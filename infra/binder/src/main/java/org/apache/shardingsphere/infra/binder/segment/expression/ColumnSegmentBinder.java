@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,20 +52,23 @@ public final class ColumnSegmentBinder {
         }
         ColumnSegment result = new ColumnSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
         segment.getOwner().ifPresent(result::setOwner);
-        result.setOriginalColumn(null == segment.getOriginalColumn() ? segment.getIdentifier() : segment.getOriginalColumn());
         Collection<TableSegmentBinderContext> tableBinderContextValues =
                 segment.getOwner().isPresent() ? Collections.singleton(tableBinderContexts.get(segment.getOwner().get().getIdentifier().getValue())) : tableBinderContexts.values();
-        result.setOriginalTable(null == segment.getOriginalTable() ? findTableNameByColumnName(segment.getIdentifier().getValue(), tableBinderContextValues) : segment.getOriginalTable());
+        ColumnSegment inputColumnSegment = findInputColumnSegment(segment.getIdentifier().getValue(), tableBinderContextValues);
+        result.setOriginalDatabase(inputColumnSegment.getOriginalDatabase());
+        result.setOriginalSchema(inputColumnSegment.getOriginalSchema());
+        result.setOriginalTable(null == segment.getOriginalTable() ? inputColumnSegment.getOriginalTable() : segment.getOriginalTable());
+        result.setOriginalColumn(null == segment.getOriginalColumn() ? segment.getIdentifier() : segment.getOriginalColumn());
         return result;
     }
     
-    private static IdentifierValue findTableNameByColumnName(final String columnName, final Collection<TableSegmentBinderContext> tableBinderContexts) {
-        IdentifierValue result = null;
+    private static ColumnSegment findInputColumnSegment(final String columnName, final Collection<TableSegmentBinderContext> tableBinderContexts) {
+        ColumnSegment result = null;
         for (TableSegmentBinderContext each : tableBinderContexts) {
-            ProjectionSegment projectionSegment = each.getColumnLabelProjectionSegments().get(columnName);
+            ProjectionSegment projectionSegment = each.getProjectionSegmentByColumnLabel(columnName);
             if (projectionSegment instanceof ColumnProjectionSegment) {
                 ShardingSpherePreconditions.checkState(null == result, () -> new IllegalStateException(String.format("Column '%s' in field list is ambiguous.", columnName)));
-                result = ((ColumnProjectionSegment) projectionSegment).getColumn().getOriginalTable();
+                result = ((ColumnProjectionSegment) projectionSegment).getColumn();
             }
         }
         ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalStateException(String.format("Unknown column '%s' in 'field list'.", columnName)));

@@ -31,7 +31,7 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   check-and-report-sonarcloud:
-    if: (github.repository == 'apache/shardingsphere')
+    if: github.repository == 'apache/shardingsphere'
     name: Check - SonarCloud
     needs: global-env
     runs-on: ubuntu-latest

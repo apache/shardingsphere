@@ -28,11 +28,11 @@ chapter = true
 | H2         | H2 数据库                | [`org.apache.shardingsphere.infra.database.h2.H2DatabaseType`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/h2/src/main/java/org/apache/shardingsphere/infra/database/h2/H2DatabaseType.java)                                         |
 | openGauss  | OpenGauss 数据库         | [`org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/opengauss/src/main/java/org/apache/shardingsphere/infra/database/opengauss/OpenGaussDatabaseType.java)      |
 
-## DialectSchemaMetaDataLoader
+## DialectMetaDataLoader
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/common/src/main/java/org/apache/shardingsphere/infra/metadata/database/schema/loader/metadata/DialectSchemaMetaDataLoader.java)
+[`org.apache.shardingsphere.infra.database.core.dict.metadata.DialectMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/core/src/main/java/org/apache/shardingsphere/infra/database/core/dict/metadata/DialectMetaDataLoader.java)
 
 ### 定义
 
@@ -40,14 +40,14 @@ chapter = true
 
 ### 已知实现
 
-| *配置标识*     | *详细说明*                | *全限定类名*                                                                                                                                                                                                                                                                        |
-|------------|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| MySQL      | 使用 MySQL 方言加载元数据      | [`org.apache.shardingsphere.infra.database.mysql.MySQLSchemaMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/mysql/src/main/java/org/apache/shardingsphere/infra/database/mysql/MySQLSchemaMetaDataLoader.java)                          |
-| Oracle     | 使用 Oracle 方言加载元数据     | [`org.apache.shardingsphere.infra.database.oracle.OracleSchemaMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/oracle/src/main/java/org/apache/shardingsphere/infra/database/oracle/OracleSchemaMetaDataLoader.java)                     |
-| PostgreSQL | 使用 PostgreSQL 方言加载元数据 | [`org.apache.shardingsphere.infra.database.postgresql.PostgreSQLSchemaMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/postgresql/src/main/java/org/apache/shardingsphere/infra/database/postgresql/PostgreSQLSchemaMetaDataLoader.java) |
-| SQLServer  | 使用 SQLServer 方言加载元数据  | [`org.apache.shardingsphere.infra.database.sqlserver.SQLServerSchemaMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/sqlserver/src/main/java/org/apache/shardingsphere/infra/database/sqlserver/SQLServerSchemaMetaDataLoader.java)      |
-| H2         | 使用 H2 方言加载元数据         | [`org.apache.shardingsphere.infra.database.h2.H2SchemaMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/h2/src/main/java/org/apache/shardingsphere/infra/database/h2/H2SchemaMetaDataLoader.java)                                         |
-| openGauss  | 使用 OpenGauss 方言加载元数据  | [`org.apache.shardingsphere.infra.database.opengauss.OpenGaussSchemaMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/opengauss/src/main/java/org/apache/shardingsphere/infra/database/opengauss/OpenGaussSchemaMetaDataLoader.java)      |
+| *配置标识*     | *详细说明*                | *全限定类名*                                                                                                                                                                                                                                                               |
+|------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MySQL      | 使用 MySQL 方言加载元数据      | [`org.apache.shardingsphere.infra.database.mysql.MySQLMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/mysql/src/main/java/org/apache/shardingsphere/infra/database/mysql/MySQLMetaDataLoader.java)                          |
+| Oracle     | 使用 Oracle 方言加载元数据     | [`org.apache.shardingsphere.infra.database.oracle.OracleMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/oracle/src/main/java/org/apache/shardingsphere/infra/database/oracle/OracleMetaDataLoader.java)                     |
+| PostgreSQL | 使用 PostgreSQL 方言加载元数据 | [`org.apache.shardingsphere.infra.database.postgresql.PostgreSQLMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/postgresql/src/main/java/org/apache/shardingsphere/infra/database/postgresql/PostgreSQLMetaDataLoader.java) |
+| SQLServer  | 使用 SQLServer 方言加载元数据  | [`org.apache.shardingsphere.infra.database.sqlserver.SQLServerMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/sqlserver/src/main/java/org/apache/shardingsphere/infra/database/sqlserver/SQLServerMetaDataLoader.java)      |
+| H2         | 使用 H2 方言加载元数据         | [`org.apache.shardingsphere.infra.database.h2.H2MetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/h2/src/main/java/org/apache/shardingsphere/infra/database/h2/H2MetaDataLoader.java)                                         |
+| openGauss  | 使用 OpenGauss 方言加载元数据  | [`org.apache.shardingsphere.infra.database.opengauss.OpenGaussMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/opengauss/src/main/java/org/apache/shardingsphere/infra/database/opengauss/OpenGaussMetaDataLoader.java)      |
 
 ## DialectDataTypeLoader
 
@@ -61,10 +61,10 @@ chapter = true
 
 ### 已知实现
 
-| *配置标识* | *详细说明*         | *全限定类名*                                                                                                                                                                                                                                                                                                     |
-|--------|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| MySQL  | MySQL 数据类型加载器  | [`org.apache.shardingsphere.infra.database.mysql.MySQLDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/mysql/src/main/java/org/apache/shardingsphere/infra/database/mysql/MySQLSchemaMetaDataLoader.java)      |
-| Oracle | Oracle 数据类型加载器 | [`org.apache.shardingsphere.infra.database.oracle.OracleDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/oracle/src/main/java/org/apache/shardingsphere/infra/database/oracle/OracleSchemaMetaDataLoader.java) |
+| *配置标识* | *详细说明*         | *全限定类名*                                                                                                                                                                                                                                           |
+|--------|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MySQL  | MySQL 数据类型加载器  | [`org.apache.shardingsphere.infra.database.mysql.MySQLDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/mysql/src/main/java/org/apache/shardingsphere/infra/database/mysql/MySQLDataTypeLoader.java)      |
+| Oracle | Oracle 数据类型加载器 | [`org.apache.shardingsphere.infra.database.oracle.OracleDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/oracle/src/main/java/org/apache/shardingsphere/infra/database/oracle/OracleDataTypeLoader.java) |
 
 ## DataSourcePoolMetaData
 

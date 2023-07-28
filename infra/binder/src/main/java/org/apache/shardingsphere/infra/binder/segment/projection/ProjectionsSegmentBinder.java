@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.projection.impl.ColumnProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.projection.impl.ShorthandProjectionSegmentBinder;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
@@ -40,13 +39,10 @@ public final class ProjectionsSegmentBinder {
      * Bind projections segment with metadata.
      *
      * @param segment table segment
-     * @param metaData meta data
-     * @param defaultDatabaseName default database name
      * @param tableBinderContexts table binder contexts
      * @return bounded projections segment
      */
-    public static ProjectionsSegment bind(final ProjectionsSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                                          final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static ProjectionsSegment bind(final ProjectionsSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         ProjectionsSegment result = new ProjectionsSegment(segment.getStartIndex(), segment.getStopIndex());
         result.setDistinctRow(segment.isDistinctRow());
         segment.getProjections().forEach(each -> result.getProjections().add(bind(each, tableBinderContexts)));

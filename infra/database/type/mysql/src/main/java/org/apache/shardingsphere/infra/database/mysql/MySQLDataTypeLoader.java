@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.mysql;
 
-import org.apache.shardingsphere.infra.database.core.metadata.datatype.DialectDataTypeLoader;
+import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DialectDataTypeLoader;
 
 import java.sql.SQLException;
 import java.sql.Types;

@@ -72,7 +72,5 @@ public interface ConnectionProperties {
      * @param connectionProps connection properties
      * @return connections are in the same database instance or not
      */
-    default boolean isInSameDatabaseInstance(final ConnectionProperties connectionProps) {
-        return getHostname().equals(connectionProps.getHostname()) && getPort() == connectionProps.getPort();
-    }
+    boolean isInSameDatabaseInstance(ConnectionProperties connectionProps);
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.column;
 
-import org.apache.shardingsphere.infra.database.core.dict.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
 
 /**
  * Column generated reviser.

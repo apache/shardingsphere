@@ -17,119 +17,70 @@
 
 package org.apache.shardingsphere.infra.database.mysql;
 
-import org.apache.shardingsphere.infra.database.core.dict.metadata.DialectSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.database.core.dict.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.database.core.dict.model.IndexMetaData;
-import org.apache.shardingsphere.infra.database.core.dict.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.database.core.dict.model.TableMetaData;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.metadata.data.loader.type.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class MySQLSchemaMetaDataLoaderTest {
     
-    @Test
-    void assertLoadWithoutTables() throws SQLException {
-        DataSource dataSource = mockDataSource();
-        ResultSet resultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement("SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION, COLUMN_TYPE "
-                + "FROM information_schema.columns WHERE TABLE_SCHEMA=? ORDER BY ORDINAL_POSITION")
-                .executeQuery()).thenReturn(resultSet);
-        ResultSet indexResultSet = mockIndexMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement("SELECT TABLE_NAME, INDEX_NAME "
-                + "FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db"));
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private DataSource dataSource;
+    
+    @BeforeEach
+    void setUp() throws SQLException {
+        ResultSet tableResultSet = mockTableResultSet();
+        when(dataSource.getConnection().getMetaData().getTables("catalog", "public", null, new String[]{"TABLE", "VIEW", "SYSTEM TABLE", "SYSTEM VIEW"})).thenReturn(tableResultSet);
+        when(dataSource.getConnection().getCatalog()).thenReturn("catalog");
+        when(dataSource.getConnection().getSchema()).thenReturn("public");
+        ResultSet schemaResultSet = mockSchemaResultSet();
+        when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
     }
     
-    @Test
-    void assertLoadWithTables() throws SQLException {
-        DataSource dataSource = mockDataSource();
-        ResultSet resultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement("SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION, COLUMN_TYPE "
-                + "FROM information_schema.columns WHERE TABLE_SCHEMA=? AND TABLE_NAME IN ('tbl') ORDER BY ORDINAL_POSITION")
-                .executeQuery()).thenReturn(resultSet);
-        ResultSet indexResultSet = mockIndexMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')")
-                .executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db"));
-    }
-    
-    private DataSource mockDataSource() throws SQLException {
-        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        ResultSet typeInfoResultSet = mockTypeInfoResultSet();
-        when(result.getConnection().getMetaData().getTypeInfo()).thenReturn(typeInfoResultSet);
-        return result;
-    }
-    
-    private ResultSet mockTypeInfoResultSet() throws SQLException {
+    private ResultSet mockTableResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, true, false);
-        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar");
-        when(result.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl", "##tbl");
         return result;
     }
     
-    private ResultSet mockTableMetaDataResultSet() throws SQLException {
+    private ResultSet mockSchemaResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, true, true, true, true, true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "doc", "geo", "t_year", "pg", "mpg", "pt", "mpt");
-        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "json", "geometry", "year", "polygon", "multipolygon", "point", "multipoint");
-        when(result.getString("COLUMN_KEY")).thenReturn("PRI", "", "", "", "", "", "", "", "");
-        when(result.getString("EXTRA")).thenReturn("auto_increment", "INVISIBLE", "", "", "", "", "", "", "");
-        when(result.getString("COLLATION_NAME")).thenReturn("utf8", "utf8_general_ci");
-        when(result.getString("COLUMN_TYPE")).thenReturn("int", "varchar");
+        when(result.next()).thenReturn(true, true, true, true, false);
+        when(result.getString("TABLE_SCHEM")).thenReturn("information_schema", "public", "schema_1", "schema_2");
         return result;
     }
     
-    private ResultSet mockIndexMetaDataResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString("INDEX_NAME")).thenReturn("id");
-        when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        return result;
+    @Test
+    void assertLoadSchemaTableNames() throws SQLException {
+        Map<String, Collection<String>> schemaTableNames = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, Collections.singletonList("tbl"));
+        assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), dataSource), is(schemaTableNames));
     }
     
-    private DialectSchemaMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectSchemaMetaDataLoader> result = DatabaseTypedSPILoader.findService(DialectSchemaMetaDataLoader.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        assertTrue(result.isPresent());
-        return result.get();
-    }
-    
-    private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList) {
-        assertThat(schemaMetaDataList.size(), is(1));
-        TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().iterator().next();
-        assertThat(actualTableMetaData.getColumns().size(), is(9));
-        Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("geo", Types.BINARY, false, false, false, true, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("t_year", Types.DATE, false, false, false, true, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("pg", Types.BINARY, false, false, false, true, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("mpg", Types.BINARY, false, false, false, true, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("pt", Types.BINARY, false, false, false, true, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("mpt", Types.BINARY, false, false, false, true, false)));
-        assertThat(actualTableMetaData.getIndexes().size(), is(1));
-        Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
-        assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
+    @Test
+    void assertLoadSchemaNames() throws SQLException {
+        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), TypedSPILoader.getService(DatabaseType.class, "MySQL")), is(Collections.singletonList("public")));
     }
 }

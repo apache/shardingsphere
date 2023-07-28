@@ -35,9 +35,10 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   e2e-operation-job:
+    if: ${{ needs.global-env.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     needs: global-env
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.global-env.outputs.GLOBAL_RUNS_ON }}
     strategy:
       max-parallel: 20
       fail-fast: false

@@ -107,4 +107,5 @@
     <sql-case id="select_between_expression" value="SELECT item_id BETWEEN 1 AND order_id, status FROM t_order_item;" db-types="MySQL" />
     <sql-case id="select_dbms_logmnr_mine_value_regular_function" value="SELECT DBMS_LOGMNR.MINE_VALUE(UNDO_VALUE, 'HR.EMPLOYEES.SALARY') FROM V$LOGMNR_CONTENTS;" db-types="Oracle" />
     <sql-case id="select_interval_day_to_second_expression" value="SELECT (SYSTIMESTAMP - order_date) DAY(9) TO SECOND FROM orders" db-types="Oracle" />
+    <sql-case id="select_feature_function" value="SELECT FEATURE_VALUE(nmf_sh_sample, 3 USING *) FROM nmf_sh_sample_apply_prepared" db-types="Oracle" />
 </sql-cases>

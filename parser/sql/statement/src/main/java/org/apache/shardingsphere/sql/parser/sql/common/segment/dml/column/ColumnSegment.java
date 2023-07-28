@@ -43,6 +43,10 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     
     private OwnerSegment owner;
     
+    private IdentifierValue originalDatabase;
+    
+    private IdentifierValue originalSchema;
+    
     private IdentifierValue originalTable;
     
     private IdentifierValue originalColumn;

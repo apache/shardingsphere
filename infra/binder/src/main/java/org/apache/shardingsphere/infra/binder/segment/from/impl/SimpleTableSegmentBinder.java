@@ -19,14 +19,15 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -35,7 +36,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -71,7 +74,8 @@ public final class SimpleTableSegmentBinder {
         IdentifierValue originalSchema = getSchemaName(segment, defaultDatabaseName, databaseType);
         // TODO check database and schema
         ShardingSphereSchema schema = metaData.getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
-        tableBinderContexts.put(segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue()), createSimpleTableBinderContext(segment, schema));
+        tableBinderContexts.put(segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue()),
+                createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema));
         segment.getTableName().setOriginalDatabase(originalDatabase);
         segment.getTableName().setOriginalSchema(originalSchema);
         return segment;
@@ -94,14 +98,20 @@ public final class SimpleTableSegmentBinder {
         return new IdentifierValue(DatabaseTypeEngine.getDefaultSchemaName(databaseType, defaultDatabaseName));
     }
     
-    private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema) {
-        Collection<String> columnNames = schema.getAllColumnNames(segment.getTableName().getIdentifier().getValue());
-        Map<String, ProjectionSegment> projectionSegments = new CaseInsensitiveMap<>(columnNames.size(), 1L);
-        for (String each : columnNames) {
-            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each));
-            columnSegment.setOriginalColumn(new IdentifierValue(each));
+    private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema,
+                                                                            final IdentifierValue originalDatabase, final IdentifierValue originalSchema) {
+        Collection<ShardingSphereColumn> columnNames =
+                Optional.ofNullable(schema.getTable(segment.getTableName().getIdentifier().getValue())).map(ShardingSphereTable::getColumnValues).orElseGet(Collections::emptyList);
+        Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
+        for (ShardingSphereColumn each : columnNames) {
+            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each.getName()));
+            columnSegment.setOriginalDatabase(originalDatabase);
+            columnSegment.setOriginalSchema(originalSchema);
             columnSegment.setOriginalTable(segment.getTableName().getIdentifier());
-            projectionSegments.put(each, new ColumnProjectionSegment(columnSegment));
+            columnSegment.setOriginalColumn(new IdentifierValue(each.getName()));
+            ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment);
+            columnProjectionSegment.setVisible(each.isVisible());
+            projectionSegments.add(columnProjectionSegment);
         }
         return new TableSegmentBinderContext(projectionSegments);
     }

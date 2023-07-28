@@ -38,7 +38,7 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
         sqlStatement.setFrom(TableSegmentBinder.bind(sqlStatement.getFrom(), metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), tableBinderContexts));
         sqlStatement.getCombine().ifPresent(optional -> sqlStatement.setCombine(CombineSegmentBinder.bind(optional, metaData, defaultDatabaseName)));
-        sqlStatement.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), metaData, defaultDatabaseName, tableBinderContexts));
+        sqlStatement.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), tableBinderContexts));
         // TODO support other segment bind in select statement
         return sqlStatement;
     }
