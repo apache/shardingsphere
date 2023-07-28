@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 public interface ConnectionPropertiesParser extends DatabaseTypedSPI {
     
     /**
-     * Parse connection properties.
+     * Parse URL to connection properties.
      *
      * @param url URL of data source
      * @param username username of data source

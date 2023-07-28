@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.postgresql;
 
-import org.apache.shardingsphere.infra.database.core.metadata.system.DialectSystemDatabase;
+import org.apache.shardingsphere.infra.database.core.metadata.database.system.DialectSystemDatabase;
 
 import java.util.Arrays;
 import java.util.Collection;

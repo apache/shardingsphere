@@ -15,39 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.system;
+package org.apache.shardingsphere.infra.database.core.metadata.database.system;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 /**
- * System database.
+ * Dialect system database.
  */
-@RequiredArgsConstructor
-public final class SystemDatabase {
-    
-    private final DatabaseType databaseType;
+@SingletonSPI
+public interface DialectSystemDatabase extends DatabaseTypedSPI {
     
     /**
      * Get system database schema map.
      *
      * @return system database schema map
      */
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseType).map(DialectSystemDatabase::getSystemDatabaseSchemaMap).orElse(Collections.emptyMap());
-    }
+    Map<String, Collection<String>> getSystemDatabaseSchemaMap();
     
     /**
      * Get system schemas.
      *
      * @return system schemas
      */
-    public Collection<String> getSystemSchemas() {
-        return DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseType).map(DialectSystemDatabase::getSystemSchemas).orElse(Collections.emptyList());
-    }
+    Collection<String> getSystemSchemas();
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.datatype;
+package org.apache.shardingsphere.infra.database.core.metadata.database.datatype;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;

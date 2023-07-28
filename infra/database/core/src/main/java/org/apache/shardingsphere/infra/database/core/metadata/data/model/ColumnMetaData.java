@@ -15,25 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.metadata.datatype;
+package org.apache.shardingsphere.infra.database.core.metadata.data.model;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-
-import java.sql.SQLException;
-import java.util.Map;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Dialect data type loader.
+ * Column meta data.
  */
-@SingletonSPI
-public interface DialectDataTypeLoader extends DatabaseTypedSPI {
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class ColumnMetaData {
     
-    /**
-     * Load data type.
-     *
-     * @return data type map
-     * @throws SQLException SQL exception
-     */
-    Map<String, Integer> load() throws SQLException;
+    private final String name;
+    
+    private final int dataType;
+    
+    private final boolean primaryKey;
+    
+    private final boolean generated;
+    
+    private final boolean caseSensitive;
+    
+    private final boolean visible;
+    
+    private final boolean unsigned;
 }
