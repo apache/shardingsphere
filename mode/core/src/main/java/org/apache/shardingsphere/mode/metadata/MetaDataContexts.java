@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
@@ -60,7 +61,8 @@ public final class MetaDataContexts implements AutoCloseable {
             return new ShardingSphereStatistics();
         }
         // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
-        Optional<ShardingSphereStatisticsBuilder> statisticsBuilder = DatabaseTypedSPILoader.findService(ShardingSphereStatisticsBuilder.class, protocolType.getDefaultSchema().isPresent()
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, protocolType);
+        Optional<ShardingSphereStatisticsBuilder> statisticsBuilder = DatabaseTypedSPILoader.findService(ShardingSphereStatisticsBuilder.class, dialectDatabaseMetaData.getDefaultSchema().isPresent()
                 ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")
                 : protocolType);
         if (!statisticsBuilder.isPresent()) {

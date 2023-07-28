@@ -18,36 +18,18 @@
 package org.apache.shardingsphere.infra.database.postgresql;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PostgreSQLDatabaseTypeTest {
     
     @Test
-    void assertGetQuoteCharacter() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getQuoteCharacter(), is(QuoteCharacter.QUOTE));
-    }
-    
-    @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:postgresql:")));
-    }
-    
-    @Test
-    void assertIsSchemaAvailable() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").isSchemaAvailable());
-    }
-    
-    @Test
-    void assertGetDefaultSchema() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getDefaultSchema(), is(Optional.of("public")));
     }
 }

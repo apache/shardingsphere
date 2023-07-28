@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.database.sql92;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -28,16 +26,6 @@ import java.util.Collections;
  * Database type of SQL92.
  */
 public final class SQL92DatabaseType implements DatabaseType {
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
-    }
-    
-    @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
-    }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

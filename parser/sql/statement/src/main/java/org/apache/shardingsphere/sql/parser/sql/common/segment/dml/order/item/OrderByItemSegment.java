@@ -19,8 +19,10 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
@@ -60,6 +62,7 @@ public abstract class OrderByItemSegment implements SQLSegment {
         if (null != nullsOrderType) {
             return nullsOrderType;
         }
-        return OrderDirection.ASC == orderDirection ? databaseType.getDefaultNullsOrderType() : databaseType.getDefaultNullsOrderType().getReversedOrderType();
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
+        return OrderDirection.ASC == orderDirection ? dialectDatabaseMetaData.getDefaultNullsOrderType() : dialectDatabaseMetaData.getDefaultNullsOrderType().getReversedOrderType();
     }
 }

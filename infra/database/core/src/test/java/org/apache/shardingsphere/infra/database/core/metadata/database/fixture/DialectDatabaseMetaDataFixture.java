@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.fixture.datasource;
+package org.apache.shardingsphere.infra.database.core.metadata.database.fixture;
 
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-
-/**
- * Mocked connection properties parser.
- */
-public final class MockedConnectionPropertiesParser implements ConnectionPropertiesParser {
+public final class DialectDatabaseMetaDataFixture implements DialectDatabaseMetaData {
     
     @Override
-    public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        return mock(ConnectionProperties.class, RETURNS_DEEP_STUBS);
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.NONE;
+    }
+    
+    @Override
+    public NullsOrderType getDefaultNullsOrderType() {
+        return NullsOrderType.FIRST;
     }
     
     @Override
     public String getDatabaseType() {
-        return "FIXTURE";
+        return "TRUNK";
     }
 }

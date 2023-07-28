@@ -25,7 +25,9 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
@@ -138,6 +140,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     }
     
     private NullsOrderType generateNewNullsOrderType(final OrderDirection orderDirection, final DatabaseType databaseType) {
-        return OrderDirection.ASC == orderDirection ? databaseType.getDefaultNullsOrderType() : databaseType.getDefaultNullsOrderType().getReversedOrderType();
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
+        return OrderDirection.ASC == orderDirection ? dialectDatabaseMetaData.getDefaultNullsOrderType() : dialectDatabaseMetaData.getDefaultNullsOrderType().getReversedOrderType();
     }
 }

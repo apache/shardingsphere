@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
@@ -140,7 +142,8 @@ public final class DatabaseTypeEngine {
      * @return default schema name
      */
     public static String getDefaultSchemaName(final DatabaseType protocolType, final String databaseName) {
-        return protocolType.getDefaultSchema().orElseGet(() -> null == databaseName ? null : databaseName.toLowerCase());
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, protocolType);
+        return dialectDatabaseMetaData.getDefaultSchema().orElseGet(() -> null == databaseName ? null : databaseName.toLowerCase());
     }
     
     /**

@@ -82,6 +82,8 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ProxySQLExecutorTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
@@ -97,6 +99,7 @@ class ProxySQLExecutorTest {
         when(databaseConnectionManager.getConnectionSession().getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(metaData.getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+        when(metaData.getDatabases().values().iterator().next().getProtocolType()).thenReturn(databaseType);
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(mock(SQLFederationRule.class))));
         ContextManager contextManager = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), metaData), mock(InstanceContext.class));
@@ -193,7 +196,7 @@ class ProxySQLExecutorTest {
     
     private QueryContext mockQueryContext() {
         QueryContext result = mock(QueryContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSqlStatementContext().getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getSqlStatementContext().getDatabaseType()).thenReturn(databaseType);
         when(result.getSqlStatementContext().getTablesContext().getSchemaName()).thenReturn(Optional.of(DefaultDatabase.LOGIC_NAME));
         return result;
     }

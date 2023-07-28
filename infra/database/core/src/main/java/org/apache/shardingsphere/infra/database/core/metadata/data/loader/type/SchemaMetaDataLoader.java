@@ -20,7 +20,9 @@ package org.apache.shardingsphere.infra.database.core.metadata.data.loader.type;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderConnection;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import javax.sql.DataSource;
@@ -63,9 +65,10 @@ public final class SchemaMetaDataLoader {
     public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource) throws SQLException {
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(databaseType, dataSource.getConnection())) {
             Collection<String> schemaNames = loadSchemaNames(connection, databaseType);
+            DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
             Map<String, Collection<String>> result = new HashMap<>(schemaNames.size(), 1F);
             for (String each : schemaNames) {
-                String schemaName = databaseType.getDefaultSchema().isPresent() ? each : databaseName;
+                String schemaName = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? each : databaseName;
                 result.put(schemaName, loadTableNames(connection, each));
             }
             return result;
@@ -81,7 +84,8 @@ public final class SchemaMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Collection<String> loadSchemaNames(final Connection connection, final DatabaseType databaseType) throws SQLException {
-        if (!databaseType.getDefaultSchema().isPresent()) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
+        if (!dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
             return Collections.singletonList(connection.getSchema());
         }
         Collection<String> result = new LinkedList<>();

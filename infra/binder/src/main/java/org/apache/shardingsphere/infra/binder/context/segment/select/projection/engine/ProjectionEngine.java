@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection.engine;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
@@ -29,8 +28,10 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -63,7 +64,6 @@ import java.util.Optional;
 /**
  * Projection engine.
  */
-@RequiredArgsConstructor
 public final class ProjectionEngine {
     
     private final String databaseName;
@@ -72,9 +72,18 @@ public final class ProjectionEngine {
     
     private final DatabaseType databaseType;
     
+    private final DialectDatabaseMetaData dialectDatabaseMetaData;
+    
     private int aggregationAverageDerivedColumnCount;
     
     private int aggregationDistinctDerivedColumnCount;
+    
+    public ProjectionEngine(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final DatabaseType databaseType) {
+        this.databaseName = databaseName;
+        this.schemas = schemas;
+        this.databaseType = databaseType;
+        dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
+    }
     
     /**
      * Create projection.
@@ -170,9 +179,9 @@ public final class ProjectionEngine {
         Collection<ColumnProjection> result = new LinkedList<>();
         if (null == owner) {
             schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(table.getAlias().orElse(((SimpleTableSegment) table).getTableName().getIdentifier()),
-                    new IdentifierValue(each, databaseType.getQuoteCharacter()), null, databaseType)).forEach(result::add);
+                    new IdentifierValue(each, dialectDatabaseMetaData.getQuoteCharacter()), null, databaseType)).forEach(result::add);
         } else if (owner.getValue().equalsIgnoreCase(tableAlias)) {
-            schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, new IdentifierValue(each, databaseType.getQuoteCharacter()), null, databaseType))
+            schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, new IdentifierValue(each, dialectDatabaseMetaData.getQuoteCharacter()), null, databaseType))
                     .forEach(result::add);
         }
         return result;

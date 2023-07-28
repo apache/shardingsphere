@@ -20,10 +20,11 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
@@ -46,6 +47,8 @@ import static org.mockito.Mockito.when;
 
 class JoinTableSegmentBinderTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertBindWithAlias() {
         JoinTableSegment joinTableSegment = mock(JoinTableSegment.class);
@@ -57,7 +60,7 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getRight()).thenReturn(rightTable);
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), tableBinderContexts);
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
         assertTrue(actual.getLeft() instanceof SimpleTableSegment);
         assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
@@ -78,7 +81,7 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getRight()).thenReturn(rightTable);
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), tableBinderContexts);
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
         assertTrue(actual.getLeft() instanceof SimpleTableSegment);
         assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
@@ -103,7 +106,7 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getJoinType()).thenReturn(JoinType.RIGHT.name());
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), tableBinderContexts);
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
         assertTrue(actual.getLeft() instanceof SimpleTableSegment);
         assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
@@ -128,7 +131,7 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getUsing()).thenReturn(Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("status")), new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), tableBinderContexts);
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
         assertTrue(actual.getLeft() instanceof SimpleTableSegment);
         assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -106,9 +107,9 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     }
     
     private void setGroupByForDistinctRow(final SelectStatementContext selectStatementContext) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, selectStatementContext.getSqlStatement().getDatabaseType());
         for (int index = 1; index <= selectStatementContext.getProjectionsContext().getExpandProjections().size(); index++) {
-            OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(-1, -1, index, OrderDirection.ASC,
-                    selectStatementContext.getSqlStatement().getDatabaseType().getDefaultNullsOrderType()));
+            OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(-1, -1, index, OrderDirection.ASC, dialectDatabaseMetaData.getDefaultNullsOrderType()));
             orderByItem.setIndex(index);
             selectStatementContext.getGroupByContext().getItems().add(orderByItem);
         }

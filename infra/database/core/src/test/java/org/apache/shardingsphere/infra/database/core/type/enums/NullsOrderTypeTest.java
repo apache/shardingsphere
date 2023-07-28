@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.core.type.enums;
 
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 

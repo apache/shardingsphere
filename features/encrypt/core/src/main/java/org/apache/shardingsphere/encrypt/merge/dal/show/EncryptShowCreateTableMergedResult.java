@@ -23,7 +23,8 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
@@ -44,7 +45,7 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     
     private static final int CREATE_TABLE_DEFINITION_INDEX = 2;
     
-    private final DatabaseType databaseType;
+    private final DialectDatabaseMetaData dialectDatabaseMetaData;
     
     private final String tableName;
     
@@ -53,7 +54,7 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     protected EncryptShowCreateTableMergedResult(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getAllTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW CREATE TABLE FOR MULTI TABLE"));
-        databaseType = sqlStatementContext.getDatabaseType();
+        dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, sqlStatementContext.getDatabaseType());
         tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         this.encryptRule = encryptRule;
     }
@@ -83,7 +84,7 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
     }
     
     private Optional<String> findLogicColumnDefinition(final String columnDefinition, final EncryptTable encryptTable) {
-        String columnName = databaseType.getQuoteCharacter().unwrap(columnDefinition.trim().split("\\s+")[0]);
+        String columnName = dialectDatabaseMetaData.getQuoteCharacter().unwrap(columnDefinition.trim().split("\\s+")[0]);
         if (encryptTable.isCipherColumn(columnName)) {
             return Optional.of(columnDefinition.replace(columnName, encryptTable.getLogicColumnByCipherColumn(columnName)));
         }

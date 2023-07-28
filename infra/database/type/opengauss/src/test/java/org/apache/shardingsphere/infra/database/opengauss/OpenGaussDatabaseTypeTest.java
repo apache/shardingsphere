@@ -18,36 +18,18 @@
 package org.apache.shardingsphere.infra.database.opengauss;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OpenGaussDatabaseTypeTest {
     
     @Test
-    void assertGetQuoteCharacter() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "openGauss").getQuoteCharacter(), is(QuoteCharacter.QUOTE));
-    }
-    
-    @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "openGauss").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:opengauss:")));
-    }
-    
-    @Test
-    void assertIsSchemaAvailable() {
-        assertTrue(TypedSPILoader.getService(DatabaseType.class, "openGauss").isSchemaAvailable());
-    }
-    
-    @Test
-    void assertGetDefaultSchema() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "openGauss").getDefaultSchema(), is(Optional.of("public")));
     }
 }

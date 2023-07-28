@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.type.enums;
+package org.apache.shardingsphere.test.fixture.connector;
+
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
+
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
 /**
- * Nulls order type.
+ * Mocked connection properties parser.
  */
-public enum NullsOrderType {
+public final class MockedConnectionPropertiesParser implements ConnectionPropertiesParser {
     
-    /**
-     * Nulls first.
-     */
-    FIRST,
+    @Override
+    public ConnectionProperties parse(final String url, final String username, final String catalog) {
+        return mock(ConnectionProperties.class, RETURNS_DEEP_STUBS);
+    }
     
-    /**
-     * Nulls last.
-     */
-    LAST;
-    
-    /**
-     * Get reversed order type.
-     * 
-     * @return reversed order type
-     */
-    public NullsOrderType getReversedOrderType() {
-        return this == FIRST ? LAST : FIRST;
+    @Override
+    public String getDatabaseType() {
+        return "FIXTURE";
     }
 }

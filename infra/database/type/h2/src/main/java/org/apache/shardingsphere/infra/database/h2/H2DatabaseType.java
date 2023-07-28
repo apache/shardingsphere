@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.database.h2;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -30,17 +28,6 @@ import java.util.Optional;
  * Database type of H2.
  */
 public final class H2DatabaseType implements DatabaseType {
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
-    }
-    
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
-    @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return getTrunkDatabaseType().get().getDefaultNullsOrderType();
-    }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

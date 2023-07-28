@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.database.mysql;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -30,11 +29,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class MySQLDatabaseTypeTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-    
-    @Test
-    void assertGetQuoteCharacter() {
-        assertThat(databaseType.getQuoteCharacter(), is(QuoteCharacter.BACK_QUOTE));
-    }
     
     @Test
     void assertGetJdbcUrlPrefixes() {

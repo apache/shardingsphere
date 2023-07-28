@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.database.mariadb;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -28,11 +27,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class MariaDBDatabaseTypeTest {
-    
-    @Test
-    void assertGetQuoteCharacter() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "MariaDB").getQuoteCharacter(), is(QuoteCharacter.BACK_QUOTE));
-    }
     
     @Test
     void assertGetJdbcUrlPrefixes() {

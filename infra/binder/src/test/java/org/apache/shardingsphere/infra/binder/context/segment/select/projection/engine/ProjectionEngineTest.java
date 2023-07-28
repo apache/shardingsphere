@@ -25,8 +25,9 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -73,11 +74,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ProjectionEngineTest {
     
-    @Mock
-    private ShardingSphereSchema schema;
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Mock
-    private DatabaseType databaseType;
+    private ShardingSphereSchema schema;
     
     @Test
     void assertCreateProjectionWhenProjectionSegmentNotMatched() {
@@ -99,7 +99,6 @@ class ProjectionEngineTest {
     void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegmentAndDuplicateTableSegment() {
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
-        when(databaseType.getQuoteCharacter()).thenReturn(QuoteCharacter.NONE);
         Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(table, new ShorthandProjectionSegment(0, 0));
         assertTrue(actual.isPresent());
@@ -180,7 +179,6 @@ class ProjectionEngineTest {
     @Test
     void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegmentAndJoinTableSegment() {
         when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "customer_id"));
-        when(databaseType.getQuoteCharacter()).thenReturn(QuoteCharacter.NONE);
         SimpleTableSegment customersTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_customer")));
         when(schema.getVisibleColumnNames("t_customer")).thenReturn(Collections.singletonList("customer_id"));
         JoinTableSegment table = new JoinTableSegment();
@@ -281,41 +279,44 @@ class ProjectionEngineTest {
     private Collection<Projection> crateExpectedColumnsWithoutOwnerForPostgreSQL() {
         Collection<Projection> result = new LinkedHashSet<>();
         DatabaseType postgresDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("order_id", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("creation_date", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("item_id", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("product_id", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("quantity", postgresDatabaseType.getQuoteCharacter()), null, postgresDatabaseType));
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, postgresDatabaseType);
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id", dialectDatabaseMetaData.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("order_id", dialectDatabaseMetaData.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("creation_date", dialectDatabaseMetaData.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", dialectDatabaseMetaData.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", dialectDatabaseMetaData.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", dialectDatabaseMetaData.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("item_id", dialectDatabaseMetaData.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("product_id", dialectDatabaseMetaData.getQuoteCharacter()), null, postgresDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("quantity", dialectDatabaseMetaData.getQuoteCharacter()), null, postgresDatabaseType));
         return result;
     }
     
     private Collection<Projection> crateExpectedColumnsWithoutOwnerForMySQL() {
         Collection<Projection> result = new LinkedHashSet<>();
         DatabaseType mysqlDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("order_id", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("user_id", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("creation_date", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("item_id", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("product_id", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("quantity", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", mysqlDatabaseType.getQuoteCharacter()), null, mysqlDatabaseType));
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, mysqlDatabaseType);
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("order_id", dialectDatabaseMetaData.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("user_id", dialectDatabaseMetaData.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("creation_date", dialectDatabaseMetaData.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("item_id", dialectDatabaseMetaData.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("product_id", dialectDatabaseMetaData.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("i"), new IdentifierValue("quantity", dialectDatabaseMetaData.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", dialectDatabaseMetaData.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", dialectDatabaseMetaData.getQuoteCharacter()), null, mysqlDatabaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", dialectDatabaseMetaData.getQuoteCharacter()), null, mysqlDatabaseType));
         return result;
     }
     
     private Collection<Projection> crateExpectedColumnsWithOwner(final DatabaseType databaseType) {
         Collection<Projection> result = new LinkedHashSet<>();
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("order_id", databaseType.getQuoteCharacter()), null, databaseType));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id", databaseType.getQuoteCharacter()), null, databaseType));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", databaseType.getQuoteCharacter()), null, databaseType));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", databaseType.getQuoteCharacter()), null, databaseType));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", databaseType.getQuoteCharacter()), null, databaseType));
-        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("creation_date", databaseType.getQuoteCharacter()), null, databaseType));
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("order_id", dialectDatabaseMetaData.getQuoteCharacter()), null, databaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("user_id", dialectDatabaseMetaData.getQuoteCharacter()), null, databaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("status", dialectDatabaseMetaData.getQuoteCharacter()), null, databaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("merchant_id", dialectDatabaseMetaData.getQuoteCharacter()), null, databaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("remark", dialectDatabaseMetaData.getQuoteCharacter()), null, databaseType));
+        result.add(new ColumnProjection(new IdentifierValue("o"), new IdentifierValue("creation_date", dialectDatabaseMetaData.getQuoteCharacter()), null, databaseType));
         return result;
     }
     

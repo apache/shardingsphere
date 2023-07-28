@@ -75,7 +75,7 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
                 tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
             }
         }
-        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList));
+        return Collections.singleton(new SchemaMetaData(defaultSchemaName, tableMetaDataList));
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {

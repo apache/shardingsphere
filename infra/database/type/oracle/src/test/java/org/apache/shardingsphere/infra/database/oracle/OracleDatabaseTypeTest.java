@@ -18,49 +18,18 @@
 package org.apache.shardingsphere.infra.database.oracle;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class OracleDatabaseTypeTest {
     
     @Test
-    void assertGetQuoteCharacter() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "Oracle").getQuoteCharacter(), is(QuoteCharacter.QUOTE));
-    }
-    
-    @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "Oracle").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:oracle:")));
-    }
-    
-    @Test
-    void assertGetSchema() throws SQLException {
-        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(connection.getMetaData().getUserName()).thenReturn("scott");
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "Oracle").getSchema(connection), is("SCOTT"));
-    }
-    
-    @Test
-    void assertGetSchemaIfExceptionThrown() throws SQLException {
-        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(connection.getMetaData().getUserName()).thenThrow(SQLException.class);
-        assertNull(TypedSPILoader.getService(DatabaseType.class, "Oracle").getSchema(connection));
-    }
-    
-    @Test
-    void assertFormatTableNamePattern() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "Oracle").formatTableNamePattern("tbl"), is("TBL"));
     }
 }
