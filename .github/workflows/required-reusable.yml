@@ -54,7 +54,7 @@ jobs:
             echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=true" >> $GITHUB_OUTPUT
           fi
     outputs:
-      GLOBAL_CACHE_PREFIX: ${{ steps.import-variables.outputs.GLOBAL_CACHE_PREFIX }}
       GLOBAL_RUNS_ON: ${{ steps.import-variables.outputs.GLOBAL_RUNS_ON }}
       GLOBAL_JOB_ENABLED: ${{ steps.check-job-executable.outputs.GLOBAL_JOB_ENABLED }}
+      GLOBAL_CACHE_PREFIX: ${{ steps.check-job-executable.outputs.GLOBAL_CACHE_PREFIX }}
       GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE: ${{ steps.check-job-executable.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE }}
