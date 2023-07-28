@@ -1899,7 +1899,8 @@ xmlFunction
     | xmlSerializeFunction
     | xmlTableFunction
     | xmlIsSchemaValidFunction
-    | specifiedFunctionName = (SYS_XMLGEN | SYS_XMLAGG) LP_ expr (COMMA_ expr)? RP_
+    | specifiedFunctionName = (SYS_XMLGEN | SYS_XMLAGG | APPENDCHILDXML | DELETEXML | EXISTSNODE | EXTRACT | EXTRACTVALUE | INSERTCHILDXML | INSERTCHILDXMLAFTER | INSERTCHILDXMLBEFORE | INSERTXMLAFTER | INSERTXMLBEFORE) exprList
+    | specifiedFunctionName = (DEPTH | PATH) LP_ correlationInteger RP_
     ;
 
 xmlAggFunction
