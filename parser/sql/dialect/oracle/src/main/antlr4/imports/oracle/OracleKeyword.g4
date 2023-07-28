@@ -6020,6 +6020,10 @@ STATEMENT_QUEUING
     :S T A T E M E N T UL_ Q U E U I N G
     ;
 
+OVERRIDING
+    : O V E R R I D I N G
+    ;
+
 STATIC
     :S T A T I C
     ;

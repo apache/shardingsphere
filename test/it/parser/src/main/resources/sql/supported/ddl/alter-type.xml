@@ -37,43 +37,43 @@
     <sql-case id="alter_type_compile_float" value="ALTER TYPE type_name COMPILE number_variable = +5.0 REUSE SETTINGS" db-types="Oracle" />
     <sql-case id="alter_type_compile_minus_float" value="ALTER TYPE type_name COMPILE number_variable = -5.0 REUSE SETTINGS" db-types="Oracle" />
     <sql-case id="alter_type_compile_hex" value="ALTER TYPE type_name COMPILE hex_variable = X'11' REUSE SETTINGS" db-types="Oracle" />
-    <sql-case id="alter_type_replace_attribute" value="ALTER TYPE type_name REPLACE AS OBJECT (a NUMBER, b link1)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_attribute" value="ALTER TYPE type_name REPLACE AS OBJECT (a NUMBER, b NUMBER)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_memeber_function" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, MEMBER FUNCTION p(c1 NUMBER) RETURN NUMBER)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_static_function" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, STATIC FUNCTION p(c1 BOOL) RETURN NUMBER)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, STATIC FUNCTION p(b1 BOOL) RETURN NUMBER)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_member_procedure" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, MEMBER PROCEDURE p(c1 BOOL) RETURN NUMBER)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, MEMBER PROCEDURE p(b1 BOOL))" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_static_procedure" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, STATIC PROCEDURE p(c1 BOOL) RETURN NUMBER)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, STATIC PROCEDURE p(b1 BOOL))" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_static_procedure_as_call" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, STATIC PROCEDURE p(c1 BOOL) RETURN NUMBER AS LANGUAGE JAVA NAME STRING_)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, STATIC PROCEDURE p(b1 BOOL) AS LANGUAGE JAVA NAME 'resultName')" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_static_procedure_is_call" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, STATIC PROCEDURE p(c1 BOOL) RETURN NUMBER IS LANGUAGE JAVA NAME STRING_)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, STATIC PROCEDURE p(b1 BOOL) IS LANGUAGE JAVA NAME 'resultName')" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_overriding_static_function" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, OVERRIDING STATIC FUNCTION p(c1 BOOL) RETURN NUMBER)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, OVERRIDING STATIC FUNCTION p(b1 BOOL) RETURN NUMBER)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_final_static_function" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, FINAL STATIC FUNCTION p(c1 BOOL) RETURN NUMBER)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, FINAL STATIC FUNCTION p(b1 BOOL) RETURN NUMBER)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_instantiable_static_function" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, INSTANTIABLE STATIC FUNCTION p(c1 BOOL) RETURN NUMBER)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, INSTANTIABLE STATIC FUNCTION p(b1 BOOL) RETURN NUMBER)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_not_instantiable_static_function" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, NOT INSTANTIABLE STATIC FUNCTION p(c1 BOOL) RETURN NUMBER)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, NOT INSTANTIABLE STATIC FUNCTION p(b1 BOOL) RETURN NUMBER)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_constructor_function_single_parameter" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, CONSTRUCTOR FUNCTION p(c1 BOOL) RETURN SELF AS RESULT)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(b1 BOOL) RETURN SELF AS RESULT)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_constructor_function_multi_parameter" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, CONSTRUCTOR FUNCTION p(c1 BOOL, a NUMBER) RETURN SELF AS RESULT)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(b1 BOOL, n1 NUMBER) RETURN SELF AS RESULT)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_constructor_final_function" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, FINAL CONSTRUCTOR FUNCTION p(c1 BOOL) RETURN SELF AS RESULT)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, FINAL CONSTRUCTOR FUNCTION p(b1 BOOL) RETURN SELF AS RESULT)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_constructor_instantiable_function" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, INSTANTIABLE CONSTRUCTOR FUNCTION p(c1 BOOL) RETURN SELF AS RESULT)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, INSTANTIABLE CONSTRUCTOR FUNCTION p(b1 BOOL) RETURN SELF AS RESULT)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_constructor_function_inout" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, c1 NUMBER) RETURN SELF AS RESULT)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, n1 NUMBER) RETURN SELF AS RESULT)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_constructor_function_as_call" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, c1 NUMBER) RETURN SELF AS RESULT AS LANGUAGE JAVA NAME STRING_)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, n1 NUMBER) RETURN SELF AS RESULT AS LANGUAGE JAVA NAME 'resultName')" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_constructor_function_is_call" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, c1 NUMBER) RETURN SELF AS RESULT IS LANGUAGE JAVA NAME STRING_)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, n1 NUMBER) RETURN SELF AS RESULT IS LANGUAGE JAVA NAME 'resultName')" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_map_function" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, MAP MEMBER FUNCTION p(c1 NUMBER) RETURN NUMBER)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, MAP MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_order_function" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b link1, ORDER MEMBER FUNCTION p(c1 NUMBER) RETURN NUMBER)" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, ORDER MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER)" db-types="Oracle" />
 </sql-cases>

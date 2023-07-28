@@ -3554,20 +3554,20 @@ procedureSpec
     ;
 
 returnClause
-    : RETURN typeName ((IS | AS) callSpec)?
+    : RETURN dataType ((IS | AS) callSpec)?
     ;
 
 functionSpec
-    : FUNCTION name LP_ (parameterValue typeName (COMMA_ parameterValue typeName)*) RP_ returnClause
+    : FUNCTION name LP_ (parameterValue dataType (COMMA_ parameterValue dataType)*) RP_ returnClause
     ;
 
 subprogramSpec
-    : (MEMEBER | STATIC) (procedureSpec | functionSpec)
+    : (MEMBER | STATIC) (procedureSpec | functionSpec)
     ;
 
 constructorSpec
     : FINAL? INSTANTIABLE? CONSTRUCTOR FUNCTION typeName
-    (LP_ (SELF IN OUT typeName COMMA_)? parameterValue typeName (COMMA_ parameterValue typeName)* RP_)?
+    (LP_ (SELF IN OUT dataType COMMA_)? parameterValue dataType (COMMA_ parameterValue dataType)* RP_)?
     RETURN SELF AS RESULT ((AS | IS) callSpec)?
     ;
 
@@ -3580,9 +3580,9 @@ elementSpecification
     ;
 
 replaceTypeClause
-    : REPLACE invokerRightsClause? AS OBJECT LP_ (attributeName typeName (COMMA_ attributeName typeName)* (COMMA_ elementSpecification)*) RP_
+    : REPLACE invokerRightsClause? AS OBJECT LP_ (attributeName dataType (COMMA_ (elementSpecification | attributeName dataType))*) RP_
     ;
 
 alterType
-    : ALTER TYPE typeName (compileTypeClause|replaceTypeClause)
+    : ALTER TYPE typeName (compileTypeClause|replaceTypeClause)?
     ;
