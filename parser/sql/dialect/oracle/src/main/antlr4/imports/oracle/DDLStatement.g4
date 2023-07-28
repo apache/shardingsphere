@@ -477,6 +477,7 @@ objectProperties
 alterIndexInformationClause
     : rebuildClause ((DEFERRED | IMMEDIATE) | INVALIDATION)?
     | parallelClause
+    | PARAMETERS LP_ odciParameters RP_
     | COMPILE
     | (ENABLE | DISABLE)
     | UNUSABLE ONLINE? ((DEFERRED | IMMEDIATE) | INVALIDATION)?
