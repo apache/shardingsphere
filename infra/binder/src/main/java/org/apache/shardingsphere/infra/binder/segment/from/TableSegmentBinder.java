@@ -47,8 +47,8 @@ public final class TableSegmentBinder {
      * @param tableBinderContexts table binder contexts
      * @return bounded table segment
      */
-    public static TableSegment bind(final TableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName, final DatabaseType databaseType,
-                                    final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static TableSegment bind(final TableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                    final DatabaseType databaseType, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         if (segment instanceof SimpleTableSegment) {
             return SimpleTableSegmentBinder.bind((SimpleTableSegment) segment, metaData, defaultDatabaseName, databaseType, tableBinderContexts);
         }
