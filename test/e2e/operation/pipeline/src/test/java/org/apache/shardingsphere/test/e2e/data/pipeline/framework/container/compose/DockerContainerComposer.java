@@ -67,14 +67,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         }
         for (int i = 0; i < storageContainerCount; i++) {
             StorageContainerConfiguration storageContainerConfig;
-            int majorVersion = 0;
-            try {
-                majorVersion = databaseType instanceof MySQLDatabaseType ? new DockerImageVersion(storageContainerImage).getMajorVersion() : 0;
-                // CHECKSTYLE:OFF
-            } catch (final RuntimeException ignored) {
-                log.warn("Get major version failed from {}, ignored", storageContainerImage);
-                // CHECKSTYLE:ON
-            }
+            int majorVersion = databaseType instanceof MySQLDatabaseType ? new DockerImageVersion(storageContainerImage).getMajorVersion() : 0;
             storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType, majorVersion);
             DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage,
                     storageContainerConfig));
