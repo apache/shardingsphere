@@ -58,7 +58,7 @@ jobs:
             do
               echo "GLOBAL_JOB_ENABLED=false" >> $GITHUB_OUTPUT
               echo "RUNNABLE_CI_LABEL : ${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }}"
-              if [ (${line} == *"${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }}"*) || ('' = ${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }}) ]; then
+              if [[ (${line} == *"${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }}"*) || (''=${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }}) ]]; then
                 echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
                 break
               fi
