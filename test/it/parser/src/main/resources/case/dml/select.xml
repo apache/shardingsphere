@@ -5444,9 +5444,16 @@
             </column-projection>
         </projections>
         <from>
-            <xml-table table-name="warehouses" xml-table-function-alias="warehouse2" start-index="76" stop-index="238">
-                <xml-table-function function-name="XMLTABLE" text="XMLTABLE('/Warehouse' PASSING warehouses.warehouse_spec COLUMNS &quot;Water&quot; varchar2(6) PATH 'WaterAccess',&quot;Rail&quot; varchar2(6) PATH 'RailAccess')" start-index="88" stop-index="227" />
-            </xml-table>
+            <join-table join-type="COMMA">
+                <left>
+                    <simple-table name="warehouses" start-index="72" stop-index="81" />
+                </left>
+                <right>
+                    <xml-table xml-table-function-alias="warehouse2" start-index="76" stop-index="238">
+                        <xml-table-function function-name="XMLTABLE" text="XMLTABLE('/Warehouse' PASSING warehouses.warehouse_spec COLUMNS &quot;Water&quot; varchar2(6) PATH 'WaterAccess',&quot;Rail&quot; varchar2(6) PATH 'RailAccess')" start-index="88" stop-index="227" />
+                    </xml-table>
+                </right>
+            </join-table>
         </from>
     </select>
 
