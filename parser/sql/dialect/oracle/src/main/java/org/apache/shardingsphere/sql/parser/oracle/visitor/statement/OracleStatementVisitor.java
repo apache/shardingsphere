@@ -88,6 +88,11 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlSer
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableOptionsContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlIsSchemaValidFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExtractFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FormatFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FirstOrLastValueFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TrimFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
@@ -782,7 +787,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     }
     
     @Override
-    public ASTNode visitXmlIsSchemaValidFunction(final OracleStatementParser.XmlIsSchemaValidFunctionContext ctx) {
+    public ASTNode visitXmlIsSchemaValidFunction(final XmlIsSchemaValidFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.ISSCHEMAVALID().getText(), getOriginalText(ctx));
         if (null != ctx.expr()) {
             for (ExprContext each : ctx.expr()) {
@@ -865,21 +870,21 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     }
     
     @Override
-    public ASTNode visitExtractFunction(OracleStatementParser.ExtractFunctionContext ctx) {
+    public ASTNode visitExtractFunction(ExtractFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.EXTRACT().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
     
     @Override
-    public ASTNode visitFormatFunction(OracleStatementParser.FormatFunctionContext ctx) {
+    public ASTNode visitFormatFunction(FormatFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.FORMAT().getText(), getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
     }
     
     @Override
-    public ASTNode visitFirstOrLastValueFunction(OracleStatementParser.FirstOrLastValueFunctionContext ctx) {
+    public ASTNode visitFirstOrLastValueFunction(FirstOrLastValueFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
                 null == ctx.FIRST_VALUE() ? ctx.FIRST_VALUE().getText() : ctx.LAST_VALUE().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
@@ -887,7 +892,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     }
     
     @Override
-    public ASTNode visitTrimFunction(OracleStatementParser.TrimFunctionContext ctx) {
+    public ASTNode visitTrimFunction(TrimFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
