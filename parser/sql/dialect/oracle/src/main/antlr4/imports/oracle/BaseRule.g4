@@ -527,6 +527,10 @@ containerName
     : identifier
     ;
 
+newName
+    : identifier
+    ;
+
 partitionName
     : identifier
     ;
