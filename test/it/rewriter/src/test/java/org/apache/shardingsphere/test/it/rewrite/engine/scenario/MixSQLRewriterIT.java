@@ -54,12 +54,12 @@ class MixSQLRewriterIT extends SQLRewriterIT {
     protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
         Map<String, ShardingSphereTable> tables = new LinkedHashMap<>();
         tables.put("t_account", new ShardingSphereTable("t_account", Arrays.asList(
-                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false),
                 new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false),
                 new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false),
                 new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false)), Collections.singletonList(new ShardingSphereIndex("index_name")), Collections.emptyList()));
         tables.put("t_account_bak", new ShardingSphereTable("t_account_bak", Arrays.asList(
-                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false),
                 new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false),
                 new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false),
                 new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
