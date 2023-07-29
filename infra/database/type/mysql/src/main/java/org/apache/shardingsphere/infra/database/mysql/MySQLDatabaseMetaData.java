@@ -21,8 +21,11 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 
+import java.sql.Types;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -51,6 +54,22 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public QuoteCharacter getQuoteCharacter() {
         return QuoteCharacter.BACK_QUOTE;
+    }
+    
+    @Override
+    public Map<String, Integer> getExtraDataTypes() {
+        Map<String, Integer> result = new HashMap<>(10, 1F);
+        result.put("JSON", Types.LONGVARCHAR);
+        result.put("GEOMETRY", Types.BINARY);
+        result.put("GEOMETRYCOLLECTION", Types.BINARY);
+        result.put("YEAR", Types.DATE);
+        result.put("POINT", Types.BINARY);
+        result.put("MULTIPOINT", Types.BINARY);
+        result.put("POLYGON", Types.BINARY);
+        result.put("MULTIPOLYGON", Types.BINARY);
+        result.put("LINESTRING", Types.BINARY);
+        result.put("MULTILINESTRING", Types.BINARY);
+        return result;
     }
     
     @Override
