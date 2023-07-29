@@ -34,14 +34,14 @@ public final class GlobalDataSourceRegistry {
     
     private static final GlobalDataSourceRegistry INSTANCE = new GlobalDataSourceRegistry();
     
-    private final Map<String, DataSource> cachedDataSourceDataSources = new ConcurrentHashMap<>();
+    private final Map<String, DataSource> cachedDataSources = new ConcurrentHashMap<>();
     
     private final Map<String, String> cachedDatabaseTables = new ConcurrentHashMap<>();
     
     /**
-     * Get global data source.
+     * Get instance of global data source registry.
      *
-     * @return instance of ShardingSphere global data source.
+     * @return got instance
      */
     public static GlobalDataSourceRegistry getInstance() {
         return INSTANCE;

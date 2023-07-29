@@ -221,8 +221,8 @@ public final class DataSourcePoolCreator {
      */
     public static DataSource create(final String dataSourceName, final DataSourceProperties dataSourceProps, final boolean cacheEnabled) {
         DataSource result = create(dataSourceProps);
-        if (cacheEnabled && !GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().containsKey(dataSourceName)) {
-            GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().put(dataSourceName, result);
+        if (cacheEnabled && !GlobalDataSourceRegistry.getInstance().getCachedDataSources().containsKey(dataSourceName)) {
+            GlobalDataSourceRegistry.getInstance().getCachedDataSources().put(dataSourceName, result);
         }
         return result;
     }
