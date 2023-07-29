@@ -45,14 +45,11 @@ import java.util.concurrent.Executor;
  */
 public final class MetaDataLoaderConnection implements Connection {
     
-    private final DatabaseType databaseType;
-    
     private final Connection connection;
     
     private final DialectDatabaseMetaData dialectDatabaseMetaData;
     
     public MetaDataLoaderConnection(final DatabaseType databaseType, final Connection connection) {
-        this.databaseType = databaseType;
         this.connection = connection;
         dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
     }
