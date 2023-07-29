@@ -3649,12 +3649,22 @@ subprogramSpec
     : (MEMBER | STATIC) (procedureSpec | functionSpec)
     ;
 
+constructorSpec
+    : FINAL? INSTANTIABLE? CONSTRUCTOR FUNCTION typeName
+    (LP_ (SELF IN OUT dataType COMMA_)? parameterValue dataType (COMMA_ parameterValue dataType)* RP_)?
+    RETURN SELF AS RESULT ((AS | IS) callSpec)?
+    ;
+
+mapOrderFunctionSpec
+    : (MAP | ORDER) MEMBER functionSpec
+    ;
+
 elementSpecification
-    : inheritanceClauses? (subprogramSpec)+
+    : inheritanceClauses? (subprogramSpec | constructorSpec | mapOrderFunctionSpec)+
     ;
 
 replaceTypeClause
-    : REPLACE invokerRightsClause? AS OBJECT LP_ (attributeName dataType (COMMA_ attributeName dataType)* (COMMA_ elementSpecification)*) RP_
+    : REPLACE invokerRightsClause? AS OBJECT LP_ (attributeName dataType (COMMA_ (elementSpecification | attributeName dataType))*) RP_
     ;
 
 alterType
