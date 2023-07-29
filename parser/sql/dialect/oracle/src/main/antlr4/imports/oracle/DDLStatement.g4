@@ -3687,7 +3687,15 @@ alterCollectionClauses
     : MODIFY (LIMIT INTEGER_ | ELEMENT TYPE dataType)
     ;
 
+exceptionsClause
+    : EXCEPTIONS INTO (schemaName DOT_)? tableName
+    ;
+
+dependentHandlingClause
+    : INVALIDATE | CASCADE (NOT? INCLUDING TABLE DATA | CONVERT TO SUBSTITUTABLE)? (FORCE? exceptionsClause)?
+    ;
+
 alterType
     : ALTER TYPE typeName (compileTypeClause | replaceTypeClause | RESET
-    | (alterMethodSpec | alterAttributeDefinition | alterCollectionClauses | NOT (INSTANTIABLE | FINAL)))?
+    | (alterMethodSpec | alterAttributeDefinition | alterCollectionClauses | NOT? (INSTANTIABLE | FINAL)) dependentHandlingClause?)
     ;
