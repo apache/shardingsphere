@@ -648,12 +648,12 @@ storageClause
     : STORAGE LP_
     (INITIAL sizeClause
     | NEXT sizeClause
-    | MINEXTENTS NUMBER_
-    | MAXEXTENTS (NUMBER_ | UNLIMITED)
+    | MINEXTENTS INTEGER_
+    | MAXEXTENTS (INTEGER_ | UNLIMITED)
     | maxsizeClause
-    | PCTINCREASE NUMBER_
-    | FREELISTS NUMBER_
-    | FREELIST GROUPS NUMBER_
+    | PCTINCREASE INTEGER_
+    | FREELISTS INTEGER_
+    | FREELIST GROUPS INTEGER_
     | OPTIMAL (sizeClause | NULL)?
     | BUFFER_POOL (KEEP | RECYCLE | DEFAULT)
     | FLASH_CACHE (KEEP | NONE | DEFAULT)
@@ -3598,6 +3598,13 @@ tablespaceEncryptionSpec
     : USING encryptAlgorithmName
     ;
 
+tableCompressionTableSpace
+    : COMPRESS
+    | COMPRESS BASIC
+    | COMPRESS (FOR (OLTP | ((QUERY | ARCHIVE) (LOW | HIGH)?)))
+    | NOCOMPRESS
+    ;
+
 createTablespace
     : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
     ;
@@ -3609,6 +3616,7 @@ permanentTablespaceClause
     | loggingClause
     | (FORCE LOGGING)
     | ENCRYPTION tablespaceEncryptionSpec
+    | DEFAULT tableCompressionTableSpace? storageClause?
     | (ONLINE|OFFLINE)
     )
     ;
