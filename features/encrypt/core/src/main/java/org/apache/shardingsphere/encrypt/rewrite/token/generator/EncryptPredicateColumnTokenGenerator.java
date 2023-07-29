@@ -19,22 +19,24 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
+import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -53,13 +55,15 @@ import java.util.Optional;
  * Predicate column token generator for encrypt.
  */
 @Setter
-public final class EncryptPredicateColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, SchemaMetaDataAware, EncryptRuleAware {
+public final class EncryptPredicateColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, SchemaMetaDataAware, EncryptRuleAware, DatabaseTypeAware {
     
     private String databaseName;
     
     private Map<String, ShardingSphereSchema> schemas;
     
     private EncryptRule encryptRule;
+    
+    private DatabaseType databaseType;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -133,6 +137,6 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     }
     
     private Collection<Projection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter) {
-        return Collections.singletonList(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null));
+        return Collections.singletonList(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null, databaseType));
     }
 }

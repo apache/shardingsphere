@@ -28,7 +28,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-database-spi</artifactId>
+            <artifactId>shardingsphere-infra-util</artifactId>
             <version>${project.version}</version>
         </dependency>
         

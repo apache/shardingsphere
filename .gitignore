@@ -48,3 +48,6 @@ Thumbs.db
 # antlr ignore
 gen/
 *.tokens
+
+# profiler ignore
+.profiler/

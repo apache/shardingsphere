@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
-import org.apache.shardingsphere.infra.binder.statement.ddl.CreateViewStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;

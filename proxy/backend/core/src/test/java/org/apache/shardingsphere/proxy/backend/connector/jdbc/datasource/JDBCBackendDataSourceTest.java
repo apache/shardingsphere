@@ -19,17 +19,17 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.h2.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.fixture.CallTimeRecordDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -92,10 +92,12 @@ class JDBCBackendDataSourceTest {
     }
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getProtocolType()).thenReturn(databaseType);
         Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(2, 1F);
-        storageTypes.put("ds_0", new H2DatabaseType());
-        storageTypes.put("ds_1", new H2DatabaseType());
+        storageTypes.put("ds_0", databaseType);
+        storageTypes.put("ds_1", databaseType);
         when(database.getResourceMetaData().getStorageTypes()).thenReturn(storageTypes);
         when(database.getResourceMetaData().getDataSources()).thenReturn(mockDataSources(2));
         return Collections.singletonMap("schema", database);

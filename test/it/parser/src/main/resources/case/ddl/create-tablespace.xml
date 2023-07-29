@@ -25,5 +25,21 @@
     <create-tablespace sql-case-id="create_undo_tablespace_for_myisam" />
     <create-tablespace sql-case-id="create_permanent_tablespace_online" />
     <create-tablespace sql-case-id="create_permanent_tablespace_offline" />
-
+    <create-tablespace sql-case-id="create_permanent_tablespace_bigfile" />
+    <create-tablespace sql-case-id="create_permanent_tablespace_smallfile" />
+    <create-tablespace sql-case-id="create_tablespace_with_multi_filespecification" />
+    <create-tablespace sql-case-id="create_tablespace_with_filespecification_next" />
+    <create-tablespace sql-case-id="create_tablespace_with_filespecification" />
+    <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_k" />
+    <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_m" />
+    <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_g" />
+    <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_t" />
+    <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_p" />
+    <create-tablespace sql-case-id="create_tablespace_with_minimum_extend_e" />
+    <create-tablespace sql-case-id="create_tablespace_with_blocksize" />
+    <create-tablespace sql-case-id="create_tablespace_with_logging_clause" />
+    <create-tablespace sql-case-id="create_tablespace_with_nologging_clause" />
+    <create-tablespace sql-case-id="create_tablespace_with_filesystem_like_logging" />
+    <create-tablespace sql-case-id="create_tablespace_with_force_logging" />
+    <create-tablespace sql-case-id="create_tablespace_with_encrypt" />
 </sql-parser-test-cases>

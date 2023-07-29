@@ -41,16 +41,13 @@
         <assertion expected-data-file="show_status_from_readwrite_splitting_rules.xml" />
     </test-case>
 
-    <!-- TODO fix this bug in #24540 -->
-    <!--
     <test-case sql="SHOW DIST VARIABLES;">
         <assertion expected-data-file="show_dist_variables.xml" />
     </test-case>
-    
+
     <test-case sql="SHOW DIST VARIABLE WHERE name = sql_show;">
         <assertion expected-data-file="show_dist_variable_where_name_equal_sql_show.xml" />
     </test-case>
-    -->
     
     <test-case sql="SHOW COMPUTE NODE INFO">
         <assertion expected-data-file="show_compute_node_info.xml" />

@@ -57,6 +57,7 @@
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <checkstyle.skip>true</checkstyle.skip>
+        <rat.skip>true</rat.skip>
         <shade.package>org.apache.shardingsphere.shade</shade.package>
         <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
         
@@ -624,6 +625,14 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+        </dependency>
         
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -844,6 +853,14 @@
                         <!--suppress MavenModelInspection -->
                         <excludesFile>${maven.multiModuleProjectDirectory}/src/resources/rat.txt</excludesFile>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <phase>verify</phase>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>com.diffplug.spotless</groupId>
@@ -999,6 +1016,10 @@
             </plugin>
             
             <!-- Check plugins -->
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>

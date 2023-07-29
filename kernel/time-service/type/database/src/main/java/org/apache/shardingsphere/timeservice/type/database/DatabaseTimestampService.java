@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.timeservice.type.database;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;

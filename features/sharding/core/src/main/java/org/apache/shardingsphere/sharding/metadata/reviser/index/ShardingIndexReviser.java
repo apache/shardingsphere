@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.metadata.reviser.index;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.index.IndexReviser;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 

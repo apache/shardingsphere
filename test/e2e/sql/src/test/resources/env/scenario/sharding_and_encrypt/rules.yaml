@@ -92,24 +92,6 @@ rules:
         standard:
           shardingColumn: user_id
           shardingAlgorithmName: it_standard_fixture
-    t_order_item_federate_sharding:
-      actualDataNodes: encrypt_ds_1.t_order_item_federate_sharding_${0..1}
-      tableStrategy:
-        standard:
-          shardingColumn: item_id
-          shardingAlgorithmName: table_inline_item_id
-    t_order_federate_sharding:
-      actualDataNodes: encrypt_ds_1.t_order_federate_sharding_${0..1}
-      tableStrategy:
-        standard:
-          shardingColumn: order_id_sharding
-          shardingAlgorithmName: table_inline_order_id
-    t_user_encrypt_federate_sharding:
-      actualDataNodes: encrypt_ds_1.t_user_encrypt_federate_sharding_${0..1}
-      tableStrategy:
-        standard:
-          shardingColumn: user_id
-          shardingAlgorithmName: table_inline_user_id
   bindingTables:
     - ref_0:t_user,t_user_details
     - ref_1:t_order,t_order_item
@@ -117,19 +99,6 @@ rules:
   shardingAlgorithms:
     it_standard_fixture:
       type: IT.STANDARD.FIXTURE
-    table_inline_item_id:
-      type: INLINE
-      props:
-        algorithm-expression: t_order_item_federate_sharding_${item_id % 2}
-    table_inline_order_id:
-      type: INLINE
-      props:
-        algorithm-expression: t_order_federate_sharding_${order_id_sharding % 2}
-    table_inline_user_id:
-      type: INLINE
-      props:
-        algorithm-expression: t_user_encrypt_federate_sharding_${user_id % 2}
-        allow-range-query-with-inline-sharding: true
 
   keyGenerators:
     constant:
@@ -166,18 +135,6 @@ rules:
         number_new:
           cipher: 
             name: number_new_cipher
-            encryptorName: aes_encryptor
-    t_user_encrypt_federate:
-      columns:
-        pwd:
-          cipher:
-            name: cipher_pwd
-            encryptorName: aes_encryptor
-    t_user_encrypt_federate_sharding:
-      columns:
-        pwd:
-          cipher:
-            name: cipher_pwd
             encryptorName: aes_encryptor
     t_merchant:
       columns:

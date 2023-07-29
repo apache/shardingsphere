@@ -27,7 +27,7 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
-import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -47,6 +47,7 @@ import java.util.Iterator;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -122,23 +123,8 @@ class EncryptAlterTableTokenGeneratorTest {
     }
     
     @Test
-    void assertModifyColumnGenerateSQLTokens() {
-        Collection<SQLToken> actual = generator.generateSQLTokens(mockModifyColumnStatementContext());
-        assertThat(actual.size(), is(4));
-        Iterator<SQLToken> actualIterator = actual.iterator();
-        assertThat(actualIterator.next(), instanceOf(RemoveToken.class));
-        EncryptAlterTableToken cipherToken = (EncryptAlterTableToken) actualIterator.next();
-        assertThat(cipherToken.toString(), is("cipher_certificate_number"));
-        assertThat(cipherToken.getStartIndex(), is(54));
-        assertThat(cipherToken.getStopIndex(), is(53));
-        EncryptAlterTableToken assistedToken = (EncryptAlterTableToken) actualIterator.next();
-        assertThat(assistedToken.toString(), is(", MODIFY COLUMN assisted_certificate_number"));
-        assertThat(assistedToken.getStartIndex(), is(71));
-        assertThat(assistedToken.getStopIndex(), is(53));
-        EncryptAlterTableToken likeToken = (EncryptAlterTableToken) actualIterator.next();
-        assertThat(likeToken.toString(), is(", MODIFY COLUMN like_certificate_number"));
-        assertThat(likeToken.getStartIndex(), is(71));
-        assertThat(likeToken.getStopIndex(), is(53));
+    void assertModifyEncryptColumnGenerateSQLTokens() {
+        assertThrows(UnsupportedOperationException.class, () -> generator.generateSQLTokens(mockModifyColumnStatementContext()));
     }
     
     private AlterTableStatementContext mockModifyColumnStatementContext() {
@@ -151,26 +137,8 @@ class EncryptAlterTableTokenGeneratorTest {
     }
     
     @Test
-    void assertChangeColumnGenerateSQLTokens() {
-        Collection<SQLToken> actual = generator.generateSQLTokens(mockChangeColumnStatementContext());
-        assertThat(actual.size(), is(6));
-        Iterator<SQLToken> actualIterator = actual.iterator();
-        assertThat(actualIterator.next(), instanceOf(RemoveToken.class));
-        EncryptAlterTableToken previous = (EncryptAlterTableToken) actualIterator.next();
-        assertThat(previous.toString(), is("cipher_certificate_number"));
-        assertThat(actualIterator.next(), instanceOf(RemoveToken.class));
-        EncryptAlterTableToken cipherToken = (EncryptAlterTableToken) actualIterator.next();
-        assertThat(cipherToken.toString(), is("cipher_certificate_number_new"));
-        assertThat(cipherToken.getStartIndex(), is(77));
-        assertThat(cipherToken.getStopIndex(), is(76));
-        EncryptAlterTableToken assistedToken = (EncryptAlterTableToken) actualIterator.next();
-        assertThat(assistedToken.toString(), is(", CHANGE COLUMN assisted_certificate_number assisted_certificate_number_new"));
-        assertThat(assistedToken.getStartIndex(), is(94));
-        assertThat(assistedToken.getStopIndex(), is(76));
-        EncryptAlterTableToken likeToken = (EncryptAlterTableToken) actualIterator.next();
-        assertThat(likeToken.toString(), is(", CHANGE COLUMN like_certificate_number like_certificate_number_new"));
-        assertThat(likeToken.getStartIndex(), is(94));
-        assertThat(likeToken.getStopIndex(), is(76));
+    void assertChangeEncryptColumnGenerateSQLTokens() {
+        assertThrows(UnsupportedOperationException.class, () -> generator.generateSQLTokens(mockChangeColumnStatementContext()));
     }
     
     private AlterTableStatementContext mockChangeColumnStatementContext() {

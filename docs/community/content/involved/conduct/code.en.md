@@ -114,7 +114,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 - Workflow file name must end with `.yml`.
 - Workflow file name must consist with the lowercase of `triggerType-actionType`. For example: `nightly-check.yml`. Omit trigger type for pull_request. For example: `check.yml`.
 - Trigger type includes: pull_request (without prefix), nightly, schedule.
-- Action type includes: check, ci, e2e, build.
+- Action type includes: check, ci, e2e, build, report.
 - `name` property in workflow file should be same with file name, Words separated by `-`, add space between `-` and words, first letter of every word should be capital. For example: `Nightly - Check`.
 - `name` property in step should describe the usage of step, first letter of every word should be capital, preposition should be lowercase. For example: `Build Project with Maven`.
 - `job` property in workflow should be unique in that workflow file.

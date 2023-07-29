@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.parser.cache;
 
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +30,6 @@ class SQLStatementCacheBuilderTest {
     
     @Test
     void assertBuild() {
-        assertThat(SQLStatementCacheBuilder.build("MySQL", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false), isA(LoadingCache.class));
+        assertThat(SQLStatementCacheBuilder.build(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false), isA(LoadingCache.class));
     }
 }

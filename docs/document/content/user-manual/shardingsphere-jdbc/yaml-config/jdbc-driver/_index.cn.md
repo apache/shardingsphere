@@ -19,8 +19,9 @@ ShardingSphere-JDBC 提供了 JDBC 驱动，可以仅通过配置变更即可使
 - 以 `jdbc:shardingsphere:` 为前缀
 - 配置文件：`xxx.yaml`，配置文件格式与 [YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/)一致
 - 配置文件加载规则：
-  - 无前缀表示从指定路径加载配置文件
+  - `absolutepath:` 前缀表示从绝对路径中加载配置文件
   - `classpath:` 前缀表示从类路径中加载配置文件
+  - `apollo:` 前缀表示从 apollo 中加载配置文件
 
 ## 操作步骤
 
@@ -31,6 +32,16 @@ ShardingSphere-JDBC 提供了 JDBC 驱动，可以仅通过配置变更即可使
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+如果使用 apollo 配置方式，还需要引入 `apollo-client` 依赖：
+
+```xml
+<dependency>
+    <groupId>com.ctrip.framework.apollo</groupId>
+    <artifactId>apollo-client</artifactId>
+    <version>${apollo-client.version}</version>
 </dependency>
 ```
 
@@ -91,4 +102,9 @@ jdbc:shardingsphere:classpath:config.yaml
 加载绝对路径中 config.yaml 配置文件的 JDBC URL：
 ```
 jdbc:shardingsphere:absolutepath:/path/to/config.yaml
+```
+
+加载 apollo 指定 namespace 中的 yaml 配置文件的 JDBC URL：
+```
+jdbc:shardingsphere:apollo:TEST.test_namespace
 ```

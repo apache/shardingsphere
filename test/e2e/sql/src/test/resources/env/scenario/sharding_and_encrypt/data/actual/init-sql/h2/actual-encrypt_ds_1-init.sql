@@ -16,23 +16,7 @@
 --
 
 DROP TABLE IF EXISTS t_merchant;
-DROP TABLE IF EXISTS t_order_item_federate;
-DROP TABLE IF EXISTS t_order_item_federate_sharding_0;
-DROP TABLE IF EXISTS t_order_item_federate_sharding_1;
-DROP TABLE IF EXISTS t_order_federate_sharding_0;
-DROP TABLE IF EXISTS t_order_federate_sharding_1;
-DROP TABLE IF EXISTS t_user_encrypt_federate_sharding_0;
-DROP TABLE IF EXISTS t_user_encrypt_federate_sharding_1;
-DROP TABLE IF EXISTS t_user_encrypt_federate;
 DROP TABLE IF EXISTS t_user_info;
 
 CREATE TABLE t_merchant (merchant_id INT PRIMARY KEY, country_id INT NOT NULL, merchant_name VARCHAR(50) NOT NULL, business_code VARCHAR(50) NOT NULL, telephone VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
-CREATE TABLE t_order_item_federate (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE t_order_item_federate_sharding_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE t_order_item_federate_sharding_1 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
-CREATE TABLE t_order_federate_sharding_0 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
-CREATE TABLE t_order_federate_sharding_1 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
-CREATE TABLE t_user_encrypt_federate_sharding_0 (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
-CREATE TABLE t_user_encrypt_federate_sharding_1 (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
-CREATE TABLE t_user_encrypt_federate (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_info (user_id INT NOT NULL, information VARCHAR(45) NULL, PRIMARY KEY (user_id));

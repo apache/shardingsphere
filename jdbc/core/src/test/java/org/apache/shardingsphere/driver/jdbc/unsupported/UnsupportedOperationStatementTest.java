@@ -20,7 +20,9 @@ package org.apache.shardingsphere.driver.jdbc.unsupported;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
@@ -48,6 +50,8 @@ class UnsupportedOperationStatementTest {
     void setUp() {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         when(connection.getDatabaseName()).thenReturn("db");
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+        when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(databaseType);
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(
                 Arrays.asList(new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()),
                         new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyMap(), mock(ConfigurationProperties.class)),
