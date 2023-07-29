@@ -25,7 +25,9 @@ import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSou
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineCommonSQLBuilder;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 
 import javax.sql.DataSource;
@@ -50,11 +52,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     @Override
     public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) throws SQLException {
         DatabaseType targetDatabaseType = param.getTargetDatabaseType();
-        if (!targetDatabaseType.isSchemaAvailable()) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, targetDatabaseType);
+        if (!dialectDatabaseMetaData.isSchemaAvailable()) {
             return;
         }
         CreateTableConfiguration createTableConfig = param.getCreateTableConfig();
-        String defaultSchema = targetDatabaseType.getDefaultSchema().orElse(null);
+        String defaultSchema = dialectDatabaseMetaData.getDefaultSchema().orElse(null);
         PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(targetDatabaseType);
         Collection<String> createdSchemaNames = new HashSet<>();
         for (CreateTableEntry each : createTableConfig.getCreateTableEntries()) {

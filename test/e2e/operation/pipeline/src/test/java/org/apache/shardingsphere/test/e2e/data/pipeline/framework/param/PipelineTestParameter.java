@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.framework.param;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 @RequiredArgsConstructor
 @Getter

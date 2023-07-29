@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -50,13 +50,20 @@ class ClassBasedShardingAlgorithmTest {
     
     @Test
     void assertInitWithWrongStrategy() {
-        assertThrows(IllegalArgumentException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "wrong"))));
+        assertThrows(ShardingAlgorithmInitializationException.class,
+                () -> TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "wrong"))));
     }
     
     @Test
     void assertInitWithNullClass() {
         assertThrows(ShardingAlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "standard"))));
+    }
+    
+    @Test
+    void assertInitWithEmptyClassName() {
+        assertThrows(ShardingAlgorithmInitializationException.class,
+                () -> TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "standard"), new Property("algorithmClassName", ""))));
     }
     
     @Test

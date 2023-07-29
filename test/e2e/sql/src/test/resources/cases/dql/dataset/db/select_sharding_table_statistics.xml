@@ -55,8 +55,4 @@
     <row values=" | db |         t_order_details|         ds_7 |         t_order_details| |     " />
     <row values=" | db |         t_order_details|         ds_8 |         t_order_details| |     " />
     <row values=" | db |         t_order_details|         ds_9 |         t_order_details| |     " />
-    <row values=" | db |         t_order_federate_sharding|    ds_0 |         t_order_federate_sharding||   " />
-    <row values=" | db |         t_order_federate_sharding|    ds_1 |         t_order_federate_sharding||   " />
-    <row values=" | db |         t_order_item_federate_sharding | ds_0 |         t_order_item_federate_sharding | | " />
-    <row values=" | db |         t_order_item_federate_sharding | ds_1 |         t_order_item_federate_sharding | | " />
 </dataset>
