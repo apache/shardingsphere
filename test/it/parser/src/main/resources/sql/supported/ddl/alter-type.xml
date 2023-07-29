@@ -69,9 +69,11 @@
     <sql-case id="alter_type_replace_element_constructor_function_inout" value="ALTER TYPE type_name
     REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, n1 NUMBER) RETURN SELF AS RESULT)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_constructor_function_as_call" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, n1 NUMBER) RETURN SELF AS RESULT AS LANGUAGE JAVA NAME 'resultName')" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, n1 NUMBER)
+    RETURN SELF AS RESULT AS LANGUAGE JAVA NAME 'resultName')" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_constructor_function_is_call" value="ALTER TYPE type_name
-    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, n1 NUMBER) RETURN SELF AS RESULT IS LANGUAGE JAVA NAME 'resultName')" db-types="Oracle" />
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, n1 NUMBER)
+    RETURN SELF AS RESULT IS LANGUAGE JAVA NAME 'resultName')" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_map_function" value="ALTER TYPE type_name
     REPLACE AS OBJECT (a NUMBER, b NUMBER, MAP MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_order_function" value="ALTER TYPE type_name
@@ -120,4 +122,10 @@
     STATIC FUNCTION p(b1 BOOL) RETURN NUMBER AS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
     <sql-case id="alter_type_drop_static_procedure_is" value="ALTER TYPE type_name DROP
     STATIC PROCEDURE p(b1 BOOL)) IS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
+    <sql-case id="alter_type_add_single_attribute" value="ALTER TYPE type_name ADD ATTRIBUTE c1 NUMBER" db-types="Oracle" />
+    <sql-case id="alter_type_add_multi_attribute" value="ALTER TYPE type_name ADD ATTRIBUTE (c1 NUMBER, b1 BOOL)" db-types="Oracle" />
+    <sql-case id="alter_type_modify_single_attribute" value="ALTER TYPE type_name MODIFY ATTRIBUTE c1 NUMBER" db-types="Oracle" />
+    <sql-case id="alter_type_modify_multi_attribute" value="ALTER TYPE type_name MODIFY ATTRIBUTE (c1 NUMBER, b1 BOOL)" db-types="Oracle" />
+    <sql-case id="alter_type_drop_single_attribute" value="ALTER TYPE type_name DROP ATTRIBUTE c1" db-types="Oracle" />
+    <sql-case id="alter_type_drop_multi_attribute" value="ALTER TYPE type_name DROP ATTRIBUTE (c1,b1)" db-types="Oracle" />
 </sql-cases>
