@@ -63,6 +63,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Column
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnOrVirtualDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CommentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConstraintClausesContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateClusterContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateContextContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateControlFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDatabaseContext;
@@ -203,6 +204,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAssociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAuditStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCommentStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateClusterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateContextStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateControlFileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDatabaseLinkStatement;
@@ -1100,6 +1102,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
         return new OracleCreateTablespaceStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateCluster(final CreateClusterContext ctx) {
+        return new OracleCreateClusterStatement();
     }
     
     @Override

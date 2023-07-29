@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Oracle create tablespace statement.
+ * Create cluster statement.
  */
-@Setter
-public final class OracleCreateTablespaceStatement extends CreateTablespaceStatement implements OracleStatement {
+public abstract class CreateClusterStatement extends AbstractSQLStatement implements DDLStatement {
 }
