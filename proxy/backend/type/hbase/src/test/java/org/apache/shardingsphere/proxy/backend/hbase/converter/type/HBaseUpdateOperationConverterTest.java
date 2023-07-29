@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.hbase.converter.type;
 
 import org.apache.hadoop.hbase.client.Put;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverterFactory;
@@ -27,6 +27,8 @@ import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseUp
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -37,7 +39,7 @@ class HBaseUpdateOperationConverterTest {
     @Test
     void assertConvert() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getUpdateStatement());
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(null, "").bind(sqlStatement, Collections.emptyList());
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         HBaseOperation operation = converter.convert();
         assertThat(operation.getTableName(), is(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));
@@ -48,7 +50,7 @@ class HBaseUpdateOperationConverterTest {
     void assertConvertWithIn() {
         String sql = " update /*+ hbase */ t_test_order set age = 10 where rowKey in (1, '2')";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(null, "").bind(sqlStatement, Collections.emptyList());
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         HBaseOperation operation = converter.convert();
         assertThat(operation.getTableName(), is(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));

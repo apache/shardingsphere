@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
+import com.google.common.base.Strings;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 import groovy.util.Expando;
@@ -54,8 +55,9 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     }
     
     private String getAlgorithmExpression(final Properties props) {
-        String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY, "");
-        ShardingSpherePreconditions.checkState(!expression.isEmpty(), () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression cannot be null or empty"));
+        String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(expression),
+                () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression cannot be null or empty"));
         return InlineExpressionParserFactory.newInstance().handlePlaceHolder(expression.trim());
     }
     

@@ -19,7 +19,7 @@ databaseName: db
 
 dataSources:
   ds_0:
-    url: jdbc:fixturedb:xxx
+    url: jdbc:mock:xxx
     username: root
     password: pwd
     connectionTimeoutMilliseconds: 1000
@@ -29,7 +29,7 @@ dataSources:
     minPoolSize: 10
     readOnly: true
   ds_1:
-    url: jdbc:fixturedb:xxx
+    url: jdbc:mock:xxx
     username: root
     password: pwd
     connectionTimeoutMilliseconds: 1000

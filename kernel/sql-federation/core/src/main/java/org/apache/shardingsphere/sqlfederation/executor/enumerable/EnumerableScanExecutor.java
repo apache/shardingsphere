@@ -23,11 +23,11 @@ import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -131,8 +131,8 @@ public final class EnumerableScanExecutor {
     public Enumerable<Object> execute(final ShardingSphereTable table, final EnumerableScanExecutorContext scanContext) {
         String databaseName = executorContext.getDatabaseName().toLowerCase();
         String schemaName = executorContext.getSchemaName().toLowerCase();
-        DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContext(databaseName).getDatabaseType().getType());
-        if (databaseType.getSystemSchemas().contains(schemaName)) {
+        DatabaseType databaseType = optimizerContext.getParserContext(databaseName).getDatabaseType();
+        if (new SystemDatabase(databaseType).getSystemSchemas().contains(schemaName)) {
             return executeByShardingSphereData(databaseName, schemaName, table, databaseType);
         }
         SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
@@ -279,11 +279,11 @@ public final class EnumerableScanExecutor {
     
     private QueryContext createQueryContext(final ShardingSphereMetaData metaData, final EnumerableScanExecutorContext sqlString, final DatabaseType databaseType, final boolean useCache) {
         String sql = sqlString.getSql().replace("\n", " ");
-        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getType(),
+        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType,
                 optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache(),
                 optimizerContext.getSqlParserRule().isSqlCommentParseEnabled()).parse(sql, useCache);
         List<Object> params = getParameters(sqlString.getParamIndexes());
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaData, params, sqlStatement, executorContext.getDatabaseName());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, executorContext.getDatabaseName()).bind(sqlStatement, params);
         return new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), useCache);
     }
     

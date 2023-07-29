@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
-import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.junit.jupiter.api.Test;
 

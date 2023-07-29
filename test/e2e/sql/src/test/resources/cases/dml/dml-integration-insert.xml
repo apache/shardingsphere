@@ -87,6 +87,14 @@
     <test-case sql="INSERT ALL INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08') SELECT 1 FROM DUAL" db-types="Oracle" scenario-types="tbl">
         <assertion parameters="999:int, 10:int, insertALL:String" expected-data-file="batch_insert_all_into_order_table.xml" />
     </test-case>
+
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) SELECT ?, ?, ?, 1, 'test', '2017-08-08' FROM DUAL" db-types="Oracle" scenario-types="tbl">
+        <assertion parameters="999:int, 10:int, insertALL:String" expected-data-file="insert_into_order_table_with_select.xml" />
+    </test-case>
+
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) (SELECT ?, ?, ?, 1, 'test', '2017-08-08' UNION ALL SELECT ?, ?, ?, 1, 'test', '2017-08-08' FROM DUAL)" db-types="Oracle" scenario-types="tbl">
+        <assertion parameters="999:int, 10:int, insertALL:String, 998:int, 10:int, insertALL:String" expected-data-file="batch_insert_into_order_with_select.xml" />
+    </test-case>
     
     <test-case sql="INSERT INTO t_order_item VALUES (?, ?, 1, 1, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" expected-generated-key-data-file="insert_without_generate_key_column_generated_key_data.xml" />

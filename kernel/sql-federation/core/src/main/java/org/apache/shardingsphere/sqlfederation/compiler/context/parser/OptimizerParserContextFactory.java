@@ -19,15 +19,13 @@ package org.apache.shardingsphere.sqlfederation.compiler.context.parser;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sqlfederation.compiler.context.parser.dialect.OptimizerSQLDialectBuilder;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -45,8 +43,7 @@ public final class OptimizerParserContextFactory {
     public static Map<String, OptimizerParserContext> create(final Map<String, ShardingSphereDatabase> databases) {
         Map<String, OptimizerParserContext> result = new ConcurrentHashMap<>();
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
-            DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(entry.getValue().getProtocolType().getType());
-            result.put(entry.getKey(), new OptimizerParserContext(databaseType, createSQLDialectProperties(databaseType)));
+            result.put(entry.getKey(), create(entry.getValue().getProtocolType()));
         }
         return result;
     }
@@ -58,10 +55,6 @@ public final class OptimizerParserContextFactory {
      * @return optimizer parser context
      */
     public static OptimizerParserContext create(final DatabaseType databaseType) {
-        return new OptimizerParserContext(databaseType, createSQLDialectProperties(databaseType));
-    }
-    
-    private static Properties createSQLDialectProperties(final DatabaseType databaseType) {
-        return DatabaseTypedSPILoader.getService(OptimizerSQLDialectBuilder.class, databaseType).build();
+        return new OptimizerParserContext(databaseType, DatabaseTypedSPILoader.getService(OptimizerSQLDialectBuilder.class, databaseType).build());
     }
 }

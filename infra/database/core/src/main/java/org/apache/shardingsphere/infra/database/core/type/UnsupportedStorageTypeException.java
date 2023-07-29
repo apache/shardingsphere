@@ -27,11 +27,7 @@ public final class UnsupportedStorageTypeException extends KernelSQLException {
     
     private static final long serialVersionUID = 8981789100727786183L;
     
-    public UnsupportedStorageTypeException(final String dataSourceName) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 3, 40, "Unsupported storage type of `%s`.", dataSourceName);
-    }
-    
-    public UnsupportedStorageTypeException(final String databaseName, final String dataSourceName) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 3, 40, "Unsupported storage type of `%s.%s`.", databaseName, dataSourceName);
+    public UnsupportedStorageTypeException(final String url) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 3, 40, "Unsupported storage type of URL `%s`.", url);
     }
 }
