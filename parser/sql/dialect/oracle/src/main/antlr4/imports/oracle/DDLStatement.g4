@@ -3674,6 +3674,10 @@ replaceTypeClause
     : REPLACE invokerRightsClause? AS OBJECT LP_ (attributeName dataType (COMMA_ (elementSpecification | attributeName dataType))*) RP_
     ;
 
+alterMethodSpec
+    : (ADD | DROP) (mapOrderFunctionSpec | subprogramSpec) ((ADD | DROP) (mapOrderFunctionSpec | subprogramSpec))*
+    ;
+
 alterType
-    : ALTER TYPE typeName (compileTypeClause|replaceTypeClause|RESET)?
+    : ALTER TYPE typeName (compileTypeClause|replaceTypeClause|RESET|(alterMethodSpec))?
     ;
