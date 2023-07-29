@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLFormatEngine;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -37,7 +39,7 @@ class MySQLFormatVisitorIT {
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertSQLFormat(final String caseId, final String inputSQL, final String expectFormattedSQL, final String expectFormattedParameterizedSQL) {
-        SQLFormatEngine sqlFormatEngine = new SQLFormatEngine("MySQL", new CacheOption(1, 1L));
+        SQLFormatEngine sqlFormatEngine = new SQLFormatEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new CacheOption(1, 1L));
         assertThat(sqlFormatEngine.format(inputSQL, false, PropertiesBuilder.build(new Property("parameterized", Boolean.FALSE.toString()))), is(expectFormattedSQL));
         assertThat(sqlFormatEngine.format(inputSQL, false, PropertiesBuilder.build(new Property("parameterized", Boolean.TRUE.toString()))), is(expectFormattedParameterizedSQL));
     }

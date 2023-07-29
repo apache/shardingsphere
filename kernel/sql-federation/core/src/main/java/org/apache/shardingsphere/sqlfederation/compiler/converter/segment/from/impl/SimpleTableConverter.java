@@ -22,6 +22,7 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -41,7 +42,7 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
         TableNameSegment tableName = segment.getTableName();
         List<String> names = new ArrayList<>();
         if (segment.getOwner().isPresent()) {
-            names.add(segment.getOwner().get().getIdentifier().getValue());
+            addOwnerNames(names, segment.getOwner().get());
         }
         names.add(tableName.getIdentifier().getValue());
         SqlNode tableNameSQLNode = new SqlIdentifier(names, SqlParserPos.ZERO);
@@ -50,5 +51,12 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(tableNameSQLNode, aliasSQLNode), SqlParserPos.ZERO));
         }
         return Optional.of(tableNameSQLNode);
+    }
+    
+    private void addOwnerNames(final List<String> names, final OwnerSegment owner) {
+        if (null != owner) {
+            addOwnerNames(names, owner.getOwner().orElse(null));
+            names.add(owner.getIdentifier().getValue());
+        }
     }
 }

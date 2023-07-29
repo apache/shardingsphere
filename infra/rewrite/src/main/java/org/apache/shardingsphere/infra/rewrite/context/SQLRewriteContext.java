@@ -19,10 +19,10 @@ package org.apache.shardingsphere.infra.rewrite.context;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -35,7 +35,6 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * SQL rewrite context.
@@ -43,9 +42,7 @@ import java.util.Map;
 @Getter
 public final class SQLRewriteContext {
     
-    private final String databaseName;
-    
-    private final Map<String, ShardingSphereSchema> schemas;
+    private final ShardingSphereDatabase database;
     
     private final SQLStatementContext sqlStatementContext;
     
@@ -62,10 +59,9 @@ public final class SQLRewriteContext {
     
     private final ConnectionContext connectionContext;
     
-    public SQLRewriteContext(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final SQLStatementContext sqlStatementContext,
-                             final String sql, final List<Object> params, final ConnectionContext connectionContext, final HintValueContext hintValueContext) {
-        this.databaseName = databaseName;
-        this.schemas = schemas;
+    public SQLRewriteContext(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext, final String sql, final List<Object> params,
+                             final ConnectionContext connectionContext, final HintValueContext hintValueContext) {
+        this.database = database;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         parameters = params;
@@ -92,6 +88,6 @@ public final class SQLRewriteContext {
      * Generate SQL tokens.
      */
     public void generateSQLTokens() {
-        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(databaseName, schemas, sqlStatementContext, parameters, connectionContext));
+        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(database.getName(), database.getSchemas(), sqlStatementContext, parameters, connectionContext));
     }
 }

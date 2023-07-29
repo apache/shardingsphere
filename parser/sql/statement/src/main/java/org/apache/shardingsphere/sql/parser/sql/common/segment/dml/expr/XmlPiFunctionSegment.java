@@ -61,4 +61,9 @@ public final class XmlPiFunctionSegment implements ExpressionSegment, Projection
         this.valueExpr = valueExpr;
         this.text = text;
     }
+    
+    @Override
+    public String getColumnLabel() {
+        return text;
+    }
 }

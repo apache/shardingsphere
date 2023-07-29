@@ -36,17 +36,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @SQLRewriterITSettings("scenario/sharding/case")
 class ShardingSQLRewriterIT extends SQLRewriterIT {
@@ -68,42 +64,36 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
     
     @Override
     protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
-        ShardingSphereSchema result = mock(ShardingSphereSchema.class);
-        when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
-        ShardingSphereTable accountTableMetaData = mock(ShardingSphereTable.class);
-        when(accountTableMetaData.getColumnValues()).thenReturn(createColumnMetaDataMap());
-        when(accountTableMetaData.getIndexValues()).thenReturn(Collections.singletonList(new ShardingSphereIndex("status_idx_exist")));
-        when(accountTableMetaData.containsIndex("status_idx_exist")).thenReturn(true);
-        when(accountTableMetaData.getPrimaryKeyColumns()).thenReturn(Collections.singletonList("account_id"));
-        when(result.containsTable("t_account")).thenReturn(true);
-        when(result.getTable("t_account")).thenReturn(accountTableMetaData);
-        when(result.getTable("t_account_detail")).thenReturn(mock(ShardingSphereTable.class));
-        when(result.getAllColumnNames("t_account")).thenReturn(new ArrayList<>(Arrays.asList("account_id", "amount", "status")));
-        when(result.getAllColumnNames("t_user")).thenReturn(new ArrayList<>(Arrays.asList("id", "content")));
-        when(result.getAllColumnNames("t_user_extend")).thenReturn(new ArrayList<>(Arrays.asList("user_id", "content")));
-        when(result.getVisibleColumnNames("t_account")).thenReturn(new ArrayList<>(Arrays.asList("account_id", "amount")));
-        when(result.getVisibleColumnNames("t_user")).thenReturn(new ArrayList<>(Arrays.asList("id", "content")));
-        when(result.getVisibleColumnNames("t_user_extend")).thenReturn(new ArrayList<>(Arrays.asList("user_id", "content")));
-        when(result.containsColumn("t_account", "account_id")).thenReturn(true);
-        when(result.containsTable("t_account")).thenReturn(true);
-        when(result.containsTable("t_account_detail")).thenReturn(true);
-        when(result.containsTable("t_user")).thenReturn(true);
-        when(result.containsTable("t_user_extend")).thenReturn(true);
-        when(result.containsTable("t_single")).thenReturn(true);
-        when(result.containsTable("t_single_extend")).thenReturn(true);
-        when(result.containsTable("t_config")).thenReturn(true);
-        when(result.containsTable("T_ROLE")).thenReturn(true);
-        when(result.containsTable("T_ROLE_ADMIN")).thenReturn(true);
-        when(result.containsTable("t_account_view")).thenReturn(true);
+        Map<String, ShardingSphereTable> tables = new LinkedHashMap<>();
+        tables.put("t_account", new ShardingSphereTable("t_account", Arrays.asList(
+                new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false),
+                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false)), Collections.singletonList(new ShardingSphereIndex("status_idx_exist")),
+                Collections.emptyList()));
+        tables.put("t_account_detail", new ShardingSphereTable("t_account_detail", Arrays.asList(
+                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_user", new ShardingSphereTable("t_user", Arrays.asList(
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("content", Types.VARCHAR, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_user_extend", new ShardingSphereTable("t_user_extend", Arrays.asList(
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("content", Types.VARCHAR, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_single", new ShardingSphereTable("t_single", Collections.singletonList(
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_single_extend", new ShardingSphereTable("t_single_extend", Collections.singletonList(
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_config", new ShardingSphereTable("t_config", Collections.singletonList(
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("T_ROLE", new ShardingSphereTable("T_ROLE", Collections.singletonList(
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("T_ROLE_ADMIN", new ShardingSphereTable("T_ROLE_ADMIN", Collections.singletonList(
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_account_view", new ShardingSphereTable("t_account_view", Collections.singletonList(
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+        ShardingSphereSchema result = new ShardingSphereSchema(tables, Collections.emptyMap());
         return Collections.singletonMap(schemaName, result);
-    }
-    
-    private Collection<ShardingSphereColumn> createColumnMetaDataMap() {
-        Collection<ShardingSphereColumn> result = new LinkedList<>();
-        result.add(new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false));
-        result.add(mock(ShardingSphereColumn.class));
-        result.add(mock(ShardingSphereColumn.class));
-        return result;
     }
     
     @Override

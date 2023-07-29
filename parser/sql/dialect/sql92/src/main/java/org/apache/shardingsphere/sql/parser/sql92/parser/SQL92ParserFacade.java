@@ -37,7 +37,7 @@ public final class SQL92ParserFacade implements SQLDialectParserFacade {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "SQL92";
     }
 }
