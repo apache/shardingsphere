@@ -49,22 +49,6 @@ chapter = true
 | H2         | 使用 H2 方言加载元数据         | [`org.apache.shardingsphere.infra.database.h2.H2MetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/h2/src/main/java/org/apache/shardingsphere/infra/database/h2/H2MetaDataLoader.java)                                         |
 | openGauss  | 使用 OpenGauss 方言加载元数据  | [`org.apache.shardingsphere.infra.database.opengauss.OpenGaussMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/opengauss/src/main/java/org/apache/shardingsphere/infra/database/opengauss/OpenGaussMetaDataLoader.java)      |
 
-## DialectDataTypeLoader
-
-### 全限定类名
-
-[`org.apache.shardingsphere.infra.database.core.metadata.database.DialectDataTypeLoader`](https://github.com/apache/shardingsphere/blob//master/infra/database/core/src/main/java/org/apache/shardingsphere/infra/database/core/metadata/database/datatype/DialectDataTypeLoader.java)
-
-### 定义
-
-数据类型加载器
-
-### 已知实现
-
-| *配置标识* | *详细说明*         | *全限定类名*                                                                                                                                                                                                                                           |
-|--------|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| MySQL  | MySQL 数据类型加载器  | [`org.apache.shardingsphere.infra.database.mysql.MySQLDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/mysql/src/main/java/org/apache/shardingsphere/infra/database/mysql/MySQLDataTypeLoader.java)      |
-
 ## DataSourcePoolMetaData
 
 ### 全限定类名
