@@ -44,7 +44,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      *
      * @param databaseName database name
      * @param dataSourceName data source name
-     * @param connectionSize size of connections to get
+     * @param connectionSize size of connections
      * @param connectionMode connection mode
      * @return connections
      * @throws SQLException SQL exception
@@ -59,7 +59,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      *
      * @param databaseName database name
      * @param dataSourceName data source name
-     * @param connectionSize size of connections to be get
+     * @param connectionSize size of connections to be got
      * @param connectionMode connection mode
      * @param transactionType transaction type
      * @return connections
