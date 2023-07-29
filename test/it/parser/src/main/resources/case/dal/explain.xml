@@ -472,6 +472,29 @@
             </where>
         </select>
     </describe>
+    <describe sql-case-id="explain_for_select_with_into">
+        <select>
+            <projections start-index="37" stop-index="37">
+                <shorthand-projection start-index="37" stop-index="37" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="44" stop-index="50" />
+            </from>
+            <where start-index="52" stop-index="69">
+                <expr>
+                    <binary-operation-expression start-index="58" stop-index="69">
+                        <left>
+                            <column name="order_id" start-index="58" stop-index="65" />
+                        </left>
+                        <operator>></operator>
+                        <right>
+                            <literal-expression value="8" start-index="69" stop-index="69" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
     <describe sql-case-id="explain_for_update_without_condition">
         <update>
             <table start-index="24" stop-index="30">
@@ -513,6 +536,21 @@
                     <column name="id" start-index="65" stop-index="66" />
                     <assignment-value>
                         <literal-expression value="1" start-index="70" stop-index="70" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </describe>
+    <describe sql-case-id="explain_for_update_with_into">
+        <update>
+            <table start-index="21" stop-index="27">
+                <simple-table name="t_order" start-index="37" stop-index="43" />
+            </table>
+            <set start-index="45" stop-index="54" literal-stop-index="54">
+                <assignment start-index="52" stop-index="57" literal-stop-index="54">
+                    <column name="id" start-index="49" stop-index="50" />
+                    <assignment-value>
+                        <literal-expression value="1" start-index="54" stop-index="54" />
                     </assignment-value>
                 </assignment>
             </set>
@@ -569,6 +607,21 @@
                 <value>
                     <assignment-value>
                         <literal-expression value="1" start-index="84" stop-index="84" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </describe>
+    <describe sql-case-id="explain_for_insert_into">
+        <insert>
+            <table name="t_order" start-index="42" stop-index="48" />
+            <columns start-index="50" stop-index="59">
+                <column name="order_id" start-index="51" stop-index="58" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="68" stop-index="68" />
                     </assignment-value>
                 </value>
             </values>
@@ -634,6 +687,26 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="1" start-index="84" stop-index="84" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </describe>
+    <describe sql-case-id="explain_for_delete_into">
+        <delete>
+            <table name="t_order" start-index="42" stop-index="48" />
+            <where start-index="50" stop-index="68">
+                <expr>
+                    <binary-operation-expression start-index="56" stop-index="68">
+                        <left>
+                            <column name="x" start-index="56" stop-index="64">
+                                <owner name="t_order" start-index="56" stop-index="62" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="1" start-index="68" stop-index="68" />
                         </right>
                     </binary-operation-expression>
                 </expr>
