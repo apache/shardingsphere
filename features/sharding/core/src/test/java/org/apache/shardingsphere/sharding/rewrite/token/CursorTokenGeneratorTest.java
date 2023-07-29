@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token;
 
-import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.FetchStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.MoveStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.MoveStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.CursorTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.CursorToken;

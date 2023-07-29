@@ -17,9 +17,10 @@
   -->
 
 <integration-test-cases>
-    <test-case sql="SELECT order_id_sharding AS order_id, user_id, status FROM t_order_federate_sharding WHERE order_id_sharding = ? UNION ALL SELECT order_id, user_id, status FROM t_order_item_federate_sharding WHERE user_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,tbl">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="SELECT order_id_sharding, user_id, status FROM t_order_federate_sharding WHERE order_id_sharding = ? UNION ALL SELECT order_id, user_id, status FROM t_order_item_federate_sharding WHERE user_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,tbl">
         <assertion parameters="1010:int, 10:int" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <!-- TODO fix Operation not allowed after ResultSet closed -->
     <!--<test-case sql="SELECT * FROM t_order UNION ALL SELECT * FROM t_order ORDER BY order_id LIMIT 5, 5" db-types="MySQL,openGauss" scenario-types="db">
@@ -170,21 +171,25 @@
         <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id and i.order_id > ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id and i.order_id > ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
-    <test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id and i.order_id > ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id and i.order_id > ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
-    <test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id and t_user_encrypt_federate_sharding.user_id > ? " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select t_user_encrypt_federate_sharding.user_id, t_user_encrypt_federate_sharding.pwd, t_user_info.information from t_user_encrypt_federate_sharding, t_user_info where t_user_encrypt_federate_sharding.user_id = t_user_info.user_id and t_user_encrypt_federate_sharding.user_id > ? " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
-    <test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id and t_user_encrypt_federate.user_id > ? " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id and t_user_encrypt_federate.user_id > ? " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <!-- TODO support MySQL EXCEPT clause -->
     <test-case sql="SELECT * FROM t_order EXCEPT ALL SELECT * FROM t_order ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">

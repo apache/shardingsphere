@@ -115,6 +115,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.IntervalExpressionProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlQueryAndExistsFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlSerializeFunctionSegment;
@@ -287,7 +288,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.selectSubquery()) {
             OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
-            result.setSelectSubquery(subquerySegment);
+            result.setInsertSelect(subquerySegment);
         }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
@@ -307,7 +308,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 : (InsertMultiTableElementSegment) visit(ctx.conditionalInsertClause()));
         OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
-        result.setSelectSubquery(subquerySegment);
+        result.setInsertSelect(subquerySegment);
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -471,6 +472,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -733,6 +735,17 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             ((AliasAvailable) projection).setAlias(alias);
             return projection;
         }
+        if (projection instanceof IntervalExpressionProjection) {
+            IntervalExpressionProjection intervalExpressionProjection = (IntervalExpressionProjection) projection;
+            IntervalExpressionProjection result = new IntervalExpressionProjection(intervalExpressionProjection.getStartIndex(), intervalExpressionProjection.getStopIndex(),
+                    intervalExpressionProjection.getLeft(), intervalExpressionProjection.getMinus(), intervalExpressionProjection.getRight());
+            if (null != intervalExpressionProjection.getDayToSecondExpression()) {
+                result.setDayToSecondExpression(intervalExpressionProjection.getDayToSecondExpression());
+            } else {
+                result.setYearToMonthExpression(intervalExpressionProjection.getYearToMonthExpression());
+            }
+            return result;
+        }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = null == alias
                 ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
@@ -780,9 +793,12 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitXmlTable(final XmlTableContext ctx) {
-        String tableAlias = null == ctx.alias() ? null : ctx.alias().getText();
-        return new XmlTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.tableName().getText(),
-                tableAlias, (XmlTableFunctionSegment) visit(ctx.xmlTableFunction()), ctx.xmlTableFunctionAlias().alias().getText());
+        XmlTableSegment result = new XmlTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
+                (XmlTableFunctionSegment) visit(ctx.xmlTableFunction()));
+        if (null != ctx.xmlTableFunctionAlias()) {
+            result.setXmlTableFunctionAlias(ctx.xmlTableFunctionAlias().alias().getText());
+        }
+        return result;
     }
     
     @Override

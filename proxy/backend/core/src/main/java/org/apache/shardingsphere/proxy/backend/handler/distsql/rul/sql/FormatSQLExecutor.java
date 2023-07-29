@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor.ConnectionSessionRequiredRULExecutor;
@@ -41,10 +42,10 @@ public final class FormatSQLExecutor implements ConnectionSessionRequiredRULExec
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final FormatStatement sqlStatement) {
-        return Collections.singleton(new LocalDataQueryResultRow(formatSQL(sqlStatement.getSql(), connectionSession.getProtocolType().getType())));
+        return Collections.singleton(new LocalDataQueryResultRow(formatSQL(sqlStatement.getSql(), connectionSession.getProtocolType())));
     }
     
-    private Object formatSQL(final String sql, final String databaseType) {
+    private Object formatSQL(final String sql, final DatabaseType databaseType) {
         Properties props = new Properties();
         props.setProperty("parameterized", Boolean.FALSE.toString());
         return new SQLFormatEngine(databaseType, new CacheOption(1, 1L)).format(sql, false, props);

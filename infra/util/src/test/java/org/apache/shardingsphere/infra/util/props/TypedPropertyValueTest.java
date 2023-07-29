@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.util.props;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyEnumFixture;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyKeyFixture;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.fixture.TypedSPIFixture;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -76,5 +78,10 @@ class TypedPropertyValueTest {
     @Test
     void assertGetInvalidEnumValue() {
         assertThrows(TypedPropertyValueException.class, () -> new TypedPropertyValue(TypedPropertyKeyFixture.ENUM_VALUE, "BAR"));
+    }
+    
+    @Test
+    void assertGetTypedSPI() throws TypedPropertyValueException {
+        assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.TYPED_SPI_VALUE, "TYPED.FIXTURE").getValue(), is(TypedSPILoader.getService(TypedSPIFixture.class, "TYPED.FIXTURE")));
     }
 }

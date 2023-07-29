@@ -48,7 +48,7 @@ public final class ParseDistSQLExecutor implements ConnectionSessionRequiredRULE
     
     private SQLStatement parseSQL(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final ParseStatement sqlStatement) {
         SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return sqlParserRule.getSQLParserEngine(connectionSession.getProtocolType().getType()).parse(sqlStatement.getSql(), false);
+        return sqlParserRule.getSQLParserEngine(connectionSession.getProtocolType()).parse(sqlStatement.getSql(), false);
     }
     
     @Override

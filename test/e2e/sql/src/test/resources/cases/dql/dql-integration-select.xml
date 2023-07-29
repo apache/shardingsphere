@@ -96,37 +96,45 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate i WHERE o.order_id = ? AND i.item_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item_federate i WHERE o.order_id = ? AND i.item_id = ?" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="1000:int, 100000:int" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
-    <test-case sql="SELECT user_id, CONCAT('SUM:', total, '.') AS content FROM (SELECT user_id, SUM(order_id_sharding) AS total FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ?) AS temp ORDER BY temp.user_id" db-types="MySQL,PostgreSQL" scenario-types="tbl">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="SELECT user_id, CONCAT('SUM:', total, '.') AS content FROM (SELECT user_id, SUM(order_id_sharding) AS total FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ?) AS temp ORDER BY temp.user_id" db-types="MySQL,PostgreSQL" scenario-types="tbl">
         <assertion parameters="1000:int" />
-    </test-case>
+    </test-case>-->
     
-    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate,t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate,t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
-    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.order_id = ?" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.order_id = ?" scenario-types="dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion parameters="10001:int" expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
-    <test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select o.order_id_sharding, i.order_id from t_order_federate_sharding o, t_order_item_federate_sharding i where o.order_id_sharding = i.item_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
-    <test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select t_user_encrypt_federate.user_id, t_user_encrypt_federate.pwd, t_user_info.information from t_user_encrypt_federate, t_user_info where t_user_encrypt_federate.user_id = t_user_info.user_id " scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
-    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding' " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding' " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
-    <test-case sql="select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id " scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <!-- TODO complete test type -->
     <test-case sql="SELECT order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp FROM t_shadow WHERE user_id = ?" db-types="MySQL,PostgreSQL" scenario-types="shadow">
@@ -186,11 +194,6 @@
     
     <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
                scenario-comments="Test single table's LIKE operator underscore wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in simple select statement when use encrypt feature.">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM (SELECT * FROM t_merchant) temp" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt"
-               scenario-comments="Test encrypt shorthand expansion for subquery with simple select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     

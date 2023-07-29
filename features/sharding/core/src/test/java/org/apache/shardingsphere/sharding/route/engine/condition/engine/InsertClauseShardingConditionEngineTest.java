@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
-import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertSelectContext;
-import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -84,7 +85,7 @@ class InsertClauseShardingConditionEngineTest {
         when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_col_1"));
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(createInsertValueContext()));
         when(insertStatementContext.getInsertSelectContext()).thenReturn(null);
-        when(insertStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(insertStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(insertStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
     }
     

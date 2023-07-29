@@ -17,54 +17,19 @@
 
 package org.apache.shardingsphere.infra.database.opengauss;
 
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OpenGaussDatabaseTypeTest {
     
     @Test
-    void assertGetQuoteCharacter() {
-        assertThat(new OpenGaussDatabaseType().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
-    }
-    
-    @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(new OpenGaussDatabaseType().getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:opengauss:")));
-    }
-    
-    @Test
-    void assertGetDataSourceMetaData() {
-        assertThat(new OpenGaussDatabaseType().getDataSourceMetaData("jdbc:opengauss://localhost:5432/demo_ds_0", "postgres"), instanceOf(OpenGaussDataSourceMetaData.class));
-    }
-    
-    @Test
-    void assertGetSystemDatabases() {
-        assertTrue(new OpenGaussDatabaseType().getSystemDatabaseSchemaMap().containsKey("postgres"));
-    }
-    
-    @Test
-    void assertGetSystemSchemas() {
-        assertThat(new OpenGaussDatabaseType().getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "pg_catalog", "blockchain",
-                "cstore", "db4ai", "dbe_perf", "dbe_pldebugger", "gaussdb", "oracle", "pkg_service", "snapshot", "sqladvisor", "dbe_pldeveloper", "pg_toast", "pkg_util", "shardingsphere"))));
-    }
-    
-    @Test
-    void assertIsSchemaAvailable() {
-        assertTrue(new OpenGaussDatabaseType().isSchemaAvailable());
-    }
-    
-    @Test
-    void assertGetDefaultSchema() {
-        assertThat(new OpenGaussDatabaseType().getDefaultSchema(), is(Optional.of("public")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "openGauss").getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:opengauss:")));
     }
 }
