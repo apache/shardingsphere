@@ -51,4 +51,15 @@ public final class DatabaseTypeFactory {
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {
         return databaseType.getJdbcUrlPrefixes().stream().anyMatch(url::startsWith);
     }
+    
+    /**
+     * Get all branch database types.
+     * 
+     * @param databaseType database type
+     * @return all branch database types
+     */
+    public static Collection<DatabaseType> getAllBranchDatabaseTypes(final DatabaseType databaseType) {
+        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)
+                .stream().filter(each -> each.getTrunkDatabaseType().map(optional -> optional == databaseType).orElse(false)).collect(Collectors.toList());
+    }
 }

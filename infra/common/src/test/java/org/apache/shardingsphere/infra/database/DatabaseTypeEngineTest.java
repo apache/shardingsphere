@@ -127,11 +127,4 @@ class DatabaseTypeEngineTest {
         DatabaseType schemaNoSupportDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaNoSupportDatabaseType, "MySQL"), is("mysql"));
     }
-    
-    @Test
-    void assertGetBranchDatabaseTypes() {
-        Collection<DatabaseType> actual = DatabaseTypeEngine.getTrunkAndBranchDatabaseTypes(Collections.singleton("MySQL"));
-        assertTrue(actual.contains(TypedSPILoader.getService(DatabaseType.class, "MySQL")), "MySQL not present");
-        assertTrue(actual.contains(TypedSPILoader.getService(DatabaseType.class, "MariaDB")), "MariaDB not present");
-    }
 }
