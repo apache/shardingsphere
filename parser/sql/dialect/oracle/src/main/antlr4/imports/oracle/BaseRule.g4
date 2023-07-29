@@ -447,6 +447,10 @@ policyName
     : identifier
     ;
 
+connectionQualifier
+    : identifier
+    ;
+
 functionName
     : identifier
     ;
