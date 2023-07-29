@@ -34,16 +34,16 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MySQLMetaDataLoaderTest {
+    
+    private final DialectMetaDataLoader dialectMetaDataLoader = DatabaseTypedSPILoader.getService(DialectMetaDataLoader.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     
     @Test
     void assertLoadWithoutTables() throws SQLException {
@@ -55,7 +55,7 @@ class MySQLMetaDataLoaderTest {
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement("SELECT TABLE_NAME, INDEX_NAME "
                 + "FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db"));
+        assertTableMetaDataMap(dialectMetaDataLoader.load(dataSource, Collections.emptyList(), "sharding_db"));
     }
     
     @Test
@@ -69,7 +69,7 @@ class MySQLMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(
                 "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db"));
+        assertTableMetaDataMap(dialectMetaDataLoader.load(dataSource, Collections.singletonList("tbl"), "sharding_db"));
     }
     
     private DataSource mockDataSource() throws SQLException {
@@ -106,12 +106,6 @@ class MySQLMetaDataLoaderTest {
         when(result.getString("INDEX_NAME")).thenReturn("id");
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
         return result;
-    }
-    
-    private DialectMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectMetaDataLoader> result = DatabaseTypedSPILoader.findService(DialectMetaDataLoader.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        assertTrue(result.isPresent());
-        return result.get();
     }
     
     private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList) {
