@@ -17,7 +17,6 @@
 
 org.apache.shardingsphere.sqlfederation.compiler.context.parser.dialect.impl.H2OptimizerBuilder
 org.apache.shardingsphere.sqlfederation.compiler.context.parser.dialect.impl.MySQLOptimizerBuilder
-org.apache.shardingsphere.sqlfederation.compiler.context.parser.dialect.impl.MariaDBOptimizerBuilder
 org.apache.shardingsphere.sqlfederation.compiler.context.parser.dialect.impl.PostgreSQLOptimizerBuilder
 org.apache.shardingsphere.sqlfederation.compiler.context.parser.dialect.impl.OpenGaussOptimizerBuilder
 org.apache.shardingsphere.sqlfederation.compiler.context.parser.dialect.impl.SQLServerOptimizerBuilder

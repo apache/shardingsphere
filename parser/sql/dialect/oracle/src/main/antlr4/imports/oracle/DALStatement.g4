@@ -17,8 +17,12 @@
 
 grammar DALStatement;
 
-import BaseRule;
+import BaseRule, DMLStatement;
 
 alterResourceCost
     : ALTER RESOURCE COST ((CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA) INTEGER_)+
+    ;
+
+explain
+    : EXPLAIN PLAN (SET STATEMENT_ID EQ_ stringLiterals)? (INTO (schemaName DOT_)? tableName (AT_ dbLink)? )? FOR (insert | delete | update | select)
     ;

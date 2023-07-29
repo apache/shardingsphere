@@ -31,4 +31,17 @@
     <sql-case id="alter_diskgroup_scrub" value="ALTER DISKGROUP dgroup_01 SCRUB REPAIR WAIT;" db-types="Oracle" />
     <sql-case id="alter_diskgroup_dismount" value="ALTER DISKGROUP dgroup_01 DISMOUNT FORCE;" db-types="Oracle" />
     <sql-case id="alter_diskgroup_mount" value="ALTER DISKGROUP dgroup_01 MOUNT;" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_offline_disk_drop_after_time_unit_m" value="ALTER DISKGROUP data OFFLINE DISK DATA_001 DROP AFTER 5m" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_attribute_time_h" value="ALTER DISKGROUP data SET ATTRIBUTE 'disk_repair_time' = '4.5h'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_attribute_time_m" value="ALTER DISKGROUP data SET ATTRIBUTE 'disk_repair_time' = '270m'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_attribute_1" value="ALTER DISKGROUP data1 SET ATTRIBUTE 'access_control.enabled' = 'true'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_attribute_2" value="ALTER DISKGROUP data1 SET ATTRIBUTE 'access_control.umask' = '026'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_attribute_3" value="ALTER DISKGROUP data3 SET ATTRIBUTE 'compatible.asm' = '11.2'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_permission_owner_group_other_for_file" value="ALTER DISKGROUP data SET PERMISSION OWNER=read write, GROUP=read only, OTHER=none FOR FILE '+data/controlfile.f'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_set_ownership_owner_group_for_file" value="ALTER DISKGROUP data SET OWNERSHIP OWNER='oracle1', GROUP='test_grp1' FOR FILE '+data/controlfile.f'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_add_template_attribute_hot_hirrorhot" value="ALTER DISKGROUP data ADD TEMPLATE datafile_hot ATTRIBUTE (HOT MIRRORHOT)" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_modify_drop_member" value="ALTER DISKGROUP data MODIFY USERGROUP 'test_grp2' DROP MEMBER 'oracle2'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_resize_disks_in_failgroup_size_g" value="ALTER DISKGROUP data1 RESIZE DISKS IN FAILGROUP failgrp1 SIZE 100G" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_add_template_attribute_unprotected_coarse" value="ALTER DISKGROUP dgroup_01 ADD TEMPLATE template_01 ATTRIBUTES (UNPROTECTED COARSE)" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_modify_template_attribute_fine" value="ALTER DISKGROUP dgroup_01 MODIFY TEMPLATE template_01 ATTRIBUTES (FINE)" db-types="Oracle" />
 </sql-cases>

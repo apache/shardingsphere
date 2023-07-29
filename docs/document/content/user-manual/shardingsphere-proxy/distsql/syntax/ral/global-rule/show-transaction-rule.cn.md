@@ -30,7 +30,7 @@ ShowTransactionRule ::=
 
 ### 示例
 
-- 查询权限规则配置
+- 查询事务规则配置
 
 ```sql
 SHOW TRANSACTION RULE;

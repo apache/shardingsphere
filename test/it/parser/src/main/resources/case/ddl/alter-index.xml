@@ -77,6 +77,18 @@
     <alter-index sql-case-id="alter_index_with_reorganize">
         <table name="t_order" start-index="27" stop-index="33" />
     </alter-index>
+
+    <alter-index sql-case-id="alter_index_parameters_odci">
+        <index name="ResumeTextIndex" start-index="12" stop-index="26" />
+    </alter-index>
+
+    <alter-index sql-case-id="alter_index_modify_partition_unusable">
+        <index name="cost_ix" start-index="12" stop-index="18" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_drop_partition">
+        <index name="cost_ix" start-index="12" stop-index="18" />
+    </alter-index>
     
     <alter-index sql-case-id="alter_index_alter_column" />
     <alter-index sql-case-id="alter_index_with_schema" />

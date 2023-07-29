@@ -21,6 +21,6 @@
         <column name="database" />
         <column name="count" />
     </metadata>
-    <row values="sharding_table| dbtbl_with_readwrite_splitting| 5" />
+    <row values="sharding_table| dbtbl_with_readwrite_splitting| 3" />
     <row values="sharding_table_reference| dbtbl_with_readwrite_splitting| 1" />
 </dataset>

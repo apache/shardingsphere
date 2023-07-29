@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sql.parser.core.database.cache;
 
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.junit.jupiter.api.Test;
@@ -29,7 +31,7 @@ class ParseTreeCacheBuilderTest {
     
     @Test
     void assertParseTreeCacheBuild() {
-        LoadingCache<String, ParseASTNode> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10), "MySQL");
+        LoadingCache<String, ParseASTNode> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         assertThat(cache, isA(LoadingCache.class));
     }
 }

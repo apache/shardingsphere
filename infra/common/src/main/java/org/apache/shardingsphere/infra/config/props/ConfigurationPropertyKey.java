@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.config.props;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 
 import java.util.Arrays;
@@ -63,9 +64,9 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
-     * Frontend database protocol type for ShardingSphere-Proxy.
+     * Frontend database protocol for ShardingSphere-Proxy.
      */
-    PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", "", String.class, false),
+    PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", null, DatabaseType.class, false),
     
     /**
      * Flush threshold for every record from databases for ShardingSphere-Proxy.

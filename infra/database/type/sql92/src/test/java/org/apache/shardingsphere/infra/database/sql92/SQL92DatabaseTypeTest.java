@@ -17,40 +17,19 @@
 
 package org.apache.shardingsphere.infra.database.sql92;
 
-import org.apache.shardingsphere.infra.util.quote.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQL92DatabaseTypeTest {
     
     @Test
-    void assertGetQuoteCharacter() {
-        assertThat(new SQL92DatabaseType().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
-    }
-    
-    @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(new SQL92DatabaseType().getJdbcUrlPrefixes(), is(Collections.emptyList()));
-    }
-    
-    @Test
-    void assertGetDataSourceMetaData() {
-        assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:xxx", "root"), instanceOf(SQL92DataSourceMetaData.class));
-    }
-    
-    @Test
-    void assertGetSystemDatabases() {
-        assertTrue(new SQL92DatabaseType().getSystemDatabaseSchemaMap().isEmpty());
-    }
-    
-    @Test
-    void assertGetSystemSchemas() {
-        assertTrue(new SQL92DatabaseType().getSystemSchemas().isEmpty());
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "SQL92").getJdbcUrlPrefixes(), is(Collections.emptyList()));
     }
 }

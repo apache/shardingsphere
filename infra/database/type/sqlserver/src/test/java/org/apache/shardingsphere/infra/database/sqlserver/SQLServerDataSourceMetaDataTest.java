@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.infra.database.sqlserver;
 
-import org.apache.shardingsphere.infra.database.core.url.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
+import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,10 +39,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLServerDataSourceMetaDataTest {
     
+    private final ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
+    
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
     void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema) {
-        DataSourceMetaData actual = new SQLServerDataSourceMetaData(url);
+        ConnectionProperties actual = parser.parse(url, null, null);
         assertThat(actual.getHostname(), is(hostname));
         assertThat(actual.getPort(), is(port));
         assertThat(actual.getCatalog(), is(catalog));
@@ -48,7 +54,7 @@ class SQLServerDataSourceMetaDataTest {
     
     @Test
     void assertNewConstructorFailure() {
-        assertThrows(UnrecognizedDatabaseURLException.class, () -> new SQLServerDataSourceMetaData("jdbc:sqlserver:xxxxxxxx"));
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> parser.parse("jdbc:sqlserver:xxxxxxxx", null, null));
     }
     
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {

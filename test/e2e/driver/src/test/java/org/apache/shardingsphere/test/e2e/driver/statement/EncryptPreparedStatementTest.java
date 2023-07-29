@@ -48,7 +48,9 @@ class EncryptPreparedStatementTest extends AbstractEncryptDriverTest {
     
     private static final String SELECT_SQL_OR = "SELECT * FROM t_query_encrypt WHERE pwd = ? AND (id = ? OR id =?)";
     
-    private static final String SELECT_ALL_SQL = "SELECT id, cipher_pwd, assist_pwd FROM t_query_encrypt";
+    private static final String SELECT_ALL_LOGICAL_SQL = "SELECT id, pwd FROM t_query_encrypt";
+    
+    private static final String SELECT_ALL_ACTUAL_SQL = "SELECT id, cipher_pwd, assist_pwd FROM t_query_encrypt";
     
     private static final String SELECT_SQL_WITH_IN_OPERATOR = "SELECT * FROM t_query_encrypt WHERE pwd IN (?)";
     
@@ -172,7 +174,7 @@ class EncryptPreparedStatementTest extends AbstractEncryptDriverTest {
     void assertSelectWithExecuteWithProperties() throws SQLException {
         try (
                 PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(
-                        SELECT_ALL_SQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+                        SELECT_ALL_LOGICAL_SQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             boolean result = preparedStatement.execute();
             assertTrue(result);
             assertThat(preparedStatement.getResultSetType(), is(ResultSet.TYPE_FORWARD_ONLY));
@@ -185,7 +187,7 @@ class EncryptPreparedStatementTest extends AbstractEncryptDriverTest {
         try (
                 Connection connection = getActualDataSources().get("encrypt").getConnection();
                 Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(SELECT_ALL_SQL);
+            ResultSet resultSet = statement.executeQuery(SELECT_ALL_ACTUAL_SQL);
             int count = 1;
             while (resultSet.next()) {
                 if (id == count) {

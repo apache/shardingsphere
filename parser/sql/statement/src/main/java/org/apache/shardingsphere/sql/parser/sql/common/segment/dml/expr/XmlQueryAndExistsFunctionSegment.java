@@ -43,4 +43,9 @@ public final class XmlQueryAndExistsFunctionSegment implements ComplexExpression
     private final Collection<ExpressionSegment> parameters = new LinkedList<>();
     
     private final String text;
+    
+    @Override
+    public String getColumnLabel() {
+        return text;
+    }
 }

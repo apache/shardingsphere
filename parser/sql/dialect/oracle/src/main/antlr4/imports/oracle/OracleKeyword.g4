@@ -5360,6 +5360,10 @@ PARITY
     :P A R I T Y
     ;
 
+PARTIAL
+    : P A R T I A L
+    ;
+
 PARTIALLY
     :P A R T I A L L Y
     ;
@@ -6020,6 +6024,10 @@ STATEMENT_QUEUING
     :S T A T E M E N T UL_ Q U E U I N G
     ;
 
+OVERRIDING
+    : O V E R R I D I N G
+    ;
+
 STATIC
     :S T A T I C
     ;
@@ -6658,6 +6666,10 @@ SYS_XMLEXNSURI
 
 SYS_XMLGEN
     :S Y S UL_ X M L G E N
+    ;
+    
+SYS_XMLAGG
+    :S Y S UL_ X M L A G G
     ;
 
 SYS_XMLI_LOC_ISNODE
@@ -7644,10 +7656,30 @@ XPATHTABLE
     :X P A T H T A B L E
     ;
 
+XMLSEQUENCE
+    :X M L S E Q U E N C E
+    ;
+
 XS_SYS_CONTEXT
     :X S UL_ S Y S UL_ C O N T E X T
     ;
 
 X_DYN_PRUNE
     :X UL_ D Y N UL_ P R U N E
+    ;
+
+FEATURE_COMPARE
+    : F E A T U R E UL_ C O M P A R E
+    ;
+
+FEATURE_DETAILS
+    : F E A T U R E UL_ D E T A I L S
+    ;
+
+CLUSTER_DETAILS
+    : C L U S T E R UL_ D E T A I L S
+    ;
+
+CLUSTER_DISTANCE
+    : C L U S T E R UL_ D I S T A N C E
     ;

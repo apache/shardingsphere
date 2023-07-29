@@ -17,10 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * MySQL statement.
  */
 public interface MySQLStatement extends SQLStatement {
+    
+    @Override
+    default DatabaseType getDatabaseType() {
+        return TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    }
 }
