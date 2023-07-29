@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;

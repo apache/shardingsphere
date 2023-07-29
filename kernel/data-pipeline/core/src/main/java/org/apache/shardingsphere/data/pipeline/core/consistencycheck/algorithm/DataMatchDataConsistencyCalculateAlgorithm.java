@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.Data
 import org.apache.shardingsphere.data.pipeline.core.dumper.ColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;

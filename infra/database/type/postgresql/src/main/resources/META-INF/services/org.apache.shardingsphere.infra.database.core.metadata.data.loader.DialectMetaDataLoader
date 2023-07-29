@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.postgresql.PostgreSQLMetaDataLoader
+org.apache.shardingsphere.infra.database.postgresql.metadata.data.loader.PostgreSQLMetaDataLoader
