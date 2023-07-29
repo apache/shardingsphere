@@ -3683,6 +3683,11 @@ alterAttributeDefinition
       | DROP ATTRIBUTE ( attributeName | LP_ attributeName (COMMA_ attributeName)* RP_)
     ;
 
+alterCollectionClauses
+    : MODIFY (LIMIT INTEGER_ | ELEMENT TYPE dataType)
+    ;
+
 alterType
-    : ALTER TYPE typeName (compileTypeClause|replaceTypeClause|RESET|(alterMethodSpec|alterAttributeDefinition))?
+    : ALTER TYPE typeName (compileTypeClause | replaceTypeClause | RESET
+    | (alterMethodSpec | alterAttributeDefinition | alterCollectionClauses | NOT (INSTANTIABLE | FINAL)))?
     ;

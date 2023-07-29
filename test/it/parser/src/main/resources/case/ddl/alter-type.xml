@@ -83,4 +83,8 @@
     <alter-type sql-case-id="alter_type_modify_multi_attribute" />
     <alter-type sql-case-id="alter_type_drop_single_attribute" />
     <alter-type sql-case-id="alter_type_drop_multi_attribute" />
+    <alter-type sql-case-id="alter_type_modify_limit" />
+    <alter-type sql-case-id="alter_type_modify_element_type" />
+    <alter-type sql-case-id="alter_type_not_instantiable" />
+    <alter-type sql-case-id="alter_type_not_final" />
 </sql-parser-test-cases>
