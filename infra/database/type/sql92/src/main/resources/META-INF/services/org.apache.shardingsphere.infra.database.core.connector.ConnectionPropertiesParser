@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.sql92.SQL92ConnectionPropertiesParser
+org.apache.shardingsphere.infra.database.sql92.connector.SQL92ConnectionPropertiesParser
