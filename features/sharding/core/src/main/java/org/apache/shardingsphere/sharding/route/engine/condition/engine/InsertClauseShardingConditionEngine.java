@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
-import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
