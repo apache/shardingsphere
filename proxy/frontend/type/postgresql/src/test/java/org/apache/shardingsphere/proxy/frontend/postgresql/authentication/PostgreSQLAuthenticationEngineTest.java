@@ -33,9 +33,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.Postgre
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLSSLWillingPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authentication.PostgreSQLMD5PasswordAuthenticationPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
-import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidPasswordException;
-import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
+import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.EmptyUsernameException;
+import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.InvalidPasswordException;
+import org.apache.shardingsphere.infra.exception.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
