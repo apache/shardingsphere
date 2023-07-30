@@ -41,6 +41,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -66,13 +67,13 @@ class RDLE2EIT {
         String mode = testParam.getMode();
         
         for (IntegrationTestCaseAssertion each : containerComposer.getAssertions()) {
-            if (each.getInitialSQL() != null && each.getAssertionSQL() != null) {
+            if (null != each.getInitialSQL() && null != each.getAssertionSQL()) {
                 init(containerComposer, each, dataSetIndex, mode);
             }
-            if (each.getAssertionSQL() != null && each.getDestroySQL() == null && each.getInitialSQL() == null) {
+            if (null != each.getAssertionSQL() && null == each.getDestroySQL() && null == each.getInitialSQL()) {
                 executeSQLCase(containerComposer, each, dataSetIndex, mode);
             }
-            if (each.getDestroySQL() != null && each.getAssertionSQL() != null) {
+            if (null != each.getDestroySQL() && null != each.getAssertionSQL()) {
                 tearDown(containerComposer, each, dataSetIndex, mode);
             }
             dataSetIndex++;
@@ -120,7 +121,7 @@ class RDLE2EIT {
                                      final IntegrationTestCaseAssertion testCaseAssertionSQL,
                                      final int dataSetIndex, final String mode) {
         if ("Cluster".equals(mode)) {
-            Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> assertResultSet(containerComposer, statement, testCaseAssertionSQL, dataSetIndex));
+            Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> assertResultSet(containerComposer, statement, testCaseAssertionSQL, dataSetIndex));
         } else if ("Standalone".equals(mode)) {
             assertResultSet(containerComposer, statement, testCaseAssertionSQL, dataSetIndex);
         }
