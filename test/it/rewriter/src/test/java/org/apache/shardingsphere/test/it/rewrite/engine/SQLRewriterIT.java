@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDa
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -121,7 +121,7 @@ public abstract class SQLRewriterIT {
         Map<String, DatabaseType> storageTypes = createStorageTypes(databaseConfig, databaseType);
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         when(resourceMetaData.getStorageTypes()).thenReturn(storageTypes);
-        String schemaName = DatabaseTypeFactory.getDefaultSchemaName(databaseType, DefaultDatabase.LOGIC_NAME);
+        String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(DefaultDatabase.LOGIC_NAME);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType()),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(testParams.getInputSQL(), false);
@@ -130,7 +130,6 @@ public abstract class SQLRewriterIT {
         ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resourceMetaData, databaseRuleMetaData, mockSchemas(schemaName));
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1F);
         databases.put(schemaName, database);
-        
         ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(createGlobalRules());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ShardingSphereResourceMetaData.class), globalRuleMetaData, mock(ConfigurationProperties.class));
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, schemaName).bind(sqlStatement, Collections.emptyList());

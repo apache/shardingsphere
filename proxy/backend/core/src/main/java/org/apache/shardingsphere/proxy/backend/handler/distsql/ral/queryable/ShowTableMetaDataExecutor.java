@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
@@ -48,7 +48,7 @@ public final class ShowTableMetaDataExecutor implements ConnectionSessionRequire
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final ShowTableMetaDataStatement sqlStatement) {
         String databaseName = getDatabaseName(connectionSession, sqlStatement);
-        String defaultSchema = DatabaseTypeFactory.getDefaultSchemaName(connectionSession.getProtocolType(), connectionSession.getDatabaseName());
+        String defaultSchema = new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDefaultSchemaName(connectionSession.getDatabaseName());
         ShardingSphereSchema schema = ProxyContext.getInstance().getDatabase(databaseName).getSchema(defaultSchema);
         return schema.getAllTableNames().stream().filter(each -> sqlStatement.getTableNames().contains(each))
                 .map(each -> buildTableRows(databaseName, schema, each)).flatMap(Collection::stream).collect(Collectors.toList());

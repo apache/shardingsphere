@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -173,7 +173,7 @@ public final class ProjectionEngine {
         String tableName = ((SimpleTableSegment) table).getTableName().getIdentifier().getValue();
         String tableAlias = table.getAliasName().orElse(tableName);
         String schemaName = ((SimpleTableSegment) table).getOwner().map(optional -> optional.getIdentifier().getValue())
-                .orElseGet(() -> DatabaseTypeFactory.getDefaultSchemaName(databaseType, databaseName)).toLowerCase();
+                .orElseGet(() -> new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName)).toLowerCase();
         ShardingSphereSchema schema = schemas.get(schemaName);
         ShardingSpherePreconditions.checkNotNull(schema, () -> new SchemaNotFoundException(schemaName));
         Collection<ColumnProjection> result = new LinkedList<>();

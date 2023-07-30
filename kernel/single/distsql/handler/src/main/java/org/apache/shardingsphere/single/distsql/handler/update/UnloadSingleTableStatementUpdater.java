@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableExcep
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -76,7 +76,7 @@ public final class UnloadSingleTableStatementUpdater implements RuleDefinitionAl
     }
     
     private Collection<String> getAllTableNames(final ShardingSphereDatabase database) {
-        String defaultSchemaName = DatabaseTypeFactory.getDefaultSchemaName(database.getProtocolType(), database.getName());
+        String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
         return database.getSchema(defaultSchemaName).getTables().values().stream().map(ShardingSphereTable::getName).collect(Collectors.toList());
     }
     

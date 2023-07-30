@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
@@ -57,7 +57,7 @@ public final class MaskAlgorithmMetaData {
             return Optional.empty();
         }
         TablesContext tablesContext = selectStatementContext.getTablesContext();
-        String schemaName = tablesContext.getSchemaName().orElseGet(() -> DatabaseTypeFactory.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName()));
+        String schemaName = tablesContext.getSchemaName().orElseGet(() -> new DatabaseTypeRegistry(selectStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
         Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(
                 Collections.singletonList(columnProjection.get()), database.getSchema(schemaName));
         return findTableName(columnProjection.get(), expressionTableNames).flatMap(optional -> maskRule.findMaskAlgorithm(optional, columnProjection.get().getName().getValue()));

@@ -17,15 +17,10 @@
 
 package org.apache.shardingsphere.infra.database.core.type;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collection;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DatabaseTypeFactoryTest {
@@ -43,29 +38,5 @@ class DatabaseTypeFactoryTest {
     @Test
     void assertGetDatabaseTypeWithUnrecognizedURL() {
         assertThrows(UnsupportedStorageTypeException.class, () -> DatabaseTypeFactory.get("jdbc:not-existed:test"));
-    }
-    
-    @Test
-    void assertGetAllBranchDatabaseTypes() {
-        Collection<DatabaseType> actual = DatabaseTypeFactory.getAllBranchDatabaseTypes(TypedSPILoader.getService(DatabaseType.class, "TRUNK"));
-        assertThat(actual, is(Collections.singletonList(TypedSPILoader.getService(DatabaseType.class, "BRANCH"))));
-    }
-    
-    @Test
-    void assertGetDefaultSchemaNameWhenDatabaseTypeContainsDefaultSchema() {
-        DatabaseType schemaNoSupportDatabaseType = TypedSPILoader.getService(DatabaseType.class, "TRUNK");
-        assertThat(DatabaseTypeFactory.getDefaultSchemaName(schemaNoSupportDatabaseType, "FOO"), is("test"));
-    }
-    
-    @Test
-    void assertGetDefaultSchemaNameWhenDatabaseTypeNotContainsDefaultSchema() {
-        DatabaseType schemaNoSupportDatabaseType = TypedSPILoader.getService(DatabaseType.class, "BRANCH");
-        assertThat(DatabaseTypeFactory.getDefaultSchemaName(schemaNoSupportDatabaseType, "FOO"), is("foo"));
-    }
-    
-    @Test
-    void assertGetDefaultSchemaNameWhenDatabaseTypeNotContainsDefaultSchemaAndNullDatabaseName() {
-        DatabaseType schemaNoSupportDatabaseType = TypedSPILoader.getService(DatabaseType.class, "BRANCH");
-        assertNull(DatabaseTypeFactory.getDefaultSchemaName(schemaNoSupportDatabaseType, null));
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -82,7 +82,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     
     private MergedResult build(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
                                final Map<String, Integer> columnLabelIndexMap, final ShardingSphereDatabase database) throws SQLException {
-        String defaultSchemaName = DatabaseTypeFactory.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName());
+        String defaultSchemaName = new DatabaseTypeRegistry(selectStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
         ShardingSphereSchema schema = selectStatementContext.getTablesContext().getSchemaName()
                 .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         if (isNeedProcessGroupBy(selectStatementContext)) {

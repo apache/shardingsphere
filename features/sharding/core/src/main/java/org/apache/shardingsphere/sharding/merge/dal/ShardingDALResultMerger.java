@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dal;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -62,7 +62,8 @@ public final class ShardingDALResultMerger implements ResultMerger {
         if (dalStatement instanceof MySQLShowDatabasesStatement) {
             return new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(databaseName)));
         }
-        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeFactory.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName()));
+        String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
+                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
         ShardingSphereSchema schema = database.getSchema(schemaName);
         if (dalStatement instanceof MySQLShowTablesStatement) {
             return new LogicTablesMergedResult(shardingRule, sqlStatementContext, schema, queryResults);

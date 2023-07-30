@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
@@ -167,7 +167,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 columns.addAll(((ShorthandProjection) projection).getColumnProjections());
             }
         }
-        String defaultSchema = DatabaseTypeFactory.getDefaultSchemaName(selectStatementContext.getDatabaseType(), databaseName);
+        String defaultSchema = new DatabaseTypeRegistry(selectStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName);
         ShardingSphereSchema schema = selectStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> schemas.get(defaultSchema));
         return selectStatementContext.getTablesContext().findTableNamesByColumnProjection(columns, schema);
     }

@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.insert.values.expr
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.expression.DerivedSimpleExpressionSegment;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
@@ -91,7 +91,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         int count = 0;
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> DatabaseTypeFactory.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
+                .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             encryptToken(insertValuesToken.getInsertValues().get(count), schemaName, encryptTable, insertStatementContext, each);
             count++;
@@ -104,7 +104,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         InsertValuesToken result = new EncryptInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
         EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> DatabaseTypeFactory.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
+                .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = new InsertValue(each.getValueExpressions());
             encryptToken(insertValueToken, schemaName, encryptTable, insertStatementContext, each);
