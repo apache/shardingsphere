@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.Ord
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -82,7 +82,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     
     private MergedResult build(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
                                final Map<String, Integer> columnLabelIndexMap, final ShardingSphereDatabase database) throws SQLException {
-        String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName());
+        String defaultSchemaName = DatabaseTypeFactory.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName());
         ShardingSphereSchema schema = selectStatementContext.getTablesContext().getSchemaName()
                 .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         if (isNeedProcessGroupBy(selectStatementContext)) {

@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.infra.database.core.metadata.database.fixture.TrunkDialectDatabaseMetaData
+org.apache.shardingsphere.infra.database.core.metadata.database.fixture.BranchDialectDatabaseMetaData

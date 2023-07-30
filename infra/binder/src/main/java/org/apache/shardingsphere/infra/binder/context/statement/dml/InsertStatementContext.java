@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.insert.values.OnDu
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -102,7 +102,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         ShardingSpherePreconditions.checkNotNull(databaseName, NoDatabaseSelectedException::new);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
-        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(getDatabaseType(), databaseName);
+        String defaultSchema = DatabaseTypeFactory.getDefaultSchemaName(getDatabaseType(), databaseName);
         return tablesContext.getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchema));
     }
     
