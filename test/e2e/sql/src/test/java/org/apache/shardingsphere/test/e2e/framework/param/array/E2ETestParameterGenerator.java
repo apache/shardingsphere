@@ -94,9 +94,15 @@ public final class E2ETestParameterGenerator {
     private Collection<AssertionTestParameter> getAssertionTestParameter(final IntegrationTestCaseContext testCaseContext,
                                                                          final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
-        IntegrationTestCaseAssertion each = testCaseContext.getTestCase().getAssertions().iterator().next();
-        result.addAll(getAssertionTestParameter(testCaseContext, databaseType, sqlExecuteType, each, testCaseContext.getTestCase().getAssertions(), sqlCommandType));
-        
+
+        if ("RDL".equals(sqlCommandType.name())) {
+            IntegrationTestCaseAssertion eachAssertions = testCaseContext.getTestCase().getAssertions().iterator().next();
+            result.addAll(getAssertionTestParameter(testCaseContext, databaseType, sqlExecuteType, eachAssertions, testCaseContext.getTestCase().getAssertions(), sqlCommandType));
+        } else {
+            for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
+                result.addAll(getAssertionTestParameter(testCaseContext, databaseType, sqlExecuteType, each, testCaseContext.getTestCase().getAssertions(), sqlCommandType));
+            }
+        }
         return result;
     }
     

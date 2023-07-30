@@ -58,11 +58,13 @@ public final class SingleE2EContainerComposer extends E2EContainerComposer {
         assertions = testParam.getAssertions();
         assertion = testParam.getAssertion();
         
-        for (IntegrationTestCaseAssertion caseAssertion : assertions) {
-            dataSets.add(null == caseAssertion || null == caseAssertion.getExpectedDataFile()
-                    ? null
-                    : DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(),
-                            caseAssertion.getExpectedDataFile()));
+        if ("RDL".equals(testParam.getSqlCommandType().name())) {
+            for (IntegrationTestCaseAssertion caseAssertion : assertions) {
+                dataSets.add(null == caseAssertion || null == caseAssertion.getExpectedDataFile()
+                        ? null
+                        : DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(),
+                        caseAssertion.getExpectedDataFile()));
+            }
         }
         
         dataSet = null == assertion || null == assertion.getExpectedDataFile()
