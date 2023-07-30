@@ -184,6 +184,22 @@
             </expression-projection>
         </projections>
     </select>
+    <select sql-case-id="select_chr_using_nchar_cs">
+        <from>
+            <simple-table name="DUAL" start-index="37" stop-index="40" />
+        </from>
+        <projections start-index="7" stop-index="30">
+            <expression-projection text="CHR (196 USING NCHAR_CS)" start-index="7" stop-index="30">
+                <expr>
+                    <function function-name="CHR" start-index="7" stop-index="30" text="CHR (196 USING NCHAR_CS)" >
+                        <parameter>
+                            <literal-expression value="196" start-index="12" stop-index="14" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
     <select sql-case-id="select_trim">
         <projections start-index="7" stop-index="22">
             <expression-projection text="TRIM('  bar   ')" start-index="7" stop-index="22">

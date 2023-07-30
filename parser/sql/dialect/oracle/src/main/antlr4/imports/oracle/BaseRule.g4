@@ -800,7 +800,12 @@ castFunction
     ;
 
 charFunction
-    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier)? RP_
+    : (CHR | CHAR) LP_ expr (COMMA_ expr)* (USING charSet)? RP_
+    ;
+
+charSet
+    : NCHAR_CS
+    | ignoredIdentifier
     ;
     
 extractFunction
