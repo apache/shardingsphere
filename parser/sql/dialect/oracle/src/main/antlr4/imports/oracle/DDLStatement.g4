@@ -3674,4 +3674,5 @@ alterType
 createCluster
     : CREATE CLUSTER (schemaName DOT_)? clusterName
     LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
+    parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
     ;
