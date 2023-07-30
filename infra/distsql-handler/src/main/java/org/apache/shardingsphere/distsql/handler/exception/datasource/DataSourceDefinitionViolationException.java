@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.distsql.handler.exception.datasource;
 
-import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
 
 /**
  * Data source definition violation exception.

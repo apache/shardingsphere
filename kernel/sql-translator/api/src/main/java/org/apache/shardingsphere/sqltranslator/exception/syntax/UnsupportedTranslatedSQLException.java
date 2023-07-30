@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.exception.syntax;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
 
 /**

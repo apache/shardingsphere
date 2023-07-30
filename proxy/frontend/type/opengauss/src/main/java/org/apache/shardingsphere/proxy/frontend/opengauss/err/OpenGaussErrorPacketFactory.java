@@ -26,7 +26,7 @@ import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.opengauss.util.PSQLException;
 

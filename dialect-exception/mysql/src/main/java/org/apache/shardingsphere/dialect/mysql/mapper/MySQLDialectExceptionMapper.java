@@ -39,8 +39,8 @@ import org.apache.shardingsphere.dialect.mysql.exception.UnknownCollationExcepti
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.VendorError;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.vendor.VendorError;
 
 import java.sql.SQLException;
 
