@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public final class OracleParserStatementExample {
@@ -43,13 +42,12 @@ public final class OracleParserStatementExample {
     
     private static final String DDL_ALTER_SQL = "ALTER TABLE table1 DROP age;";
 
-    private static final String TEST_SQL = "SELECT CHR (196 USING NCHAR_CS) FROM DUAL;";
-
     private static final List<String> ORACLE_PARSER_STATEMENT_LIST;
     
     static {
-        ORACLE_PARSER_STATEMENT_LIST = Collections.singletonList(TEST_SQL);
+        ORACLE_PARSER_STATEMENT_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_UPDATE_SQL, DML_DELETE_SQL, DDL_CREATE_SQL, DDL_DROP_SQL, DDL_ALTER_SQL);
     }
+    
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
         // CHECKSTYLE:ON
