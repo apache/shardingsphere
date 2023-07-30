@@ -21,9 +21,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 
-import java.util.Optional;
-
-public final class TrunkDialectDatabaseMetaData implements DialectDatabaseMetaData {
+public final class BranchDialectDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -36,12 +34,7 @@ public final class TrunkDialectDatabaseMetaData implements DialectDatabaseMetaDa
     }
     
     @Override
-    public Optional<String> getDefaultSchema() {
-        return Optional.of("test");
-    }
-    
-    @Override
     public String getDatabaseType() {
-        return "TRUNK";
+        return "BRANCH";
     }
 }
