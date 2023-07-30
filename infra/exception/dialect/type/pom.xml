@@ -23,14 +23,12 @@
         <artifactId>shardingsphere-infra-exception-dialect</artifactId>
         <version>5.4.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-mysql-dialect-exception</artifactId>
+    <artifactId>shardingsphere-infra-exception-dialect-type</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-exception-dialect-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>mysql</module>
+        <module>postgresql</module>
+    </modules>
 </project>
