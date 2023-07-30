@@ -44,4 +44,9 @@
     <create-cluster sql-case-id="create_cluster_storage_flash_cache" />
     <create-cluster sql-case-id="create_cluster_storage_call_flash_cache" />
     <create-cluster sql-case-id="create_cluster_storage_encrypt" />
+    <create-cluster sql-case-id="create_cluster_tablespace" />
+    <create-cluster sql-case-id="create_cluster_index" />
+    <create-cluster sql-case-id="create_cluster_hashkeys" />
+    <create-cluster sql-case-id="create_cluster_single_table" />
+    <create-cluster sql-case-id="create_cluster_single_table_hash" />
 </sql-parser-test-cases>
