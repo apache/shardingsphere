@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dialect.exception;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 
 /**
  * SQL dialect exception.

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.expr.espresso;
 
 import groovy.lang.Closure;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.hotsopt.HotspotInlineExpressionParser;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.TypeLiteral;
 import org.graalvm.polyglot.Value;

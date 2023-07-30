@@ -24,9 +24,9 @@ import org.apache.shardingsphere.dialect.exception.protocol.DatabaseProtocolExce
 import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.DatabaseProtocolSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.DatabaseProtocolSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
 
 import java.sql.SQLException;
 import java.util.Optional;

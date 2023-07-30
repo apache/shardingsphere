@@ -19,9 +19,9 @@ package org.apache.shardingsphere.dialect.mysql.vendor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.VendorError;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.vendor.VendorError;
 
 /**
  * MySQL vendor error.

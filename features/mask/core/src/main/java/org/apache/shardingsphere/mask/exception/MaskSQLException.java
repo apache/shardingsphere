@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mask.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.feature.FeatureSQLException;
 
 /**
  * Mask SQL exception.

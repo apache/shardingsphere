@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaM
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.type.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
 
 import java.sql.SQLException;
 import java.util.Collection;

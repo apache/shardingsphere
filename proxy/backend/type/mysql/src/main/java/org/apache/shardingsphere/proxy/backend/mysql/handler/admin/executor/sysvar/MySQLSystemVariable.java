@@ -24,7 +24,7 @@ import org.apache.shardingsphere.dialect.mysql.exception.ErrorGlobalVariableExce
 import org.apache.shardingsphere.dialect.mysql.exception.ErrorLocalVariableException;
 import org.apache.shardingsphere.dialect.mysql.exception.IncorrectGlobalLocalVariableException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionIsolationValueProvider;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionReadOnlyValueProvider;

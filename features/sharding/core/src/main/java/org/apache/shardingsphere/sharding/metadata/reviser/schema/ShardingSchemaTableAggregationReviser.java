@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.metadata.reviser.schema;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema.SchemaTableAggregationReviser;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.exception.metadata.InconsistentShardingTableMetaDataException;
 import org.apache.shardingsphere.sharding.metadata.TableMetaDataViolation;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;

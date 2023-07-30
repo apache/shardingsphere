@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.dialect.postgresql.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.VendorError;
+import org.apache.shardingsphere.infra.exception.core.external.sql.vendor.VendorError;
 
 import java.io.Serializable;
 import java.sql.SQLException;
