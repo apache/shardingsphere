@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.Data
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedCRC32DataConsistencyCalculateAlgorithmException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -83,7 +83,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
         Collection<DatabaseType> result = new LinkedList<>();
         DatabaseType supportedDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         result.add(supportedDatabaseType);
-        result.addAll(DatabaseTypeFactory.getAllBranchDatabaseTypes(supportedDatabaseType));
+        result.addAll(new DatabaseTypeRegistry(supportedDatabaseType).getAllBranchDatabaseTypes());
         return result;
     }
     

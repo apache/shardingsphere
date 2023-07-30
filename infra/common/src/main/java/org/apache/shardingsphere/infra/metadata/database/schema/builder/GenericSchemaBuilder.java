@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMe
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereConstraint;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
@@ -108,10 +108,10 @@ public final class GenericSchemaBuilder {
     private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         for (DatabaseType each : material.getStorageTypes().values()) {
-            String defaultSchemaName = DatabaseTypeFactory.getDefaultSchemaName(each, material.getDefaultSchemaName());
+            String defaultSchemaName = new DatabaseTypeRegistry(each).getDefaultSchemaName(material.getDefaultSchemaName());
             tableMetaDataList.addAll(Optional.ofNullable(schemaMetaDataMap.get(defaultSchemaName)).map(SchemaMetaData::getTables).orElseGet(Collections::emptyList));
         }
-        String frontendSchemaName = DatabaseTypeFactory.getDefaultSchemaName(material.getProtocolType(), material.getDefaultSchemaName());
+        String frontendSchemaName = new DatabaseTypeRegistry(material.getProtocolType()).getDefaultSchemaName(material.getDefaultSchemaName());
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataList));
         return result;

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDataba
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -80,9 +80,7 @@ public final class RefreshTableMetaDataUpdater implements ConnectionSessionRequi
     }
     
     private String getSchemaName(final String databaseName, final RefreshTableMetaDataStatement sqlStatement, final ConnectionSession connectionSession) {
-        return sqlStatement.getSchemaName().isPresent()
-                ? sqlStatement.getSchemaName().get()
-                : DatabaseTypeFactory.getDefaultSchemaName(connectionSession.getProtocolType(), databaseName);
+        return sqlStatement.getSchemaName().isPresent() ? sqlStatement.getSchemaName().get() : new DatabaseTypeRegistry(connectionSession.getProtocolType()).getDefaultSchemaName(databaseName);
     }
     
     @Override

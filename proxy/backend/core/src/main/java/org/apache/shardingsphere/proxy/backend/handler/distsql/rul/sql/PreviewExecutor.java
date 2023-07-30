@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
@@ -106,7 +106,7 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(connectionSession.getDatabaseName()));
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName()
-                .orElseGet(() -> DatabaseTypeFactory.getDefaultSchemaName(database.getProtocolType(), databaseName));
+                .orElseGet(() -> new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(databaseName));
         SQLFederationEngine sqlFederationEngine = new SQLFederationEngine(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(),
                 new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext()));
         Collection<ExecutionUnit> executionUnits = isUseFederation(queryContext, metaDataContexts, connectionSession, sqlFederationEngine)

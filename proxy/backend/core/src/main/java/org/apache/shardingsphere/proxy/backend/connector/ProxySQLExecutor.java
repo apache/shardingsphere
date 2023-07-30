@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
@@ -103,7 +103,7 @@ public final class ProxySQLExecutor {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = databaseConnectionManager.getConnectionSession().getDatabaseName();
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName()
-                .orElseGet(() -> DatabaseTypeFactory.getDefaultSchemaName(queryContext.getSqlStatementContext().getDatabaseType(), databaseName));
+                .orElseGet(() -> new DatabaseTypeRegistry(queryContext.getSqlStatementContext().getDatabaseType()).getDefaultSchemaName(databaseName));
         sqlFederationEngine = new SQLFederationEngine(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
     }
     

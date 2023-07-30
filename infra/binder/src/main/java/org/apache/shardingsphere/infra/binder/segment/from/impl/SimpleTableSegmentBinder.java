@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderCon
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -98,7 +98,7 @@ public final class SimpleTableSegmentBinder {
                 && SYSTEM_CATALOG_TABLES.contains(segment.getTableName().getIdentifier().getValue().toLowerCase())) {
             return new IdentifierValue(PG_CATALOG);
         }
-        return new IdentifierValue(DatabaseTypeFactory.getDefaultSchemaName(databaseType, defaultDatabaseName));
+        return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(defaultDatabaseName));
     }
     
     private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema,

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRe
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
@@ -51,7 +51,7 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final LoadSingleTableStatement sqlStatement, final SingleRuleConfiguration currentRuleConfig) {
-        String defaultSchemaName = DatabaseTypeFactory.getDefaultSchemaName(database.getProtocolType(), database.getName());
+        String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
         checkDuplicatedTables(database, sqlStatement, defaultSchemaName);
         checkStorageUnits(database, sqlStatement);
         checkActualTableExist(database, sqlStatement, defaultSchemaName);
