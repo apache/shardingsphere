@@ -28,7 +28,6 @@ import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComp
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.awaitility.Awaitility;
-import org.awaitility.Durations;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
