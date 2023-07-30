@@ -99,20 +99,6 @@ public final class DatabaseTypeEngine {
     }
     
     /**
-     * Get storage types.
-     *
-     * @param dataSources data sources
-     * @return storage types
-     */
-    public static Map<String, DatabaseType> getStorageTypes(final Map<String, DataSource> dataSources) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(dataSources.size(), 1F);
-        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            result.put(entry.getKey(), getStorageType(entry.getValue()));
-        }
-        return result;
-    }
-    
-    /**
      * Get storage type.
      *
      * @param dataSources data sources
