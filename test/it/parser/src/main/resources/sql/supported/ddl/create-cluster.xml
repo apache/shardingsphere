@@ -28,4 +28,20 @@
     <sql-case id="create_cluster_row_depend" value="CREATE CLUSTER test_cluster (col1 NUMBER) ROWDEPENDENCIES" db-types="Oracle" />
     <sql-case id="create_cluster_no_cache" value="CREATE CLUSTER test_cluster (col1 NUMBER) NOCACHE" db-types="Oracle" />
     <sql-case id="create_cluster_cache" value="CREATE CLUSTER test_cluster (col1 NUMBER) CACHE" db-types="Oracle" />
+    <sql-case id="create_cluster_pctfree" value="CREATE CLUSTER test_cluster (col1 NUMBER) PCTFREE 2" db-types="Oracle" />
+    <sql-case id="create_cluster_pctused" value="CREATE CLUSTER test_cluster (col1 NUMBER) PCTUSED 4" db-types="Oracle" />
+    <sql-case id="create_cluster_initrans" value="CREATE CLUSTER test_cluster (col1 NUMBER) INITRANS 5" db-types="Oracle" />
+    <sql-case id="create_cluster_set_size" value="CREATE CLUSTER test_cluster (col1 NUMBER) SET 10M" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_init" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (INITIAL 109G)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_next" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (NEXT 109G)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_minextents" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (MINEXTENTS 109.0)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_maxextents" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (MAXEXTENTS 10.0)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_pctincrease" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (PCTINCREASE 109.0)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_freelists" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (FREELISTS 109.0)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_freelist_groups" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (FREELIST GROUPS 80.0)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_optimal" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (OPTIMAL 109G)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_buffer_pool" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (BUFFER_POOL KEEP)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_flash_cache" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (FLASH_CACHE KEEP)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_call_flash_cache" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (CELL_FLASH_CACHE KEEP)" db-types="Oracle" />
+    <sql-case id="create_cluster_storage_encrypt" value="CREATE CLUSTER test_cluster (col1 NUMBER) STORAGE (ENCRYPT)" db-types="Oracle" />
 </sql-cases>
