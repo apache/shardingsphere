@@ -63,7 +63,7 @@ public final class SingleE2EContainerComposer extends E2EContainerComposer {
                 dataSets.add(null == caseAssertion || null == caseAssertion.getExpectedDataFile()
                         ? null
                         : DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(),
-                        caseAssertion.getExpectedDataFile()));
+                                caseAssertion.getExpectedDataFile()));
             }
         }
         
