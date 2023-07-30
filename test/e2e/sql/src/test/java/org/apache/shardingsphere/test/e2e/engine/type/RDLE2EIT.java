@@ -105,7 +105,7 @@ class RDLE2EIT {
     }
     
     private void executeInitSQLs(final SingleE2EContainerComposer containerComposer, final Connection connection,
-                                 final IntegrationTestCaseAssertion testCaseInitSql, int dataSetIndex, String mode) throws SQLException {
+                                 final IntegrationTestCaseAssertion testCaseInitSql, final int dataSetIndex, final String mode) throws SQLException {
         if (null == testCaseInitSql.getInitialSQL() || null == testCaseInitSql.getInitialSQL().getSql()) {
             return;
         }

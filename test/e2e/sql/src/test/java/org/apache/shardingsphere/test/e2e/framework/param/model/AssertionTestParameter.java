@@ -29,6 +29,7 @@ import java.util.Collection;
 /**
  * Assertion test parameter.
  */
+
 @RequiredArgsConstructor
 @Getter
 public final class AssertionTestParameter implements E2ETestParameter {
