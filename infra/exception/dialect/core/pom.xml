@@ -23,7 +23,7 @@
         <artifactId>shardingsphere-infra-exception-dialect</artifactId>
         <version>5.4.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-dialect-exception-core</artifactId>
+    <artifactId>shardingsphere-infra-exception-dialect-core</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
