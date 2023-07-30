@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.database.core.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
@@ -61,5 +63,16 @@ public final class DatabaseTypeFactory {
     public static Collection<DatabaseType> getAllBranchDatabaseTypes(final DatabaseType databaseType) {
         return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)
                 .stream().filter(each -> each.getTrunkDatabaseType().map(optional -> optional == databaseType).orElse(false)).collect(Collectors.toList());
+    }
+    
+    /**
+     * Get default schema name.
+     *
+     * @param databaseType database type
+     * @param databaseName database name
+     * @return default schema name
+     */
+    public static String getDefaultSchemaName(final DatabaseType databaseType, final String databaseName) {
+        return DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).getDefaultSchema().orElseGet(() -> null == databaseName ? null : databaseName.toLowerCase());
     }
 }

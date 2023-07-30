@@ -25,6 +25,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DatabaseTypeFactoryTest {
@@ -48,5 +49,23 @@ class DatabaseTypeFactoryTest {
     void assertGetAllBranchDatabaseTypes() {
         Collection<DatabaseType> actual = DatabaseTypeFactory.getAllBranchDatabaseTypes(TypedSPILoader.getService(DatabaseType.class, "TRUNK"));
         assertThat(actual, is(Collections.singletonList(TypedSPILoader.getService(DatabaseType.class, "BRANCH"))));
+    }
+    
+    @Test
+    void assertGetDefaultSchemaNameWhenDatabaseTypeContainsDefaultSchema() {
+        DatabaseType schemaNoSupportDatabaseType = TypedSPILoader.getService(DatabaseType.class, "TRUNK");
+        assertThat(DatabaseTypeFactory.getDefaultSchemaName(schemaNoSupportDatabaseType, "FOO"), is("test"));
+    }
+    
+    @Test
+    void assertGetDefaultSchemaNameWhenDatabaseTypeNotContainsDefaultSchema() {
+        DatabaseType schemaNoSupportDatabaseType = TypedSPILoader.getService(DatabaseType.class, "BRANCH");
+        assertThat(DatabaseTypeFactory.getDefaultSchemaName(schemaNoSupportDatabaseType, "FOO"), is("foo"));
+    }
+    
+    @Test
+    void assertGetDefaultSchemaNameWhenDatabaseTypeNotContainsDefaultSchemaAndNullDatabaseName() {
+        DatabaseType schemaNoSupportDatabaseType = TypedSPILoader.getService(DatabaseType.class, "BRANCH");
+        assertNull(DatabaseTypeFactory.getDefaultSchemaName(schemaNoSupportDatabaseType, null));
     }
 }
