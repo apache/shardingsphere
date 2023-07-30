@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.mysql.MySQLSystemDatabase
+org.apache.shardingsphere.infra.database.mysql.metadata.database.system.MySQLSystemDatabase

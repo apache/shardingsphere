@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.infra.database.core.type;
 
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,5 +42,11 @@ class DatabaseTypeFactoryTest {
     @Test
     void assertGetDatabaseTypeWithUnrecognizedURL() {
         assertThrows(UnsupportedStorageTypeException.class, () -> DatabaseTypeFactory.get("jdbc:not-existed:test"));
+    }
+    
+    @Test
+    void assertGetAllBranchDatabaseTypes() {
+        Collection<DatabaseType> actual = DatabaseTypeFactory.getAllBranchDatabaseTypes(TypedSPILoader.getService(DatabaseType.class, "TRUNK"));
+        assertThat(actual, is(Collections.singletonList(TypedSPILoader.getService(DatabaseType.class, "BRANCH"))));
     }
 }

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.sqlserver.SQLServerMetaDataLoader
+org.apache.shardingsphere.infra.database.sqlserver.metadata.data.loader.SQLServerMetaDataLoader

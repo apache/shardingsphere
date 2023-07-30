@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.opengauss.OpenGaussMetaDataLoader
+org.apache.shardingsphere.infra.database.opengauss.metadata.data.loader.OpenGaussMetaDataLoader
