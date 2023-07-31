@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.Gro
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -65,7 +65,7 @@ public final class OrderByContextEngine {
         if (groupByContext.getItems().isEmpty() && selectStatement.getProjections().isDistinctRow()) {
             int index = 0;
             List<OrderByItem> orderByItems = new LinkedList<>();
-            DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, selectStatement.getDatabaseType());
+            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(selectStatement.getDatabaseType()).getDialectDatabaseMetaData();
             for (ProjectionSegment projectionSegment : selectStatement.getProjections().getProjections()) {
                 if (projectionSegment instanceof ColumnProjectionSegment) {
                     ColumnProjectionSegment columnProjectionSegment = (ColumnProjectionSegment) projectionSegment;
