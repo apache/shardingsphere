@@ -113,6 +113,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Fir
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ForwardAllContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ForwardContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ForwardCountContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.FuncArgExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.FunctionExprWindowlessContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IndexElemContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IndexNamesContext;
@@ -156,6 +158,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNa
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.NameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -529,6 +533,32 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
             if (null != each.colId()) {
                 result.getValue().add(new ColumnSegment(each.colId().start.getStartIndex(), each.colId().stop.getStopIndex(), new IdentifierValue(each.colId().getText())));
             }
+            if (null != each.functionExprWindowless()) {
+                FunctionSegment functionSegment = (FunctionSegment) visit(each.functionExprWindowless());
+                functionSegment.getParameters().forEach(parameter -> {
+                    if (parameter instanceof ColumnSegment) {
+                        result.getValue().add((ColumnSegment) parameter);
+                    }
+                });
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitFunctionExprWindowless(final FunctionExprWindowlessContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcApplication().funcName().getText(), getOriginalText(ctx));
+        result.getParameters().addAll(getExpressions(ctx.funcApplication().funcArgList().funcArgExpr()));
+        return result;
+    }
+    
+    private Collection<ExpressionSegment> getExpressions(final Collection<FuncArgExprContext> aExprContexts) {
+        if (null == aExprContexts) {
+            return Collections.emptyList();
+        }
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        for (FuncArgExprContext each : aExprContexts) {
+            result.add((ExpressionSegment) visit(each.aExpr()));
         }
         return result;
     }
