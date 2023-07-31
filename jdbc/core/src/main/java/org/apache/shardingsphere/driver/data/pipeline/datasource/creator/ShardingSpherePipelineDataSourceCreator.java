@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.data.pipeline.datasource.creator;
 
+import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
@@ -50,9 +51,10 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     @Override
     public DataSource createPipelineDataSource(final Object dataSourceConfig) throws SQLException {
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(YamlEngine.marshal(dataSourceConfig), YamlRootConfiguration.class);
+        removeAuthorityRule(rootConfig);
+        updateSingleRuleConfiguration(rootConfig);
         disableSystemSchemaMetadata(rootConfig);
         enableStreamingQuery(rootConfig);
-        updateSingleRuleConfiguration(rootConfig);
         Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(rootConfig.getRules());
         if (yamlShardingRuleConfig.isPresent()) {
             enableRangeQueryForInline(yamlShardingRuleConfig.get());
@@ -62,6 +64,10 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         rootConfig.setSchemaName(rootConfig.getSchemaName());
         rootConfig.setMode(createStandaloneModeConfiguration());
         return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
+    }
+    
+    private void removeAuthorityRule(final YamlRootConfiguration rootConfig) {
+        rootConfig.getRules().stream().filter(YamlAuthorityRuleConfiguration.class::isInstance).findFirst().map(each -> rootConfig.getRules().remove(each));
     }
     
     private void updateSingleRuleConfiguration(final YamlRootConfiguration rootConfig) {

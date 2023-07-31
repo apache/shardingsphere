@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.exception;
 
-import org.apache.shardingsphere.dialect.exception.SQLDialectException;
-import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
-import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
+import org.apache.shardingsphere.infra.exception.core.internal.ShardingSphereInternalException;
+import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

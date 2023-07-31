@@ -148,7 +148,19 @@ parenthesisSelectSubquery
     ;
 
 queryBlock
-    : withClause? SELECT hint? duplicateSpecification? selectList selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
+    : withClause? SELECT hint? duplicateSpecification? selectList selectIntoClause? selectFromClause whereClause? hierarchicalQueryClause? groupByClause? modelClause?
+    ;
+
+selectIntoClause
+    : (BULK COLLECT)? INTO variableNames
+    ;
+
+variableNames
+    : variableName (COMMA_ variableName)*
+    ;
+
+variableName
+    : identifier | stringLiterals
     ;
 
 withClause
@@ -435,7 +447,7 @@ fromClauseOption
     ;
 
 xmlTable
-    : tableName alias? COMMA_ xmlTableFunction xmlTableFunctionAlias
+    : xmlTableFunction xmlTableFunctionAlias?
     ;
 
 xmlTableFunctionAlias
@@ -452,7 +464,11 @@ queryTableExprClause
 
 flashbackQueryClause
     : VERSIONS (BETWEEN (SCN | TIMESTAMP) | PERIOD FOR validTimeColumn BETWEEN) (expr | MINVALUE) AND (expr | MAXVALUE)
-    | AS OF ((SCN | TIMESTAMP) expr | PERIOD FOR validTimeColumn expr)
+    | AS OF ((SCN | TIMESTAMP) (expr | intervalExprClause) | PERIOD FOR validTimeColumn expr)
+    ;
+
+intervalExprClause
+    : LP_ SYSTIMESTAMP  (PLUS_ | MINUS_)  INTERVAL (INTEGER_ | STRING_) (HOUR | MINUTE | SECOND) RP_
     ;
 
 queryTableExpr

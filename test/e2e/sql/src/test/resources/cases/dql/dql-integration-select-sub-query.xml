@@ -45,9 +45,10 @@
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 4:int, 3:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="SELECT * FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <test-case sql="SELECT * FROM (SELECT o.* FROM t_order o WHERE o.user_id IN (10, 11, 12)) AS t, t_order_item i WHERE t.order_id = i.order_id AND t.order_id > ? ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="1200:long" expected-data-source-name="read_dataset" />
@@ -55,19 +56,6 @@
     
     <test-case sql="SELECT * FROM (SELECT count(*) as count, id from t_single_table group by id) as temp_table" db-types="MySQL" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM (SELECT m1.* FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id) temp" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt"
-               scenario-comments="Test encrypt shorthand expansion for subquery with select join statement when use encrypt feature.">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM (SELECT * FROM t_user) temp ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="mask,mask_encrypt,mask_sharding,mask_encrypt_sharding">
-        <assertion expected-data-source-name="expected_dataset" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM (SELECT u1.* FROM t_user u1 INNER JOIN t_user u2 ON u1.user_id = u2.user_id) temp ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="mask,mask_encrypt,mask_sharding,mask_encrypt_sharding">
-        <assertion expected-data-source-name="expected_dataset" />
     </test-case>
     
     <test-case sql="SELECT * FROM t_order o WHERE o.order_id IN (SELECT i.order_id FROM t_order_item i INNER JOIN t_product p ON i.product_id = p.product_id WHERE p.product_id = ?) ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
@@ -88,19 +76,9 @@
                scenario-comments="Test subquery projection contains encrypt column and config alias when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
-    <test-case sql="SELECT * FROM (SELECT business_code, telephone, (SELECT password FROM t_user LIMIT 1) AS password FROM t_merchant) AS temp" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt"
-               scenario-comments="Test shorthand expansion contains subquery projection and subquery projection contains encrypt column and config alias when use encrypt feature.">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
 
     <test-case sql="SELECT m.business_code, m.telephone, u.user_id FROM t_merchant AS m INNER JOIN t_user AS u ON m.merchant_id = u.user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt"
                scenario-comments="Test join contains some encrypt columns in multi tables when use encrypt feature.">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM (SELECT m.business_code, m.telephone, u.user_id FROM t_merchant AS m INNER JOIN t_user AS u ON m.merchant_id = u.user_id) AS temp" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt"
-               scenario-comments="Test shorthand expansion contains subquery join and join contains some encrypt columns in multi tables when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </integration-test-cases>

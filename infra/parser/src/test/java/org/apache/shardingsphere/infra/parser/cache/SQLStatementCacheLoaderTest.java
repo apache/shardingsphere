@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.infra.parser.cache;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.jupiter.api.Test;
@@ -34,7 +36,7 @@ class SQLStatementCacheLoaderTest {
     
     @Test
     void assertSQLStatementCacheLoad() throws ReflectiveOperationException {
-        SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader("MySQL", new CacheOption(128, 1024L), false);
+        SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new CacheOption(128, 1024L), false);
         SQLStatementParserExecutor executor = mock(SQLStatementParserExecutor.class, RETURNS_DEEP_STUBS);
         Plugins.getMemberAccessor().set(sqlStatementCacheLoader.getClass().getDeclaredField("sqlStatementParserExecutor"), sqlStatementCacheLoader, executor);
         assertThat(sqlStatementCacheLoader.load(SQL), isA(SQLStatement.class));

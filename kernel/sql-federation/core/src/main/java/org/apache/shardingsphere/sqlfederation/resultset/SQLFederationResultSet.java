@@ -20,13 +20,11 @@ package org.apache.shardingsphere.sqlfederation.resultset;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.schema.Schema;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -90,17 +88,10 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
         List<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
         for (int columnIndex = 1; columnIndex <= projections.size(); columnIndex++) {
             Projection projection = projections.get(columnIndex - 1);
-            String columnLabel = getColumnLabel(projection, selectStatementContext.getDatabaseType());
+            String columnLabel = projection.getColumnLabel();
             columnLabelAndIndexes.put(columnLabel.toLowerCase(), columnIndex);
             indexAndColumnLabels.put(columnIndex, columnLabel);
         }
-    }
-    
-    private String getColumnLabel(final Projection projection, final DatabaseType databaseType) {
-        if (projection instanceof AggregationDistinctProjection) {
-            return databaseType.getDefaultSchema().isPresent() ? ((AggregationDistinctProjection) projection).getType().name().toLowerCase() : projection.getColumnName();
-        }
-        return projection.getColumnLabel();
     }
     
     @Override

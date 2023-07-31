@@ -23,4 +23,57 @@
     <sql-case id="alter_type_add_attribute" value="ALTER TYPE usr1.compfoo1 ADD ATTRIBUTE f3 int;" db-types="openGauss,PostgreSQL" />
     <sql-case id="alter_type_add_value" value="ALTER TYPE bugstatus ADD VALUE IF NOT EXISTS 'regress' BEFORE 'closed';" db-types="openGauss,PostgreSQL" />
     <sql-case id="alter_type_rename_value" value="ALTER TYPE bugstatus RENAME VALUE 'create' TO 'new';" db-types="openGauss,PostgreSQL" />
+    <sql-case id="alter_type_default" value="ALTER TYPE type_name" db-types="Oracle" />
+    <sql-case id="alter_type_schema_name" value="ALTER TYPE schema_name.type_name" db-types="Oracle" />
+    <sql-case id="alter_type_compile" value="ALTER TYPE type_name COMPILE REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_debug" value="ALTER TYPE type_name COMPILE DEBUG REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_spec" value="ALTER TYPE type_name COMPILE SPECIFICATION REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_body" value="ALTER TYPE type_name COMPILE BODY REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_bool" value="ALTER TYPE type_name COMPILE bool_variable = TRUE REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_bool_false" value="ALTER TYPE type_name COMPILE bool_variable = FALSE REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_string" value="ALTER TYPE type_name COMPILE string_variable = 'String Value' REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_integer" value="ALTER TYPE type_name COMPILE number_variable = +5 REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_minus_integer" value="ALTER TYPE type_name COMPILE number_variable = -5 REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_float" value="ALTER TYPE type_name COMPILE number_variable = +5.0 REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_minus_float" value="ALTER TYPE type_name COMPILE number_variable = -5.0 REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_compile_hex" value="ALTER TYPE type_name COMPILE hex_variable = X'11' REUSE SETTINGS" db-types="Oracle" />
+    <sql-case id="alter_type_replace_attribute" value="ALTER TYPE type_name REPLACE AS OBJECT (a NUMBER, b NUMBER)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_memeber_function" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_static_function" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, STATIC FUNCTION p(b1 BOOL) RETURN NUMBER)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_member_procedure" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, MEMBER PROCEDURE p(b1 BOOL))" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_static_procedure" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, STATIC PROCEDURE p(b1 BOOL))" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_static_procedure_as_call" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, STATIC PROCEDURE p(b1 BOOL) AS LANGUAGE JAVA NAME 'resultName')" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_static_procedure_is_call" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, STATIC PROCEDURE p(b1 BOOL) IS LANGUAGE JAVA NAME 'resultName')" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_overriding_static_function" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, OVERRIDING STATIC FUNCTION p(b1 BOOL) RETURN NUMBER)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_final_static_function" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, FINAL STATIC FUNCTION p(b1 BOOL) RETURN NUMBER)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_instantiable_static_function" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, INSTANTIABLE STATIC FUNCTION p(b1 BOOL) RETURN NUMBER)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_not_instantiable_static_function" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, NOT INSTANTIABLE STATIC FUNCTION p(b1 BOOL) RETURN NUMBER)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_constructor_function_single_parameter" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(b1 BOOL) RETURN SELF AS RESULT)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_constructor_function_multi_parameter" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(b1 BOOL, n1 NUMBER) RETURN SELF AS RESULT)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_constructor_final_function" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, FINAL CONSTRUCTOR FUNCTION p(b1 BOOL) RETURN SELF AS RESULT)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_constructor_instantiable_function" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, INSTANTIABLE CONSTRUCTOR FUNCTION p(b1 BOOL) RETURN SELF AS RESULT)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_constructor_function_inout" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, n1 NUMBER) RETURN SELF AS RESULT)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_constructor_function_as_call" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, n1 NUMBER) RETURN SELF AS RESULT AS LANGUAGE JAVA NAME 'resultName')" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_constructor_function_is_call" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, CONSTRUCTOR FUNCTION p(SELF IN OUT NUMBER, n1 NUMBER) RETURN SELF AS RESULT IS LANGUAGE JAVA NAME 'resultName')" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_map_function" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, MAP MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_order_function" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b NUMBER, ORDER MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER)" db-types="Oracle" />
 </sql-cases>

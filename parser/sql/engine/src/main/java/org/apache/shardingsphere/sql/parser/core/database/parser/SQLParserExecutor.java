@@ -22,7 +22,8 @@ import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
@@ -35,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.spi.SQLDialectParserFacade;
 @RequiredArgsConstructor
 public final class SQLParserExecutor {
     
-    private final String databaseType;
+    private final DatabaseType databaseType;
     
     /**
      * Parse SQL.
@@ -53,7 +54,7 @@ public final class SQLParserExecutor {
     }
     
     private ParseASTNode twoPhaseParse(final String sql) {
-        SQLDialectParserFacade sqlParserFacade = TypedSPILoader.getService(SQLDialectParserFacade.class, databaseType);
+        SQLDialectParserFacade sqlParserFacade = DatabaseTypedSPILoader.getService(SQLDialectParserFacade.class, databaseType);
         SQLParser sqlParser = SQLParserFactory.newInstance(sql, sqlParserFacade.getLexerClass(), sqlParserFacade.getParserClass());
         try {
             ((Parser) sqlParser).getInterpreter().setPredictionMode(PredictionMode.SLL);

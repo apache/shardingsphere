@@ -46,18 +46,6 @@ rules:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: it_standard_fixture
-    t_order_federate_sharding:
-      actualDataNodes: tbl.t_order_federate_sharding_${0..1}
-      tableStrategy:
-        standard:
-          shardingColumn: order_id_sharding
-          shardingAlgorithmName: table_inline_order_id
-    t_order_item_federate_sharding:
-      actualDataNodes: tbl.t_order_item_federate_sharding_${0..1}
-      tableStrategy:
-        standard:
-          shardingColumn: item_id
-          shardingAlgorithmName: table_inline_item_id
     t_product:
       actualDataNodes: tbl.t_product_${0..9}
       tableStrategy:
@@ -69,15 +57,6 @@ rules:
   shardingAlgorithms:
     it_standard_fixture:
       type: IT.STANDARD.FIXTURE
-    table_inline_item_id:
-      type: INLINE
-      props:
-        algorithm-expression: t_order_item_federate_sharding_${item_id % 2}
-    table_inline_order_id:
-      type: INLINE
-      props:
-        algorithm-expression: t_order_federate_sharding_${order_id_sharding % 2}
-        allow-range-query-with-inline-sharding: true
     t_product_hint_inline:
       type: HINT_INLINE
       props:
