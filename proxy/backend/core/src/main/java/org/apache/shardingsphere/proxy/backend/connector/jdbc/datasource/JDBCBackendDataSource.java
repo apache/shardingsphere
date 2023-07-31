@@ -44,7 +44,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      *
      * @param databaseName database name
      * @param dataSourceName data source name
-     * @param connectionSize size of connections to get
+     * @param connectionSize size of connections
      * @param connectionMode connection mode
      * @return connections
      * @throws SQLException SQL exception
@@ -59,7 +59,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      *
      * @param databaseName database name
      * @param dataSourceName data source name
-     * @param connectionSize size of connections to be get
+     * @param connectionSize size of connections to be got
      * @param connectionMode connection mode
      * @param transactionType transaction type
      * @return connections
@@ -71,8 +71,8 @@ public final class JDBCBackendDataSource implements BackendDataSource {
         DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources().get(dataSourceName);
         if (dataSourceName.contains(".")) {
             String dataSourceStr = dataSourceName.split("\\.")[0];
-            if (GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().containsKey(dataSourceStr)) {
-                dataSource = GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().get(dataSourceStr);
+            if (GlobalDataSourceRegistry.getInstance().getCachedDataSources().containsKey(dataSourceStr)) {
+                dataSource = GlobalDataSourceRegistry.getInstance().getCachedDataSources().get(dataSourceStr);
             }
         }
         Preconditions.checkNotNull(dataSource, "Can not get connection from datasource %s.", dataSourceName);

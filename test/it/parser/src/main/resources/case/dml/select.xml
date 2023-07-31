@@ -5638,16 +5638,25 @@
     </select>
     
     <select sql-case-id="select_with_format_function">
-        <from>
-            <simple-table alias="wi" name="warehouse_info" start-index="66" stop-index="82" literal-start-index="66" literal-stop-index="82"/>
-        </from>
-        <projections distinct-row="false" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
-            <expression-projection text="wi.code.format(null,'PURE_IDENTITY')" literal-text="wi.code.format(null,'PURE_IDENTITY')" alias="PURE_IDENTITY" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
-                <expr >
-                    <function function-name="wi" text="wi.code.format(null,'PURE_IDENTITY')" literal-text="wi.code.format(null,'PURE_IDENTITY')" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42"/>
+        <projections start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
+            <expression-projection text="wi.code.format(null,'PURE_IDENTITY')" alias="PURE_IDENTITY" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
+                <literalText>wi.code.format(null,'PURE_IDENTITY')</literalText>
+                <expr>
+                    <function function-name="format" text="wi.code.format(null,'PURE_IDENTITY')" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42">
+                        <parameter>
+                            <literal-expression value="null" start-index="22" stop-index="25" literal-start-index="22" literal-stop-index="25" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="PURE_IDENTITY" start-index="27" stop-index="41" literal-start-index="27" literal-stop-index="41" />
+                        </parameter>
+                        <literalText>wi.code.format(null,'PURE_IDENTITY')</literalText>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
+        <from>
+            <simple-table alias="wi" name="warehouse_info" start-index="66" stop-index="82" literal-start-index="66" literal-stop-index="82" />
+        </from>
     </select>
 
     <select sql-case-id="select_with_xml_is_schema_valid_function">
@@ -5673,15 +5682,22 @@
     <select sql-case-id="select_with_last_value_function">
         <projections start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
             <expression-projection text="LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
+                <literalText>LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)</literalText>
                 <expr>
-                    <function function-name="LAST_VALUE" text="LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71"/>
+                    <function function-name="LAST_VALUE" text="LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
+                        <parameter>
+                            <column name="AGE" start-index="18" stop-index="20" literal-start-index="18" literal-stop-index="20" />
+                        </parameter>
+                        <literalText>LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)</literalText>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
         <from>
-            <simple-table name="TEST" start-index="78" stop-index="81" literal-start-index="78" literal-stop-index="81"/>
+            <simple-table name="TEST" start-index="78" stop-index="81" literal-start-index="78" literal-stop-index="81" />
         </from>
     </select>
+
     <select sql-case-id="select_with_connect_by_root">
         <projections start-index="7" stop-index="41" literal-start-index="7" literal-stop-index="41">
             <column-projection alias="Manager" name="last_name" start-index="23" stop-index="41" literal-start-index="23" literal-stop-index="41"/>
@@ -5694,8 +5710,14 @@
     <select sql-case-id="select_with_ntile_function">
         <projections start-index="7" stop-index="54" literal-start-index="7" literal-stop-index="54">
             <expression-projection text="NTILE(4) OVER (ORDER BY salary DESC)" alias="quartile" start-index="7" stop-index="54" literal-start-index="7" literal-stop-index="54">
+                <literalText>NTILE(4) OVER (ORDER BY salary DESC)</literalText>
                 <expr>
-                    <function function-name="NTILE" text="NTILE(4) OVER (ORDER BY salary DESC)" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42" />
+                    <function function-name="NTILE" text="NTILE(4) OVER (ORDER BY salary DESC)" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42">
+                        <parameter>
+                            <literal-expression value="4" start-index="13" stop-index="13" literal-start-index="13" literal-stop-index="13" />
+                        </parameter>
+                        <literalText>NTILE(4) OVER (ORDER BY salary DESC)</literalText>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -5755,6 +5777,20 @@
                 <literalText>CORR(SYSDATE - hire_date, salary)</literalText>
                 <expr>
                     <function function-name="CORR" text="CORR(SYSDATE - hire_date, salary)" start-index="20" stop-index="52" literal-start-index="20" literal-stop-index="52">
+                        <parameter>
+                            <binary-operation-expression start-index="25" stop-index="43" literal-start-index="25" literal-stop-index="43">
+                                <left>
+                                    <column name="SYSDATE" start-index="25" stop-index="31" literal-start-index="25" literal-stop-index="31" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="35" stop-index="43" literal-start-index="35" literal-stop-index="43" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="46" stop-index="51" literal-start-index="46" literal-stop-index="51" />
+                        </parameter>
                         <literalText>CORR(SYSDATE - hire_date, salary)</literalText>
                     </function>
                 </expr>
@@ -5794,6 +5830,9 @@
                 <literalText>TRIM(' derby ')</literalText>
                 <expr>
                     <function function-name="TRIM" text="TRIM('  derby ')" start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
+                        <parameter>
+                            <literal-expression value="  derby " start-index="12" stop-index="21" literal-start-index="12" literal-stop-index="21" />
+                        </parameter>
                         <literalText>TRIM(' derby ')</literalText>
                     </function>
                 </expr>
@@ -5802,6 +5841,9 @@
                 <literalText>TRIM(BOTH ' ' FROM ' derby ')</literalText>
                 <expr>
                     <function function-name="TRIM" text="TRIM(BOTH ' ' FROM '  derby ')" start-index="25" stop-index="54" literal-start-index="25" literal-stop-index="54">
+                        <parameter>
+                            <literal-expression value="  derby " start-index="44" stop-index="53" literal-start-index="44" literal-stop-index="53" />
+                        </parameter>
                         <literalText>TRIM(BOTH ' ' FROM ' derby ')</literalText>
                     </function>
                 </expr>
@@ -5810,6 +5852,9 @@
                 <literalText>TRIM(TRAILING ' ' FROM ' derby ')</literalText>
                 <expr>
                     <function function-name="TRIM" text="TRIM(TRAILING ' ' FROM '  derby ')" start-index="57" stop-index="90" literal-start-index="57" literal-stop-index="90">
+                        <parameter>
+                            <literal-expression value="  derby " start-index="80" stop-index="89" literal-start-index="80" literal-stop-index="89" />
+                        </parameter>
                         <literalText>TRIM(TRAILING ' ' FROM ' derby ')</literalText>
                     </function>
                 </expr>
@@ -5818,6 +5863,9 @@
                 <literalText>TRIM(cast (null as char(1)) FROM ' derby ')</literalText>
                 <expr>
                     <function function-name="TRIM" text="TRIM(cast (null as char(1)) FROM '  derby ')" start-index="93" stop-index="136" literal-start-index="93" literal-stop-index="136">
+                        <parameter>
+                            <literal-expression value="  derby " start-index="126" stop-index="135" literal-start-index="126" literal-stop-index="135" />
+                        </parameter>
                         <literalText>TRIM(cast (null as char(1)) FROM ' derby ')</literalText>
                     </function>
                 </expr>
@@ -5826,6 +5874,17 @@
                 <literalText>TRIM(' ' FROM cast(null as varchar(30)))</literalText>
                 <expr>
                     <function function-name="TRIM" text="TRIM(' ' FROM cast(null as varchar(30)))" start-index="139" stop-index="178" literal-start-index="139" literal-stop-index="178">
+                        <parameter>
+                            <function function-name="cast" text="cast(null as varchar(30))" start-index="153" stop-index="177" literal-start-index="153" literal-stop-index="177">
+                                <parameter>
+                                    <literal-expression value="null" start-index="158" stop-index="161" literal-start-index="158" literal-stop-index="161" />
+                                </parameter>
+                                <parameter>
+                                    <data-type value="varchar" start-index="166" stop-index="176" />
+                                </parameter>
+                                <literalText>cast(null as varchar(30))</literalText>
+                            </function>
+                        </parameter>
                         <literalText>TRIM(' ' FROM cast(null as varchar(30)))</literalText>
                     </function>
                 </expr>
@@ -5834,6 +5893,9 @@
                 <literalText>TRIM('y' FROM ' derby')</literalText>
                 <expr>
                     <function function-name="TRIM" text="TRIM('y' FROM ' derby')" start-index="181" stop-index="203" literal-start-index="181" literal-stop-index="203">
+                        <parameter>
+                            <literal-expression value=" derby" start-index="195" stop-index="202" literal-start-index="195" literal-stop-index="202" />
+                        </parameter>
                         <literalText>TRIM('y' FROM ' derby')</literalText>
                     </function>
                 </expr>
@@ -5852,6 +5914,9 @@
                     <function function-name="TO_CHAR" text="TO_CHAR(RATIO_TO_REPORT(amount_sold) OVER (), '9.999')" start-index="7" stop-index="60" literal-start-index="7" literal-stop-index="60">
                         <parameter>
                             <function function-name="RATIO_TO_REPORT" text="RATIO_TO_REPORT(amount_sold) OVER ()" start-index="15" stop-index="50" literal-start-index="15" literal-stop-index="50">
+                                <parameter>
+                                    <column name="amount_sold" start-index="31" stop-index="41" literal-start-index="31" literal-stop-index="41" />
+                                </parameter>
                                 <literalText>RATIO_TO_REPORT(amount_sold) OVER ()</literalText>
                             </function>
                         </parameter>

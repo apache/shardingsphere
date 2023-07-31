@@ -22,12 +22,11 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -78,7 +77,8 @@ public final class JoinTableSegmentBinder {
             return projectionSegments;
         }
         Collection<ProjectionSegment> result = new LinkedList<>();
-        Map<String, ProjectionSegment> originalUsingColumns = segment.getUsing().isEmpty() ? getUsingColumnsByNaturalJoin(segment, tableBinderContexts) : getUsingColumns(segment.getUsing());
+        Map<String, ProjectionSegment> originalUsingColumns =
+                segment.getUsing().isEmpty() ? getUsingColumnsByNaturalJoin(segment, tableBinderContexts) : getUsingColumns(projectionSegments, segment.getUsing());
         Collection<ProjectionSegment> orderedUsingColumns =
                 databaseType instanceof MySQLDatabaseType ? getJoinUsingColumnsByProjectionOrder(projectionSegments, originalUsingColumns) : originalUsingColumns.values();
         result.addAll(orderedUsingColumns);
@@ -132,11 +132,15 @@ public final class JoinTableSegmentBinder {
         return result;
     }
     
-    private static Map<String, ProjectionSegment> getUsingColumns(final Collection<ColumnSegment> usingColumns) {
+    private static Map<String, ProjectionSegment> getUsingColumns(final Collection<ProjectionSegment> projectionSegments, final Collection<ColumnSegment> usingColumns) {
+        Map<String, ProjectionSegment> columnLabelProjectionSegments = new LinkedHashMap<>(projectionSegments.size(), 1F);
+        projectionSegments.forEach(each -> columnLabelProjectionSegments.putIfAbsent(each.getColumnLabel().toLowerCase(), each));
         Map<String, ProjectionSegment> result = new LinkedHashMap<>();
         for (ColumnSegment each : usingColumns) {
-            ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(each);
-            result.put(columnProjectionSegment.getColumnLabel().toLowerCase(), columnProjectionSegment);
+            ProjectionSegment projectionSegment = columnLabelProjectionSegments.get(each.getIdentifier().getValue().toLowerCase());
+            if (null != projectionSegment) {
+                result.put(projectionSegment.getColumnLabel().toLowerCase(), projectionSegment);
+            }
         }
         return result;
     }

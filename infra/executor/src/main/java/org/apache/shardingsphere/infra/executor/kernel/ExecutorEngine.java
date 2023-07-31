@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -55,18 +55,6 @@ public final class ExecutorEngine implements AutoCloseable {
      */
     public static ExecutorEngine createExecutorEngineWithSize(final int executorSize) {
         return new ExecutorEngine(executorSize);
-    }
-    
-    /**
-     * Create executor engine with CPU and resources.
-     * 
-     * @param resourceCount resource count
-     * @return created executor engine
-     */
-    public static ExecutorEngine createExecutorEngineWithCPUAndResources(final int resourceCount) {
-        int cpuThreadCount = CPU_CORES * 2 - 1;
-        int resourceThreadCount = Math.max(resourceCount, 1);
-        return new ExecutorEngine(Math.min(cpuThreadCount, resourceThreadCount));
     }
     
     /**

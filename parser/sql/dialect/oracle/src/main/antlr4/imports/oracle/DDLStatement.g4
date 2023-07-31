@@ -479,6 +479,7 @@ alterIndexInformationClause
     | allocateExtentClause
     | shrinkClause
     | parallelClause
+    | physicalAttributesClause
     | loggingClause
     | partialIndexClause)+
     | rebuildClause ((DEFERRED | IMMEDIATE) | INVALIDATION)?
@@ -581,7 +582,15 @@ enableDisableOthers
     ;
 
 rebuildClause
-    : REBUILD parallelClause?
+    : REBUILD (PARTITION partitionName | SUBPARTITION subpartitionName | REVERSE | NOREVERSE)?
+    ( parallelClause
+    | TABLESPACE tablespaceName
+    | PARAMETERS LP_ odciParameters RP_
+    | ONLINE
+    | physicalAttributesClause
+    | indexCompression
+    | loggingClause
+    | partialIndexClause)*
     ;
 
 parallelClause
@@ -648,12 +657,12 @@ storageClause
     : STORAGE LP_
     (INITIAL sizeClause
     | NEXT sizeClause
-    | MINEXTENTS NUMBER_
-    | MAXEXTENTS (NUMBER_ | UNLIMITED)
+    | MINEXTENTS INTEGER_
+    | MAXEXTENTS (INTEGER_ | UNLIMITED)
     | maxsizeClause
-    | PCTINCREASE NUMBER_
-    | FREELISTS NUMBER_
-    | FREELIST GROUPS NUMBER_
+    | PCTINCREASE INTEGER_
+    | FREELISTS INTEGER_
+    | FREELIST GROUPS INTEGER_
     | OPTIMAL (sizeClause | NULL)?
     | BUFFER_POOL (KEEP | RECYCLE | DEFAULT)
     | FLASH_CACHE (KEEP | NONE | DEFAULT)
@@ -3598,6 +3607,13 @@ tablespaceEncryptionSpec
     : USING encryptAlgorithmName
     ;
 
+tableCompressionTableSpace
+    : COMPRESS
+    | COMPRESS BASIC
+    | COMPRESS (FOR (OLTP | ((QUERY | ARCHIVE) (LOW | HIGH)?)))
+    | NOCOMPRESS
+    ;
+
 createTablespace
     : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
     ;
@@ -3609,6 +3625,7 @@ permanentTablespaceClause
     | loggingClause
     | (FORCE LOGGING)
     | ENCRYPTION tablespaceEncryptionSpec
+    | DEFAULT tableCompressionTableSpace? storageClause?
     | (ONLINE|OFFLINE)
     )
     ;
@@ -3621,6 +3638,44 @@ compileTypeClause
     : COMPILE DEBUG? (SPECIFICATION|BODY)? compilerParametersClause? REUSE SETTINGS
     ;
 
+inheritanceClauses
+    : (NOT? (OVERRIDING | FINAL | INSTANTIABLE))+
+    ;
+
+procedureSpec
+    : PROCEDURE procedureName LP_ (parameterValue typeName (COMMA_ parameterValue typeName)*) RP_ ((IS | AS) callSpec)?
+    ;
+
+returnClause
+    : RETURN dataType ((IS | AS) callSpec)?
+    ;
+
+functionSpec
+    : FUNCTION name LP_ (parameterValue dataType (COMMA_ parameterValue dataType)*) RP_ returnClause
+    ;
+
+subprogramSpec
+    : (MEMBER | STATIC) (procedureSpec | functionSpec)
+    ;
+
+constructorSpec
+    : FINAL? INSTANTIABLE? CONSTRUCTOR FUNCTION typeName
+    (LP_ (SELF IN OUT dataType COMMA_)? parameterValue dataType (COMMA_ parameterValue dataType)* RP_)?
+    RETURN SELF AS RESULT ((AS | IS) callSpec)?
+    ;
+
+mapOrderFunctionSpec
+    : (MAP | ORDER) MEMBER functionSpec
+    ;
+
+elementSpecification
+    : inheritanceClauses? (subprogramSpec | constructorSpec | mapOrderFunctionSpec)+
+    ;
+
+replaceTypeClause
+    : REPLACE invokerRightsClause? AS OBJECT LP_ (attributeName dataType (COMMA_ (elementSpecification | attributeName dataType))*) RP_
+    ;
+
 alterType
-    : ALTER TYPE typeName compileTypeClause
+    : ALTER TYPE typeName (compileTypeClause | replaceTypeClause)?
     ;

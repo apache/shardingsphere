@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.h2.H2MetaDataLoader
+org.apache.shardingsphere.infra.database.h2.metadata.data.loader.H2MetaDataLoader

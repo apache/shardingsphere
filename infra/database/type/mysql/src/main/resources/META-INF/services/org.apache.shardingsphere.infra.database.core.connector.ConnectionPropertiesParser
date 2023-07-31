@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.mysql.MySQLConnectionPropertiesParser
+org.apache.shardingsphere.infra.database.mysql.connector.MySQLConnectionPropertiesParser

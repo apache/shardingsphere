@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
