@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.spi.exception;
+package org.apache.shardingsphere.infra.util.props.fixture.typed;
 
-/**
- * Service provider not found exception.
- */
-public final class ServiceProviderNotFoundServerException extends RuntimeException {
+public final class PropertiesTypedSPIFixtureImpl implements PropertiesTypedSPIFixture {
     
-    private static final long serialVersionUID = -3730257541332863236L;
-    
-    private static final String ERROR_CATEGORY = "SPI";
-    
-    private static final int ERROR_CODE = 1;
-    
-    public ServiceProviderNotFoundServerException(final Class<?> clazz, final Object type) {
-        super(String.format("%s-%05d: %s", ERROR_CATEGORY, ERROR_CODE, String.format("No implementation class load from SPI `%s` with type `%s`.", clazz.getName(), type)));
+    @Override
+    public String getType() {
+        return "TYPED.SPI.PROPS";
     }
 }

@@ -20,7 +20,8 @@ package org.apache.shardingsphere.infra.util.props.fixture;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
-import org.apache.shardingsphere.infra.util.spi.type.typed.fixture.TypedSPIFixture;
+import org.apache.shardingsphere.infra.util.props.fixture.enums.TypedPropertyEnumFixture;
+import org.apache.shardingsphere.infra.util.props.fixture.typed.PropertiesTypedSPIFixture;
 
 @RequiredArgsConstructor
 @Getter
@@ -42,7 +43,7 @@ public enum TypedPropertyKeyFixture implements TypedPropertyKey {
     
     ENUM_VALUE("enum", TypedPropertyEnumFixture.FOO.name(), TypedPropertyEnumFixture.class),
     
-    TYPED_SPI_VALUE("typed_spi", "TYPED.FIXTURE", TypedSPIFixture.class);
+    TYPED_SPI_VALUE("typed_spi", "TYPED.SPI.PROPS", PropertiesTypedSPIFixture.class);
     
     private final String key;
     

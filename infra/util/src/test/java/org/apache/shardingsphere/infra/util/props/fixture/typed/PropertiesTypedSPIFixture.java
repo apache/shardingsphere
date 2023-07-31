@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props.fixture;
+package org.apache.shardingsphere.infra.util.props.fixture.typed;
 
-public enum TypedPropertyEnumFixture {
-    
-    FOO
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
+@SingletonSPI
+public interface PropertiesTypedSPIFixture extends TypedSPI {
 }
