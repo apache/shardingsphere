@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.type.typed.algorithm;
+package org.apache.shardingsphere.infra.algorithm;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
