@@ -62,7 +62,7 @@ public interface ConvertRuleConfigurationProvider extends TypedSPI {
     }
     
     /**
-     * Get algorithm properties
+     * Get algorithm properties.
      *
      * @param props properties
      * @return algorithm properties
