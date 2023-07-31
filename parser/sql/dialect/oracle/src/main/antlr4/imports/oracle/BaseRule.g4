@@ -622,8 +622,6 @@ expr
     | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
-    | aggregationFunction
-    | analyticFunction
     | expr datetimeExpr
     ;
 
@@ -749,7 +747,7 @@ leadLagInfo
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
+    : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
     ;
 
 featureFunction

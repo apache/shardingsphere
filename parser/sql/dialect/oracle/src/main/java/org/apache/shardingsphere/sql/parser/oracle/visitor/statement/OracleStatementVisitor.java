@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyticFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitExprContext;
@@ -593,6 +594,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     public ASTNode visitAnalyticFunction(final AnalyticFunctionContext ctx) {
         String functionName = null == ctx.analyticFunctionName() ? ctx.specifiedAnalyticFunctionName.getText() : ctx.analyticFunctionName().getText();
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
+        result.getParameters().addAll(getExpressions(ctx.expr()));
         for (DataTypeContext each : ctx.dataType()) {
             result.getParameters().add((DataTypeSegment) visit(each));
         }
@@ -662,11 +664,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return visit(ctx.xmlTableFunction());
         }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.specifiedFunctionName.getText(), getOriginalText(ctx));
-        if (null != ctx.exprList()) {
-            for (ExprContext each : ctx.exprList().exprs().expr()) {
-                result.getParameters().add((ExpressionSegment) visit(each));
-            }
-        }
+        result.getParameters().addAll(getExpressions(ctx.exprList()));
         return result;
     }
     
@@ -796,6 +794,13 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         return result;
     }
     
+    private Collection<ExpressionSegment> getExpressions(final OracleStatementParser.ExprListContext exprList) {
+        if (null == exprList) {
+            return Collections.emptyList();
+        }
+        return getExpressions(exprList.exprs().expr());
+    }
+    
     private Collection<ExpressionSegment> getExpressions(final List<ExprContext> exprList) {
         if (null == exprList) {
             return Collections.emptyList();
@@ -909,8 +914,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             OwnerContext owner = ctx.owner();
             result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
-        Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
-        result.getParameters().addAll(expressionSegments);
+        result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
     }
     

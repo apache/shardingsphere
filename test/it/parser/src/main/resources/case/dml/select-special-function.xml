@@ -402,13 +402,25 @@
         <projections start-index="7" stop-index="123" literal-start-index="7" literal-stop-index="123">
             <column-projection name="hire_date" start-index="7" stop-index="15" literal-start-index="7" literal-stop-index="15" />
             <expression-projection text="LAG(hire_date, 1) OVER (ORDER BY hire_date)" alias="LAG1" start-index="18" stop-index="68" literal-start-index="18" literal-stop-index="68">
+                <literalText>LAG(hire_date, 1) OVER (ORDER BY hire_date)</literalText>
                 <expr>
-                    <function function-name="LAG" text="LAG(hire_date, 1) OVER (ORDER BY hire_date)" start-index="18" stop-index="60" literal-start-index="18" literal-stop-index="60" />
+                    <function function-name="LAG" text="LAG(hire_date, 1) OVER (ORDER BY hire_date)" start-index="18" stop-index="60" literal-start-index="18" literal-stop-index="60">
+                        <parameter>
+                            <column name="hire_date" start-index="22" stop-index="30" literal-start-index="22" literal-stop-index="30" />
+                        </parameter>
+                        <literalText>LAG(hire_date, 1) OVER (ORDER BY hire_date)</literalText>
+                    </function>
                 </expr>
             </expression-projection>
-            <expression-projection text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" literal-text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" alias="LEAD1" start-index="71" stop-index="123" literal-start-index="71" literal-stop-index="123">
+            <expression-projection text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" alias="LEAD1" start-index="71" stop-index="123" literal-start-index="71" literal-stop-index="123">
+                <literalText>LEAD(hire_date, 1) OVER (ORDER BY hire_date)</literalText>
                 <expr>
-                    <function function-name="LEAD" text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" literal-text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" start-index="71" stop-index="114" literal-start-index="71" literal-stop-index="114" />
+                    <function function-name="LEAD" text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" start-index="71" stop-index="114" literal-start-index="71" literal-stop-index="114">
+                        <parameter>
+                            <column name="hire_date" start-index="76" stop-index="84" literal-start-index="76" literal-stop-index="84" />
+                        </parameter>
+                        <literalText>LEAD(hire_date, 1) OVER (ORDER BY hire_date)</literalText>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
