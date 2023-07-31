@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.exception;
+package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 
-/**
- * CDC exception wrapper.
- */
+import java.util.Set;
+
+@RequiredArgsConstructor
 @Getter
-public final class CDCExceptionWrapper extends RuntimeException {
+@EqualsAndHashCode
+public final class StartStreamingParameter {
     
-    private static final long serialVersionUID = -929604775277797727L;
+    private final String database;
     
-    private final String requestId;
+    private final Set<SchemaTable> schemaTables;
     
-    private final ShardingSphereSQLException exception;
-    
-    public CDCExceptionWrapper(final String requestId, final ShardingSphereSQLException exception) {
-        super(exception.getMessage());
-        this.requestId = requestId;
-        this.exception = exception;
-    }
+    private final boolean full;
 }

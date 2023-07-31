@@ -15,26 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.exception;
-
-import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
+package org.apache.shardingsphere.data.pipeline.cdc.client.exception;
 
 /**
- * CDC exception wrapper.
+ * Get result timeout exception.
  */
-@Getter
-public final class CDCExceptionWrapper extends RuntimeException {
+public final class GetResultTimeoutException extends RuntimeException {
     
-    private static final long serialVersionUID = -929604775277797727L;
+    private static final long serialVersionUID = 6661736945772674919L;
     
-    private final String requestId;
-    
-    private final ShardingSphereSQLException exception;
-    
-    public CDCExceptionWrapper(final String requestId, final ShardingSphereSQLException exception) {
-        super(exception.getMessage());
-        this.requestId = requestId;
-        this.exception = exception;
+    public GetResultTimeoutException(final String message) {
+        super(message);
     }
 }

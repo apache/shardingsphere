@@ -100,7 +100,7 @@ class CDCChannelInboundHandlerTest {
         assertTrue(expectedGreetingResult.hasServerGreetingResult());
         CDCResponse expectedLoginResult = channel.readOutbound();
         assertThat(expectedLoginResult.getStatus(), is(Status.FAILED));
-        assertThat(expectedLoginResult.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
+        assertThat(expectedLoginResult.getErrorCode(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertFalse(channel.isOpen());
     }
     

@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
+package org.apache.shardingsphere.data.pipeline.cdc.client.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Start CDC client parameter.
  */
-@Getter
-@Setter
 @RequiredArgsConstructor
-public final class StartCDCClientParameter {
+@Getter
+public final class CDCClientConfiguration {
     
-    private String address;
+    private final String address;
     
-    private int port;
+    private final int port;
     
-    private String username;
+    private final Consumer<List<Record>> consumer;
     
-    private String password;
+    private final int timeoutMills;
     
-    private String database;
-    
-    private List<SchemaTable> schemaTables;
-    
-    private boolean full;
+    public CDCClientConfiguration(final String address, final int port, final Consumer<List<Record>> consumer) {
+        this.address = address;
+        this.port = port;
+        this.consumer = consumer;
+        this.timeoutMills = 5000;
+    }
 }
