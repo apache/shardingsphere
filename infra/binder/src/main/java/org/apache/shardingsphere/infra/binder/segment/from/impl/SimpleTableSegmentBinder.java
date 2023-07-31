@@ -77,7 +77,7 @@ public final class SimpleTableSegmentBinder {
         // TODO check database and schema
         ShardingSphereSchema schema = metaData.getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
         tableBinderContexts.put(segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue()),
-                createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema));
+                createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema, databaseType));
         segment.getTableName().setOriginalDatabase(originalDatabase);
         segment.getTableName().setOriginalSchema(originalSchema);
         return segment;
@@ -102,12 +102,14 @@ public final class SimpleTableSegmentBinder {
     }
     
     private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema,
-                                                                            final IdentifierValue originalDatabase, final IdentifierValue originalSchema) {
+                                                                            final IdentifierValue originalDatabase, final IdentifierValue originalSchema, final DatabaseType databaseType) {
         Collection<ShardingSphereColumn> columnNames =
                 Optional.ofNullable(schema.getTable(segment.getTableName().getIdentifier().getValue())).map(ShardingSphereTable::getColumnValues).orElseGet(Collections::emptyList);
         Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
+        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
         for (ShardingSphereColumn each : columnNames) {
-            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each.getName()));
+            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each.getName(), dialectDatabaseMetaData.getQuoteCharacter()));
+            columnSegment.setOwner(new OwnerSegment(0, 0, segment.getAlias().orElse(segment.getTableName().getIdentifier())));
             columnSegment.setOriginalDatabase(originalDatabase);
             columnSegment.setOriginalSchema(originalSchema);
             columnSegment.setOriginalTable(segment.getTableName().getIdentifier());
