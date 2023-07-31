@@ -54,7 +54,7 @@ public final class DeleteStatementConverter implements SQLStatementConverter<Del
         return orderBy.isEmpty() ? sqlDelete : new SqlOrderBy(SqlParserPos.ZERO, sqlDelete, orderBy, null, null);
     }
     
-    public SqlDelete convertDelete(final DeleteStatement deleteStatement) {
+    private SqlDelete convertDelete(final DeleteStatement deleteStatement) {
         SqlNode targetTable = new TableConverter().convert(deleteStatement.getTable()).get();
         SqlNode condition = deleteStatement.getWhere().flatMap(optional -> new WhereConverter().convert(optional)).orElse(null);
         if (deleteStatement.getTable().getAliasName().isPresent()) {
