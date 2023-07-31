@@ -319,6 +319,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLUnlistenStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -673,9 +674,9 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
             }
             if (null != each.functionExprWindowless()) {
                 FunctionSegment functionSegment = (FunctionSegment) visit(each.functionExprWindowless());
-                functionSegment.getParameters().forEach(parameter -> {
-                    if (parameter instanceof ColumnSegment) {
-                        result.getValue().add((ColumnSegment) parameter);
+                functionSegment.getParameters().forEach(param -> {
+                    if (param instanceof ColumnSegment) {
+                        result.getValue().add((ColumnSegment) param);
                     }
                 });
             }
@@ -694,7 +695,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         if (null == aExprContexts) {
             return Collections.emptyList();
         }
-        Collection<ExpressionSegment> result = new LinkedList<>();
+        Collection<ExpressionSegment> result = new ArrayList<>(aExprContexts.size());
         for (FuncArgExprContext each : aExprContexts) {
             result.add((ExpressionSegment) visit(each.aExpr()));
         }

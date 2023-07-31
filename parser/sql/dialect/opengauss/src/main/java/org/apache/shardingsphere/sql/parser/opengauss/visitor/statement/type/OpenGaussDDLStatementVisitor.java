@@ -246,6 +246,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussPrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussTruncateStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -535,9 +536,9 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
             }
             if (null != each.functionExprWindowless()) {
                 FunctionSegment functionSegment = (FunctionSegment) visit(each.functionExprWindowless());
-                functionSegment.getParameters().forEach(parameter -> {
-                    if (parameter instanceof ColumnSegment) {
-                        result.getValue().add((ColumnSegment) parameter);
+                functionSegment.getParameters().forEach(param -> {
+                    if (param instanceof ColumnSegment) {
+                        result.getValue().add((ColumnSegment) param);
                     }
                 });
             }
@@ -556,7 +557,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
         if (null == aExprContexts) {
             return Collections.emptyList();
         }
-        Collection<ExpressionSegment> result = new LinkedList<>();
+        Collection<ExpressionSegment> result = new ArrayList<>(aExprContexts.size());
         for (FuncArgExprContext each : aExprContexts) {
             result.add((ExpressionSegment) visit(each.aExpr()));
         }
