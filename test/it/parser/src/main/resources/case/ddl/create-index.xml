@@ -222,6 +222,8 @@
         <table>
             <simple-table name="t_order" start-index="25" stop-index="31" />
         </table>
+        <column name="location" start-index="51" stop-index="58" literal-start-index="51" literal-stop-index="58" />
+        <column name="location" start-index="60" stop-index="67" literal-start-index="60" literal-stop-index="67" />
     </create-index>
 
     <create-index sql-case-id="create_index_with_concurrently">
