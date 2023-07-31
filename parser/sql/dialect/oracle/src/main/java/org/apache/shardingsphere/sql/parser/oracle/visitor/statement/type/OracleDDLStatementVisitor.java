@@ -601,6 +601,13 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             if (astNode instanceof ColumnSegment) {
                 result.getValue().add((ColumnSegment) astNode);
             }
+            if (astNode instanceof FunctionSegment) {
+                ((FunctionSegment) astNode).getParameters().forEach(parameter -> {
+                    if (parameter instanceof ColumnSegment) {
+                        result.getValue().add((ColumnSegment) parameter);
+                    }
+                });
+            }
         }
         return result;
     }
