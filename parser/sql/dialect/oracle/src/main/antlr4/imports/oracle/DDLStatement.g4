@@ -3606,7 +3606,8 @@ tableCompressionTableSpace
     ;
 
 segmentManagementClause
-    : SEGMENT SPACE MANAGEMENT (AUTO|MANUAL);
+    : SEGMENT SPACE MANAGEMENT (AUTO|MANUAL)
+    ;
 
 createTablespace
     : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
