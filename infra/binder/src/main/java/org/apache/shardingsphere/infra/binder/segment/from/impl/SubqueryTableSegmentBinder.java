@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
@@ -78,16 +79,17 @@ public final class SubqueryTableSegmentBinder {
         return result;
     }
     
-    private static ColumnProjectionSegment createColumnProjection(final ColumnProjectionSegment originalColumnProjection, final IdentifierValue subqueryTableName) {
-        ColumnSegment originalColumnSegment = originalColumnProjection.getColumn();
-        ColumnSegment newColumnSegment = new ColumnSegment(0, 0, originalColumnSegment.getIdentifier());
-        newColumnSegment.setOwner(new OwnerSegment(0, 0, subqueryTableName));
-        newColumnSegment.setOriginalColumn(originalColumnSegment.getOriginalColumn());
-        newColumnSegment.setOriginalTable(originalColumnSegment.getOriginalTable());
-        newColumnSegment.setOriginalSchema(originalColumnSegment.getOriginalSchema());
-        newColumnSegment.setOriginalDatabase(originalColumnSegment.getOriginalDatabase());
+    private static ColumnProjectionSegment createColumnProjection(final ColumnProjectionSegment originalColumn, final IdentifierValue subqueryTableName) {
+        ColumnSegment newColumnSegment = new ColumnSegment(0, 0, originalColumn.getAlias().orElseGet(() -> originalColumn.getColumn().getIdentifier()));
+        if (!Strings.isNullOrEmpty(subqueryTableName.getValue())) {
+            newColumnSegment.setOwner(new OwnerSegment(0, 0, subqueryTableName));
+        }
+        newColumnSegment.setOriginalColumn(originalColumn.getColumn().getOriginalColumn());
+        newColumnSegment.setOriginalTable(originalColumn.getColumn().getOriginalTable());
+        newColumnSegment.setOriginalSchema(originalColumn.getColumn().getOriginalSchema());
+        newColumnSegment.setOriginalDatabase(originalColumn.getColumn().getOriginalDatabase());
         ColumnProjectionSegment result = new ColumnProjectionSegment(newColumnSegment);
-        result.setVisible(originalColumnProjection.isVisible());
+        result.setVisible(originalColumn.isVisible());
         return result;
     }
 }
