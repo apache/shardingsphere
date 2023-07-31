@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.repository.cluster.lock.creator;
 
 import org.apache.shardingsphere.infra.util.props.TypedProperties;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 
 /**

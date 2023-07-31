@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.repository.cluster.lock.holder;
 
 import org.apache.shardingsphere.infra.util.props.TypedProperties;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator;
 

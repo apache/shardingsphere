@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueEx
 import org.apache.shardingsphere.infra.util.props.fixture.enums.TypedPropertyEnumFixture;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyKeyFixture;
 import org.apache.shardingsphere.infra.util.props.fixture.typed.PropertiesTypedSPIFixture;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.datasource.storage.StorageNodeProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResourceWithProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.audit.exception.SQLAuditExceptio
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
@@ -41,7 +41,6 @@ import static org.mockito.Mockito.when;
 
 class DMLShardingConditionsShardingAuditAlgorithmTest {
     
-    @SuppressWarnings("rawtypes")
     private SQLStatementContext sqlStatementContext;
     
     private ShardingSphereDatabase database;

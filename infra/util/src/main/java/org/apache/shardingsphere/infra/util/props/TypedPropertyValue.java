@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.util.props;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 /**
  * Typed property value.
