@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -54,12 +53,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -71,9 +68,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ProjectionsContextEngineTest {
-    
-    @Mock
-    private ShardingSphereSchema schema;
     
     @Test
     void assertProjectionsContextCreatedProperlyForMySQL() {
@@ -104,7 +98,7 @@ class ProjectionsContextEngineTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         ProjectionsSegment projectionsSegment = selectStatement.getProjections();
-        ProjectionsContextEngine projectionsContextEngine = new ProjectionsContextEngine(DefaultDatabase.LOGIC_NAME, mockSchemas(), selectStatementContext.getDatabaseType());
+        ProjectionsContextEngine projectionsContextEngine = new ProjectionsContextEngine(selectStatementContext.getDatabaseType());
         ProjectionsContext actual = projectionsContextEngine
                 .createProjectionsContext(selectStatement.getFrom(), projectionsSegment, new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false));
         assertNotNull(actual);
@@ -143,7 +137,7 @@ class ProjectionsContextEngineTest {
         shorthandProjectionSegment.setOwner(owner);
         projectionsSegment.getProjections().add(shorthandProjectionSegment);
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
-        ProjectionsContextEngine engine = new ProjectionsContextEngine(DefaultDatabase.LOGIC_NAME, mockSchemas(), selectStatementContext.getDatabaseType());
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(selectStatementContext.getDatabaseType());
         ProjectionsContext actual = engine.createProjectionsContext(selectStatement.getFrom(),
                 projectionsSegment, new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.emptyList(), false));
         assertNotNull(actual);
@@ -184,7 +178,7 @@ class ProjectionsContextEngineTest {
         OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(0, 1, 0, OrderDirection.ASC, NullsOrderType.FIRST));
         OrderByContext orderByContext = new OrderByContext(Collections.singletonList(orderByItem), true);
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
-        ProjectionsContextEngine engine = new ProjectionsContextEngine(DefaultDatabase.LOGIC_NAME, mockSchemas(), selectStatementContext.getDatabaseType());
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(selectStatementContext.getDatabaseType());
         ProjectionsContext actual = engine.createProjectionsContext(selectStatement.getFrom(), projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
         assertNotNull(actual);
     }
@@ -224,14 +218,13 @@ class ProjectionsContextEngineTest {
         OrderByItem orderByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 1, "", OrderDirection.ASC, NullsOrderType.FIRST));
         OrderByContext orderByContext = new OrderByContext(Collections.singletonList(orderByItem), true);
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
-        ProjectionsContextEngine engine = new ProjectionsContextEngine(DefaultDatabase.LOGIC_NAME, mockSchemas(), selectStatementContext.getDatabaseType());
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(selectStatementContext.getDatabaseType());
         ProjectionsContext actual = engine.createProjectionsContext(selectStatement.getFrom(), projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
         assertNotNull(actual);
     }
     
     private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
         ShardingSphereDatabase database = mockDatabase();
-        when(database.getSchemas()).thenReturn(mockSchemas());
         Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ShardingSphereResourceMetaData.class),
                 mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
@@ -241,13 +234,6 @@ class ProjectionsContextEngineTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getRuleMetaData().findRules(TableContainedRule.class)).thenReturn(Collections.emptyList());
-        return result;
-    }
-    
-    private Map<String, ShardingSphereSchema> mockSchemas() {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(2, 1F);
-        result.put(DefaultDatabase.LOGIC_NAME, schema);
-        result.put("public", schema);
         return result;
     }
     
@@ -287,7 +273,7 @@ class ProjectionsContextEngineTest {
         OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC, NullsOrderType.FIRST));
         OrderByContext orderByContext = new OrderByContext(Collections.singletonList(orderByItem), true);
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
-        ProjectionsContextEngine engine = new ProjectionsContextEngine(DefaultDatabase.LOGIC_NAME, mockSchemas(), selectStatementContext.getDatabaseType());
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(selectStatementContext.getDatabaseType());
         ProjectionsContext actual = engine.createProjectionsContext(selectStatement.getFrom(), projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
         assertNotNull(actual);
     }
@@ -328,7 +314,7 @@ class ProjectionsContextEngineTest {
         OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC, NullsOrderType.FIRST));
         OrderByContext orderByContext = new OrderByContext(Collections.singletonList(orderByItem), true);
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
-        ProjectionsContextEngine engine = new ProjectionsContextEngine(DefaultDatabase.LOGIC_NAME, mockSchemas(), selectStatementContext.getDatabaseType());
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(selectStatementContext.getDatabaseType());
         ProjectionsContext actual = engine.createProjectionsContext(selectStatement.getFrom(), projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
         assertNotNull(actual);
     }
@@ -377,7 +363,7 @@ class ProjectionsContextEngineTest {
         OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC, NullsOrderType.FIRST));
         OrderByContext orderByContext = new OrderByContext(Collections.singleton(orderByItem), false);
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
-        ProjectionsContextEngine engine = new ProjectionsContextEngine(DefaultDatabase.LOGIC_NAME, mockSchemas(), selectStatementContext.getDatabaseType());
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(selectStatementContext.getDatabaseType());
         ProjectionsContext actual = engine.createProjectionsContext(selectStatement.getFrom(), projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
         assertNotNull(actual);
     }
@@ -422,7 +408,7 @@ class ProjectionsContextEngineTest {
         OrderByItem groupByItem = new OrderByItem(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.FIRST));
         GroupByContext groupByContext = new GroupByContext(Collections.singleton(groupByItem));
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
-        ProjectionsContextEngine engine = new ProjectionsContextEngine(DefaultDatabase.LOGIC_NAME, mockSchemas(), selectStatementContext.getDatabaseType());
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(selectStatementContext.getDatabaseType());
         ProjectionsContext actual = engine.createProjectionsContext(selectStatement.getFrom(), projectionsSegment, groupByContext, new OrderByContext(Collections.emptyList(), false));
         assertNotNull(actual);
     }
@@ -467,7 +453,7 @@ class ProjectionsContextEngineTest {
         OrderByItem groupByItem = new OrderByItem(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.FIRST));
         GroupByContext groupByContext = new GroupByContext(Collections.singleton(groupByItem));
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
-        ProjectionsContextEngine engine = new ProjectionsContextEngine(DefaultDatabase.LOGIC_NAME, mockSchemas(), selectStatementContext.getDatabaseType());
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(selectStatementContext.getDatabaseType());
         ProjectionsContext actual = engine.createProjectionsContext(selectStatement.getFrom(), projectionsSegment, groupByContext, new OrderByContext(Collections.emptyList(), false));
         assertNotNull(actual);
     }
@@ -482,7 +468,7 @@ class ProjectionsContextEngineTest {
         OrderByItem orderByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 0, "id + 1", OrderDirection.ASC, NullsOrderType.FIRST));
         OrderByContext orderByContext = new OrderByContext(Collections.singleton(orderByItem), false);
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
-        ProjectionsContextEngine engine = new ProjectionsContextEngine(DefaultDatabase.LOGIC_NAME, mockSchemas(), selectStatementContext.getDatabaseType());
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(selectStatementContext.getDatabaseType());
         ProjectionsContext actual = engine.createProjectionsContext(selectStatement.getFrom(), projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
         assertThat(actual.getProjections().size(), is(2));
     }

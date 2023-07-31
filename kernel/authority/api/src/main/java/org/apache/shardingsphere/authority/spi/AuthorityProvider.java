@@ -20,7 +20,7 @@ package org.apache.shardingsphere.authority.spi;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.Map;

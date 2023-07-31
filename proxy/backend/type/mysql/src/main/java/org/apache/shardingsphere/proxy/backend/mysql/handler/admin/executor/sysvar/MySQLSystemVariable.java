@@ -20,12 +20,12 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sys
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
-import org.apache.shardingsphere.dialect.mysql.exception.ErrorGlobalVariableException;
-import org.apache.shardingsphere.dialect.mysql.exception.ErrorLocalVariableException;
-import org.apache.shardingsphere.dialect.mysql.exception.IncorrectGlobalLocalVariableException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorGlobalVariableException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorLocalVariableException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.IncorrectGlobalLocalVariableException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionIsolationValueProvider;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionReadOnlyValueProvider;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.VersionValueProvider;

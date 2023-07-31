@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.expr.core;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 /**
  * Inline expression parser factory.

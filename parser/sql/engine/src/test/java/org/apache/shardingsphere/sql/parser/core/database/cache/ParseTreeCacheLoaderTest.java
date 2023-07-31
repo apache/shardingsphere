@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.core.database.cache;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.jupiter.api.Test;

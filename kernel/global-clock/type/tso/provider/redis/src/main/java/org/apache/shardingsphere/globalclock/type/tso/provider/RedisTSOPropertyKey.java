@@ -19,7 +19,7 @@ package org.apache.shardingsphere.globalclock.type.tso.provider;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
+import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
 /**
  * Property key of redis timestamp oracle provider.

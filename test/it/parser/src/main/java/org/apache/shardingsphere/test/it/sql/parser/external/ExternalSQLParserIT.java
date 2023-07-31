@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.it.sql.parser.external;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;

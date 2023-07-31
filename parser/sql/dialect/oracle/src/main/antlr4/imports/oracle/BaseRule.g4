@@ -600,7 +600,7 @@ alias
     ;
 
 dataTypeLength
-    : LP_ (INTEGER_ (COMMA_ INTEGER_)? (CHAR | BYTE)?)? RP_
+    : LP_ (INTEGER_ (COMMA_ (MINUS_)? INTEGER_)? (CHAR | BYTE)?)? RP_
     ;
 
 primaryKey
@@ -622,8 +622,6 @@ expr
     | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
-    | aggregationFunction
-    | analyticFunction
     | expr datetimeExpr
     ;
 
@@ -749,7 +747,7 @@ leadLagInfo
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
+    : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
     ;
 
 featureFunction

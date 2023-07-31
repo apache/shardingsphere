@@ -20,10 +20,12 @@ package org.apache.shardingsphere.infra.database.core.metadata.database;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -38,6 +40,15 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return quote character
      */
     QuoteCharacter getQuoteCharacter();
+    
+    /**
+     * Get extra data types.
+     *
+     * @return extra data type map
+     */
+    default Map<String, Integer> getExtraDataTypes() {
+        return Collections.emptyMap();
+    }
     
     /**
      * Get default nulls order type.

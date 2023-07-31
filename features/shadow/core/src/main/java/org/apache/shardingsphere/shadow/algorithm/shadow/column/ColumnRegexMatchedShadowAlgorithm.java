@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.exception.algorithm.ShadowAlgorithmInitializationException;
 
 import java.util.Properties;

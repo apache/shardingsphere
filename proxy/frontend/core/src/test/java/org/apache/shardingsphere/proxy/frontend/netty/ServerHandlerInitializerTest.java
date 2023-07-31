@@ -23,7 +23,7 @@ import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
 import org.apache.shardingsphere.db.protocol.netty.ProxyFlowControlHandler;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.ConstructionMockSettings;
 import org.junit.jupiter.api.Test;

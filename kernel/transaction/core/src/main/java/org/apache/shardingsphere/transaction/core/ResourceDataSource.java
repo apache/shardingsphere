@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.core;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.transaction.exception.XAResourceNameLengthExceededException;
 
 import javax.sql.DataSource;

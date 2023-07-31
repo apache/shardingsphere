@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.sqlserver.SQLServerDatabaseType
+org.apache.shardingsphere.infra.database.sqlserver.type.SQLServerDatabaseType

@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.infra.database.core.metadata.database.datatype;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 
 /**
@@ -43,7 +41,7 @@ public final class DataTypeLoader {
      */
     public Map<String, Integer> load(final DatabaseMetaData databaseMetaData, final DatabaseType databaseType) throws SQLException {
         Map<String, Integer> result = loadStandardDataTypes(databaseMetaData);
-        result.putAll(loadDialectDataTypes(databaseType));
+        result.putAll(new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getExtraDataTypes());
         return result;
     }
     
@@ -54,16 +52,6 @@ public final class DataTypeLoader {
                 result.put(resultSet.getString("TYPE_NAME"), resultSet.getInt("DATA_TYPE"));
             }
         }
-        return result;
-    }
-    
-    private Map<String, Integer> loadDialectDataTypes(final DatabaseType databaseType) throws SQLException {
-        Optional<DialectDataTypeLoader> loader = DatabaseTypedSPILoader.findService(DialectDataTypeLoader.class, databaseType);
-        if (!loader.isPresent()) {
-            return Collections.emptyMap();
-        }
-        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        result.putAll(loader.get().load());
         return result;
     }
 }

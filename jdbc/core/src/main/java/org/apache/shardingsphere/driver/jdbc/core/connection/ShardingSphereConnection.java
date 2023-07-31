@@ -24,7 +24,7 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePrepar
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.exception.connection.ConnectionClosedException;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Array;

@@ -20,8 +20,6 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
@@ -29,6 +27,8 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.Constra
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereConstraint;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
@@ -108,10 +108,10 @@ public final class GenericSchemaBuilder {
     private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         for (DatabaseType each : material.getStorageTypes().values()) {
-            String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(each, material.getDefaultSchemaName());
+            String defaultSchemaName = new DatabaseTypeRegistry(each).getDefaultSchemaName(material.getDefaultSchemaName());
             tableMetaDataList.addAll(Optional.ofNullable(schemaMetaDataMap.get(defaultSchemaName)).map(SchemaMetaData::getTables).orElseGet(Collections::emptyList));
         }
-        String frontendSchemaName = DatabaseTypeEngine.getDefaultSchemaName(material.getProtocolType(), material.getDefaultSchemaName());
+        String frontendSchemaName = new DatabaseTypeRegistry(material.getProtocolType()).getDefaultSchemaName(material.getDefaultSchemaName());
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataList));
         return result;

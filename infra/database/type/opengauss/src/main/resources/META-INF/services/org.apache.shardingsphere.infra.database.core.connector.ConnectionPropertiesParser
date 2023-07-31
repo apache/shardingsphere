@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.opengauss.OpenGaussConnectionPropertiesParser
+org.apache.shardingsphere.infra.database.opengauss.connector.OpenGaussConnectionPropertiesParser
