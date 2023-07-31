@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.common.metadata.node.config.processor;
 
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
 /**

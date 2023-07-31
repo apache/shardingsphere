@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.generator.scenario;
 import org.apache.shardingsphere.example.generator.scenario.feature.FeatureExampleScenario;
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
 import org.apache.shardingsphere.example.generator.scenario.transaction.TransactionExampleScenario;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Arrays;
 import java.util.Collection;
