@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
+import java.util.Map;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.segment.combine.CombineSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
@@ -24,9 +25,8 @@ import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderCon
 import org.apache.shardingsphere.infra.binder.segment.projection.ProjectionsSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-
-import java.util.Map;
 
 /**
  * Select statement binder.
@@ -36,9 +36,10 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     @Override
     public SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        sqlStatement.setFrom(TableSegmentBinder.bind(sqlStatement.getFrom(), metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), tableBinderContexts));
+        TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getFrom(), metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), tableBinderContexts);
+        sqlStatement.setFrom(boundedTableSegment);
         sqlStatement.getCombine().ifPresent(optional -> sqlStatement.setCombine(CombineSegmentBinder.bind(optional, metaData, defaultDatabaseName)));
-        sqlStatement.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), tableBinderContexts));
+        sqlStatement.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), boundedTableSegment, tableBinderContexts));
         // TODO support other segment bind in select statement
         return sqlStatement;
     }

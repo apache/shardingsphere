@@ -5360,6 +5360,10 @@ PARITY
     :P A R I T Y
     ;
 
+PARTIAL
+    : P A R T I A L
+    ;
+
 PARTIALLY
     :P A R T I A L L Y
     ;
@@ -6018,6 +6022,10 @@ STATEMENT_ID
 
 STATEMENT_QUEUING
     :S T A T E M E N T UL_ Q U E U I N G
+    ;
+
+OVERRIDING
+    : O V E R R I D I N G
     ;
 
 STATIC
@@ -7648,6 +7656,10 @@ XPATHTABLE
     :X P A T H T A B L E
     ;
 
+XMLSEQUENCE
+    :X M L S E Q U E N C E
+    ;
+
 XS_SYS_CONTEXT
     :X S UL_ S Y S UL_ C O N T E X T
     ;
@@ -7662,4 +7674,12 @@ FEATURE_COMPARE
 
 FEATURE_DETAILS
     : F E A T U R E UL_ D E T A I L S
+    ;
+
+CLUSTER_DETAILS
+    : C L U S T E R UL_ D E T A I L S
+    ;
+
+CLUSTER_DISTANCE
+    : C L U S T E R UL_ D I S T A N C E
     ;

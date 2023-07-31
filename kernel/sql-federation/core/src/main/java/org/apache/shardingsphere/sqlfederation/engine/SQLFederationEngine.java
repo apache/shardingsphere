@@ -24,7 +24,7 @@ import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.runtime.Bindable;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.Table;
-import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationCompilerEngine;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;

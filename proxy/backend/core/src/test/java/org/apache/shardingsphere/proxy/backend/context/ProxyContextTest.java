@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.context;
 
-import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -53,6 +53,8 @@ import static org.mockito.Mockito.when;
 class ProxyContextTest {
     
     private static final String SCHEMA_PATTERN = "db_%s";
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     private ContextManager currentContextManager;
     
@@ -138,6 +140,7 @@ class ProxyContextTest {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             String databaseName = String.format(SCHEMA_PATTERN, i);
             when(database.getName()).thenReturn(databaseName);
+            when(database.getProtocolType()).thenReturn(databaseType);
             result.put(databaseName, database);
         }
         return result;
@@ -145,7 +148,7 @@ class ProxyContextTest {
     
     private Map<String, ShardingSphereDatabase> mockDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(database.getProtocolType()).thenReturn(databaseType);
         return Collections.singletonMap("db", database);
     }
 }

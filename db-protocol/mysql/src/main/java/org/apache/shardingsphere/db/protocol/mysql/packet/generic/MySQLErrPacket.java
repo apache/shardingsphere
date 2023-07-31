@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.VendorError;
+import org.apache.shardingsphere.infra.exception.core.external.sql.vendor.VendorError;
 
 /**
  * ERR packet protocol for MySQL.

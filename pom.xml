@@ -32,7 +32,6 @@
     
     <modules>
         <module>infra</module>
-        <module>dialect-exception</module>
         <module>parser</module>
         <module>db-protocol</module>
         <module>mode</module>
@@ -624,6 +623,14 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
         </dependency>
         
         <dependency>

@@ -20,11 +20,11 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -45,12 +45,14 @@ import static org.mockito.Mockito.when;
 
 class SimpleTableSegmentBinderTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertBind() {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_order")));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, metaData, DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), tableBinderContexts);
+        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
         assertThat(actual.getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertTrue(tableBinderContexts.containsKey("t_order"));
@@ -84,7 +86,7 @@ class SimpleTableSegmentBinderTest {
         simpleTableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db")));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, metaData, DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), tableBinderContexts);
+        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
         assertThat(actual.getTableName().getOriginalDatabase().getValue(), is("sharding_db"));
         assertThat(actual.getTableName().getOriginalSchema().getValue(), is("sharding_db"));
     }
@@ -94,42 +96,9 @@ class SimpleTableSegmentBinderTest {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_order")));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, metaData, DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), tableBinderContexts);
+        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
         assertThat(actual.getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-    }
-    
-    @Test
-    void assertBindWithSchemaForPostgreSQL() {
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_order")));
-        OwnerSegment schema = new OwnerSegment(0, 0, new IdentifierValue("test"));
-        schema.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db")));
-        simpleTableSegment.setOwner(schema);
-        ShardingSphereMetaData metaData = createMetaData();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, metaData, DefaultDatabase.LOGIC_NAME, new PostgreSQLDatabaseType(), tableBinderContexts);
-        assertThat(actual.getTableName().getOriginalDatabase().getValue(), is("sharding_db"));
-        assertThat(actual.getTableName().getOriginalSchema().getValue(), is("test"));
-    }
-    
-    @Test
-    void assertBindWithoutSchemaForPostgreSQL() {
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_order")));
-        ShardingSphereMetaData metaData = createMetaData();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, metaData, DefaultDatabase.LOGIC_NAME, new PostgreSQLDatabaseType(), tableBinderContexts);
-        assertThat(actual.getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(actual.getTableName().getOriginalSchema().getValue(), is("public"));
-    }
-    
-    @Test
-    void assertBindWhenContainsPgCatalogTableForPostgreSQL() {
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("pg_database")));
-        ShardingSphereMetaData metaData = createMetaData();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, metaData, DefaultDatabase.LOGIC_NAME, new PostgreSQLDatabaseType(), tableBinderContexts);
-        assertThat(actual.getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(actual.getTableName().getOriginalSchema().getValue(), is("pg_catalog"));
     }
     
     private ShardingSphereMetaData createMetaData() {

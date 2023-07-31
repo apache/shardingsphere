@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.framework.container.confi
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;

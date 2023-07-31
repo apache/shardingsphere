@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.database.core.connector.url;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.util.Properties;
 import java.util.regex.Matcher;

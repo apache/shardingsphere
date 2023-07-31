@@ -30,15 +30,15 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
 
 jobs:
-  global-env:
-    name: Import Global Env
+  global-environment:
+    name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
   e2e-operation-job:
-    if: ${{ needs.global-env.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
-    needs: global-env
-    runs-on: ${{ needs.global-env.outputs.GLOBAL_RUNS_ON }}
+    needs: global-environment
+    runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     strategy:
       max-parallel: 20
       fail-fast: false
@@ -58,10 +58,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-${{ github.sha }}
           restore-keys: |
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-e2e-cache-
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Setup JDK 11
         uses: actions/setup-java@v3
         with:
@@ -69,10 +69,5 @@ jobs:
           java-version: 11
       - name: Build ${{ matrix.operation }} E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pit.env.docker -DskipTests
-      - name: Setup JDK 8 for Test
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 8
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
         run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.${{ matrix.image.type }}=${{ matrix.image.version }}

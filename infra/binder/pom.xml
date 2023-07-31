@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-dialect-exception-core</artifactId>
+            <artifactId>shardingsphere-infra-exception-dialect-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -59,10 +59,6 @@
             <artifactId>shardingsphere-test-fixture-database</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
         </dependency>
     </dependencies>
 </project>

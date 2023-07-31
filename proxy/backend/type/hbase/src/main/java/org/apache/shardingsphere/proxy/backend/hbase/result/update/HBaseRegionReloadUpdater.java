@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseRegionWarmUpContext;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;

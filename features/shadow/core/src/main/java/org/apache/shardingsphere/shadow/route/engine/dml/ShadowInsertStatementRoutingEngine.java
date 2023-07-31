@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.route.engine.dml;
 
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.exception.syntax.UnsupportedShadowInsertValueException;

@@ -527,6 +527,10 @@ containerName
     : identifier
     ;
 
+newName
+    : identifier
+    ;
+
 partitionName
     : identifier
     ;
@@ -596,7 +600,7 @@ alias
     ;
 
 dataTypeLength
-    : LP_ (INTEGER_ (COMMA_ INTEGER_)? (CHAR | BYTE)?)? RP_
+    : LP_ (INTEGER_ (COMMA_ (MINUS_)? INTEGER_)? (CHAR | BYTE)?)? RP_
     ;
 
 primaryKey
@@ -618,8 +622,6 @@ expr
     | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
-    | aggregationFunction
-    | analyticFunction
     | expr datetimeExpr
     ;
 
@@ -745,7 +747,7 @@ leadLagInfo
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
+    : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
     ;
 
 featureFunction
@@ -754,7 +756,7 @@ featureFunction
     ;
 
 featureFunctionName
-    : FEATURE_COMPARE | FEATURE_DETAILS | FEATURE_SET | FEATURE_ID | FEATURE_VALUE
+    : FEATURE_COMPARE | FEATURE_DETAILS | FEATURE_SET | FEATURE_ID | FEATURE_VALUE | CLUSTER_DETAILS | CLUSTER_DISTANCE | CLUSTER_ID | CLUSTER_PROBABILITY | CLUSTER_SET
     ;
 
 miningAttributeClause
@@ -1899,7 +1901,11 @@ xmlFunction
     | xmlSerializeFunction
     | xmlTableFunction
     | xmlIsSchemaValidFunction
-    | specifiedFunctionName = (SYS_XMLGEN | SYS_XMLAGG) LP_ expr (COMMA_ expr)? RP_
+    | specifiedFunctionName = (SYS_XMLGEN | SYS_XMLAGG | APPENDCHILDXML | DELETEXML | EXISTSNODE | EXTRACT | EXTRACTVALUE 
+        | INSERTCHILDXML | INSERTCHILDXMLAFTER | INSERTCHILDXMLBEFORE | INSERTXMLAFTER | INSERTXMLBEFORE
+        | SYS_DBURIGEN | UPDATEXML | XMLCONCAT | XMLDIFF | XMLEXISTS | XMLISVALID | XMLPATCH | XMLSEQUENCE | XMLTRANSFORM) exprList
+    | specifiedFunctionName = (DEPTH | PATH) LP_ correlationInteger RP_
+    | specifiedFunctionName = XMLCOMMENT LP_ stringLiterals RP_
     ;
 
 xmlAggFunction
@@ -1907,7 +1913,11 @@ xmlAggFunction
     ;
 
 xmlColattvalFunction
-    : XMLCOLATTVAL LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+    : XMLCOLATTVAL LP_ expr (xmlAsAliasOrEvalnameExpr)? (COMMA_ expr (xmlAsAliasOrEvalnameExpr)?)* RP_
+    ;
+
+xmlAsAliasOrEvalnameExpr
+    :AS (alias | EVALNAME expr)
     ;
 
 xmlExistsFunction
@@ -1915,7 +1925,7 @@ xmlExistsFunction
     ;
 
 xmlForestFunction
-   : XMLFOREST LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+   : XMLFOREST LP_ expr (xmlAsAliasOrEvalnameExpr)? (COMMA_ expr (xmlAsAliasOrEvalnameExpr)?)* RP_
    ;
 
 xmlParseFunction

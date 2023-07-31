@@ -20,17 +20,19 @@ package org.apache.shardingsphere.infra.datasource.pool.creator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
-import org.apache.shardingsphere.infra.database.core.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNodeProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResourceWithProperties;
@@ -118,11 +120,14 @@ public final class DataSourcePoolCreator {
     private static void appendStorageUnit(final Map<String, StorageUnit> storageUnits, final StorageNodeProperties storageNodeProperties,
                                           final String unitName, final DataSourceProperties dataSourceProps) {
         String url = dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        if (storageNodeProperties.getDatabaseType().isInstanceConnectionAvailable()) {
-            storageUnits.put(unitName, new StorageUnit(unitName, storageNodeProperties.getName(), storageNodeProperties.getDatabase(), url));
-        } else {
-            storageUnits.put(unitName, new StorageUnit(unitName, storageNodeProperties.getName(), url));
-        }
+        storageUnits.put(unitName, getStorageUnit(storageNodeProperties, unitName, url));
+    }
+    
+    private static StorageUnit getStorageUnit(final StorageNodeProperties storageNodeProperties, final String unitName, final String url) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(storageNodeProperties.getDatabaseType()).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.isInstanceConnectionAvailable()
+                ? new StorageUnit(unitName, storageNodeProperties.getName(), storageNodeProperties.getDatabase(), url)
+                : new StorageUnit(unitName, storageNodeProperties.getName(), url);
     }
     
     private static StorageNodeProperties getStorageNodeProperties(final String dataSourceName, final DataSourceProperties dataSourceProperties) {
@@ -130,15 +135,19 @@ public final class DataSourcePoolCreator {
         String url = standardProperties.get("url").toString();
         String username = standardProperties.get("username").toString();
         DatabaseType databaseType = DatabaseTypeFactory.get(url);
-        StorageNodeProperties storageNodeProperties;
+        return getStorageNodeProperties(dataSourceName, dataSourceProperties, url, username, databaseType);
+    }
+    
+    private static StorageNodeProperties getStorageNodeProperties(final String dataSourceName, final DataSourceProperties dataSourceProperties,
+                                                                  final String url, final String username, final DatabaseType databaseType) {
         try {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-            String nodeName = databaseType.isInstanceConnectionAvailable() ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
-            storageNodeProperties = new StorageNodeProperties(nodeName, databaseType, dataSourceProperties, jdbcUrl.getDatabase());
+            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+            String nodeName = dialectDatabaseMetaData.isInstanceConnectionAvailable() ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
+            return new StorageNodeProperties(nodeName, databaseType, dataSourceProperties, jdbcUrl.getDatabase());
         } catch (final UnrecognizedDatabaseURLException ex) {
-            storageNodeProperties = new StorageNodeProperties(dataSourceName, databaseType, dataSourceProperties, null);
+            return new StorageNodeProperties(dataSourceName, databaseType, dataSourceProperties, null);
         }
-        return storageNodeProperties;
     }
     
     private static String generateStorageNodeName(final String hostname, final int port, final String username) {
@@ -212,8 +221,8 @@ public final class DataSourcePoolCreator {
      */
     public static DataSource create(final String dataSourceName, final DataSourceProperties dataSourceProps, final boolean cacheEnabled) {
         DataSource result = create(dataSourceProps);
-        if (cacheEnabled && !GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().containsKey(dataSourceName)) {
-            GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().put(dataSourceName, result);
+        if (cacheEnabled && !GlobalDataSourceRegistry.getInstance().getCachedDataSources().containsKey(dataSourceName)) {
+            GlobalDataSourceRegistry.getInstance().getCachedDataSources().put(dataSourceName, result);
         }
         return result;
     }

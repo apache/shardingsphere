@@ -41,18 +41,6 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="expected_dataset.t_order_federate_sharding">
-        <column name="order_id_sharding" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <metadata data-nodes="expected_dataset.t_order_item_federate_sharding">
-        <column name="item_id" type="numeric" />
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-        <column name="remarks" type="varchar" />
-    </metadata>
     <metadata data-nodes="expected_dataset.t_product">
         <column name="product_id" type="numeric" />
         <column name="product_name" type="varchar" />
@@ -126,14 +114,6 @@
     <row data-node="expected_dataset.t_single_table" values="3, 1002, init" />
     <row data-node="expected_dataset.t_single_table" values="4, 1003, init" />
     <row data-node="expected_dataset.t_broadcast_table" values="1, init" />
-    <row data-node="expected_dataset.t_order_federate_sharding" values="1010, 10, init" />
-    <row data-node="expected_dataset.t_order_federate_sharding" values="1100, 10, init" />
-    <row data-node="expected_dataset.t_order_federate_sharding" values="1011, 11, init" />
-    <row data-node="expected_dataset.t_order_federate_sharding" values="1101, 11, init" />
-    <row data-node="expected_dataset.t_order_item_federate_sharding" values="1000, 10000, 10, init, t_order_item_federate_sharding" />
-    <row data-node="expected_dataset.t_order_item_federate_sharding" values="1010, 10001, 10, init, t_order_item_federate_sharding" />
-    <row data-node="expected_dataset.t_order_item_federate_sharding" values="1001, 10001, 11, init, t_order_item_federate_sharding" />
-    <row data-node="expected_dataset.t_order_item_federate_sharding" values="1011, 10001, 10, init, t_order_item_federate_sharding" />
     <row data-node="expected_dataset.t_product" values="1, qq coins, 2, 200, off sale, 2017-08-08" />
     <row data-node="expected_dataset.t_product" values="2, haier washing machine, 4, 3121, on sale, 2017-08-08" />
     <row data-node="expected_dataset.t_product" values="3, huawei mobile phones, 6, 6666, on sale, 2017-08-08" />

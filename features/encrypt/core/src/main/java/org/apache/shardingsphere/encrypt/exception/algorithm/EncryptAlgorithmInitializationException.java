@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.exception.algorithm;
 
 import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Encrypt algorithm initialization exception.

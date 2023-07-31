@@ -475,22 +475,83 @@ objectProperties
     ;
 
 alterIndexInformationClause
-    : rebuildClause ((DEFERRED|IMMEDIATE) | INVALIDATION)?
+    : (deallocateUnusedClause
+    | allocateExtentClause
+    | shrinkClause
     | parallelClause
+    | loggingClause
+    | partialIndexClause)+
+    | rebuildClause ((DEFERRED | IMMEDIATE) | INVALIDATION)?
+    | parallelClause
+    | PARAMETERS LP_ odciParameters RP_
     | COMPILE
     | (ENABLE | DISABLE)
-    | UNUSABLE ONLINE? ((DEFERRED|IMMEDIATE)|INVALIDATION)?
+    | UNUSABLE ONLINE? ((DEFERRED | IMMEDIATE) | INVALIDATION)?
     | (VISIBLE | INVISIBLE)
     | renameIndexClause
     | COALESCE CLEANUP? ONLY? parallelClause?
     | ((MONITORING | NOMONITORING) USAGE)
     | UPDATE BLOCK REFERENCES
+    | alterIndexPartitioning
     ;
 
 renameIndexClause
     : (RENAME TO indexName)?
     ;
-    
+
+alterIndexPartitioning
+    : modifyIndexDefaultAttrs
+    | addHashIndexPartition
+    | modifyIndexPartition
+    | renameIndexPartition
+    | dropIndexPartition
+    | splitIndexPartition
+    | coalesceIndexPartition
+    | modifyIndexsubPartition
+    ;
+
+modifyIndexDefaultAttrs
+    : MODIFY DEFAULT ATTRIBUTES (FOR PARTITION partitionName)? (physicalAttributesClause | TABLESPACE (tablespaceName | DEFAULT) | loggingClause)+
+    ;
+
+addHashIndexPartition
+    : ADD PARTITION partitionName? (TABLESPACE tablespaceName)? indexCompression? parallelClause?
+    ;
+
+modifyIndexPartition
+    : MODIFY PARTITION partitionName
+    ( (deallocateUnusedClause | allocateExtentClause | physicalAttributesClause | loggingClause | indexCompression)+ 
+    | PARAMETERS LP_ odciParameters RP_
+    | COALESCE (CLEANUP | ONLY | parallelClause)?
+    | UPDATE BLOCK REFERENCES
+    | UNUSABLE
+    )
+    ;
+
+renameIndexPartition
+    : RENAME (PARTITION partitionName | SUBPARTITION subpartitionName) TO newName
+    ;
+
+dropIndexPartition
+    : DROP PARTITION partitionName
+    ;
+
+splitIndexPartition
+    : SPLIT PARTITION partitionName AT LP_ literals (COMMA_ literals)* RP_ (INTO LP_ indexPartitionDescription COMMA_ indexPartitionDescription RP_)? (parallelClause)?
+    ;
+
+indexPartitionDescription
+    : PARTITION (partitionName ((segmentAttributesClause | indexCompression)+ | PARAMETERS LP_ odciParameters RP_)? (USABLE | UNUSABLE)?)?
+    ;
+
+coalesceIndexPartition
+    : COALESCE PARTITION parallelClause?
+    ;
+
+modifyIndexsubPartition
+    : MODIFY SUBPARTITION subpartitionName (UNUSABLE | allocateExtentClause | deallocateUnusedClause)
+    ;
+
 objectTableSubstitution
     : NOT? SUBSTITUTABLE AT ALL LEVELS
     ;
@@ -579,16 +640,20 @@ loggingClause
     : LOGGING | NOLOGGING |  FILESYSTEM_LIKE_LOGGING
     ;
 
+partialIndexClause
+    : INDEXING (PARTIAL | FULL)
+    ;
+
 storageClause
     : STORAGE LP_
     (INITIAL sizeClause
     | NEXT sizeClause
-    | MINEXTENTS NUMBER_
-    | MAXEXTENTS (NUMBER_ | UNLIMITED)
+    | MINEXTENTS INTEGER_
+    | MAXEXTENTS (INTEGER_ | UNLIMITED)
     | maxsizeClause
-    | PCTINCREASE NUMBER_
-    | FREELISTS NUMBER_
-    | FREELIST GROUPS NUMBER_
+    | PCTINCREASE INTEGER_
+    | FREELISTS INTEGER_
+    | FREELIST GROUPS INTEGER_
     | OPTIMAL (sizeClause | NULL)?
     | BUFFER_POOL (KEEP | RECYCLE | DEFAULT)
     | FLASH_CACHE (KEEP | NONE | DEFAULT)
@@ -3533,6 +3598,13 @@ tablespaceEncryptionSpec
     : USING encryptAlgorithmName
     ;
 
+tableCompressionTableSpace
+    : COMPRESS
+    | COMPRESS BASIC
+    | COMPRESS (FOR (OLTP | ((QUERY | ARCHIVE) (LOW | HIGH)?)))
+    | NOCOMPRESS
+    ;
+
 createTablespace
     : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
     ;
@@ -3544,6 +3616,7 @@ permanentTablespaceClause
     | loggingClause
     | (FORCE LOGGING)
     | ENCRYPTION tablespaceEncryptionSpec
+    | DEFAULT tableCompressionTableSpace? storageClause?
     | (ONLINE|OFFLINE)
     )
     ;
@@ -3556,6 +3629,44 @@ compileTypeClause
     : COMPILE DEBUG? (SPECIFICATION|BODY)? compilerParametersClause? REUSE SETTINGS
     ;
 
+inheritanceClauses
+    : (NOT? (OVERRIDING | FINAL | INSTANTIABLE))+
+    ;
+
+procedureSpec
+    : PROCEDURE procedureName LP_ (parameterValue typeName (COMMA_ parameterValue typeName)*) RP_ ((IS | AS) callSpec)?
+    ;
+
+returnClause
+    : RETURN dataType ((IS | AS) callSpec)?
+    ;
+
+functionSpec
+    : FUNCTION name LP_ (parameterValue dataType (COMMA_ parameterValue dataType)*) RP_ returnClause
+    ;
+
+subprogramSpec
+    : (MEMBER | STATIC) (procedureSpec | functionSpec)
+    ;
+
+constructorSpec
+    : FINAL? INSTANTIABLE? CONSTRUCTOR FUNCTION typeName
+    (LP_ (SELF IN OUT dataType COMMA_)? parameterValue dataType (COMMA_ parameterValue dataType)* RP_)?
+    RETURN SELF AS RESULT ((AS | IS) callSpec)?
+    ;
+
+mapOrderFunctionSpec
+    : (MAP | ORDER) MEMBER functionSpec
+    ;
+
+elementSpecification
+    : inheritanceClauses? (subprogramSpec | constructorSpec | mapOrderFunctionSpec)+
+    ;
+
+replaceTypeClause
+    : REPLACE invokerRightsClause? AS OBJECT LP_ (attributeName dataType (COMMA_ (elementSpecification | attributeName dataType))*) RP_
+    ;
+
 alterType
-    : ALTER TYPE typeName compileTypeClause
+    : ALTER TYPE typeName (compileTypeClause | replaceTypeClause)?
     ;

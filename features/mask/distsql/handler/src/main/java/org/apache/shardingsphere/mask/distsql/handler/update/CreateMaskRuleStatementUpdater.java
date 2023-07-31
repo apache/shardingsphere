@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mask.distsql.handler.update;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;

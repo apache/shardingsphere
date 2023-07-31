@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.connection.validator.ShardingSphereMetaDa
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.DuplicateInsertDataRecordException;
 import org.apache.shardingsphere.sharding.exception.syntax.InsertSelectTableViolationException;
 import org.apache.shardingsphere.sharding.exception.syntax.MissingGenerateKeyColumnWithInsertSelectException;

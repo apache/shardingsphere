@@ -32,7 +32,7 @@ Supported database types definition
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.infra.database.core.dict.metadata.DialectMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/core/src/main/java/org/apache/shardingsphere/infra/database/core/dict/metadata/DialectMetaDataLoader.java)
+[`org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader`](https://github.com/apache/shardingsphere/tree/master/infra/database/core/src/main/java/org/apache/shardingsphere/infra/database/core/metadata/data/loader/DialectMetaDataLoader.java)
 
 ### Definition
 
@@ -48,23 +48,6 @@ Use SQL dialect to load meta data rapidly
 | SQLServer            | Use SQLServer dialect to load meta data  | [`org.apache.shardingsphere.infra.database.sqlserver.SQLServerMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/sqlserver/src/main/java/org/apache/shardingsphere/infra/database/sqlserver/SQLServerMetaDataLoader.java)      |
 | H2                   | Use H2 dialect to load meta data         | [`org.apache.shardingsphere.infra.database.h2.H2MetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/h2/src/main/java/org/apache/shardingsphere/infra/database/h2/H2MetaDataLoader.java)                                         |
 | openGauss            | Use OpenGauss dialect to load meta data  | [`org.apache.shardingsphere.infra.database.opengauss.OpenGaussMetaDataLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/opengauss/src/main/java/org/apache/shardingsphere/infra/database/opengauss/OpenGaussMetaDataLoader.java)      |
-
-## DialectDataTypeLoader
-
-### Fully-qualified class name
-
-[`org.apache.shardingsphere.infra.database.core.metadata.datatype.DialectDataTypeLoader`](https://github.com/apache/shardingsphere/blob//master/infra/database/core/src/main/java/org/apache/shardingsphere/infra/database/core/metadata/datatype/DialectDataTypeLoader.java)
-
-### Definition
-
-Data type loader
-
-### Implementation classes
-
-| *Configuration Type* | *Description*           | *Fully-qualified class name*                                                                                                                                                                                                                      |
-|----------------------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| MySQL                | MySQL data type loader  | [`org.apache.shardingsphere.infra.database.mysql.MySQLDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/mysql/src/main/java/org/apache/shardingsphere/infra/database/mysql/MySQLDataTypeLoader.java)      |
-| Oracle               | Oracle data type loader | [`org.apache.shardingsphere.infra.database.oracle.OracleDataTypeLoader`](https://github.com/apache/shardingsphere/blob/master/infra/database/type/oracle/src/main/java/org/apache/shardingsphere/infra/database/oracle/OracleDataTypeLoader.java) |
 
 ## DataSourcePoolMetaData 
 

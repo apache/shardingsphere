@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.data.loader.type;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,7 +49,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +59,10 @@ class TableMetaDataLoaderTest {
     private static final String TEST_CATALOG = "catalog";
     
     private static final String TEST_TABLE = "table";
+    
+    private static final String NOT_EXISTED_TABLE = "not_existed_table";
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "TRUNK");
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
@@ -86,6 +90,7 @@ class TableMetaDataLoaderTest {
         when(dataSource.getConnection().getCatalog()).thenReturn(TEST_CATALOG);
         when(dataSource.getConnection().getMetaData().getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableExistResultSet);
         when(tableExistResultSet.next()).thenReturn(true);
+        when(dataSource.getConnection().getMetaData().getTables(TEST_CATALOG, null, NOT_EXISTED_TABLE, null)).thenReturn(mock(ResultSet.class));
         when(dataSource.getConnection().getMetaData().getColumns(TEST_CATALOG, null, TEST_TABLE, "%")).thenReturn(columnResultSet);
         when(columnResultSet.next()).thenReturn(true, true, false);
         when(columnResultSet.getString("TABLE_NAME")).thenReturn(TEST_TABLE);
@@ -106,10 +111,7 @@ class TableMetaDataLoaderTest {
     
     @Test
     void assertLoadWithExistedTable() throws SQLException {
-        DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
-        when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
-        Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singletonList(
-                new MetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource, databaseType, "sharding_db")));
+        Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(new MetaDataLoaderMaterial(Collections.singleton(TEST_TABLE), dataSource, databaseType, "sharding_db")));
         TableMetaData tableMetaData = actual.get("sharding_db").getTables().iterator().next();
         Collection<ColumnMetaData> columns = tableMetaData.getColumns();
         assertThat(columns.size(), is(2));
@@ -131,8 +133,7 @@ class TableMetaDataLoaderTest {
     
     @Test
     void assertLoadWithNotExistedTable() throws SQLException {
-        Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singletonList(
-                new MetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource, mock(DatabaseType.class), "sharding_db")));
+        Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(new MetaDataLoaderMaterial(Collections.singleton(NOT_EXISTED_TABLE), dataSource, databaseType, "sharding_db")));
         assertFalse(actual.isEmpty());
         assertTrue(actual.containsKey("sharding_db"));
         assertTrue(actual.get("sharding_db").getTables().isEmpty());

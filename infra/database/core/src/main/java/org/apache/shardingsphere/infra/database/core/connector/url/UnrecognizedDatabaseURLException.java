@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.infra.database.core.connector.url;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
  * Unrecognized database URL exception.
  */
-public final class UnrecognizedDatabaseURLException extends KernelSQLException {
+public final class UnrecognizedDatabaseURLException extends MetaDataSQLException {
     
     private static final long serialVersionUID = -1551117178863766353L;
     
     public UnrecognizedDatabaseURLException(final String url, final String pattern) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 0, 1, "The URL `%s` is not recognized, please refer to the pattern `%s`.", url, pattern);
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 1, "The URL `%s` is not recognized, please refer to the pattern `%s`.", url, pattern);
     }
 }

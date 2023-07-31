@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.projection;
 
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
@@ -26,8 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnPr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
-
-import java.util.Map;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
 /**
  * Projections segment binder.
@@ -39,22 +39,23 @@ public final class ProjectionsSegmentBinder {
      * Bind projections segment with metadata.
      *
      * @param segment table segment
+     * @param boundedTableSegment bounded table segment
      * @param tableBinderContexts table binder contexts
      * @return bounded projections segment
      */
-    public static ProjectionsSegment bind(final ProjectionsSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static ProjectionsSegment bind(final ProjectionsSegment segment, final TableSegment boundedTableSegment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         ProjectionsSegment result = new ProjectionsSegment(segment.getStartIndex(), segment.getStopIndex());
         result.setDistinctRow(segment.isDistinctRow());
-        segment.getProjections().forEach(each -> result.getProjections().add(bind(each, tableBinderContexts)));
+        segment.getProjections().forEach(each -> result.getProjections().add(bind(each, boundedTableSegment, tableBinderContexts)));
         return result;
     }
     
-    private static ProjectionSegment bind(final ProjectionSegment projectionSegment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    private static ProjectionSegment bind(final ProjectionSegment projectionSegment, final TableSegment boundedTableSegment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         if (projectionSegment instanceof ColumnProjectionSegment) {
             return ColumnProjectionSegmentBinder.bind((ColumnProjectionSegment) projectionSegment, tableBinderContexts);
         }
         if (projectionSegment instanceof ShorthandProjectionSegment) {
-            return ShorthandProjectionSegmentBinder.bind((ShorthandProjectionSegment) projectionSegment, tableBinderContexts);
+            return ShorthandProjectionSegmentBinder.bind((ShorthandProjectionSegment) projectionSegment, boundedTableSegment, tableBinderContexts);
         }
         // TODO support more ProjectionSegment bind
         return projectionSegment;

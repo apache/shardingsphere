@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.CompareUtils;
 

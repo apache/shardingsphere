@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.database.core.metadata.data.loader.type;
 
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,12 +38,12 @@ import java.util.Iterator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ColumnMetaDataLoaderTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "TRUNK");
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private Connection connection;
@@ -79,7 +80,7 @@ class ColumnMetaDataLoaderTest {
     
     @Test
     void assertLoad() throws SQLException {
-        Collection<ColumnMetaData> actual = ColumnMetaDataLoader.load(connection, "tbl", mock(DatabaseType.class, RETURNS_DEEP_STUBS));
+        Collection<ColumnMetaData> actual = ColumnMetaDataLoader.load(connection, "tbl", databaseType);
         assertThat(actual.size(), is(2));
         Iterator<ColumnMetaData> columnMetaDataIterator = actual.iterator();
         assertColumnMetaData(columnMetaDataIterator.next(), "pk_col", Types.INTEGER, true, true);

@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.data.loader;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
 import java.sql.Array;
 import java.sql.Blob;
@@ -42,12 +43,16 @@ import java.util.concurrent.Executor;
 /**
  * Meta data loader connection.
  */
-@RequiredArgsConstructor
 public final class MetaDataLoaderConnection implements Connection {
     
-    private final DatabaseType databaseType;
-    
     private final Connection connection;
+    
+    private final DialectDatabaseMetaData dialectDatabaseMetaData;
+    
+    public MetaDataLoaderConnection(final DatabaseType databaseType, final Connection connection) {
+        this.connection = connection;
+        dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+    }
     
     @SuppressWarnings("ReturnOfNull")
     @Override
@@ -66,7 +71,7 @@ public final class MetaDataLoaderConnection implements Connection {
     
     @Override
     public String getSchema() {
-        return databaseType.getSchema(connection);
+        return dialectDatabaseMetaData.getSchema(connection);
     }
     
     @Override

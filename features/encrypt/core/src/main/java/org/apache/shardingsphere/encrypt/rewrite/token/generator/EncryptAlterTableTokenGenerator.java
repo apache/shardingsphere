@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQL
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;

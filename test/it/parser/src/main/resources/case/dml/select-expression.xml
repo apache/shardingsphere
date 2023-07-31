@@ -2630,4 +2630,15 @@
             <simple-table name="nmf_sh_sample_apply_prepared" start-index="52" stop-index="79" />
         </from>
     </select>
+    
+    <select sql-case-id="select_cluster_function">
+        <projections start-index="7" stop-index="55">
+            <expression-projection text="CLUSTER_PROBABILITY(km_sh_clus_sample, 2 USING *)" start-index="7" stop-index="55">
+                <function function-name="CLUSTER_PROBABILITY" text="CLUSTER_PROBABILITY(km_sh_clus_sample, 2 USING *)" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="mining_data_apply_v" start-index="62" stop-index="80" />
+        </from>
+    </select>
 </sql-parser-test-cases>
