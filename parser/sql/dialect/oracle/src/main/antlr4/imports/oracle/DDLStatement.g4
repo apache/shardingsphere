@@ -479,6 +479,7 @@ alterIndexInformationClause
     | allocateExtentClause
     | shrinkClause
     | parallelClause
+    | physicalAttributesClause
     | loggingClause
     | partialIndexClause)+
     | rebuildClause ((DEFERRED | IMMEDIATE) | INVALIDATION)?
@@ -581,7 +582,15 @@ enableDisableOthers
     ;
 
 rebuildClause
-    : REBUILD parallelClause?
+    : REBUILD (PARTITION partitionName | SUBPARTITION subpartitionName | REVERSE | NOREVERSE)?
+    ( parallelClause
+    | TABLESPACE tablespaceName
+    | PARAMETERS LP_ odciParameters RP_
+    | ONLINE
+    | physicalAttributesClause
+    | indexCompression
+    | loggingClause
+    | partialIndexClause)*
     ;
 
 parallelClause
