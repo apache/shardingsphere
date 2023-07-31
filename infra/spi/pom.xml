@@ -20,28 +20,23 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-infra</artifactId>
         <version>5.4.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra</artifactId>
-    <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
+    <artifactId>shardingsphere-infra-spi</artifactId>
     
-    <modules>
-        <module>spi</module>
-        <module>exception</module>
-        <module>database</module>
-        <module>binder</module>
-        <module>common</module>
-        <module>context</module>
-        <module>distsql-handler</module>
-        <module>executor</module>
-        <module>expr</module>
-        <module>merge</module>
-        <module>parser</module>
-        <module>rewrite</module>
-        <module>route</module>
-        <module>session</module>
-        <module>util</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-exception-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-util</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
