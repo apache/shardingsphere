@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.metadata.data;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -51,7 +52,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS);
         DatabaseType protocolType = shardingSphereDatabases.values().iterator().next().getProtocolType();
-        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, protocolType);
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
         if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
             collectFromDatabase(shardingSphereDatabases.get(databaseName), result);
         } else {
