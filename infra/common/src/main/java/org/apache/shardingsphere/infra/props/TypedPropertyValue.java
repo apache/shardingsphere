@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props;
+package org.apache.shardingsphere.infra.props;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
+import org.apache.shardingsphere.infra.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 

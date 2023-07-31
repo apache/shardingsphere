@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props;
+package org.apache.shardingsphere.infra.props;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.util.props.exception.TypedPropertiesServerException;
-import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
+import org.apache.shardingsphere.infra.props.exception.TypedPropertiesServerException;
+import org.apache.shardingsphere.infra.props.exception.TypedPropertyValueException;
 
 import java.util.Collection;
 import java.util.HashMap;

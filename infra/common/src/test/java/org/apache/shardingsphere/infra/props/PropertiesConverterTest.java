@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props.exception;
+package org.apache.shardingsphere.infra.props;
 
-import java.util.Collection;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.Test;
 
-/**
- * Typed properties exception.
- */
-public final class TypedPropertiesServerException extends RuntimeException {
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class PropertiesConverterTest {
     
-    private static final long serialVersionUID = -8301410307117564844L;
+    @Test
+    void assertConvert() {
+        assertThat(PropertiesConverter.convert(PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value"))), is("bar=bar_value,foo=foo_value"));
+    }
     
-    private static final String ERROR_CATEGORY = "PROPS";
-    
-    private static final int ERROR_CODE = 1;
-    
-    public TypedPropertiesServerException(final Collection<String> errorMessages) {
-        super(String.format("%s-%05d: %s", ERROR_CATEGORY, ERROR_CODE, String.join(System.lineSeparator(), errorMessages)));
+    @Test
+    void assertConvertEmptyProperties() {
+        assertThat(PropertiesConverter.convert(new Properties()), is(""));
     }
 }

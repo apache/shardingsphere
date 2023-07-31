@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props;
+package org.apache.shardingsphere.infra.props.exception;
 
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
-import java.util.Properties;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class PropertiesConverterTest {
+class TypedPropertiesExceptionTest {
     
     @Test
-    void assertConvert() {
-        assertThat(PropertiesConverter.convert(PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value"))), is("bar=bar_value,foo=foo_value"));
-    }
-    
-    @Test
-    void assertConvertEmptyProperties() {
-        assertThat(PropertiesConverter.convert(new Properties()), is(""));
+    void assertGetMessage() {
+        assertThat(new TypedPropertiesServerException(Arrays.asList("foo_msg", "bar_msg")).getMessage(), is("PROPS-00001: foo_msg" + System.lineSeparator() + "bar_msg"));
     }
 }

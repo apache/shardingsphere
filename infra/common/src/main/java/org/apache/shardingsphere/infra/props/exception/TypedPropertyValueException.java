@@ -15,9 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props.fixture.enums;
+package org.apache.shardingsphere.infra.props.exception;
 
-public enum TypedPropertyEnumFixture {
+import org.apache.shardingsphere.infra.exception.core.internal.ShardingSphereInternalException;
+import org.apache.shardingsphere.infra.props.TypedPropertyKey;
+
+/**
+ * Typed property value exception.
+ */
+public final class TypedPropertyValueException extends ShardingSphereInternalException {
     
-    FOO
+    private static final long serialVersionUID = -2989212435757964906L;
+    
+    public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
+        super("Value `%s` of `%s` cannot convert to type `%s`", value, key.getKey(), key.getType().getName());
+    }
 }
