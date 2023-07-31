@@ -15,18 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props.exception;
+package org.apache.shardingsphere.infra.props.fixture.enums;
 
-import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyKeyFixture;
-import org.junit.jupiter.api.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class TypedPropertyValueExceptionTest {
+public enum TypedPropertyEnumFixture {
     
-    @Test
-    void assertGetMessage() {
-        assertThat(new TypedPropertyValueException(TypedPropertyKeyFixture.INT_VALUE, "test").getMessage(), is("Value `test` of `int` cannot convert to type `int`"));
-    }
+    FOO
 }

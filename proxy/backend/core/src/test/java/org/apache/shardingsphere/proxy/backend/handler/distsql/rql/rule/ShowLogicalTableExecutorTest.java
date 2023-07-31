@@ -45,6 +45,8 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ShowLogicalTableExecutorTest {
     
+    private final RQLExecutor<ShowLogicalTablesStatement> executor = new ShowLogicalTableExecutor();
+    
     @Mock
     private ShardingSphereDatabase database;
     
@@ -59,7 +61,6 @@ class ShowLogicalTableExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowLogicalTablesStatement> executor = new ShowLogicalTableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowLogicalTablesStatement.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
@@ -71,7 +72,6 @@ class ShowLogicalTableExecutorTest {
     
     @Test
     void assertRowDataWithLike() {
-        RQLExecutor<ShowLogicalTablesStatement> executor = new ShowLogicalTableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, new ShowLogicalTablesStatement("t_order_%", null));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
@@ -80,7 +80,6 @@ class ShowLogicalTableExecutorTest {
     
     @Test
     void assertGetColumnNames() {
-        RQLExecutor<ShowLogicalTablesStatement> executor = new ShowLogicalTableExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(1));
         Iterator<String> iterator = columns.iterator();

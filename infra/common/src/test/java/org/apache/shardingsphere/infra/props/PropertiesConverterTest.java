@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props.exception;
+package org.apache.shardingsphere.infra.props;
 
-import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.Test;
 
-/**
- * Typed property value exception.
- */
-public final class TypedPropertyValueException extends Exception {
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class PropertiesConverterTest {
     
-    private static final long serialVersionUID = -2989212435757964906L;
+    @Test
+    void assertConvert() {
+        assertThat(PropertiesConverter.convert(PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value"))), is("bar=bar_value,foo=foo_value"));
+    }
     
-    public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
-        super(String.format("Value `%s` of `%s` cannot convert to type `%s`", value, key.getKey(), key.getType().getName()));
+    @Test
+    void assertConvertEmptyProperties() {
+        assertThat(PropertiesConverter.convert(new Properties()), is(""));
     }
 }

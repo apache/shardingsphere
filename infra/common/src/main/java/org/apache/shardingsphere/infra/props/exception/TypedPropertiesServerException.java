@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props;
+package org.apache.shardingsphere.infra.props.exception;
+
+import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
+
+import java.util.Collection;
 
 /**
- * Typed property key.
+ * Typed properties exception.
  */
-public interface TypedPropertyKey {
+public final class TypedPropertiesServerException extends ShardingSphereServerException {
     
-    /**
-     * Get property key.
-     * 
-     * @return property key
-     */
-    String getKey();
+    private static final long serialVersionUID = -8301410307117564844L;
     
-    /**
-     * Get default property value.
-     * 
-     * @return default property value
-     */
-    String getDefaultValue();
+    private static final String ERROR_CATEGORY = "PROPS";
     
-    /**
-     * Get property type.
-     * 
-     * @return property type
-     */
-    Class<?> getType();
+    private static final int ERROR_CODE = 1;
+    
+    public TypedPropertiesServerException(final Collection<String> errorMessages) {
+        super(ERROR_CATEGORY, ERROR_CODE, String.join(System.lineSeparator(), errorMessages));
+    }
 }

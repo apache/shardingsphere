@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.regular;
+package org.apache.shardingsphere.infra.props;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
- * Regular utility class.
+ * Properties converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RegularUtils {
+public final class PropertiesConverter {
     
     /**
-     * Tells whether this input string matches the given regular expression.
+     * Convert properties to string content.
      * 
-     * @param regex the regular expression to which the input string is to be matched
-     * @param toBeMatched the string to be matched
-     * @return whether the regular expression matches on the input
+     * @param props properties to be converted
+     * @return converted string content
      */
-    public static boolean matchesCaseInsensitive(final String regex, final String toBeMatched) {
-        Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher(toBeMatched);
-        return m.matches();
+    public static String convert(final Properties props) {
+        return props.entrySet().stream().map(entry -> String.join("=", entry.getKey().toString(), entry.getValue().toString())).sorted().collect(Collectors.joining(","));
     }
 }

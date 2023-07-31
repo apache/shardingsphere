@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.regular;
+package org.apache.shardingsphere.infra.props.exception;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.exception.core.internal.ShardingSphereInternalException;
+import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class RegularUtilsTest {
+/**
+ * Typed property value exception.
+ */
+public final class TypedPropertyValueException extends ShardingSphereInternalException {
     
-    @Test
-    void assertMatchesWithUpperCaseRegex() {
-        assertTrue(RegularUtils.matchesCaseInsensitive("T.ORDER", "t_order"));
-    }
+    private static final long serialVersionUID = -2989212435757964906L;
     
-    @Test
-    void assertMatchesWithLowerCaseRegex() {
-        assertTrue(RegularUtils.matchesCaseInsensitive("t.order", "t_order"));
-    }
-    
-    @Test
-    void assertMatchesWithUpperCaseInput() {
-        assertTrue(RegularUtils.matchesCaseInsensitive("t.order", "T_ORDER"));
+    public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
+        super("Value `%s` of `%s` cannot convert to type `%s`", value, key.getKey(), key.getType().getName());
     }
 }

@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props.fixture;
+package org.apache.shardingsphere.infra.props.fixture;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
-import org.apache.shardingsphere.infra.util.props.fixture.enums.TypedPropertyEnumFixture;
-import org.apache.shardingsphere.infra.util.props.fixture.typed.PropertiesTypedSPIFixture;
+import org.apache.shardingsphere.infra.props.TypedPropertyKey;
+import org.apache.shardingsphere.infra.props.fixture.enums.TypedPropertyEnumFixture;
+import org.apache.shardingsphere.infra.props.fixture.typed.PropertiesTypedSPIFixture;
 
 @RequiredArgsConstructor
 @Getter
