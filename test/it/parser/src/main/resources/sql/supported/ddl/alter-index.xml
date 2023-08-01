@@ -48,7 +48,6 @@
     <sql-case id="alter_index_parameters2" value="ALTER INDEX po_xmlindex_ix PARAMETERS('DROP_GROUP GROUP po_item')" db-types="Oracle" />
     <sql-case id="alter_index_parameters3" value="ALTER INDEX po_xmlindex_ix PARAMETERS('PARAM myparam')" db-types="Oracle" />
     <sql-case id="alter_index_modify_default_attributes_tablespace" value="ALTER INDEX q1_sales_by_region_locix MODIFY DEFAULT ATTRIBUTES TABLESPACE tbs_4" db-types="Oracle" />
-    <sql-case id="alter_index_parameters" value="ALTER INDEX po_xmlindex_ix PARAMETERS('DROP PATH TABLE')" db-types="Oracle" />
     <sql-case id="alter_index_rename_subpartition_to" value="ALTER INDEX scuba RENAME SUBPARTITION sys_subp3254 TO bcd_types" db-types="Oracle" />
     <sql-case id="alter_index_modify_default_attributes_initrans" value="ALTER INDEX prod_idx MODIFY DEFAULT ATTRIBUTES INITRANS 5" db-types="Oracle" />
     <sql-case id="alter_index_set_tablespace" value="ALTER INDEX distributors SET TABLESPACE fasttablespace" db-types="PostgreSQL,openGauss" />
