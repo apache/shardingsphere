@@ -111,8 +111,8 @@ public final class ProjectionEngine {
         IdentifierValue owner = projectionSegment.getColumn().getOwner().isPresent() ? projectionSegment.getColumn().getOwner().get().getIdentifier() : null;
         IdentifierValue alias = projectionSegment.getAliasName().isPresent() ? projectionSegment.getAlias().orElse(null) : null;
         ColumnProjection result = new ColumnProjection(owner, projectionSegment.getColumn().getIdentifier(), alias, databaseType);
-        result.setOriginalName(projectionSegment.getColumn().getOriginalColumn());
-        result.setOriginalOwner(projectionSegment.getColumn().getOriginalTable());
+        result.setOriginalColumn(projectionSegment.getColumn().getOriginalColumn());
+        result.setOriginalTable(projectionSegment.getColumn().getOriginalTable());
         return result;
     }
     
