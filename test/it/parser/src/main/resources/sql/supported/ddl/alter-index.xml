@@ -42,6 +42,8 @@
     <sql-case id="alter_index_storage" value="ALTER INDEX emp_ename STORAGE (NEXT 40)" db-types="Oracle" />
     <sql-case id="alter_index_add_partition" value="ALTER INDEX hgidx ADD PARTITION p5" db-types="Oracle" />
     <sql-case id="alter_index_parameters" value="ALTER INDEX po_xmlindex_ix PARAMETERS('DROP PATH TABLE')" db-types="Oracle" />
+    <sql-case id="alter_index_rename_subpartition_to" value="ALTER INDEX scuba RENAME SUBPARTITION sys_subp3254 TO bcd_types" db-types="Oracle" />
+    <sql-case id="alter_index_modify_default_attributes_initrans" value="ALTER INDEX prod_idx MODIFY DEFAULT ATTRIBUTES INITRANS 5" db-types="Oracle" />
     <sql-case id="alter_index_set_tablespace" value="ALTER INDEX distributors SET TABLESPACE fasttablespace" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_index_alter_column" value="ALTER INDEX t_order_idx ALTER COLUMN 3 SET STATISTICS 1000" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_index_with_schema" value="ALTER INDEX public.t_order_idx ALTER COLUMN 3 SET STATISTICS 1000" db-types="PostgreSQL,openGauss" />
