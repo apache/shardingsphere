@@ -55,6 +55,7 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         SelectStatementHandler.getWindowSegment(sqlStatement).ifPresent(optional -> SelectStatementHandler.setWindowSegment(result, optional));
         SelectStatementHandler.getWithSegment(sqlStatement).ifPresent(optional -> SelectStatementHandler.setWithSegment(result, optional));
         SelectStatementHandler.getModelSegment(sqlStatement).ifPresent(optional -> SelectStatementHandler.setModelSegment(result, optional));
+        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         return result;
     }
 }
