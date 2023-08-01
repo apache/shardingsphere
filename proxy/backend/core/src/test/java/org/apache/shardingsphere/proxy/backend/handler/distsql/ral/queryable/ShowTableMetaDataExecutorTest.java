@@ -83,9 +83,8 @@ class ShowTableMetaDataExecutorTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        ShardingSphereSchema schema = new ShardingSphereSchema(createTableMap(), Collections.emptyMap());
         when(result.getName()).thenReturn("foo_db");
-        when(result.getSchema("foo_db")).thenReturn(schema);
+        when(result.getSchema("foo_db")).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));
         return result;
     }
     
