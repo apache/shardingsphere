@@ -41,6 +41,7 @@ public final class EncryptMetaDataReviseEntry implements MetaDataReviseEntry<Enc
         return rule.findEncryptTable(tableName).map(EncryptColumnNameReviser::new);
     }
     
+    @Override
     public Optional<EncryptIndexReviser> getIndexReviser(final EncryptRule rule, final String tableName) {
         return rule.findEncryptTable(tableName).map(EncryptIndexReviser::new);
     }
