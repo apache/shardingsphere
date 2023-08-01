@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected tables.
+ * Expected table collection expression.
  */
 @Getter
 @Setter
