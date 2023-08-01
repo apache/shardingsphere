@@ -78,7 +78,7 @@ public final class SimpleTableSegmentBinder {
         ShardingSphereSchema schema = metaData.getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
         tableBinderContexts.put(segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue()),
                 createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema, databaseType));
-        TableNameSegment tableNameSegment = new TableNameSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getTableName().getIdentifier());
+        TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), segment.getTableName().getIdentifier());
         tableNameSegment.setOriginalDatabase(originalDatabase);
         tableNameSegment.setOriginalSchema(originalSchema);
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
