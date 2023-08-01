@@ -520,7 +520,7 @@ addHashIndexPartition
 
 modifyIndexPartition
     : MODIFY PARTITION partitionName
-    ( (deallocateUnusedClause | allocateExtentClause | physicalAttributesClause | loggingClause | indexCompression)+
+    ( (deallocateUnusedClause | allocateExtentClause | physicalAttributesClause | loggingClause | indexCompression)+ 
     | PARAMETERS LP_ odciParameters RP_
     | COALESCE (CLEANUP | ONLY | parallelClause)?
     | UPDATE BLOCK REFERENCES
