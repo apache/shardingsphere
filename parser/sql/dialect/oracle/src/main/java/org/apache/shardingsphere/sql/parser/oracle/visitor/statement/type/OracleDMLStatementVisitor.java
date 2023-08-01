@@ -150,6 +150,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegme
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableCollectionExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.XmlTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
@@ -410,6 +411,15 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitTableCollectionExpr(final TableCollectionExprContext ctx) {
+        TableCollectionExpressionSegment result = new TableCollectionExpressionSegment(ctx.collectionExpr().functionCall().getStart().getStartIndex(),
+                ctx.collectionExpr().functionCall().getStop().getStopIndex());
+        if (null != ctx.collectionExpr().functionCall()) {
+            result.setFunctionSegment((FunctionSegment) visit(ctx.collectionExpr().functionCall()));
+            return result;
+        }
+        if (null != ctx.collectionExpr().expr()) {
+            result.setExpressionSegment((ExpressionSegment) visit(ctx.collectionExpr().expr()));
+        }
         OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.collectionExpr().selectSubquery());
         return new SubquerySegment(ctx.collectionExpr().selectSubquery().start.getStartIndex(), ctx.collectionExpr().selectSubquery().stop.getStopIndex(), subquery);
     }
@@ -940,8 +950,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             SubquerySegment subquerySegment = new SubquerySegment(ctx.lateralClause().selectSubquery().start.getStartIndex(), ctx.lateralClause().selectSubquery().stop.getStopIndex(), subquery);
             result = new SubqueryTableSegment(subquerySegment);
         } else {
-            SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.tableCollectionExpr());
-            result = new SubqueryTableSegment(subquerySegment);
+            return visit(ctx.tableCollectionExpr());
         }
         return result;
     }

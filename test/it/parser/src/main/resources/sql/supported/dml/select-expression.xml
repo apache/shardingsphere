@@ -109,4 +109,5 @@
     <sql-case id="select_interval_day_to_second_expression" value="SELECT (SYSTIMESTAMP - order_date) DAY(9) TO SECOND FROM orders" db-types="Oracle" />
     <sql-case id="select_feature_function" value="SELECT FEATURE_VALUE(nmf_sh_sample, 3 USING *) FROM nmf_sh_sample_apply_prepared" db-types="Oracle" />
     <sql-case id="select_cluster_function" value="SELECT CLUSTER_PROBABILITY(km_sh_clus_sample, 2 USING *) FROM mining_data_apply_v" db-types="Oracle" />
+    <sql-case id="select_from_table_function" value="SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_SQL_PLAN_BASELINE(sql_handle=>'SYS_SQL_209d10fabbedc741', format=>'basic'));" db-types="Oracle" />
 </sql-cases>

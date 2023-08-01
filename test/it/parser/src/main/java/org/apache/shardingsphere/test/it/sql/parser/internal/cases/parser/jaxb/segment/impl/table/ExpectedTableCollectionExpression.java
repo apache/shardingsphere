@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedDelimiterSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.function.ExpectedFunction;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -28,20 +30,12 @@ import javax.xml.bind.annotation.XmlElement;
  */
 @Getter
 @Setter
-public final class ExpectedTable extends AbstractExpectedDelimiterSQLSegment {
+public final class ExpectedTableCollectionExpression extends AbstractExpectedDelimiterSQLSegment {
     
-    @XmlElement(name = "simple-table")
-    private ExpectedSimpleTable simpleTable;
+    @XmlElement
+    private ExpectedFunction function;
     
-    @XmlElement(name = "subquery-table")
-    private ExpectedSubqueryTable subqueryTable;
+    @XmlElement
+    private ExpectedExpression expr;
     
-    @XmlElement(name = "join-table")
-    private ExpectedJoinTable joinTable;
-    
-    @XmlElement(name = "xml-table")
-    private ExpectedXmlTable xmlTable;
-    
-    @XmlElement(name = "table-collection-expr")
-    private ExpectedTableCollectionExpression tableCollectionExpression;
 }

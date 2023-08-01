@@ -673,6 +673,7 @@ bitExpr
     | bitExpr SLASH_ bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
+    | bitExpr ARROW_ bitExpr
     ;
 
 simpleExpr

@@ -2641,4 +2641,38 @@
             <simple-table name="mining_data_apply_v" start-index="62" stop-index="80" />
         </from>
     </select>
+    
+    <select sql-case-id="select_from_table_function">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <table-collection-expr>
+                <function start-index="20" stop-index="112" function-name="DISPLAY_SQL_PLAN_BASELINE" text="DBMS_XPLAN.DISPLAY_SQL_PLAN_BASELINE(sql_handle=>'SYS_SQL_209d10fabbedc741', format=>'basic')" owner="DBMS_XPLAN">
+                <parameter>
+                    <binary-operation-expression start-index="57" stop-index="94">
+                        <left>
+                            <column name="sql_handle" start-index="57" stop-index="66" />
+                        </left>
+                        <operator>=></operator>
+                        <right>
+                            <literal-expression start-index="69" stop-index="94" value="SYS_SQL_209d10fabbedc741" />
+                        </right>
+                    </binary-operation-expression>
+                </parameter>
+                    <parameter>
+                        <binary-operation-expression start-index="97" stop-index="111">
+                            <left>
+                                <column name="format" start-index="97" stop-index="102" />
+                            </left>
+                            <operator>=></operator>
+                            <right>
+                                <literal-expression start-index="105" stop-index="111" value="basic" />
+                            </right>
+                        </binary-operation-expression>
+                    </parameter>
+                </function>
+            </table-collection-expr>
+        </from>
+    </select>
 </sql-parser-test-cases>
