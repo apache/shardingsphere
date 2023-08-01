@@ -107,7 +107,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
         for (ShardingSphereRule each : rules) {
             RuleConfiguration ruleConfig = each.getConfiguration();
             Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass().getName());
-            result.add(decorator.map(optional -> optional.decorate(databaseName, dataSources, rules, ruleConfig)).orElse(each.getConfiguration()));
+            result.add(decorator.map(optional -> optional.decorate(databaseName, dataSources, rules, ruleConfig)).orElse(ruleConfig));
         }
         return result;
     }
