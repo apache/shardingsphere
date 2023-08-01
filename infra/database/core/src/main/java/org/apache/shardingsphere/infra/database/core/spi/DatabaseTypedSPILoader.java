@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.database.core.spi;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundServerException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Optional;
 import java.util.Properties;

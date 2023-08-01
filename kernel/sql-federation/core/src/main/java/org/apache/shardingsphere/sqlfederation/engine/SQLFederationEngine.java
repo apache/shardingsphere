@@ -42,7 +42,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchem
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationCompilerEngine;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;

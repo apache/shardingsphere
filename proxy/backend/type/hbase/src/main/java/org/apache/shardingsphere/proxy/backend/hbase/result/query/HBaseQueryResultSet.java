@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.hbase.result.query;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import java.util.Collection;
 
 /**

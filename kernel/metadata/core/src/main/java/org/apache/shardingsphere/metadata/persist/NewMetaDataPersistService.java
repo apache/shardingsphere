@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolD
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.datasource.NewDataSourceNodePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.datasource.NewDataSourceUnitPersistService;

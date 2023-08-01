@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.datasource.pool.destroyer;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSourcePoolActiveDetector;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.util.concurrent.ExecutorService;

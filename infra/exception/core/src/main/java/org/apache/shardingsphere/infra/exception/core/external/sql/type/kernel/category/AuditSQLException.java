@@ -29,7 +29,7 @@ public abstract class AuditSQLException extends KernelSQLException {
     
     private static final int KERNEL_CODE = 6;
     
-    public AuditSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+    protected AuditSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
     }
 }
