@@ -65,8 +65,9 @@ public final class JoinTableSegmentBinder {
         result.setJoinType(segment.getJoinType());
         result.setRight(TableSegmentBinder.bind(segment.getRight(), metaData, defaultDatabaseName, databaseType, tableBinderContexts));
         result.setCondition(segment.getCondition());
-        result.getJoinTableProjectionSegments().addAll(getJoinTableProjectionSegments(segment, databaseType, tableBinderContexts));
         // TODO bind condition and using column in join table segment
+        result.setUsing(segment.getUsing());
+        result.getJoinTableProjectionSegments().addAll(getJoinTableProjectionSegments(segment, databaseType, tableBinderContexts));
         return result;
     }
     
