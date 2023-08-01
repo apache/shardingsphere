@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
+import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptColumnToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -99,18 +99,18 @@ class EncryptAlterTableTokenGeneratorTest {
         assertThat(actual.size(), is(4));
         Iterator<SQLToken> actualIterator = actual.iterator();
         assertThat(actualIterator.next(), instanceOf(RemoveToken.class));
-        EncryptAlterTableToken cipherToken = (EncryptAlterTableToken) actualIterator.next();
-        assertThat(cipherToken.toString(), is("cipher_certificate_number"));
-        assertThat(cipherToken.getStartIndex(), is(51));
-        assertThat(cipherToken.getStopIndex(), is(50));
-        EncryptAlterTableToken assistedToken = (EncryptAlterTableToken) actualIterator.next();
-        assertThat(assistedToken.toString(), is(", ADD COLUMN assisted_certificate_number"));
+        EncryptColumnToken cipherToken = (EncryptColumnToken) actualIterator.next();
+        assertThat(cipherToken.toString(), is("cipher_certificate_number VARCHAR(4000)"));
+        assertThat(cipherToken.getStartIndex(), is(68));
+        assertThat(cipherToken.getStopIndex(), is(67));
+        EncryptColumnToken assistedToken = (EncryptColumnToken) actualIterator.next();
+        assertThat(assistedToken.toString(), is(", ADD COLUMN assisted_certificate_number VARCHAR(4000)"));
         assertThat(assistedToken.getStartIndex(), is(68));
-        assertThat(assistedToken.getStopIndex(), is(50));
-        EncryptAlterTableToken likeToken = (EncryptAlterTableToken) actualIterator.next();
-        assertThat(likeToken.toString(), is(", ADD COLUMN like_certificate_number"));
+        assertThat(assistedToken.getStopIndex(), is(67));
+        EncryptColumnToken likeToken = (EncryptColumnToken) actualIterator.next();
+        assertThat(likeToken.toString(), is(", ADD COLUMN like_certificate_number VARCHAR(4000)"));
         assertThat(likeToken.getStartIndex(), is(68));
-        assertThat(likeToken.getStopIndex(), is(50));
+        assertThat(likeToken.getStopIndex(), is(67));
     }
     
     private AlterTableStatementContext mockAddColumnStatementContext() {

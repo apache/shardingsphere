@@ -73,6 +73,30 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     }
     
     /**
+     * Set limit segment.
+     *
+     * @param selectStatement select statement
+     * @param  limitSegment limit segment
+     */
+    public static void setLimitSegment(final SelectStatement selectStatement, final LimitSegment limitSegment) {
+        if (selectStatement instanceof MySQLStatement) {
+            ((MySQLSelectStatement) selectStatement).setLimit(limitSegment);
+        }
+        if (selectStatement instanceof PostgreSQLStatement) {
+            ((PostgreSQLSelectStatement) selectStatement).setLimit(limitSegment);
+        }
+        if (selectStatement instanceof SQL92Statement) {
+            ((SQL92SelectStatement) selectStatement).setLimit(limitSegment);
+        }
+        if (selectStatement instanceof SQLServerStatement) {
+            ((SQLServerSelectStatement) selectStatement).setLimit(limitSegment);
+        }
+        if (selectStatement instanceof OpenGaussStatement) {
+            ((OpenGaussSelectStatement) selectStatement).setLimit(limitSegment);
+        }
+    }
+    
+    /**
      * Get lock segment.
      *
      * @param selectStatement select statement
@@ -95,6 +119,27 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     }
     
     /**
+     * Set lock segment.
+     * 
+     * @param selectStatement select statement
+     * @param lockSegment lock segment
+     */
+    public static void setLockSegment(final SelectStatement selectStatement, final LockSegment lockSegment) {
+        if (selectStatement instanceof MySQLStatement) {
+            ((MySQLSelectStatement) selectStatement).setLock(lockSegment);
+        }
+        if (selectStatement instanceof OracleStatement) {
+            ((OracleSelectStatement) selectStatement).setLock(lockSegment);
+        }
+        if (selectStatement instanceof PostgreSQLStatement) {
+            ((PostgreSQLSelectStatement) selectStatement).setLock(lockSegment);
+        }
+        if (selectStatement instanceof OpenGaussStatement) {
+            ((OpenGaussSelectStatement) selectStatement).setLock(lockSegment);
+        }
+    }
+    
+    /**
      * Get window segment.
      *
      * @param selectStatement select statement
@@ -114,6 +159,24 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     }
     
     /**
+     * Set window segment.
+     *
+     * @param selectStatement select statement
+     * @param windowSegment window segment
+     */
+    public static void setWindowSegment(final SelectStatement selectStatement, final WindowSegment windowSegment) {
+        if (selectStatement instanceof MySQLStatement) {
+            ((MySQLSelectStatement) selectStatement).setWindow(windowSegment);
+        }
+        if (selectStatement instanceof PostgreSQLStatement) {
+            ((PostgreSQLSelectStatement) selectStatement).setWindow(windowSegment);
+        }
+        if (selectStatement instanceof OpenGaussStatement) {
+            ((OpenGaussSelectStatement) selectStatement).setWindow(windowSegment);
+        }
+    }
+    
+    /**
      * Get with segment.
      *
      * @param selectStatement select statement
@@ -130,6 +193,21 @@ public final class SelectStatementHandler implements SQLStatementHandler {
     }
     
     /**
+     * Set with segment.
+     * 
+     * @param selectStatement select statement
+     * @param withSegment with segment
+     */
+    public static void setWithSegment(final SelectStatement selectStatement, final WithSegment withSegment) {
+        if (selectStatement instanceof OracleStatement) {
+            ((OracleSelectStatement) selectStatement).setWithSegment(withSegment);
+        }
+        if (selectStatement instanceof SQLServerStatement) {
+            ((SQLServerSelectStatement) selectStatement).setWithSegment(withSegment);
+        }
+    }
+    
+    /**
      * Get model segment.
      *
      * @param selectStatement select statement
@@ -140,5 +218,17 @@ public final class SelectStatementHandler implements SQLStatementHandler {
             return ((OracleSelectStatement) selectStatement).getModelSegment();
         }
         return Optional.empty();
+    }
+    
+    /**
+     * Set model segment.
+     * 
+     * @param selectStatement select statement
+     * @param modelSegment model segment
+     */
+    public static void setModelSegment(final SelectStatement selectStatement, final ModelSegment modelSegment) {
+        if (selectStatement instanceof OracleStatement) {
+            ((OracleSelectStatement) selectStatement).setModelSegment(modelSegment);
+        }
     }
 }
