@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.spi;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
@@ -43,7 +42,6 @@ public final class ShardingSphereServiceLoader<T> {
     
     private final Class<T> serviceInterface;
     
-    @Getter
     private final Collection<T> services;
     
     static {
