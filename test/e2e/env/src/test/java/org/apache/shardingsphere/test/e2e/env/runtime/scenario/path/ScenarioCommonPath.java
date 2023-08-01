@@ -32,8 +32,6 @@ public final class ScenarioCommonPath {
     
     private static final String ROOT_PATH = "env/scenario";
     
-    private static final String DATABASE_ROOT_PATH = "env/scenario/jdbc/conf";
-    
     private static final String RULE_CONFIG_FILE = "rules.yaml";
     
     private static final String AUTHORITY_FILE = "authority.xml";
@@ -55,7 +53,7 @@ public final class ScenarioCommonPath {
      * @return rule configuration file
      */
     public String getRuleConfigurationFile(final DatabaseType databaseType) {
-        String databaseFileName = String.join("/", DATABASE_ROOT_PATH, databaseType.getType().toLowerCase(), RULE_CONFIG_FILE);
+        String databaseFileName = String.join("/", String.format("env/scenario/%s/jdbc/conf", scenario), databaseType.getType().toLowerCase(), RULE_CONFIG_FILE);
         return exists(databaseFileName) ? getFile(databaseFileName) : getFile(String.join("/", ROOT_PATH, scenario, RULE_CONFIG_FILE));
     }
     
