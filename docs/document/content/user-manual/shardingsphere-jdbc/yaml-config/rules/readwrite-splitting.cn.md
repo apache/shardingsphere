@@ -30,7 +30,6 @@ rules:
 ```
 
 算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/common-config/builtin-algorithm/load-balance)。
-查询一致性路由的详情，请参见[核心特性：读写分离](/cn/features/readwrite-splitting/)。
 
 ## 操作步骤
 1. 添加读写分离数据源

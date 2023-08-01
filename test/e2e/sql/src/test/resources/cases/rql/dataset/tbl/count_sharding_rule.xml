@@ -21,6 +21,6 @@
         <column name="database" />
         <column name="count" />
     </metadata>
-    <row values="sharding_table| tbl| 6" />
+    <row values="sharding_table| tbl| 4" />
     <row values="sharding_table_reference| tbl| 1" />
 </dataset>

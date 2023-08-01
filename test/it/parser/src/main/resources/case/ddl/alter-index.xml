@@ -77,6 +77,38 @@
     <alter-index sql-case-id="alter_index_with_reorganize">
         <table name="t_order" start-index="27" stop-index="33" />
     </alter-index>
+
+    <alter-index sql-case-id="alter_index_parameters_odci">
+        <index name="ResumeTextIndex" start-index="12" stop-index="26" />
+    </alter-index>
+
+    <alter-index sql-case-id="alter_index_modify_partition_unusable">
+        <index name="cost_ix" start-index="12" stop-index="18" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_drop_partition">
+        <index name="cost_ix" start-index="12" stop-index="18" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_rename_partition">
+        <index name="cost_ix" start-index="12" stop-index="18" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_split_partition_at_into">
+        <index name="cost_ix" start-index="12" stop-index="18" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_storage">
+        <index name="emp_ename" start-index="12" stop-index="20" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_add_partition">
+        <index name="hgidx" start-index="12" stop-index="16" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_parameters">
+        <index name="po_xmlindex_ix" start-index="12" stop-index="25" />
+    </alter-index>
     
     <alter-index sql-case-id="alter_index_alter_column" />
     <alter-index sql-case-id="alter_index_with_schema" />

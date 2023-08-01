@@ -35,6 +35,8 @@ class NacosPropertiesTest {
         assertThat(actual.getValue(NacosPropertyKey.RETRY_INTERVAL_MILLISECONDS), is(1000L));
         assertThat(actual.getValue(NacosPropertyKey.MAX_RETRIES), is(5));
         assertThat(actual.getValue(NacosPropertyKey.TIME_TO_LIVE_SECONDS), is(60));
+        assertThat(actual.getValue(NacosPropertyKey.USERNAME), is("nacos"));
+        assertThat(actual.getValue(NacosPropertyKey.PASSWORD), is("nacos"));
     }
     
     private Properties createProperties() {
@@ -42,7 +44,9 @@ class NacosPropertiesTest {
                 new Property(NacosPropertyKey.CLUSTER_IP.getKey(), "127.0.0.1"),
                 new Property(NacosPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000"),
                 new Property(NacosPropertyKey.MAX_RETRIES.getKey(), "5"),
-                new Property(NacosPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "60"));
+                new Property(NacosPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "60"),
+                new Property(NacosPropertyKey.USERNAME.getKey(), "nacos"),
+                new Property(NacosPropertyKey.PASSWORD.getKey(), "nacos"));
     }
     
     @Test
@@ -52,5 +56,7 @@ class NacosPropertiesTest {
         assertThat(actual.getValue(NacosPropertyKey.RETRY_INTERVAL_MILLISECONDS), is(500L));
         assertThat(actual.getValue(NacosPropertyKey.MAX_RETRIES), is(3));
         assertThat(actual.getValue(NacosPropertyKey.TIME_TO_LIVE_SECONDS), is(30));
+        assertThat(actual.getValue(NacosPropertyKey.USERNAME), is(""));
+        assertThat(actual.getValue(NacosPropertyKey.PASSWORD), is(""));
     }
 }

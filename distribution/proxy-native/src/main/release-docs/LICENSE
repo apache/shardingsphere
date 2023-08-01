@@ -302,11 +302,11 @@ Apache 2.0 licenses
 The following components are provided under the Apache License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    atomikos-util 5.0.9: https://www.atomikos.com, Apache 2.0
-    transactions 5.0.9: https://www.atomikos.com, Apache 2.0
-    transactions-api 5.0.9: https://www.atomikos.com, Apache 2.0
-    transactions-jdbc 5.0.9: https://www.atomikos.com, Apache 2.0
-    transactions-jta 5.0.9: https://www.atomikos.com, Apache 2.0
+    atomikos-util 6.0.0: https://www.atomikos.com, Apache 2.0
+    transactions 6.0.0: https://www.atomikos.com, Apache 2.0
+    transactions-api 6.0.0: https://www.atomikos.com, Apache 2.0
+    transactions-jdbc 6.0.0: https://www.atomikos.com, Apache 2.0
+    transactions-jta 6.0.0: https://www.atomikos.com, Apache 2.0
     
 ========================================================================
 BSD licenses

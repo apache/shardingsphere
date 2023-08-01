@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
@@ -30,4 +32,13 @@ public interface SQLStatement extends ASTNode {
      * @return count of parameters
      */
     int getParameterCount();
+    
+    /**
+     * Get database type.
+     * 
+     * @return database type
+     */
+    default DatabaseType getDatabaseType() {
+        return TypedSPILoader.getService(DatabaseType.class, "SQL92");
+    }
 }

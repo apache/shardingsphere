@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.state.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
 
 import java.sql.SQLException;
 

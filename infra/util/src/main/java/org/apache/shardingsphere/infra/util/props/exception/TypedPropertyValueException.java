@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.infra.util.props.exception;
 
-import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 
 /**
  * Typed property value exception.
  */
-public final class TypedPropertyValueException extends ShardingSphereInternalException {
+public final class TypedPropertyValueException extends Exception {
     
     private static final long serialVersionUID = -2989212435757964906L;
     
     public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
-        super("Value `%s` of `%s` cannot convert to type `%s`", value, key.getKey(), key.getType().getName());
+        super(String.format("Value `%s` of `%s` cannot convert to type `%s`", value, key.getKey(), key.getType().getName()));
     }
 }

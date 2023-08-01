@@ -38,13 +38,10 @@ public final class XmlTableSegment implements TableSegment {
     
     private final int stopIndex;
     
-    private final String tableName;
-    
-    private final String tableNameAlias;
-    
     private final XmlTableFunctionSegment xmlTableFunction;
     
-    private final String xmlTableFunctionAlias;
+    @Setter
+    private String xmlTableFunctionAlias;
     
     @Override
     public Optional<String> getAliasName() {

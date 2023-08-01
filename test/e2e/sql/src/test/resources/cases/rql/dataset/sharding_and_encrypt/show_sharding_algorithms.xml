@@ -22,7 +22,4 @@
         <column name="props" />
     </metadata>
     <row values="it_standard_fixture| IT.STANDARD.FIXTURE| " />
-    <row values="table_inline_item_id| INLINE| algorithm-expression=t_order_item_federate_sharding_${item_id % 2}" />
-    <row values="table_inline_order_id| INLINE| algorithm-expression=t_order_federate_sharding_${order_id_sharding % 2}" />
-    <row values="table_inline_user_id| INLINE| algorithm-expression=t_user_encrypt_federate_sharding_${user_id % 2},allow-range-query-with-inline-sharding=true" />
 </dataset>

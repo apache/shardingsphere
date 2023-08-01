@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
@@ -33,8 +32,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ins
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertMultiTableElementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertValuesClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.OnDuplicateKeyColumnsAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.returning.ReturningClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.output.OutputClauseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.returning.ReturningClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.set.SetClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.with.WithClauseAssert;
@@ -69,7 +68,6 @@ public final class InsertStatementAssert {
         assertWithClause(assertContext, actual, expected);
         assertOutputClause(assertContext, actual, expected);
         assertInsertMultiTableElement(assertContext, actual, expected);
-        assertSelectSubqueryClause(assertContext, actual, expected);
         assertReturningClause(assertContext, actual, expected);
     }
     
@@ -155,16 +153,6 @@ public final class InsertStatementAssert {
         } else {
             assertTrue(insertTableElementSegment.isPresent(), assertContext.getText("Actual insert multi table element segment should exist."));
             InsertMultiTableElementAssert.assertIs(assertContext, insertTableElementSegment.get(), expected.getInsertTableElement());
-        }
-    }
-    
-    private static void assertSelectSubqueryClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        Optional<SubquerySegment> selectSubquery = InsertStatementHandler.getSelectSubquery(actual);
-        if (null == expected.getSelectSubquery()) {
-            assertFalse(selectSubquery.isPresent(), assertContext.getText("Actual select subquery segment should not exist."));
-        } else {
-            assertTrue(selectSubquery.isPresent(), assertContext.getText("Actual select subquery segment should exist."));
-            SelectStatementAssert.assertIs(assertContext, selectSubquery.get().getSelect(), expected.getSelectSubquery());
         }
     }
     

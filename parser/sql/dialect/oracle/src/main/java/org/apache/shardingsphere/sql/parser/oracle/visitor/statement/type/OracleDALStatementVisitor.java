@@ -20,8 +20,11 @@ package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterResourceCostContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleAlterResourceCostStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleExplainStatement;
 
 /**
  * DAL statement visitor for Oracle.
@@ -31,5 +34,23 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitAlterResourceCost(final AlterResourceCostContext ctx) {
         return new OracleAlterResourceCostStatement();
+    }
+    
+    @Override
+    public ASTNode visitExplain(final ExplainContext ctx) {
+        OracleExplainStatement result = new OracleExplainStatement();
+        OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor();
+        visitor.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        if (null != ctx.insert()) {
+            result.setStatement((SQLStatement) visitor.visit(ctx.insert()));
+        } else if (null != ctx.delete()) {
+            result.setStatement((SQLStatement) visitor.visit(ctx.delete()));
+        } else if (null != ctx.update()) {
+            result.setStatement((SQLStatement) visitor.visit(ctx.update()));
+        } else if (null != ctx.select()) {
+            result.setStatement((SQLStatement) visitor.visit(ctx.select()));
+        }
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        return result;
     }
 }

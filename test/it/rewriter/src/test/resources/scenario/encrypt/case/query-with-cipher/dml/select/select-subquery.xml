@@ -92,11 +92,6 @@
         <output sql="SELECT b.certificate_number, b.amount FROM (SELECT a.cipher_certificate_number AS certificate_number, a.assisted_query_certificate_number, a.cipher_amount AS amount FROM t_account a WHERE a.cipher_amount = 'encrypt_1373') b" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_not_nested_subquery_in_tablesegment_ref_shorthand" db-types="MySQL">
-        <input sql="SELECT b.* FROM (SELECT a.certificate_number as certificate_number, a.amount FROM t_account a WHERE a.amount = 1373) b" />
-        <output sql="SELECT b.certificate_number, b.amount FROM (SELECT a.cipher_certificate_number AS certificate_number, a.assisted_query_certificate_number, a.cipher_amount AS amount FROM t_account a WHERE a.cipher_amount = 'encrypt_1373') b" />
-    </rewrite-assertion>
-
     <rewrite-assertion id="select_with_exists_sub_query" db-types="MySQL">
         <input sql="SELECT out_table.amount FROM t_account out_table WHERE EXISTS (SELECT inner_table.amount FROM t_account inner_table)" />
         <output sql="SELECT out_table.cipher_amount AS amount FROM t_account out_table WHERE EXISTS (SELECT inner_table.cipher_amount FROM t_account inner_table)" />
@@ -105,15 +100,5 @@
     <rewrite-assertion id="select_sub_query_with_order_by" db-types="MySQL">
         <input sql="SELECT COUNT(1) AS cnt FROM (SELECT a.amount FROM t_account a ORDER BY a.amount DESC ) AS tmp" />
         <output sql="SELECT COUNT(1) AS cnt FROM (SELECT a.cipher_amount AS amount FROM t_account a ORDER BY a.cipher_amount DESC ) AS tmp" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_shorthand_from_sub_query_with_simple_select" db-types="MySQL">
-        <input sql="SELECT * FROM (SELECT * FROM t_account a) AS temp" />
-        <output sql="SELECT temp.`account_id`, temp.`certificate_number`, temp.`password`, temp.`amount` FROM (SELECT a.`account_id`, a.`cipher_certificate_number` AS `certificate_number`, a.`assisted_query_certificate_number`, a.`cipher_password` AS `password`, a.`assisted_query_password`, a.`cipher_amount` AS `amount` FROM t_account a) AS temp" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_shorthand_from_sub_query_with_select_join" db-types="MySQL">
-        <input sql="SELECT * FROM (SELECT a1.* FROM t_account a1 INNER JOIN t_account a2) AS temp" />
-        <output sql="SELECT temp.`account_id`, temp.`certificate_number`, temp.`password`, temp.`amount` FROM (SELECT a1.`account_id`, a1.`cipher_certificate_number` AS `certificate_number`, a1.`assisted_query_certificate_number`, a1.`cipher_password` AS `password`, a1.`assisted_query_password`, a1.`cipher_amount` AS `amount` FROM t_account a1 INNER JOIN t_account a2) AS temp" />
     </rewrite-assertion>
 </rewrite-assertions>

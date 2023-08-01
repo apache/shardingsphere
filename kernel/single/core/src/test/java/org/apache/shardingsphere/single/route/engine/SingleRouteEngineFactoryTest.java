@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 class SingleRouteEngineFactoryTest {
     
     @Test
-    void assertNewInstanceWithNotEmptySingleTableNames() {
+    void assertNewInstanceWithNotEmptySingleTables() {
         assertTrue(SingleRouteEngineFactory.newInstance(Collections.singleton(new QualifiedTable("demo_ds", "t_order")), mock(SQLStatement.class)).isPresent());
     }
     

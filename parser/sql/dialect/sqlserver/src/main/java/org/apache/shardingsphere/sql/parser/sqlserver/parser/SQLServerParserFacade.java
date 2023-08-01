@@ -37,7 +37,7 @@ public final class SQLServerParserFacade implements SQLDialectParserFacade {
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "SQLServer";
     }
 }

@@ -442,8 +442,8 @@
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_table_as_qualified_name">
-        <input sql="SELECT t_account.account_id, t_account.password, t_account.amount AS a, status AS s FROM t_account WHERE t_account.account_id = 1 AND t_account.password = 'aaa' AND t_account.amount = 1000 AND t_account.status = 'OK'" />
-        <output sql="SELECT t_account_1.account_id, t_account_1.password, t_account_1.amount AS a, status AS s FROM t_account_1 WHERE t_account_1.account_id = 1 AND t_account_1.password = 'aaa' AND t_account_1.amount = 1000 AND t_account_1.status = 'OK'" />
+        <input sql="SELECT t_account.account_id, t_account.amount AS a, status AS s FROM t_account WHERE t_account.account_id = 1 AND t_account.amount = 1000 AND t_account.status = 'OK'" />
+        <output sql="SELECT t_account_1.account_id, t_account_1.amount AS a, status AS s FROM t_account_1 WHERE t_account_1.account_id = 1 AND t_account_1.amount = 1000 AND t_account_1.status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_join_table_with_qualified_columns">
@@ -505,12 +505,6 @@
         <input sql="SELECT account_id FROM t_account GROUP BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END ORDER BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END" parameters="100" />
         <output sql="SELECT account_id , CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END AS GROUP_BY_DERIVED_0 FROM t_account_0 GROUP BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END ORDER BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END" parameters="100" />
         <output sql="SELECT account_id , CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END AS GROUP_BY_DERIVED_0 FROM t_account_1 GROUP BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END ORDER BY CASE WHEN account_id > 0 AND account_id &lt;= 10 THEN '(0,10]' WHEN account_id > 10 THEN '(10,+∞)' ELSE '' END" parameters="100" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_sub_query_with_no_alias" db-types="Oracle">
-        <input sql="SELECT * FROM ( SELECT TMP.*, ROWNUM ROW_ID FROM ( SELECT  account_id  FROM t_account ) TMP WHERE ROWNUM &lt;=?) WHERE ROW_ID &gt; ?" parameters="10,5" />
-        <output sql="SELECT * FROM ( SELECT TMP.*, ROWNUM ROW_ID FROM ( SELECT  account_id  FROM t_account_0 ) TMP WHERE ROWNUM &lt;=?) WHERE ROW_ID &gt; ?" parameters="10,0" />
-        <output sql="SELECT * FROM ( SELECT TMP.*, ROWNUM ROW_ID FROM ( SELECT  account_id  FROM t_account_1 ) TMP WHERE ROWNUM &lt;=?) WHERE ROW_ID &gt; ?" parameters="10,0" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_sharding_value_and_binary_column_for_parameters" db-types="MySQL">

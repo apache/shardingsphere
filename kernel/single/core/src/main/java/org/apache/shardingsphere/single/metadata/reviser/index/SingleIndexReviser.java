@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.metadata.reviser.index;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.index.IndexReviser;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.single.rule.SingleRule;
 

@@ -52,7 +52,7 @@ class HikariDataSourcePoolActiveDetectorTest {
     private HikariDataSource createHikariDataSource() {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName(MockedDriver.class.getName());
-        config.setJdbcUrl("mock:jdbc");
+        config.setJdbcUrl("jdbc:mock");
         return new HikariDataSource(config);
     }
 }
