@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.database.core.spi;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundServerException;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Optional;
@@ -80,7 +80,7 @@ public final class DatabaseTypedSPILoader {
      * @return found service
      */
     public static <T extends DatabaseTypedSPI> T getService(final Class<T> spiClass, final DatabaseType databaseType) {
-        return findService(spiClass, databaseType).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, databaseType.getType()));
+        return findService(spiClass, databaseType).orElseThrow(() -> new ServiceProviderNotFoundException(spiClass, databaseType.getType()));
     }
     
     /**
@@ -93,6 +93,6 @@ public final class DatabaseTypedSPILoader {
      * @return found service
      */
     public static <T extends DatabaseTypedSPI> T getService(final Class<T> spiClass, final DatabaseType databaseType, final Properties props) {
-        return findService(spiClass, databaseType, props).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, databaseType.getType()));
+        return findService(spiClass, databaseType, props).orElseThrow(() -> new ServiceProviderNotFoundException(spiClass, databaseType.getType()));
     }
 }

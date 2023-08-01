@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.spi.type.typed;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundServerException;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -119,7 +119,7 @@ public final class TypedSPILoader {
      * @return service
      */
     public static <T extends TypedSPI> T getService(final Class<T> serviceInterface, final Object type, final Properties props) {
-        return findService(serviceInterface, type, props).orElseGet(() -> findDefaultService(serviceInterface).orElseThrow(() -> new ServiceProviderNotFoundServerException(serviceInterface, type)));
+        return findService(serviceInterface, type, props).orElseGet(() -> findDefaultService(serviceInterface).orElseThrow(() -> new ServiceProviderNotFoundException(serviceInterface, type)));
     }
     
     /**
@@ -130,7 +130,7 @@ public final class TypedSPILoader {
      * @param props properties
      * @param <T> SPI class type
      * @return is valid service or not
-     * @throws ServiceProviderNotFoundServerException service provider not found server exception
+     * @throws ServiceProviderNotFoundException service provider not found server exception
      */
     public static <T extends TypedSPI> boolean checkService(final Class<T> serviceInterface, final Object type, final Properties props) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
@@ -139,7 +139,7 @@ public final class TypedSPILoader {
                 return true;
             }
         }
-        throw new ServiceProviderNotFoundServerException(serviceInterface, type);
+        throw new ServiceProviderNotFoundException(serviceInterface, type);
     }
     
     private static boolean matchesType(final Object type, final TypedSPI instance) {
