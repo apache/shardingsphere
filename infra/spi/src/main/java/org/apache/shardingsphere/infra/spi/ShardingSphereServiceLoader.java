@@ -58,7 +58,7 @@ public final class ShardingSphereServiceLoader<T> {
     
     private void validate(final Class<T> serviceInterface) {
         Preconditions.checkNotNull(serviceInterface, "SPI interface is null.");
-        Preconditions.checkArgument(serviceInterface.isInterface(), "SPI interface `%s` is not interface.", serviceInterface);
+        Preconditions.checkArgument(serviceInterface.isInterface(), "SPI `%s` is not an interface.", serviceInterface);
     }
     
     private Collection<T> load(final Class<T> serviceInterface) {
