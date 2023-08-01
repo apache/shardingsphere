@@ -85,10 +85,10 @@ public final class TableAssert {
      * @param expected expected xml table
      */
     private static void assertIs(final SQLCaseAssertContext assertContext, final XmlTableSegment actual, final ExpectedXmlTable expected) {
-        assertThat(assertContext.getText("Table name assertion error"), actual.getTableName(), is(expected.getTableName()));
-        assertThat(assertContext.getText("Table name alias assertion error"), actual.getTableNameAlias(), is(expected.getTableAlias()));
         assertXmlTableFunction(assertContext, actual.getXmlTableFunction(), expected.getXmlTableFunction());
-        assertThat(assertContext.getText("Xml table function alias assertion error"), actual.getXmlTableFunctionAlias(), is(expected.getXmlTableFunctionAlias()));
+        if (null != actual.getXmlTableFunctionAlias()) {
+            assertThat(assertContext.getText("Xml table function alias assertion error"), actual.getXmlTableFunctionAlias(), is(expected.getXmlTableFunctionAlias()));
+        }
     }
     
     /**

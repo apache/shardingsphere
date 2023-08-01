@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.rmi.server.UID;
 import java.sql.SQLException;

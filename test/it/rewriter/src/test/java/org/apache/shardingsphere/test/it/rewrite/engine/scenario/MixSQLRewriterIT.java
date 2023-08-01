@@ -37,12 +37,9 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @SQLRewriterITSettings("scenario/mix/case")
 class MixSQLRewriterIT extends SQLRewriterIT {
@@ -55,24 +52,23 @@ class MixSQLRewriterIT extends SQLRewriterIT {
     
     @Override
     protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
-        ShardingSphereSchema result = mock(ShardingSphereSchema.class);
-        when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_bak", "t_account_detail"));
-        ShardingSphereTable accountTable = mock(ShardingSphereTable.class);
-        when(accountTable.getColumnValues()).thenReturn(createColumns());
-        when(accountTable.getIndexValues()).thenReturn(Collections.singletonList(new ShardingSphereIndex("index_name")));
-        when(result.containsTable("t_account")).thenReturn(true);
-        when(result.containsTable("t_account_bak")).thenReturn(true);
-        when(result.containsTable("t_account_detail")).thenReturn(true);
-        ShardingSphereTable accountBakTable = mock(ShardingSphereTable.class);
-        when(accountBakTable.getColumnValues()).thenReturn(createColumns());
-        when(result.containsTable("t_account_bak")).thenReturn(true);
-        when(result.getTable("t_account")).thenReturn(accountTable);
-        when(result.getTable("t_account_bak")).thenReturn(accountBakTable);
-        when(result.getTable("t_account_detail")).thenReturn(mock(ShardingSphereTable.class));
-        when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
-        when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
-        when(result.getVisibleColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount"));
-        when(result.getVisibleColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount"));
+        Map<String, ShardingSphereTable> tables = new LinkedHashMap<>();
+        tables.put("t_account", new ShardingSphereTable("t_account", Arrays.asList(
+                new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false),
+                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false),
+                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false)), Collections.singletonList(new ShardingSphereIndex("index_name")), Collections.emptyList()));
+        tables.put("t_account_bak", new ShardingSphereTable("t_account_bak", Arrays.asList(
+                new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false),
+                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false),
+                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_account_detail", new ShardingSphereTable("t_account_detail", Arrays.asList(
+                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false),
+                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
+        ShardingSphereSchema result = new ShardingSphereSchema(tables, Collections.emptyMap());
         return Collections.singletonMap(schemaName, result);
     }
     
@@ -82,14 +78,5 @@ class MixSQLRewriterIT extends SQLRewriterIT {
     
     @Override
     protected void mockDataSource(final Map<String, DataSource> dataSources) {
-    }
-    
-    private Collection<ShardingSphereColumn> createColumns() {
-        Collection<ShardingSphereColumn> result = new LinkedList<>();
-        result.add(new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false));
-        result.add(mock(ShardingSphereColumn.class));
-        result.add(mock(ShardingSphereColumn.class));
-        result.add(mock(ShardingSphereColumn.class));
-        return result;
     }
 }

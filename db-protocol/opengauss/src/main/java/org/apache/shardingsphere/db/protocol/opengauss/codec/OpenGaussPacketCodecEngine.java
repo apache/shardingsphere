@@ -30,7 +30,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessa
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
+import org.apache.shardingsphere.infra.exception.postgresql.vendor.PostgreSQLVendorError;
 
 import java.nio.charset.Charset;
 import java.util.LinkedList;

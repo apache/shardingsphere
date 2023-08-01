@@ -19,10 +19,15 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.i
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +44,18 @@ public final class OpenGaussContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources());
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(), new ArrayList<>(), new ArrayList<>());
+    }
+    
+    /**
+     * Create new instance of openGauss container configuration.
+     *
+     * @param scenario scenario
+     * @return created instance
+     */
+    public static StorageContainerConfiguration newInstance(final String scenario) {
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario), DatabaseEnvironmentManager.getDatabaseNames(scenario),
+                DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario));
     }
     
     private static String getCommand() {
@@ -51,7 +67,18 @@ public final class OpenGaussContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResources() {
-        Map<String, String> result = new HashMap<>(2, 1F);
+        Map<String, String> result = new HashMap<>(3, 1F);
+        result.put("/env/opengauss/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
+        result.put("/env/postgresql/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
+        result.put("/env/opengauss/pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
+        return result;
+    }
+    
+    private static Map<String, String> getMountedResources(final String scenario) {
+        Map<String, String> result = new HashMap<>(4, 1F);
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, new OpenGaussDatabaseType()) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, new OpenGaussDatabaseType()) + "/01-expected-init.sql",
+                "/docker-entrypoint-initdb.d/01-expected-init.sql");
         result.put("/env/postgresql/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
         result.put("/env/opengauss/pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
         return result;

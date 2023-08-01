@@ -46,4 +46,9 @@ public final class XmlSerializeFunctionSegment implements ComplexExpressionSegme
     private final String identSize;
     
     private final String text;
+    
+    @Override
+    public String getColumnLabel() {
+        return text;
+    }
 }

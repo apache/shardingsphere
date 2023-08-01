@@ -1,0 +1,71 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+on:
+  workflow_call:
+    outputs:
+      GLOBAL_CACHE_PREFIX:
+        value: ${{ jobs.init-environment.outputs.GLOBAL_CACHE_PREFIX }}
+      GLOBAL_RUNS_ON:
+        value: ${{ jobs.init-environment.outputs.GLOBAL_RUNS_ON }}
+      GLOBAL_JOB_ENABLED:
+        value: ${{ jobs.init-environment.outputs.GLOBAL_JOB_ENABLED }}
+      GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE:
+        value: ${{ jobs.init-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE }}
+
+jobs:
+  init-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            .github/workflows/resources/variables/
+      - name: Setup Environment
+        id: import-variables
+        run: |
+          cat .github/workflows/resources/variables/env-variables.properties | while read line
+          do
+            echo ${line} >> $GITHUB_OUTPUT
+          done
+          echo "GLOBAL_REPOSITORY=${{ env.GLOBAL_REPOSITORY }}"
+          GLOBAL_CACHE_PREFIX=$(echo '${{ env.GLOBAL_REPOSITORY }}' | sed 's/\//_/g')
+          echo "GLOBAL_CACHE_PREFIX=${GLOBAL_CACHE_PREFIX}" >> $GITHUB_OUTPUT
+      - name: Check If Job is Executable
+        id: check-job-executable
+        env:
+          JSON_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        shell: sh
+        run: |
+          GLOBAL_CACHE_PREFIX=$(echo '${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }}' | sed 's/\//-/g')
+          echo "GLOBAL_CACHE_PREFIX=${GLOBAL_CACHE_PREFIX}" >> $GITHUB_OUTPUT
+          if [ ${{ toJSON(github.repository) }} = ${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }} ]; then
+            echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=true" >> $GITHUB_OUTPUT
+            echo "GLOBAL_JOB_ENABLED=false" >> $GITHUB_OUTPUT
+            echo '${{ env.JSON_LABELS }}' | while read line
+            do
+              if [ ${line}="type: ${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }}" ] || [ -z "${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }}" ]; then
+                echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
+                break
+              fi
+            done
+          fi
+    outputs:
+      GLOBAL_RUNS_ON: ${{ steps.import-variables.outputs.GLOBAL_RUNS_ON }}
+      GLOBAL_JOB_ENABLED: ${{ steps.check-job-executable.outputs.GLOBAL_JOB_ENABLED }}
+      GLOBAL_CACHE_PREFIX: ${{ steps.check-job-executable.outputs.GLOBAL_CACHE_PREFIX }}
+      GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE: ${{ steps.check-job-executable.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE }}

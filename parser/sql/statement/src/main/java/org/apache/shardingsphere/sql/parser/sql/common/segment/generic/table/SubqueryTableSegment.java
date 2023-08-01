@@ -57,4 +57,13 @@ public final class SubqueryTableSegment implements TableSegment {
     public int getStopIndex() {
         return subquery.getStopIndex();
     }
+    
+    /**
+     * Get alias segment.
+     *
+     * @return alias segment
+     */
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
+    }
 }

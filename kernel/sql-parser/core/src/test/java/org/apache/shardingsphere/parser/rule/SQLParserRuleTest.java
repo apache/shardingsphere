@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.parser.rule;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +40,7 @@ class SQLParserRuleTest {
     
     @Test
     void assertGetSQLParserEngine() {
-        assertNotNull(sqlParserRule.getSQLParserEngine("H2"));
+        assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "H2")));
     }
     
     @Test

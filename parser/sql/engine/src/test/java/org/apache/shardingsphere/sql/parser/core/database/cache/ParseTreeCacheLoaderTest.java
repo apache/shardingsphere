@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.core.database.cache;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.jupiter.api.Test;
@@ -34,7 +36,7 @@ class ParseTreeCacheLoaderTest {
     @Test
     void assertParseTreeCacheLoader() throws ReflectiveOperationException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class, RETURNS_DEEP_STUBS);
-        ParseTreeCacheLoader loader = new ParseTreeCacheLoader("MySQL");
+        ParseTreeCacheLoader loader = new ParseTreeCacheLoader(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         Plugins.getMemberAccessor().set(loader.getClass().getDeclaredField("sqlParserExecutor"), loader, sqlParserExecutor);
         assertThat(loader.load(SQL), isA(ParseASTNode.class));
     }

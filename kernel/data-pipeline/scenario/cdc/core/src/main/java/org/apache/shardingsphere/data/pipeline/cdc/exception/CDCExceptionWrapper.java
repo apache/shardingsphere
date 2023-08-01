@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
 
 /**
  * CDC exception wrapper.
