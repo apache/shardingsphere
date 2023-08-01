@@ -521,7 +521,7 @@ addHashIndexPartition
 
 modifyIndexPartition
     : MODIFY PARTITION partitionName
-    ( (deallocateUnusedClause | allocateExtentClause | physicalAttributesClause | loggingClause | indexCompression)+ 
+    ( (deallocateUnusedClause | allocateExtentClause | physicalAttributesClause | loggingClause | indexCompression)+
     | PARAMETERS LP_ odciParameters RP_
     | COALESCE (CLEANUP | ONLY | parallelClause)?
     | UPDATE BLOCK REFERENCES
@@ -3614,6 +3614,10 @@ tableCompressionTableSpace
     | NOCOMPRESS
     ;
 
+segmentManagementClause
+    : SEGMENT SPACE MANAGEMENT (AUTO|MANUAL)
+    ;
+
 createTablespace
     : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
     ;
@@ -3627,6 +3631,8 @@ permanentTablespaceClause
     | ENCRYPTION tablespaceEncryptionSpec
     | DEFAULT tableCompressionTableSpace? storageClause?
     | (ONLINE|OFFLINE)
+    | extentManagementClause
+    | segmentManagementClause
     )
     ;
 
