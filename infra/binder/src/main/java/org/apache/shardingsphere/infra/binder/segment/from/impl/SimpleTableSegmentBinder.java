@@ -50,7 +50,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SimpleTableSegmentBinder {
     
-    private static final Collection<String> SYSTEM_CATALOG_TABLES = new HashSet<>(3, 1F);
+    private static final Collection<String> SYSTEM_CATALOG_TABLES = new HashSet<>(4, 1F);
     
     private static final String PG_CATALOG = "pg_catalog";
     
@@ -58,6 +58,7 @@ public final class SimpleTableSegmentBinder {
         SYSTEM_CATALOG_TABLES.add("pg_database");
         SYSTEM_CATALOG_TABLES.add("pg_tables");
         SYSTEM_CATALOG_TABLES.add("pg_roles");
+        SYSTEM_CATALOG_TABLES.add("pg_settings");
     }
     
     /**
