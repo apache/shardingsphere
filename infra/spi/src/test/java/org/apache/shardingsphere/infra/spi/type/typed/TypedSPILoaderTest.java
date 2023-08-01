@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.spi.type.typed;
 
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundServerException;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.fixture.TypedSPIFixture;
 import org.apache.shardingsphere.infra.spi.type.typed.fixture.impl.TypedSPIFixtureImpl;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -69,6 +69,6 @@ class TypedSPILoaderTest {
     
     @Test
     void assertGetServiceWhenTypeIsNotExist() {
-        assertThrows(ServiceProviderNotFoundServerException.class, () -> TypedSPILoader.getService(TypedSPIFixture.class, "NOT_EXISTED"));
+        assertThrows(ServiceProviderNotFoundException.class, () -> TypedSPILoader.getService(TypedSPIFixture.class, "NOT_EXISTED"));
     }
 }
