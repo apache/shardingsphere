@@ -19,14 +19,14 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
+import org.apache.shardingsphere.infra.database.core.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.exception.UnsupportedActualDataNodeStructureException;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.SchemaMetaDataLoaderMaterial;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderMaterial;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -43,15 +43,15 @@ import java.util.stream.Collectors;
 public final class SchemaMetaDataUtils {
     
     /**
-     * Get schema meta data loader materials.
+     * Get meta data loader materials.
      *
      * @param tableNames table name collection
      * @param material material
      * @param checkMetaDataEnable check meta data enable config
-     * @return schema meta data loader materials
+     * @return meta data loader materials
      */
-    public static Collection<SchemaMetaDataLoaderMaterial> getSchemaMetaDataLoaderMaterials(final Collection<String> tableNames,
-                                                                                            final GenericSchemaBuilderMaterial material, final boolean checkMetaDataEnable) {
+    public static Collection<MetaDataLoaderMaterial> getMetaDataLoaderMaterials(final Collection<String> tableNames,
+                                                                                final GenericSchemaBuilderMaterial material, final boolean checkMetaDataEnable) {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
         Collection<DatabaseType> notSupportThreeTierStructureStorageTypes = getNotSupportThreeTierStructureStorageTypes(material.getStorageTypes().values());
         DataNodes dataNodes = new DataNodes(material.getRules());
@@ -63,7 +63,7 @@ public final class SchemaMetaDataUtils {
                 addOneActualTableDataNode(material, dataSourceTableGroups, dataNodes, each);
             }
         }
-        return dataSourceTableGroups.entrySet().stream().map(entry -> new SchemaMetaDataLoaderMaterial(entry.getValue(),
+        return dataSourceTableGroups.entrySet().stream().map(entry -> new MetaDataLoaderMaterial(entry.getValue(),
                 getDataSource(material, entry.getKey()), material.getStorageTypes().get(entry.getKey()), material.getDefaultSchemaName())).collect(Collectors.toList());
     }
     

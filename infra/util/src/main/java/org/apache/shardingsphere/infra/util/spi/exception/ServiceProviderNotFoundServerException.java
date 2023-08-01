@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.infra.util.spi.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
-
 /**
  * Service provider not found exception.
  */
-public final class ServiceProviderNotFoundServerException extends ShardingSphereServerException {
+public final class ServiceProviderNotFoundServerException extends RuntimeException {
     
     private static final long serialVersionUID = -3730257541332863236L;
     
@@ -31,6 +29,6 @@ public final class ServiceProviderNotFoundServerException extends ShardingSphere
     private static final int ERROR_CODE = 1;
     
     public ServiceProviderNotFoundServerException(final Class<?> clazz, final Object type) {
-        super(ERROR_CATEGORY, ERROR_CODE, String.format("No implementation class load from SPI `%s` with type `%s`.", clazz.getName(), type));
+        super(String.format("%s-%05d: %s", ERROR_CATEGORY, ERROR_CODE, String.format("No implementation class load from SPI `%s` with type `%s`.", clazz.getName(), type)));
     }
 }

@@ -23,7 +23,7 @@ import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -46,7 +46,7 @@ public final class ShardingSphereViewExpander implements ViewExpander {
     
     @Override
     public RelRoot expandView(final RelDataType rowType, final String queryString, final List<String> schemaPath, @Nullable final List<String> viewPath) {
-        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getType(), sqlParserRule.getSqlStatementCache(),
+        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType, sqlParserRule.getSqlStatementCache(),
                 sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled()).parse(queryString, false);
         SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
         return sqlToRelConverter.convertQuery(sqlNode, true, true);

@@ -27,13 +27,13 @@ import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
@@ -133,24 +133,9 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         Collection<SQLToken> result = new LinkedList<>();
         for (ModifyColumnDefinitionSegment each : segments) {
             String columnName = each.getColumnDefinition().getColumnName().getIdentifier().getValue();
-            if (encryptTable.isEncryptColumn(columnName)) {
-                result.addAll(getModifyColumnTokens(encryptTable.getEncryptColumn(columnName), each));
-            }
+            ShardingSpherePreconditions.checkState(!encryptTable.isEncryptColumn(columnName), () -> new UnsupportedOperationException("Unsupported operation 'modify' for the cipher column"));
             each.getColumnPosition().flatMap(optional -> getColumnPositionToken(encryptTable, optional)).ifPresent(result::add);
         }
-        return result;
-    }
-    
-    private Collection<SQLToken> getModifyColumnTokens(final EncryptColumn encryptColumn, final ModifyColumnDefinitionSegment segment) {
-        Collection<SQLToken> result = new LinkedList<>();
-        ColumnDefinitionSegment columnDefinitionSegment = segment.getColumnDefinition();
-        result.add(new RemoveToken(columnDefinitionSegment.getColumnName().getStartIndex(), columnDefinitionSegment.getColumnName().getStopIndex()));
-        result.add(new EncryptAlterTableToken(columnDefinitionSegment.getColumnName().getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(),
-                encryptColumn.getCipher().getName(), null));
-        encryptColumn.getAssistedQuery().map(optional -> new EncryptAlterTableToken(segment.getStopIndex() + 1,
-                columnDefinitionSegment.getColumnName().getStopIndex(), optional.getName(), ", MODIFY COLUMN")).ifPresent(result::add);
-        encryptColumn.getLikeQuery().map(optional -> new EncryptAlterTableToken(segment.getStopIndex() + 1,
-                columnDefinitionSegment.getColumnName().getStopIndex(), optional.getName(), ", MODIFY COLUMN")).ifPresent(result::add);
         return result;
     }
     
@@ -165,6 +150,8 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     private Collection<SQLToken> getChangeColumnTokens(final EncryptTable encryptTable, final Collection<ChangeColumnDefinitionSegment> segments) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ChangeColumnDefinitionSegment each : segments) {
+            String columnName = each.getPreviousColumn().getIdentifier().getValue();
+            ShardingSpherePreconditions.checkState(!encryptTable.isEncryptColumn(columnName), () -> new UnsupportedOperationException("Unsupported operation 'change' for the cipher column"));
             result.addAll(getChangeColumnTokens(encryptTable, each));
             each.getColumnPosition().flatMap(optional -> getColumnPositionToken(encryptTable, optional)).ifPresent(result::add);
         }
@@ -238,22 +225,9 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     private Collection<SQLToken> getDropColumnTokens(final EncryptTable encryptTable, final DropColumnDefinitionSegment segment) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : segment.getColumns()) {
-            String columnName = each.getQualifiedName();
-            if (encryptTable.isEncryptColumn(columnName)) {
-                result.addAll(getDropColumnTokens(encryptTable.getEncryptColumn(columnName), each, segment));
-            }
+            ShardingSpherePreconditions.checkState(!encryptTable.isEncryptColumn(each.getQualifiedName()),
+                    () -> new UnsupportedOperationException("Unsupported operation 'drop' for the cipher column"));
         }
-        return result;
-    }
-    
-    private Collection<SQLToken> getDropColumnTokens(final EncryptColumn encryptColumn, final ColumnSegment columnSegment, final DropColumnDefinitionSegment dropColumnDefinitionSegment) {
-        Collection<SQLToken> result = new LinkedList<>();
-        result.add(new RemoveToken(columnSegment.getStartIndex(), columnSegment.getStopIndex()));
-        result.add(new EncryptAlterTableToken(columnSegment.getStopIndex() + 1, columnSegment.getStopIndex(), encryptColumn.getCipher().getName(), null));
-        encryptColumn.getAssistedQuery().map(optional -> new EncryptAlterTableToken(dropColumnDefinitionSegment.getStopIndex() + 1,
-                dropColumnDefinitionSegment.getStopIndex(), optional.getName(), ", DROP COLUMN")).ifPresent(result::add);
-        encryptColumn.getLikeQuery().map(optional -> new EncryptAlterTableToken(dropColumnDefinitionSegment.getStopIndex() + 1,
-                dropColumnDefinitionSegment.getStopIndex(), optional.getName(), ", DROP COLUMN")).ifPresent(result::add);
         return result;
     }
     

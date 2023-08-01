@@ -20,10 +20,10 @@ package org.apache.shardingsphere.encrypt.merge.dql;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
@@ -61,9 +61,8 @@ public final class EncryptMergedResult implements MergedResult {
             return mergedResult.getValue(columnIndex, type);
         }
         TablesContext tablesContext = selectStatementContext.getTablesContext();
-        String schemaName = tablesContext.getSchemaName()
-                .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), database.getName()));
-        ColumnProjection originalColumn = new ColumnProjection(columnProjection.get().getOriginalOwner(), columnProjection.get().getOriginalName(), null);
+        String schemaName = tablesContext.getSchemaName().orElseGet(() -> new DatabaseTypeRegistry(selectStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
+        ColumnProjection originalColumn = new ColumnProjection(columnProjection.get().getOriginalOwner(), columnProjection.get().getOriginalName(), null, selectStatementContext.getDatabaseType());
         Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(Collections.singletonList(originalColumn), database.getSchema(schemaName));
         Optional<String> tableName = findTableName(originalColumn, expressionTableNames);
         if (!tableName.isPresent()) {
@@ -78,7 +77,7 @@ public final class EncryptMergedResult implements MergedResult {
     }
     
     private Optional<String> findTableName(final ColumnProjection columnProjection, final Map<String, String> columnTableNames) {
-        String tableName = columnTableNames.get(columnProjection.getColumnName());
+        String tableName = columnTableNames.get(columnProjection.getExpression());
         if (null != tableName) {
             return Optional.of(tableName);
         }

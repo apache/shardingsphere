@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.transaction.exception;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.TransactionSQLException;
 
 /**
  * Transaction timeout exception.

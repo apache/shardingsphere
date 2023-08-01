@@ -18,14 +18,17 @@
 package org.apache.shardingsphere.single.rule;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -37,6 +40,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -90,47 +94,45 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     }
     
     /**
-     * Judge whether single tables are in same data source or not.
-     *
-     * @param singleTableNames single table names
-     * @return whether single tables are in same data source or not
+     * Judge whether all tables are in same compute node or not.
+     * 
+     * @param dataNodes data nodes
+     * @param singleTables single tables
+     * @return whether all tables are in same compute node or not
      */
-    public boolean isSingleTablesInSameDataSource(final Collection<QualifiedTable> singleTableNames) {
-        String firstFoundDataSourceName = null;
-        for (QualifiedTable each : singleTableNames) {
-            Optional<DataNode> dataNode = findTableDataNode(each.getSchemaName(), each.getTableName());
-            if (!dataNode.isPresent()) {
-                continue;
-            }
-            if (null == firstFoundDataSourceName) {
-                firstFoundDataSourceName = dataNode.get().getDataSourceName();
-                continue;
-            }
-            if (!firstFoundDataSourceName.equals(dataNode.get().getDataSourceName())) {
-                return false;
+    public boolean isAllTablesInSameComputeNode(final Collection<DataNode> dataNodes, final Collection<QualifiedTable> singleTables) {
+        if (!isSingleTablesInSameComputeNode(singleTables)) {
+            return false;
+        }
+        QualifiedTable sampleTable = singleTables.iterator().next();
+        Optional<DataNode> sampleDataNode = findTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
+        if (sampleDataNode.isPresent()) {
+            for (DataNode each : dataNodes) {
+                if (!isSameComputeNode(sampleDataNode.get().getDataSourceName(), each.getDataSourceName())) {
+                    return false;
+                }
             }
         }
         return true;
     }
     
-    /**
-     * Judge whether all tables are in same data source or not.
-     * 
-     * @param routeContext route context
-     * @param singleTableNames single table names
-     * @return whether all tables are in same data source or not
-     */
-    public boolean isAllTablesInSameDataSource(final RouteContext routeContext, final Collection<QualifiedTable> singleTableNames) {
-        if (!isSingleTablesInSameDataSource(singleTableNames)) {
-            return false;
-        }
-        QualifiedTable sampleTable = singleTableNames.iterator().next();
-        Optional<DataNode> dataNode = findTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
-        if (dataNode.isPresent()) {
-            for (RouteUnit each : routeContext.getRouteUnits()) {
-                if (!each.getDataSourceMapper().getLogicName().equals(dataNode.get().getDataSourceName())) {
-                    return false;
-                }
+    private boolean isSameComputeNode(final String sampleDataSourceName, final String dataSourceName) {
+        return sampleDataSourceName.equalsIgnoreCase(dataSourceName);
+    }
+    
+    private boolean isSingleTablesInSameComputeNode(final Collection<QualifiedTable> singleTables) {
+        String sampleDataSourceName = null;
+        for (QualifiedTable each : singleTables) {
+            Optional<DataNode> dataNode = findTableDataNode(each.getSchemaName(), each.getTableName());
+            if (!dataNode.isPresent()) {
+                continue;
+            }
+            if (null == sampleDataSourceName) {
+                sampleDataSourceName = dataNode.get().getDataSourceName();
+                continue;
+            }
+            if (!isSameComputeNode(sampleDataSourceName, dataNode.get().getDataSourceName())) {
+                return false;
             }
         }
         return true;
@@ -142,7 +144,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
      * @param qualifiedTables qualified tables
      * @return single table names
      */
-    public Collection<QualifiedTable> getSingleTableNames(final Collection<QualifiedTable> qualifiedTables) {
+    public Collection<QualifiedTable> getSingleTables(final Collection<QualifiedTable> qualifiedTables) {
         Collection<QualifiedTable> result = new LinkedList<>();
         for (QualifiedTable each : qualifiedTables) {
             Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(each.getTableName().toLowerCase(), new LinkedList<>());
@@ -160,6 +162,31 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
             }
         }
         return false;
+    }
+    
+    /**
+     * Get qualified tables.
+     *
+     * @param sqlStatementContext sql statement context
+     * @param database database
+     * @return qualified tables
+     */
+    public Collection<QualifiedTable> getQualifiedTables(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
+        Collection<QualifiedTable> result = getQualifiedTables(database, databaseType, sqlStatementContext.getTablesContext().getSimpleTableSegments());
+        if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
+            result = IndexMetaDataUtils.getTableNames(database, databaseType, ((IndexAvailable) sqlStatementContext).getIndexes());
+        }
+        return result;
+    }
+    
+    private Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<SimpleTableSegment> tableSegments) {
+        Collection<QualifiedTable> result = new LinkedList<>();
+        String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(database.getName());
+        for (SimpleTableSegment each : tableSegments) {
+            String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
+            result.add(new QualifiedTable(actualSchemaName, each.getTableName().getIdentifier().getValue()));
+        }
+        return result;
     }
     
     @Override

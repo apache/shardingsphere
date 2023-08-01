@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
+import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.PostgreSQLResetVariableAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.PostgreSQLSetVariableAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.PostgreSQLShowVariableExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
@@ -62,8 +67,12 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SelectStatement) {
             Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);
-            if (KERNEL_SUPPORTED_TABLES.containsAll(selectedTableNames)) {
+            if (!selectedTableNames.isEmpty() && KERNEL_SUPPORTED_TABLES.containsAll(selectedTableNames)) {
                 return Optional.empty();
+            }
+            if (!selectedTableNames.isEmpty() && (SystemSchemaBuilderRule.POSTGRESQL_INFORMATION_SCHEMA.getTables().containsAll(selectedTableNames)
+                    || SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG.getTables().containsAll(selectedTableNames))) {
+                return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
             }
         }
         if (sqlStatement instanceof SetStatement) {

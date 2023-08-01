@@ -20,4 +20,5 @@
     <drop-role sql-case-id="drop_role" />
     <drop-role sql-case-id="drop_roles" />
     <drop-role sql-case-id="drop_role_if_exists" />
+    <drop-role sql-case-id="drop_role_appsuser" />
 </sql-parser-test-cases>

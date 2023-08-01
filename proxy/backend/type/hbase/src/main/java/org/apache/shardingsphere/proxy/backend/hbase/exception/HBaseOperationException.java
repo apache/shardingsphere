@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 
 /**
  * HBase operation exception.

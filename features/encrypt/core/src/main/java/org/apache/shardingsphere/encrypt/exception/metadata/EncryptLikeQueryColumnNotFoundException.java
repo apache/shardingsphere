@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.exception.metadata;
 
 import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Encrypt like query column not found exception.
@@ -29,9 +29,5 @@ public final class EncryptLikeQueryColumnNotFoundException extends EncryptSQLExc
     
     public EncryptLikeQueryColumnNotFoundException(final String logicColumnName, final String databaseName) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 7, "Like query column of `%s` can not be null in database `%s`.", logicColumnName, databaseName);
-    }
-    
-    public EncryptLikeQueryColumnNotFoundException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 7, "Can not find like query column Name.");
     }
 }

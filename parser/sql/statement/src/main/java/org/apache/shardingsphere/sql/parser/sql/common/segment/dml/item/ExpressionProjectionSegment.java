@@ -60,6 +60,11 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     }
     
     @Override
+    public String getColumnLabel() {
+        return getAliasName().orElse(text);
+    }
+    
+    @Override
     public Optional<String> getAliasName() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }

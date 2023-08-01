@@ -22,11 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
@@ -34,7 +33,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -71,6 +69,11 @@ public final class DatabaseTypeEngine {
         return configuredDatabaseType.orElseGet(() -> getStorageType(getEnabledDataSources(databaseConfigs).values()));
     }
     
+    private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
+        DatabaseType configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
+        return null == configuredDatabaseType ? Optional.empty() : Optional.of(configuredDatabaseType.getTrunkDatabaseType().orElse(configuredDatabaseType));
+    }
+    
     private static Map<String, DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSource> result = new LinkedHashMap<>();
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
@@ -96,20 +99,6 @@ public final class DatabaseTypeEngine {
     }
     
     /**
-     * Get storage types.
-     *
-     * @param dataSources data sources
-     * @return storage types
-     */
-    public static Map<String, DatabaseType> getStorageTypes(final Map<String, DataSource> dataSources) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(dataSources.size(), 1F);
-        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            result.put(entry.getKey(), getStorageType(entry.getValue()));
-        }
-        return result;
-    }
-    
-    /**
      * Get storage type.
      *
      * @param dataSources data sources
@@ -125,58 +114,5 @@ public final class DatabaseTypeEngine {
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
-    }
-    
-    private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
-        String configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeEngine.getTrunkDatabaseType(configuredDatabaseType));
-    }
-    
-    /**
-     * Get trunk database type.
-     *
-     * @param name database name 
-     * @return trunk database type
-     */
-    public static DatabaseType getTrunkDatabaseType(final String name) {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, name);
-        return databaseType.getTrunkDatabaseType().orElse(databaseType);
-    }
-    
-    /**
-     * Get name of trunk database type.
-     *
-     * @param databaseType database type
-     * @return name of trunk database type
-     */
-    public static String getTrunkDatabaseTypeName(final DatabaseType databaseType) {
-        return databaseType.getTrunkDatabaseType().map(DatabaseType::getType).orElse(databaseType.getType());
-    }
-    
-    /**
-     * Get default schema name.
-     * 
-     * @param protocolType protocol type
-     * @param databaseName database name
-     * @return default schema name
-     */
-    public static String getDefaultSchemaName(final DatabaseType protocolType, final String databaseName) {
-        return protocolType.getDefaultSchema().orElseGet(() -> null == databaseName ? null : databaseName.toLowerCase());
-    }
-    
-    /**
-     * Get trunk and branch database types.
-     *
-     * @param trunkDatabaseTypes trunk database types
-     * @return database types
-     */
-    public static Collection<DatabaseType> getTrunkAndBranchDatabaseTypes(final Collection<String> trunkDatabaseTypes) {
-        Collection<DatabaseType> result = new LinkedList<>();
-        for (DatabaseType each : ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)) {
-            if (trunkDatabaseTypes.contains(each.getType()) || each.getTrunkDatabaseType().map(optional -> trunkDatabaseTypes.contains(optional.getType())).orElse(false)) {
-                result.add(each);
-            }
-        }
-        return result;
     }
 }

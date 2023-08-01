@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
@@ -117,19 +116,6 @@ public final class InsertStatementHandler implements SQLStatementHandler {
     public static Optional<InsertMultiTableElementSegment> getInsertMultiTableElementSegment(final InsertStatement insertStatement) {
         if (insertStatement instanceof OracleStatement) {
             return ((OracleInsertStatement) insertStatement).getInsertMultiTableElementSegment();
-        }
-        return Optional.empty();
-    }
-    
-    /**
-     * Get select subquery segment.
-     *
-     * @param insertStatement insert statement
-     * @return select subquery segment
-     */
-    public static Optional<SubquerySegment> getSelectSubquery(final InsertStatement insertStatement) {
-        if (insertStatement instanceof OracleStatement) {
-            return ((OracleInsertStatement) insertStatement).getSelectSubquery();
         }
         return Optional.empty();
     }

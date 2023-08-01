@@ -43,4 +43,18 @@
     <sql-case id="explain_create_materialized_view_with_data" value="EXPLAIN (ANALYZE, COSTS OFF, SUMMARY OFF, TIMING OFF) CREATE MATERIALIZED VIEW matview_schema.mv_withdata2 (a) AS SELECT generate_series(1, 10) WITH DATA;" db-types="PostgreSQL" />
     <sql-case id="explain_create_materialized_view_with_no_data" value="EXPLAIN (ANALYZE, COSTS OFF, SUMMARY OFF, TIMING OFF) CREATE MATERIALIZED VIEW matview_schema.mv_nodata2 (a) AS SELECT generate_series(1, 10) WITH NO DATA;" db-types="PostgreSQL" />
     <sql-case id="explain_performance" value="EXPLAIN PERFORMANCE SELECT 1" db-types="openGauss" />
+    <sql-case id="explain_for_select_alias_as_keyword" value="EXPLAIN PLAN FOR SELECT length.item_id password FROM t_order_item length where length.item_id = 1;" db-types="Oracle" />
+    <sql-case id="explain_for_select_with_binding_tables" value="EXPLAIN PLAN FOR SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = 10" db-types="Oracle" />
+    <sql-case id="explain_for_select_with_analyze" value="EXPLAIN PLAN FOR SELECT * FROM t_order WHERE order_id > 8" db-types="Oracle" />
+    <sql-case id="explain_for_select_with_statement" value="EXPLAIN PLAN SET STATEMENT_ID = 'select1' FOR SELECT * FROM t_order WHERE order_id > 8" db-types="Oracle" />
+    <sql-case id="explain_for_update_without_condition" value="EXPLAIN PLAN FOR UPDATE t_order SET status = 'finished'" db-types="Oracle" />
+    <sql-case id="explain_for_update" value="EXPLAIN PLAN FOR UPDATE t_order SET id = 1" db-types="Oracle" />
+    <sql-case id="explain_for_update_with_statement" value="EXPLAIN PLAN SET STATEMENT_ID = 'update1' FOR UPDATE t_order SET id = 1" db-types="Oracle" />
+    <sql-case id="explain_for_insert_without_parameters" value="EXPLAIN PLAN FOR INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')" db-types="Oracle" />
+    <sql-case id="explain_for_with_analyze_insert" value="EXPLAIN PLAN FOR INSERT INTO t_order (order_id) VALUES(1)" db-types="Oracle" />
+    <sql-case id="explain_for_insert_statement" value="EXPLAIN PLAN SET STATEMENT_ID = 'insert1' FOR INSERT INTO t_order (order_id) VALUES(1)" db-types="Oracle" />
+    <sql-case id="explain_for_delete_without_sharding_value" value="EXPLAIN PLAN FOR DELETE FROM t_order WHERE status='init'" db-types="Oracle" />
+    <sql-case id="explain_for_with_analyze_delete" value="EXPLAIN PLAN FOR DELETE FROM t_order" db-types="Oracle" />
+    <sql-case id="explain_for_delete_condition" value="EXPLAIN PLAN FOR DELETE FROM t_order WHERE t_order.x = 1" db-types="Oracle" />
+    <sql-case id="explain_for_delete_statement" value="EXPLAIN PLAN SET STATEMENT_ID = 'insert1' FOR DELETE FROM t_order WHERE t_order.x = 1" db-types="Oracle" />
 </sql-cases>

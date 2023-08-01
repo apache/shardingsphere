@@ -66,7 +66,7 @@ public final class SQL92StatementVisitorFacade implements SQLStatementVisitorFac
     }
     
     @Override
-    public String getType() {
+    public String getDatabaseType() {
         return "SQL92";
     }
 }

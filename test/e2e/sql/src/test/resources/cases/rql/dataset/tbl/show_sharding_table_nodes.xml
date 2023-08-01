@@ -23,7 +23,5 @@
     <row values="t_order| tbl.t_order_0, tbl.t_order_1, tbl.t_order_2, tbl.t_order_3, tbl.t_order_4, tbl.t_order_5, tbl.t_order_6, tbl.t_order_7, tbl.t_order_8, tbl.t_order_9" />
     <row values="t_order_item| tbl.t_order_item_0, tbl.t_order_item_1, tbl.t_order_item_2, tbl.t_order_item_3, tbl.t_order_item_4, tbl.t_order_item_5, tbl.t_order_item_6, tbl.t_order_item_7, tbl.t_order_item_8, tbl.t_order_item_9" />
     <row values="t_order_details| tbl.t_order_details_0, tbl.t_order_details_1, tbl.t_order_details_2, tbl.t_order_details_3, tbl.t_order_details_4, tbl.t_order_details_5, tbl.t_order_details_6, tbl.t_order_details_7, tbl.t_order_details_8, tbl.t_order_details_9" />
-    <row values="t_order_federate_sharding| tbl.t_order_federate_sharding_0, tbl.t_order_federate_sharding_1" />
-    <row values="t_order_item_federate_sharding| tbl.t_order_item_federate_sharding_0, tbl.t_order_item_federate_sharding_1" />
     <row values="t_product| tbl.t_product_0, tbl.t_product_1, tbl.t_product_2, tbl.t_product_3, tbl.t_product_4, tbl.t_product_5, tbl.t_product_6, tbl.t_product_7, tbl.t_product_8, tbl.t_product_9" />
 </dataset>

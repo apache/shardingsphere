@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.postgresql.PostgreSQLIncrementalDumperCreator
+org.apache.shardingsphere.data.pipeline.postgresql.ingest.dumper.PostgreSQLIncrementalDumperCreator

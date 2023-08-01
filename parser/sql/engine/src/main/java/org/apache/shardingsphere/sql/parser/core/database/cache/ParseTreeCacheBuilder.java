@@ -21,6 +21,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
@@ -37,8 +38,7 @@ public final class ParseTreeCacheBuilder {
      * @param databaseType database type
      * @return built parse tree cache
      */
-    public static LoadingCache<String, ParseASTNode> build(final CacheOption option, final String databaseType) {
-        return Caffeine.newBuilder().softValues().initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize())
-                .build(new ParseTreeCacheLoader(databaseType));
+    public static LoadingCache<String, ParseASTNode> build(final CacheOption option, final DatabaseType databaseType) {
+        return Caffeine.newBuilder().softValues().initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize()).build(new ParseTreeCacheLoader(databaseType));
     }
 }

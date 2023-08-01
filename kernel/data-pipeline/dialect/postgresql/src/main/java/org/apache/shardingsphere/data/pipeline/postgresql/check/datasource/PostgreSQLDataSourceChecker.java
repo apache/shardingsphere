@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWith
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutUserException;
 import org.apache.shardingsphere.data.pipeline.spi.check.DialectDataSourceChecker;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

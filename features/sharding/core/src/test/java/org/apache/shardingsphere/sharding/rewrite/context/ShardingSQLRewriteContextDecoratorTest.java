@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sharding.rewrite.context;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -36,6 +37,7 @@ class ShardingSQLRewriteContextDecoratorTest {
     @Test
     void assertDecorate() {
         SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
+        when(sqlRewriteContext.getDatabase()).thenReturn(mock(ShardingSphereDatabase.class));
         when(sqlRewriteContext.getParameters()).thenReturn(Collections.singletonList(new Object()));
         when(sqlRewriteContext.getSqlStatementContext()).thenReturn(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS));
         new ShardingSQLRewriteContextDecorator().decorate(mock(ShardingRule.class), mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
