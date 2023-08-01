@@ -58,8 +58,8 @@ public final class DeleteStatementConverter implements SQLStatementConverter<Del
         SqlNode targetTable = new TableConverter().convert(deleteStatement.getTable()).get();
         SqlNode condition = deleteStatement.getWhere().flatMap(optional -> new WhereConverter().convert(optional)).orElse(null);
         if (deleteStatement.getTable().getAliasName().isPresent()) {
-            SqlIdentifier alias1 = new SqlIdentifier(deleteStatement.getTable().getAliasName().toString(), SqlParserPos.ZERO);
-            return new SqlDelete(SqlParserPos.ZERO, targetTable, condition, null, alias1);
+            SqlIdentifier alias = new SqlIdentifier(deleteStatement.getTable().getAliasName().toString(), SqlParserPos.ZERO);
+            return new SqlDelete(SqlParserPos.ZERO, targetTable, condition, null, alias);
         }
         return new SqlDelete(SqlParserPos.ZERO, targetTable, condition, null, null);
     }

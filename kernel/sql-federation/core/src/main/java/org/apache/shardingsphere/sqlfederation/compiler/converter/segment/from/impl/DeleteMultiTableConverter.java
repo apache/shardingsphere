@@ -39,7 +39,7 @@ public final class DeleteMultiTableConverter implements SQLSegmentConverter<Dele
     
     @Override
     public Optional<SqlNode> convert(final DeleteMultiTableSegment segment) {
-        if (segment == null) {
+        if (null == segment) {
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodeList = new LinkedList<>();
@@ -47,12 +47,11 @@ public final class DeleteMultiTableConverter implements SQLSegmentConverter<Dele
         sqlNodeList.add(table);
         List<SimpleTableSegment> actualDeleteTables = segment.getActualDeleteTables();
         List<String> names = new ArrayList<>();
-        for (SimpleTableSegment tableSegment : actualDeleteTables) {
-            String tableName = tableSegment.getTableName().getIdentifier().getValue();
+        for (SimpleTableSegment each : actualDeleteTables) {
+            String tableName = each.getTableName().getIdentifier().getValue();
             names.add(tableName);
         }
         sqlNodeList.add(new SqlIdentifier(names, SqlParserPos.ZERO));
-        SqlNodeList sqlNodeList1 = new SqlNodeList(sqlNodeList, SqlParserPos.ZERO);
-        return Optional.of(sqlNodeList1);
+        return Optional.of(new SqlNodeList(sqlNodeList, SqlParserPos.ZERO));
     }
 }
