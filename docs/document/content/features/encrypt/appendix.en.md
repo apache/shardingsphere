@@ -11,4 +11,4 @@ Unsupported SQL：
 
 Other:
 
-- You should keep encrypt column, assisted column and like column in encrypt rule keep same capitalization with column in database. 
+- You should keep encrypt columns, assisted columns and like columns in encrypt rule same capitalization with columns in database. 

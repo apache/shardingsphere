@@ -17,4 +17,4 @@ Unsupported SQL:
 
 Other：
 
-- You should keep actual table, sharding column and key generate column in sharding rule keep same capitalization with table and column in database.
+- You should keep actual tables, sharding columns and key generate columns in sharding rule same capitalization with tables and columns in database.
