@@ -43,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -100,16 +101,13 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
         }
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<RuleConfiguration> decorateRuleConfigs(final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (ShardingSphereRule each : rules) {
             RuleConfiguration ruleConfig = each.getConfiguration();
-            if (TypedSPILoader.contains(RuleConfigurationDecorator.class, ruleConfig.getClass().getName())) {
-                result.add(TypedSPILoader.getService(RuleConfigurationDecorator.class, ruleConfig.getClass().getName()).decorate(databaseName, dataSources, rules, ruleConfig));
-            } else {
-                result.add(each.getConfiguration());
-            }
+            Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass().getName());
+            result.add(decorator.map(optional -> optional.decorate(databaseName, dataSources, rules, ruleConfig)).orElse(each.getConfiguration()));
         }
         return result;
     }
