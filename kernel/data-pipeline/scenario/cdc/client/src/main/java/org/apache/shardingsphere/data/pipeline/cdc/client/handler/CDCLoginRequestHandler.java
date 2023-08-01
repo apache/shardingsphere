@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.ResponseFuture;
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.ServerErrorResult;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
@@ -36,6 +37,8 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public final class CDCLoginRequestHandler extends ChannelInboundHandlerAdapter {
+    
+    private final ExceptionHandler exceptionHandler;
     
     @Override
     public void channelActive(final ChannelHandlerContext ctx) {
@@ -56,11 +59,11 @@ public final class CDCLoginRequestHandler extends ChannelInboundHandlerAdapter {
         ClientConnectionContext connectionContext = ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).get();
         Optional<ResponseFuture> responseFuture = Optional.ofNullable(connectionContext.getResponseFutureMap().get(response.getRequestId()));
         if (response.getStatus() != Status.SUCCEED) {
-            log.error("Received error response {}", msg);
+            exceptionHandler.handlerServerException(new ServerErrorResult(response.getErrorCode(), response.getErrorMessage()));
             responseFuture.ifPresent(future -> {
                 future.setErrorCode(response.getErrorCode());
                 future.setErrorMessage(response.getErrorMessage());
-                future.getCountDownLatch().countDown();
+                future.countDown();
             });
             return;
         }
@@ -70,7 +73,7 @@ public final class CDCLoginRequestHandler extends ChannelInboundHandlerAdapter {
             return;
         }
         if (ClientConnectionStatus.NOT_LOGGED_IN == connectionContext.getStatus().get() && response.getStatus() == Status.SUCCEED) {
-            responseFuture.ifPresent(future -> future.getCountDownLatch().countDown());
+            responseFuture.ifPresent(ResponseFuture::countDown);
             connectionContext.getStatus().set(ClientConnectionStatus.LOGGED_IN);
             return;
         }
@@ -79,6 +82,6 @@ public final class CDCLoginRequestHandler extends ChannelInboundHandlerAdapter {
     
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
-        log.error("Login handler error", cause);
+        exceptionHandler.handlerSocketException(cause);
     }
 }

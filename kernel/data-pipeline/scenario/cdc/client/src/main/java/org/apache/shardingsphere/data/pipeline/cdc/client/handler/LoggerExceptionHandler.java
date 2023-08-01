@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
+package org.apache.shardingsphere.data.pipeline.cdc.client.handler;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
-
-import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.ServerErrorResult;
 
 /**
- * Start streaming parameter.
+ * Logger exception handler, just print error.
  */
 @RequiredArgsConstructor
-@Getter
-public final class StartStreamingParameter {
+@Slf4j
+public class LoggerExceptionHandler implements ExceptionHandler {
     
-    private final String database;
+    @Override
+    public void handlerServerException(final ServerErrorResult result) {
+        log.error("Server error, code: {}, message: {}", result.getErrorCode(), result.getErrorMessage());
+    }
     
-    private final Set<SchemaTable> schemaTables;
-    
-    private final boolean full;
+    @Override
+    public void handlerSocketException(final Throwable throwable) {
+        log.error("Socket error: ", throwable);
+    }
 }

@@ -22,7 +22,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.exception;
  */
 public final class GetResultTimeoutException extends RuntimeException {
     
-    private static final long serialVersionUID = 6661736945772674919L;
+    private static final long serialVersionUID = 8473381735246753765L;
     
     public GetResultTimeoutException(final String message) {
         super(message);

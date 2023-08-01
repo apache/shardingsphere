@@ -136,10 +136,6 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             throw new CDCExceptionWrapper(request.getRequestId(), new CDCLoginException("Login request body is empty"));
         }
         BasicBody body = request.getLoginRequestBody().getBasicBody();
-        CDCConnectionContext connectionContext = ctx.channel().attr(CONNECTION_CONTEXT_KEY).get();
-        if (null != connectionContext && Objects.equals(connectionContext.getCurrentUser().getGrantee().getUsername(), body.getUsername())) {
-            throw new CDCExceptionWrapper(request.getRequestId(), new CDCLoginException(String.format("%s already logged in", body.getUsername())));
-        }
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Optional<ShardingSphereUser> user = authorityRule.findUser(new Grantee(body.getUsername(), getHostAddress(ctx)));
         if (user.isPresent() && Objects.equals(Hashing.sha256().hashBytes(user.get().getPassword().getBytes()).toString().toUpperCase(), body.getPassword())) {

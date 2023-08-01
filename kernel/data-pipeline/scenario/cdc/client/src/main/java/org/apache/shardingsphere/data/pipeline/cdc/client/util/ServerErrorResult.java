@@ -15,10 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.event;
+package org.apache.shardingsphere.data.pipeline.cdc.client.util;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Stream data event.
+ * Server error result.
  */
-public final class StreamDataEvent {
+@RequiredArgsConstructor
+@Getter
+public final class ServerErrorResult {
+    
+    private final String errorCode;
+    
+    private final String errorMessage;
 }

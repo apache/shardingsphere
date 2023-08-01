@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
-
-import java.util.Set;
+package org.apache.shardingsphere.data.pipeline.cdc.client.exception;
 
 /**
- * Start streaming parameter.
+ * Server result exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class StartStreamingParameter {
+public final class ServerResultException extends RuntimeException {
     
-    private final String database;
+    private static final long serialVersionUID = 6661736945772674919L;
     
-    private final Set<SchemaTable> schemaTables;
-    
-    private final boolean full;
+    public ServerResultException(final String message) {
+        super(message);
+    }
 }

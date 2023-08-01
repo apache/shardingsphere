@@ -44,6 +44,8 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     private final Consumer<List<Record>> consumer;
     
+    private final ExceptionHandler exceptionHandler;
+    
     @Override
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         CDCResponse response = (CDCResponse) msg;
@@ -56,7 +58,7 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
         } else if (response.hasDataRecordResult()) {
             processDataRecords(ctx, response.getDataRecordResult());
         }
-        responseFuture.ifPresent(future -> future.getCountDownLatch().countDown());
+        responseFuture.ifPresent(ResponseFuture::countDown);
     }
     
     private void processDataRecords(final ChannelHandlerContext ctx, final DataRecordResult result) {
@@ -72,7 +74,6 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
-        log.error("Handler data streaming error", cause);
-        // TODO passing error messages to the caller
+        exceptionHandler.handlerSocketException(cause);
     }
 }
