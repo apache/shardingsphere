@@ -21,10 +21,9 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.type.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
 
 import java.sql.SQLException;
@@ -33,7 +32,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -80,14 +78,14 @@ public final class MetaDataLoader {
     }
     
     private static Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
-        Optional<DialectMetaDataLoader> dialectLoader = DatabaseTypedSPILoader.findService(DialectMetaDataLoader.class, material.getStorageType());
-        if (dialectLoader.isPresent()) {
-            try {
-                return dialectLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());
-            } catch (final SQLException ex) {
-                log.debug("Dialect load schema meta data error.", ex);
-            }
-        }
+//        Optional<DialectMetaDataLoader> dialectLoader = DatabaseTypedSPILoader.findService(DialectMetaDataLoader.class, material.getStorageType());
+//        if (dialectLoader.isPresent()) {
+//            try {
+//                return dialectLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());
+//            } catch (final SQLException ex) {
+//                log.debug("Dialect load schema meta data error.", ex);
+//            }
+//        }
         return loadByDefault(material);
     }
     
