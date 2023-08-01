@@ -28,7 +28,7 @@ import java.util.LinkedHashSet;
 import java.util.Optional;
 
 /**
- * Sharding index reviser.
+ * Encrypt index reviser.
  */
 @RequiredArgsConstructor
 public final class EncryptIndexReviser implements IndexReviser<EncryptRule> {
