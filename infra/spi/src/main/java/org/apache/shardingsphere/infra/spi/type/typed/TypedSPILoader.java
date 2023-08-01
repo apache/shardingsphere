@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.spi.type.typed;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundServerException;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -34,51 +34,51 @@ public final class TypedSPILoader {
     /**
      * Judge whether contains service.
      * 
-     * @param spiClass typed SPI class
+     * @param serviceInterface typed SPI service interface to be judged
      * @param type type
      * @param <T> SPI class type
      * @return contains or not
      */
-    public static <T extends TypedSPI> boolean contains(final Class<T> spiClass, final Object type) {
-        return ShardingSphereServiceLoader.getServiceInstances(spiClass).stream().anyMatch(each -> matchesType(type, each));
+    public static <T extends TypedSPI> boolean contains(final Class<T> serviceInterface, final Object type) {
+        return ShardingSphereServiceLoader.getServiceInstances(serviceInterface).stream().anyMatch(each -> matchesType(type, each));
     }
     
     /**
      * Find service.
      * 
-     * @param spiClass typed SPI class
+     * @param serviceInterface typed SPI service interface
      * @param type type
      * @param <T> SPI class type
-     * @return service
+     * @return found service
      */
-    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final Object type) {
-        return findService(spiClass, type, new Properties());
+    public static <T extends TypedSPI> Optional<T> findService(final Class<T> serviceInterface, final Object type) {
+        return findService(serviceInterface, type, new Properties());
     }
     
     /**
      * Find service.
      * 
-     * @param spiClass typed SPI class
+     * @param serviceInterface typed SPI service interface
      * @param type type
      * @param props properties
      * @param <T> SPI class type
-     * @return service
+     * @return found service
      */
-    public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final Object type, final Properties props) {
+    public static <T extends TypedSPI> Optional<T> findService(final Class<T> serviceInterface, final Object type, final Properties props) {
         if (null == type) {
-            return findDefaultService(spiClass);
+            return findDefaultService(serviceInterface);
         }
-        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
             if (matchesType(type, each)) {
                 each.init(null == props ? new Properties() : convertToStringTypedProperties(props));
                 return Optional.of(each);
             }
         }
-        return findDefaultService(spiClass);
+        return findDefaultService(serviceInterface);
     }
     
-    private static <T extends TypedSPI> Optional<T> findDefaultService(final Class<T> spiClass) {
-        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
+    private static <T extends TypedSPI> Optional<T> findDefaultService(final Class<T> serviceInterface) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
             if (!each.isDefault()) {
                 continue;
             }
@@ -100,46 +100,46 @@ public final class TypedSPILoader {
     /**
      * Get service.
      * 
-     * @param spiClass typed SPI class
+     * @param serviceInterface typed SPI service interface
      * @param type type
      * @param <T> SPI class type
      * @return service
      */
-    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final Object type) {
-        return getService(spiClass, type, new Properties());
+    public static <T extends TypedSPI> T getService(final Class<T> serviceInterface, final Object type) {
+        return getService(serviceInterface, type, new Properties());
     }
     
     /**
      * Get service.
      * 
-     * @param spiClass typed SPI class
+     * @param serviceInterface typed SPI service interface
      * @param type type
      * @param props properties
      * @param <T> SPI class type
      * @return service
      */
-    public static <T extends TypedSPI> T getService(final Class<T> spiClass, final Object type, final Properties props) {
-        return findService(spiClass, type, props).orElseGet(() -> findDefaultService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass, type)));
+    public static <T extends TypedSPI> T getService(final Class<T> serviceInterface, final Object type, final Properties props) {
+        return findService(serviceInterface, type, props).orElseGet(() -> findDefaultService(serviceInterface).orElseThrow(() -> new ServiceProviderNotFoundException(serviceInterface, type)));
     }
     
     /**
      * Check service.
      * 
-     * @param spiClass typed SPI class
+     * @param serviceInterface typed SPI service interface
      * @param type type
      * @param props properties
      * @param <T> SPI class type
      * @return is valid service or not
-     * @throws ServiceProviderNotFoundServerException service provider not found server exception
+     * @throws ServiceProviderNotFoundException service provider not found server exception
      */
-    public static <T extends TypedSPI> boolean checkService(final Class<T> spiClass, final Object type, final Properties props) {
-        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
+    public static <T extends TypedSPI> boolean checkService(final Class<T> serviceInterface, final Object type, final Properties props) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
             if (matchesType(type, each)) {
                 each.init(null == props ? new Properties() : convertToStringTypedProperties(props));
                 return true;
             }
         }
-        throw new ServiceProviderNotFoundServerException(spiClass, type);
+        throw new ServiceProviderNotFoundException(serviceInterface, type);
     }
     
     private static boolean matchesType(final Object type, final TypedSPI instance) {
