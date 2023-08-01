@@ -39,13 +39,13 @@ public final class OrderedSPILoader {
     /**
      * Get services by class type.
      *
-     * @param spiClass class of ordered SPI
+     * @param serviceInterface ordered SPI service interface
      * @param types types
      * @param <T> type of ordered SPI class
-     * @return services
+     * @return got services
      */
-    public static <T extends OrderedSPI<?>> Map<Class<?>, T> getServicesByClass(final Class<T> spiClass, final Collection<Class<?>> types) {
-        Collection<T> services = getServices(spiClass);
+    public static <T extends OrderedSPI<?>> Map<Class<?>, T> getServicesByClass(final Class<T> serviceInterface, final Collection<Class<?>> types) {
+        Collection<T> services = getServices(serviceInterface);
         Map<Class<?>, T> result = new LinkedHashMap<>(services.size(), 1F);
         for (T each : services) {
             types.stream().filter(type -> each.getTypeClass() == type).forEach(type -> result.put(type, each));
@@ -56,55 +56,55 @@ public final class OrderedSPILoader {
     /**
      * Get services.
      *
-     * @param spiClass class of ordered SPI
+     * @param serviceInterface ordered SPI service interface
      * @param types types
      * @param <K> type of key
      * @param <V> type of ordered SPI class
-     * @return services
+     * @return got services
      */
-    public static <K, V extends OrderedSPI<?>> Map<K, V> getServices(final Class<V> spiClass, final Collection<K> types) {
-        return getServices(spiClass, types, Comparator.naturalOrder());
+    public static <K, V extends OrderedSPI<?>> Map<K, V> getServices(final Class<V> serviceInterface, final Collection<K> types) {
+        return getServices(serviceInterface, types, Comparator.naturalOrder());
     }
     
     /**
      * Get services.
      *
-     * @param spiClass class of ordered SPI
+     * @param serviceInterface ordered SPI service interface
      * @param types types
      * @param <K> type of key
      * @param <V> type of ordered SPI class
      * @param orderComparator order comparator
-     * @return services
+     * @return got services
      */
     @SuppressWarnings("unchecked")
-    public static <K, V extends OrderedSPI<?>> Map<K, V> getServices(final Class<V> spiClass, final Collection<K> types, final Comparator<Integer> orderComparator) {
-        Optional<Map<K, V>> cachedServices = OrderedServicesCache.findCachedServices(spiClass, types).map(optional -> (Map<K, V>) optional);
+    public static <K, V extends OrderedSPI<?>> Map<K, V> getServices(final Class<V> serviceInterface, final Collection<K> types, final Comparator<Integer> orderComparator) {
+        Optional<Map<K, V>> cachedServices = OrderedServicesCache.findCachedServices(serviceInterface, types).map(optional -> (Map<K, V>) optional);
         if (cachedServices.isPresent()) {
             return cachedServices.get();
         }
-        Collection<V> services = getServices(spiClass, orderComparator);
+        Collection<V> services = getServices(serviceInterface, orderComparator);
         Map<K, V> result = new LinkedHashMap<>(services.size(), 1F);
         for (V each : services) {
             types.stream().filter(type -> each.getTypeClass() == type.getClass()).forEach(type -> result.put(type, each));
         }
-        OrderedServicesCache.cacheServices(spiClass, types, result);
+        OrderedServicesCache.cacheServices(serviceInterface, types, result);
         return result;
     }
     
     /**
      * Get services.
      *
-     * @param spiClass class of ordered SPI
+     * @param serviceInterface ordered SPI service interface
      * @param <T> type of ordered SPI class
-     * @return services
+     * @return got services
      */
-    public static <T extends OrderedSPI<?>> Collection<T> getServices(final Class<T> spiClass) {
-        return getServices(spiClass, Comparator.naturalOrder());
+    public static <T extends OrderedSPI<?>> Collection<T> getServices(final Class<T> serviceInterface) {
+        return getServices(serviceInterface, Comparator.naturalOrder());
     }
     
-    private static <T extends OrderedSPI<?>> Collection<T> getServices(final Class<T> spiClass, final Comparator<Integer> comparator) {
+    private static <T extends OrderedSPI<?>> Collection<T> getServices(final Class<T> serviceInterface, final Comparator<Integer> comparator) {
         Map<Integer, T> result = new TreeMap<>(comparator);
-        for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
+        for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
             Preconditions.checkArgument(!result.containsKey(each.getOrder()), "Found same order `%s` with `%s` and `%s`", each.getOrder(), result.get(each.getOrder()), each);
             result.put(each.getOrder(), each);
         }
