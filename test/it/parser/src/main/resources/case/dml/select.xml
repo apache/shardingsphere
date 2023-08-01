@@ -5974,6 +5974,9 @@
                 </binary-operation-expression>
             </expr>
         </where>
+        <order-by>
+            <column-item name="xmlagg" order-direction="ASC" start-index="106" stop-index="111"/>
+        </order-by>
     </select>
 
     <select sql-case-id="select_with_cover_pop_and_covar_samp">

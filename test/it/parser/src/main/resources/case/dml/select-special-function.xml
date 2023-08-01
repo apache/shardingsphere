@@ -432,4 +432,45 @@
             <column-item name="hire_date" order-direction="ASC" start-index="174" stop-index="182" literal-start-index="174" literal-stop-index="182" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_sys_xml_agg">
+        <projections start-index="7" stop-index="46">
+            <expression-projection text="SYS_XMLAGG(SYS_XMLGEN(last_name))" alias="XMLAGG" start-index="7" stop-index="46">
+                <expr>
+                    <function function-name="SYS_XMLAGG" start-index="7" stop-index="39" text="SYS_XMLAGG(SYS_XMLGEN(last_name))">
+                        <parameter>
+                            <function function-name="SYS_XMLGEN" start-index="18" stop-index="38" text="SYS_XMLGEN(last_name)">
+                                <parameter>
+                                    <column name="last_name" start-index="29" stop-index="37"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="53" stop-index="61" />
+        </from>
+        <where start-index="63" stop-index="87">
+            <expr>
+                <binary-operation-expression start-index="69" stop-index="87" >
+                    <left>
+                        <column name="last_name" start-index="69" stop-index="77"/>
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="84" stop-index="87">
+                            <items>
+                                <literal-expression value="R%" start-index="84" stop-index="87" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="xmlagg" order-direction="ASC" start-index="98" stop-index="103"/>
+        </order-by>
+    </select>
 </sql-parser-test-cases>
