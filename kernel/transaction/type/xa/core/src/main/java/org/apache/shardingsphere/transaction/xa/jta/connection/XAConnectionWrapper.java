@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.connection;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.StatefulTypedSPI;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
@@ -29,7 +30,7 @@ import java.sql.SQLException;
  * XA connection wrapper.
  */
 @SingletonSPI
-public interface XAConnectionWrapper extends DatabaseTypedSPI {
+public interface XAConnectionWrapper extends DatabaseTypedSPI, StatefulTypedSPI {
     
     /**
      * Wrap a normal connection to XA connection.
