@@ -124,7 +124,7 @@ public final class ProjectionsContext {
     }
     
     private String getOriginalColumnName(final Projection projection) {
-        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getOriginalName().getValue() : projection.getExpression();
+        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getOriginalColumn().getValue() : projection.getExpression();
     }
     
     /**

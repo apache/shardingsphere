@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.7. </b>"
+pre = "<b>5.3. </b>"
 title = "Data Sharding"
-weight = 7
+weight = 3
 chapter = true
 +++
 

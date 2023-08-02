@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.consul.props;
 
-import org.apache.shardingsphere.infra.util.props.TypedProperties;
+import org.apache.shardingsphere.infra.props.TypedProperties;
 import java.util.Properties;
 
 /**

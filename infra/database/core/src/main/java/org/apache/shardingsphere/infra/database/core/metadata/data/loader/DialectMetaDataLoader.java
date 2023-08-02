@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.database.core.metadata.data.loader;
 
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

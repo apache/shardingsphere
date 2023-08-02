@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
 
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 
 /**
  * Job rate limit algorithm.

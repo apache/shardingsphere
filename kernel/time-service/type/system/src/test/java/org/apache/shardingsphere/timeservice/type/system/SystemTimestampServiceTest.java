@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.timeservice.type.system;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.timeservice.spi.TimestampService;
 import org.junit.jupiter.api.Test;
 

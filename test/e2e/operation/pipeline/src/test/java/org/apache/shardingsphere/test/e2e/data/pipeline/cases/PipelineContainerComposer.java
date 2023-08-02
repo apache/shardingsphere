@@ -27,9 +27,8 @@ import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSou
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrlAppender;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
@@ -295,7 +294,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public void createSchema(final Connection connection, final int sleepSeconds) throws SQLException {
-        if (!DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).isSchemaAvailable()) {
+        if (!new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().isSchemaAvailable()) {
             return;
         }
         connection.createStatement().execute(String.format("CREATE SCHEMA %s", SCHEMA_NAME));

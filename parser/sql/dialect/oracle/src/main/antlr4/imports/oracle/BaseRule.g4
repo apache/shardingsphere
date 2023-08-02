@@ -325,7 +325,7 @@ unreservedWord3
     | USE_PRIVATE_OUTLINES | USE_SEMI | USE_TTT_FOR_GSETS | USE_WEAK_NAME_RESL | VALIDATE | VALIDATION | VARIANCE | VAR_POP
     | VAR_SAMP | VECTOR_READ | VECTOR_READ_TRACE | VERSIONING | VERSIONS_ENDSCN | VERSIONS_ENDTIME | VERSIONS_OPERATION
     | VERSIONS_STARTSCN | VERSIONS_STARTTIME | VERSIONS_XID | VOLUME | VSIZE | WELLFORMED | WHENEVER | WHITESPACE
-    | WIDTH_BUCKET | WRAPPED | XID | XMLATTRIBUTES | XMLCAST | XMLCDATA | XMLCOLATTVAL | XMLCOMMENT | XMLCONCAT | XMLDIFF
+    | WIDTH_BUCKET | WRAPPED | XID | XMLAGG | XMLATTRIBUTES | XMLCAST | XMLCDATA | XMLCOLATTVAL | XMLCOMMENT | XMLCONCAT | XMLDIFF
     | XMLEXISTS | XMLEXISTS2 | XMLFOREST | XMLINDEX_REWRITE | XMLINDEX_REWRITE_IN_SELECT | XMLINDEX_SEL_IDX_TBL | XMLISNODE
     | XMLISVALID | XMLNAMESPACES | XMLPARSE | XMLPATCH | XMLPI | XMLQUERY | XMLROOT | XMLSERIALIZE | XMLTABLE | XMLTOOBJECT
     | XMLTRANSFORM | XMLTRANSFORMBLOB | XML_DML_RWT_STMT | XPATHTABLE | XS_SYS_CONTEXT | X_DYN_PRUNE
@@ -428,6 +428,14 @@ name
     ;
 
 tablespaceName
+    : identifier
+    ;
+
+subprogramName
+    : identifier
+    ;
+
+methodName
     : identifier
     ;
 
@@ -600,7 +608,7 @@ alias
     ;
 
 dataTypeLength
-    : LP_ (INTEGER_ (COMMA_ INTEGER_)? (CHAR | BYTE)?)? RP_
+    : LP_ (INTEGER_ (COMMA_ (MINUS_)? INTEGER_)? (CHAR | BYTE)?)? RP_
     ;
 
 primaryKey
@@ -622,9 +630,8 @@ expr
     | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
-    | aggregationFunction
-    | analyticFunction
     | expr datetimeExpr
+    | multisetExpr
     ;
 
 andOperator
@@ -749,7 +756,7 @@ leadLagInfo
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
+    : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
     ;
 
 featureFunction
@@ -800,7 +807,12 @@ castFunction
     ;
 
 charFunction
-    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier)? RP_
+    : (CHR | CHAR) LP_ expr (COMMA_ expr)* (USING charSet)? RP_
+    ;
+
+charSet
+    : NCHAR_CS
+    | ignoredIdentifier
     ;
     
 extractFunction
@@ -1980,4 +1992,14 @@ xmlTableOptions
 
 xmlTableColumn
     : columnName (FOR ORDINALITY | (dataType | XMLTYPE (LP_ SEQUENCE RP_ BY REF)?) (PATH STRING_)? (DEFAULT expr)?)
+    ;
+
+multisetExpr
+    : columnName MULTISET multisetOperator (ALL | DISTINCT)? columnName
+    ;
+
+multisetOperator
+    : EXCEPT
+    | INTERSECT
+    | UNION
     ;

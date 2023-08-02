@@ -23,7 +23,7 @@ import freemarker.template.TemplateException;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfigurationValidator;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.io.File;
