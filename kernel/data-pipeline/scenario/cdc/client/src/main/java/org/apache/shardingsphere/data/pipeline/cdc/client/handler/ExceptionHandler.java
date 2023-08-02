@@ -15,10 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.event;
+package org.apache.shardingsphere.data.pipeline.cdc.client.handler;
+
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.ServerErrorResult;
 
 /**
- * Stream data event.
+ * Exception handler.
  */
-public final class StreamDataEvent {
+public interface ExceptionHandler {
+    
+    /**
+     * Handle server exception.
+     *
+     * @param result error result
+     */
+    void handleServerException(ServerErrorResult result);
+    
+    /**
+     * Handle socket exception.
+     *
+     * @param throwable throwable
+     */
+    void handleSocketException(Throwable throwable);
 }

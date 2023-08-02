@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.client;
 
+import com.google.common.hash.Hashing;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.ChannelFuture;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -30,57 +31,57 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.cdc.client.config.CDCClientConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
+import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.CDCRequestHandler;
-import org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoginRequestHandler;
-import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.CDCLoginParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartStreamingParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtils;
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.ResponseFuture;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody.BasicBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody.LoginType;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartStreamingRequestBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StopStreamingRequestBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
-
-import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * CDC client.
  */
 @Slf4j
-public final class CDCClient {
+public final class CDCClient implements AutoCloseable {
     
-    private final StartCDCClientParameter parameter;
+    private final CDCClientConfiguration config;
     
-    private final Consumer<List<Record>> consumer;
+    private NioEventLoopGroup group;
     
-    public CDCClient(final StartCDCClientParameter parameter, final Consumer<List<Record>> consumer) {
-        validateParameter(parameter);
-        this.parameter = parameter;
-        this.consumer = consumer;
+    private Channel channel;
+    
+    public CDCClient(final CDCClientConfiguration config) {
+        validateParameter(config);
+        this.config = config;
     }
     
-    private void validateParameter(final StartCDCClientParameter parameter) {
-        if (null == parameter.getDatabase() || parameter.getDatabase().isEmpty()) {
-            throw new IllegalArgumentException("The database parameter can't be null");
-        }
-        if (null == parameter.getUsername() || parameter.getUsername().isEmpty()) {
-            throw new IllegalArgumentException("The username parameter can't be null");
-        }
+    private void validateParameter(final CDCClientConfiguration parameter) {
         if (null == parameter.getAddress() || parameter.getAddress().isEmpty()) {
             throw new IllegalArgumentException("The address parameter can't be null");
         }
-        if (null == parameter.getSchemaTables() || parameter.getSchemaTables().isEmpty()) {
-            throw new IllegalArgumentException("The schema tables parameter can't be null");
+        if (parameter.getPort() <= 0) {
+            throw new IllegalArgumentException("The port must be greater than 0");
         }
     }
     
     /**
-     * Start ShardingSphere CDC client.
+     * Connect.
      */
-    public void start() {
-        startInternal(parameter.getAddress(), parameter.getPort());
-    }
-    
     @SneakyThrows(InterruptedException.class)
-    private void startInternal(final String address, final int port) {
+    public void connect() {
         Bootstrap bootstrap = new Bootstrap();
-        NioEventLoopGroup group = new NioEventLoopGroup();
+        group = new NioEventLoopGroup();
         bootstrap.channel(NioSocketChannel.class)
                 .group(group)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
@@ -93,14 +94,124 @@ public final class CDCClient {
                         channel.pipeline().addLast(new ProtobufDecoder(CDCResponse.getDefaultInstance()));
                         channel.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
                         channel.pipeline().addLast(new ProtobufEncoder());
-                        channel.pipeline().addLast(new LoginRequestHandler(parameter.getUsername(), parameter.getPassword()));
-                        channel.pipeline().addLast(new CDCRequestHandler(parameter, consumer));
+                        channel.pipeline().addLast(new CDCRequestHandler(config.getDataConsumer(), config.getExceptionHandler()));
                     }
                 });
-        try {
-            ChannelFuture future = bootstrap.connect(address, port).sync();
-            future.channel().closeFuture().sync();
-        } finally {
+        channel = bootstrap.connect(config.getAddress(), config.getPort()).sync().channel();
+    }
+    
+    /**
+     * Await channel close.
+     *
+     * @throws InterruptedException interrupted exception
+     */
+    public void await() throws InterruptedException {
+        channel.closeFuture().sync();
+    }
+    
+    /**
+     * Login.
+     *
+     * @param parameter parameter
+     * @throws IllegalStateException the channel is not active
+     */
+    public synchronized void login(final CDCLoginParameter parameter) {
+        checkChannelActive();
+        ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
+        if (ClientConnectionStatus.LOGGED_IN == connectionContext.getStatus().get()) {
+            throw new IllegalStateException("The client is already logged in");
+        }
+        LoginRequestBody loginRequestBody = LoginRequestBody.newBuilder().setType(LoginType.BASIC).setBasicBody(BasicBody.newBuilder().setUsername(parameter.getUsername())
+                .setPassword(Hashing.sha256().hashBytes(parameter.getPassword().getBytes()).toString().toUpperCase()).build()).build();
+        String requestId = RequestIdUtils.generateRequestId();
+        CDCRequest data = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId(requestId).setLoginRequestBody(loginRequestBody).build();
+        ResponseFuture responseFuture = new ResponseFuture(requestId, Type.LOGIN);
+        connectionContext.getResponseFutureMap().put(requestId, responseFuture);
+        channel.writeAndFlush(data);
+        responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
+        log.info("Login success, username: {}", parameter.getUsername());
+    }
+    
+    private void checkChannelActive() {
+        if (null == channel || !channel.isActive()) {
+            throw new IllegalStateException("The channel is not active, call the `connect` method first");
+        }
+    }
+    
+    /**
+     * Start streaming.
+     *
+     * @param parameter parameter
+     * @return streaming id
+     */
+    public String startStreaming(final StartStreamingParameter parameter) {
+        StreamDataRequestBody streamDataRequestBody = StreamDataRequestBody.newBuilder().setDatabase(parameter.getDatabase()).setFull(parameter.isFull())
+                .addAllSourceSchemaTable(parameter.getSchemaTables()).build();
+        String requestId = RequestIdUtils.generateRequestId();
+        CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setType(Type.STREAM_DATA).setStreamDataRequestBody(streamDataRequestBody).build();
+        ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
+        ResponseFuture responseFuture = new ResponseFuture(requestId, Type.STREAM_DATA);
+        connectionContext.getResponseFutureMap().put(requestId, responseFuture);
+        channel.writeAndFlush(request);
+        String result = responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext).toString();
+        log.info("Start streaming success, streaming id: {}", result);
+        return result;
+    }
+    
+    /**
+     * Restart streaming.
+     *
+     * @param streamingId streaming id
+     */
+    public void restartStreaming(final String streamingId) {
+        if (checkStreamingIdExist(streamingId)) {
+            stopStreaming(streamingId);
+        }
+        String requestId = RequestIdUtils.generateRequestId();
+        StartStreamingRequestBody body = StartStreamingRequestBody.newBuilder().setStreamingId(streamingId).build();
+        CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setType(Type.START_STREAMING).setStartStreamingRequestBody(body).build();
+        ResponseFuture responseFuture = new ResponseFuture(requestId, Type.START_STREAMING);
+        ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
+        connectionContext.getResponseFutureMap().put(requestId, responseFuture);
+        channel.writeAndFlush(request);
+        responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
+        log.info("Restart streaming success, streaming id: {}", streamingId);
+    }
+    
+    private boolean checkStreamingIdExist(final String streamingId) {
+        checkChannelActive();
+        ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
+        if (null == connectionContext) {
+            log.warn("The connection context not exist");
+            return true;
+        }
+        return connectionContext.getStreamingIds().contains(streamingId);
+    }
+    
+    /**
+     * Stop streaming.
+     *
+     * @param streamingId streaming id
+     */
+    public void stopStreaming(final String streamingId) {
+        String requestId = RequestIdUtils.generateRequestId();
+        StopStreamingRequestBody body = StopStreamingRequestBody.newBuilder().setStreamingId(streamingId).build();
+        CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setType(Type.STOP_STREAMING).setStopStreamingRequestBody(body).build();
+        ResponseFuture responseFuture = new ResponseFuture(requestId, Type.STOP_STREAMING);
+        ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
+        connectionContext.getResponseFutureMap().put(requestId, responseFuture);
+        channel.writeAndFlush(request);
+        responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
+        connectionContext.getStreamingIds().remove(streamingId);
+        log.info("Stop streaming success, streaming id: {}", streamingId);
+    }
+    
+    @Override
+    public void close() {
+        if (null != channel) {
+            channel.close().awaitUninterruptibly();
+        }
+        if (null != group) {
             group.shutdownGracefully();
         }
     }

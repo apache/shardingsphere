@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.spi;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
@@ -37,33 +36,24 @@ public final class ShardingSphereServiceLoader<T> {
     
     private static final Map<Class<?>, ShardingSphereServiceLoader<?>> LOADERS = new ConcurrentHashMap<>();
     
-    private static final int LOAD_LOCKS_COUNT = 16;
+    private static final Object LOAD_LOCK = new Object();
     
-    private static final Object[] LOAD_LOCKS = new Object[LOAD_LOCKS_COUNT];
-    
-    private final Class<T> serviceInterface;
-    
-    @Getter
     private final Collection<T> services;
     
-    static {
-        for (int i = 0; i < LOAD_LOCKS_COUNT; i++) {
-            LOAD_LOCKS[i] = new Object();
-        }
-    }
+    private final boolean isSingletonSPI;
     
     private ShardingSphereServiceLoader(final Class<T> serviceInterface) {
-        this.serviceInterface = serviceInterface;
-        validate();
-        services = load();
+        validate(serviceInterface);
+        services = load(serviceInterface);
+        isSingletonSPI = null != serviceInterface.getAnnotation(SingletonSPI.class);
     }
     
-    private void validate() {
+    private void validate(final Class<T> serviceInterface) {
         Preconditions.checkNotNull(serviceInterface, "SPI interface is null.");
-        Preconditions.checkArgument(serviceInterface.isInterface(), "SPI interface `%s` is not interface.", serviceInterface);
+        Preconditions.checkArgument(serviceInterface.isInterface(), "SPI `%s` is not an interface.", serviceInterface);
     }
     
-    private Collection<T> load() {
+    private Collection<T> load(final Class<T> serviceInterface) {
         Collection<T> result = new LinkedList<>();
         for (T each : ServiceLoader.load(serviceInterface)) {
             result.add(each);
@@ -85,7 +75,7 @@ public final class ShardingSphereServiceLoader<T> {
         if (null != result) {
             return (Collection<T>) result.getServiceInstances();
         }
-        synchronized (LOAD_LOCKS[serviceInterface.hashCode() % LOAD_LOCKS_COUNT]) {
+        synchronized (LOAD_LOCK) {
             result = LOADERS.get(serviceInterface);
             if (null == result) {
                 result = new ShardingSphereServiceLoader<>(serviceInterface);
@@ -96,7 +86,11 @@ public final class ShardingSphereServiceLoader<T> {
     }
     
     private Collection<T> getServiceInstances() {
-        return null == serviceInterface.getAnnotation(SingletonSPI.class) ? createNewServiceInstances() : getSingletonServiceInstances();
+        return isSingletonSPI ? getSingletonServiceInstances() : createNewServiceInstances();
+    }
+    
+    private Collection<T> getSingletonServiceInstances() {
+        return services;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -107,9 +101,5 @@ public final class ShardingSphereServiceLoader<T> {
             result.add((T) each.getClass().getDeclaredConstructor().newInstance());
         }
         return result;
-    }
-    
-    private Collection<T> getSingletonServiceInstances() {
-        return services;
     }
 }

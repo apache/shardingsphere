@@ -15,34 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
-
-import java.util.List;
+package org.apache.shardingsphere.data.pipeline.cdc.client.exception;
 
 /**
- * Start CDC client parameter.
+ * Server result exception.
  */
-@Getter
-@Setter
-@RequiredArgsConstructor
-public final class StartCDCClientParameter {
+public final class ServerResultException extends RuntimeException {
     
-    private String address;
+    private static final long serialVersionUID = 6661736945772674919L;
     
-    private int port;
-    
-    private String username;
-    
-    private String password;
-    
-    private String database;
-    
-    private List<SchemaTable> schemaTables;
-    
-    private boolean full;
+    public ServerResultException(final String message) {
+        super(message);
+    }
 }

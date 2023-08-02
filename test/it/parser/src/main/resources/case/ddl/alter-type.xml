@@ -57,4 +57,24 @@
     <alter-type sql-case-id="alter_type_replace_element_constructor_function_is_call" />
     <alter-type sql-case-id="alter_type_replace_element_map_function" />
     <alter-type sql-case-id="alter_type_replace_element_order_function" />
+    <alter-type sql-case-id="alter_type_replace_element_restrict_rnds" />
+    <alter-type sql-case-id="alter_type_replace_element_restrict_wnds" />
+    <alter-type sql-case-id="alter_type_replace_element_restrict_rnps" />
+    <alter-type sql-case-id="alter_type_replace_element_restrict_wnps" />
+    <alter-type sql-case-id="alter_type_replace_element_restrict_trust" />
+    <alter-type sql-case-id="alter_type_reset" />
+    <alter-type sql-case-id="alter_type_add_member_function" />
+    <alter-type sql-case-id="alter_type_drop_member_function" />
+    <alter-type sql-case-id="alter_type_add_order_function" />
+    <alter-type sql-case-id="alter_type_drop_order_function" />
+    <alter-type sql-case-id="alter_type_add_order_function_as" />
+    <alter-type sql-case-id="alter_type_drop_order_function_is" />
+    <alter-type sql-case-id="alter_type_add_static_function" />
+    <alter-type sql-case-id="alter_type_add_static_procedure" />
+    <alter-type sql-case-id="alter_type_add_static_function_as" />
+    <alter-type sql-case-id="alter_type_add_static_procedure_is" />
+    <alter-type sql-case-id="alter_type_drop_static_function" />
+    <alter-type sql-case-id="alter_type_drop_static_procedure" />
+    <alter-type sql-case-id="alter_type_drop_static_function_as" />
+    <alter-type sql-case-id="alter_type_drop_static_procedure_is" />
 </sql-parser-test-cases>

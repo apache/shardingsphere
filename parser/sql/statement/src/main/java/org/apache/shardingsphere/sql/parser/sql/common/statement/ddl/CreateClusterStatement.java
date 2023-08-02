@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.simple.model.privilege;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class AllPermittedPrivilegesProviderTest {
-    
-    @Test
-    void assertFindPrivileges() {
-        ShardingSpherePrivileges actual = new AllPrivilegesPermittedShardingSpherePrivileges();
-        assertTrue(actual.hasPrivileges("testSchema"));
-        assertTrue(actual.hasPrivileges(Collections.emptyList()));
-        assertTrue(actual.hasPrivileges(new DatabaseAccessSubject("testSchema"), Collections.emptyList()));
-    }
+/**
+ * Create cluster statement.
+ */
+public abstract class CreateClusterStatement extends AbstractSQLStatement implements DDLStatement {
 }

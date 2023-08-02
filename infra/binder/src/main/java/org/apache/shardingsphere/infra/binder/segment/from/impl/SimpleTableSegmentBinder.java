@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnPr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -49,7 +50,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SimpleTableSegmentBinder {
     
-    private static final Collection<String> SYSTEM_CATALOG_TABLES = new HashSet<>(3, 1F);
+    private static final Collection<String> SYSTEM_CATALOG_TABLES = new HashSet<>(4, 1F);
     
     private static final String PG_CATALOG = "pg_catalog";
     
@@ -57,6 +58,7 @@ public final class SimpleTableSegmentBinder {
         SYSTEM_CATALOG_TABLES.add("pg_database");
         SYSTEM_CATALOG_TABLES.add("pg_tables");
         SYSTEM_CATALOG_TABLES.add("pg_roles");
+        SYSTEM_CATALOG_TABLES.add("pg_settings");
     }
     
     /**
@@ -77,9 +79,13 @@ public final class SimpleTableSegmentBinder {
         ShardingSphereSchema schema = metaData.getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
         tableBinderContexts.put(segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue()),
                 createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema, databaseType));
-        segment.getTableName().setOriginalDatabase(originalDatabase);
-        segment.getTableName().setOriginalSchema(originalSchema);
-        return segment;
+        TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), segment.getTableName().getIdentifier());
+        tableNameSegment.setOriginalDatabase(originalDatabase);
+        tableNameSegment.setOriginalSchema(originalSchema);
+        SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
+        segment.getOwner().ifPresent(result::setOwner);
+        segment.getAliasSegment().ifPresent(result::setAlias);
+        return result;
     }
     
     private static IdentifierValue getDatabaseName(final SimpleTableSegment tableSegment, final String defaultDatabaseName, final DatabaseType databaseType) {
@@ -112,7 +118,7 @@ public final class SimpleTableSegmentBinder {
             columnSegment.setOriginalDatabase(originalDatabase);
             columnSegment.setOriginalSchema(originalSchema);
             columnSegment.setOriginalTable(segment.getTableName().getIdentifier());
-            columnSegment.setOriginalColumn(new IdentifierValue(each.getName()));
+            columnSegment.setOriginalColumn(new IdentifierValue(each.getName(), dialectDatabaseMetaData.getQuoteCharacter()));
             ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment);
             columnProjectionSegment.setVisible(each.isVisible());
             projectionSegments.add(columnProjectionSegment);

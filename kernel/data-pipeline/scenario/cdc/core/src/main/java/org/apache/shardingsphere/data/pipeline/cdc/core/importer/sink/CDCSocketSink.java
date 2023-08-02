@@ -115,6 +115,5 @@ public final class CDCSocketSink implements PipelineSink {
     
     @Override
     public void close() throws IOException {
-        channel.close();
     }
 }

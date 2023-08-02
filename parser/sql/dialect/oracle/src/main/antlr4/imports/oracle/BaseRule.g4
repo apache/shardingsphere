@@ -431,6 +431,14 @@ tablespaceName
     : identifier
     ;
 
+subprogramName
+    : identifier
+    ;
+
+methodName
+    : identifier
+    ;
+
 tablespaceSetName
     : identifier
     ;
@@ -1702,9 +1710,13 @@ libName
 externalDatatype
     : dataType
     ;
-    
+
 capacityUnit
     : ('K' | 'M' | 'G' | 'T' | 'P' | 'E')
+    ;
+
+tablespaceGroupName
+    : identifier
     ;
 
 attributeDimensionName

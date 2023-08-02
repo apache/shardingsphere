@@ -15,35 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.simple;
+package org.apache.shardingsphere.authority.spi;
 
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
-import org.apache.shardingsphere.authority.registry.AllPermittedAuthorityRegistry;
-import org.apache.shardingsphere.authority.spi.AuthorityProvider;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 /**
- * All permitted privileges provider.
+ * Authority registry provider.
  */
-public final class AllPermittedPrivilegesProvider implements AuthorityProvider {
+public interface AuthorityRegistryProvider extends TypedSPI {
     
-    @Override
-    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
-        return new AllPermittedAuthorityRegistry();
-    }
-    
-    @Override
-    public String getType() {
-        return "ALL_PERMITTED";
-    }
-    
-    @Override
-    public Collection<Object> getTypeAliases() {
-        return Collections.singleton("ALL_PRIVILEGES_PERMITTED");
-    }
+    /**
+     * Build authority registry.
+     *
+     * @param databases databases
+     * @param users users
+     * @return built authority registry
+     */
+    AuthorityRegistry build(Map<String, ShardingSphereDatabase> databases, Collection<ShardingSphereUser> users);
 }

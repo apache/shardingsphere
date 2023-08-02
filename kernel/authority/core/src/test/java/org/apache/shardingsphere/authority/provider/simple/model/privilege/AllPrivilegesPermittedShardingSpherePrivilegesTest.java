@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.metadata.nodepath;
+package org.apache.shardingsphere.authority.provider.simple.model.privilege;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-/**
- * Broadcast node path.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BroadcastNodePath {
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class AllPrivilegesPermittedShardingSpherePrivilegesTest {
     
-    public static final String TABLES = "tables";
-    
-    private static final RuleNodePath INSTANCE = new RuleNodePath("broadcast", Collections.emptyList(), Collections.singleton(TABLES));
-    
-    /**
-     * Get instance of rule node path.
-     * 
-     * @return got instance
-     */
-    public static RuleNodePath getInstance() {
-        return INSTANCE;
+    @Test
+    void assertFindPrivileges() {
+        ShardingSpherePrivileges actual = new AllPrivilegesPermittedShardingSpherePrivileges();
+        assertTrue(actual.hasPrivileges("testSchema"));
+        assertTrue(actual.hasPrivileges(Collections.emptyList()));
+        assertTrue(actual.hasPrivileges(new DatabaseAccessSubject("testSchema"), Collections.emptyList()));
     }
 }
