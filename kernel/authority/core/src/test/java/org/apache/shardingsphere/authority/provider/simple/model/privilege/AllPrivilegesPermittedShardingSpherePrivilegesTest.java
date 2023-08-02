@@ -25,7 +25,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AllPermittedPrivilegesProviderTest {
+class AllPrivilegesPermittedShardingSpherePrivilegesTest {
     
     @Test
     void assertFindPrivileges() {
