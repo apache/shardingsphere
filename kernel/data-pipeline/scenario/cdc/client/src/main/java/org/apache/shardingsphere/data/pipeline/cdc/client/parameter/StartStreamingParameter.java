@@ -19,30 +19,20 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 
-import java.util.List;
+import java.util.Set;
 
 /**
- * Start CDC client parameter.
+ * Start streaming parameter.
  */
-@Getter
-@Setter
 @RequiredArgsConstructor
-public final class StartCDCClientParameter {
+@Getter
+public final class StartStreamingParameter {
     
-    private String address;
+    private final String database;
     
-    private int port;
+    private final Set<SchemaTable> schemaTables;
     
-    private String username;
-    
-    private String password;
-    
-    private String database;
-    
-    private List<SchemaTable> schemaTables;
-    
-    private boolean full;
+    private final boolean full;
 }

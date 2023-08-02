@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.exception;
+package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
+import lombok.RequiredArgsConstructor;
 
 /**
- * CDC exception wrapper.
+ * CDC login parameter.
  */
+@RequiredArgsConstructor
 @Getter
-public final class CDCExceptionWrapper extends RuntimeException {
+public final class CDCLoginParameter {
     
-    private static final long serialVersionUID = -929604775277797727L;
+    private final String username;
     
-    private final String requestId;
-    
-    private final ShardingSphereSQLException exception;
-    
-    public CDCExceptionWrapper(final String requestId, final ShardingSphereSQLException exception) {
-        super(exception.getMessage());
-        this.requestId = requestId;
-        this.exception = exception;
-    }
+    private final String password;
 }

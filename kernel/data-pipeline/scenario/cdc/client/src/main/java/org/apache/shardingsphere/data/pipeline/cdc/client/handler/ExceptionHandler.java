@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.exception;
+package org.apache.shardingsphere.data.pipeline.cdc.client.handler;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.ServerErrorResult;
 
 /**
- * CDC exception wrapper.
+ * Exception handler.
  */
-@Getter
-public final class CDCExceptionWrapper extends RuntimeException {
+public interface ExceptionHandler {
     
-    private static final long serialVersionUID = -929604775277797727L;
+    /**
+     * Handle server exception.
+     *
+     * @param result error result
+     */
+    void handleServerException(ServerErrorResult result);
     
-    private final String requestId;
-    
-    private final ShardingSphereSQLException exception;
-    
-    public CDCExceptionWrapper(final String requestId, final ShardingSphereSQLException exception) {
-        super(exception.getMessage());
-        this.requestId = requestId;
-        this.exception = exception;
-    }
+    /**
+     * Handle socket exception.
+     *
+     * @param throwable throwable
+     */
+    void handleSocketException(Throwable throwable);
 }
