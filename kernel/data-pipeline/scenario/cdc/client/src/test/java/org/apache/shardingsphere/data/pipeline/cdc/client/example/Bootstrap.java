@@ -43,6 +43,7 @@ public final class Bootstrap {
         String address = "127.0.0.1";
         CDCClientConfiguration clientConfig = new CDCClientConfiguration(address, 33071, records -> log.info("records: {}", records), new LoggerExceptionHandler());
         try (CDCClient cdcClient = new CDCClient(clientConfig)) {
+            cdcClient.connect();
             cdcClient.login(new CDCLoginParameter("root", "root"));
             String streamingId = cdcClient.startStreaming(new StartStreamingParameter("sharding_db", Collections.singleton(SchemaTable.newBuilder().setTable("t_order").build()), true));
             log.info("Streaming id={}", streamingId);

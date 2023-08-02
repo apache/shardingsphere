@@ -177,7 +177,7 @@ class CDCE2EIT {
         CDCClientConfiguration cdcConfig = new CDCClientConfiguration("localhost", containerComposer.getContainerComposer().getProxyCDCPort(), recordConsumer, new LoggerExceptionHandler());
         String schema = dialectDatabaseMetaData.isSchemaAvailable() ? "test" : "";
         CDCClient cdcClient = new CDCClient(cdcConfig);
-        Awaitility.await().atMost(5L, TimeUnit.SECONDS).pollInterval(100L, TimeUnit.MILLISECONDS).until(cdcClient::isActive);
+        cdcClient.connect();
         cdcClient.login(new CDCLoginParameter(ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD));
         // TODO add full=false test case later
         cdcClient.startStreaming(new StartStreamingParameter("sharding_db", new HashSet<>(Arrays.asList(SchemaTable.newBuilder().setTable(SOURCE_TABLE_NAME).setSchema(schema).build(),
