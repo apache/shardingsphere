@@ -795,7 +795,8 @@ formatFunction
     ;
 
 castFunction
-    : (CAST | XMLCAST) LP_ expr AS dataType RP_
+    : CAST LP_ ((MULTISET subquery) | expr) AS dataType RP_
+    | XMLCAST LP_ expr AS dataType RP_
     ;
 
 charFunction
