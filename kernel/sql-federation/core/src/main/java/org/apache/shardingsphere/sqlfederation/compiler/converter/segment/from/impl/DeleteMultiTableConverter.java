@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
 
 /**
  * Delete multi table converter.
@@ -42,16 +41,13 @@ public final class DeleteMultiTableConverter implements SQLSegmentConverter<Dele
         if (null == segment) {
             return Optional.empty();
         }
-        Collection<SqlNode> sqlNodeList = new LinkedList<>();
-        SqlNode table = new TableConverter().convert(segment.getRelationTable()).get();
-        sqlNodeList.add(table);
-        List<SimpleTableSegment> actualDeleteTables = segment.getActualDeleteTables();
-        List<String> names = new ArrayList<>();
-        for (SimpleTableSegment each : actualDeleteTables) {
-            String tableName = each.getTableName().getIdentifier().getValue();
-            names.add(tableName);
+        Collection<SqlNode> sqlNodes = new LinkedList<>();
+        new TableConverter().convert(segment.getRelationTable()).ifPresent(sqlNodes::add);
+        List<String> tableNames = new LinkedList<>();
+        for (SimpleTableSegment each : segment.getActualDeleteTables()) {
+            tableNames.add(each.getTableName().getIdentifier().getValue());
         }
-        sqlNodeList.add(new SqlIdentifier(names, SqlParserPos.ZERO));
-        return Optional.of(new SqlNodeList(sqlNodeList, SqlParserPos.ZERO));
+        sqlNodes.add(new SqlIdentifier(tableNames, SqlParserPos.ZERO));
+        return Optional.of(new SqlNodeList(sqlNodes, SqlParserPos.ZERO));
     }
 }
