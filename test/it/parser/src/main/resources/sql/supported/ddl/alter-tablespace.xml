@@ -19,4 +19,8 @@
 <sql-cases>
     <sql-case id="alter_tablespace_rename" value="ALTER TABLESPACE ts1 RENAME TO ts2" db-types="MySQL" />
     <sql-case id="alter_tablespace_read_only" value="ALTER TABLESPACE ts1 READ ONLY" db-types="Oracle" />
+    <sql-case id="alter_tablespace_add_datafile" value="ALTER TABLESPACE ts1 ADD DATAFILE" db-types="Oracle" />
+    <sql-case id="alter_tablespace_shrink_tempfile" value="ALTER TABLESPACE ts1 SHRINK TEMPFILE '/u02/oracle/data/lmtemp02.dbf'" db-types="Oracle" />
+    <sql-case id="alter_tablespace_drop_tempfile" value="ALTER TABLESPACE ts1 DROP TEMPFILE '/u02/oracle/data/lmtemp02.dbf'" db-types="Oracle" />
+    <sql-case id="alter_tablespace_drop_datafile" value="ALTER TABLESPACE ts1 DROP DATAFILE '+DGROUP1/example_df3.f'" db-types="Oracle" />
 </sql-cases>

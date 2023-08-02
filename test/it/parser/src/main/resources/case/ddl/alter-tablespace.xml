@@ -24,4 +24,16 @@
     <alter-tablespace sql-case-id="alter_tablespace_read_only">
         <tablespace start-index="17" stop-index="19" name="ts1" />
     </alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_shrink_tempfile">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_drop_tempfile">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_drop_datafile">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
 </sql-parser-test-cases>
