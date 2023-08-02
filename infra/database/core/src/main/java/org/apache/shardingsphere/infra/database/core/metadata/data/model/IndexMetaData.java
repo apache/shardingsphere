@@ -20,7 +20,11 @@ package org.apache.shardingsphere.infra.database.core.metadata.data.model;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Index meta data.
@@ -32,4 +36,9 @@ import lombok.ToString;
 public final class IndexMetaData {
     
     private final String name;
+    
+    private final Collection<String> columns = new LinkedList<>();
+    
+    @Setter
+    private boolean unique;
 }

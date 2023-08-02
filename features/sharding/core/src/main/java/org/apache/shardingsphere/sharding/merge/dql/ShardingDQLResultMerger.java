@@ -107,7 +107,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     }
     
     private void setGroupByForDistinctRow(final SelectStatementContext selectStatementContext) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, selectStatementContext.getSqlStatement().getDatabaseType());
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(selectStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
         for (int index = 1; index <= selectStatementContext.getProjectionsContext().getExpandProjections().size(); index++) {
             OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(-1, -1, index, OrderDirection.ASC, dialectDatabaseMetaData.getDefaultNullsOrderType()));
             orderByItem.setIndex(index);

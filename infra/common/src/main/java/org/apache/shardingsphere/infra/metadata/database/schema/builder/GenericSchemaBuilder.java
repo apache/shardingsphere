@@ -157,7 +157,10 @@ public final class GenericSchemaBuilder {
     private static Collection<ShardingSphereIndex> convertToIndexes(final Collection<IndexMetaData> indexMetaDataList) {
         Collection<ShardingSphereIndex> result = new LinkedList<>();
         for (IndexMetaData each : indexMetaDataList) {
-            result.add(new ShardingSphereIndex(each.getName()));
+            ShardingSphereIndex index = new ShardingSphereIndex(each.getName());
+            index.getColumns().addAll(each.getColumns());
+            index.setUnique(each.isUnique());
+            result.add(index);
         }
         return result;
     }

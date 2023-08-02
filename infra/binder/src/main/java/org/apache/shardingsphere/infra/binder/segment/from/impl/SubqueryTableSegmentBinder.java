@@ -17,17 +17,25 @@
 
 package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -53,7 +61,35 @@ public final class SubqueryTableSegmentBinder {
         SubqueryTableSegment result = new SubqueryTableSegment(boundedSubquerySegment);
         segment.getAliasSegment().ifPresent(result::setAlias);
         IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
-        tableBinderContexts.put(subqueryTableName.getValue(), new TableSegmentBinderContext(boundedSelect.getProjections().getProjections()));
+        tableBinderContexts.put(subqueryTableName.getValue(), new TableSegmentBinderContext(createSubqueryProjections(boundedSelect.getProjections().getProjections(), subqueryTableName)));
+        return result;
+    }
+    
+    private static Collection<ProjectionSegment> createSubqueryProjections(final Collection<ProjectionSegment> projections, final IdentifierValue subqueryTableName) {
+        Collection<ProjectionSegment> result = new LinkedList<>();
+        for (ProjectionSegment each : projections) {
+            if (each instanceof ColumnProjectionSegment) {
+                result.add(createColumnProjection((ColumnProjectionSegment) each, subqueryTableName));
+            } else if (each instanceof ShorthandProjectionSegment) {
+                result.addAll(createSubqueryProjections(((ShorthandProjectionSegment) each).getActualProjectionSegments(), subqueryTableName));
+            } else {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private static ColumnProjectionSegment createColumnProjection(final ColumnProjectionSegment originalColumn, final IdentifierValue subqueryTableName) {
+        ColumnSegment newColumnSegment = new ColumnSegment(0, 0, originalColumn.getAlias().orElseGet(() -> originalColumn.getColumn().getIdentifier()));
+        if (!Strings.isNullOrEmpty(subqueryTableName.getValue())) {
+            newColumnSegment.setOwner(new OwnerSegment(0, 0, subqueryTableName));
+        }
+        newColumnSegment.setOriginalColumn(originalColumn.getColumn().getOriginalColumn());
+        newColumnSegment.setOriginalTable(originalColumn.getColumn().getOriginalTable());
+        newColumnSegment.setOriginalSchema(originalColumn.getColumn().getOriginalSchema());
+        newColumnSegment.setOriginalDatabase(originalColumn.getColumn().getOriginalDatabase());
+        ColumnProjectionSegment result = new ColumnProjectionSegment(newColumnSegment);
+        result.setVisible(originalColumn.isVisible());
         return result;
     }
 }

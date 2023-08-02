@@ -66,7 +66,7 @@ public final class DropDefaultShadowAlgorithmStatementUpdater implements RuleDef
     public boolean updateCurrentRuleConfiguration(final DropDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getShadowAlgorithms().remove(currentRuleConfig.getDefaultShadowAlgorithmName());
         currentRuleConfig.setDefaultShadowAlgorithmName(null);
-        return false;
+        return currentRuleConfig.isEmpty();
     }
     
     @Override

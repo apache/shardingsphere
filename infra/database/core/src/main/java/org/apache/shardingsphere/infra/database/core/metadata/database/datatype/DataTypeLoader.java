@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.database.datatype;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -42,7 +41,7 @@ public final class DataTypeLoader {
      */
     public Map<String, Integer> load(final DatabaseMetaData databaseMetaData, final DatabaseType databaseType) throws SQLException {
         Map<String, Integer> result = loadStandardDataTypes(databaseMetaData);
-        result.putAll(DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).getExtraDataTypes());
+        result.putAll(new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getExtraDataTypes());
         return result;
     }
     

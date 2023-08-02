@@ -479,6 +479,7 @@ alterIndexInformationClause
     | allocateExtentClause
     | shrinkClause
     | parallelClause
+    | physicalAttributesClause
     | loggingClause
     | partialIndexClause)+
     | rebuildClause ((DEFERRED | IMMEDIATE) | INVALIDATION)?
@@ -520,7 +521,7 @@ addHashIndexPartition
 
 modifyIndexPartition
     : MODIFY PARTITION partitionName
-    ( (deallocateUnusedClause | allocateExtentClause | physicalAttributesClause | loggingClause | indexCompression)+ 
+    ( (deallocateUnusedClause | allocateExtentClause | physicalAttributesClause | loggingClause | indexCompression)+
     | PARAMETERS LP_ odciParameters RP_
     | COALESCE (CLEANUP | ONLY | parallelClause)?
     | UPDATE BLOCK REFERENCES
@@ -581,7 +582,15 @@ enableDisableOthers
     ;
 
 rebuildClause
-    : REBUILD parallelClause?
+    : REBUILD (PARTITION partitionName | SUBPARTITION subpartitionName | REVERSE | NOREVERSE)?
+    ( parallelClause
+    | TABLESPACE tablespaceName
+    | PARAMETERS LP_ odciParameters RP_
+    | ONLINE
+    | physicalAttributesClause
+    | indexCompression
+    | loggingClause
+    | partialIndexClause)*
     ;
 
 parallelClause
@@ -2610,7 +2619,7 @@ zonemapRefreshClause
     ;
 
 alterJava
-   : ALTER JAVA (SOURCE | CLASS) objectName resolveClauses (COMPILE | RESOLVE | invokerRightsClause)
+   : ALTER JAVA (SOURCE | CLASS) objectName resolveClauses? (COMPILE | RESOLVE | invokerRightsClause)
    ;
 
 resolveClauses
@@ -3605,8 +3614,20 @@ tableCompressionTableSpace
     | NOCOMPRESS
     ;
 
+segmentManagementClause
+    : SEGMENT SPACE MANAGEMENT (AUTO|MANUAL)
+    ;
+
+tablespaceGroupClause
+    : ON TABLESPACE GROUP tablespaceGroupName
+    ;
+
+temporaryTablespaceClause
+    : TEMPORARY TABLESPACE tablespaceName (TEMPFILE fileSpecification (COMMA_ fileSpecification)* )? tablespaceGroupClause? extentManagementClause?
+    ;
+
 createTablespace
-    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
+    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? (permanentTablespaceClause | temporaryTablespaceClause)
     ;
 
 permanentTablespaceClause
@@ -3618,6 +3639,9 @@ permanentTablespaceClause
     | ENCRYPTION tablespaceEncryptionSpec
     | DEFAULT tableCompressionTableSpace? storageClause?
     | (ONLINE|OFFLINE)
+    | extentManagementClause
+    | segmentManagementClause
+    | flashbackModeClause
     )
     ;
 
@@ -3659,16 +3683,38 @@ mapOrderFunctionSpec
     : (MAP | ORDER) MEMBER functionSpec
     ;
 
+restrictReferencesPragma
+    : PRAGMA RESTRICT_REFERENCES
+    LP_ (subprogramName | methodName | DEFAULT) COMMA_
+    (RNDS | WNDS | RNPS | WNPS | TRUST)
+    (COMMA_ (RNDS | WNDS | RNPS | WNPS | TRUST))* RP_
+    ;
+
 elementSpecification
-    : inheritanceClauses? (subprogramSpec | constructorSpec | mapOrderFunctionSpec)+
+    : inheritanceClauses? (subprogramSpec | constructorSpec | mapOrderFunctionSpec)+ (COMMA_ restrictReferencesPragma)?
     ;
 
 replaceTypeClause
     : REPLACE invokerRightsClause? AS OBJECT LP_ (attributeName dataType (COMMA_ (elementSpecification | attributeName dataType))*) RP_
     ;
 
+alterMethodSpec
+    : (ADD | DROP) (mapOrderFunctionSpec | subprogramSpec) ((ADD | DROP) (mapOrderFunctionSpec | subprogramSpec))*
+    ;
+
 alterType
-    : ALTER TYPE typeName (compileTypeClause | replaceTypeClause)?
+    : ALTER TYPE typeName (compileTypeClause|replaceTypeClause|RESET|(alterMethodSpec))?
+    ;
+
+createCluster
+    : CREATE CLUSTER (schemaName DOT_)? clusterName
+    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
+    ;
+
+createCluster
+    : CREATE CLUSTER (schemaName DOT_)? clusterName
+    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
+    parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
     ;
 
 createCluster

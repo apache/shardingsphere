@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.spi;
 
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 
 /**
  * Encrypt algorithm.
