@@ -25,10 +25,8 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.window.WindowConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.groupby.GroupByConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.groupby.HavingConverter;
@@ -37,6 +35,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.orderb
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.DistinctConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.ProjectionsConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.where.WhereConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.window.WindowConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.SQLStatementConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.type.CombineOperatorConverter;
 
@@ -69,8 +68,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         SqlNode where = selectStatement.getWhere().flatMap(optional -> new WhereConverter().convert(optional)).orElse(null);
         SqlNodeList groupBy = selectStatement.getGroupBy().flatMap(optional -> new GroupByConverter().convert(optional)).orElse(null);
         SqlNode having = selectStatement.getHaving().flatMap(optional -> new HavingConverter().convert(optional)).orElse(null);
-        Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(selectStatement);
-        SqlNodeList window = windowSegment.map(new WindowConverter()::convert).map(Optional::get).orElse(SqlNodeList.EMPTY);
+        SqlNodeList window = SelectStatementHandler.getWindowSegment(selectStatement).flatMap(new WindowConverter()::convert).orElse(SqlNodeList.EMPTY);
         return new SqlSelect(SqlParserPos.ZERO, distinct, projection, from, where, groupBy, having, window, null, null, null, SqlNodeList.EMPTY);
     }
     

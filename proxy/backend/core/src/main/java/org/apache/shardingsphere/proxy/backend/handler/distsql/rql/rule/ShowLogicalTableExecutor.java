@@ -20,15 +20,14 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.regular.RegularUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -37,8 +36,13 @@ import java.util.stream.Collectors;
 public final class ShowLogicalTableExecutor implements RQLExecutor<ShowLogicalTablesStatement> {
     
     @Override
+    public Collection<String> getColumnNames() {
+        return Collections.singleton("table_name");
+    }
+    
+    @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowLogicalTablesStatement sqlStatement) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, database.getProtocolType());
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
         String schemaName = dialectDatabaseMetaData.getDefaultSchema().orElse(database.getName());
         if (null == database.getSchema(schemaName)) {
             return Collections.emptyList();
@@ -46,16 +50,9 @@ public final class ShowLogicalTableExecutor implements RQLExecutor<ShowLogicalTa
         Collection<String> tables = database.getSchema(schemaName).getAllTableNames();
         if (sqlStatement.getLikePattern().isPresent()) {
             String pattern = SQLUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get());
-            tables = tables.stream().filter(each -> RegularUtils.matchesCaseInsensitive(pattern, each)).collect(Collectors.toList());
+            tables = tables.stream().filter(each -> Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(each).matches()).collect(Collectors.toList());
         }
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        tables.forEach(each -> result.add(new LocalDataQueryResultRow(each)));
-        return result;
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Collections.singletonList("table_name");
+        return tables.stream().map(LocalDataQueryResultRow::new).collect(Collectors.toList());
     }
     
     @Override

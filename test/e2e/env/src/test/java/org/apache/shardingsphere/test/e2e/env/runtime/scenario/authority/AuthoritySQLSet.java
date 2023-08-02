@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority;
 import com.google.common.base.Splitter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

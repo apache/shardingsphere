@@ -19,10 +19,19 @@ package org.apache.shardingsphere.infra.binder.engine;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementBinder;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 
 import java.util.List;
 
@@ -53,8 +62,38 @@ public final class SQLBindEngine {
     }
     
     private SQLStatement bind(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+        if (containsDataSourceNameSQLHint(statement)) {
+            return statement;
+        }
+        if (statement instanceof DMLStatement) {
+            return bindDMLStatement(statement, metaData, defaultDatabaseName);
+        }
+        if (statement instanceof DDLStatement) {
+            return bindDDLStatement(statement, metaData, defaultDatabaseName);
+        }
+        return statement;
+    }
+    
+    private boolean containsDataSourceNameSQLHint(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty()) {
+            return SQLHintUtils.extractHint(((AbstractSQLStatement) sqlStatement).getCommentSegments().iterator().next().getText()).flatMap(HintValueContext::findHintDataSourceName).isPresent();
+        }
+        return false;
+    }
+    
+    private static SQLStatement bindDMLStatement(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
         if (statement instanceof SelectStatement) {
             return new SelectStatementBinder().bind((SelectStatement) statement, metaData, defaultDatabaseName);
+        }
+        if (statement instanceof InsertStatement) {
+            return new InsertStatementBinder().bind((InsertStatement) statement, metaData, defaultDatabaseName);
+        }
+        return statement;
+    }
+    
+    private static SQLStatement bindDDLStatement(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+        if (statement instanceof OpenGaussCursorStatement) {
+            return new CursorStatementBinder().bind((OpenGaussCursorStatement) statement, metaData, defaultDatabaseName);
         }
         return statement;
     }

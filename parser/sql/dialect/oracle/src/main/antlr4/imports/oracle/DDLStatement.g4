@@ -479,6 +479,7 @@ alterIndexInformationClause
     | allocateExtentClause
     | shrinkClause
     | parallelClause
+    | physicalAttributesClause
     | loggingClause
     | partialIndexClause)+
     | rebuildClause ((DEFERRED | IMMEDIATE) | INVALIDATION)?
@@ -581,7 +582,15 @@ enableDisableOthers
     ;
 
 rebuildClause
-    : REBUILD parallelClause?
+    : REBUILD (PARTITION partitionName | SUBPARTITION subpartitionName | REVERSE | NOREVERSE)?
+    ( parallelClause
+    | TABLESPACE tablespaceName
+    | PARAMETERS LP_ odciParameters RP_
+    | ONLINE
+    | physicalAttributesClause
+    | indexCompression
+    | loggingClause
+    | partialIndexClause)*
     ;
 
 parallelClause
@@ -2610,7 +2619,7 @@ zonemapRefreshClause
     ;
 
 alterJava
-   : ALTER JAVA (SOURCE | CLASS) objectName resolveClauses (COMPILE | RESOLVE | invokerRightsClause)
+   : ALTER JAVA (SOURCE | CLASS) objectName resolveClauses? (COMPILE | RESOLVE | invokerRightsClause)
    ;
 
 resolveClauses
@@ -3605,8 +3614,20 @@ tableCompressionTableSpace
     | NOCOMPRESS
     ;
 
+segmentManagementClause
+    : SEGMENT SPACE MANAGEMENT (AUTO|MANUAL)
+    ;
+
+tablespaceGroupClause
+    : ON TABLESPACE GROUP tablespaceGroupName
+    ;
+
+temporaryTablespaceClause
+    : TEMPORARY TABLESPACE tablespaceName (TEMPFILE fileSpecification (COMMA_ fileSpecification)* )? tablespaceGroupClause? extentManagementClause?
+    ;
+
 createTablespace
-    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
+    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? (permanentTablespaceClause | temporaryTablespaceClause)
     ;
 
 permanentTablespaceClause
@@ -3618,6 +3639,9 @@ permanentTablespaceClause
     | ENCRYPTION tablespaceEncryptionSpec
     | DEFAULT tableCompressionTableSpace? storageClause?
     | (ONLINE|OFFLINE)
+    | extentManagementClause
+    | segmentManagementClause
+    | flashbackModeClause
     )
     ;
 
@@ -3685,4 +3709,15 @@ alterAttributeDefinition
 
 alterType
     : ALTER TYPE typeName (compileTypeClause|replaceTypeClause|RESET|(alterMethodSpec|alterAttributeDefinition))?
+    ;
+
+createCluster
+    : CREATE CLUSTER (schemaName DOT_)? clusterName
+    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
+    ;
+
+createCluster
+    : CREATE CLUSTER (schemaName DOT_)? clusterName
+    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
+    parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
     ;

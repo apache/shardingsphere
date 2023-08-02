@@ -30,8 +30,6 @@ public final class ReadwriteSplittingDistSQLConstants {
     
     public static final String SEMI = ";";
     
-    public static final String PROPERTY = "'%s'='%s'";
-    
     public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
     
     public static final String READWRITE_SPLITTING_FOR_STATIC = " %s ("
@@ -45,8 +43,4 @@ public final class ReadwriteSplittingDistSQLConstants {
             + ")";
     
     public static final String READ_RESOURCE = "%s";
-    
-    public static final String ALGORITHM_TYPE = "TYPE(NAME='%s', PROPERTIES(%s))";
-    
-    public static final String ALGORITHM_TYPE_WITHOUT_PROPS = "TYPE(NAME='%s')";
 }

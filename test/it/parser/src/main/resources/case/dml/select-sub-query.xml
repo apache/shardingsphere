@@ -187,6 +187,53 @@
         </where>
     </select>
 
+    <select sql-case-id="select_with_any_subquery">
+        <from>
+            <simple-table name="employees" start-index="14" stop-index="22" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="24" stop-index="97">
+            <expr>
+                <binary-operation-expression start-index="30" stop-index="97">
+                    <left>
+                        <column name="salary" start-index="30" stop-index="35" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <subquery start-index="43" stop-index="97">
+                            <select>
+                                <from start-index="63" stop-index="71">
+                                    <simple-table name="employees" start-index="63" stop-index="71"/>
+                                </from>
+                                <projections start-index="51" stop-index="56">
+                                    <column-projection name="salary" start-index="51" stop-index="56"/>
+                                </projections>
+                                <where start-index="73" stop-index="96">
+                                    <expr>
+                                        <binary-operation-expression start-index="79" stop-index="96">
+                                            <left>
+                                                <column name="department_id" start-index="79" stop-index="91" />
+                                            </left>
+                                            <operator>=</operator>
+                                            <right>
+                                                <literal-expression value="30" start-index="95" stop-index="96" />
+                                            </right>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </select>
+                        </subquery>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="employee_id" order-direction="ASC" start-index="108" stop-index="118" />
+        </order-by>
+    </select>
+
     <select sql-case-id="select_with_in_subquery">
         <from>
             <simple-table name="t_order" start-index="14" stop-index="20" />

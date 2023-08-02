@@ -44,4 +44,12 @@
     <sql-case id="alter_diskgroup_resize_disks_in_failgroup_size_g" value="ALTER DISKGROUP data1 RESIZE DISKS IN FAILGROUP failgrp1 SIZE 100G" db-types="Oracle" />
     <sql-case id="alter_diskgroup_add_template_attribute_unprotected_coarse" value="ALTER DISKGROUP dgroup_01 ADD TEMPLATE template_01 ATTRIBUTES (UNPROTECTED COARSE)" db-types="Oracle" />
     <sql-case id="alter_diskgroup_modify_template_attribute_fine" value="ALTER DISKGROUP dgroup_01 MODIFY TEMPLATE template_01 ATTRIBUTES (FINE)" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_modify_file_attribute_hot_mirrorhot" value="ALTER DISKGROUP data MODIFY FILE '+data/orcl/datafile/users.259.679156903' ATTRIBUTE (HOT MIRRORHOT)" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_modify_usergroup_add_member" value="ALTER DISKGROUP data MODIFY USERGROUP 'test_grp2' ADD MEMBER 'oracle2'" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_add_volume_size_g" value="ALTER DISKGROUP data ADD VOLUME volume1 SIZE 10G" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_resize_volume_size_g" value="ALTER DISKGROUP data RESIZE VOLUME volume1 SIZE 15G" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_disable_volume" value="ALTER DISKGROUP data DISABLE VOLUME volume1" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_enable_volume" value="ALTER DISKGROUP data ENABLE VOLUME volume1" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_all_disable_volume_all" value="ALTER DISKGROUP ALL DISABLE VOLUME ALL" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_drop_volume" value="ALTER DISKGROUP data DROP VOLUME volume1" db-types="Oracle" />
 </sql-cases>

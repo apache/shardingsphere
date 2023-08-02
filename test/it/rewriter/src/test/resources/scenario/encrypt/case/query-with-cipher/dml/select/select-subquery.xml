@@ -44,7 +44,7 @@
 
     <rewrite-assertion id="select_not_nested_subquery_in_table_segment_with_shorthand_project_alias_quote" db-types="MySQL">
         <input sql="SELECT u.amount, u.password, o.certificate_number FROM (SELECT a.* FROM t_account `a`) o, t_account u WHERE o.certificate_number=u.certificate_number AND u.password=?" parameters="1" />
-        <output sql="SELECT u.amount, u.password, o.certificate_number FROM (SELECT a.`account_id`, a.`cipher_certificate_number` AS `certificate_number`, a.`assisted_query_certificate_number`, a.`cipher_password` AS `password`, a.`assisted_query_password`, a.`cipher_amount` AS `amount` FROM t_account `a`) o, t_account u WHERE o.assisted_query_certificate_number=u.assisted_query_certificate_number AND u.assisted_query_password=?" parameters="assisted_query_1" />
+        <output sql="SELECT u.amount, u.password, o.certificate_number FROM (SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS `certificate_number`, `a`.`assisted_query_certificate_number`, `a`.`cipher_password` AS `password`, `a`.`assisted_query_password`, `a`.`cipher_amount` AS `amount` FROM t_account `a`) o, t_account u WHERE o.assisted_query_certificate_number=u.assisted_query_certificate_number AND u.assisted_query_password=?" parameters="assisted_query_1" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_not_nested_subquery_in_table_segment_with_shorthand_project" db-types="MySQL">
