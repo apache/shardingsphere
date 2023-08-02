@@ -19,12 +19,14 @@ package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.util.Optional;
 
 /**
  * Dialect pipeline SQL builder.
  */
+@SingletonSPI
 public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
     
     /**

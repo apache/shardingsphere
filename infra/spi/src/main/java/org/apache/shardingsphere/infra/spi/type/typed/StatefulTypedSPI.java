@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm;
+package org.apache.shardingsphere.infra.spi.type.typed;
 
-import org.apache.shardingsphere.infra.spi.type.typed.StatefulTypedSPI;
+import java.util.Properties;
 
 /**
- * ShardingSphere algorithm SPI.
+ * Stateful typed SPI.
  */
-public interface ShardingSphereAlgorithm extends StatefulTypedSPI {
+public interface StatefulTypedSPI extends TypedSPI {
     
-    @Override
-    default String getType() {
-        return "";
-    }
+    /**
+     * Initialize SPI.
+     * 
+     * @param props properties to be initialized
+     */
+    void init(Properties props);
 }

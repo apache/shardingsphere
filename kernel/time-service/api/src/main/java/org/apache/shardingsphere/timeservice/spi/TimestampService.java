@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.timeservice.spi;
 
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.StatefulTypedSPI;
 
 import java.sql.Timestamp;
 
 /**
  * Timestamp service.
  */
-public interface TimestampService extends TypedSPI {
+public interface TimestampService extends StatefulTypedSPI {
     
     /**
      * Get timestamp.

@@ -70,7 +70,9 @@ public final class TypedSPILoader {
         }
         for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
             if (matchesType(type, each)) {
-                each.init(null == props ? new Properties() : convertToStringTypedProperties(props));
+                if (each instanceof StatefulTypedSPI) {
+                    ((StatefulTypedSPI) each).init(null == props ? new Properties() : convertToStringTypedProperties(props));
+                }
                 return Optional.of(each);
             }
         }
@@ -82,7 +84,9 @@ public final class TypedSPILoader {
             if (!each.isDefault()) {
                 continue;
             }
-            each.init(new Properties());
+            if (each instanceof StatefulTypedSPI) {
+                ((StatefulTypedSPI) each).init(new Properties());
+            }
             return Optional.of(each);
         }
         return Optional.empty();
@@ -135,7 +139,9 @@ public final class TypedSPILoader {
     public static <T extends TypedSPI> boolean checkService(final Class<T> serviceInterface, final Object type, final Properties props) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
             if (matchesType(type, each)) {
-                each.init(null == props ? new Properties() : convertToStringTypedProperties(props));
+                if (each instanceof StatefulTypedSPI) {
+                    ((StatefulTypedSPI) each).init(null == props ? new Properties() : convertToStringTypedProperties(props));
+                }
                 return true;
             }
         }

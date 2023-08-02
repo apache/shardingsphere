@@ -19,20 +19,11 @@ package org.apache.shardingsphere.infra.spi.type.typed;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Properties;
 
 /**
  * Typed SPI.
  */
 public interface TypedSPI {
-    
-    /**
-     * Initialize SPI.
-     * 
-     * @param props properties to be initialized
-     */
-    default void init(Properties props) {
-    }
     
     /**
      * Get type.

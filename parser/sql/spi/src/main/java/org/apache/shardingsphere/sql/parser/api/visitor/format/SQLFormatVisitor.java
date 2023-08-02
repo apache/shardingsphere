@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.sql.parser.api.visitor.format;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.StatefulTypedSPI;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
  * SQL format visitor.
  */
-public interface SQLFormatVisitor extends SQLVisitor<String>, DatabaseTypedSPI {
+public interface SQLFormatVisitor extends SQLVisitor<String>, DatabaseTypedSPI, StatefulTypedSPI {
 }

@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.checker;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import javax.sql.DataSource;
 
 /**
  * Data source privilege checker.
  */
+@SingletonSPI
 public interface DataSourcePrivilegeChecker extends DatabaseTypedSPI {
     
     /**
