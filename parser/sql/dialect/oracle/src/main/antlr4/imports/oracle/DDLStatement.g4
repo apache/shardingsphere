@@ -44,7 +44,7 @@ objectBaseTypeDef
     ;
 
 objectTypeDef
-    : OBJECT LP_ typeDefinition (COMMA_ typeDefinition)* RP_ finalClause? instantiableClause? persistableClause?
+    : OBJECT LP_ dataTypeDefinition (COMMA_ dataTypeDefinition)* RP_ finalClause? instantiableClause? persistableClause?
     ;
 
 finalClause
@@ -71,12 +71,12 @@ typeSpec
     : ((LP_ dataType RP_) | dataType) (NOT NULL)? persistableClause?
     ;
 
-typeDefinition
+dataTypeDefinition
     : name dataType
     ;
 
 objectSubTypeDef
-    : UNDER typeName LP_ typeDefinition (COMMA_ typeDefinition)* RP_ finalClause? instantiableClause?
+    : UNDER typeName LP_ dataTypeDefinition (COMMA_ dataTypeDefinition)* RP_ finalClause? instantiableClause?
     ;
 
 alterTable

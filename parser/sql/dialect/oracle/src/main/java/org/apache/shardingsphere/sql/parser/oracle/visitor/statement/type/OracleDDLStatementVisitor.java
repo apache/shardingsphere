@@ -314,14 +314,14 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     null == objectSubTypeDefContext.finalClause() || null == objectSubTypeDefContext.finalClause().NOT(),
                     null == objectSubTypeDefContext.instantiableClause() || null == objectSubTypeDefContext.instantiableClause().NOT(),
                     typeSegment,
-                    objectSubTypeDefContext.typeDefinition().stream().map(definition -> (TypeDefinitionSegment) visit(definition)).collect(Collectors.toList()));
+                    objectSubTypeDefContext.dataTypeDefinition().stream().map(definition -> (TypeDefinitionSegment) visit(definition)).collect(Collectors.toList()));
         } else {
             if (null != ctx.plsqlTypeSource().objectBaseTypeDef().objectTypeDef()) {
                 OracleStatementParser.ObjectTypeDefContext objectTypeDefContext = ctx.plsqlTypeSource().objectBaseTypeDef().objectTypeDef();
                 return new OracleCreateObjectTypeStatement(isReplace, isEditionable, null == objectTypeDefContext.finalClause() || null == objectTypeDefContext.finalClause().NOT(),
                         null == objectTypeDefContext.instantiableClause() || null == objectTypeDefContext.instantiableClause().NOT(),
                         null == objectTypeDefContext.persistableClause() || null == objectTypeDefContext.persistableClause().NOT(),
-                        typeSegment, objectTypeDefContext.typeDefinition().stream().map(definition -> (TypeDefinitionSegment) visit(definition)).collect(Collectors.toList()));
+                        typeSegment, objectTypeDefContext.dataTypeDefinition().stream().map(definition -> (TypeDefinitionSegment) visit(definition)).collect(Collectors.toList()));
             } else if (null != ctx.plsqlTypeSource().objectBaseTypeDef().varrayTypeSpec()) {
                 OracleStatementParser.VarrayTypeSpecContext varrayTypeSpecContext = ctx.plsqlTypeSource().objectBaseTypeDef().varrayTypeSpec();
                 return new OracleCreateVarrayTypeStatement(isReplace, isEditionable,
@@ -342,7 +342,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     }
     
     @Override
-    public ASTNode visitTypeDefinition(final OracleStatementParser.TypeDefinitionContext ctx) {
+    public ASTNode visitDataTypeDefinition(final OracleStatementParser.DataTypeDefinitionContext ctx) {
         return new TypeDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.name().getText(), (DataTypeSegment) visit(ctx.dataType()));
     }
     
