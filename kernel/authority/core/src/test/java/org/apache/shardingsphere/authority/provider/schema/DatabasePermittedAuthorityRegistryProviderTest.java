@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DatabasePermittedAuthorityRegistryProviderTest {
     
     @Test
-    void assertBuildAuthorityRegistry() {
+    void assertBuild() {
         Properties props = PropertiesBuilder.build(
                 new Property(DatabasePermittedAuthorityRegistryProvider.PROP_USER_DATABASE_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*"));
         AuthorityRegistryProvider provider = TypedSPILoader.getService(AuthorityRegistryProvider.class, "DATABASE_PERMITTED", props);
