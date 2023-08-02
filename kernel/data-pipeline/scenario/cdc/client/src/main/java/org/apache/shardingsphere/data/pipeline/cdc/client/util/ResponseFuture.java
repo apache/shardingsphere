@@ -26,6 +26,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.client.exception.GetResultTimeoutException;
 import org.apache.shardingsphere.data.pipeline.cdc.client.exception.ServerResultException;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 
 import java.util.concurrent.CountDownLatch;
@@ -43,6 +44,8 @@ public final class ResponseFuture {
     private final CountDownLatch countDownLatch = new CountDownLatch(1);
     
     private final String requestId;
+    
+    private final Type requestType;
     
     private Status status;
     
@@ -66,7 +69,7 @@ public final class ResponseFuture {
         boolean received = countDownLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
         connectionContext.getResponseFutureMap().remove(requestId);
         if (!Strings.isNullOrEmpty(errorMessage)) {
-            throw new ServerResultException(String.format("Get response failed, code:%s, reason: %s", errorCode, errorMessage));
+            throw new ServerResultException(String.format("Get %s response failed, code:%s, reason: %s", requestType.name(), errorCode, errorMessage));
         }
         if (!received) {
             throw new GetResultTimeoutException("Get result timeout");

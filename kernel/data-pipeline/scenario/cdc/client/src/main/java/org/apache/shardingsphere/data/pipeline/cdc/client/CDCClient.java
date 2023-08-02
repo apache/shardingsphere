@@ -130,7 +130,7 @@ public final class CDCClient implements AutoCloseable {
                 .setPassword(Hashing.sha256().hashBytes(parameter.getPassword().getBytes()).toString().toUpperCase()).build()).build();
         String requestId = RequestIdUtils.generateRequestId();
         CDCRequest data = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId(requestId).setLoginRequestBody(loginRequestBody).build();
-        ResponseFuture responseFuture = new ResponseFuture(requestId);
+        ResponseFuture responseFuture = new ResponseFuture(requestId, Type.LOGIN);
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(data);
         responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
@@ -149,7 +149,7 @@ public final class CDCClient implements AutoCloseable {
         String requestId = RequestIdUtils.generateRequestId();
         CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setType(Type.STREAM_DATA).setStreamDataRequestBody(streamDataRequestBody).build();
         ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
-        ResponseFuture responseFuture = new ResponseFuture(requestId);
+        ResponseFuture responseFuture = new ResponseFuture(requestId, Type.STREAM_DATA);
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(request);
         String result = responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext).toString();
@@ -169,7 +169,7 @@ public final class CDCClient implements AutoCloseable {
         String requestId = RequestIdUtils.generateRequestId();
         StartStreamingRequestBody body = StartStreamingRequestBody.newBuilder().setStreamingId(streamingId).build();
         CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setType(Type.START_STREAMING).setStartStreamingRequestBody(body).build();
-        ResponseFuture responseFuture = new ResponseFuture(requestId);
+        ResponseFuture responseFuture = new ResponseFuture(requestId, Type.START_STREAMING);
         ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(request);
@@ -198,7 +198,7 @@ public final class CDCClient implements AutoCloseable {
         String requestId = RequestIdUtils.generateRequestId();
         StopStreamingRequestBody body = StopStreamingRequestBody.newBuilder().setStreamingId(streamingId).build();
         CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setType(Type.STOP_STREAMING).setStopStreamingRequestBody(body).build();
-        ResponseFuture responseFuture = new ResponseFuture(requestId);
+        ResponseFuture responseFuture = new ResponseFuture(requestId, Type.STOP_STREAMING);
         ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(request);

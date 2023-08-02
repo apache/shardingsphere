@@ -70,7 +70,15 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
         ClientConnectionContext connectionContext = ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).get();
         Optional<ResponseFuture> responseFuture = Optional.ofNullable(connectionContext.getResponseFutureMap().get(response.getRequestId()));
         if (response.getStatus() != Status.SUCCEED) {
-            exceptionHandler.handleServerException(new ServerErrorResult(response.getErrorCode(), response.getErrorMessage(), response.getResponseCase().name()));
+            Type requestType = Type.UNKNOWN;
+            if (responseFuture.isPresent()) {
+                final ResponseFuture future = responseFuture.get();
+                future.setErrorCode(response.getErrorCode());
+                future.setErrorMessage(response.getErrorMessage());
+                future.countDown();
+                requestType = future.getRequestType();
+            }
+            exceptionHandler.handleServerException(new ServerErrorResult(response.getErrorCode(), response.getErrorMessage(), requestType));
             responseFuture.ifPresent(future -> {
                 future.setErrorCode(response.getErrorCode());
                 future.setErrorMessage(response.getErrorMessage());
@@ -83,7 +91,7 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
             log.info("Received server greeting result, serverVersion={}, protocolVersion={}", serverGreetingResult.getServerVersion(), serverGreetingResult.getProtocolVersion());
             return;
         }
-        if (ClientConnectionStatus.NOT_LOGGED_IN == connectionContext.getStatus().get() && response.hasLoginResult()) {
+        if (ClientConnectionStatus.NOT_LOGGED_IN == connectionContext.getStatus().get() && responseFuture.isPresent() && Type.LOGIN == responseFuture.get().getRequestType()) {
             responseFuture.ifPresent(ResponseFuture::countDown);
             connectionContext.getStatus().set(ClientConnectionStatus.LOGGED_IN);
             return;

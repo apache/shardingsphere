@@ -35,10 +35,6 @@ message CDCResponse {
     ServerGreetingResult server_greeting_result = 3;
     StreamDataResult stream_data_result = 4;
     DataRecordResult data_record_result = 5;
-    LoginResult login_result = 6;
-    StartStreamingResult start_streaming_result = 7;
-    StopStreamingResult stop_streaming_result = 8;
-    DropStreamingResult drop_streaming_result = 9;
   }
   optional string error_code = 14;
   optional string error_message = 15;
@@ -87,16 +83,4 @@ message DataRecordResult {
   }
   string ack_id = 1;
   repeated Record record = 2;
-}
-
-message LoginResult {
-}
-
-message StartStreamingResult {
-}
-
-message StopStreamingResult {
-}
-
-message DropStreamingResult {
 }

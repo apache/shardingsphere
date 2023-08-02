@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.util;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
 
 /**
  * Server error result.
@@ -31,5 +32,5 @@ public final class ServerErrorResult {
     
     private final String errorMessage;
     
-    private final String responseType;
+    private final Type requestType;
 }
