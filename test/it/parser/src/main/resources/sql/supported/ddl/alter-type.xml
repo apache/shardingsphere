@@ -92,4 +92,32 @@
     REPLACE AS OBJECT (a NUMBER, b link1, MEMBER FUNCTION p(c1 NUMBER) RETURN NUMBER
     , PRAGMA RESTRICT_REFERENCES (method_name, TRUST))" db-types="Oracle" />
     <sql-case id="alter_type_reset" value="ALTER TYPE type_name RESET" db-types="Oracle" />
+    <sql-case id="alter_type_add_member_function" value="ALTER TYPE type_name ADD
+    MAP MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER" db-types="Oracle" />
+    <sql-case id="alter_type_drop_member_function" value="ALTER TYPE type_name DROP
+    MAP MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER" db-types="Oracle" />
+    <sql-case id="alter_type_add_order_function" value="ALTER TYPE type_name ADD
+    ORDER MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER" db-types="Oracle" />
+    <sql-case id="alter_type_drop_order_function" value="ALTER TYPE type_name DROP
+    ORDER MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER" db-types="Oracle" />
+    <sql-case id="alter_type_add_order_function_as" value="ALTER TYPE type_name ADD
+    ORDER MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER AS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
+    <sql-case id="alter_type_drop_order_function_is" value="ALTER TYPE type_name DROP
+    ORDER MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER IS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
+    <sql-case id="alter_type_add_static_function" value="ALTER TYPE type_name ADD
+    STATIC FUNCTION p(b1 BOOL) RETURN NUMBER" db-types="Oracle" />
+    <sql-case id="alter_type_add_static_procedure" value="ALTER TYPE type_name ADD
+    STATIC PROCEDURE p(b1 BOOL))" db-types="Oracle" />
+    <sql-case id="alter_type_add_static_function_as" value="ALTER TYPE type_name ADD
+    STATIC FUNCTION p(b1 BOOL) RETURN NUMBER AS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
+    <sql-case id="alter_type_add_static_procedure_is" value="ALTER TYPE type_name ADD
+    STATIC PROCEDURE p(b1 BOOL)) IS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
+    <sql-case id="alter_type_drop_static_function" value="ALTER TYPE type_name DROP
+    STATIC FUNCTION p(b1 BOOL) RETURN NUMBER" db-types="Oracle" />
+    <sql-case id="alter_type_drop_static_procedure" value="ALTER TYPE type_name DROP
+    STATIC PROCEDURE p(b1 BOOL))" db-types="Oracle" />
+    <sql-case id="alter_type_drop_static_function_as" value="ALTER TYPE type_name DROP
+    STATIC FUNCTION p(b1 BOOL) RETURN NUMBER AS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
+    <sql-case id="alter_type_drop_static_procedure_is" value="ALTER TYPE type_name DROP
+    STATIC PROCEDURE p(b1 BOOL)) IS LANGUAGE JAVA NAME 'resultName'" db-types="Oracle" />
 </sql-cases>
