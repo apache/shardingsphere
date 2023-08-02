@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.transaction.xa;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -56,7 +56,12 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
-        dataSources.forEach((key, value) -> DatabaseTypedSPILoader.getService(DataSourcePrivilegeChecker.class, databaseTypes.get(key)).checkPrivilege(value));
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            DataSourcePrivilegeChecker checker = DatabaseTypedSPILoader.findService(DataSourcePrivilegeChecker.class, databaseTypes.get(entry.getKey()))
+                    .orElseGet(() -> DatabaseTypedSPILoader.getService(DataSourcePrivilegeChecker.class, null));
+            System.out.println(checker);
+            checker.checkPrivilege(entry.getValue());
+        }
         xaTransactionManagerProvider = TypedSPILoader.getService(XATransactionManagerProvider.class, providerType);
         xaTransactionManagerProvider.init();
         Map<String, ResourceDataSource> resourceDataSources = getResourceDataSources(dataSources);

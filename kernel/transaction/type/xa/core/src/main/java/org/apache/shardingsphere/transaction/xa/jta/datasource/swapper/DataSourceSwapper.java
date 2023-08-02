@@ -81,10 +81,9 @@ public final class DataSourceSwapper {
     private Map<String, Object> getDatabaseAccessConfiguration(final DataSource dataSource) {
         if (dataSource instanceof ShardingSphereStorageDataSourceWrapper) {
             ShardingSphereStorageDataSourceWrapper dataSourceWrapper = (ShardingSphereStorageDataSourceWrapper) dataSource;
-            return getDatabaseAccessConfiguration(dataSourceWrapper, TypedSPILoader.getService(DataSourcePropertyProvider.class, dataSourceWrapper.getDataSource().getClass().getName()));
+            return getDatabaseAccessConfiguration(dataSourceWrapper, getDataSourcePropertyProvider(dataSourceWrapper.getDataSource()));
         }
-        DataSourcePropertyProvider provider = TypedSPILoader.getService(DataSourcePropertyProvider.class, dataSource.getClass().getName());
-        return getDatabaseAccessConfiguration(dataSource, provider);
+        return getDatabaseAccessConfiguration(dataSource, getDataSourcePropertyProvider(dataSource));
     }
     
     private Map<String, Object> getDatabaseAccessConfiguration(final ShardingSphereStorageDataSourceWrapper dataSourceWrapper, final DataSourcePropertyProvider provider) {
@@ -109,6 +108,10 @@ public final class DataSourceSwapper {
         } catch (final ReflectiveOperationException ignored) {
             throw new XADataSourceInitializeException(xaDataSourceDefinition);
         }
+    }
+    
+    private DataSourcePropertyProvider getDataSourcePropertyProvider(final DataSource dataSource) {
+        return TypedSPILoader.findService(DataSourcePropertyProvider.class, dataSource.getClass().getName()).orElseGet(() -> TypedSPILoader.getService(DataSourcePropertyProvider.class, null));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

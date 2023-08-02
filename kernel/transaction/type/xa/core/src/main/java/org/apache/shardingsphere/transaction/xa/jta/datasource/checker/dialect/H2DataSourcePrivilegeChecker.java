@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.jta.datasource.checker;
+package org.apache.shardingsphere.transaction.xa.jta.datasource.checker.dialect;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.DataSourcePrivilegeChecker;
 
 import javax.sql.DataSource;
 
 /**
- * Data source privilege checker.
+ * H2 data source privilege checker.
  */
-@SingletonSPI
-public interface DataSourcePrivilegeChecker extends DatabaseTypedSPI {
+public final class H2DataSourcePrivilegeChecker implements DataSourcePrivilegeChecker {
     
-    /**
-     * Check privilege.
-     *
-     * @param dataSource data source
-     */
-    void checkPrivilege(DataSource dataSource);
+    @Override
+    public void checkPrivilege(final DataSource dataSource) {
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "H2";
+    }
 }
