@@ -3685,3 +3685,8 @@ replaceTypeClause
 alterType
     : ALTER TYPE typeName (compileTypeClause | replaceTypeClause)?
     ;
+
+createCluster
+    : CREATE CLUSTER (schemaName DOT_)? clusterName
+    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
+    ;
