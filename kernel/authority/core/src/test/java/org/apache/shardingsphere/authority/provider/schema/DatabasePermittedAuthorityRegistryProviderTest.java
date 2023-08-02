@@ -34,7 +34,7 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DatabasePermittedPrivilegesProviderTest {
+class DatabasePermittedAuthorityRegistryProviderTest {
     
     @Test
     void assertBuildAuthorityRegistry() {
