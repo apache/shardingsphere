@@ -109,8 +109,11 @@ public final class ProjectionEngine {
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
         IdentifierValue owner = projectionSegment.getColumn().getOwner().isPresent() ? projectionSegment.getColumn().getOwner().get().getIdentifier() : null;
-        return new ColumnProjection(owner, projectionSegment.getColumn().getIdentifier(), projectionSegment.getAliasName().isPresent() ? projectionSegment.getAlias().orElse(null) : null,
-                databaseType);
+        IdentifierValue alias = projectionSegment.getAliasName().isPresent() ? projectionSegment.getAlias().orElse(null) : null;
+        ColumnProjection result = new ColumnProjection(owner, projectionSegment.getColumn().getIdentifier(), alias, databaseType);
+        result.setOriginalColumn(projectionSegment.getColumn().getOriginalColumn());
+        result.setOriginalTable(projectionSegment.getColumn().getOriginalTable());
+        return result;
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {
