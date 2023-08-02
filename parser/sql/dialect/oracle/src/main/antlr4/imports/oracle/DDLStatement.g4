@@ -3618,8 +3618,16 @@ segmentManagementClause
     : SEGMENT SPACE MANAGEMENT (AUTO|MANUAL)
     ;
 
+tablespaceGroupClause
+    : ON TABLESPACE GROUP tablespaceGroupName
+    ;
+
+temporaryTablespaceClause
+    : TEMPORARY TABLESPACE tablespaceName (TEMPFILE fileSpecification (COMMA_ fileSpecification)* )? tablespaceGroupClause? extentManagementClause?
+    ;
+
 createTablespace
-    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
+    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? (permanentTablespaceClause | temporaryTablespaceClause)
     ;
 
 permanentTablespaceClause
@@ -3633,6 +3641,7 @@ permanentTablespaceClause
     | (ONLINE|OFFLINE)
     | extentManagementClause
     | segmentManagementClause
+    | flashbackModeClause
     )
     ;
 
