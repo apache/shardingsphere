@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 

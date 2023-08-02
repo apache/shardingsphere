@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.nanoid.algorithm.keygen;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.jupiter.api.Test;
 

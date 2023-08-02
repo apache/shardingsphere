@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.nio.charset.Charset;
 

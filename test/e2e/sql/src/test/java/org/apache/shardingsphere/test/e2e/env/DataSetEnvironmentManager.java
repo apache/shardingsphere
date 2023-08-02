@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.e2e.env;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -219,7 +219,7 @@ public final class DataSetEnvironmentManager {
             try (Connection connection = dataSource.getConnection()) {
                 for (String each : tableNames) {
                     DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
-                    DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
+                    DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
                     try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", dialectDatabaseMetaData.getQuoteCharacter().wrap(each)))) {
                         preparedStatement.execute();
                     }

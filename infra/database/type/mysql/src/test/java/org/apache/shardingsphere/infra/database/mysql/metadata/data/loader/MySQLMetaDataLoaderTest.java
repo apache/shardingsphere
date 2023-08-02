@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaM
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -53,8 +53,8 @@ class MySQLMetaDataLoaderTest {
                 + "FROM information_schema.columns WHERE TABLE_SCHEMA=? ORDER BY ORDINAL_POSITION")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement("SELECT TABLE_NAME, INDEX_NAME "
-                + "FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
+        when(dataSource.getConnection().prepareStatement("SELECT TABLE_NAME, INDEX_NAME, NON_UNIQUE, COLUMN_NAME FROM information_schema.statistics "
+                + "WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl') ORDER BY NON_UNIQUE, INDEX_NAME, SEQ_IN_INDEX").executeQuery()).thenReturn(indexResultSet);
         assertTableMetaDataMap(dialectMetaDataLoader.load(dataSource, Collections.emptyList(), "sharding_db"));
     }
     
@@ -66,8 +66,8 @@ class MySQLMetaDataLoaderTest {
                 + "FROM information_schema.columns WHERE TABLE_SCHEMA=? AND TABLE_NAME IN ('tbl') ORDER BY ORDINAL_POSITION")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')")
+        when(dataSource.getConnection().prepareStatement("SELECT TABLE_NAME, INDEX_NAME, NON_UNIQUE, COLUMN_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl') "
+                + "ORDER BY NON_UNIQUE, INDEX_NAME, SEQ_IN_INDEX")
                 .executeQuery()).thenReturn(indexResultSet);
         assertTableMetaDataMap(dialectMetaDataLoader.load(dataSource, Collections.singletonList("tbl"), "sharding_db"));
     }
@@ -105,6 +105,8 @@ class MySQLMetaDataLoaderTest {
         when(result.next()).thenReturn(true, false);
         when(result.getString("INDEX_NAME")).thenReturn("id");
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
+        when(result.getString("COLUMN_NAME")).thenReturn("id");
+        when(result.getString("NON_UNIQUE")).thenReturn("0");
         return result;
     }
     
@@ -124,6 +126,9 @@ class MySQLMetaDataLoaderTest {
         assertThat(columnsIterator.next(), is(new ColumnMetaData("mpt", Types.BINARY, false, false, false, true, false)));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
-        assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
+        IndexMetaData expected = new IndexMetaData("id");
+        expected.getColumns().add("id");
+        expected.setUnique(true);
+        assertThat(indexesIterator.next(), is(expected));
     }
 }

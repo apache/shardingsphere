@@ -19,11 +19,11 @@
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
     <rewrite-assertion id="create_table_for_cipher" db-types="MySQL">
         <input sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`))" />
-        <output sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', cipher_password VARCHAR(255) NOT NULL DEFAULT '', assisted_query_password VARCHAR(255) NOT NULL DEFAULT '', like_query_password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`))" />
+        <output sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', cipher_password VARCHAR(4000), assisted_query_password VARCHAR(4000), like_query_password VARCHAR(4000), PRIMARY KEY (`id`))" />
     </rewrite-assertion>
 
     <rewrite-assertion id="create_table_with_index_for_cipher" db-types="MySQL">
         <input sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`), KEY `t_account_bak_amount_idx` (`amount`))" />
-        <output sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', cipher_password VARCHAR(255) NOT NULL DEFAULT '', assisted_query_password VARCHAR(255) NOT NULL DEFAULT '', like_query_password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`), KEY `t_account_bak_amount_idx` (`cipher_amount`))" />
+        <output sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', cipher_password VARCHAR(4000), assisted_query_password VARCHAR(4000), like_query_password VARCHAR(4000), PRIMARY KEY (`id`), KEY `t_account_bak_amount_idx` (`cipher_amount`))" />
     </rewrite-assertion>
 </rewrite-assertions>

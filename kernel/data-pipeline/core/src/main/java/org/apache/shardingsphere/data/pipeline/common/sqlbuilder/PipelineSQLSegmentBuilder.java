@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
 /**
  * Pipeline SQL segment builder.
@@ -30,7 +30,7 @@ public final class PipelineSQLSegmentBuilder {
     private final DialectDatabaseMetaData dialectDatabaseMetaData;
     
     public PipelineSQLSegmentBuilder(final DatabaseType databaseType) {
-        dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
+        dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
     }
     
     /**
