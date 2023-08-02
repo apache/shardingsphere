@@ -428,7 +428,7 @@ name
     ;
 
 tablespaceName
-    : identifier
+    : (owner DOT_)? name
     ;
 
 subprogramName
