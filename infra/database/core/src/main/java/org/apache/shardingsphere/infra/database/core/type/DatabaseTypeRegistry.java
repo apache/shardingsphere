@@ -17,21 +17,35 @@
 
 package org.apache.shardingsphere.infra.database.core.type;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
  * Database type registry.
  */
-@RequiredArgsConstructor
 public final class DatabaseTypeRegistry {
     
+    private static final Map<DatabaseType, DialectDatabaseMetaData> REGISTERED_META_DATA = new ConcurrentHashMap<>();
+    
     private final DatabaseType databaseType;
+    
+    @Getter
+    private final DialectDatabaseMetaData dialectDatabaseMetaData;
+    
+    public DatabaseTypeRegistry(final DatabaseType databaseType) {
+        this.databaseType = databaseType;
+        if (!REGISTERED_META_DATA.containsKey(databaseType)) {
+            REGISTERED_META_DATA.put(databaseType, DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType));
+        }
+        dialectDatabaseMetaData = REGISTERED_META_DATA.get(databaseType);
+    }
     
     /**
      * Get all branch database types.
@@ -50,6 +64,6 @@ public final class DatabaseTypeRegistry {
      * @return default schema name
      */
     public String getDefaultSchemaName(final String databaseName) {
-        return DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType).getDefaultSchema().orElseGet(() -> null == databaseName ? null : databaseName.toLowerCase());
+        return dialectDatabaseMetaData.getDefaultSchema().orElseGet(() -> null == databaseName ? null : databaseName.toLowerCase());
     }
 }

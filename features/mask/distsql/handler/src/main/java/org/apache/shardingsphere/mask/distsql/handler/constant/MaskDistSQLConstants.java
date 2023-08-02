@@ -30,12 +30,6 @@ public final class MaskDistSQLConstants {
     
     public static final String SEMI = ";";
     
-    public static final String PROPERTY = "'%s'='%s'";
-    
-    public static final String ALGORITHM_TYPE = "TYPE(NAME='%s', PROPERTIES(%s))";
-    
-    public static final String ALGORITHM_TYPE_WITHOUT_PROPS = "TYPE(NAME='%s')";
-    
     public static final String CREATE_MASK = "CREATE MASK RULE";
     
     public static final String MASK = " %s ("

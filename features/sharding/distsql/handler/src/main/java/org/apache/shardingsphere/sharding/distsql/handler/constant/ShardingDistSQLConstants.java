@@ -38,8 +38,6 @@ public final class ShardingDistSQLConstants {
     
     public static final String SEMI = ";";
     
-    public static final String PROPERTY = "'%s'='%s'";
-    
     public static final String CREATE_SHARDING_TABLE = "CREATE SHARDING TABLE RULE";
     
     public static final String SHARDING_TABLE = " %s ("
@@ -91,8 +89,4 @@ public final class ShardingDistSQLConstants {
     public static final String DEFAULT_DATABASE_STRATEGY = "CREATE DEFAULT SHARDING DATABASE STRATEGY";
     
     public static final String DEFAULT_TABLE_STRATEGY = "CREATE DEFAULT SHARDING TABLE STRATEGY";
-    
-    public static final String ALGORITHM_TYPE = "TYPE(NAME='%s', PROPERTIES(%s))";
-    
-    public static final String ALGORITHM_TYPE_WITHOUT_PROPS = "TYPE(NAME='%s')";
 }
