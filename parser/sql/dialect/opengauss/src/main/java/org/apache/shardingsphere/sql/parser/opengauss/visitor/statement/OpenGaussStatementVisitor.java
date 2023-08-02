@@ -1173,7 +1173,8 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     private SubqueryTableSegment getSubqueryTableSegment(final TableReferenceContext ctx) {
         OpenGaussSelectStatement select = (OpenGaussSelectStatement) visit(ctx.selectWithParens());
         SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select);
-        SubqueryTableSegment result = new SubqueryTableSegment(subquery);
+        SubqueryTableSegment result = new SubqueryTableSegment();
+        result.setSubquery(subquery);
         if (null != ctx.aliasClause()) {
             result.setAlias((AliasSegment) visit(ctx.aliasClause()));
         }

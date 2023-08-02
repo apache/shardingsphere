@@ -82,7 +82,8 @@ class ShorthandProjectionSegmentBinderTest {
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
         tableBinderContexts.put("o", new TableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
-        SubqueryTableSegment boundedTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, mock(MySQLSelectStatement.class)));
+        SubqueryTableSegment boundedTableSegment = new SubqueryTableSegment();
+        boundedTableSegment.setSubquery(new SubquerySegment(0, 0, mock(MySQLSelectStatement.class)));
         boundedTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
         ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(new ShorthandProjectionSegment(0, 0), boundedTableSegment, tableBinderContexts);
         assertThat(actual.getActualProjectionSegments().size(), is(1));

@@ -41,7 +41,4 @@ public final class ExpectedTable extends AbstractExpectedDelimiterSQLSegment {
     
     @XmlElement(name = "xml-table")
     private ExpectedXmlTable xmlTable;
-    
-    @XmlElement(name = "table-collection-expr")
-    private ExpectedTableCollectionExpression tableCollectionExpression;
 }

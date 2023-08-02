@@ -58,7 +58,8 @@ public final class SubqueryTableSegmentBinder {
         SelectStatement boundedSelect = new SelectStatementBinder().bind(segment.getSubquery().getSelect(), metaData, defaultDatabaseName);
         SubquerySegment boundedSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundedSelect);
         boundedSubquerySegment.setSubqueryType(segment.getSubquery().getSubqueryType());
-        SubqueryTableSegment result = new SubqueryTableSegment(boundedSubquerySegment);
+        SubqueryTableSegment result = new SubqueryTableSegment();
+        result.setSubquery(boundedSubquerySegment);
         segment.getAliasSegment().ifPresent(result::setAlias);
         IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
         tableBinderContexts.put(subqueryTableName.getValue(), new TableSegmentBinderContext(createSubqueryProjections(boundedSelect.getProjections().getProjections(), subqueryTableName)));

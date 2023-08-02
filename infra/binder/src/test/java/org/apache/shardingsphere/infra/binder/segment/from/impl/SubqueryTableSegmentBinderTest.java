@@ -65,7 +65,8 @@ class SubqueryTableSegmentBinderTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, selectStatement));
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment();
+        subqueryTableSegment.setSubquery(new SubquerySegment(0, 0, selectStatement));
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("temp")));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
@@ -98,7 +99,8 @@ class SubqueryTableSegmentBinderTest {
         columnProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("order_id_alias")));
         projectionsSegment.getProjections().add(columnProjectionSegment);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, selectStatement));
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment();
+        subqueryTableSegment.setSubquery(new SubquerySegment(0, 0, selectStatement));
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("temp")));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
@@ -121,7 +123,8 @@ class SubqueryTableSegmentBinderTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, selectStatement));
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment();
+        subqueryTableSegment.setSubquery(new SubquerySegment(0, 0, selectStatement));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
         SubqueryTableSegment actual = SubqueryTableSegmentBinder.bind(subqueryTableSegment, metaData, DefaultDatabase.LOGIC_NAME, tableBinderContexts);

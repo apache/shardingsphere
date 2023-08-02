@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlTable
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableCollectionExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.XmlTableSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
@@ -40,7 +39,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSubqueryTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedTable;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedTableCollectionExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedXmlTable;
 
 import java.util.Collection;
@@ -74,26 +72,8 @@ public final class TableAssert {
             assertIs(assertContext, (SubqueryTableSegment) actual, expected.getSubqueryTable());
         } else if (actual instanceof XmlTableSegment) {
             assertIs(assertContext, (XmlTableSegment) actual, expected.getXmlTable());
-        } else if (actual instanceof TableCollectionExpressionSegment) {
-            assertIs(assertContext, (TableCollectionExpressionSegment) actual, expected.getTableCollectionExpression());
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported table segment type `%s`.", actual.getClass()));
-        }
-    }
-    
-    /**
-     * Assert actual table collection expression segment is correct with expected table expression segment.
-     *
-     * @param assertContext assert context
-     * @param actual actual table collection expression segment
-     * @param expected expected table collection expression segment
-     */
-    private static void assertIs(final SQLCaseAssertContext assertContext, final TableCollectionExpressionSegment actual, final ExpectedTableCollectionExpression expected) {
-        if (null != actual.getFunctionSegment()) {
-            ExpressionAssert.assertFunction(assertContext, actual.getFunctionSegment(), expected.getFunction());
-        }
-        if (null != actual.getExpressionSegment()) {
-            ExpressionAssert.assertExpression(assertContext, actual.getExpressionSegment(), expected.getExpr());
         }
     }
     
@@ -138,8 +118,14 @@ public final class TableAssert {
      * @param expected expected subquery expression
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SubqueryTableSegment actual, final ExpectedSubqueryTable expected) {
-        SelectStatementAssert.assertIs(assertContext, actual.getSubquery().getSelect(), expected.getSubquery().getSelectTestCases());
-        assertThat(assertContext.getText("Table alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
+        if (null != actual.getFunctionSegment()) {
+            ExpressionAssert.assertFunction(assertContext, actual.getFunctionSegment(), expected.getFunction());
+        } else if (null != actual.getExpressionSegment()) {
+            ExpressionAssert.assertExpression(assertContext, actual.getExpressionSegment(), expected.getExpr());
+        } else if (null != actual.getSubquery().getSelect()) {
+            SelectStatementAssert.assertIs(assertContext, actual.getSubquery().getSelect(), expected.getSubquery().getSelectTestCases());
+            assertThat(assertContext.getText("Table alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
+        }
     }
     
     /**

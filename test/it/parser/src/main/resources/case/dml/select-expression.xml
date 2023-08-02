@@ -2686,7 +2686,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
-            <table-collection-expr>
+            <subquery-table>
                 <function start-index="20" stop-index="112" function-name="DISPLAY_SQL_PLAN_BASELINE" text="DBMS_XPLAN.DISPLAY_SQL_PLAN_BASELINE(sql_handle=>'SYS_SQL_209d10fabbedc741', format=>'basic')" owner="DBMS_XPLAN">
                 <parameter>
                     <binary-operation-expression start-index="57" stop-index="94">
@@ -2711,7 +2711,7 @@
                         </binary-operation-expression>
                     </parameter>
                 </function>
-            </table-collection-expr>
+            </subquery-table>
         </from>
     </select>
 </sql-parser-test-cases>

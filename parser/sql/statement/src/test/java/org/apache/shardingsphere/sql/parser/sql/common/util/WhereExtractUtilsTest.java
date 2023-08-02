@@ -86,7 +86,9 @@ class WhereExtractUtilsTest {
         MySQLSelectStatement subQuerySelectStatement = new MySQLSelectStatement();
         subQuerySelectStatement.setFrom(joinTableSegment);
         MySQLSelectStatement mySQLSelectStatement = new MySQLSelectStatement();
-        mySQLSelectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(20, 84, subQuerySelectStatement)));
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment();
+        subqueryTableSegment.setSubquery(new SubquerySegment(20, 84, subQuerySelectStatement));
+        mySQLSelectStatement.setFrom(subqueryTableSegment);
         Collection<WhereSegment> subqueryWhereSegments = WhereExtractUtils.getSubqueryWhereSegments(mySQLSelectStatement);
         WhereSegment actual = subqueryWhereSegments.iterator().next();
         assertThat(actual.getExpr(), is(((JoinTableSegment) subQuerySelectStatement.getFrom()).getCondition()));

@@ -1124,7 +1124,8 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             PostgreSQLSelectStatement select = (PostgreSQLSelectStatement) visit(ctx.selectWithParens());
             SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select);
             AliasSegment alias = null != ctx.aliasClause() ? (AliasSegment) visit(ctx.aliasClause()) : null;
-            SubqueryTableSegment result = new SubqueryTableSegment(subquery);
+            SubqueryTableSegment result = new SubqueryTableSegment();
+            result.setSubquery(subquery);
             result.setAlias(alias);
             return result;
         }
