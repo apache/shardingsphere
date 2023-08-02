@@ -56,7 +56,8 @@ public final class YamlDataSourceConfigurationSwapper {
      * @return data sources
      */
     public Map<String, DataSource> swapToDataSources(final Map<String, Map<String, Object>> yamlDataSources, final boolean cacheEnabled) {
-        return DataSourcePoolCreator.create(yamlDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapToDataSourceProperties(entry.getValue()))), cacheEnabled);
+        return DataSourcePoolCreator.create(yamlDataSources.entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> swapToDataSourceProperties(entry.getValue()), (key, value) -> value, LinkedHashMap::new)), cacheEnabled);
     }
     
     /**
