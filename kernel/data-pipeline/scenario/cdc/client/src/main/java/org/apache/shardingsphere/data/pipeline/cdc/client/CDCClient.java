@@ -57,14 +57,29 @@ public final class CDCClient implements AutoCloseable {
     
     private final CDCClientConfiguration config;
     
-    private final NioEventLoopGroup group;
+    private NioEventLoopGroup group;
     
-    private final Channel channel;
+    private Channel channel;
     
-    @SneakyThrows(InterruptedException.class)
     public CDCClient(final CDCClientConfiguration config) {
         validateParameter(config);
         this.config = config;
+    }
+    
+    private void validateParameter(final CDCClientConfiguration parameter) {
+        if (null == parameter.getAddress() || parameter.getAddress().isEmpty()) {
+            throw new IllegalArgumentException("The address parameter can't be null");
+        }
+        if (parameter.getPort() <= 0) {
+            throw new IllegalArgumentException("The port must be greater than 0");
+        }
+    }
+    
+    /**
+     * Connect.
+     */
+    @SneakyThrows(InterruptedException.class)
+    public void connect() {
         Bootstrap bootstrap = new Bootstrap();
         group = new NioEventLoopGroup();
         bootstrap.channel(NioSocketChannel.class)
@@ -85,24 +100,6 @@ public final class CDCClient implements AutoCloseable {
         channel = bootstrap.connect(config.getAddress(), config.getPort()).sync().channel();
     }
     
-    private void validateParameter(final CDCClientConfiguration parameter) {
-        if (null == parameter.getAddress() || parameter.getAddress().isEmpty()) {
-            throw new IllegalArgumentException("The address parameter can't be null");
-        }
-        if (parameter.getPort() <= 0) {
-            throw new IllegalArgumentException("The port must be greater than 0");
-        }
-    }
-    
-    /**
-     * Check channel is active.
-     *
-     * @return true if channel is active
-     */
-    public boolean isActive() {
-        return channel.isActive();
-    }
-    
     /**
      * Await channel close.
      *
@@ -119,9 +116,7 @@ public final class CDCClient implements AutoCloseable {
      * @throws IllegalStateException the channel is not active
      */
     public synchronized void login(final CDCLoginParameter parameter) {
-        if (null == channel || !channel.isActive()) {
-            throw new IllegalStateException("The channel is not active");
-        }
+        checkChannelActive();
         ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
         if (ClientConnectionStatus.LOGGED_IN == connectionContext.getStatus().get()) {
             throw new IllegalStateException("The client is already logged in");
@@ -135,6 +130,12 @@ public final class CDCClient implements AutoCloseable {
         channel.writeAndFlush(data);
         responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
         log.info("Login success, username: {}", parameter.getUsername());
+    }
+    
+    private void checkChannelActive() {
+        if (null == channel || !channel.isActive()) {
+            throw new IllegalStateException("The channel is not active, call the `connect` method first");
+        }
     }
     
     /**
@@ -178,9 +179,7 @@ public final class CDCClient implements AutoCloseable {
     }
     
     private boolean checkStreamingIdExist(final String streamingId) {
-        if (null == channel || !channel.isActive()) {
-            throw new IllegalStateException("The channel is not active, please start the client first");
-        }
+        checkChannelActive();
         ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
         if (null == connectionContext) {
             log.warn("The connection context not exist");

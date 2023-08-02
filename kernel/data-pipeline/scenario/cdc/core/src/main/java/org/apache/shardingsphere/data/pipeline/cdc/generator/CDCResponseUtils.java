@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.generator;
 
-import com.google.protobuf.Empty;
 import com.google.protobuf.Message;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -43,7 +42,7 @@ public final class CDCResponseUtils {
      * @return CDC response
      */
     public static CDCResponse succeed(final String requestId) {
-        return succeed(requestId, ResponseCase.RESPONSE_NOT_SET, Empty.newBuilder().build());
+        return succeed(requestId, ResponseCase.RESPONSE_NOT_SET, null);
     }
     
     /**

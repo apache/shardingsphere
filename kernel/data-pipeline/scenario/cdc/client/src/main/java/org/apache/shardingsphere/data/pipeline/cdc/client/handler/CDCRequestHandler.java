@@ -51,7 +51,7 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     private final ExceptionHandler exceptionHandler;
     
     @Override
-    public void channelActive(final ChannelHandlerContext ctx) {
+    public void channelRegistered(final ChannelHandlerContext ctx) {
         ClientConnectionContext context = new ClientConnectionContext();
         context.getStatus().set(ClientConnectionStatus.NOT_LOGGED_IN);
         ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).setIfAbsent(context);
