@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateClusterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Oracle create tablespace statement.
+ * Oracle create cluster statement.
  */
 @Setter
-public final class OracleCreateTablespaceStatement extends CreateTablespaceStatement implements OracleStatement {
+public final class OracleCreateClusterStatement extends CreateClusterStatement implements OracleStatement {
 }

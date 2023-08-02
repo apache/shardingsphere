@@ -15,30 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.metadata.nodepath;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
-
-import java.util.Collections;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Broadcast node path.
+ * Create cluster statement.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BroadcastNodePath {
-    
-    public static final String TABLES = "tables";
-    
-    private static final RuleNodePath INSTANCE = new RuleNodePath("broadcast", Collections.emptyList(), Collections.singleton(TABLES));
-    
-    /**
-     * Get instance of rule node path.
-     * 
-     * @return got instance
-     */
-    public static RuleNodePath getInstance() {
-        return INSTANCE;
-    }
+public abstract class CreateClusterStatement extends AbstractSQLStatement implements DDLStatement {
 }
