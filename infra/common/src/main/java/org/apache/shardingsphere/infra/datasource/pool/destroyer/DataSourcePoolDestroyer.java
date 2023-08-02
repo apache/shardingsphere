@@ -53,7 +53,8 @@ public final class DataSourcePoolDestroyer {
     }
     
     private void waitUntilActiveConnectionComplete() {
-        DataSourcePoolActiveDetector dataSourcePoolActiveDetector = TypedSPILoader.getService(DataSourcePoolActiveDetector.class, dataSource.getClass().getName());
+        DataSourcePoolActiveDetector dataSourcePoolActiveDetector = TypedSPILoader.findService(DataSourcePoolActiveDetector.class, dataSource.getClass().getName())
+                .orElseGet(() -> TypedSPILoader.getService(DataSourcePoolActiveDetector.class, null));
         while (dataSourcePoolActiveDetector.containsActiveConnection(dataSource)) {
             try {
                 Thread.sleep(10L);
