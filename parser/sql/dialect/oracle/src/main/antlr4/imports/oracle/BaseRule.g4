@@ -1775,7 +1775,7 @@ matchString
     ;
 
 parameterType
-    : identifier
+    : (owner DOT_)? identifier
     ;
 
 returnType

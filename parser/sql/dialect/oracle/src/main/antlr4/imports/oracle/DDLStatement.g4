@@ -2831,8 +2831,7 @@ alterOperator
     ;
 
 addBindingClause
-    : ADD BINDING LP_ parameterType (COMMA_ parameterType)* RP_
-      RETURN LP_ returnType RP_ implementationClause? usingFunctionClause
+    : ADD BINDING LP_ parameterType (COMMA_ parameterType)* RP_ RETURN (LP_ returnType RP_ | NUMBER) implementationClause? usingFunctionClause
     ;
 
 implementationClause
