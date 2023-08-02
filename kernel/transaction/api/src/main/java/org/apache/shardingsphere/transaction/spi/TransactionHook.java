@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.transaction.spi;
 
-import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.spi.type.typed.StatefulTypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
 
@@ -30,8 +30,7 @@ import java.util.Collection;
 /**
  * ShardingSphere transaction hook.
  */
-@SingletonSPI
-public interface TransactionHook extends TypedSPI {
+public interface TransactionHook extends TypedSPI, StatefulTypedSPI {
     
     /**
      * Process before opening the transaction.
