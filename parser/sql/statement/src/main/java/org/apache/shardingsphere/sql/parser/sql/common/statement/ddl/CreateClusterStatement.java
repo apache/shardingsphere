@@ -15,34 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
-
-import java.util.List;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Start CDC client parameter.
+ * Create cluster statement.
  */
-@Getter
-@Setter
-@RequiredArgsConstructor
-public final class StartCDCClientParameter {
-    
-    private String address;
-    
-    private int port;
-    
-    private String username;
-    
-    private String password;
-    
-    private String database;
-    
-    private List<SchemaTable> schemaTables;
-    
-    private boolean full;
+public abstract class CreateClusterStatement extends AbstractSQLStatement implements DDLStatement {
 }

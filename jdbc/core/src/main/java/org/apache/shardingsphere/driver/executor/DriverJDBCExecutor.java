@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.executor;
 
 import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefreshEngine;
@@ -46,9 +47,9 @@ public final class DriverJDBCExecutor {
     
     private final MetaDataContexts metaDataContexts;
     
-    private final JDBCExecutor jdbcExecutor;
+    private final ModeContextManager modeContextManager;
     
-    private final MetaDataRefreshEngine metaDataRefreshEngine;
+    private final JDBCExecutor jdbcExecutor;
     
     private final ProcessEngine processEngine = new ProcessEngine();
     
@@ -56,8 +57,7 @@ public final class DriverJDBCExecutor {
         this.databaseName = databaseName;
         this.jdbcExecutor = jdbcExecutor;
         metaDataContexts = contextManager.getMetaDataContexts();
-        metaDataRefreshEngine = new MetaDataRefreshEngine(contextManager.getInstanceContext().getModeContextManager(),
-                metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getProps());
+        modeContextManager = contextManager.getInstanceContext().getModeContextManager();
     }
     
     /**
@@ -95,7 +95,9 @@ public final class DriverJDBCExecutor {
             processEngine.executeSQL(executionGroupContext, queryContext);
             SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
             List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
-            return isNeedAccumulate(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
+            return isNeedAccumulate(metaDataContexts.getMetaData().getDatabase(queryContext.getDatabaseNameFromSQLStatement().orElse(databaseName)).getRuleMetaData().getRules(), sqlStatementContext)
+                    ? accumulate(results)
+                    : results.get(0);
         } finally {
             processEngine.completeSQLExecution();
         }
@@ -142,7 +144,9 @@ public final class DriverJDBCExecutor {
     private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatementContext sqlStatementContext, final Collection<RouteUnit> routeUnits,
                                   final JDBCExecutorCallback<T> callback) throws SQLException {
         List<T> results = jdbcExecutor.execute(executionGroupContext, callback);
-        metaDataRefreshEngine.refresh(sqlStatementContext, routeUnits);
+        new MetaDataRefreshEngine(modeContextManager,
+                metaDataContexts.getMetaData().getDatabase(sqlStatementContext.getTablesContext().getDatabaseName().orElse(databaseName)), metaDataContexts.getMetaData().getProps())
+                        .refresh(sqlStatementContext, routeUnits);
         return results;
     }
 }

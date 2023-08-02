@@ -2943,6 +2943,10 @@ TRUSTED
     : T R U S T E D
     ;
 
+TRUST
+    : T R U S T
+    ;
+
 ID
     : I D
     ;
@@ -6024,6 +6028,30 @@ STATEMENT_QUEUING
     :S T A T E M E N T UL_ Q U E U I N G
     ;
 
+PRAGMA
+    : P R A G M A
+    ;
+
+RESTRICT_REFERENCES
+    : R E S T R I C T UL_ R E F E R E N C E S
+    ;
+
+RNDS
+    : R N D S
+    ;
+
+WNDS
+    : W N D S
+    ;
+
+RNPS
+    : R N P S
+    ;
+
+WNPS
+    : W N P S
+    ;
+
 OVERRIDING
     : O V E R R I D I N G
     ;
@@ -6667,7 +6695,7 @@ SYS_XMLEXNSURI
 SYS_XMLGEN
     :S Y S UL_ X M L G E N
     ;
-    
+
 SYS_XMLAGG
     :S Y S UL_ X M L A G G
     ;

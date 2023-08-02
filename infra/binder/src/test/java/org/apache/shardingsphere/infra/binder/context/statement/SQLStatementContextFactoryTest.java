@@ -124,7 +124,9 @@ class SQLStatementContextFactoryTest {
         OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class, RETURNS_DEEP_STUBS);
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
         when(selectStatement.getProjections().isDistinctRow()).thenReturn(false);
+        when(selectStatement.getCommentSegments()).thenReturn(Collections.emptyList());
         when(cursorStatement.getSelect()).thenReturn(selectStatement);
+        when(cursorStatement.getCommentSegments()).thenReturn(Collections.emptyList());
         SQLStatementContext actual = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(cursorStatement, Collections.emptyList());
         assertThat(actual, instanceOf(CursorStatementContext.class));
     }

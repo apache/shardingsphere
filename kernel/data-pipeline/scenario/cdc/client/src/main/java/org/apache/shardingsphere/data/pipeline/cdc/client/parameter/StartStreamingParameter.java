@@ -15,10 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.event;
+package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
+
+import java.util.Set;
 
 /**
- * Stream data event.
+ * Start streaming parameter.
  */
-public final class StreamDataEvent {
+@RequiredArgsConstructor
+@Getter
+public final class StartStreamingParameter {
+    
+    private final String database;
+    
+    private final Set<SchemaTable> schemaTables;
+    
+    private final boolean full;
 }
