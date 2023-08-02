@@ -623,6 +623,7 @@ expr
     | LP_ expr RP_
     | booleanPrimary
     | expr datetimeExpr
+    | multisetExpr
     ;
 
 andOperator
@@ -1983,4 +1984,14 @@ xmlTableOptions
 
 xmlTableColumn
     : columnName (FOR ORDINALITY | (dataType | XMLTYPE (LP_ SEQUENCE RP_ BY REF)?) (PATH STRING_)? (DEFAULT expr)?)
+    ;
+
+multisetExpr
+    : columnName MULTISET multisetOperator (ALL | DISTINCT)? columnName
+    ;
+
+multisetOperator
+    : EXCEPT
+    | INTERSECT
+    | UNION
     ;
