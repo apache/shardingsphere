@@ -19,8 +19,8 @@ package org.apache.shardingsphere.authority.provider.schema;
 
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProvider;
-import org.apache.shardingsphere.authority.spi.AuthorityProvider;
+import org.apache.shardingsphere.authority.provider.database.DatabasePermittedAuthorityRegistryProvider;
+import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -39,9 +39,9 @@ class DatabasePermittedPrivilegesProviderTest {
     @Test
     void assertBuildAuthorityRegistry() {
         Properties props = PropertiesBuilder.build(
-                new Property(DatabasePermittedPrivilegesProvider.PROP_USER_DATABASE_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*"));
-        AuthorityProvider provider = TypedSPILoader.getService(AuthorityProvider.class, "DATABASE_PERMITTED", props);
-        AuthorityRegistry actual = provider.buildAuthorityRegistry(Collections.emptyMap(), Collections.singletonList(new ShardingSphereUser("user1", "", "127.0.0.2")));
+                new Property(DatabasePermittedAuthorityRegistryProvider.PROP_USER_DATABASE_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*"));
+        AuthorityRegistryProvider provider = TypedSPILoader.getService(AuthorityRegistryProvider.class, "DATABASE_PERMITTED", props);
+        AuthorityRegistry actual = provider.build(Collections.emptyMap(), Collections.singletonList(new ShardingSphereUser("user1", "", "127.0.0.2")));
         Optional<ShardingSpherePrivileges> privileges = actual.findPrivileges(new Grantee("user1", "127.0.0.2"));
         assertTrue(privileges.isPresent());
         assertTrue(privileges.get().hasPrivileges("test"));

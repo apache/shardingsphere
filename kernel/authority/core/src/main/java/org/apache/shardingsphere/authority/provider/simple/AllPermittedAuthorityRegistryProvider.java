@@ -15,46 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.database;
+package org.apache.shardingsphere.authority.provider.simple;
 
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
-import org.apache.shardingsphere.authority.provider.database.builder.DatabasePrivilegeBuilder;
-import org.apache.shardingsphere.authority.registry.UserPrivilegeMapAuthorityRegistry;
-import org.apache.shardingsphere.authority.spi.AuthorityProvider;
+import org.apache.shardingsphere.authority.registry.AllPermittedAuthorityRegistry;
+import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Properties;
 
 /**
- * Database permitted privileges provider.
+ * All permitted authority registry provider.
  */
-public final class DatabasePermittedPrivilegesProvider implements AuthorityProvider {
-    
-    public static final String PROP_USER_DATABASE_MAPPINGS = "user-database-mappings";
-    
-    private Properties props;
+public final class AllPermittedAuthorityRegistryProvider implements AuthorityRegistryProvider {
     
     @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
-    
-    @Override
-    public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
-        return new UserPrivilegeMapAuthorityRegistry(DatabasePrivilegeBuilder.build(users, props));
+    public AuthorityRegistry build(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
+        return new AllPermittedAuthorityRegistry();
     }
     
     @Override
     public String getType() {
-        return "DATABASE_PERMITTED";
+        return "ALL_PERMITTED";
     }
     
     @Override
     public Collection<Object> getTypeAliases() {
-        return Collections.singleton("SCHEMA_PRIVILEGES_PERMITTED");
+        return Collections.singleton("ALL_PRIVILEGES_PERMITTED");
     }
 }
