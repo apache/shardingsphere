@@ -21,11 +21,16 @@ import org.apache.shardingsphere.timeservice.spi.TimestampService;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Properties;
 
 /**
  * System timestamp service.
  */
 public final class SystemTimestampService implements TimestampService {
+    
+    @Override
+    public void init(final Properties props) {
+    }
     
     @Override
     public Timestamp getTimestamp() {
