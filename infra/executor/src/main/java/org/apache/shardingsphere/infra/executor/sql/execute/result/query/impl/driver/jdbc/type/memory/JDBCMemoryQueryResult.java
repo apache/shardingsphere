@@ -32,7 +32,10 @@ import java.sql.SQLException;
 public final class JDBCMemoryQueryResult extends AbstractMemoryQueryResult {
     
     public JDBCMemoryQueryResult(final ResultSet resultSet, final DatabaseType databaseType) throws SQLException {
-        super(new JDBCQueryResultMetaData(resultSet.getMetaData()),
-                DatabaseTypedSPILoader.getService(DialectQueryResultDataRowLoader.class, databaseType).load(resultSet.getMetaData().getColumnCount(), resultSet));
+        super(new JDBCQueryResultMetaData(resultSet.getMetaData()), getDialectQueryResultDataRowLoader(databaseType).load(resultSet.getMetaData().getColumnCount(), resultSet));
+    }
+    
+    private static DialectQueryResultDataRowLoader getDialectQueryResultDataRowLoader(final DatabaseType databaseType) {
+        return DatabaseTypedSPILoader.findService(DialectQueryResultDataRowLoader.class, databaseType).orElseGet(() -> DatabaseTypedSPILoader.getService(DialectQueryResultDataRowLoader.class, null));
     }
 }
