@@ -427,11 +427,7 @@ selectProjection
     ;
 
 selectProjectionExprClause
-    : expr (AS? alias)? | cursorExpr
-    ;
-
-cursorExpr
-    : CURSOR LP_ selectSubquery RP_
+    : expr (AS? alias)?
     ;
 
 selectFromClause
