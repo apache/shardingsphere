@@ -21,4 +21,11 @@
     <sql-case id="create_cluster_schema" value="CREATE CLUSTER test_schema.test_cluster (col1 NUMBER)" db-types="Oracle" />
     <sql-case id="create_cluster_schema_multi_col" value="CREATE CLUSTER test_schema.test_cluster (col1 NUMBER, col2 BOOL)" db-types="Oracle" />
     <sql-case id="create_cluster_schema_multi_col_sort" value="CREATE CLUSTER test_schema.test_cluster (col1 NUMBER SORT, col2 BOOL)" db-types="Oracle" />
+    <sql-case id="create_cluster_parallel" value="CREATE CLUSTER test_cluster (col1 NUMBER) PARALLEL" db-types="Oracle" />
+    <sql-case id="create_cluster_parallel_number" value="CREATE CLUSTER test_cluster (col1 NUMBER) PARALLEL 2" db-types="Oracle" />
+    <sql-case id="create_cluster_noparallel" value="CREATE CLUSTER test_cluster (col1 NUMBER) NOPARALLEL" db-types="Oracle" />
+    <sql-case id="create_cluster_no_row_depend" value="CREATE CLUSTER test_cluster (col1 NUMBER) NOROWDEPENDENCIES" db-types="Oracle" />
+    <sql-case id="create_cluster_row_depend" value="CREATE CLUSTER test_cluster (col1 NUMBER) ROWDEPENDENCIES" db-types="Oracle" />
+    <sql-case id="create_cluster_no_cache" value="CREATE CLUSTER test_cluster (col1 NUMBER) NOCACHE" db-types="Oracle" />
+    <sql-case id="create_cluster_cache" value="CREATE CLUSTER test_cluster (col1 NUMBER) CACHE" db-types="Oracle" />
 </sql-cases>

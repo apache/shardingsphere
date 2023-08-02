@@ -21,4 +21,11 @@
     <create-cluster sql-case-id="create_cluster_schema" />
     <create-cluster sql-case-id="create_cluster_schema_multi_col" />
     <create-cluster sql-case-id="create_cluster_schema_multi_col_sort" />
+    <create-cluster sql-case-id="create_cluster_parallel" />
+    <create-cluster sql-case-id="create_cluster_parallel_number" />
+    <create-cluster sql-case-id="create_cluster_noparallel" />
+    <create-cluster sql-case-id="create_cluster_no_row_depend" />
+    <create-cluster sql-case-id="create_cluster_row_depend" />
+    <create-cluster sql-case-id="create_cluster_no_cache" />
+    <create-cluster sql-case-id="create_cluster_cache" />
 </sql-parser-test-cases>
