@@ -35,6 +35,7 @@ public final class CursorStatementBinder implements SQLStatementBinder<OpenGauss
         result.setCursorName(sqlStatement.getCursorName());
         result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), metaData, defaultDatabaseName));
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
+        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;
     }
 }

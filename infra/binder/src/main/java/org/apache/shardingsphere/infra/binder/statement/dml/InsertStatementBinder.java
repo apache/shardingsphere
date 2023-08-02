@@ -44,6 +44,7 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         InsertStatementHandler.getInsertMultiTableElementSegment(sqlStatement).ifPresent(optional -> InsertStatementHandler.setInsertMultiTableElementSegment(result, optional));
         InsertStatementHandler.getReturningSegment(sqlStatement).ifPresent(optional -> InsertStatementHandler.setReturningSegment(result, optional));
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
+        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;
     }
 }
