@@ -29,12 +29,12 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.util.ServerErrorResult
 public class LoggerExceptionHandler implements ExceptionHandler {
     
     @Override
-    public void handlerServerException(final ServerErrorResult result) {
+    public void handleServerException(final ServerErrorResult result) {
         log.error("Server error, code: {}, message: {}", result.getErrorCode(), result.getErrorMessage());
     }
     
     @Override
-    public void handlerSocketException(final Throwable throwable) {
+    public void handleSocketException(final Throwable throwable) {
         log.error("Socket error: ", throwable);
     }
 }

@@ -35,8 +35,8 @@ import java.util.concurrent.TimeUnit;
  * Response future.
  */
 @RequiredArgsConstructor
-@Setter
 @Getter
+@Setter
 public final class ResponseFuture {
     
     @Getter(AccessLevel.PRIVATE)

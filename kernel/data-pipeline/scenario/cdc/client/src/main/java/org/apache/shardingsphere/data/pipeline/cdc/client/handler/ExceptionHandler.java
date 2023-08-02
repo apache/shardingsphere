@@ -25,16 +25,16 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.util.ServerErrorResult
 public interface ExceptionHandler {
     
     /**
-     * Handler server exception.
+     * Handle server exception.
      *
      * @param result error result
      */
-    void handlerServerException(ServerErrorResult result);
+    void handleServerException(ServerErrorResult result);
     
     /**
-     * Handler socket exception.
+     * Handle socket exception.
      *
      * @param throwable throwable
      */
-    void handlerSocketException(Throwable throwable);
+    void handleSocketException(Throwable throwable);
 }

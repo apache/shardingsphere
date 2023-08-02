@@ -30,4 +30,6 @@ public final class ServerErrorResult {
     private final String errorCode;
     
     private final String errorMessage;
+    
+    private final String responseType;
 }

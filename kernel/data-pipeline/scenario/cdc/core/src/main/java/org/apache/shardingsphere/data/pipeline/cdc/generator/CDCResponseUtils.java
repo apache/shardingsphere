@@ -22,10 +22,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Builder;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.ResponseCase;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.LoginResult;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StartStreamingResult;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StopStreamingResult;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 
@@ -34,16 +36,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInva
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CDCResponseUtils {
-    
-    /**
-     * Succeed response.
-     *
-     * @param requestId request id
-     * @return CDC response
-     */
-    public static CDCResponse succeed(final String requestId) {
-        return succeed(requestId, ResponseCase.RESPONSE_NOT_SET, null);
-    }
     
     /**
      * Succeed response.
@@ -65,6 +57,15 @@ public final class CDCResponseUtils {
                 break;
             case STREAM_DATA_RESULT:
                 result.setStreamDataResult((StreamDataResult) response);
+                break;
+            case LOGIN_RESULT:
+                result.setLoginResult((LoginResult) response);
+                break;
+            case START_STREAMING_RESULT:
+                result.setStartStreamingResult((StartStreamingResult) response);
+                break;
+            case STOP_STREAMING_RESULT:
+                result.setStopStreamingResult((StopStreamingResult) response);
                 break;
             case RESPONSE_NOT_SET:
                 break;

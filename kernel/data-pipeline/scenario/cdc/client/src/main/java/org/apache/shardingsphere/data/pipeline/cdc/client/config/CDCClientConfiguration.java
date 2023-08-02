@@ -38,15 +38,15 @@ public final class CDCClientConfiguration {
     
     private final Consumer<List<Record>> dataConsumer;
     
-    private final ExceptionHandler errorHandler;
+    private final ExceptionHandler exceptionHandler;
     
     private final int timeoutMills;
     
-    public CDCClientConfiguration(final String address, final int port, final Consumer<List<Record>> dataConsumer, final ExceptionHandler errorHandler) {
+    public CDCClientConfiguration(final String address, final int port, final Consumer<List<Record>> dataConsumer, final ExceptionHandler exceptionHandler) {
         this.address = address;
         this.port = port;
         this.dataConsumer = dataConsumer;
-        this.errorHandler = errorHandler;
+        this.exceptionHandler = exceptionHandler;
         this.timeoutMills = 5000;
     }
 }
