@@ -2641,4 +2641,43 @@
             <simple-table name="mining_data_apply_v" start-index="62" stop-index="80" />
         </from>
     </select>
+
+    <select sql-case-id="select_with_multiset_except_expression">
+        <from>
+            <simple-table name="customers_demo" start-index="103" stop-index="116" />
+        </from>
+        <projections start-index="7" stop-index="96">
+            <column-projection name="customer_id" start-index="7" stop-index="17" />
+            <expression-projection text="cust_address_ntab MULTISET EXCEPT DISTINCT cust_address2_ntab" alias="multiset_except" start-index="20" stop-index="96" />
+        </projections>
+        <order-by>
+            <column-item name="customer_id" order-direction="ASC" start-index="127" stop-index="137"/>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_multiset_intersect_expression">
+        <from>
+            <simple-table name="customers_demo" start-index="109" stop-index="122" />
+        </from>
+        <projections start-index="7" stop-index="102">
+            <column-projection name="customer_id" start-index="7" stop-index="17" />
+            <expression-projection text="cust_address_ntab MULTISET INTERSECT DISTINCT cust_address2_ntab" alias="multiset_intersect" start-index="20" stop-index="102" />
+        </projections>
+        <order-by>
+            <column-item name="customer_id" order-direction="ASC" start-index="133" stop-index="143"/>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_multiset_union_expression">
+        <from>
+            <simple-table name="customers_demo" start-index="92" stop-index="105" />
+        </from>
+        <projections start-index="7" stop-index="85">
+            <column-projection name="customer_id" start-index="7" stop-index="17" />
+            <expression-projection text="cust_address_ntab MULTISET UNION cust_address2_ntab" alias="multiset_union" start-index="20" stop-index="85" />
+        </projections>
+        <order-by>
+            <column-item name="customer_id" order-direction="ASC" start-index="116" stop-index="126"/>
+        </order-by>
+    </select>
 </sql-parser-test-cases>

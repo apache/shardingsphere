@@ -15,15 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-/**
- * Oracle create tablespace statement.
- */
+@RequiredArgsConstructor
+@Getter
 @Setter
-public final class OracleCreateTablespaceStatement extends CreateTablespaceStatement implements OracleStatement {
+public class MultisetExpression implements ExpressionSegment {
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final ExpressionSegment left;
+    
+    private final ExpressionSegment right;
+    
+    private final String operator;
+    
+    private final String keyWord;
+    
+    private final String text;
 }

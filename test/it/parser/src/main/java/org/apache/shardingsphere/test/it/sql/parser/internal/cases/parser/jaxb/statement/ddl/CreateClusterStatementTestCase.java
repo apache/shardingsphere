@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
 
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Oracle create tablespace statement.
+ * Create cluster statement test case.
  */
-@Setter
-public final class OracleCreateTablespaceStatement extends CreateTablespaceStatement implements OracleStatement {
+public final class CreateClusterStatementTestCase extends SQLParserTestCase {
 }

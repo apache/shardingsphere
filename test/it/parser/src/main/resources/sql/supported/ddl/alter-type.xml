@@ -76,4 +76,20 @@
     REPLACE AS OBJECT (a NUMBER, b NUMBER, MAP MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER)" db-types="Oracle" />
     <sql-case id="alter_type_replace_element_order_function" value="ALTER TYPE type_name
     REPLACE AS OBJECT (a NUMBER, b NUMBER, ORDER MEMBER FUNCTION p(n1 NUMBER) RETURN NUMBER)" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_restrict_rnds" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b link1, MEMBER FUNCTION p(c1 NUMBER) RETURN NUMBER
+    , PRAGMA RESTRICT_REFERENCES (method_name, RNDS))" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_restrict_wnds" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b link1, MEMBER FUNCTION p(c1 NUMBER) RETURN NUMBER
+    , PRAGMA RESTRICT_REFERENCES (method_name, WNDS))" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_restrict_rnps" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b link1, MEMBER FUNCTION p(c1 NUMBER) RETURN NUMBER
+    , PRAGMA RESTRICT_REFERENCES (method_name, RNPS))" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_restrict_wnps" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b link1, MEMBER FUNCTION p(c1 NUMBER) RETURN NUMBER
+    , PRAGMA RESTRICT_REFERENCES (method_name, WNPS))" db-types="Oracle" />
+    <sql-case id="alter_type_replace_element_restrict_trust" value="ALTER TYPE type_name
+    REPLACE AS OBJECT (a NUMBER, b link1, MEMBER FUNCTION p(c1 NUMBER) RETURN NUMBER
+    , PRAGMA RESTRICT_REFERENCES (method_name, TRUST))" db-types="Oracle" />
+    <sql-case id="alter_type_reset" value="ALTER TYPE type_name RESET" db-types="Oracle" />
 </sql-cases>

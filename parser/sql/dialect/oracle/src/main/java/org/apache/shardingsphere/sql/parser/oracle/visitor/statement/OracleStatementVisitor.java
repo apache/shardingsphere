@@ -112,6 +112,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.IntervalDayToSecondExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.IntervalYearToMonthExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MultisetExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlNameSpaceStringAsIdentifierSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlNameSpacesClauseSegment;
@@ -354,7 +355,18 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.datetimeExpr()) {
             return createDatetimeExpression(ctx, ctx.datetimeExpr());
         }
+        if (null != ctx.multisetExpr()) {
+            return createMultisetExpression(ctx);
+        }
         return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
+    }
+    
+    private ASTNode createMultisetExpression(final ExprContext ctx) {
+        ExpressionSegment left = (ColumnSegment) visitColumnName(ctx.multisetExpr().columnName(0));
+        ExpressionSegment right = (ColumnSegment) visitColumnName(ctx.multisetExpr().columnName(1));
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        String keyWord = ctx.multisetExpr().DISTINCT() != null ? "DISTINCT" : "ALL";
+        return new MultisetExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, ctx.multisetExpr().multisetOperator().getText(), keyWord, text);
     }
     
     private ASTNode createDatetimeExpression(final ExprContext ctx, final DatetimeExprContext datetimeExpr) {
