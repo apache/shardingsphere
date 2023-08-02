@@ -5710,8 +5710,14 @@
     <select sql-case-id="select_with_ntile_function">
         <projections start-index="7" stop-index="54" literal-start-index="7" literal-stop-index="54">
             <expression-projection text="NTILE(4) OVER (ORDER BY salary DESC)" alias="quartile" start-index="7" stop-index="54" literal-start-index="7" literal-stop-index="54">
+                <literalText>NTILE(4) OVER (ORDER BY salary DESC)</literalText>
                 <expr>
-                    <function function-name="NTILE" text="NTILE(4) OVER (ORDER BY salary DESC)" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42" />
+                    <function function-name="NTILE" text="NTILE(4) OVER (ORDER BY salary DESC)" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42">
+                        <parameter>
+                            <literal-expression value="4" start-index="13" stop-index="13" literal-start-index="13" literal-stop-index="13" />
+                        </parameter>
+                        <literalText>NTILE(4) OVER (ORDER BY salary DESC)</literalText>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -5908,6 +5914,9 @@
                     <function function-name="TO_CHAR" text="TO_CHAR(RATIO_TO_REPORT(amount_sold) OVER (), '9.999')" start-index="7" stop-index="60" literal-start-index="7" literal-stop-index="60">
                         <parameter>
                             <function function-name="RATIO_TO_REPORT" text="RATIO_TO_REPORT(amount_sold) OVER ()" start-index="15" stop-index="50" literal-start-index="15" literal-stop-index="50">
+                                <parameter>
+                                    <column name="amount_sold" start-index="31" stop-index="41" literal-start-index="31" literal-stop-index="41" />
+                                </parameter>
                                 <literalText>RATIO_TO_REPORT(amount_sold) OVER ()</literalText>
                             </function>
                         </parameter>
@@ -5974,6 +5983,9 @@
                 </binary-operation-expression>
             </expr>
         </where>
+        <order-by>
+            <column-item name="xmlagg" order-direction="ASC" start-index="106" stop-index="111"/>
+        </order-by>
     </select>
 
     <select sql-case-id="select_with_cover_pop_and_covar_samp">

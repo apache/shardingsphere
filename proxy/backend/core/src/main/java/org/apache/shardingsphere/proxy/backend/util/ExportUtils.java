@@ -19,20 +19,14 @@ package org.apache.shardingsphere.proxy.backend.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -116,30 +110,10 @@ public final class ExportUtils {
         }
         stringBuilder.append("rules:").append(System.lineSeparator());
         for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, ruleConfigs).entrySet()) {
-            if (checkRuleConfigIsEmpty(entry.getKey())) {
+            if (((DatabaseRuleConfiguration) entry.getKey()).isEmpty()) {
                 continue;
             }
             stringBuilder.append(YamlEngine.marshal(Collections.singletonList(entry.getValue().swapToYamlConfiguration(entry.getKey()))));
         }
-    }
-    
-    private static boolean checkRuleConfigIsEmpty(final RuleConfiguration ruleConfig) {
-        if (ruleConfig instanceof ShardingRuleConfiguration) {
-            ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) ruleConfig;
-            return shardingRuleConfig.getTables().isEmpty() && shardingRuleConfig.getAutoTables().isEmpty();
-        } else if (ruleConfig instanceof ReadwriteSplittingRuleConfiguration) {
-            return ((ReadwriteSplittingRuleConfiguration) ruleConfig).getDataSources().isEmpty();
-        } else if (ruleConfig instanceof EncryptRuleConfiguration) {
-            return ((EncryptRuleConfiguration) ruleConfig).getTables().isEmpty();
-        } else if (ruleConfig instanceof CompatibleEncryptRuleConfiguration) {
-            return ((CompatibleEncryptRuleConfiguration) ruleConfig).getTables().isEmpty();
-        } else if (ruleConfig instanceof ShadowRuleConfiguration) {
-            return ((ShadowRuleConfiguration) ruleConfig).getTables().isEmpty();
-        } else if (ruleConfig instanceof MaskRuleConfiguration) {
-            return ((MaskRuleConfiguration) ruleConfig).getTables().isEmpty();
-        } else if (ruleConfig instanceof SingleRuleConfiguration) {
-            return !((SingleRuleConfiguration) ruleConfig).getDefaultDataSource().isPresent();
-        }
-        return false;
     }
 }

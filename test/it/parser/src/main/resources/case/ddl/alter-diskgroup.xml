@@ -44,4 +44,12 @@
     <alter-diskgroup sql-case-id="alter_diskgroup_resize_disks_in_failgroup_size_g" />
     <alter-diskgroup sql-case-id="alter_diskgroup_add_template_attribute_unprotected_coarse" />
     <alter-diskgroup sql-case-id="alter_diskgroup_modify_template_attribute_fine" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_modify_file_attribute_hot_mirrorhot" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_modify_usergroup_add_member" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_add_volume_size_g" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_resize_volume_size_g" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_disable_volume" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_enable_volume" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_all_disable_volume_all" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_drop_volume" />
 </sql-parser-test-cases>

@@ -521,6 +521,8 @@ public enum SQLVisitorRule {
     
     CREATE_CAST("CreateCast", SQLStatementType.DDL),
     
+    CREATE_CLUSTER("CreateCluster", SQLStatementType.DDL),
+    
     CREATE_TYPE("CreateType", SQLStatementType.DDL),
     
     DROP_CONVERSION("DropConversion", SQLStatementType.DDL),

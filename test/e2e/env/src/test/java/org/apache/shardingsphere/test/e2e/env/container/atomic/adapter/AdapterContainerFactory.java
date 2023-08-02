@@ -54,7 +54,7 @@ public final class AdapterContainerFactory {
                         ? new ShardingSphereProxyClusterContainer(databaseType, containerConfig)
                         : new ShardingSphereProxyStandaloneContainer(databaseType, containerConfig);
             case JDBC:
-                return new ShardingSphereJdbcContainer(storageContainer, scenario);
+                return new ShardingSphereJdbcContainer(storageContainer, scenario, databaseType);
             default:
                 throw new RuntimeException(String.format("Unknown adapter `%s`.", adapter));
         }

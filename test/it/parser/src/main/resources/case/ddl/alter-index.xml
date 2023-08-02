@@ -86,8 +86,16 @@
         <index name="cost_ix" start-index="12" stop-index="18" />
     </alter-index>
     
-    <alter-index sql-case-id="alter_index_drop_partition">
+    <alter-index sql-case-id="alter_index_drop_partition1">
         <index name="cost_ix" start-index="12" stop-index="18" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_drop_partition2">
+        <index name="npr" start-index="12" stop-index="14" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_rebuild_partition">
+        <index name="npr" start-index="12" stop-index="14" />
     </alter-index>
     
     <alter-index sql-case-id="alter_index_rename_partition">
@@ -106,8 +114,32 @@
         <index name="hgidx" start-index="12" stop-index="16" />
     </alter-index>
     
-    <alter-index sql-case-id="alter_index_parameters">
+    <alter-index sql-case-id="alter_index_initrans">
+        <index name="cust_lname_ix" start-index="12" stop-index="27" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_parameters1">
         <index name="po_xmlindex_ix" start-index="12" stop-index="25" />
+    </alter-index>
+
+    <alter-index sql-case-id="alter_index_parameters2">
+        <index name="po_xmlindex_ix" start-index="12" stop-index="25" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_parameters3">
+        <index name="po_xmlindex_ix" start-index="12" stop-index="25" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_modify_default_attributes_tablespace">
+        <index name="q1_sales_by_region_locix" start-index="12" stop-index="35" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_rename_subpartition_to">
+        <index name="scuba" start-index="12" stop-index="16" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_modify_default_attributes_initrans">
+        <index name="prod_idx" start-index="12" stop-index="19" />
     </alter-index>
     
     <alter-index sql-case-id="alter_index_alter_column" />

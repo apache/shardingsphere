@@ -72,4 +72,10 @@
     <create-tablespace sql-case-id="create_tablespace_with_storage_flashcache_none" />
     <create-tablespace sql-case-id="create_tablespace_with_storage_flashcache_default" />
     <create-tablespace sql-case-id="create_tablespace_with_storage_encrypt" />
+    <create-tablespace sql-case-id="create_tablespace_with_extent_management" />
+    <create-tablespace sql-case-id="create_tablespace_with_extent_management_autoallocate" />
+    <create-tablespace sql-case-id="create_tablespace_with_extent_management_uniform_size" />
+    <create-tablespace sql-case-id="create_tablespace_with_extent_management_uniform" />
+    <create-tablespace sql-case-id="create_tablespace_with_segment_auto" />
+    <create-tablespace sql-case-id="create_tablespace_with_segment_manual" />
 </sql-parser-test-cases>
