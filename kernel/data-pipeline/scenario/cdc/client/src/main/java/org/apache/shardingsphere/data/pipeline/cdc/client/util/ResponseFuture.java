@@ -66,13 +66,13 @@ public final class ResponseFuture {
      */
     @SneakyThrows(InterruptedException.class)
     public Object waitResponseResult(final long timeoutMillis, final ClientConnectionContext connectionContext) {
-        boolean received = countDownLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
+        if (!countDownLatch.await(timeoutMillis, TimeUnit.MILLISECONDS)) {
+            connectionContext.getResponseFutureMap().remove(requestId);
+            throw new GetResultTimeoutException("Get result timeout");
+        }
         connectionContext.getResponseFutureMap().remove(requestId);
         if (!Strings.isNullOrEmpty(errorMessage)) {
             throw new ServerResultException(String.format("Get %s response failed, code:%s, reason: %s", requestType.name(), errorCode, errorMessage));
-        }
-        if (!received) {
-            throw new GetResultTimeoutException("Get result timeout");
         }
         return result;
     }
