@@ -26,16 +26,11 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * All permitted privileges provider.
  */
 public final class AllPermittedPrivilegesProvider implements AuthorityProvider {
-    
-    @Override
-    public void init(final Properties props) {
-    }
     
     @Override
     public AuthorityRegistry buildAuthorityRegistry(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {

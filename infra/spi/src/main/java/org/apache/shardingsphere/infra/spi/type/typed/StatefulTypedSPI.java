@@ -29,5 +29,6 @@ public interface StatefulTypedSPI extends TypedSPI {
      * 
      * @param props properties to be initialized
      */
-    void init(Properties props);
+    default void init(Properties props) {
+    }
 }
