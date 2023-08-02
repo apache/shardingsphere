@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.converter.statement.delete;
 
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlDelete;
+import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOrderBy;
-import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.DeleteStatementHandler;
@@ -43,8 +42,7 @@ public final class DeleteStatementConverter implements SQLStatementConverter<Del
     @Override
     public SqlNode convert(final DeleteStatement deleteStatement) {
         SqlDelete sqlDelete = convertDelete(deleteStatement);
-        Optional<OrderBySegment> orderByfetcher = DeleteStatementHandler.getOrderBySegment(deleteStatement);
-        SqlNodeList orderBy = orderByfetcher.flatMap(optional -> new OrderByConverter().convert(optional)).orElse(SqlNodeList.EMPTY);
+        SqlNodeList orderBy = DeleteStatementHandler.getOrderBySegment(deleteStatement).flatMap(optional -> new OrderByConverter().convert(optional)).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = DeleteStatementHandler.getLimitSegment(deleteStatement);
         if (limit.isPresent()) {
             SqlNode offset = limit.get().getOffset().flatMap(optional -> new PaginationValueSQLConverter().convert(optional)).orElse(null);
@@ -55,12 +53,9 @@ public final class DeleteStatementConverter implements SQLStatementConverter<Del
     }
     
     private SqlDelete convertDelete(final DeleteStatement deleteStatement) {
-        SqlNode targetTable = new TableConverter().convert(deleteStatement.getTable()).get();
+        SqlNode deleteTable = new TableConverter().convert(deleteStatement.getTable()).orElseThrow(IllegalStateException::new);
         SqlNode condition = deleteStatement.getWhere().flatMap(optional -> new WhereConverter().convert(optional)).orElse(null);
-        if (deleteStatement.getTable().getAliasName().isPresent()) {
-            SqlIdentifier alias = new SqlIdentifier(deleteStatement.getTable().getAliasName().toString(), SqlParserPos.ZERO);
-            return new SqlDelete(SqlParserPos.ZERO, targetTable, condition, null, alias);
-        }
-        return new SqlDelete(SqlParserPos.ZERO, targetTable, condition, null, null);
+        SqlIdentifier alias = deleteStatement.getTable().getAliasName().map(optional -> new SqlIdentifier(optional, SqlParserPos.ZERO)).orElse(null);
+        return new SqlDelete(SqlParserPos.ZERO, deleteTable, condition, null, alias);
     }
 }
