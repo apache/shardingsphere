@@ -307,8 +307,8 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitCreateType(final OracleStatementParser.CreateTypeContext ctx) {
-        boolean isReplace = (null != ctx.REPLACE());
-        boolean isEditionable = (null == ctx.NONEDITIONABLE());
+        boolean isReplace = null != ctx.REPLACE();
+        boolean isEditionable = null == ctx.NONEDITIONABLE();
         TypeSegment typeSegment = (TypeSegment) visit(ctx.plsqlTypeSource().typeName());
         if (null != ctx.plsqlTypeSource().objectSubTypeDef()) {
             OracleStatementParser.ObjectSubTypeDefContext objectSubTypeDefContext = ctx.plsqlTypeSource().objectSubTypeDef();
