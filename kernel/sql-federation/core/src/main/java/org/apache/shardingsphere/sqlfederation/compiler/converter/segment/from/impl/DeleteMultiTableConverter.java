@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.from.TableConverter;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,7 +43,7 @@ public final class DeleteMultiTableConverter implements SQLSegmentConverter<Dele
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         new TableConverter().convert(segment.getRelationTable()).ifPresent(sqlNodes::add);
-        List<String> tableNames = new ArrayList<>();
+        List<String> tableNames = new LinkedList<>();
         for (SimpleTableSegment each : segment.getActualDeleteTables()) {
             tableNames.add(each.getTableName().getIdentifier().getValue());
         }
