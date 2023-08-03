@@ -128,4 +128,8 @@
     <sql-case id="alter_type_modify_multi_attribute" value="ALTER TYPE type_name MODIFY ATTRIBUTE (c1 NUMBER, b1 BOOL)" db-types="Oracle" />
     <sql-case id="alter_type_drop_single_attribute" value="ALTER TYPE type_name DROP ATTRIBUTE c1" db-types="Oracle" />
     <sql-case id="alter_type_drop_multi_attribute" value="ALTER TYPE type_name DROP ATTRIBUTE (c1,b1)" db-types="Oracle" />
+    <sql-case id="alter_type_modify_limit" value="ALTER TYPE type_name MODIFY LIMIT 999" db-types="Oracle" />
+    <sql-case id="alter_type_modify_element_type" value="ALTER TYPE type_name MODIFY ELEMENT TYPE NUMBER" db-types="Oracle" />
+    <sql-case id="alter_type_not_instantiable" value="ALTER TYPE type_name NOT INSTANTIABLE" db-types="Oracle" />
+    <sql-case id="alter_type_not_final" value="ALTER TYPE type_name NOT FINAL" db-types="Oracle" />
 </sql-cases>
