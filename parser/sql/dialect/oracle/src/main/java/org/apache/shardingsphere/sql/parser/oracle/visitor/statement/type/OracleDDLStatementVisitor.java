@@ -453,13 +453,13 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             result.setTablespaceSegment(
                     new TablespaceSegment(ctx.tablespaceName().getStart().getStartIndex(),
                             ctx.tablespaceName().getStop().getStopIndex(),
-                            new IdentifierValue(ctx.tablespaceName().name().getText())));
+                            (IdentifierValue) visit(ctx.tablespaceName())));
         }
         if (null != ctx.newTablespaceName()) {
             result.setRenameTablespaceSegment(
                     new TablespaceSegment(ctx.newTablespaceName().getStart().getStartIndex(),
                             ctx.newTablespaceName().getStop().getStopIndex(),
-                            new IdentifierValue(ctx.newTablespaceName().tablespaceName().name().getText())));
+                            (IdentifierValue) visit(ctx.newTablespaceName())));
         }
         return result;
     }

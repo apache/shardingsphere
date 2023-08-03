@@ -3718,7 +3718,7 @@ tablespaceRetentionClause
     ;
 
 newTablespaceName
-    : tablespaceName
+    : identifier
     ;
 
 datafileTempfileClauses
