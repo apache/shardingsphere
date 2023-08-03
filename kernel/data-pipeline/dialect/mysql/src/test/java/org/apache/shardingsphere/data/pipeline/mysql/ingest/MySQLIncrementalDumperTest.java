@@ -88,7 +88,7 @@ class MySQLIncrementalDumperTest {
     void setUp() {
         dumperConfig = mockDumperConfiguration();
         initTableData(dumperConfig);
-        dumperConfig.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:mock://127.0.0.1:3306/test", "root", "root"));
+        dumperConfig.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("com.zaxxer.hikari.HikariDataSource", "jdbc:mock://127.0.0.1:3306/test", "root", "root"));
         PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
         SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10000, new EmptyAckCallback());
         incrementalDumper = new MySQLIncrementalDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L, 0L), channel, metaDataLoader);
@@ -98,7 +98,8 @@ class MySQLIncrementalDumperTest {
     
     private DumperConfiguration mockDumperConfiguration() {
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
+        result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("com.zaxxer.hikari.HikariDataSource",
+                "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
         result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
         result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
         result.setTargetTableColumnsMap(Collections.singletonMap(new LogicTableName("t_order"), Collections.singleton(new ColumnName("order_id"))));

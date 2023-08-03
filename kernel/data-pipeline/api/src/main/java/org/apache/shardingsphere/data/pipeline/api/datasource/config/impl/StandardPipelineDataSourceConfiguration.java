@@ -77,21 +77,21 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
             yamlConfig.put("url", yamlConfig.get("jdbcUrl"));
             yamlConfig.remove("jdbcUrl");
         }
-        yamlConfig.remove(DATA_SOURCE_CLASS_NAME);
         jdbcConfig = YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), YamlJdbcConfiguration.class, true);
         databaseType = DatabaseTypeFactory.get(jdbcConfig.getUrl());
-        yamlConfig.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
+        yamlConfig.put(DATA_SOURCE_CLASS_NAME, jdbcConfig.getDataSourceClassName());
         appendJdbcQueryProperties(databaseType, yamlConfig);
         dataSourceProperties = new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(yamlConfig);
     }
     
-    public StandardPipelineDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
-        this(wrapParameter(jdbcUrl, username, password));
+    public StandardPipelineDataSourceConfiguration(final String dataSourceClassName, final String jdbcUrl, final String username, final String password) {
+        this(wrapParameter(dataSourceClassName, jdbcUrl, username, password));
     }
     
-    private static Map<String, Object> wrapParameter(final String jdbcUrl, final String username, final String password) {
+    private static Map<String, Object> wrapParameter(final String dataSourceClassName, final String jdbcUrl, final String username, final String password) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         // Reference ConnectionPropertySynonyms
+        result.put("dataSourceClassName", dataSourceClassName);
         result.put("url", jdbcUrl);
         result.put("username", username);
         result.put("password", password);

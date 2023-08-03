@@ -32,6 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class StandardPipelineDataSourceConfigurationTest {
     
+    private static final String DATA_SOURCE_CLASS_NAME = "com.zaxxer.hikari.HikariDataSource";
+    
     private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false";
     
     private static final String USERNAME = "userName";
@@ -40,7 +42,7 @@ class StandardPipelineDataSourceConfigurationTest {
     
     @Test
     void assertCreateWithSimpleParameters() {
-        StandardPipelineDataSourceConfiguration actual = new StandardPipelineDataSourceConfiguration(JDBC_URL, USERNAME, PASSWORD);
+        StandardPipelineDataSourceConfiguration actual = new StandardPipelineDataSourceConfiguration(DATA_SOURCE_CLASS_NAME, JDBC_URL, USERNAME, PASSWORD);
         assertGetConfig(actual);
         actual = new StandardPipelineDataSourceConfiguration(actual.getParameter());
         assertGetConfig(actual);

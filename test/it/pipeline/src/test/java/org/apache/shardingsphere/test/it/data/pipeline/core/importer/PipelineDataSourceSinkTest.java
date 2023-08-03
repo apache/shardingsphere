@@ -68,7 +68,7 @@ class PipelineDataSourceSinkTest {
     @Mock
     private PipelineDataSourceManager dataSourceManager;
     
-    private final PipelineDataSourceConfiguration dataSourceConfig = new StandardPipelineDataSourceConfiguration(
+    private final PipelineDataSourceConfiguration dataSourceConfig = new StandardPipelineDataSourceConfiguration("com.zaxxer.hikari.HikariDataSource",
             "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=root", "root", "root");
     
     @Mock

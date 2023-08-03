@@ -84,11 +84,12 @@ class PostgreSQLWALDumperTest {
     void setUp() {
         position = new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
         channel = new SimpleMemoryPipelineChannel(10000, new EmptyAckCallback());
+        String dataSourceClassName = "com.zaxxer.hikari.HikariDataSource";
         String jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL";
         String username = "root";
         String password = "root";
         createTable(jdbcUrl, username, password);
-        dumperConfig = createDumperConfiguration(jdbcUrl, username, password);
+        dumperConfig = createDumperConfiguration(dataSourceClassName, jdbcUrl, username, password);
         walDumper = new PostgreSQLWALDumper(dumperConfig, position, channel, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig())));
     }
     
@@ -103,10 +104,10 @@ class PostgreSQLWALDumperTest {
         }
     }
     
-    private DumperConfiguration createDumperConfiguration(final String jdbcUrl, final String username, final String password) {
+    private DumperConfiguration createDumperConfiguration(final String dataSourceClassName, final String jdbcUrl, final String username, final String password) {
         DumperConfiguration result = new DumperConfiguration();
         result.setJobId("0101123456");
-        result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration(jdbcUrl, username, password));
+        result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration(dataSourceClassName, jdbcUrl, username, password));
         result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order_0"), new LogicTableName("t_order")));
         result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
         return result;

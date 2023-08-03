@@ -78,6 +78,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
         </dependency>
