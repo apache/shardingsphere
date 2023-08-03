@@ -15,34 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTypeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-import java.util.List;
-
-/**
- * Start CDC client parameter.
- */
 @Getter
-@Setter
 @RequiredArgsConstructor
-public final class StartCDCClientParameter {
+public final class OracleCreateNestedTableTypeStatement extends CreateTypeStatement implements OracleStatement {
     
-    private String address;
+    private final boolean isReplace;
     
-    private int port;
+    private final boolean editionable;
     
-    private String username;
+    private final boolean notNull;
     
-    private String password;
+    private final boolean isPersistable;
     
-    private String database;
+    private final TypeSegment typeSegment;
     
-    private List<SchemaTable> schemaTables;
-    
-    private boolean full;
+    private final DataTypeSegment dataType;
 }

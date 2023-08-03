@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.spi;
+package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
 
-import org.apache.shardingsphere.authority.model.AuthorityRegistry;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.Set;
 
 /**
- * Authority provider.
+ * Start streaming parameter.
  */
-public interface AuthorityProvider extends TypedSPI {
+@RequiredArgsConstructor
+@Getter
+public final class StartStreamingParameter {
     
-    /**
-     * Build authority registry.
-     *
-     * @param databases databases
-     * @param users users
-     * @return built authority registry
-     */
-    AuthorityRegistry buildAuthorityRegistry(Map<String, ShardingSphereDatabase> databases, Collection<ShardingSphereUser> users);
+    private final String database;
+    
+    private final Set<SchemaTable> schemaTables;
+    
+    private final boolean full;
 }

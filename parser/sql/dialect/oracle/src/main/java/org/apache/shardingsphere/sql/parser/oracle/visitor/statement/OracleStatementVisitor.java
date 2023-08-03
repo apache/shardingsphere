@@ -275,6 +275,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != owner) {
             result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
+        if (null != ctx.nestedItem() && !ctx.nestedItem().isEmpty()) {
+            result.setNestedObjectAttributes(ctx.nestedItem().stream().map(item -> (IdentifierValue) visit(item.identifier())).collect(Collectors.toList()));
+        }
         return result;
     }
     
@@ -870,18 +873,22 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
         FunctionSegment result;
         if (null != ctx.CAST()) {
             result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
         } else {
             result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.XMLCAST().getText(), getOriginalText(ctx));
         }
-        ASTNode exprSegment = visit(ctx.expr());
-        if (exprSegment instanceof ColumnSegment) {
-            result.getParameters().add((ColumnSegment) exprSegment);
-        } else if (exprSegment instanceof LiteralExpressionSegment) {
-            result.getParameters().add((LiteralExpressionSegment) exprSegment);
+        if (null != ctx.MULTISET()) {
+            result.getParameters()
+                    .add(new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.subquery()))));
+        } else {
+            ASTNode exprSegment = visit(ctx.expr());
+            if (exprSegment instanceof ColumnSegment) {
+                result.getParameters().add((ColumnSegment) exprSegment);
+            } else if (exprSegment instanceof LiteralExpressionSegment) {
+                result.getParameters().add((LiteralExpressionSegment) exprSegment);
+            }
         }
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         return result;

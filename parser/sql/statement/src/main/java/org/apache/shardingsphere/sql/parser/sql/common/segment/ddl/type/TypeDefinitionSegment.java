@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.simple.model.privilege;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
-import org.junit.jupiter.api.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 
-import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class AllPermittedPrivilegesProviderTest {
+@RequiredArgsConstructor
+@Getter
+public final class TypeDefinitionSegment implements CreateDefinitionSegment {
     
-    @Test
-    void assertFindPrivileges() {
-        ShardingSpherePrivileges actual = new AllPrivilegesPermittedShardingSpherePrivileges();
-        assertTrue(actual.hasPrivileges("testSchema"));
-        assertTrue(actual.hasPrivileges(Collections.emptyList()));
-        assertTrue(actual.hasPrivileges(new DatabaseAccessSubject("testSchema"), Collections.emptyList()));
-    }
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final String attributeName;
+    
+    private final DataTypeSegment dataType;
 }

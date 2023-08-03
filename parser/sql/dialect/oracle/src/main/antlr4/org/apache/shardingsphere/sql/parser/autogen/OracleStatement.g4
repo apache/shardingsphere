@@ -145,6 +145,7 @@ execute
     | dropCluster
     | systemAction
     | alterType
+    | createType
     | createCluster
     ) SEMI_?
     ;

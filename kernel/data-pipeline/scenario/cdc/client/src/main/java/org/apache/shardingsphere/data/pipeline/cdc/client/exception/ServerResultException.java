@@ -15,10 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.event;
+package org.apache.shardingsphere.data.pipeline.cdc.client.exception;
 
 /**
- * Stream data event.
+ * Server result exception.
  */
-public final class StreamDataEvent {
+public final class ServerResultException extends RuntimeException {
+    
+    private static final long serialVersionUID = 6661736945772674919L;
+    
+    public ServerResultException(final String message) {
+        super(message);
+    }
 }
