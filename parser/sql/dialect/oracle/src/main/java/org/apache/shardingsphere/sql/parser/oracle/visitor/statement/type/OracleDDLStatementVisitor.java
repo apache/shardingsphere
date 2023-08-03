@@ -322,7 +322,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         }
     }
     
-    private ASTNode visitCreateTypeObjectBaseTypeDef(OracleStatementParser.ObjectBaseTypeDefContext ctx, boolean isReplace, boolean isEditionable, TypeSegment typeSegment) {
+    private ASTNode visitCreateTypeObjectBaseTypeDef(final OracleStatementParser.ObjectBaseTypeDefContext ctx, final boolean isReplace, final boolean isEditionable, final TypeSegment typeSegment) {
         if (null != ctx.objectTypeDef()) {
             OracleStatementParser.ObjectTypeDefContext objectTypeDefContext = ctx.objectTypeDef();
             return new OracleCreateObjectTypeStatement(isReplace, isEditionable, null == objectTypeDefContext.finalClause() || null == objectTypeDefContext.finalClause().NOT(),
