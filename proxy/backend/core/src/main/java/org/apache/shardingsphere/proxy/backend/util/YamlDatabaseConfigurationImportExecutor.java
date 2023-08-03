@@ -260,7 +260,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     private void addEncryptRuleConfiguration(final EncryptRuleConfiguration encryptRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
         encryptRuleConfigImportChecker.check(database, encryptRuleConfig);
         allRuleConfigs.add(encryptRuleConfig);
-        database.getRuleMetaData().getRules().add(new EncryptRule(encryptRuleConfig));
+        database.getRuleMetaData().getRules().add(new EncryptRule(database.getName(), encryptRuleConfig));
     }
     
     private void addShadowRuleConfiguration(final ShadowRuleConfiguration shadowRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {

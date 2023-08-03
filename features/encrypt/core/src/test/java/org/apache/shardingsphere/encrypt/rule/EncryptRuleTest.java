@@ -68,7 +68,8 @@ class EncryptRuleTest {
     
     @Test
     void assertGetTableWithLowercase() {
-        assertThat(new LinkedList<>(new EncryptRule("foo_db", createEncryptRuleConfigurationWithUpperCaseLogicTable()).getLogicTableMapper().getTableNames()), is(Collections.singletonList("T_ENCRYPT")));
+        assertThat(new LinkedList<>(new EncryptRule("foo_db", createEncryptRuleConfigurationWithUpperCaseLogicTable()).getLogicTableMapper().getTableNames()),
+                is(Collections.singletonList("T_ENCRYPT")));
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
