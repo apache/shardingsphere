@@ -3758,8 +3758,13 @@ alterMethodSpec
     : (ADD | DROP) (mapOrderFunctionSpec | subprogramSpec) ((ADD | DROP) (mapOrderFunctionSpec | subprogramSpec))*
     ;
 
+alterAttributeDefinition
+    : (ADD | MODIFY) ATTRIBUTE ( attributeName dataType? | LP_ attributeName dataType (COMMA_ attributeName dataType)* RP_)
+      | DROP ATTRIBUTE ( attributeName | LP_ attributeName (COMMA_ attributeName)* RP_)
+    ;
+
 alterType
-    : ALTER TYPE typeName (compileTypeClause|replaceTypeClause|RESET|(alterMethodSpec))?
+    : ALTER TYPE typeName (compileTypeClause|replaceTypeClause|RESET|(alterMethodSpec|alterAttributeDefinition))?
     ;
 
 createCluster
