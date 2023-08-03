@@ -67,7 +67,7 @@ public final class JoinTableSegmentBinder {
         result.setCondition(segment.getCondition());
         // TODO bind condition and using column in join table segment
         result.setUsing(segment.getUsing());
-        result.getJoinTableProjectionSegments().addAll(getJoinTableProjectionSegments(segment, databaseType, tableBinderContexts));
+        result.getJoinTableProjectionSegments().addAll(getJoinTableProjectionSegments(result, databaseType, tableBinderContexts));
         return result;
     }
     
