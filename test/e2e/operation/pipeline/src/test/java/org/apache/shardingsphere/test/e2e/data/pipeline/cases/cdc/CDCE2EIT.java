@@ -167,8 +167,8 @@ class CDCE2EIT {
     }
     
     private DataSource createStandardDataSource(final PipelineContainerComposer containerComposer, final String storageUnitName) {
-        return PipelineDataSourceFactory.newInstance(new StandardPipelineDataSourceConfiguration(containerComposer.getActualJdbcUrlTemplate(storageUnitName, false),
-                containerComposer.getUsername(), containerComposer.getPassword()));
+        return PipelineDataSourceFactory.newInstance(new StandardPipelineDataSourceConfiguration("com.zaxxer.hikari.HikariDataSource",
+                containerComposer.getActualJdbcUrlTemplate(storageUnitName, false), containerComposer.getUsername(), containerComposer.getPassword()));
     }
     
     private void startCDCClient(final PipelineContainerComposer containerComposer, final DialectDatabaseMetaData dialectDatabaseMetaData) {
