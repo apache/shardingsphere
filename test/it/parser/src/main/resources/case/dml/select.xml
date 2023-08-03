@@ -6490,4 +6490,23 @@
             <simple-table name="short_orders" alias="o" start-index="49" stop-index="62" literal-start-index="49" literal-stop-index="62" />
         </from>
     </select>
+
+    <select sql-case-id="select_with_collection_table">
+        <projections start-index="7" stop-index="14" literal-start-index="7" literal-stop-index="14">
+            <expression-projection text="VALUE(p)" start-index="7" stop-index="14">
+                <function function-name="value" start-index="7" stop-index="14" />
+            </expression-projection>
+        </projections>
+        <from>
+            <join-table join-type="COMMA">
+                <left>
+                    <simple-table name="warehouses" alias="w" start-index="21" stop-index="32" />
+                </left>
+                <right>
+                    <collection-table alias="p" start-index="37" stop-index="50">
+                    </collection-table>>
+                </right>
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
