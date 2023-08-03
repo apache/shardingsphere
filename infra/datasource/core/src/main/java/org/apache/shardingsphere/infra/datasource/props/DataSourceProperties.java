@@ -65,6 +65,11 @@ public final class DataSourceProperties {
         return result;
     }
     
+    /**
+     * Get data source class name.
+     *
+     * @return data source class name
+     */
     public String getDataSourceClassName() {
         return null == dataSourceClassName ? DEFAULT_DATA_SOURCE_CLASS : dataSourceClassName;
     }
