@@ -87,4 +87,11 @@
     <create-tablespace sql-case-id="create_tablespace_with_temporary_extent_autoallocate" />
     <create-tablespace sql-case-id="create_tablespace_with_temporary_extent_uniform_size" />
     <create-tablespace sql-case-id="create_tablespace_with_temporary_extent_uniform" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_spec" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_extent" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_extent_autoallocate" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_extent_uniform" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_retention_guarantee" />
+    <create-tablespace sql-case-id="create_tablespace_with_undo_tablespace_retention_noguarantee" />
 </sql-parser-test-cases>
