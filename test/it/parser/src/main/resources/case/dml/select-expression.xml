@@ -2706,4 +2706,13 @@
             <column-item name="customer_id" order-direction="ASC" start-index="116" stop-index="126"/>
         </order-by>
     </select>
+    
+    <select sql-case-id="select_collect_expression">
+        <projections start-index="7" stop-index="92">
+            <expression-projection start-index="7" stop-index="92" text="CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t)" alias="Warehouses" />
+        </projections>
+        <from>
+            <simple-table start-index="99" stop-index="108" name="warehouses" />
+        </from>
+    </select>
 </sql-parser-test-cases>
