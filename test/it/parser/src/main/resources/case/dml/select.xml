@@ -6476,4 +6476,18 @@
             <simple-table name="DUAL" start-index="355" stop-index="358" literal-start-index="355" literal-stop-index="358" />
         </from>
     </select>
+
+    <select sql-case-id="select_with_nested_object">
+        <projections start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42">
+            <column-projection name="o.item.line_item_id" start-index="7" stop-index="25" >
+                <owner name="o" start-index="7" stop-index="7" />
+            </column-projection>>
+            <column-projection name="o.item.quantity" start-index="28" stop-index="42" >
+                <owner name="o" start-index="28" stop-index="28" />
+            </column-projection>>
+        </projections>
+        <from>
+            <simple-table name="short_orders" alias="o" start-index="49" stop-index="62" literal-start-index="49" literal-stop-index="62" />
+        </from>
+    </select>
 </sql-parser-test-cases>
