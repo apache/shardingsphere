@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.codehaus.groovy.runtime.StringGroovyMethods;
 
 import java.util.List;
 import java.util.Optional;
