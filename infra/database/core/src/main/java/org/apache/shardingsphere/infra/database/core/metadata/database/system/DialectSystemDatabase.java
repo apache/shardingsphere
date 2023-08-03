@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.core.metadata.database.system;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.util.Collection;
 import java.util.Map;

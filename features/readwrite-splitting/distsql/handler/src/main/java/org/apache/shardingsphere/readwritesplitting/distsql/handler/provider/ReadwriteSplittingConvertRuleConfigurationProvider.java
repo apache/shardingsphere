@@ -22,14 +22,12 @@ import org.apache.shardingsphere.distsql.handler.ral.query.ConvertRuleConfigurat
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.distsql.handler.constant.ReadwriteSplittingDistSQLConstants;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.distsql.handler.constant.ReadwriteSplittingDistSQLConstants;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
 
 /**
  * Readwrite-splitting convert rule configuration provider.
@@ -83,38 +81,6 @@ public final class ReadwriteSplittingConvertRuleConfigurationProvider implements
         String loadBalancerType = getAlgorithmType(algorithmConfig);
         if (!Strings.isNullOrEmpty(loadBalancerType)) {
             result.append(ReadwriteSplittingDistSQLConstants.COMMA).append(System.lineSeparator()).append(loadBalancerType);
-        }
-        return result.toString();
-    }
-    
-    private String getAlgorithmType(final AlgorithmConfiguration algorithmConfig) {
-        StringBuilder result = new StringBuilder();
-        if (null == algorithmConfig) {
-            return result.toString();
-        }
-        String type = algorithmConfig.getType().toLowerCase();
-        if (algorithmConfig.getProps().isEmpty()) {
-            result.append(String.format(ReadwriteSplittingDistSQLConstants.ALGORITHM_TYPE_WITHOUT_PROPS, type));
-        } else {
-            result.append(String.format(ReadwriteSplittingDistSQLConstants.ALGORITHM_TYPE, type, getAlgorithmProperties(algorithmConfig.getProps())));
-        }
-        return result.toString();
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private String getAlgorithmProperties(final Properties props) {
-        StringBuilder result = new StringBuilder();
-        Iterator<String> iterator = new TreeMap(props).keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            Object value = props.get(key);
-            if (null == value) {
-                continue;
-            }
-            result.append(String.format(ReadwriteSplittingDistSQLConstants.PROPERTY, key, value));
-            if (iterator.hasNext()) {
-                result.append(ReadwriteSplittingDistSQLConstants.COMMA).append(' ');
-            }
         }
         return result.toString();
     }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.hbase.handler.HBaseBackendUpdateHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;

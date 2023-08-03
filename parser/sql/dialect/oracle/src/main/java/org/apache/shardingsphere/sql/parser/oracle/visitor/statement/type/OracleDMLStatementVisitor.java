@@ -115,6 +115,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MultisetExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.IntervalExpressionProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlQueryAndExistsFunctionSegment;
@@ -718,6 +719,14 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             int startIndex = binaryExpression.getStartIndex();
             int stopIndex = null == alias ? binaryExpression.getStopIndex() : alias.getStopIndex();
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, binaryExpression.getText(), binaryExpression);
+            result.setAlias(alias);
+            return result;
+        }
+        if (projection instanceof MultisetExpression) {
+            MultisetExpression multisetExpression = (MultisetExpression) projection;
+            int startIndex = multisetExpression.getStartIndex();
+            int stopIndex = null == alias ? multisetExpression.getStopIndex() : alias.getStopIndex();
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, multisetExpression.getText(), multisetExpression);
             result.setAlias(alias);
             return result;
         }

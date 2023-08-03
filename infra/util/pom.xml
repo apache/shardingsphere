@@ -24,8 +24,15 @@
         <version>5.4.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-util</artifactId>
+    <name>${project.artifactId}</name>
     
     <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.metadata.reviser.index;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.index.IndexReviser;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -39,7 +39,10 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
         for (DataNode each : tableRule.getActualDataNodes()) {
             Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
             if (logicIndexName.isPresent()) {
-                return Optional.of(new IndexMetaData(logicIndexName.get()));
+                IndexMetaData result = new IndexMetaData(logicIndexName.get());
+                result.getColumns().addAll(originalMetaData.getColumns());
+                result.setUnique(originalMetaData.isUnique());
+                return Optional.of(result);
             }
         }
         return Optional.empty();

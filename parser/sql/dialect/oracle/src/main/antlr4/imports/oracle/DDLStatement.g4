@@ -31,6 +31,54 @@ createIndex
     : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause usableSpecification? invalidationSpecification?
     ;
 
+createType
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? TYPE plsqlTypeSource
+    ;
+
+plsqlTypeSource
+    : typeName (objectBaseTypeDef | objectSubTypeDef)
+    ;
+
+objectBaseTypeDef
+    : (IS | AS) (objectTypeDef | varrayTypeSpec | nestedTableTypeSpec)
+    ;
+
+objectTypeDef
+    : OBJECT LP_ dataTypeDefinition (COMMA_ dataTypeDefinition)* RP_ finalClause? instantiableClause? persistableClause?
+    ;
+
+finalClause
+    : NOT? FINAL
+    ;
+
+instantiableClause
+    : NOT? INSTANTIABLE
+    ;
+
+persistableClause
+    : NOT? PERSISTABLE
+    ;
+
+varrayTypeSpec
+    : VARRAY (LP_ INTEGER_ RP_)? OF typeSpec
+    ;
+
+nestedTableTypeSpec
+    : TABLE OF typeSpec
+    ;
+
+typeSpec
+    : ((LP_ dataType RP_) | dataType) (NOT NULL)? persistableClause?
+    ;
+
+dataTypeDefinition
+    : name dataType
+    ;
+
+objectSubTypeDef
+    : UNDER typeName LP_ dataTypeDefinition (COMMA_ dataTypeDefinition)* RP_ finalClause? instantiableClause?
+    ;
+
 alterTable
     : ALTER TABLE tableName memOptimizeClause alterDefinitionClause enableDisableClauses
     ;
@@ -479,6 +527,7 @@ alterIndexInformationClause
     | allocateExtentClause
     | shrinkClause
     | parallelClause
+    | physicalAttributesClause
     | loggingClause
     | partialIndexClause)+
     | rebuildClause ((DEFERRED | IMMEDIATE) | INVALIDATION)?
@@ -581,7 +630,15 @@ enableDisableOthers
     ;
 
 rebuildClause
-    : REBUILD parallelClause?
+    : REBUILD (PARTITION partitionName | SUBPARTITION subpartitionName | REVERSE | NOREVERSE)?
+    ( parallelClause
+    | TABLESPACE tablespaceName
+    | PARAMETERS LP_ odciParameters RP_
+    | ONLINE
+    | physicalAttributesClause
+    | indexCompression
+    | loggingClause
+    | partialIndexClause)*
     ;
 
 parallelClause
@@ -2610,7 +2667,7 @@ zonemapRefreshClause
     ;
 
 alterJava
-   : ALTER JAVA (SOURCE | CLASS) objectName resolveClauses (COMPILE | RESOLVE | invokerRightsClause)
+   : ALTER JAVA (SOURCE | CLASS) objectName resolveClauses? (COMPILE | RESOLVE | invokerRightsClause)
    ;
 
 resolveClauses
@@ -3605,8 +3662,28 @@ tableCompressionTableSpace
     | NOCOMPRESS
     ;
 
+segmentManagementClause
+    : SEGMENT SPACE MANAGEMENT (AUTO|MANUAL)
+    ;
+
+tablespaceGroupClause
+    : ON TABLESPACE GROUP tablespaceGroupName
+    ;
+
+temporaryTablespaceClause
+    : TEMPORARY TABLESPACE tablespaceName (TEMPFILE fileSpecification (COMMA_ fileSpecification)* )? tablespaceGroupClause? extentManagementClause?
+    ;
+
+tablespaceRetentionClause
+    : RETENTION (GUARANTEE | NOGUARANTEE)
+    ;
+
+undoTablespaceClause
+    : UNDO TABLESPACE tablespaceName (DATAFILE fileSpecification (COMMA_ fileSpecification)*)? extentManagementClause? tablespaceRetentionClause?
+    ;
+
 createTablespace
-    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
+    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? (permanentTablespaceClause | temporaryTablespaceClause | undoTablespaceClause)
     ;
 
 permanentTablespaceClause
@@ -3618,6 +3695,9 @@ permanentTablespaceClause
     | ENCRYPTION tablespaceEncryptionSpec
     | DEFAULT tableCompressionTableSpace? storageClause?
     | (ONLINE|OFFLINE)
+    | extentManagementClause
+    | segmentManagementClause
+    | flashbackModeClause
     )
     ;
 
@@ -3690,4 +3770,22 @@ alterCollectionClauses
 alterType
     : ALTER TYPE typeName (compileTypeClause | replaceTypeClause | RESET
     | (alterMethodSpec | alterAttributeDefinition | alterCollectionClauses | NOT (INSTANTIABLE | FINAL)))?
+    ;
+
+createCluster
+    : CREATE CLUSTER (schemaName DOT_)? clusterName
+    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
+    ;
+
+createCluster
+    : CREATE CLUSTER (schemaName DOT_)? clusterName
+    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
+    parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
+    ;
+
+createCluster
+    : CREATE CLUSTER (schemaName DOT_)? clusterName
+    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
+    (physicalAttributesClause | SET sizeClause)?
+    parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
     ;

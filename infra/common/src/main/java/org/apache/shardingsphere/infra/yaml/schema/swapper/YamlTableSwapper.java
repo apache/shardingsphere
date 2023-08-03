@@ -66,7 +66,10 @@ public final class YamlTableSwapper implements YamlConfigurationSwapper<YamlShar
     }
     
     private ShardingSphereIndex swapIndex(final YamlShardingSphereIndex index) {
-        return new ShardingSphereIndex(index.getName());
+        ShardingSphereIndex result = new ShardingSphereIndex(index.getName());
+        result.getColumns().addAll(index.getColumns());
+        result.setUnique(index.isUnique());
+        return result;
     }
     
     private Collection<ShardingSphereColumn> swapColumns(final Map<String, YamlShardingSphereColumn> indexes) {
@@ -95,6 +98,8 @@ public final class YamlTableSwapper implements YamlConfigurationSwapper<YamlShar
     private YamlShardingSphereIndex swapYamlIndex(final ShardingSphereIndex index) {
         YamlShardingSphereIndex result = new YamlShardingSphereIndex();
         result.setName(index.getName());
+        result.getColumns().addAll(index.getColumns());
+        result.setUnique(index.isUnique());
         return result;
     }
     

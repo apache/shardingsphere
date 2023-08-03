@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

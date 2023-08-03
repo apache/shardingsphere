@@ -144,6 +144,8 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Fi
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ForwardAllContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ForwardContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ForwardCountContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FuncArgExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FunctionExprWindowlessContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndexElemContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IndexNamesContext;
@@ -193,6 +195,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNa
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.NameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -315,6 +319,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLUnlistenStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -667,6 +672,32 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
             if (null != each.colId()) {
                 result.getValue().add(new ColumnSegment(each.colId().start.getStartIndex(), each.colId().stop.getStopIndex(), new IdentifierValue(each.colId().getText())));
             }
+            if (null != each.functionExprWindowless()) {
+                FunctionSegment functionSegment = (FunctionSegment) visit(each.functionExprWindowless());
+                functionSegment.getParameters().forEach(param -> {
+                    if (param instanceof ColumnSegment) {
+                        result.getValue().add((ColumnSegment) param);
+                    }
+                });
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitFunctionExprWindowless(final FunctionExprWindowlessContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcApplication().funcName().getText(), getOriginalText(ctx));
+        result.getParameters().addAll(getExpressions(ctx.funcApplication().funcArgList().funcArgExpr()));
+        return result;
+    }
+    
+    private Collection<ExpressionSegment> getExpressions(final Collection<FuncArgExprContext> aExprContexts) {
+        if (null == aExprContexts) {
+            return Collections.emptyList();
+        }
+        Collection<ExpressionSegment> result = new ArrayList<>(aExprContexts.size());
+        for (FuncArgExprContext each : aExprContexts) {
+            result.add((ExpressionSegment) visit(each.aExpr()));
         }
         return result;
     }
