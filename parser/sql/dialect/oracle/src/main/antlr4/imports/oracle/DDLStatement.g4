@@ -1109,6 +1109,36 @@ alterPackage
     )
     ;
 
+alterProfile
+    : ALTER PROFILE profileName LIMIT (resourceParameters | passwordParameters)+ (CONTAINER EQ_ (CURRENT | ALL))?
+    ;
+
+resourceParameters
+    : (SESSIONS_PER_USER
+    | CPU_PER_SESSION
+    | CPU_PER_CALL
+    | CONNECT_TIME
+    | IDLE_TIME
+    | LOGICAL_READS_PER_SESSION
+    | LOGICAL_READS_PER_CALL
+    | COMPOSITE_LIMIT
+    ) (INTEGER | UNLIMITED | DEFAULT)
+    | PRIVATE_SGA (sizeClause | UNLIMITED | DEFAULT)
+    ;
+
+passwordParameters
+    : (FAILED_LOGIN_ATTEMPTS
+    | PASSWORD_LIFE_TIME
+    | PASSWORD_REUSE_TIME
+    | PASSWORD_REUSE_MAX
+    | PASSWORD_LOCK_TIME
+    | PASSWORD_GRACE_TIME
+    | INACTIVE_ACCOUNT_TIME
+    ) (expr | UNLIMITED | DEFAULT)
+    | PASSWORD_VERIFY_FUNCTION (function | NULL | DEFAULT)
+    | PASSWORD_ROLLOVER_TIME (expr | DEFAULT)
+    ;
+
 packageCompileClause
     : COMPILE DEBUG? (PACKAGE | SPECIFICATION | BODY)? (compilerParametersClause*)? (REUSE SETTINGS)?
     ;
