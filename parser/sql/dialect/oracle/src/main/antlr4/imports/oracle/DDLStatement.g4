@@ -3650,7 +3650,7 @@ alterTablespace
     ( MINIMUM EXTENT sizeClause
     | RESIZE sizeClause
     | COALESCE
-    | SHRINK SPACE_KEYWORD (KEEP sizeClause)?
+    | SHRINK SPACE (KEEP sizeClause)?
     | RENAME TO newTablespaceName
     | (BEGIN|END) BACKUP
     | datafileTempfileClauses
@@ -3660,6 +3660,8 @@ alterTablespace
     | autoextendClause
     | flashbackModeClause
     | tablespaceRetentionClause
+    | alterTablespaceEncryption
+    | lostWriteProtection
     )
     ;
 
@@ -3680,11 +3682,13 @@ datafileTempfileClauses
     ;
 
 datafileSpecification
-    : DATAFILE datafileTempfileSpec
+    : DATAFILE
+      (COMMA_? datafileTempfileSpec)
     ;
 
 tempfileSpecification
-    : TEMPFILE datafileTempfileSpec
+    : TEMPFILE
+      (COMMA_? datafileTempfileSpec)
     ;
 
 tablespaceLoggingClauses
@@ -3698,6 +3702,17 @@ tablespaceStateClauses
     | READ (ONLY | WRITE)
     | PERMANENT
     | TEMPORARY
+    ;
+
+tablespaceFileNameConvert
+    : FILE_NAME_CONVERT EQ_ LP_ CHAR_STRING COMMA_ CHAR_STRING (COMMA_ CHAR_STRING COMMA_ CHAR_STRING)* RP_ KEEP?
+    ;
+
+alterTablespaceEncryption
+    : ENCRYPTION ( OFFLINE (tablespaceEncryptionSpec? ENCRYPT | DECRYPT)
+                 | ONLINE (tablespaceEncryptionSpec? (ENCRYPT | REKEY) | DECRYPT) tablespaceFileNameConvert?
+                 | FINISH (ENCRYPT | REKEY | DECRYPT) tablespaceFileNameConvert?
+                 )
     ;
 
 dropFunction

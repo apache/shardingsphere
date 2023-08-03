@@ -20,5 +20,8 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
+/**
+ * Oracle alter tablespace statement.
+ */
 public class OracleAlterTablespaceStatement extends AlterTablespaceStatement implements OracleStatement {
 }

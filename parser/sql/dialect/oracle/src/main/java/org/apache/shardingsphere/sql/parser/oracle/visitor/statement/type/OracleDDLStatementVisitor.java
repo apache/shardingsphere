@@ -398,7 +398,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAlterTablespace(final AlterTablespaceContext ctx) {
-        final OracleAlterTablespaceStatement result = new OracleAlterTablespaceStatement();
+        OracleAlterTablespaceStatement result = new OracleAlterTablespaceStatement();
         if (null != ctx.tablespaceName()) {
             result.setTablespaceSegment(
                     new TablespaceSegment(ctx.tablespaceName().getStart().getStartIndex(),
