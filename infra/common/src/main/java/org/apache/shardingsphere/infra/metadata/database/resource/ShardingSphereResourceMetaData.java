@@ -57,7 +57,7 @@ public final class ShardingSphereResourceMetaData {
         Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources);
         Map<String, DatabaseType> storageTypes = createStorageTypes(dataSources, enabledDataSources);
         this.dataSourcePropsMap = DataSourcePropertiesCreator.create(dataSources);
-        storageNodeMetaData = new ShardingSphereStorageNodeMetaData(dataSources, storageTypes);
+        storageNodeMetaData = new ShardingSphereStorageNodeMetaData(dataSources);
         storageUnitMetaData = new ShardingSphereStorageUnitMetaData(dataSources, storageTypes, StorageUtils.getStorageUnits(dataSources), enabledDataSources);
         
     }
@@ -65,7 +65,7 @@ public final class ShardingSphereResourceMetaData {
     public ShardingSphereResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, storageResource.getStorageNodes());
         Map<String, DatabaseType> storageTypes = createStorageTypes(storageResource.getStorageNodes(), enabledDataSources);
-        storageNodeMetaData = new ShardingSphereStorageNodeMetaData(storageResource.getStorageNodes(), storageTypes);
+        storageNodeMetaData = new ShardingSphereStorageNodeMetaData(storageResource.getStorageNodes());
         storageUnitMetaData = new ShardingSphereStorageUnitMetaData(storageResource.getStorageNodes(), storageTypes, storageResource.getStorageUnits(), enabledDataSources);
         this.dataSourcePropsMap = dataSourcePropsMap;
     }
