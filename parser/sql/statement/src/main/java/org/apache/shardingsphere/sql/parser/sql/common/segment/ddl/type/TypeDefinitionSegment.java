@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.spi.fixture.impl;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type;
 
-import org.apache.shardingsphere.infra.database.core.spi.fixture.DatabaseTypedSPIFixture;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 
-public final class FooDatabaseTypedSPIFixture implements DatabaseTypedSPIFixture {
+@RequiredArgsConstructor
+@Getter
+public final class TypeDefinitionSegment implements CreateDefinitionSegment {
     
-    @Override
-    public String getDatabaseType() {
-        return "TRUNK";
-    }
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final String attributeName;
+    
+    private final DataTypeSegment dataType;
 }

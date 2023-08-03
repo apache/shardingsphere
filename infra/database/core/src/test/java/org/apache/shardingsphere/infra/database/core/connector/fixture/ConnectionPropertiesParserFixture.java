@@ -37,6 +37,6 @@ public final class ConnectionPropertiesParserFixture implements ConnectionProper
     
     @Override
     public String getDatabaseType() {
-        return "FIXTURE";
+        return "TRUNK";
     }
 }
