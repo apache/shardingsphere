@@ -115,4 +115,5 @@
     <sql-case id="select_with_multiset_union_expression" value="SELECT customer_id, cust_address_ntab MULTISET UNION cust_address2_ntab multiset_union FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
     <sql-case id="select_collect_expression" value="SELECT CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t) &quot;Warehouses&quot; FROM warehouses;" db-types="Oracle" />
     <sql-case id="select_expr_dot_expr" value="SELECT DBURIType('/HR/DEPARTMENTS').getXML() FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_arrow_symbol_in_function" value="SELECT DECODE(DBMS_COMPRESSION.GET_COMPRESSION_TYPE(ownname => 'HR'), 'No Compression') compression_type FROM DUAL;" db-types="Oracle" />
 </sql-cases>
