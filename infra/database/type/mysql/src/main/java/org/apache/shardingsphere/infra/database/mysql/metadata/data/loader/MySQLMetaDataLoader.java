@@ -48,7 +48,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
     private static final String ORDER_BY_ORDINAL_POSITION = " ORDER BY ORDINAL_POSITION";
     
     private static final String TABLE_META_DATA_NO_ORDER =
-            "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION, COLUMN_TYPE FROM information_schema.columns "
+            "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION, COLUMN_TYPE, IS_NULLABLE FROM information_schema.columns "
                     + "WHERE TABLE_SCHEMA=?";
     
     private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_NO_ORDER + ORDER_BY_ORDINAL_POSITION;
@@ -131,7 +131,8 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         boolean caseSensitive = null != collationName && !collationName.endsWith("_ci");
         boolean visible = !"INVISIBLE".equalsIgnoreCase(extra);
         boolean unsigned = resultSet.getString("COLUMN_TYPE").toUpperCase().contains("UNSIGNED");
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, visible, unsigned);
+        boolean nullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, visible, unsigned, nullable);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {
