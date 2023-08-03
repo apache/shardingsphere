@@ -36,10 +36,9 @@ public final class TypedSPILoader {
      * 
      * @param serviceInterface typed SPI service interface to be judged
      * @param type type
-     * @param <T> SPI class type
      * @return contains or not
      */
-    public static <T extends TypedSPI> boolean contains(final Class<T> serviceInterface, final Object type) {
+    public static boolean contains(final Class<? extends TypedSPI> serviceInterface, final Object type) {
         return ShardingSphereServiceLoader.getServiceInstances(serviceInterface).stream().anyMatch(each -> matchesType(type, each));
     }
     
