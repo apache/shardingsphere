@@ -43,6 +43,7 @@ public final class ColumnProjectionSegmentBinder {
         ColumnSegment boundedColumn = ColumnSegmentBinder.bind(segment.getColumn(), tableBinderContexts);
         ColumnProjectionSegment result = new ColumnProjectionSegment(boundedColumn);
         segment.getAliasSegment().ifPresent(result::setAlias);
+        result.setVisible(segment.isVisible());
         return result;
     }
 }

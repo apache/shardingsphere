@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.example.generator.scenario;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.Map;
 /**
  * Example scenario.
  */
+@SingletonSPI
 public interface ExampleScenario extends TypedSPI {
     
     /**

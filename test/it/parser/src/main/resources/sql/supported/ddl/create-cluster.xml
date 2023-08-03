@@ -49,7 +49,4 @@
     <sql-case id="create_cluster_hashkeys" value="CREATE CLUSTER test_cluster (col1 NUMBER) HASHKEYS 5" db-types="Oracle" />
     <sql-case id="create_cluster_single_table" value="CREATE CLUSTER test_cluster (col1 NUMBER) SINGLE TABLE HASHKEYS 5" db-types="Oracle" />
     <sql-case id="create_cluster_single_table_hash" value="CREATE CLUSTER test_cluster (col1 NUMBER) SINGLE TABLE HASHKEYS 5 HASH IS MOD(arg1, arg2)" db-types="Oracle" />
-
-
-
 </sql-cases>

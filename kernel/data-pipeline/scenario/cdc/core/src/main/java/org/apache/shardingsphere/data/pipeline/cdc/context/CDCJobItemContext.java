@@ -124,10 +124,6 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
         return sourceMetaDataLoaderLazyInitializer.get();
     }
     
-    public PipelineSink getSink() {
-        return sink;
-    }
-    
     @Override
     public long getProcessedRecordsCount() {
         return processedRecordsCount.get();

@@ -81,6 +81,51 @@
             </expression-projection>
         </projections>
     </select>
+    <select sql-case-id="select_cast_multiset">
+        <projections start-index="7" stop-index="119">
+            <expression-projection text="CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ)" start-index="7" stop-index="119">
+                <expr>
+                    <function function-name="CAST" start-index="7" stop-index="119" text="CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ)">
+                        <parameter>
+                            <subquery start-index="20" stop-index="94">
+                                <select>
+                                    <from start-index="46" stop-index="54">
+                                        <simple-table name="customers" alias="c" start-index="46" stop-index="56"/>
+                                    </from>
+                                    <projections start-index="28" stop-index="39">
+                                        <column-projection name="cust_address" start-index="28" stop-index="39"/>
+                                    </projections>
+                                    <where start-index="58" stop-index="93">
+                                        <expr>
+                                            <binary-operation-expression start-index="64" stop-index="93">
+                                                <left>
+                                                    <column name="customer_id" start-index="64" stop-index="76">
+                                                        <owner start-index="64" stop-index="64" name="c" />
+                                                    </column>
+                                                </left>
+                                                <operator>=</operator>
+                                                <right>
+                                                    <column name="customer_id" start-index="80" stop-index="93">
+                                                        <owner start-index="80" stop-index="81" name="cd" />
+                                                    </column>
+                                                </right>
+                                            </binary-operation-expression>
+                                        </expr>
+                                    </where>
+                                </select>
+                            </subquery>
+                        </parameter>
+                        <parameter>
+                            <data-type value="cust_address_tab_typ" start-index="99" stop-index="118" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="customer" start-index="126" stop-index="133" />
+        </from>
+    </select>
     <select sql-case-id="select_convert_function">
         <projections start-index="7" stop-index="33">
             <expression-projection text="CONVERT('2020-10-01', DATE)" start-index="7" stop-index="33">
@@ -178,6 +223,22 @@
                         </parameter>
                         <parameter>
                             <literal-expression value="76" start-index="25" stop-index="28" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_chr_using_nchar_cs">
+        <from>
+            <simple-table name="DUAL" start-index="37" stop-index="40" />
+        </from>
+        <projections start-index="7" stop-index="30">
+            <expression-projection text="CHR (196 USING NCHAR_CS)" start-index="7" stop-index="30">
+                <expr>
+                    <function function-name="CHR" start-index="7" stop-index="30" text="CHR (196 USING NCHAR_CS)" >
+                        <parameter>
+                            <literal-expression value="196" start-index="12" stop-index="14" />
                         </parameter>
                     </function>
                 </expr>
@@ -402,13 +463,25 @@
         <projections start-index="7" stop-index="123" literal-start-index="7" literal-stop-index="123">
             <column-projection name="hire_date" start-index="7" stop-index="15" literal-start-index="7" literal-stop-index="15" />
             <expression-projection text="LAG(hire_date, 1) OVER (ORDER BY hire_date)" alias="LAG1" start-index="18" stop-index="68" literal-start-index="18" literal-stop-index="68">
+                <literalText>LAG(hire_date, 1) OVER (ORDER BY hire_date)</literalText>
                 <expr>
-                    <function function-name="LAG" text="LAG(hire_date, 1) OVER (ORDER BY hire_date)" start-index="18" stop-index="60" literal-start-index="18" literal-stop-index="60" />
+                    <function function-name="LAG" text="LAG(hire_date, 1) OVER (ORDER BY hire_date)" start-index="18" stop-index="60" literal-start-index="18" literal-stop-index="60">
+                        <parameter>
+                            <column name="hire_date" start-index="22" stop-index="30" literal-start-index="22" literal-stop-index="30" />
+                        </parameter>
+                        <literalText>LAG(hire_date, 1) OVER (ORDER BY hire_date)</literalText>
+                    </function>
                 </expr>
             </expression-projection>
-            <expression-projection text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" literal-text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" alias="LEAD1" start-index="71" stop-index="123" literal-start-index="71" literal-stop-index="123">
+            <expression-projection text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" alias="LEAD1" start-index="71" stop-index="123" literal-start-index="71" literal-stop-index="123">
+                <literalText>LEAD(hire_date, 1) OVER (ORDER BY hire_date)</literalText>
                 <expr>
-                    <function function-name="LEAD" text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" literal-text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" start-index="71" stop-index="114" literal-start-index="71" literal-stop-index="114" />
+                    <function function-name="LEAD" text="LEAD(hire_date, 1) OVER (ORDER BY hire_date)" start-index="71" stop-index="114" literal-start-index="71" literal-stop-index="114">
+                        <parameter>
+                            <column name="hire_date" start-index="76" stop-index="84" literal-start-index="76" literal-stop-index="84" />
+                        </parameter>
+                        <literalText>LEAD(hire_date, 1) OVER (ORDER BY hire_date)</literalText>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -430,6 +503,47 @@
         </where>
         <order-by>
             <column-item name="hire_date" order-direction="ASC" start-index="174" stop-index="182" literal-start-index="174" literal-stop-index="182" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_sys_xml_agg">
+        <projections start-index="7" stop-index="46">
+            <expression-projection text="SYS_XMLAGG(SYS_XMLGEN(last_name))" alias="XMLAGG" start-index="7" stop-index="46">
+                <expr>
+                    <function function-name="SYS_XMLAGG" start-index="7" stop-index="39" text="SYS_XMLAGG(SYS_XMLGEN(last_name))">
+                        <parameter>
+                            <function function-name="SYS_XMLGEN" start-index="18" stop-index="38" text="SYS_XMLGEN(last_name)">
+                                <parameter>
+                                    <column name="last_name" start-index="29" stop-index="37"/>
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="53" stop-index="61" />
+        </from>
+        <where start-index="63" stop-index="87">
+            <expr>
+                <binary-operation-expression start-index="69" stop-index="87" >
+                    <left>
+                        <column name="last_name" start-index="69" stop-index="77"/>
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="84" stop-index="87">
+                            <items>
+                                <literal-expression value="R%" start-index="84" stop-index="87" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="xmlagg" order-direction="ASC" start-index="98" stop-index="103"/>
         </order-by>
     </select>
 </sql-parser-test-cases>

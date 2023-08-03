@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.common.ingest.channel.PipelineCha
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineLazyInitializer;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 /**
  * Abstract inventory incremental process context.

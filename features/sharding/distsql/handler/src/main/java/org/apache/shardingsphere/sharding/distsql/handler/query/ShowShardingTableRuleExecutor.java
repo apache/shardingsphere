@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
+import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -130,7 +130,7 @@ public final class ShowShardingTableRuleExecutor implements RQLExecutor<ShowShar
     private Optional<ShardingStrategyConfiguration> getDatabaseShardingStrategy(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
         return null == shardingTableRuleConfig.getDatabaseShardingStrategy()
                 ? Optional.ofNullable(shardingRuleConfig.getDefaultDatabaseShardingStrategy())
-                : Optional.ofNullable(shardingTableRuleConfig.getDatabaseShardingStrategy());
+                : Optional.of(shardingTableRuleConfig.getDatabaseShardingStrategy());
     }
     
     private AlgorithmConfiguration getAlgorithmConfiguration(final String algorithmName) {
