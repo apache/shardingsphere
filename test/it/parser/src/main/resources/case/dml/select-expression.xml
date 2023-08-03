@@ -2715,4 +2715,23 @@
             <simple-table start-index="99" stop-index="108" name="warehouses" />
         </from>
     </select>
+    
+    <select sql-case-id="select_expr_dot_expr">
+        <projections start-index="7" stop-index="43">
+            <expression-projection start-index="7" stop-index="43" text="DBURIType('/HR/DEPARTMENTS').getXML()">
+                <binary-operation-expression start-index="7" stop-index="43">
+                    <left>
+                        <function function-name="DBURIType" text="DBURIType('/HR/DEPARTMENTS')" />
+                    </left>
+                    <operator>.</operator>
+                    <right>
+                        <function function-name="getXML" text="getXML()" />
+                    </right>
+                </binary-operation-expression>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table start-index="50" stop-index="53" name="DUAL" />
+        </from>
+    </select>
 </sql-parser-test-cases>
