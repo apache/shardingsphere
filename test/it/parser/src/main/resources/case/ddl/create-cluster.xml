@@ -28,4 +28,20 @@
     <create-cluster sql-case-id="create_cluster_row_depend" />
     <create-cluster sql-case-id="create_cluster_no_cache" />
     <create-cluster sql-case-id="create_cluster_cache" />
+    <create-cluster sql-case-id="create_cluster_pctfree" />
+    <create-cluster sql-case-id="create_cluster_pctused" />
+    <create-cluster sql-case-id="create_cluster_initrans" />
+    <create-cluster sql-case-id="create_cluster_set_size" />
+    <create-cluster sql-case-id="create_cluster_storage_init" />
+    <create-cluster sql-case-id="create_cluster_storage_next" />
+    <create-cluster sql-case-id="create_cluster_storage_minextents" />
+    <create-cluster sql-case-id="create_cluster_storage_maxextents" />
+    <create-cluster sql-case-id="create_cluster_storage_pctincrease" />
+    <create-cluster sql-case-id="create_cluster_storage_freelists" />
+    <create-cluster sql-case-id="create_cluster_storage_freelist_groups" />
+    <create-cluster sql-case-id="create_cluster_storage_optimal" />
+    <create-cluster sql-case-id="create_cluster_storage_buffer_pool" />
+    <create-cluster sql-case-id="create_cluster_storage_flash_cache" />
+    <create-cluster sql-case-id="create_cluster_storage_call_flash_cache" />
+    <create-cluster sql-case-id="create_cluster_storage_encrypt" />
 </sql-parser-test-cases>
