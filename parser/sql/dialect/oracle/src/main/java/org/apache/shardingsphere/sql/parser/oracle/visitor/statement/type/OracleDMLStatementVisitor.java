@@ -116,6 +116,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Datetime
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MultisetExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.IntervalExpressionProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlQueryAndExistsFunctionSegment;
@@ -689,6 +691,23 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     private ASTNode createProjection(final SelectProjectionExprClauseContext ctx) {
         AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
         ASTNode projection = visit(ctx.expr());
+        if (projection instanceof AliasAvailable) {
+            ((AliasAvailable) projection).setAlias(alias);
+            return projection;
+        }
+        if (projection instanceof ComplexExpressionSegment) {
+            return createProjectionForComplexExpressionSegment(projection, alias);
+        }
+        if (projection instanceof SimpleExpressionSegment) {
+            return createProjectionForSimpleExpressionSegment(projection, alias, ctx);
+        }
+        if (projection instanceof ExpressionSegment) {
+            return createProjectionForExpressionSegment(projection, alias);
+        }
+        throw new UnsupportedOperationException("Unhandled case");
+    }
+    
+    private ASTNode createProjectionForComplexExpressionSegment(final ASTNode projection, final AliasSegment alias) {
         if (projection instanceof FunctionSegment) {
             FunctionSegment segment = (FunctionSegment) projection;
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText(), segment);
@@ -701,16 +720,35 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result.setAlias(alias);
             return result;
         }
-        // FIXME :For DISTINCT()
-        if (projection instanceof ColumnSegment) {
-            ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) projection);
-            result.setAlias(alias);
-            return result;
+        if (projection instanceof XmlQueryAndExistsFunctionSegment || projection instanceof XmlPiFunctionSegment || projection instanceof XmlSerializeFunctionSegment) {
+            return projection;
         }
+        throw new UnsupportedOperationException("Unsupported Complex Expression");
+    }
+    
+    private ASTNode createProjectionForSimpleExpressionSegment(final ASTNode projection, final AliasSegment alias, final SelectProjectionExprClauseContext ctx) {
         if (projection instanceof SubqueryExpressionSegment) {
             SubqueryExpressionSegment subqueryExpressionSegment = (SubqueryExpressionSegment) projection;
             String text = ctx.start.getInputStream().getText(new Interval(subqueryExpressionSegment.getStartIndex(), subqueryExpressionSegment.getStopIndex()));
             SubqueryProjectionSegment result = new SubqueryProjectionSegment(((SubqueryExpressionSegment) projection).getSubquery(), text);
+            result.setAlias(alias);
+            return result;
+        }
+        if (projection instanceof LiteralExpressionSegment) {
+            LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
+            ExpressionProjectionSegment result = null == alias
+                    ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
+                    : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
+            result.setAlias(alias);
+            return result;
+        }
+        throw new UnsupportedOperationException("Unsupported Simple Expression");
+    }
+    
+    private ASTNode createProjectionForExpressionSegment(final ASTNode projection, final AliasSegment alias) {
+        // FIXME :For DISTINCT()
+        if (projection instanceof ColumnSegment) {
+            ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) projection);
             result.setAlias(alias);
             return result;
         }
@@ -737,13 +775,6 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                     : new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(),
                             datetimeExpression.getLeft(), datetimeExpression.getRight(), datetimeExpression.getText());
         }
-        if (projection instanceof XmlQueryAndExistsFunctionSegment || projection instanceof XmlPiFunctionSegment || projection instanceof XmlSerializeFunctionSegment) {
-            return projection;
-        }
-        if (projection instanceof AliasAvailable) {
-            ((AliasAvailable) projection).setAlias(alias);
-            return projection;
-        }
         if (projection instanceof IntervalExpressionProjection) {
             IntervalExpressionProjection intervalExpressionProjection = (IntervalExpressionProjection) projection;
             IntervalExpressionProjection result = new IntervalExpressionProjection(intervalExpressionProjection.getStartIndex(), intervalExpressionProjection.getStopIndex(),
@@ -755,12 +786,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             }
             return result;
         }
-        LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
-        ExpressionProjectionSegment result = null == alias
-                ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
-                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
-        result.setAlias(alias);
-        return result;
+        throw new UnsupportedOperationException("Unsupported Expression");
     }
     
     @Override

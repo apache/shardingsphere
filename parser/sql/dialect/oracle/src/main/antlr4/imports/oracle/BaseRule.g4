@@ -352,7 +352,7 @@ materializedViewName
     ;
 
 columnName
-    : (owner DOT_)? name
+    : (owner DOT_)? name (DOT_ nestedItem)*
     ;
 
 objectName
