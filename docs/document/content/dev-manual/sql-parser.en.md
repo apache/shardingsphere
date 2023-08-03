@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.5. </b>"
+pre = "<b>5.2. </b>"
 title = "SQL Parser"
-weight = 5
+weight = 2
 chapter = true
 +++
 
@@ -38,8 +38,8 @@ SQL visitor facade class definition
 
 ### Implementation classes
 
-| *Configuration Type* | *Description*                        | *Fully-qualified class name*                                                                                                                                                                                                                                                                                       |
-|----------------------|--------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| *Configuration Type* | *Description*                        | *Fully-qualified class name*                                                                                                                                                                                                                                                                                     |
+|----------------------|--------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | MySQL                | MySQL syntax tree visitor entry      | [`org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/parser/sql/dialect/mysql/src/main/java/org/apache/shardingsphere/sql/parser/mysql/visitor/statement/MySQLStatementVisitorFacade.java)                          |
 | PostgreSQL           | PostgreSQL syntax tree visitor entry | [`org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/parser/sql/dialect/postgresql/src/main/java/org/apache/shardingsphere/sql/parser/postgresql/visitor/statement/PostgreSQLStatementVisitorFacade.java) |
 | SQLServer            | SQLServer syntax tree visitor entry  | [`org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/parser/sql/dialect/sqlserver/src/main/java/org/apache/shardingsphere/sql/parser/sqlserver/visitor/statement/SQLServerStatementVisitorFacade.java)      |

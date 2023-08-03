@@ -29,12 +29,12 @@
 
     <rewrite-assertion id="alter_table_add_column_with_cipher" db-types="MySQL">
         <input sql="ALTER TABLE t_account ADD COLUMN amount INT" />
-        <output sql="ALTER TABLE t_account ADD COLUMN cipher_amount INT" />
+        <output sql="ALTER TABLE t_account ADD COLUMN cipher_amount VARCHAR(4000)" />
     </rewrite-assertion>
     
     <rewrite-assertion id="alter_table_add_column_for_cipher" db-types="MySQL">
         <input sql="ALTER TABLE t_account_bak ADD COLUMN id int not null, ADD COLUMN password varchar(255) not null default ''" />
-        <output sql="ALTER TABLE t_account_bak ADD COLUMN id int not null, ADD COLUMN cipher_password varchar(255) not null default '', ADD COLUMN assisted_query_password varchar(255) not null default '', ADD COLUMN like_query_password varchar(255) not null default ''" />
+        <output sql="ALTER TABLE t_account_bak ADD COLUMN id int not null, ADD COLUMN cipher_password VARCHAR(4000), ADD COLUMN assisted_query_password VARCHAR(4000), ADD COLUMN like_query_password VARCHAR(4000)" />
     </rewrite-assertion>
     
     <rewrite-assertion id="alter_table_add_index_for_cipher" db-types="MySQL">

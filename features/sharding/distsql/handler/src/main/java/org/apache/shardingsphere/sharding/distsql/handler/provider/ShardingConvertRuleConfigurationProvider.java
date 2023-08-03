@@ -36,8 +36,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
-import java.util.TreeMap;
 
 /**
  * Sharding convert rule configuration provider.
@@ -195,20 +193,6 @@ public final class ShardingConvertRuleConfigurationProvider implements ConvertRu
         }
     }
     
-    private String getAlgorithmType(final AlgorithmConfiguration algorithmConfig) {
-        StringBuilder result = new StringBuilder();
-        if (null == algorithmConfig) {
-            return result.toString();
-        }
-        String type = algorithmConfig.getType().toLowerCase();
-        if (algorithmConfig.getProps().isEmpty()) {
-            result.append(String.format(ShardingDistSQLConstants.ALGORITHM_TYPE_WITHOUT_PROPS, type));
-        } else {
-            result.append(String.format(ShardingDistSQLConstants.ALGORITHM_TYPE, type, getAlgorithmProperties(algorithmConfig.getProps())));
-        }
-        return result.toString();
-    }
-    
     private String getAlgorithmTypes(final Map<String, AlgorithmConfiguration> auditors, final Collection<String> auditorNames) {
         StringBuilder result = new StringBuilder();
         if (!auditorNames.isEmpty()) {
@@ -218,24 +202,6 @@ public final class ShardingConvertRuleConfigurationProvider implements ConvertRu
                 if (iterator.hasNext()) {
                     result.append(ShardingDistSQLConstants.COMMA);
                 }
-            }
-        }
-        return result.toString();
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private String getAlgorithmProperties(final Properties props) {
-        StringBuilder result = new StringBuilder();
-        Iterator<String> iterator = new TreeMap(props).keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            Object value = props.get(key);
-            if (null == value) {
-                continue;
-            }
-            result.append(String.format(ShardingDistSQLConstants.PROPERTY, key, value));
-            if (iterator.hasNext()) {
-                result.append(ShardingDistSQLConstants.COMMA).append(' ');
             }
         }
         return result.toString();
