@@ -275,6 +275,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != owner) {
             result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
+        if (null != ctx.nestedItem() && !ctx.nestedItem().isEmpty()) {
+            result.setNestedObjectAttributes(ctx.nestedItem().stream().map(item -> (IdentifierValue) visit(item.identifier())).collect(Collectors.toList()));
+        }
         return result;
     }
     

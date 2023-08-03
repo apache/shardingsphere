@@ -318,28 +318,32 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     typeSegment,
                     objectSubTypeDefContext.dataTypeDefinition().stream().map(definition -> (TypeDefinitionSegment) visit(definition)).collect(Collectors.toList()));
         } else {
-            if (null != ctx.plsqlTypeSource().objectBaseTypeDef().objectTypeDef()) {
-                OracleStatementParser.ObjectTypeDefContext objectTypeDefContext = ctx.plsqlTypeSource().objectBaseTypeDef().objectTypeDef();
-                return new OracleCreateObjectTypeStatement(isReplace, isEditionable, null == objectTypeDefContext.finalClause() || null == objectTypeDefContext.finalClause().NOT(),
-                        null == objectTypeDefContext.instantiableClause() || null == objectTypeDefContext.instantiableClause().NOT(),
-                        null == objectTypeDefContext.persistableClause() || null == objectTypeDefContext.persistableClause().NOT(),
-                        typeSegment, objectTypeDefContext.dataTypeDefinition().stream().map(definition -> (TypeDefinitionSegment) visit(definition)).collect(Collectors.toList()));
-            } else if (null != ctx.plsqlTypeSource().objectBaseTypeDef().varrayTypeSpec()) {
-                OracleStatementParser.VarrayTypeSpecContext varrayTypeSpecContext = ctx.plsqlTypeSource().objectBaseTypeDef().varrayTypeSpec();
-                return new OracleCreateVarrayTypeStatement(isReplace, isEditionable,
-                        null == varrayTypeSpecContext.INTEGER_() ? -1 : Integer.parseInt(varrayTypeSpecContext.INTEGER_().getText()),
-                        null != varrayTypeSpecContext.typeSpec().NULL(),
-                        null == varrayTypeSpecContext.typeSpec().persistableClause() || null == varrayTypeSpecContext.typeSpec().persistableClause().NOT(),
-                        typeSegment,
-                        (DataTypeSegment) visit(varrayTypeSpecContext.typeSpec().dataType()));
-            } else {
-                OracleStatementParser.NestedTableTypeSpecContext nestedTableTypeSpecContext = ctx.plsqlTypeSource().objectBaseTypeDef().nestedTableTypeSpec();
-                return new OracleCreateNestedTableTypeStatement(isReplace, isEditionable,
-                        null != nestedTableTypeSpecContext.typeSpec().NULL(),
-                        null == nestedTableTypeSpecContext.typeSpec().persistableClause() || null == nestedTableTypeSpecContext.typeSpec().persistableClause().NOT(),
-                        typeSegment,
-                        (DataTypeSegment) visit(nestedTableTypeSpecContext.typeSpec().dataType()));
-            }
+            return visitCreateTypeObjectBaseTypeDef(ctx.plsqlTypeSource().objectBaseTypeDef(), isReplace, isEditionable, typeSegment);
+        }
+    }
+    
+    private ASTNode visitCreateTypeObjectBaseTypeDef(OracleStatementParser.ObjectBaseTypeDefContext ctx, boolean isReplace, boolean isEditionable, TypeSegment typeSegment) {
+        if (null != ctx.objectTypeDef()) {
+            OracleStatementParser.ObjectTypeDefContext objectTypeDefContext = ctx.objectTypeDef();
+            return new OracleCreateObjectTypeStatement(isReplace, isEditionable, null == objectTypeDefContext.finalClause() || null == objectTypeDefContext.finalClause().NOT(),
+                    null == objectTypeDefContext.instantiableClause() || null == objectTypeDefContext.instantiableClause().NOT(),
+                    null == objectTypeDefContext.persistableClause() || null == objectTypeDefContext.persistableClause().NOT(),
+                    typeSegment, objectTypeDefContext.dataTypeDefinition().stream().map(definition -> (TypeDefinitionSegment) visit(definition)).collect(Collectors.toList()));
+        } else if (null != ctx.varrayTypeSpec()) {
+            OracleStatementParser.VarrayTypeSpecContext varrayTypeSpecContext = ctx.varrayTypeSpec();
+            return new OracleCreateVarrayTypeStatement(isReplace, isEditionable,
+                    null == varrayTypeSpecContext.INTEGER_() ? -1 : Integer.parseInt(varrayTypeSpecContext.INTEGER_().getText()),
+                    null != varrayTypeSpecContext.typeSpec().NULL(),
+                    null == varrayTypeSpecContext.typeSpec().persistableClause() || null == varrayTypeSpecContext.typeSpec().persistableClause().NOT(),
+                    typeSegment,
+                    (DataTypeSegment) visit(varrayTypeSpecContext.typeSpec().dataType()));
+        } else {
+            OracleStatementParser.NestedTableTypeSpecContext nestedTableTypeSpecContext = ctx.nestedTableTypeSpec();
+            return new OracleCreateNestedTableTypeStatement(isReplace, isEditionable,
+                    null != nestedTableTypeSpecContext.typeSpec().NULL(),
+                    null == nestedTableTypeSpecContext.typeSpec().persistableClause() || null == nestedTableTypeSpecContext.typeSpec().persistableClause().NOT(),
+                    typeSegment,
+                    (DataTypeSegment) visit(nestedTableTypeSpecContext.typeSpec().dataType()));
         }
     }
     
