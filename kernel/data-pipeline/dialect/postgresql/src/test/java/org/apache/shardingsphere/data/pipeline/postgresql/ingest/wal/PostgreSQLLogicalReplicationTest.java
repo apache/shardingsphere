@@ -67,7 +67,7 @@ class PostgreSQLLogicalReplicationTest {
     @Test
     void assertCreatePgConnectionSuccess() throws SQLException {
         Connection connection = logicalReplication.createConnection(
-                new StandardPipelineDataSourceConfiguration("com.zaxxer.hikari.HikariDataSource", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
+                new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
         assertFalse(connection.isClosed());
     }
     

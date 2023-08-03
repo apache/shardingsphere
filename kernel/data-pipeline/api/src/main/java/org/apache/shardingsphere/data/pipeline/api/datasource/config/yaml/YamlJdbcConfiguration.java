@@ -28,8 +28,6 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlJdbcConfiguration implements YamlConfiguration {
     
-    private static final String DEFAULT_DATA_SOURCE_CLASS = "com.zaxxer.hikari.HikariDataSource";
-    
     private String dataSourceClassName;
     
     private String url;
@@ -37,13 +35,4 @@ public final class YamlJdbcConfiguration implements YamlConfiguration {
     private String username;
     
     private String password;
-    
-    /**
-     * Get data source class name.
-     *
-     * @return data source class name
-     */
-    public String getDataSourceClassName() {
-        return null == dataSourceClassName ? DEFAULT_DATA_SOURCE_CLASS : dataSourceClassName;
-    }
 }
