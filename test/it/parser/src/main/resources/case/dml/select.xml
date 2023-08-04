@@ -4462,11 +4462,43 @@
         <from>
             <simple-table name="sales_view" start-index="78" stop-index="87" />
         </from>
-        <projections start-index="7" stop-index="71">
-            <expression-projection text="SUBSTR(country,1,20)" alias="country" start-index="7" stop-index="34" />
-            <expression-projection text="SUBSTR(prod,1,15)" alias="prod" start-index="37" stop-index="58" />
-            <column-projection name="year" start-index="61" stop-index="64" />
-            <column-projection name="sales" start-index="67" stop-index="71" />
+        <projections start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
+            <column-projection name="year" start-index="61" stop-index="64" literal-start-index="61" literal-stop-index="64" />
+            <column-projection name="sales" start-index="67" stop-index="71" literal-start-index="67" literal-stop-index="71" />
+            <expression-projection text="SUBSTR(country,1,20)" alias="country" start-index="7" stop-index="34" literal-start-index="7" literal-stop-index="34">
+                <literalText>SUBSTR(country,1,20)</literalText>
+                <expr>
+                    <function function-name="SUBSTR" text="SUBSTR(country,1,20)" start-index="7" stop-index="26" literal-start-index="7" literal-stop-index="26">
+                        <parameter>
+                            <column name="country" start-index="14" stop-index="20" literal-start-index="14" literal-stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="22" stop-index="22" literal-start-index="22" literal-stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="20" start-index="24" stop-index="25" literal-start-index="24" literal-stop-index="25" />
+                        </parameter>
+                        <literalText>SUBSTR(country,1,20)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="SUBSTR(prod,1,15)" alias="prod" start-index="37" stop-index="58" literal-start-index="37" literal-stop-index="58">
+                <literalText>SUBSTR(prod,1,15)</literalText>
+                <expr>
+                    <function function-name="SUBSTR" text="SUBSTR(prod,1,15)" start-index="37" stop-index="53" literal-start-index="37" literal-stop-index="53">
+                        <parameter>
+                            <column name="prod" start-index="44" stop-index="47" literal-start-index="44" literal-stop-index="47" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="49" stop-index="49" literal-start-index="49" literal-stop-index="49" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="15" start-index="51" stop-index="52" literal-start-index="51" literal-stop-index="52" />
+                        </parameter>
+                        <literalText>SUBSTR(prod,1,15)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <where start-index="89" stop-index="109">
             <expr>
@@ -4496,11 +4528,27 @@
         <from>
             <simple-table name="sales_view" start-index="72" stop-index="81" />
         </from>
-        <projections start-index="7" stop-index="65">
-            <expression-projection text="SUBSTR(country,1,20)" alias="country" start-index="7" stop-index="34" />
-            <column-projection name="year" start-index="37" stop-index="40" />
-            <column-projection name="localsales" start-index="43" stop-index="52" />
-            <column-projection name="dollarsales" start-index="55" stop-index="65" />
+        <projections start-index="7" stop-index="65" literal-start-index="7" literal-stop-index="65">
+            <column-projection name="year" start-index="37" stop-index="40" literal-start-index="37" literal-stop-index="40" />
+            <column-projection name="localsales" start-index="43" stop-index="52" literal-start-index="43" literal-stop-index="52" />
+            <column-projection name="dollarsales" start-index="55" stop-index="65" literal-start-index="55" literal-stop-index="65" />
+            <expression-projection text="SUBSTR(country,1,20)" alias="country" start-index="7" stop-index="34" literal-start-index="7" literal-stop-index="34">
+                <literalText>SUBSTR(country,1,20)</literalText>
+                <expr>
+                    <function function-name="SUBSTR" text="SUBSTR(country,1,20)" start-index="7" stop-index="26" literal-start-index="7" literal-stop-index="26">
+                        <parameter>
+                            <column name="country" start-index="14" stop-index="20" literal-start-index="14" literal-stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="22" stop-index="22" literal-start-index="22" literal-stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="20" start-index="24" stop-index="25" literal-start-index="24" literal-stop-index="25" />
+                        </parameter>
+                        <literalText>SUBSTR(country,1,20)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <where start-index="83" stop-index="119">
             <expr>
@@ -4611,7 +4659,12 @@
                     <simple-table name="sales_view" start-index="222" stop-index="231" />
                 </from>
                 <projections start-index="188" stop-index="215" distinct-row="true">
-                    <expression-projection text="new_country" start-index="188" stop-index="200" />
+                    <expression-projection text="new_country" start-index="188" stop-index="200" literal-start-index="188" literal-stop-index="200">
+                        <literalText>new_country</literalText>
+                        <expr>
+                            <literal-expression value="new_country" start-index="188" stop-index="200" literal-start-index="188" literal-stop-index="200" />
+                        </expr>
+                    </expression-projection>
                     <column-projection name="product" start-index="203" stop-index="209" />
                     <column-projection name="year" start-index="212" stop-index="215" />
                 </projections>
@@ -5241,16 +5294,142 @@
     </select>
 
     <select sql-case-id="select_linear_regression_function">
-        <projections start-index="7" stop-index="465">
-            <column-projection name="job_id" start-index="7" stop-index="12" />
-            <column-projection name="employee_id" start-index="15" stop-index="28" alias="ID" />
-            <column-projection name="salary" start-index="31" stop-index="36" />
-            <expression-projection text="REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="39" stop-index="108" alias="slope" />
-            <expression-projection text="REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="111" stop-index="185" alias="intcpt" />
-            <expression-projection text="REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="188" stop-index="253" alias="rsqr" />
-            <expression-projection text="REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="256" stop-index="325" alias="count" />
-            <expression-projection text="REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="328" stop-index="395" alias="avgx" />
-            <expression-projection text="REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="398" stop-index="465" alias="avgy" />
+        <projections start-index="7" stop-index="465" literal-start-index="7" literal-stop-index="465">
+            <column-projection name="job_id" start-index="7" stop-index="12" literal-start-index="7" literal-stop-index="12" />
+            <column-projection alias="ID" name="employee_id" start-index="15" stop-index="28" literal-start-index="15" literal-stop-index="28" />
+            <column-projection name="salary" start-index="31" stop-index="36" literal-start-index="31" literal-stop-index="36" />
+            <expression-projection text="REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" alias="slope" start-index="39" stop-index="108" literal-start-index="39" literal-stop-index="108">
+                <literalText>REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                <expr>
+                    <function function-name="REGR_SLOPE" text="REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="39" stop-index="102" literal-start-index="39" literal-stop-index="102">
+                        <parameter>
+                            <binary-operation-expression start-index="50" stop-index="66" literal-start-index="50" literal-stop-index="66">
+                                <left>
+                                    <column name="SYSDATE" start-index="50" stop-index="56" literal-start-index="50" literal-stop-index="56" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="58" stop-index="66" literal-start-index="58" literal-stop-index="66" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="69" stop-index="74" literal-start-index="69" literal-stop-index="74" />
+                        </parameter>
+                        <literalText>REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" alias="intcpt" start-index="111" stop-index="185" literal-start-index="111" literal-stop-index="185">
+                <literalText>REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                <expr>
+                    <function function-name="REGR_INTERCEPT" text="REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="111" stop-index="178" literal-start-index="111" literal-stop-index="178">
+                        <parameter>
+                            <binary-operation-expression start-index="126" stop-index="142" literal-start-index="126" literal-stop-index="142">
+                                <left>
+                                    <column name="SYSDATE" start-index="126" stop-index="132" literal-start-index="126" literal-stop-index="132" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="134" stop-index="142" literal-start-index="134" literal-stop-index="142" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="145" stop-index="150" literal-start-index="145" literal-stop-index="150" />
+                        </parameter>
+                        <literalText>REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" alias="rsqr" start-index="188" stop-index="253" literal-start-index="188" literal-stop-index="253">
+                <literalText>REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                <expr>
+                    <function function-name="REGR_R2" text="REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="188" stop-index="248" literal-start-index="188" literal-stop-index="248">
+                        <parameter>
+                            <binary-operation-expression start-index="196" stop-index="212" literal-start-index="196" literal-stop-index="212">
+                                <left>
+                                    <column name="SYSDATE" start-index="196" stop-index="202" literal-start-index="196" literal-stop-index="202" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="204" stop-index="212" literal-start-index="204" literal-stop-index="212" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="215" stop-index="220" literal-start-index="215" literal-stop-index="220" />
+                        </parameter>
+                        <literalText>REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" alias="count" start-index="256" stop-index="325" literal-start-index="256" literal-stop-index="325">
+                <literalText>REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                <expr>
+                    <function function-name="REGR_COUNT" text="REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="256" stop-index="319" literal-start-index="256" literal-stop-index="319">
+                        <parameter>
+                            <binary-operation-expression start-index="267" stop-index="283" literal-start-index="267" literal-stop-index="283">
+                                <left>
+                                    <column name="SYSDATE" start-index="267" stop-index="273" literal-start-index="267" literal-stop-index="273" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="275" stop-index="283" literal-start-index="275" literal-stop-index="283" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="286" stop-index="291" literal-start-index="286" literal-stop-index="291" />
+                        </parameter>
+                        <literalText>REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" alias="avgx" start-index="328" stop-index="395" literal-start-index="328" literal-stop-index="395">
+                <literalText>REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                <expr>
+                    <function function-name="REGR_AVGX" text="REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="328" stop-index="390" literal-start-index="328" literal-stop-index="390">
+                        <parameter>
+                            <binary-operation-expression start-index="338" stop-index="354" literal-start-index="338" literal-stop-index="354">
+                                <left>
+                                    <column name="SYSDATE" start-index="338" stop-index="344" literal-start-index="338" literal-stop-index="344" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="346" stop-index="354" literal-start-index="346" literal-stop-index="354" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="357" stop-index="362" literal-start-index="357" literal-stop-index="362" />
+                        </parameter>
+                        <literalText>REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" alias="avgy" start-index="398" stop-index="465" literal-start-index="398" literal-stop-index="465">
+                <literalText>REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                <expr>
+                    <function function-name="REGR_AVGY" text="REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="398" stop-index="460" literal-start-index="398" literal-stop-index="460">
+                        <parameter>
+                            <binary-operation-expression start-index="408" stop-index="424" literal-start-index="408" literal-stop-index="424">
+                                <left>
+                                    <column name="SYSDATE" start-index="408" stop-index="414" literal-start-index="408" literal-stop-index="414" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="416" stop-index="424" literal-start-index="416" literal-stop-index="424" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="427" stop-index="432" literal-start-index="427" literal-stop-index="432" />
+                        </parameter>
+                        <literalText>REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table name="employees" start-index="472" stop-index="480" />
@@ -5303,7 +5482,22 @@
 
     <select sql-case-id="select_xmlelement_xmlagg_function">
         <projections start-index="7" stop-index="124">
-            <expression-projection text="XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name))" alias="Dept_list" start-index="7" stop-index="124" />
+            <expression-projection text="XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name))" alias="Dept_list" start-index="7" stop-index="124" literal-start-index="7" literal-stop-index="124">
+                <literalText>XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name))</literalText>
+                <expr>
+                    <function function-name="XMLELEMENT" text="XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name))" start-index="7" stop-index="109" literal-start-index="7" literal-stop-index="109">
+                        <parameter>
+                            <literal-expression value="Department" start-index="18" stop-index="29" literal-start-index="18" literal-stop-index="29" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLAGG" text="XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name)" start-index="32" stop-index="108" literal-start-index="32" literal-stop-index="108">
+                                <literalText>XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name)</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table name="employees" alias="e" start-index="131" stop-index="141" />
@@ -5710,8 +5904,14 @@
     <select sql-case-id="select_with_ntile_function">
         <projections start-index="7" stop-index="54" literal-start-index="7" literal-stop-index="54">
             <expression-projection text="NTILE(4) OVER (ORDER BY salary DESC)" alias="quartile" start-index="7" stop-index="54" literal-start-index="7" literal-stop-index="54">
+                <literalText>NTILE(4) OVER (ORDER BY salary DESC)</literalText>
                 <expr>
-                    <function function-name="NTILE" text="NTILE(4) OVER (ORDER BY salary DESC)" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42" />
+                    <function function-name="NTILE" text="NTILE(4) OVER (ORDER BY salary DESC)" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42">
+                        <parameter>
+                            <literal-expression value="4" start-index="13" stop-index="13" literal-start-index="13" literal-stop-index="13" />
+                        </parameter>
+                        <literalText>NTILE(4) OVER (ORDER BY salary DESC)</literalText>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -5908,6 +6108,9 @@
                     <function function-name="TO_CHAR" text="TO_CHAR(RATIO_TO_REPORT(amount_sold) OVER (), '9.999')" start-index="7" stop-index="60" literal-start-index="7" literal-stop-index="60">
                         <parameter>
                             <function function-name="RATIO_TO_REPORT" text="RATIO_TO_REPORT(amount_sold) OVER ()" start-index="15" stop-index="50" literal-start-index="15" literal-stop-index="50">
+                                <parameter>
+                                    <column name="amount_sold" start-index="31" stop-index="41" literal-start-index="31" literal-stop-index="41" />
+                                </parameter>
                                 <literalText>RATIO_TO_REPORT(amount_sold) OVER ()</literalText>
                             </function>
                         </parameter>
@@ -5974,6 +6177,9 @@
                 </binary-operation-expression>
             </expr>
         </where>
+        <order-by>
+            <column-item name="xmlagg" order-direction="ASC" start-index="106" stop-index="111"/>
+        </order-by>
     </select>
 
     <select sql-case-id="select_with_cover_pop_and_covar_samp">
@@ -6462,6 +6668,39 @@
         </projections>
         <from>
             <simple-table name="DUAL" start-index="355" stop-index="358" literal-start-index="355" literal-stop-index="358" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_nested_object">
+        <projections start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42">
+            <column-projection name="o.item.line_item_id" start-index="7" stop-index="25" >
+                <owner name="o" start-index="7" stop-index="7" />
+            </column-projection>>
+            <column-projection name="o.item.quantity" start-index="28" stop-index="42" >
+                <owner name="o" start-index="28" stop-index="28" />
+            </column-projection>>
+        </projections>
+        <from>
+            <simple-table name="short_orders" alias="o" start-index="49" stop-index="62" literal-start-index="49" literal-stop-index="62" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_collection_table">
+        <projections start-index="7" stop-index="14" literal-start-index="7" literal-stop-index="14">
+            <expression-projection text="VALUE(p)" start-index="7" stop-index="14">
+                <function function-name="value" start-index="7" stop-index="14" />
+            </expression-projection>
+        </projections>
+        <from>
+            <join-table join-type="COMMA">
+                <left>
+                    <simple-table name="warehouses" alias="w" start-index="21" stop-index="32" />
+                </left>
+                <right>
+                    <collection-table alias="p" start-index="37" stop-index="50">
+                    </collection-table>>
+                </right>
+            </join-table>
         </from>
     </select>
 </sql-parser-test-cases>

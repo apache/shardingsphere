@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -48,6 +48,8 @@ public final class ColumnMetaDataLoader {
     
     private static final String TABLE_NAME = "TABLE_NAME";
     
+    private static final String IS_NULLABLE = "IS_NULLABLE";
+    
     /**
      * Load column meta data list.
      *
@@ -64,6 +66,7 @@ public final class ColumnMetaDataLoader {
         List<Integer> columnTypes = new ArrayList<>();
         List<Boolean> primaryKeyFlags = new ArrayList<>();
         List<Boolean> caseSensitiveFlags = new ArrayList<>();
+        List<Boolean> nullableFlags = new ArrayList<>();
         try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), tableNamePattern, "%")) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString(TABLE_NAME);
@@ -71,6 +74,7 @@ public final class ColumnMetaDataLoader {
                     String columnName = resultSet.getString(COLUMN_NAME);
                     columnTypes.add(resultSet.getInt(DATA_TYPE));
                     primaryKeyFlags.add(primaryKeys.contains(columnName));
+                    nullableFlags.add("YES".equals(resultSet.getString(IS_NULLABLE)));
                     columnNames.add(columnName);
                 }
             }
@@ -79,14 +83,14 @@ public final class ColumnMetaDataLoader {
             for (int i = 0; i < columnNames.size(); i++) {
                 boolean generated = resultSet.getMetaData().isAutoIncrement(i + 1);
                 caseSensitiveFlags.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(columnNames.get(i))));
-                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), primaryKeyFlags.get(i), generated, caseSensitiveFlags.get(i), true, false));
+                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), primaryKeyFlags.get(i), generated, caseSensitiveFlags.get(i), true, false, nullableFlags.get(i)));
             }
         }
         return result;
     }
     
     private static String generateEmptyResultSQL(final String table, final List<String> columnNames, final DatabaseType databaseType) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         String wrappedColumnNames = columnNames.stream().map(each -> dialectDatabaseMetaData.getQuoteCharacter().wrap(each)).collect(Collectors.joining(","));
         return String.format("SELECT %s FROM %s WHERE 1 != 1", wrappedColumnNames, dialectDatabaseMetaData.getQuoteCharacter().wrap(table));
     }

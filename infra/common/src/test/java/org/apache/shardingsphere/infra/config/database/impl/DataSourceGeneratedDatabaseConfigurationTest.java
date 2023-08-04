@@ -88,7 +88,8 @@ class DataSourceGeneratedDatabaseConfigurationTest {
         assertThat(poolStandardProps.get("minPoolSize"), is(1));
         assertFalse((Boolean) poolStandardProps.get("readOnly"));
         Map<String, Object> connStandardProps = props.getConnectionPropertySynonyms().getStandardProperties();
-        assertThat(connStandardProps.size(), is(3));
+        assertThat(connStandardProps.size(), is(4));
+        assertThat(connStandardProps.get("dataSourceClassName"), is("com.zaxxer.hikari.HikariDataSource"));
         assertThat(connStandardProps.get("url"), is("jdbc:mock://127.0.0.1/normal_db"));
         assertThat(connStandardProps.get("username"), is("root"));
         assertThat(connStandardProps.get("password"), is(""));
@@ -100,7 +101,8 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     
     private Map<String, DataSourceConfiguration> createDataSources() {
         PoolConfiguration poolConfig = new PoolConfiguration(2000L, 1000L, 1000L, 2, 1, false, new Properties());
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(new ConnectionConfiguration("jdbc:mock://127.0.0.1/normal_db", "root", ""), poolConfig);
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(
+                new ConnectionConfiguration("com.zaxxer.hikari.HikariDataSource", "jdbc:mock://127.0.0.1/normal_db", "root", ""), poolConfig);
         return Collections.singletonMap("normal_db", dataSourceConfig);
     }
 }

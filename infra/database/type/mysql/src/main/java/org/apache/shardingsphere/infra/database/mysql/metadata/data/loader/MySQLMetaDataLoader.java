@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.infra.database.mysql.metadata.data.loader;
 
 import org.apache.shardingsphere.infra.database.core.GlobalDataSourceRegistry;
-import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeLoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -48,14 +48,15 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
     private static final String ORDER_BY_ORDINAL_POSITION = " ORDER BY ORDINAL_POSITION";
     
     private static final String TABLE_META_DATA_NO_ORDER =
-            "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION, COLUMN_TYPE FROM information_schema.columns "
+            "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME, ORDINAL_POSITION, COLUMN_TYPE, IS_NULLABLE FROM information_schema.columns "
                     + "WHERE TABLE_SCHEMA=?";
     
     private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_NO_ORDER + ORDER_BY_ORDINAL_POSITION;
     
     private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_NO_ORDER + " AND TABLE_NAME IN (%s)" + ORDER_BY_ORDINAL_POSITION;
     
-    private static final String INDEX_META_DATA_SQL = "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN (%s)";
+    private static final String INDEX_META_DATA_SQL = "SELECT TABLE_NAME, INDEX_NAME, NON_UNIQUE, COLUMN_NAME FROM information_schema.statistics "
+            + "WHERE TABLE_SCHEMA=? and TABLE_NAME IN (%s) ORDER BY NON_UNIQUE, INDEX_NAME, SEQ_IN_INDEX";
     
     private static final String CONSTRAINT_META_DATA_SQL = "SELECT CONSTRAINT_NAME, TABLE_NAME, REFERENCED_TABLE_NAME FROM information_schema.KEY_COLUMN_USAGE "
             + "WHERE TABLE_NAME IN (%s) AND REFERENCED_TABLE_SCHEMA IS NOT NULL";
@@ -130,7 +131,8 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         boolean caseSensitive = null != collationName && !collationName.endsWith("_ci");
         boolean visible = !"INVISIBLE".equalsIgnoreCase(extra);
         boolean unsigned = resultSet.getString("COLUMN_TYPE").toUpperCase().contains("UNSIGNED");
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, visible, unsigned);
+        boolean nullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, visible, unsigned, nullable);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {
@@ -138,7 +140,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
-        Map<String, Collection<IndexMetaData>> result = new HashMap<>();
+        Map<String, Map<String, IndexMetaData>> tableToIndex = new HashMap<>();
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
@@ -148,12 +150,24 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
                 while (resultSet.next()) {
                     String indexName = resultSet.getString("INDEX_NAME");
                     String tableName = resultSet.getString("TABLE_NAME");
-                    if (!result.containsKey(tableName)) {
-                        result.put(tableName, new LinkedList<>());
+                    if (!tableToIndex.containsKey(tableName)) {
+                        tableToIndex.put(tableName, new HashMap<>());
                     }
-                    result.get(tableName).add(new IndexMetaData(indexName));
+                    Map<String, IndexMetaData> indexMap = tableToIndex.get(tableName);
+                    if (!indexMap.containsKey(indexName)) {
+                        IndexMetaData indexMetaData = new IndexMetaData(indexName);
+                        indexMetaData.getColumns().add(resultSet.getString("COLUMN_NAME"));
+                        indexMetaData.setUnique("0".equals(resultSet.getString("NON_UNIQUE")));
+                        indexMap.put(indexName, indexMetaData);
+                    } else {
+                        indexMap.get(indexName).getColumns().add(resultSet.getString("COLUMN_NAME"));
+                    }
                 }
             }
+        }
+        Map<String, Collection<IndexMetaData>> result = new HashMap<>(tableToIndex.size(), 1);
+        for (Entry<String, Map<String, IndexMetaData>> entry : tableToIndex.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().values());
         }
         return result;
     }

@@ -17,20 +17,24 @@
 
 package org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.PrimaryKeyPosition;
 
 /**
  * String primary key position.
  */
-@RequiredArgsConstructor
 @Getter
 public final class StringPrimaryKeyPosition implements PrimaryKeyPosition<String> {
     
     private final String beginValue;
     
     private final String endValue;
+    
+    public StringPrimaryKeyPosition(final String beginValue, final String endValue) {
+        this.beginValue = Strings.emptyToNull(beginValue);
+        this.endValue = Strings.emptyToNull(endValue);
+    }
     
     @Override
     public String convert(final String value) {

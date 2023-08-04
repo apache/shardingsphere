@@ -28,8 +28,10 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>spi</module>
         <module>exception</module>
         <module>database</module>
+        <module>datasource</module>
         <module>binder</module>
         <module>common</module>
         <module>context</module>

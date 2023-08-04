@@ -144,6 +144,22 @@ public final class EncryptTable {
     }
     
     /**
+     * Get logic column by assisted query column.
+     *
+     * @param assistQueryColumnName assisted query column name
+     * @return logic column name
+     * @throws EncryptLogicColumnNotFoundException encrypt logic column not found exception
+     */
+    public String getLogicColumnByAssistedQueryColumn(final String assistQueryColumnName) {
+        for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
+            if (entry.getValue().getAssistedQuery().isPresent() && entry.getValue().getAssistedQuery().get().getName().equalsIgnoreCase(assistQueryColumnName)) {
+                return entry.getKey();
+            }
+        }
+        throw new EncryptLogicColumnNotFoundException(assistQueryColumnName);
+    }
+    
+    /**
      * Is assisted query column or not.
      *
      * @param columnName column name

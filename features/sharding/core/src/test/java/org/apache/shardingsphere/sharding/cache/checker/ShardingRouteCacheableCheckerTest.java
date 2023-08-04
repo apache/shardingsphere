@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.cache.checker;
 
-import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
@@ -112,15 +112,15 @@ class ShardingRouteCacheableCheckerTest {
     private ShardingSphereDatabase createDatabase(final ShardingRule shardingRule, final TimestampServiceRule timestampServiceRule) {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("t_warehouse", new ShardingSphereTable("t_warehouse",
-                Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false)),
+                Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         schema.getTables().put("t_order", new ShardingSphereTable("t_order", Arrays.asList(
-                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false)),
+                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         schema.getTables().put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(
-                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("order_broadcast_table_id", Types.INTEGER, true, false, false, true, false)),
+                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("order_broadcast_table_id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         return new ShardingSphereDatabase(DATABASE_NAME, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"),
                 new ShardingSphereResourceMetaData(DATABASE_NAME, Collections.emptyMap()), new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, timestampServiceRule)),

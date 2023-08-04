@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.core.metadata.data.loader;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -39,7 +39,7 @@ class MetaDataLoaderConnectionTest {
     
     private static final String TEST_SCHEMA = "schema";
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "TRUNK");
     
     @Mock
     private Connection connection;

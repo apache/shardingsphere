@@ -20,11 +20,11 @@ package org.apache.shardingsphere.encrypt.metadata;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -67,9 +67,9 @@ class EncryptMetaDataReviseEngineTest {
     }
     
     private TableMetaData createTableMetaData() {
-        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false),
-                new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false),
-                new ColumnMetaData("pwd_like", Types.VARCHAR, false, false, true, true, false));
+        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false),
+                new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false, false),
+                new ColumnMetaData("pwd_like", Types.VARCHAR, false, false, true, true, false, false));
         return new TableMetaData(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList());
     }
 }
