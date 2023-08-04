@@ -758,7 +758,11 @@ leadLagInfo
     ;
 
 specialFunction
-    : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
+    : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction | setFunction
+    ;
+
+setFunction
+    : SET LP_ expr RP_
     ;
 
 featureFunction
