@@ -23,6 +23,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -132,6 +134,21 @@ class PostgreSQLComParseExecutorTest {
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
         assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.JSON, PostgreSQLColumnType.INT4)));
         assertThat(actualPreparedStatement.getActualParameterMarkerIndexes(), is(Arrays.asList(1, 0)));
+    }
+    
+    @Test
+    void assetExecuteWithQuestionOperator() throws ReflectiveOperationException {
+        final String rawSQL = "update t_test set enabled = $1 where name ?& $2";
+        final String expectedSQL = "update t_test set enabled = ? where name ??& ?";
+        final String statementId = "S_2";
+        when(parsePacket.getSQL()).thenReturn(rawSQL);
+        when(parsePacket.getStatementId()).thenReturn(statementId);
+        Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        executor.execute();
+        PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
+        assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
     }
     
     @Test

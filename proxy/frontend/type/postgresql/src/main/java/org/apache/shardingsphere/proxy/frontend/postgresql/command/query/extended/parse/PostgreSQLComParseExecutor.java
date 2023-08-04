@@ -23,8 +23,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
-import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -59,7 +59,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         SQLParserEngine sqlParserEngine = createShardingSphereSQLParserEngine(connectionSession.getDatabaseName());
-        String sql = packet.getSQL();
+        String sql = escape(packet.getSQL());
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
         List<Integer> actualParameterMarkerIndexes = new ArrayList<>();
         if (sqlStatement.getParameterCount() > 0) {
@@ -85,6 +85,10 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType();
         return sqlParserRule.getSQLParserEngine(protocolType.getTrunkDatabaseType().orElse(protocolType));
+    }
+    
+    private String escape(String sql) {
+        return sql.replace("?", "??");
     }
     
     private String convertSQLToJDBCStyle(final List<ParameterMarkerSegment> parameterMarkerSegments, final String sql) {
