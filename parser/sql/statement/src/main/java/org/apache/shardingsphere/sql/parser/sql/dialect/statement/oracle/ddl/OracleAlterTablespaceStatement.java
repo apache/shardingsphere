@@ -23,5 +23,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle alter tablespace statement.
  */
-public class OracleAlterTablespaceStatement extends AlterTablespaceStatement implements OracleStatement {
+public final class OracleAlterTablespaceStatement extends AlterTablespaceStatement implements OracleStatement {
 }
