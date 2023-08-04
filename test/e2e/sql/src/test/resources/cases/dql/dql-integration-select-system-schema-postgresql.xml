@@ -49,23 +49,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM information_schema.character_sets limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM information_schema.check_constraint_routine_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.check_constraints limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.collation_character_set_applicability limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.collations limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -73,51 +57,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM information_schema.column_domain_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM information_schema.column_options limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.column_privileges limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.column_udt_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.columns limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.constraint_column_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.constraint_table_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.data_type_privileges limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.domain_constraints limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.domain_udt_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.domains limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.element_types limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -149,67 +89,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM information_schema.information_schema_catalog_name limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.key_column_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.parameters limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM information_schema.referential_constraints limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.role_column_grants limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.role_routine_grants limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.role_table_grants limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.role_udt_grants limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.role_usage_grants limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.routine_column_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.routine_privileges limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.routine_routine_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.routine_sequence_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.routine_table_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.routines limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.schemata limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -233,18 +113,6 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM information_schema.table_constraints limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.table_privileges limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.tables limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM information_schema.transforms limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -257,14 +125,6 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM information_schema.udt_privileges limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.usage_privileges limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM information_schema.user_defined_types limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -274,26 +134,6 @@
     </test-case>
 
     <test-case sql="SELECT * FROM information_schema.user_mappings limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.view_column_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.view_routine_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.view_table_usage limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM information_schema.views limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_aggregate limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -313,27 +153,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_attribute limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_auth_members limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_authid limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_available_extension_versions limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_available_extensions limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_backend_memory_contexts limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -341,27 +161,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_collation limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_config limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_constraint limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_conversion limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_cursors limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_database limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -389,14 +189,6 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_extension limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_file_settings limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_foreign_data_wrapper limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -417,14 +209,6 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_index limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_indexes limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_inherits limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -433,32 +217,11 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_language limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <!-- TODO ERROR:  Can not find JDBC type `-3` in PostgreSQL column type -->
-    <!--    <test-case sql="SELECT * FROM pg_catalog.pg_largeobject limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">-->
-    <!--        <assertion expected-data-source-name="read_dataset" />-->
-    <!--    </test-case>-->
-
     <test-case sql="SELECT * FROM pg_catalog.pg_largeobject_metadata limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_locks limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_matviews limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_opclass limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_operator limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -478,15 +241,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_prepared_statements limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_prepared_xacts limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_proc limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -518,15 +273,6 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_rewrite limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <!-- TODO ERROR:  Index 24 out of bounds for length 24 -->
-    <!--    <test-case sql="SELECT * FROM pg_catalog.pg_roles limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">-->
-    <!--        <assertion expected-data-source-name="read_dataset" />-->
-    <!--    </test-case>-->
-
     <test-case sql="SELECT * FROM pg_catalog.pg_rules limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -547,14 +293,6 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_settings limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_shadow limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_shdepend limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -563,19 +301,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_shmem_allocations limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_shseclabel limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_activity limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_all_indexes limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -583,39 +309,11 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_archiver limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_bgwriter limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_database limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_stat_database_conflicts limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_gssapi limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_progress_analyze limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_progress_basebackup limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_stat_progress_cluster limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_progress_copy limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -631,43 +329,11 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_replication_slots limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_slru limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_ssl limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_stat_subscription limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_sys_indexes limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_sys_tables limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_stat_user_functions limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_user_indexes limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_user_tables limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_wal limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -679,19 +345,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_xact_sys_tables limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_stat_xact_user_functions limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_xact_user_tables limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_statio_all_indexes limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -699,35 +353,11 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_statio_all_tables limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_statio_sys_indexes limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_statio_sys_sequences limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_statio_sys_tables limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_statio_user_indexes limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_statio_user_sequences limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_statio_user_tables limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_statistic limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -739,15 +369,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_stats limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
     <test-case sql="SELECT * FROM pg_catalog.pg_stats_ext limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_stats_ext_exprs limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -759,31 +381,13 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <!-- TODO ERROR: Index: 10, size: 10 -->
-<!--    <test-case sql="SELECT * FROM pg_catalog.pg_tables limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">-->
-<!--        <assertion expected-data-source-name="read_dataset" />-->
-<!--    </test-case>-->
-
     <test-case sql="SELECT * FROM pg_catalog.pg_tablespace limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_timezone_abbrevs limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_timezone_names limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT * FROM pg_catalog.pg_transform limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-
-    <!-- TODO ERROR:  Can not find JDBC type `-3` in PostgreSQL column type -->
-    <!--    <test-case sql="SELECT * FROM pg_catalog.pg_trigger limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">-->
-    <!--        <assertion expected-data-source-name="read_dataset" />-->
-    <!--    </test-case>-->
 
     <test-case sql="SELECT * FROM pg_catalog.pg_ts_config limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
@@ -802,14 +406,6 @@
     </test-case>
 
     <test-case sql="SELECT * FROM pg_catalog.pg_ts_template limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_type limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.pg_user limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
