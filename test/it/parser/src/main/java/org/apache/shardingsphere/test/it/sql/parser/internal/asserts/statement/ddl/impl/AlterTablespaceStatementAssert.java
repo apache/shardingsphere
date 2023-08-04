@@ -43,7 +43,9 @@ public final class AlterTablespaceStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterTablespaceStatement actual, final AlterTablespaceStatementTestCase expected) {
         assertTablespace(assertContext, actual, expected);
-        assertRenameTablespace(assertContext, actual, expected);
+        if (null != expected.getRenameTablespace()) {
+            assertRenameTablespace(assertContext, actual, expected);
+        }
     }
     
     private static void assertTablespace(final SQLCaseAssertContext assertContext, final AlterTablespaceStatement actual, final AlterTablespaceStatementTestCase expected) {
