@@ -2309,24 +2309,6 @@ dropType
     : DROP TYPE typeName (FORCE|VALIDATE)?
     ;
 
-createFunction
-    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
-    ;
-
-plsqlFunctionSource
-    : function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN dataType
-    sharingClause? (invokerRightsClause
-    | accessibleByClause 
-    | defaultCollationoOptionClause
-    | deterministicClause
-    | parallelEnableClause
-    | resultCacheClause
-    | aggregateClause
-    | pipelinedClause
-    | sqlMacroClause)* 
-    (IS | AS) callSpec
-    ;
-
 parameterDeclaration
     : parameterName (IN? dataType ((ASSIGNMENT_OPERATOR_ | DEFAULT) expr)? | IN? OUT NOCOPY? dataType)?
     ;
@@ -3701,6 +3683,76 @@ permanentTablespaceClause
     )
     ;
 
+alterTablespace
+    : ALTER TABLESPACE tablespaceName
+    ( MINIMUM EXTENT sizeClause
+    | RESIZE sizeClause
+    | COALESCE
+    | SHRINK SPACE (KEEP sizeClause)?
+    | RENAME TO newTablespaceName
+    | (BEGIN|END) BACKUP
+    | datafileTempfileClauses
+    | tablespaceLoggingClauses
+    | tablespaceGroupClause
+    | tablespaceStateClauses
+    | autoextendClause
+    | flashbackModeClause
+    | tablespaceRetentionClause
+    | alterTablespaceEncryption
+    | lostWriteProtection
+    )
+    ;
+
+tablespaceRetentionClause
+    : RETENTION (GUARANTEE | NOGUARANTEE)
+    ;
+
+newTablespaceName
+    : identifier
+    ;
+
+datafileTempfileClauses
+    : ADD (datafileSpecification | tempfileSpecification)
+    | DROP (DATAFILE | TEMPFILE) (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
+    | SHRINK TEMPFILE (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
+    | RENAME DATAFILE fileSpecification TO fileSpecification
+    | (DATAFILE | TEMPFILE) (ONLINE|OFFLINE)
+    ;
+
+datafileSpecification
+    : DATAFILE
+      (COMMA_? datafileTempfileSpec)
+    ;
+
+tempfileSpecification
+    : TEMPFILE
+      (COMMA_? datafileTempfileSpec)
+    ;
+
+tablespaceLoggingClauses
+    : loggingClause
+    | NO? FORCE LOGGING
+    ;
+
+tablespaceStateClauses
+    : ONLINE
+    | OFFLINE (NORMAL | TEMPORARY | IMMEDIATE)?
+    | READ (ONLY | WRITE)
+    | PERMANENT
+    | TEMPORARY
+    ;
+
+tablespaceFileNameConvert
+    : FILE_NAME_CONVERT EQ_ LP_ CHAR_STRING COMMA_ CHAR_STRING (COMMA_ CHAR_STRING COMMA_ CHAR_STRING)* RP_ KEEP?
+    ;
+
+alterTablespaceEncryption
+    : ENCRYPTION ( OFFLINE (tablespaceEncryptionSpec? ENCRYPT | DECRYPT)
+                 | ONLINE (tablespaceEncryptionSpec? (ENCRYPT | REKEY) | DECRYPT) tablespaceFileNameConvert?
+                 | FINISH (ENCRYPT | REKEY | DECRYPT) tablespaceFileNameConvert?
+                 )
+    ;
+
 dropFunction
     : DROP FUNCTION (schemaName DOT_)? function
     ;
@@ -3770,24 +3822,6 @@ alterCollectionClauses
 alterType
     : ALTER TYPE typeName (compileTypeClause | replaceTypeClause | RESET
     | (alterMethodSpec | alterAttributeDefinition | alterCollectionClauses | NOT (INSTANTIABLE | FINAL)))?
-    ;
-
-createCluster
-    : CREATE CLUSTER (schemaName DOT_)? clusterName
-    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
-    ;
-
-createCluster
-    : CREATE CLUSTER (schemaName DOT_)? clusterName
-    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
-    parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
-    ;
-
-createCluster
-    : CREATE CLUSTER (schemaName DOT_)? clusterName
-    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
-    (physicalAttributesClause | SET sizeClause)?
-    parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
     ;
 
 createCluster

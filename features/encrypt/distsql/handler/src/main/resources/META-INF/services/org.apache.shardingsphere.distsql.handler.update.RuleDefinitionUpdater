@@ -16,8 +16,5 @@
 #
 
 org.apache.shardingsphere.encrypt.distsql.handler.update.CreateEncryptRuleStatementUpdater
-org.apache.shardingsphere.encrypt.distsql.handler.update.CreateCompatibleEncryptRuleStatementUpdater
 org.apache.shardingsphere.encrypt.distsql.handler.update.AlterEncryptRuleStatementUpdater
-org.apache.shardingsphere.encrypt.distsql.handler.update.AlterCompatibleEncryptRuleStatementUpdater
 org.apache.shardingsphere.encrypt.distsql.handler.update.DropEncryptRuleStatementUpdater
-org.apache.shardingsphere.encrypt.distsql.handler.update.DropCompatibleEncryptRuleStatementUpdater
