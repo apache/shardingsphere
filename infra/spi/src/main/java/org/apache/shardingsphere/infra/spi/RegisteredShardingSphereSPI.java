@@ -55,12 +55,7 @@ class RegisteredShardingSphereSPI<T> {
         return result;
     }
     
-    /**
-     * Get service instances.
-     * 
-     * @return got service instances
-     */
-    public Collection<T> getServiceInstances() {
+    Collection<T> getServiceInstances() {
         return null == serviceInterface.getAnnotation(SingletonSPI.class) ? createNewServiceInstances() : getSingletonServiceInstances();
     }
     
