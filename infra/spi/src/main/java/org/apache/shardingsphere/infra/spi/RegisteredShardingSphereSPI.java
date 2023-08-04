@@ -30,13 +30,13 @@ import java.util.ServiceLoader;
  * 
  * @param <T> type of service
  */
-public final class RegisteredShardingSphereSPI<T> {
+class RegisteredShardingSphereSPI<T> {
     
     private final Class<T> serviceInterface;
     
     private final Collection<T> services;
     
-    public RegisteredShardingSphereSPI(final Class<T> serviceInterface) {
+    RegisteredShardingSphereSPI(final Class<T> serviceInterface) {
         this.serviceInterface = serviceInterface;
         validate();
         services = load();
