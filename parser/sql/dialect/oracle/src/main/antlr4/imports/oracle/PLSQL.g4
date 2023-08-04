@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar StoreProcedure;
+grammar PLSQL;
 
 import Keyword, BaseRule, DDLStatement, DMLStatement;
 
@@ -48,6 +48,24 @@ plsqlProcedureSource
     ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body)
     ;
 
+createFunction
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
+    ;
+
+plsqlFunctionSource
+    : function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN dataType
+    sharingClause? (invokerRightsClause
+    | accessibleByClause 
+    | defaultCollationoOptionClause
+    | deterministicClause
+    | parallelEnableClause
+    | resultCacheClause
+    | aggregateClause
+    | pipelinedClause
+    | sqlMacroClause)* 
+    (IS | AS) (callSpec | declareSection? body)
+    ;
+    
 body
     : BEGIN statement+ (EXCEPTION (exceptionHandler)+)? END (identifier)? SEMI_
     ;
