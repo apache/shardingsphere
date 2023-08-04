@@ -871,7 +871,19 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.setFunction()) {
             return visit(ctx.setFunction());
         }
+        if (null != ctx.translateFunction()) {
+            return visit(ctx.translateFunction());
+        }
         throw new IllegalStateException("SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, trimFunction or featureFunction.");
+    }
+    
+    @Override
+    public final ASTNode visitTranslateFunction(final OracleStatementParser.TranslateFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRANSLATE().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        TerminalNode charSet = null != ctx.NCHAR_CS() ? ctx.NCHAR_CS() : ctx.CHAR_CS();
+        result.getParameters().add(new LiteralExpressionSegment(charSet.getSymbol().getStartIndex(), charSet.getSymbol().getStopIndex(), charSet.getText()));
+        return result;
     }
     
     @Override
