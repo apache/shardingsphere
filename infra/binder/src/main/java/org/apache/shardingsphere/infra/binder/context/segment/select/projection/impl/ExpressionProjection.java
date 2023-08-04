@@ -22,6 +22,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.util.ProjectionUtils;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -35,9 +38,11 @@ import java.util.Optional;
 @ToString
 public final class ExpressionProjection implements Projection {
     
-    private final String expression;
+    private final ExpressionProjectionSegment expressionSegment;
     
     private final IdentifierValue alias;
+    
+    private final DatabaseType databaseType;
     
     @Override
     public String getColumnName() {
@@ -46,7 +51,13 @@ public final class ExpressionProjection implements Projection {
     
     @Override
     public String getColumnLabel() {
-        return getAlias().map(IdentifierValue::getValue).orElse(expression);
+        return getAlias().isPresent() ? ProjectionUtils.getColumnLabelFromAlias(getAlias().get(), databaseType)
+                : ProjectionUtils.getColumnNameFromExpression(expressionSegment.getText(), databaseType);
+    }
+    
+    @Override
+    public String getExpression() {
+        return expressionSegment.getText();
     }
     
     @Override

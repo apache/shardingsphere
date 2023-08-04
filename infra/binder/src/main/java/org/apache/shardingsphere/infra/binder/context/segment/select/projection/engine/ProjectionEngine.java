@@ -97,7 +97,7 @@ public final class ProjectionEngine {
     private SubqueryProjection createProjection(final TableSegment table, final SubqueryProjectionSegment projectionSegment) {
         Projection subqueryProjection = createProjection(table, projectionSegment.getSubquery().getSelect().getProjections().getProjections().iterator().next())
                 .orElseThrow(() -> new IllegalArgumentException("Subquery projection must have at least one projection column."));
-        return new SubqueryProjection(projectionSegment.getText(), subqueryProjection, projectionSegment.getAlias().orElse(null), databaseType);
+        return new SubqueryProjection(projectionSegment, subqueryProjection, projectionSegment.getAlias().orElse(null), databaseType);
     }
     
     private ShorthandProjection createProjection(final TableSegment table, final ShorthandProjectionSegment projectionSegment) {
@@ -117,7 +117,7 @@ public final class ProjectionEngine {
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {
-        return new ExpressionProjection(projectionSegment.getText(), projectionSegment.getAlias().orElse(null));
+        return new ExpressionProjection(projectionSegment, projectionSegment.getAlias().orElse(null), databaseType);
     }
     
     private AggregationDistinctProjection createProjection(final AggregationDistinctProjectionSegment projectionSegment) {
