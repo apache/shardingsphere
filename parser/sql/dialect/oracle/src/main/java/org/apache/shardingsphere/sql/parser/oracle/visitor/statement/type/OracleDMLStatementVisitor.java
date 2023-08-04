@@ -259,7 +259,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitUpdateSetValueClause(final UpdateSetValueClauseContext ctx) {
-        ColumnSegment column = new ColumnSegment(ctx.alias().start.getStartIndex(), ctx.alias().stop.getStopIndex(), (IdentifierValue) visit(ctx.alias().identifier()));
+        ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         List<ColumnSegment> columnSegments = new LinkedList<>();
         columnSegments.add(column);
         if (null != ctx.expr()) {
