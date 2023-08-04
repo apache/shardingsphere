@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
@@ -44,6 +45,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * ShardingSphere Transaction manager for XA.
@@ -141,7 +143,13 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public boolean containsProviderType(final String providerType) {
-        return TypedSPILoader.contains(XATransactionManagerProvider.class, providerType);
+        try {
+            TypedSPILoader.checkService(XATransactionManagerProvider.class, providerType, new Properties());
+            return true;
+        } catch (final ServiceProviderNotFoundException ex) {
+            return false;
+        }
+        
     }
     
     @Override

@@ -32,17 +32,6 @@ import java.util.Properties;
 public final class TypedSPILoader {
     
     /**
-     * Judge whether contains service.
-     * 
-     * @param serviceInterface typed SPI service interface to be judged
-     * @param type type
-     * @return contains or not
-     */
-    public static boolean contains(final Class<? extends TypedSPI> serviceInterface, final Object type) {
-        return ShardingSphereServiceLoader.getServiceInstances(serviceInterface).stream().anyMatch(each -> matchesType(type, each));
-    }
-    
-    /**
      * Find service.
      * 
      * @param serviceInterface typed SPI service interface
@@ -128,14 +117,13 @@ public final class TypedSPILoader {
      * @param type type
      * @param props properties
      * @param <T> SPI class type
-     * @return is valid service or not
      * @throws ServiceProviderNotFoundException service provider not found server exception
      */
-    public static <T extends TypedSPI> boolean checkService(final Class<T> serviceInterface, final Object type, final Properties props) {
+    public static <T extends TypedSPI> void checkService(final Class<T> serviceInterface, final Object type, final Properties props) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
             if (matchesType(type, each)) {
                 each.init(null == props ? new Properties() : convertToStringTypedProperties(props));
-                return true;
+                return;
             }
         }
         throw new ServiceProviderNotFoundException(serviceInterface, type);

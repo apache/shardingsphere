@@ -29,18 +29,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TypedSPILoaderTest {
-    
-    @Test
-    void assertContains() {
-        assertTrue(TypedSPILoader.contains(TypedSPIFixture.class, "TYPED.FIXTURE"));
-        assertFalse(TypedSPILoader.contains(TypedSPIFixture.class, "NOT_EXISTED"));
-    }
     
     @Test
     void assertFindServiceWithoutProperties() {
