@@ -44,4 +44,6 @@ public final class ColumnMetaData {
     private final boolean visible;
     
     private final boolean unsigned;
+    
+    private final boolean nullable;
 }

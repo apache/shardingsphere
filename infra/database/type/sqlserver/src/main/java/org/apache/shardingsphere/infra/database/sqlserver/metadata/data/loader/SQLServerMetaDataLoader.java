@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.database.sqlserver.metadata.data.loader;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeLoader;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeLoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
     
     private static final String TABLE_META_DATA_SQL_NO_ORDER = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
-            + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY, %s"
+            + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY, col.is_nullable AS IS_NULLABLE, %s"
             + " (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
             + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
             + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id";
@@ -102,7 +102,8 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
         boolean generated = "1".equals(resultSet.getString("IS_IDENTITY"));
         boolean caseSensitive = null != collationName && collationName.contains("_CS");
         boolean isVisible = !(versionContainsHiddenColumn(databaseMetaData) && "1".equals(resultSet.getString("IS_HIDDEN")));
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible, false);
+        boolean isNullable = "1".equals(resultSet.getString("IS_NULLABLE"));
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible, false, isNullable);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData databaseMetaData) throws SQLException {
