@@ -44,4 +44,5 @@
     <sql-case id="update_with_multi_columns" value="UPDATE employees a SET department_id = (SELECT department_id FROM departments WHERE location_id = '2100'), (salary, commission_pct) = (SELECT 1.1*AVG(salary), 1.5*AVG(commission_pct) FROM employees b WHERE a.department_id = b.department_id)" db-types="Oracle" />
     <sql-case id="update_with_force_index" value="UPDATE t_order FORCE INDEX (PRIMARY) SET status = ? WHERE order_id = ?" db-types="MySQL" />
     <sql-case id="update_with_subquery_using_interval" value="UPDATE employees a SET salary = (SELECT salary FROM employees AS OF TIMESTAMP (SYSTIMESTAMP - INTERVAL '2' MINUTE) WHERE last_name = 'Chung') WHERE last_name = 'Chung'" db-types="Oracle" />
+    <sql-case id="update_with_translate_function" value="UPDATE translate_tab SET char_col = TRANSLATE (nchar_col USING CHAR_CS);" />
 </sql-cases>

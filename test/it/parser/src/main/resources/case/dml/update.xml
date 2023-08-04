@@ -1174,4 +1174,24 @@
             </expr>
         </where>
     </update>
+    <update sql-case-id="update_with_translate_function">
+        <table start-index="7" stop-index="19">
+            <simple-table name="translate_tab" start-index="7" stop-index="19" />
+        </table>
+        <set start-index="21" stop-index="70">
+            <assignment start-index="21" stop-index="70" >
+                <column name="char_col" start-index="25" stop-index="32" />
+                <assignment-value>
+                    <function function-name="TRANSLATE" text="TRANSLATE (nchar_col USING CHAR_CS)" start-index="36" stop-index="70">
+                        <parameter>
+                            <column name="nchar_col" start-index="47" stop-index="55" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="CHAR_CS" start-index="63" stop-index="69" />
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
 </sql-parser-test-cases>
