@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlTableFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.own
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedXmlTableFunction;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedCollectionTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedJoinTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSubqueryTable;
@@ -72,8 +74,23 @@ public final class TableAssert {
             assertIs(assertContext, (SubqueryTableSegment) actual, expected.getSubqueryTable());
         } else if (actual instanceof XmlTableSegment) {
             assertIs(assertContext, (XmlTableSegment) actual, expected.getXmlTable());
+        } else if (actual instanceof CollectionTableSegment) {
+            assertIs(assertContext, (CollectionTableSegment) actual, expected.getCollectionTable());
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported table segment type `%s`.", actual.getClass()));
+        }
+    }
+    
+    /**
+     * Assert actual collection table segment is correct with expected collection table.
+     *
+     * @param assertContext assert context
+     * @param actual actual collection table
+     * @param expected expected collection table
+     */
+    private static void assertIs(final SQLCaseAssertContext assertContext, final CollectionTableSegment actual, final ExpectedCollectionTable expected) {
+        if (null != expected.getExpectedExpression()) {
+            ExpressionAssert.assertExpression(assertContext, actual.getExpressionSegment(), expected.getExpectedExpression());
         }
     }
     

@@ -150,6 +150,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMul
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
@@ -413,8 +414,20 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitTableCollectionExpr(final TableCollectionExprContext ctx) {
-        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.collectionExpr().selectSubquery());
-        return new SubquerySegment(ctx.collectionExpr().selectSubquery().start.getStartIndex(), ctx.collectionExpr().selectSubquery().stop.getStopIndex(), subquery);
+        if (null != ctx.collectionExpr().selectSubquery()) {
+            OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.collectionExpr().selectSubquery());
+            return new SubquerySegment(ctx.collectionExpr().selectSubquery().start.getStartIndex(), ctx.collectionExpr().selectSubquery().stop.getStopIndex(), subquery);
+        }
+        if (null != ctx.collectionExpr().functionCall()) {
+            return visit(ctx.collectionExpr().functionCall());
+        }
+        if (null != ctx.collectionExpr().columnName()) {
+            return visit(ctx.collectionExpr().columnName());
+        }
+        if (null != ctx.collectionExpr().expr()) {
+            return visit(ctx.collectionExpr().expr());
+        }
+        throw new UnsupportedOperationException("Unhandled table collection expr");
     }
     
     @Override
@@ -986,8 +999,12 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             SubquerySegment subquerySegment = new SubquerySegment(ctx.lateralClause().selectSubquery().start.getStartIndex(), ctx.lateralClause().selectSubquery().stop.getStopIndex(), subquery);
             result = new SubqueryTableSegment(subquerySegment);
         } else {
-            SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.tableCollectionExpr());
-            result = new SubqueryTableSegment(subquerySegment);
+            if (null != ctx.tableCollectionExpr().collectionExpr().selectSubquery()) {
+                SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.tableCollectionExpr());
+                result = new SubqueryTableSegment(subquerySegment);
+            } else {
+                result = new CollectionTableSegment((ExpressionSegment) visit(ctx.tableCollectionExpr()));
+            }
         }
         return result;
     }
