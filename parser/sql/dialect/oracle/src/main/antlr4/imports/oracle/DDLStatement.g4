@@ -2309,24 +2309,6 @@ dropType
     : DROP TYPE typeName (FORCE|VALIDATE)?
     ;
 
-createFunction
-    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
-    ;
-
-plsqlFunctionSource
-    : function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN dataType
-    sharingClause? (invokerRightsClause
-    | accessibleByClause 
-    | defaultCollationoOptionClause
-    | deterministicClause
-    | parallelEnableClause
-    | resultCacheClause
-    | aggregateClause
-    | pipelinedClause
-    | sqlMacroClause)* 
-    (IS | AS) callSpec
-    ;
-
 parameterDeclaration
     : parameterName (IN? dataType ((ASSIGNMENT_OPERATOR_ | DEFAULT) expr)? | IN? OUT NOCOPY? dataType)?
     ;
