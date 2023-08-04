@@ -22,8 +22,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.util.ProjectionUtils;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -37,7 +39,7 @@ import java.util.Optional;
 @ToString
 public final class SubqueryProjection implements Projection {
     
-    private final String expression;
+    private final SubqueryProjectionSegment subquerySegment;
     
     private final Projection projection;
     
@@ -52,7 +54,7 @@ public final class SubqueryProjection implements Projection {
     
     @Override
     public String getColumnLabel() {
-        return getAlias().map(IdentifierValue::getValue).orElse(expression);
+        return getAlias().isPresent() ? ProjectionUtils.getColumnLabelFromAlias(getAlias().get(), databaseType) : ProjectionUtils.getColumnNameFromSubquery(subquerySegment, databaseType);
     }
     
     @Override
@@ -62,8 +64,13 @@ public final class SubqueryProjection implements Projection {
     
     private Optional<IdentifierValue> buildDefaultAlias(final DatabaseType databaseType) {
         if (databaseType instanceof OracleDatabaseType) {
-            return Optional.of(new IdentifierValue(expression.replace(" ", "").toUpperCase()));
+            return Optional.of(new IdentifierValue(subquerySegment.getText().replace(" ", "").toUpperCase()));
         }
-        return Optional.of(new IdentifierValue(expression));
+        return Optional.of(new IdentifierValue(subquerySegment.getText()));
+    }
+    
+    @Override
+    public String getExpression() {
+        return subquerySegment.getText();
     }
 }
