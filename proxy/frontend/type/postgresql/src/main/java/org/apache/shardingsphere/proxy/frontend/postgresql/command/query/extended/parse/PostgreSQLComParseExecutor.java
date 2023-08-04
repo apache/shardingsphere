@@ -87,7 +87,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         return sqlParserRule.getSQLParserEngine(protocolType.getTrunkDatabaseType().orElse(protocolType));
     }
     
-    private String escape(String sql) {
+    private String escape(final String sql) {
         return sql.replace("?", "??");
     }
     
