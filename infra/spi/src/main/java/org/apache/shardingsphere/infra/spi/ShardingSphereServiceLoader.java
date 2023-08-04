@@ -40,7 +40,6 @@ public final class ShardingSphereServiceLoader {
      * @param serviceInterface service interface
      * @param <T> type of service interface
      * @return service instances
-     * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>
      */
     @SuppressWarnings("unchecked")
     public static <T> Collection<T> getServiceInstances(final Class<T> serviceInterface) {
