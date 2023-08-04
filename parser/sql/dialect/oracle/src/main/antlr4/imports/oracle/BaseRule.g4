@@ -683,6 +683,7 @@ bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
     | bitExpr DOT_ bitExpr
+    | bitExpr ARROW_ bitExpr
     ;
 
 simpleExpr

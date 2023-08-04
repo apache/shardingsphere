@@ -2734,4 +2734,15 @@
             <simple-table start-index="50" stop-index="53" name="DUAL" />
         </from>
     </select>
+    
+    <select sql-case-id="select_arrow_symbol_in_function">
+        <projections start-index="7" stop-index="103">
+            <expression-projection start-index="7" stop-index="103" text="DECODE(DBMS_COMPRESSION.GET_COMPRESSION_TYPE(ownname => 'HR'), 'No Compression')" alias="compression_type">
+                <function function-name="DECODE" text="DECODE(DBMS_COMPRESSION.GET_COMPRESSION_TYPE(ownname => 'HR'), 'No Compression')" alias="compression_type" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table start-index="110" stop-index="113" name="DUAL" />
+        </from>
+    </select>
 </sql-parser-test-cases>
