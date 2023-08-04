@@ -819,3 +819,7 @@ ANYTYPE
 ANYDATASET
     : A N Y D A T A S E T
     ;
+
+AUTONOMOUS_TRANSACTION
+    : A U T O N O M O U S UL_ T R A N S A C T I O N
+    ;

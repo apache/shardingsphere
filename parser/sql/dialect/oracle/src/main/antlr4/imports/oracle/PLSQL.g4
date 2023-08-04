@@ -91,7 +91,7 @@ declareSection
     ;
     
 declareItem
-    : typeDefinition | cursorDeclaration | itemDeclaration | functionDeclaration | procedureDeclaration | cursorDefinition | functionDefinition | procedureDefinition
+    : typeDefinition | cursorDeclaration | itemDeclaration | functionDeclaration | procedureDeclaration | cursorDefinition | functionDefinition | procedureDefinition | pragma
     ;
 
 cursorDefinition
@@ -230,4 +230,13 @@ assocArrayTypeDef
 
 rowtypeAttribute
     : (variableName | objectName) MOD_ ROWTYPE
+    ;
+
+pragma
+    : autonomousTransPragma | restrictReferencesPragma
+//    TODO Support more pragma
+    ;
+
+autonomousTransPragma
+    : PRAGMA AUTONOMOUS_TRANSACTION SEMI_
     ;
