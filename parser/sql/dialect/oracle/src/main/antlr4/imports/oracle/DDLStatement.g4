@@ -1418,7 +1418,7 @@ defaultCollationClause
     ;
 
 eventsClause
-    : EVENTS EQ_? STRING_
+    : (EVENTS EQ_? STRING_)+
     ;
 
 alterDatabaseDictionary
