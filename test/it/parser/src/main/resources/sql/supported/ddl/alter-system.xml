@@ -38,4 +38,5 @@
     <sql-case id="alter_system_switch_logfile" value="ALTER SYSTEM SWITCH LOGFILE" db-types="Oracle" />
     <sql-case id="alter_system_enable_distributed_recovery" value="ALTER SYSTEM ENABLE DISTRIBUTED RECOVERY" db-types="Oracle" />
     <sql-case id="alter_system_flush_passwordfile_metada_cache" value="ALTER SYSTEM FLUSH PASSWORDFILE_METADATA_CACHE" db-types="Oracle" />
+    <sql-case id="alter_system_set_parameter_recyclebin_scope" value="ALTER SYSTEM SET recyclebin = ON SCOPE = SPFILE" db-types="Oracle" />
 </sql-cases>
