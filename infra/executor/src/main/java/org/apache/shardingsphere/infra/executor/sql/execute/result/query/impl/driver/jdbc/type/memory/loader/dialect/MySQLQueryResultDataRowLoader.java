@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.dialect;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.AbstractQueryResultDataRowLoader;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.DialectQueryResultDataRowLoader;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,17 +25,17 @@ import java.sql.SQLException;
 /**
  * MySQL query result data row loader.
  */
-public final class MySQLQueryResultDataRowLoader extends AbstractQueryResultDataRowLoader {
+public final class MySQLQueryResultDataRowLoader implements DialectQueryResultDataRowLoader {
     
     private static final String YEAR_DATA_TYPE = "YEAR";
     
     @Override
-    protected Object getSmallintValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+    public Object getSmallintValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
         return resultSet.getInt(columnIndex);
     }
     
     @Override
-    protected Object getDateValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+    public Object getDateValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
         if (isYearDataType(resultSet.getMetaData().getColumnTypeName(columnIndex))) {
             Object result = resultSet.getObject(columnIndex);
             return resultSet.wasNull() ? null : result;

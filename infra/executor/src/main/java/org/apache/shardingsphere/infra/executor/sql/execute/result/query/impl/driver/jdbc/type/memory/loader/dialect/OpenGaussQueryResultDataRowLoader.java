@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.dialect;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.AbstractQueryResultDataRowLoader;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.DialectQueryResultDataRowLoader;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,15 +25,15 @@ import java.sql.SQLException;
 /**
  * OpenGauss query result data row loader.
  */
-public final class OpenGaussQueryResultDataRowLoader extends AbstractQueryResultDataRowLoader {
+public final class OpenGaussQueryResultDataRowLoader implements DialectQueryResultDataRowLoader {
     
     @Override
-    protected Object getSmallintValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+    public Object getSmallintValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
         return resultSet.getShort(columnIndex);
     }
     
     @Override
-    protected Object getDateValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+    public Object getDateValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
         return resultSet.getDate(columnIndex);
     }
     

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 
 import java.math.BigDecimal;
@@ -30,11 +32,24 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Abstract dialect query result data row loader.
+ * Query result data row loader.
  */
-public abstract class AbstractQueryResultDataRowLoader implements DialectQueryResultDataRowLoader {
+public final class QueryResultDataRowLoader {
     
-    @Override
+    private final DialectQueryResultDataRowLoader dialectLoader;
+    
+    public QueryResultDataRowLoader(final DatabaseType databaseType) {
+        dialectLoader = DatabaseTypedSPILoader.findService(DialectQueryResultDataRowLoader.class, databaseType).orElse(null);
+    }
+    
+    /**
+     * Load query result data row.
+     * 
+     * @param columnCount column count
+     * @param resultSet result set
+     * @return query result data row
+     * @throws SQLException SQL exception
+     */
     public Collection<MemoryQueryResultDataRow> load(final int columnCount, final ResultSet resultSet) throws SQLException {
         Collection<MemoryQueryResultDataRow> result = new LinkedList<>();
         while (resultSet.next()) {
@@ -56,7 +71,7 @@ public abstract class AbstractQueryResultDataRowLoader implements DialectQueryRe
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:
             case Types.SMALLINT:
-                return getSmallintValue(resultSet, columnIndex);
+                return null == dialectLoader ? Integer.valueOf(resultSet.getInt(columnIndex)) : dialectLoader.getSmallintValue(resultSet, columnIndex);
             case Types.INTEGER:
                 if (metaData.isSigned(columnIndex)) {
                     return resultSet.getInt(columnIndex);
@@ -79,7 +94,7 @@ public abstract class AbstractQueryResultDataRowLoader implements DialectQueryRe
             case Types.LONGVARCHAR:
                 return resultSet.getString(columnIndex);
             case Types.DATE:
-                return getDateValue(resultSet, columnIndex);
+                return null == dialectLoader ? resultSet.getDate(columnIndex) : dialectLoader.getDateValue(resultSet, columnIndex);
             case Types.TIME:
                 return resultSet.getTime(columnIndex);
             case Types.TIMESTAMP:
@@ -98,24 +113,4 @@ public abstract class AbstractQueryResultDataRowLoader implements DialectQueryRe
                 return resultSet.getObject(columnIndex);
         }
     }
-    
-    /**
-     * Get smallint value from result set.
-     *
-     * @param resultSet result set
-     * @param columnIndex column index
-     * @return smallint value
-     * @throws SQLException sql exception
-     */
-    protected abstract Object getSmallintValue(ResultSet resultSet, int columnIndex) throws SQLException;
-    
-    /**
-     * Get date value from result set.
-     * 
-     * @param resultSet result set
-     * @param columnIndex column index
-     * @return date value
-     * @throws SQLException sql exception
-     */
-    protected abstract Object getDateValue(ResultSet resultSet, int columnIndex) throws SQLException;
 }
