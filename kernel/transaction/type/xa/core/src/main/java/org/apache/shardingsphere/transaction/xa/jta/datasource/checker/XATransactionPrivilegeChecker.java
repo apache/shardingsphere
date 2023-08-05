@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.checker;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+
 import javax.sql.DataSource;
 
 /**
- * Default data source privilege checker.
+ * XA transaction privilege checker.
  */
-public final class DefaultDataSourcePrivilegeChecker implements DataSourcePrivilegeChecker {
+public interface XATransactionPrivilegeChecker extends DatabaseTypedSPI {
     
-    @Override
-    public void checkPrivilege(final DataSource dataSource) {
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
+    /**
+     * Check XA transaction privilege.
+     *
+     * @param dataSource data source to be checked
+     */
+    void check(DataSource dataSource);
 }

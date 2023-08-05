@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.checker.dialect;
 
-import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.DataSourcePrivilegeChecker;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.XATransactionPrivilegeChecker;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionCheckPrivilegeFailedException;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionPrivilegeException;
 
@@ -29,9 +29,9 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 /**
- * MySQL data source privilege checker.
+ * XA transaction privilege checker of MySQL.
  */
-public final class MySQLDataSourcePrivilegeChecker implements DataSourcePrivilegeChecker {
+public final class MySQLXATransactionPrivilegeChecker implements XATransactionPrivilegeChecker {
     
     private static final String SHOW_GRANTS_SQL = "SHOW GRANTS";
     
@@ -40,7 +40,7 @@ public final class MySQLDataSourcePrivilegeChecker implements DataSourcePrivileg
     private static final int MYSQL_MAJOR_VERSION_8 = 8;
     
     @Override
-    public void checkPrivilege(final DataSource dataSource) {
+    public void check(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
             if (MYSQL_MAJOR_VERSION_8 == connection.getMetaData().getDatabaseMajorVersion()) {
                 checkPrivilege(connection);

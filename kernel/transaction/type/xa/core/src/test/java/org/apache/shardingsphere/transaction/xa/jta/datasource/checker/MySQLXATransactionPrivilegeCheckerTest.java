@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.checker;
 
-import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.dialect.MySQLDataSourcePrivilegeChecker;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.dialect.MySQLXATransactionPrivilegeChecker;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionCheckPrivilegeFailedException;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionPrivilegeException;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MySQLDataSourcePrivilegeCheckerTest {
+class MySQLXATransactionPrivilegeCheckerTest {
     
     @Mock
     private PreparedStatement preparedStatement;
@@ -61,14 +61,14 @@ class MySQLDataSourcePrivilegeCheckerTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(8);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString(1)).thenReturn("GRANT XA_RECOVER_ADMIN ON *.* TO '%'@'%'");
-        new MySQLDataSourcePrivilegeChecker().checkPrivilege(dataSource);
+        new MySQLXATransactionPrivilegeChecker().check(dataSource);
         verify(preparedStatement).executeQuery();
     }
     
     @Test
     void assertUnCheckPrivilegeInMySQL5() throws SQLException {
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(5);
-        new MySQLDataSourcePrivilegeChecker().checkPrivilege(dataSource);
+        new MySQLXATransactionPrivilegeChecker().check(dataSource);
         verify(preparedStatement, times(0)).executeQuery();
     }
     
@@ -78,7 +78,7 @@ class MySQLDataSourcePrivilegeCheckerTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(8);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString(1)).thenReturn("GRANT ALL PRIVILEGES ON *.* TO '%'@'%'");
-        new MySQLDataSourcePrivilegeChecker().checkPrivilege(dataSource);
+        new MySQLXATransactionPrivilegeChecker().check(dataSource);
         verify(preparedStatement).executeQuery();
     }
     
@@ -86,7 +86,7 @@ class MySQLDataSourcePrivilegeCheckerTest {
     void assertCheckPrivilegeLackPrivilegesInMySQL8() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(8);
-        assertThrows(XATransactionPrivilegeException.class, () -> new MySQLDataSourcePrivilegeChecker().checkPrivilege(dataSource));
+        assertThrows(XATransactionPrivilegeException.class, () -> new MySQLXATransactionPrivilegeChecker().check(dataSource));
     }
     
     @Test
@@ -94,6 +94,6 @@ class MySQLDataSourcePrivilegeCheckerTest {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(8);
         when(resultSet.next()).thenThrow(new SQLException(""));
-        assertThrows(XATransactionCheckPrivilegeFailedException.class, () -> new MySQLDataSourcePrivilegeChecker().checkPrivilege(dataSource));
+        assertThrows(XATransactionCheckPrivilegeFailedException.class, () -> new MySQLXATransactionPrivilegeChecker().check(dataSource));
     }
 }
