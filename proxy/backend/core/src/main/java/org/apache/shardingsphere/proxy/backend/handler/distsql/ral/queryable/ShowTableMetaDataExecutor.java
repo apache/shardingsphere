@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
- * Show table meta data handler.
+ * Show table meta data executor.
  */
 public final class ShowTableMetaDataExecutor implements DatabaseRequiredQueryableRALExecutor<ShowTableMetaDataStatement> {
     

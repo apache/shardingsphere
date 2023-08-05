@@ -106,22 +106,26 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             return Optional.of(new MySQLSetVariableAdminExecutor((SetStatement) sqlStatement));
         }
         if (sqlStatement instanceof SelectStatement) {
-            SelectStatement selectStatement = (SelectStatement) sqlStatement;
-            if (null == selectStatement.getFrom()) {
-                return findAdminExecutorForSelectWithoutFrom(sql, databaseName, selectStatement);
-            }
-            if (isQueryInformationSchema(databaseName)) {
-                return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
-            }
-            if (isQueryPerformanceSchema(databaseName)) {
-                return MySQLPerformanceSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
-            }
-            if (isQueryMySQLSchema(databaseName)) {
-                return MySQLMySQLSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
-            }
-            if (isQuerySysSchema(databaseName)) {
-                return MySQLSysSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
-            }
+            return create((SelectStatement) sqlStatement, sql, databaseName, parameters);
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<DatabaseAdminExecutor> create(final SelectStatement selectStatement, final String sql, final String databaseName, final List<Object> parameters) {
+        if (null == selectStatement.getFrom()) {
+            return findAdminExecutorForSelectWithoutFrom(sql, databaseName, selectStatement);
+        }
+        if (isQueryInformationSchema(databaseName)) {
+            return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
+        }
+        if (isQueryPerformanceSchema(databaseName)) {
+            return MySQLPerformanceSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
+        }
+        if (isQueryMySQLSchema(databaseName)) {
+            return MySQLMySQLSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
+        }
+        if (isQuerySysSchema(databaseName)) {
+            return MySQLSysSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
         }
         return Optional.empty();
     }

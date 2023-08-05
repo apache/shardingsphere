@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.sharding.metadata;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.Test;
@@ -61,9 +61,9 @@ class ShardingMetaDataReviseEngineTest {
     }
     
     private TableMetaData createTableMetaData() {
-        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false),
-                new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false),
-                new ColumnMetaData("product_id", Types.INTEGER, false, false, true, true, false));
+        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false),
+                new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false, false),
+                new ColumnMetaData("product_id", Types.INTEGER, false, false, true, true, false, false));
         return new TableMetaData("t_order", columns, Collections.emptyList(), Collections.emptyList());
     }
 }

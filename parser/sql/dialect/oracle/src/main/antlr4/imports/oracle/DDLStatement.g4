@@ -31,6 +31,54 @@ createIndex
     : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause usableSpecification? invalidationSpecification?
     ;
 
+createType
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? TYPE plsqlTypeSource
+    ;
+
+plsqlTypeSource
+    : typeName (objectBaseTypeDef | objectSubTypeDef)
+    ;
+
+objectBaseTypeDef
+    : (IS | AS) (objectTypeDef | varrayTypeSpec | nestedTableTypeSpec)
+    ;
+
+objectTypeDef
+    : OBJECT LP_ dataTypeDefinition (COMMA_ dataTypeDefinition)* RP_ finalClause? instantiableClause? persistableClause?
+    ;
+
+finalClause
+    : NOT? FINAL
+    ;
+
+instantiableClause
+    : NOT? INSTANTIABLE
+    ;
+
+persistableClause
+    : NOT? PERSISTABLE
+    ;
+
+varrayTypeSpec
+    : VARRAY (LP_ INTEGER_ RP_)? OF typeSpec
+    ;
+
+nestedTableTypeSpec
+    : TABLE OF typeSpec
+    ;
+
+typeSpec
+    : ((LP_ dataType RP_) | dataType) (NOT NULL)? persistableClause?
+    ;
+
+dataTypeDefinition
+    : name dataType
+    ;
+
+objectSubTypeDef
+    : UNDER typeName LP_ dataTypeDefinition (COMMA_ dataTypeDefinition)* RP_ finalClause? instantiableClause?
+    ;
+
 alterTable
     : ALTER TABLE tableName memOptimizeClause alterDefinitionClause enableDisableClauses
     ;
@@ -1109,6 +1157,36 @@ alterPackage
     )
     ;
 
+alterProfile
+    : ALTER PROFILE profileName LIMIT (resourceParameters | passwordParameters)+ (CONTAINER EQ_ (CURRENT | ALL))?
+    ;
+
+resourceParameters
+    : (SESSIONS_PER_USER
+    | CPU_PER_SESSION
+    | CPU_PER_CALL
+    | CONNECT_TIME
+    | IDLE_TIME
+    | LOGICAL_READS_PER_SESSION
+    | LOGICAL_READS_PER_CALL
+    | COMPOSITE_LIMIT
+    ) (INTEGER_ | UNLIMITED | DEFAULT)
+    | PRIVATE_SGA (sizeClause | UNLIMITED | DEFAULT)
+    ;
+
+passwordParameters
+    : (FAILED_LOGIN_ATTEMPTS
+    | PASSWORD_LIFE_TIME
+    | PASSWORD_REUSE_TIME
+    | PASSWORD_REUSE_MAX
+    | PASSWORD_LOCK_TIME
+    | PASSWORD_GRACE_TIME
+    | INACTIVE_ACCOUNT_TIME
+    ) (expr | UNLIMITED | DEFAULT)
+    | PASSWORD_VERIFY_FUNCTION (function | NULL | DEFAULT)
+    | PASSWORD_ROLLOVER_TIME (expr | DEFAULT)
+    ;
+
 packageCompileClause
     : COMPILE DEBUG? (PACKAGE | SPECIFICATION | BODY)? (compilerParametersClause*)? (REUSE SETTINGS)?
     ;
@@ -1866,11 +1944,11 @@ flushClauseOption
     ;
 
 disconnectSessionClause
-    : DISCONNECT SESSION SQ_ INTEGER_ COMMA_ INTEGER_ SQ_ POST_TRANSACTION?
+    : DISCONNECT SESSION STRING_ POST_TRANSACTION?
     ;
 
 killSessionClause
-    : KILL SESSION SQ_ INTEGER_ COMMA_ INTEGER_ (COMMA_ AT_ INTEGER_)? SQ_
+    : KILL SESSION STRING_
     ;
 
 startRollingMigrationClause
@@ -1914,7 +1992,7 @@ disableAffinityClause
     ;
 
 alterSystemSetClause
-    : setParameterClause | useStoredOutlinesClause | globalTopicEnabledClause
+    : setParameterClause | useStoredOutlinesClause | globalTopicEnabledClause | dbRecoveryFileDestSizeClause
     ;
 
 alterSystemResetClause
@@ -1961,6 +2039,10 @@ globalTopicEnabledClause
     : GLOBAL_TOPIC_ENABLED EQ_ (TRUE | FALSE)
     ;
 
+dbRecoveryFileDestSizeClause
+    : DB_RECOVERY_FILE_DEST_SIZE EQ_ INTEGER_ capacityUnit?
+    ;
+
 alterSystemCommentClause
     : COMMENT EQ_ stringLiterals
     ;
@@ -1970,7 +2052,7 @@ containerCurrentAllClause
     ;
 
 scopeClause
-    : SCOPE EQ_ (MEMORY | SPFILE | BOTH) | SID EQ_ (SQ_ sessionId SQ_ | SQ_ ASTERISK_ SQ_)
+    : SCOPE EQ_ (MEMORY | SPFILE | BOTH) | SID EQ_ (sessionId | SQ_ ASTERISK_ SQ_)
     ;
 
 analyze
@@ -2264,24 +2346,6 @@ dropDirectory
 
 dropType
     : DROP TYPE typeName (FORCE|VALIDATE)?
-    ;
-
-createFunction
-    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
-    ;
-
-plsqlFunctionSource
-    : function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN dataType
-    sharingClause? (invokerRightsClause
-    | accessibleByClause 
-    | defaultCollationoOptionClause
-    | deterministicClause
-    | parallelEnableClause
-    | resultCacheClause
-    | aggregateClause
-    | pipelinedClause
-    | sqlMacroClause)* 
-    (IS | AS) callSpec
     ;
 
 parameterDeclaration
@@ -3032,7 +3096,7 @@ usergroupClauses
     ;
 
 userClauses
-    : (ADD USER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
+    : (ADD USER username (COMMA_ username)*
     | DROP USER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)* (CASCADE)?
     | REPLACE USER SQ_ username SQ_ WITH SQ_ username SQ_ (COMMA_ SQ_ username SQ_ WITH SQ_ username SQ_)*)
     ;
@@ -3623,8 +3687,24 @@ segmentManagementClause
     : SEGMENT SPACE MANAGEMENT (AUTO|MANUAL)
     ;
 
+tablespaceGroupClause
+    : TABLESPACE GROUP tablespaceGroupName
+    ;
+
+temporaryTablespaceClause
+    : TEMPORARY TABLESPACE tablespaceName (TEMPFILE fileSpecification (COMMA_ fileSpecification)* )? tablespaceGroupClause? extentManagementClause?
+    ;
+
+tablespaceRetentionClause
+    : RETENTION (GUARANTEE | NOGUARANTEE)
+    ;
+
+undoTablespaceClause
+    : UNDO TABLESPACE tablespaceName (DATAFILE fileSpecification (COMMA_ fileSpecification)*)? extentManagementClause? tablespaceRetentionClause?
+    ;
+
 createTablespace
-    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
+    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? (permanentTablespaceClause | temporaryTablespaceClause | undoTablespaceClause)
     ;
 
 permanentTablespaceClause
@@ -3638,7 +3718,78 @@ permanentTablespaceClause
     | (ONLINE|OFFLINE)
     | extentManagementClause
     | segmentManagementClause
+    | flashbackModeClause
     )
+    ;
+
+alterTablespace
+    : ALTER TABLESPACE tablespaceName
+    ( MINIMUM EXTENT sizeClause
+    | RESIZE sizeClause
+    | COALESCE
+    | SHRINK SPACE (KEEP sizeClause)?
+    | RENAME TO newTablespaceName
+    | (BEGIN|END) BACKUP
+    | datafileTempfileClauses
+    | tablespaceLoggingClauses
+    | tablespaceGroupClause
+    | tablespaceStateClauses
+    | autoextendClause
+    | flashbackModeClause
+    | tablespaceRetentionClause
+    | alterTablespaceEncryption
+    | lostWriteProtection
+    )
+    ;
+
+tablespaceRetentionClause
+    : RETENTION (GUARANTEE | NOGUARANTEE)
+    ;
+
+newTablespaceName
+    : identifier
+    ;
+
+datafileTempfileClauses
+    : ADD (datafileSpecification | tempfileSpecification)
+    | DROP (DATAFILE | TEMPFILE) (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
+    | SHRINK TEMPFILE (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
+    | RENAME DATAFILE fileSpecification (COMMA_ fileSpecification)* TO fileSpecification (COMMA_ fileSpecification)*
+    | (DATAFILE | TEMPFILE) (ONLINE|OFFLINE)
+    ;
+
+datafileSpecification
+    : DATAFILE
+      (COMMA_? datafileTempfileSpec)
+    ;
+
+tempfileSpecification
+    : TEMPFILE
+      (COMMA_? datafileTempfileSpec)
+    ;
+
+tablespaceLoggingClauses
+    : loggingClause
+    | NO? FORCE LOGGING
+    ;
+
+tablespaceStateClauses
+    : ONLINE
+    | OFFLINE (NORMAL | TEMPORARY | IMMEDIATE)?
+    | READ (ONLY | WRITE)
+    | PERMANENT
+    | TEMPORARY
+    ;
+
+tablespaceFileNameConvert
+    : FILE_NAME_CONVERT EQ_ LP_ CHAR_STRING COMMA_ CHAR_STRING (COMMA_ CHAR_STRING COMMA_ CHAR_STRING)* RP_ KEEP?
+    ;
+
+alterTablespaceEncryption
+    : ENCRYPTION ( OFFLINE (tablespaceEncryptionSpec? ENCRYPT | DECRYPT)
+                 | ONLINE (tablespaceEncryptionSpec? (ENCRYPT | REKEY) | DECRYPT) tablespaceFileNameConvert?
+                 | FINISH (ENCRYPT | REKEY | DECRYPT) tablespaceFileNameConvert?
+                 )
     ;
 
 dropFunction
@@ -3694,11 +3845,36 @@ replaceTypeClause
     : REPLACE invokerRightsClause? AS OBJECT LP_ (attributeName dataType (COMMA_ (elementSpecification | attributeName dataType))*) RP_
     ;
 
+alterMethodSpec
+    : (ADD | DROP) (mapOrderFunctionSpec | subprogramSpec) ((ADD | DROP) (mapOrderFunctionSpec | subprogramSpec))*
+    ;
+
+alterAttributeDefinition
+    : (ADD | MODIFY) ATTRIBUTE ( attributeName dataType? | LP_ attributeName dataType (COMMA_ attributeName dataType)* RP_)
+      | DROP ATTRIBUTE ( attributeName | LP_ attributeName (COMMA_ attributeName)* RP_)
+    ;
+
+alterCollectionClauses
+    : MODIFY (LIMIT INTEGER_ | ELEMENT TYPE dataType)
+    ;
+
+exceptionsClause
+    : EXCEPTIONS INTO (schemaName DOT_)? tableName
+    ;
+
+dependentHandlingClause
+    : INVALIDATE | CASCADE (NOT? INCLUDING TABLE DATA | CONVERT TO SUBSTITUTABLE)? (FORCE? exceptionsClause)?
+    ;
+
 alterType
-    : ALTER TYPE typeName (compileTypeClause|replaceTypeClause)?
+    : ALTER TYPE typeName (compileTypeClause | replaceTypeClause | RESET
+    | (alterMethodSpec | alterAttributeDefinition | alterCollectionClauses | NOT? (INSTANTIABLE | FINAL)) dependentHandlingClause?)
     ;
 
 createCluster
     : CREATE CLUSTER (schemaName DOT_)? clusterName
     LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
+    (physicalAttributesClause | SET sizeClause | TABLESPACE tablespaceName | INDEX |
+    (SINGLE TABLE)? HASHKEYS INTEGER_ (HASH IS functionName LP_ (argument (COMMA_ argument)*) RP_)?)?
+    parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
     ;

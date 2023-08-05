@@ -17,57 +17,22 @@
 
 package org.apache.shardingsphere.infra.spi;
 
-import com.google.common.base.Preconditions;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ShardingSphere service loader.
- * 
- * @param <T> type of service
  */
-public final class ShardingSphereServiceLoader<T> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingSphereServiceLoader {
     
-    private static final Map<Class<?>, ShardingSphereServiceLoader<?>> LOADERS = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, RegisteredShardingSphereSPI<?>> REGISTERED_SERVICES = new ConcurrentHashMap<>();
     
-    private static final int LOAD_LOCKS_COUNT = 16;
-    
-    private static final Object[] LOAD_LOCKS = new Object[LOAD_LOCKS_COUNT];
-    
-    private final Collection<T> services;
-    
-    private final boolean isSingletonSPI;
-    
-    static {
-        for (int i = 0; i < LOAD_LOCKS_COUNT; i++) {
-            LOAD_LOCKS[i] = new Object();
-        }
-    }
-    
-    private ShardingSphereServiceLoader(final Class<T> serviceInterface) {
-        validate(serviceInterface);
-        services = load(serviceInterface);
-        isSingletonSPI = null != serviceInterface.getAnnotation(SingletonSPI.class);
-    }
-    
-    private void validate(final Class<T> serviceInterface) {
-        Preconditions.checkNotNull(serviceInterface, "SPI interface is null.");
-        Preconditions.checkArgument(serviceInterface.isInterface(), "SPI `%s` is not an interface.", serviceInterface);
-    }
-    
-    private Collection<T> load(final Class<T> serviceInterface) {
-        Collection<T> result = new LinkedList<>();
-        for (T each : ServiceLoader.load(serviceInterface)) {
-            result.add(each);
-        }
-        return result;
-    }
+    private static final Object LOAD_LOCK = new Object();
     
     /**
      * Get service instances.
@@ -75,39 +40,25 @@ public final class ShardingSphereServiceLoader<T> {
      * @param serviceInterface service interface
      * @param <T> type of service interface
      * @return service instances
-     * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>
      */
     @SuppressWarnings("unchecked")
     public static <T> Collection<T> getServiceInstances(final Class<T> serviceInterface) {
-        ShardingSphereServiceLoader<?> result = LOADERS.get(serviceInterface);
+        return (Collection<T>) getRegisteredSPI(serviceInterface).getServiceInstances();
+    }
+    
+    /*
+     * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>
+     */
+    private static <T> RegisteredShardingSphereSPI<?> getRegisteredSPI(final Class<T> serviceInterface) {
+        RegisteredShardingSphereSPI<?> result = REGISTERED_SERVICES.get(serviceInterface);
         if (null != result) {
-            return (Collection<T>) result.getServiceInstances();
+            return result;
         }
-        synchronized (LOAD_LOCKS[serviceInterface.hashCode() % LOAD_LOCKS_COUNT]) {
-            result = LOADERS.get(serviceInterface);
-            if (null == result) {
-                result = new ShardingSphereServiceLoader<>(serviceInterface);
-                LOADERS.put(serviceInterface, result);
+        synchronized (LOAD_LOCK) {
+            if (!REGISTERED_SERVICES.containsKey(serviceInterface)) {
+                REGISTERED_SERVICES.put(serviceInterface, new RegisteredShardingSphereSPI<>(serviceInterface));
             }
         }
-        return (Collection<T>) result.getServiceInstances();
-    }
-    
-    private Collection<T> getServiceInstances() {
-        return isSingletonSPI ? getSingletonServiceInstances() : createNewServiceInstances();
-    }
-    
-    private Collection<T> getSingletonServiceInstances() {
-        return services;
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    @SuppressWarnings("unchecked")
-    private Collection<T> createNewServiceInstances() {
-        Collection<T> result = new LinkedList<>();
-        for (Object each : services) {
-            result.add((T) each.getClass().getDeclaredConstructor().newInstance());
-        }
-        return result;
+        return REGISTERED_SERVICES.get(serviceInterface);
     }
 }

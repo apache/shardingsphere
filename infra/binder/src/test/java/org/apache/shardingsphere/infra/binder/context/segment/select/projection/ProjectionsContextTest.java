@@ -24,7 +24,9 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -150,9 +152,11 @@ class ProjectionsContextTest {
     
     @Test
     void assertIsContainsLastInsertIdProjection() {
-        ProjectionsContext lastInsertIdProjection = new ProjectionsContext(0, 0, false, Collections.singletonList(new ExpressionProjection("LAST_INSERT_ID()", new IdentifierValue("id"))));
+        ProjectionsContext lastInsertIdProjection = new ProjectionsContext(0, 0, false,
+                Collections.singletonList(new ExpressionProjection(new ExpressionProjectionSegment(0, 0, "LAST_INSERT_ID()"), new IdentifierValue("id"), new MySQLDatabaseType())));
         assertTrue(lastInsertIdProjection.isContainsLastInsertIdProjection());
-        ProjectionsContext maxProjection = new ProjectionsContext(0, 0, false, Collections.singletonList(new ExpressionProjection("MAX(id)", new IdentifierValue("max"))));
+        ProjectionsContext maxProjection = new ProjectionsContext(0, 0, false,
+                Collections.singletonList(new ExpressionProjection(new ExpressionProjectionSegment(0, 0, "MAX(id)"), new IdentifierValue("max"), new MySQLDatabaseType())));
         assertFalse(maxProjection.isContainsLastInsertIdProjection());
     }
 }

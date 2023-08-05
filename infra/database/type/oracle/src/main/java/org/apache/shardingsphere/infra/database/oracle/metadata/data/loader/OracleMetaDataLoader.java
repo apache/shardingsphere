@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.infra.database.oracle.metadata.data.loader;
 
 import com.google.common.collect.Lists;
+import org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeLoader;
-import org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeLoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
@@ -49,7 +49,8 @@ import java.util.stream.Collectors;
  */
 public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     
-    private static final String TABLE_META_DATA_SQL_NO_ORDER = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN %s FROM ALL_TAB_COLS WHERE OWNER = ?";
+    private static final String TABLE_META_DATA_SQL_NO_ORDER =
+            "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, NULLABLE, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN %s FROM ALL_TAB_COLS WHERE OWNER = ?";
     
     private static final String ORDER_BY_COLUMN_ID = " ORDER BY COLUMN_ID";
     
@@ -120,7 +121,8 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
         String collation = resultSet.getString("COLLATION");
         boolean caseSensitive = versionContainsCollation(databaseMetaData) && null != collation && collation.endsWith("_CS");
         boolean isVisible = "NO".equals(resultSet.getString("HIDDEN_COLUMN"));
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible, false);
+        boolean nullable = "Y".equals(resultSet.getString("NULLABLE"));
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible, false, nullable);
     }
     
     private String getOriginalDataType(final String dataType) {
