@@ -66,32 +66,32 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
     protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
         Map<String, ShardingSphereTable> tables = new LinkedHashMap<>();
         tables.put("t_account", new ShardingSphereTable("t_account", Arrays.asList(
-                new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false),
-                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false),
-                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false)), Collections.singletonList(new ShardingSphereIndex("status_idx_exist")),
+                new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false, false),
+                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.singletonList(new ShardingSphereIndex("status_idx_exist")),
                 Collections.emptyList()));
         tables.put("t_account_detail", new ShardingSphereTable("t_account_detail", Arrays.asList(
-                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false),
-                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_user", new ShardingSphereTable("t_user", Arrays.asList(
-                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("content", Types.VARCHAR, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("content", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_user_extend", new ShardingSphereTable("t_user_extend", Arrays.asList(
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("content", Types.VARCHAR, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("content", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_single", new ShardingSphereTable("t_single", Collections.singletonList(
-                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_single_extend", new ShardingSphereTable("t_single_extend", Collections.singletonList(
-                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_config", new ShardingSphereTable("t_config", Collections.singletonList(
-                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("T_ROLE", new ShardingSphereTable("T_ROLE", Collections.singletonList(
-                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("T_ROLE_ADMIN", new ShardingSphereTable("T_ROLE_ADMIN", Collections.singletonList(
-                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_account_view", new ShardingSphereTable("t_account_view", Collections.singletonList(
-                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         ShardingSphereSchema result = new ShardingSphereSchema(tables, Collections.emptyMap());
         return Collections.singletonMap(schemaName, result);
     }

@@ -17,7 +17,7 @@
 
 grammar OracleStatement;
 
-import DMLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import DMLStatement, TCLStatement, DCLStatement, DALStatement, PLSQL;
 
 execute
     : (select
@@ -139,12 +139,14 @@ execute
     | alterResourceCost
     | alterRole
     | createTablespace
+    | alterTablespace
     | dropSequence
     | dropProfile
     | dropFunction
     | dropCluster
     | systemAction
     | alterType
+    | createType
     | createCluster
     ) SEMI_?
     ;

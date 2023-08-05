@@ -25,7 +25,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Index meta data loader.
@@ -48,12 +49,20 @@ public final class IndexMetaDataLoader {
      */
     @SuppressWarnings("CollectionWithoutInitialCapacity")
     public static Collection<IndexMetaData> load(final Connection connection, final String table) throws SQLException {
-        Collection<IndexMetaData> result = new HashSet<>();
+        Map<String, IndexMetaData> result = new HashMap<>();
         try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), connection.getSchema(), table, false, false)) {
             while (resultSet.next()) {
                 String indexName = resultSet.getString(INDEX_NAME);
-                if (null != indexName) {
-                    result.add(new IndexMetaData(indexName));
+                if (null == indexName) {
+                    continue;
+                }
+                if (!result.containsKey(indexName)) {
+                    IndexMetaData indexMetaData = new IndexMetaData(indexName);
+                    indexMetaData.getColumns().add(resultSet.getString("COLUMN_NAME"));
+                    indexMetaData.setUnique(!resultSet.getBoolean("NON_UNIQUE"));
+                    result.put(indexName, indexMetaData);
+                } else {
+                    result.get(indexName).getColumns().add(resultSet.getString("COLUMN_NAME"));
                 }
             }
         } catch (final SQLException ex) {
@@ -61,6 +70,6 @@ public final class IndexMetaDataLoader {
                 throw ex;
             }
         }
-        return result;
+        return result.values();
     }
 }

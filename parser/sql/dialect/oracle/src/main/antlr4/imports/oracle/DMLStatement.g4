@@ -111,7 +111,7 @@ updateSetColumnClause
     ;
 
 updateSetValueClause
-    : VALUE LP_ alias RP_ EQ_ (expr | LP_ selectSubquery RP_)
+    : VALUE LP_ columnName RP_ EQ_ (expr | LP_ selectSubquery RP_)
     ;
 
 assignmentValues

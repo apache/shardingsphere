@@ -18,16 +18,17 @@
 package org.apache.shardingsphere.transaction.xa;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.exception.TransactionTimeoutException;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.DataSourcePrivilegeChecker;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.XATransactionPrivilegeChecker;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.DataSource;
@@ -44,6 +45,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * ShardingSphere Transaction manager for XA.
@@ -56,7 +58,9 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
-        dataSources.forEach((key, value) -> DatabaseTypedSPILoader.getService(DataSourcePrivilegeChecker.class, databaseTypes.get(key)).checkPrivilege(value));
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            DatabaseTypedSPILoader.findService(XATransactionPrivilegeChecker.class, databaseTypes.get(entry.getKey())).ifPresent(optional -> optional.check(entry.getValue()));
+        }
         xaTransactionManagerProvider = TypedSPILoader.getService(XATransactionManagerProvider.class, providerType);
         xaTransactionManagerProvider.init();
         Map<String, ResourceDataSource> resourceDataSources = getResourceDataSources(dataSources);
@@ -141,7 +145,13 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public boolean containsProviderType(final String providerType) {
-        return TypedSPILoader.contains(XATransactionManagerProvider.class, providerType);
+        try {
+            TypedSPILoader.checkService(XATransactionManagerProvider.class, providerType, new Properties());
+            return true;
+        } catch (final ServiceProviderNotFoundException ex) {
+            return false;
+        }
+        
     }
     
     @Override

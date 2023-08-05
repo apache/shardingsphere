@@ -116,21 +116,21 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
     private Map<String, ShardingSphereDatabase> createShardingSphereDatabaseMap() {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1F);
         Collection<ShardingSphereColumn> columns = Arrays.asList(
-                new ShardingSphereColumn("datname", 12, false, false, false, true, false),
-                new ShardingSphereColumn("datdba", -5, false, false, false, true, false),
-                new ShardingSphereColumn("encoding", 4, false, false, false, true, false),
-                new ShardingSphereColumn("datcollate", 12, false, false, false, true, false),
-                new ShardingSphereColumn("datctype", 12, false, false, false, true, false),
-                new ShardingSphereColumn("datistemplate", -7, false, false, false, true, false),
-                new ShardingSphereColumn("datallowconn", -7, false, false, false, true, false),
-                new ShardingSphereColumn("datconnlimit", 4, false, false, false, true, false),
-                new ShardingSphereColumn("datlastsysoid", -5, false, false, false, true, false),
-                new ShardingSphereColumn("datfrozenxid", 1111, false, false, false, true, false),
-                new ShardingSphereColumn("dattablespace", -5, false, false, false, true, false),
-                new ShardingSphereColumn("datcompatibility", 12, false, false, false, true, false),
-                new ShardingSphereColumn("datacl", 2003, false, false, false, true, false),
-                new ShardingSphereColumn("datfrozenxid64", 1111, false, false, false, true, false),
-                new ShardingSphereColumn("datminmxid", 1111, false, false, false, true, false));
+                new ShardingSphereColumn("datname", 12, false, false, false, true, false, false),
+                new ShardingSphereColumn("datdba", -5, false, false, false, true, false, false),
+                new ShardingSphereColumn("encoding", 4, false, false, false, true, false, false),
+                new ShardingSphereColumn("datcollate", 12, false, false, false, true, false, false),
+                new ShardingSphereColumn("datctype", 12, false, false, false, true, false, false),
+                new ShardingSphereColumn("datistemplate", -7, false, false, false, true, false, false),
+                new ShardingSphereColumn("datallowconn", -7, false, false, false, true, false, false),
+                new ShardingSphereColumn("datconnlimit", 4, false, false, false, true, false, false),
+                new ShardingSphereColumn("datlastsysoid", -5, false, false, false, true, false, false),
+                new ShardingSphereColumn("datfrozenxid", 1111, false, false, false, true, false, false),
+                new ShardingSphereColumn("dattablespace", -5, false, false, false, true, false, false),
+                new ShardingSphereColumn("datcompatibility", 12, false, false, false, true, false, false),
+                new ShardingSphereColumn("datacl", 2003, false, false, false, true, false, false),
+                new ShardingSphereColumn("datfrozenxid64", 1111, false, false, false, true, false, false),
+                new ShardingSphereColumn("datminmxid", 1111, false, false, false, true, false, false));
         ShardingSphereSchema schema = new ShardingSphereSchema(
                 Collections.singletonMap("pg_database", new ShardingSphereTable("pg_database", columns, Collections.emptyList(), Collections.emptyList())), Collections.emptyMap());
         result.put("sharding_db", new ShardingSphereDatabase("sharding_db", TypedSPILoader.getService(DatabaseType.class, "openGauss"),

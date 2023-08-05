@@ -328,7 +328,7 @@ unreservedWord3
     | WIDTH_BUCKET | WRAPPED | XID | XMLAGG | XMLATTRIBUTES | XMLCAST | XMLCDATA | XMLCOLATTVAL | XMLCOMMENT | XMLCONCAT | XMLDIFF
     | XMLEXISTS | XMLEXISTS2 | XMLFOREST | XMLINDEX_REWRITE | XMLINDEX_REWRITE_IN_SELECT | XMLINDEX_SEL_IDX_TBL | XMLISNODE
     | XMLISVALID | XMLNAMESPACES | XMLPARSE | XMLPATCH | XMLPI | XMLQUERY | XMLROOT | XMLSERIALIZE | XMLTABLE | XMLTOOBJECT
-    | XMLTRANSFORM | XMLTRANSFORMBLOB | XML_DML_RWT_STMT | XPATHTABLE | XS_SYS_CONTEXT | X_DYN_PRUNE
+    | XMLTRANSFORM | XMLTRANSFORMBLOB | XML_DML_RWT_STMT | XPATHTABLE | XS_SYS_CONTEXT | X_DYN_PRUNE | RESULT | TABLE
     ;
 
 schemaName
@@ -352,7 +352,7 @@ materializedViewName
     ;
 
 columnName
-    : (owner DOT_)? name
+    : (owner? DOT_)? name (DOT_ nestedItem)*
     ;
 
 objectName
@@ -682,6 +682,8 @@ bitExpr
     | bitExpr SLASH_ bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
+    | bitExpr DOT_ bitExpr
+    | bitExpr ARROW_ bitExpr
     ;
 
 simpleExpr
@@ -704,7 +706,7 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? keepClause? overClause? overClause?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? orderByClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? keepClause? overClause? overClause?
     ;
 
 keepClause
@@ -757,6 +759,15 @@ leadLagInfo
 
 specialFunction
     : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
+    | setFunction | translateFunction
+    ;
+
+translateFunction
+    : TRANSLATE LP_ expr USING (CHAR_CS | NCHAR_CS) RP_
+    ;
+
+setFunction
+    : SET LP_ expr RP_
     ;
 
 featureFunction
@@ -803,7 +814,8 @@ formatFunction
     ;
 
 castFunction
-    : (CAST | XMLCAST) LP_ expr AS dataType RP_
+    : CAST LP_ ((MULTISET subquery) | expr) AS dataType RP_
+    | XMLCAST LP_ expr AS dataType RP_
     ;
 
 charFunction
@@ -1709,7 +1721,7 @@ libName
 externalDatatype
     : dataType
     ;
-    
+
 capacityUnit
     : ('K' | 'M' | 'G' | 'T' | 'P' | 'E')
     ;

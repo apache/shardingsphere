@@ -44,6 +44,8 @@ import java.util.Optional;
  */
 public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
+    private final String databaseName;
+    
     @Getter
     private final RuleConfiguration configuration;
     
@@ -51,7 +53,8 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
     private final TableNamesMapper tableNamesMapper = new TableNamesMapper();
     
-    public EncryptRule(final EncryptRuleConfiguration ruleConfig) {
+    public EncryptRule(final String databaseName, final EncryptRuleConfiguration ruleConfig) {
+        this.databaseName = databaseName;
         configuration = ruleConfig;
         @SuppressWarnings("rawtypes")
         Map<String, StandardEncryptAlgorithm> standardEncryptors = new LinkedHashMap<>();
@@ -76,7 +79,8 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @deprecated deprecated by compatible encrypt rule configuration
      */
     @Deprecated
-    public EncryptRule(final CompatibleEncryptRuleConfiguration ruleConfig) {
+    public EncryptRule(final String databaseName, final CompatibleEncryptRuleConfiguration ruleConfig) {
+        this.databaseName = databaseName;
         configuration = ruleConfig;
         @SuppressWarnings("rawtypes")
         Map<String, StandardEncryptAlgorithm> standardEncryptors = new LinkedHashMap<>();
@@ -112,19 +116,19 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     @SuppressWarnings("rawtypes")
     private void checkStandardEncryptorType(final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, StandardEncryptAlgorithm> standardEncryptors) {
         ShardingSpherePreconditions.checkState(standardEncryptors.containsKey(columnRuleConfig.getCipher().getEncryptorName()),
-                () -> new MismatchedEncryptAlgorithmTypeException("Cipher", columnRuleConfig.getCipher().getEncryptorName(), StandardEncryptAlgorithm.class.getSimpleName()));
+                () -> new MismatchedEncryptAlgorithmTypeException(databaseName, "Cipher", columnRuleConfig.getCipher().getEncryptorName(), StandardEncryptAlgorithm.class.getSimpleName()));
     }
     
     @SuppressWarnings("rawtypes")
     private void checkAssistedQueryEncryptorType(final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, AssistedEncryptAlgorithm> assistedEncryptors) {
         columnRuleConfig.getAssistedQuery().ifPresent(optional -> ShardingSpherePreconditions.checkState(assistedEncryptors.containsKey(optional.getEncryptorName()),
-                () -> new MismatchedEncryptAlgorithmTypeException("Assisted query", optional.getEncryptorName(), AssistedEncryptAlgorithm.class.getSimpleName())));
+                () -> new MismatchedEncryptAlgorithmTypeException(databaseName, "Assisted query", optional.getEncryptorName(), AssistedEncryptAlgorithm.class.getSimpleName())));
     }
     
     @SuppressWarnings("rawtypes")
     private void checkLikeQueryEncryptorType(final EncryptColumnRuleConfiguration columnRuleConfig, final Map<String, LikeEncryptAlgorithm> likeEncryptors) {
         columnRuleConfig.getLikeQuery().ifPresent(optional -> ShardingSpherePreconditions.checkState(likeEncryptors.containsKey(optional.getEncryptorName()),
-                () -> new MismatchedEncryptAlgorithmTypeException("Like query", optional.getEncryptorName(), LikeEncryptAlgorithm.class.getSimpleName())));
+                () -> new MismatchedEncryptAlgorithmTypeException(databaseName, "Like query", optional.getEncryptorName(), LikeEncryptAlgorithm.class.getSimpleName())));
     }
     
     /**

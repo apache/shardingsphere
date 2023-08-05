@@ -25,7 +25,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvai
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Column segment.
@@ -40,6 +42,8 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     private final int stopIndex;
     
     private final IdentifierValue identifier;
+    
+    private List<IdentifierValue> nestedObjectAttributes;
     
     private OwnerSegment owner;
     
@@ -58,7 +62,11 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
      * @return qualified name with quote characters
      */
     public String getQualifiedName() {
-        return null == owner ? identifier.getValueWithQuoteCharacters() : String.join(".", owner.getIdentifier().getValueWithQuoteCharacters(), identifier.getValueWithQuoteCharacters());
+        String column = identifier.getValueWithQuoteCharacters();
+        if (null != nestedObjectAttributes && !nestedObjectAttributes.isEmpty()) {
+            column = String.join(".", column, nestedObjectAttributes.stream().map(IdentifierValue::getValueWithQuoteCharacters).collect(Collectors.joining(".")));
+        }
+        return null == owner ? column : String.join(".", owner.getIdentifier().getValueWithQuoteCharacters(), column);
     }
     
     /**
@@ -67,7 +75,11 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
      * @return expression
      */
     public String getExpression() {
-        return null == owner ? identifier.getValue() : String.join(".", owner.getIdentifier().getValue(), identifier.getValue());
+        String column = identifier.getValue();
+        if (null != nestedObjectAttributes && !nestedObjectAttributes.isEmpty()) {
+            column = String.join(".", column, nestedObjectAttributes.stream().map(IdentifierValue::getValue).collect(Collectors.joining(".")));
+        }
+        return null == owner ? column : String.join(".", owner.getIdentifier().getValue(), column);
     }
     
     @Override

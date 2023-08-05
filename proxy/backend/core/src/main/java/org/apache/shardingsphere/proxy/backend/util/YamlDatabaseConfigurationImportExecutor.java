@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
@@ -34,8 +33,9 @@ import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguratio
 import org.apache.shardingsphere.encrypt.yaml.swapper.YamlCompatibleEncryptRuleConfigurationSwapper;
 import org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
@@ -149,7 +149,8 @@ public final class YamlDatabaseConfigurationImportExecutor {
     private void addResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
         Map<String, DataSourceProperties> dataSourcePropsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1F);
         for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
-            dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(entry.getValue())));
+            DataSourceConfiguration dataSourceConfig = dataSourceConfigSwapper.swap(entry.getValue());
+            dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(dataSourceConfig));
         }
         validateHandler.validate(dataSourcePropsMap);
         try {
@@ -260,7 +261,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     private void addEncryptRuleConfiguration(final EncryptRuleConfiguration encryptRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
         encryptRuleConfigImportChecker.check(database, encryptRuleConfig);
         allRuleConfigs.add(encryptRuleConfig);
-        database.getRuleMetaData().getRules().add(new EncryptRule(encryptRuleConfig));
+        database.getRuleMetaData().getRules().add(new EncryptRule(database.getName(), encryptRuleConfig));
     }
     
     private void addShadowRuleConfiguration(final ShadowRuleConfiguration shadowRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {

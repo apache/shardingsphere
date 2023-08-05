@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 /**
  * ShardingSphere index meta data for YAML.
  */
@@ -29,4 +32,8 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 public final class YamlShardingSphereIndex implements YamlConfiguration {
     
     private String name;
+    
+    private Collection<String> columns = new LinkedList<>();
+    
+    private boolean unique;
 }

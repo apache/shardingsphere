@@ -165,14 +165,6 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
         return currentRuleConfig.getAuditors().keySet().stream().filter(each -> !inUsedAuditors.contains(each)).collect(Collectors.toSet());
     }
     
-    private boolean isEmptyShardingTables(final ShardingRuleConfiguration currentRuleConfig) {
-        return currentRuleConfig.getTables().isEmpty() && currentRuleConfig.getAutoTables().isEmpty();
-    }
-    
-    private boolean isEmptyShardingStrategy(final ShardingRuleConfiguration currentRuleConfig) {
-        return null == currentRuleConfig.getDefaultDatabaseShardingStrategy() && null == currentRuleConfig.getDefaultTableShardingStrategy();
-    }
-    
     @Override
     public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
         return ShardingRuleConfiguration.class;
