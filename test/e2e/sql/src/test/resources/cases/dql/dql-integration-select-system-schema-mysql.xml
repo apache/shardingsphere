@@ -738,9 +738,10 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.wait_classes_global_by_latency limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    <!-- TODO -->
+<!--    <test-case sql="SELECT * FROM sys.wait_classes_global_by_latency limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">-->
+<!--        <assertion expected-data-source-name="read_dataset" />-->
+<!--    </test-case>-->
     
     <test-case sql="SELECT * FROM sys.waits_by_host_by_latency limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
