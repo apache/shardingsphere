@@ -23,8 +23,8 @@
     <sql-case id="alter_type_add_attribute" value="ALTER TYPE usr1.compfoo1 ADD ATTRIBUTE f3 int;" db-types="openGauss,PostgreSQL" />
     <sql-case id="alter_type_add_value" value="ALTER TYPE bugstatus ADD VALUE IF NOT EXISTS 'regress' BEFORE 'closed';" db-types="openGauss,PostgreSQL" />
     <sql-case id="alter_type_rename_value" value="ALTER TYPE bugstatus RENAME VALUE 'create' TO 'new';" db-types="openGauss,PostgreSQL" />
-    <sql-case id="alter_type_default" value="ALTER TYPE type_name" db-types="Oracle" />
-    <sql-case id="alter_type_schema_name" value="ALTER TYPE schema_name.type_name" db-types="Oracle" />
+    <sql-case id="alter_type_default" value="ALTER TYPE type_name FINAL" db-types="Oracle" />
+    <sql-case id="alter_type_schema_name" value="ALTER TYPE schema_name.type_name FINAL" db-types="Oracle" />
     <sql-case id="alter_type_compile" value="ALTER TYPE type_name COMPILE REUSE SETTINGS" db-types="Oracle" />
     <sql-case id="alter_type_debug" value="ALTER TYPE type_name COMPILE DEBUG REUSE SETTINGS" db-types="Oracle" />
     <sql-case id="alter_type_spec" value="ALTER TYPE type_name COMPILE SPECIFICATION REUSE SETTINGS" db-types="Oracle" />
@@ -132,4 +132,17 @@
     <sql-case id="alter_type_modify_element_type" value="ALTER TYPE type_name MODIFY ELEMENT TYPE NUMBER" db-types="Oracle" />
     <sql-case id="alter_type_not_instantiable" value="ALTER TYPE type_name NOT INSTANTIABLE" db-types="Oracle" />
     <sql-case id="alter_type_not_final" value="ALTER TYPE type_name NOT FINAL" db-types="Oracle" />
+    <sql-case id="alter_type_not_final_invalidate" value="ALTER TYPE type_name NOT FINAL INVALIDATE" db-types="Oracle" />
+    <sql-case id="alter_type_not_final_cascade_not_data" value="ALTER TYPE type_name NOT FINAL
+    CASCADE NOT INCLUDING TABLE DATA" db-types="Oracle" />
+    <sql-case id="alter_type_not_final_cascade_data" value="ALTER TYPE type_name NOT FINAL
+    CASCADE INCLUDING TABLE DATA" db-types="Oracle" />
+    <sql-case id="alter_type_not_final_cascade_convert_sub" value="ALTER TYPE type_name NOT FINAL
+    CASCADE CONVERT TO SUBSTITUTABLE" db-types="Oracle" />
+    <sql-case id="alter_type_not_final_cascade_force_exception" value="ALTER TYPE type_name NOT FINAL
+    CASCADE FORCE EXCEPTIONS INTO tableName" db-types="Oracle" />
+    <sql-case id="alter_type_not_final_cascade_exception" value="ALTER TYPE type_name NOT FINAL
+    CASCADE EXCEPTIONS INTO tableName" db-types="Oracle" />
+    <sql-case id="alter_type_not_final_cascade_force_exception_schema" value="ALTER TYPE type_name NOT FINAL
+    CASCADE FORCE EXCEPTIONS INTO schemaName.tableName" db-types="Oracle" />
 </sql-cases>
