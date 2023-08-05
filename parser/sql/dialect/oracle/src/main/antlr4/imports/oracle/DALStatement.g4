@@ -24,7 +24,7 @@ alterResourceCost
     ;
 
 dbLinkInfo
-    : databaseName (DOT domain)* (AT_ connectionQualifier)?
+    : databaseName (DOT_ domain)* (AT_ connectionQualifier)?
     ;
 
 explain
