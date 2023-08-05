@@ -1136,7 +1136,7 @@ dateValue
     ;
 
 sessionId
-    : numberLiterals
+    : STRING_
     ;
 
 serialNumber
