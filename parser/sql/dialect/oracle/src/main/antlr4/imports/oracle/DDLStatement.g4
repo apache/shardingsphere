@@ -3683,7 +3683,7 @@ segmentManagementClause
     ;
 
 tablespaceGroupClause
-    : ON TABLESPACE GROUP tablespaceGroupName
+    : TABLESPACE GROUP tablespaceGroupName
     ;
 
 temporaryTablespaceClause
@@ -3749,7 +3749,7 @@ datafileTempfileClauses
     : ADD (datafileSpecification | tempfileSpecification)
     | DROP (DATAFILE | TEMPFILE) (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
     | SHRINK TEMPFILE (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
-    | RENAME DATAFILE fileSpecification TO fileSpecification
+    | RENAME DATAFILE fileSpecification (COMMA_ fileSpecification)* TO fileSpecification (COMMA_ fileSpecification)*
     | (DATAFILE | TEMPFILE) (ONLINE|OFFLINE)
     ;
 
