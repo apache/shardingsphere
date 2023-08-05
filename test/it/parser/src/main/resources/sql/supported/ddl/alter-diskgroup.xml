@@ -52,4 +52,5 @@
     <sql-case id="alter_diskgroup_enable_volume" value="ALTER DISKGROUP data ENABLE VOLUME volume1" db-types="Oracle" />
     <sql-case id="alter_diskgroup_all_disable_volume_all" value="ALTER DISKGROUP ALL DISABLE VOLUME ALL" db-types="Oracle" />
     <sql-case id="alter_diskgroup_drop_volume" value="ALTER DISKGROUP data DROP VOLUME volume1" db-types="Oracle" />
+    <sql-case id="alter_diskgroup_data_add_user" value="ALTER DISKGROUP DATA ADD USER 'oracle1'" db-types="Oracle" />
 </sql-cases>
