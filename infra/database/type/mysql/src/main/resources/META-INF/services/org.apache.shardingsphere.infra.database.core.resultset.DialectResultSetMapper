@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.DefaultDataSourcePropertyProvider
-org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.HikariCPPropertyProvider
+org.apache.shardingsphere.infra.database.mysql.resultset.MySQLResultSetMapper

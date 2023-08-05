@@ -15,48 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader;
+package org.apache.shardingsphere.infra.database.core.resultset;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Abstract dialect query result data row loader.
+ * Result set mapper.
  */
-public abstract class AbstractQueryResultDataRowLoader implements DialectQueryResultDataRowLoader {
+public final class ResultSetMapper {
     
-    @Override
-    public Collection<MemoryQueryResultDataRow> load(final int columnCount, final ResultSet resultSet) throws SQLException {
-        Collection<MemoryQueryResultDataRow> result = new LinkedList<>();
-        while (resultSet.next()) {
-            List<Object> rowData = new ArrayList<>(columnCount);
-            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                Object rowValue = loadRowValue(resultSet, columnIndex);
-                rowData.add(resultSet.wasNull() ? null : rowValue);
-            }
-            result.add(new MemoryQueryResultDataRow(rowData));
-        }
-        return result;
+    private final DialectResultSetMapper dialectLoader;
+    
+    public ResultSetMapper(final DatabaseType databaseType) {
+        dialectLoader = DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType).orElse(null);
     }
     
-    @SuppressWarnings("ReturnOfNull")
-    private Object loadRowValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+    /**
+     * Load result set value.
+     * 
+     * @param resultSet result set to be loaded
+     * @param columnIndex column index
+     * @return data value
+     * @throws SQLException SQL exception
+     */
+    public Object load(final ResultSet resultSet, final int columnIndex) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         switch (metaData.getColumnType(columnIndex)) {
             case Types.BOOLEAN:
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:
             case Types.SMALLINT:
-                return getSmallintValue(resultSet, columnIndex);
+                return null == dialectLoader ? Integer.valueOf(resultSet.getInt(columnIndex)) : dialectLoader.getSmallintValue(resultSet, columnIndex);
             case Types.INTEGER:
                 if (metaData.isSigned(columnIndex)) {
                     return resultSet.getInt(columnIndex);
@@ -79,7 +75,7 @@ public abstract class AbstractQueryResultDataRowLoader implements DialectQueryRe
             case Types.LONGVARCHAR:
                 return resultSet.getString(columnIndex);
             case Types.DATE:
-                return getDateValue(resultSet, columnIndex);
+                return null == dialectLoader ? resultSet.getDate(columnIndex) : dialectLoader.getDateValue(resultSet, columnIndex);
             case Types.TIME:
                 return resultSet.getTime(columnIndex);
             case Types.TIMESTAMP:
@@ -98,24 +94,4 @@ public abstract class AbstractQueryResultDataRowLoader implements DialectQueryRe
                 return resultSet.getObject(columnIndex);
         }
     }
-    
-    /**
-     * Get smallint value from result set.
-     *
-     * @param resultSet result set
-     * @param columnIndex column index
-     * @return smallint value
-     * @throws SQLException sql exception
-     */
-    protected abstract Object getSmallintValue(ResultSet resultSet, int columnIndex) throws SQLException;
-    
-    /**
-     * Get date value from result set.
-     * 
-     * @param resultSet result set
-     * @param columnIndex column index
-     * @return date value
-     * @throws SQLException sql exception
-     */
-    protected abstract Object getDateValue(ResultSet resultSet, int columnIndex) throws SQLException;
 }

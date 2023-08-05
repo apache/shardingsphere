@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl;
+package org.apache.shardingsphere.infra.database.postgresql.resultset;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.database.core.resultset.DialectResultSetMapper;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-class DefaultDataSourcePropertyProviderTest {
+/**
+ * Result set mapper of PostgreSQL.
+ */
+public final class PostgreSQLResultSetMapper implements DialectResultSetMapper {
     
-    @Test
-    void assertGetURLPropertyName() {
-        assertThat(new DefaultDataSourcePropertyProvider().getURLPropertyName(), is("url"));
+    @Override
+    public Object getSmallintValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        return resultSet.getShort(columnIndex);
     }
     
-    @Test
-    void assertGetUsernamePropertyName() {
-        assertThat(new DefaultDataSourcePropertyProvider().getUsernamePropertyName(), is("username"));
+    @Override
+    public Object getDateValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        return resultSet.getDate(columnIndex);
     }
     
-    @Test
-    void assertGetPasswordPropertyName() {
-        assertThat(new DefaultDataSourcePropertyProvider().getPasswordPropertyName(), is("password"));
+    @Override
+    public String getDatabaseType() {
+        return "PostgreSQL";
     }
 }

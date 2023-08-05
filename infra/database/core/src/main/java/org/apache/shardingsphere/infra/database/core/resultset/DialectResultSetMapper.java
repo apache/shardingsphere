@@ -15,35 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
+package org.apache.shardingsphere.infra.database.core.resultset;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * Data source property provider.
+ * Dialect result set mapper.
  */
 @SingletonSPI
-public interface DataSourcePropertyProvider extends TypedSPI {
+public interface DialectResultSetMapper extends DatabaseTypedSPI {
     
     /**
-     * Get URL property name.
-     * 
-     * @return URL property name
-     */
-    String getURLPropertyName();
-    
-    /**
-     * Get username property name.
+     * Get smallint value from result set.
      *
-     * @return username property name
+     * @param resultSet result set
+     * @param columnIndex column index
+     * @return smallint value
+     * @throws SQLException sql exception
      */
-    String getUsernamePropertyName();
+    Object getSmallintValue(ResultSet resultSet, int columnIndex) throws SQLException;
     
     /**
-     * Get password property name.
+     * Get date value from result set.
      *
-     * @return password property name
+     * @param resultSet result set
+     * @param columnIndex column index
+     * @return date value
+     * @throws SQLException sql exception
      */
-    String getPasswordPropertyName();
+    Object getDateValue(ResultSet resultSet, int columnIndex) throws SQLException;
 }

@@ -15,32 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl;
+package org.apache.shardingsphere.transaction.xa.jta.datasource.checker;
 
-import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourcePropertyProvider;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+
+import javax.sql.DataSource;
 
 /**
- * HikariCP property provider.
+ * XA transaction privilege checker.
  */
-public final class HikariCPPropertyProvider implements DataSourcePropertyProvider {
+public interface XATransactionPrivilegeChecker extends DatabaseTypedSPI {
     
-    @Override
-    public String getURLPropertyName() {
-        return "jdbcUrl";
-    }
-    
-    @Override
-    public String getUsernamePropertyName() {
-        return "username";
-    }
-    
-    @Override
-    public String getPasswordPropertyName() {
-        return "password";
-    }
-    
-    @Override
-    public String getType() {
-        return "com.zaxxer.hikari.HikariDataSource";
-    }
+    /**
+     * Check XA transaction privilege.
+     *
+     * @param dataSource data source to be checked
+     */
+    void check(DataSource dataSource);
 }

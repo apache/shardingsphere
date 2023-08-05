@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl;
+package org.apache.shardingsphere.transaction.xa.jta.datasource.checker.dialect;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.XATransactionPrivilegeChecker;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import javax.sql.DataSource;
 
-class HikariCPPropertyProviderTest {
+/**
+ * XA transaction privilege checker of H2.
+ */
+public final class H2XATransactionPrivilegeChecker implements XATransactionPrivilegeChecker {
     
-    @Test
-    void assertGetURLPropertyName() {
-        assertThat(new HikariCPPropertyProvider().getURLPropertyName(), is("jdbcUrl"));
+    @Override
+    public void check(final DataSource dataSource) {
     }
     
-    @Test
-    void assertGetUsernamePropertyName() {
-        assertThat(new HikariCPPropertyProvider().getUsernamePropertyName(), is("username"));
-    }
-    
-    @Test
-    void assertGetPasswordPropertyName() {
-        assertThat(new HikariCPPropertyProvider().getPasswordPropertyName(), is("password"));
+    @Override
+    public String getDatabaseType() {
+        return "H2";
     }
 }

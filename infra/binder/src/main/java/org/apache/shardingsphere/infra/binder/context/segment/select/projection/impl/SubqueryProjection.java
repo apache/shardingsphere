@@ -24,7 +24,6 @@ import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.util.ProjectionUtils;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
@@ -59,14 +58,7 @@ public final class SubqueryProjection implements Projection {
     
     @Override
     public Optional<IdentifierValue> getAlias() {
-        return null == alias ? buildDefaultAlias(databaseType) : Optional.of(alias);
-    }
-    
-    private Optional<IdentifierValue> buildDefaultAlias(final DatabaseType databaseType) {
-        if (databaseType instanceof OracleDatabaseType) {
-            return Optional.of(new IdentifierValue(subquerySegment.getText().replace(" ", "").toUpperCase()));
-        }
-        return Optional.of(new IdentifierValue(subquerySegment.getText()));
+        return Optional.ofNullable(alias);
     }
     
     @Override

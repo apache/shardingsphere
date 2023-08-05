@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl;
+package org.apache.shardingsphere.infra.database.opengauss.resultset;
 
-import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourcePropertyProvider;
+import org.apache.shardingsphere.infra.database.core.resultset.DialectResultSetMapper;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * Default data source property provider.
+ * Result set mapper of openGauss.
  */
-public final class DefaultDataSourcePropertyProvider implements DataSourcePropertyProvider {
+public final class OpenGaussResultSetMapper implements DialectResultSetMapper {
     
     @Override
-    public String getURLPropertyName() {
-        return "url";
+    public Object getSmallintValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        return resultSet.getShort(columnIndex);
     }
     
     @Override
-    public String getUsernamePropertyName() {
-        return "username";
+    public Object getDateValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        return resultSet.getDate(columnIndex);
     }
     
     @Override
-    public String getPasswordPropertyName() {
-        return "password";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+    public String getDatabaseType() {
+        return "openGauss";
     }
 }
