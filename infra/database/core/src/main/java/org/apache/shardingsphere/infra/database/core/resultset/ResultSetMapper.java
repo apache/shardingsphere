@@ -15,56 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader;
+package org.apache.shardingsphere.infra.database.core.resultset;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Query result data row loader.
+ * Result set mapper.
  */
-public final class QueryResultDataRowLoader {
+public final class ResultSetMapper {
     
     private final DialectQueryResultDataRowLoader dialectLoader;
     
-    public QueryResultDataRowLoader(final DatabaseType databaseType) {
+    public ResultSetMapper(final DatabaseType databaseType) {
         dialectLoader = DatabaseTypedSPILoader.findService(DialectQueryResultDataRowLoader.class, databaseType).orElse(null);
     }
     
     /**
-     * Load query result data row.
+     * Load result set value.
      * 
-     * @param columnCount column count
-     * @param resultSet result set
-     * @return query result data row
+     * @param resultSet result set to be loaded
+     * @param columnIndex column index
+     * @return data value
      * @throws SQLException SQL exception
      */
-    public Collection<MemoryQueryResultDataRow> load(final int columnCount, final ResultSet resultSet) throws SQLException {
-        Collection<MemoryQueryResultDataRow> result = new LinkedList<>();
-        while (resultSet.next()) {
-            List<Object> rowData = new ArrayList<>(columnCount);
-            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                Object rowValue = loadRowValue(resultSet, columnIndex);
-                rowData.add(resultSet.wasNull() ? null : rowValue);
-            }
-            result.add(new MemoryQueryResultDataRow(rowData));
-        }
-        return result;
-    }
-    
-    @SuppressWarnings("ReturnOfNull")
-    private Object loadRowValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+    public Object load(final ResultSet resultSet, final int columnIndex) throws SQLException {
         ResultSetMetaData metaData = resultSet.getMetaData();
         switch (metaData.getColumnType(columnIndex)) {
             case Types.BOOLEAN:

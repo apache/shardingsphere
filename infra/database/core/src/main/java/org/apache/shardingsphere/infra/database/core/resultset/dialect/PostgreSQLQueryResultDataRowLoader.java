@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.dialect;
+package org.apache.shardingsphere.infra.database.core.resultset.dialect;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.DialectQueryResultDataRowLoader;
+import org.apache.shardingsphere.infra.database.core.resultset.DialectQueryResultDataRowLoader;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * OpenGauss query result data row loader.
+ * PostgreSQL query result data row loader.
  */
-public final class OpenGaussQueryResultDataRowLoader implements DialectQueryResultDataRowLoader {
+public final class PostgreSQLQueryResultDataRowLoader implements DialectQueryResultDataRowLoader {
     
     @Override
     public Object getSmallintValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
@@ -39,6 +39,6 @@ public final class OpenGaussQueryResultDataRowLoader implements DialectQueryResu
     
     @Override
     public String getDatabaseType() {
-        return "openGauss";
+        return "PostgreSQL";
     }
 }
