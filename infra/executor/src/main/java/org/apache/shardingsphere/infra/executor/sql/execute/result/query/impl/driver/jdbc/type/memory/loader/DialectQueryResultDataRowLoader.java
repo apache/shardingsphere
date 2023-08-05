@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * Dialect query result data row loader.
@@ -32,12 +30,22 @@ import java.util.Collection;
 public interface DialectQueryResultDataRowLoader extends DatabaseTypedSPI {
     
     /**
-     * Load rows.
+     * Get smallint value from result set.
      *
-     * @param columnCount column count
-     * @param resultSet result set of JDBC
-     * @return query result data rows
-     * @throws SQLException SQL exception
+     * @param resultSet result set
+     * @param columnIndex column index
+     * @return smallint value
+     * @throws SQLException sql exception
      */
-    Collection<MemoryQueryResultDataRow> load(int columnCount, ResultSet resultSet) throws SQLException;
+    Object getSmallintValue(ResultSet resultSet, int columnIndex) throws SQLException;
+    
+    /**
+     * Get date value from result set.
+     *
+     * @param resultSet result set
+     * @param columnIndex column index
+     * @return date value
+     * @throws SQLException sql exception
+     */
+    Object getDateValue(ResultSet resultSet, int columnIndex) throws SQLException;
 }
