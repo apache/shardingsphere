@@ -1909,11 +1909,11 @@ flushClauseOption
     ;
 
 disconnectSessionClause
-    : DISCONNECT SESSION SQ_ INTEGER_ COMMA_ INTEGER_ SQ_ POST_TRANSACTION?
+    : DISCONNECT SESSION STRING_ POST_TRANSACTION?
     ;
 
 killSessionClause
-    : KILL SESSION SQ_ INTEGER_ COMMA_ INTEGER_ (COMMA_ AT_ INTEGER_)? SQ_
+    : KILL SESSION STRING_
     ;
 
 startRollingMigrationClause
@@ -1957,7 +1957,7 @@ disableAffinityClause
     ;
 
 alterSystemSetClause
-    : setParameterClause | useStoredOutlinesClause | globalTopicEnabledClause
+    : setParameterClause | useStoredOutlinesClause | globalTopicEnabledClause | dbRecoveryFileDestSizeClause
     ;
 
 alterSystemResetClause
@@ -2004,6 +2004,10 @@ globalTopicEnabledClause
     : GLOBAL_TOPIC_ENABLED EQ_ (TRUE | FALSE)
     ;
 
+dbRecoveryFileDestSizeClause
+    : DB_RECOVERY_FILE_DEST_SIZE EQ_ INTEGER_ capacityUnit?
+    ;
+
 alterSystemCommentClause
     : COMMENT EQ_ stringLiterals
     ;
@@ -2013,7 +2017,7 @@ containerCurrentAllClause
     ;
 
 scopeClause
-    : SCOPE EQ_ (MEMORY | SPFILE | BOTH) | SID EQ_ (SQ_ sessionId SQ_ | SQ_ ASTERISK_ SQ_)
+    : SCOPE EQ_ (MEMORY | SPFILE | BOTH) | SID EQ_ (sessionId | SQ_ ASTERISK_ SQ_)
     ;
 
 analyze
