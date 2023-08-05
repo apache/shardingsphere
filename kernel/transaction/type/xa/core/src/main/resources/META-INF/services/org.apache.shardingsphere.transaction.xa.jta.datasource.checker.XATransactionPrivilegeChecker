@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.transaction.xa.jta.datasource.checker.dialect.MySQLXATransactionPrivilegeChecker
+org.apache.shardingsphere.transaction.xa.jta.datasource.checker.dialect.H2XATransactionPrivilegeChecker
