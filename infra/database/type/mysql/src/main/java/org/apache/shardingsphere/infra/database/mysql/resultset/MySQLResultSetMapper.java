@@ -15,30 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.core.resultset.dialect;
+package org.apache.shardingsphere.infra.database.mysql.resultset;
 
-import org.apache.shardingsphere.infra.database.core.resultset.DialectQueryResultDataRowLoader;
+import org.apache.shardingsphere.infra.database.core.resultset.DialectResultSetMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * PostgreSQL query result data row loader.
+ * Result set mapper of MySQL.
  */
-public final class PostgreSQLQueryResultDataRowLoader implements DialectQueryResultDataRowLoader {
+public final class MySQLResultSetMapper implements DialectResultSetMapper {
+    
+    private static final String YEAR_DATA_TYPE = "YEAR";
     
     @Override
     public Object getSmallintValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
-        return resultSet.getShort(columnIndex);
+        return resultSet.getInt(columnIndex);
     }
     
     @Override
     public Object getDateValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        if (isYearDataType(resultSet.getMetaData().getColumnTypeName(columnIndex))) {
+            Object result = resultSet.getObject(columnIndex);
+            return resultSet.wasNull() ? null : result;
+        }
         return resultSet.getDate(columnIndex);
+    }
+    
+    private static boolean isYearDataType(final String columnDataTypeName) {
+        return YEAR_DATA_TYPE.equalsIgnoreCase(columnDataTypeName);
     }
     
     @Override
     public String getDatabaseType() {
-        return "PostgreSQL";
+        return "MySQL";
     }
 }

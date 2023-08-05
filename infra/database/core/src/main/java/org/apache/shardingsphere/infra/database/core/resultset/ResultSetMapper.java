@@ -31,10 +31,10 @@ import java.sql.Types;
  */
 public final class ResultSetMapper {
     
-    private final DialectQueryResultDataRowLoader dialectLoader;
+    private final DialectResultSetMapper dialectLoader;
     
     public ResultSetMapper(final DatabaseType databaseType) {
-        dialectLoader = DatabaseTypedSPILoader.findService(DialectQueryResultDataRowLoader.class, databaseType).orElse(null);
+        dialectLoader = DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType).orElse(null);
     }
     
     /**

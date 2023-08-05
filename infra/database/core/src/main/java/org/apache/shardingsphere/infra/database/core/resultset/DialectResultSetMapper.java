@@ -24,10 +24,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Dialect query result data row loader.
+ * Dialect result set mapper.
  */
 @SingletonSPI
-public interface DialectQueryResultDataRowLoader extends DatabaseTypedSPI {
+public interface DialectResultSetMapper extends DatabaseTypedSPI {
     
     /**
      * Get smallint value from result set.

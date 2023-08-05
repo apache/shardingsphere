@@ -15,6 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.core.resultset.dialect.MySQLQueryResultDataRowLoader
-org.apache.shardingsphere.infra.database.core.resultset.dialect.PostgreSQLQueryResultDataRowLoader
-org.apache.shardingsphere.infra.database.core.resultset.dialect.OpenGaussQueryResultDataRowLoader
+org.apache.shardingsphere.infra.database.postgresql.resultset.PostgreSQLResultSetMapper
