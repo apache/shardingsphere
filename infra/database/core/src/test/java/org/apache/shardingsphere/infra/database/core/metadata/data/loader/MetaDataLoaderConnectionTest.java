@@ -39,7 +39,7 @@ class MetaDataLoaderConnectionTest {
     
     private static final String TEST_SCHEMA = "schema";
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "TRUNK");
     
     @Mock
     private Connection connection;

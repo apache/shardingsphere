@@ -7712,6 +7712,10 @@ CLUSTER_DISTANCE
     : C L U S T E R UL_ D I S T A N C E
     ;
 
+PERSISTABLE
+    : P E R S I S T A B L E
+    ;
+
 DB_RECOVERY_FILE_DEST_SIZE
     : D B UL_ R E C O V E R Y UL_ F I L E UL_ D E S T UL_ S I Z E
     ;

@@ -149,7 +149,8 @@ public final class GenericSchemaBuilder {
     private static Collection<ShardingSphereColumn> convertToColumns(final Collection<ColumnMetaData> columnMetaDataList) {
         Collection<ShardingSphereColumn> result = new LinkedList<>();
         for (ColumnMetaData each : columnMetaDataList) {
-            result.add(new ShardingSphereColumn(each.getName(), each.getDataType(), each.isPrimaryKey(), each.isGenerated(), each.isCaseSensitive(), each.isVisible(), each.isUnsigned()));
+            result.add(new ShardingSphereColumn(each.getName(), each.getDataType(), each.isPrimaryKey(), each.isGenerated(), each.isCaseSensitive(), each.isVisible(), each.isUnsigned(),
+                    each.isNullable()));
         }
         return result;
     }
@@ -157,7 +158,10 @@ public final class GenericSchemaBuilder {
     private static Collection<ShardingSphereIndex> convertToIndexes(final Collection<IndexMetaData> indexMetaDataList) {
         Collection<ShardingSphereIndex> result = new LinkedList<>();
         for (IndexMetaData each : indexMetaDataList) {
-            result.add(new ShardingSphereIndex(each.getName()));
+            ShardingSphereIndex index = new ShardingSphereIndex(each.getName());
+            index.getColumns().addAll(each.getColumns());
+            index.setUnique(each.isUnique());
+            result.add(index);
         }
         return result;
     }
