@@ -24,15 +24,15 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class PostgreSQLSaneQueryResultEngineTest {
+class PostgreSQLDialectSaneQueryResultEngineTest {
     
     @Test
     void assertGetSaneQueryResult() {
-        assertThat(new PostgreSQLSaneQueryResultEngine().getSaneQueryResult(null, null), is(Optional.empty()));
+        assertThat(new PostgreSQLDialectSaneQueryResultEngine().getSaneQueryResult(null, null), is(Optional.empty()));
     }
     
     @Test
     void assertGetType() {
-        assertThat(new PostgreSQLSaneQueryResultEngine().getType().getType(), is("PostgreSQL"));
+        assertThat(new PostgreSQLDialectSaneQueryResultEngine().getType().getType(), is("PostgreSQL"));
     }
 }

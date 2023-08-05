@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.postgresql.connector.sane;
+package org.apache.shardingsphere.proxy.backend.connector.sane;
 
-import org.apache.shardingsphere.proxy.backend.connector.sane.SaneQueryResultEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * Sane query result engine for PostgreSQL.
+ * Dialect sane query result engine.
  */
-public final class PostgreSQLSaneQueryResultEngine implements SaneQueryResultEngine {
+@SingletonSPI
+public interface DialectSaneQueryResultEngine extends DatabaseTypedSPI {
     
-    @Override
-    public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement, final SQLException ex) {
-        return Optional.empty();
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "PostgreSQL";
-    }
+    /**
+     * Get sane query result.
+     *
+     * @param sqlStatement SQL statement
+     * @param ex SQL exception
+     * @return sane execute result
+     */
+    Optional<ExecuteResult> getSaneQueryResult(SQLStatement sqlStatement, SQLException ex);
 }

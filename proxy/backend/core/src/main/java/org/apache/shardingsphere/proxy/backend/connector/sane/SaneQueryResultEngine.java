@@ -17,19 +17,32 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.sane;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
  * Sane query result engine.
  */
-@SingletonSPI
-public interface SaneQueryResultEngine extends DatabaseTypedSPI {
+public final class SaneQueryResultEngine {
+    
+    private final DialectSaneQueryResultEngine dialectEngine;
+    
+    public SaneQueryResultEngine(final DatabaseType databaseType) {
+        dialectEngine = DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, databaseType).orElse(null);
+    }
     
     /**
      * Get sane query result.
@@ -38,5 +51,16 @@ public interface SaneQueryResultEngine extends DatabaseTypedSPI {
      * @param ex SQL exception
      * @return sane execute result
      */
-    Optional<ExecuteResult> getSaneQueryResult(SQLStatement sqlStatement, SQLException ex);
+    public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement, final SQLException ex) {
+        if (null == dialectEngine) {
+            return sqlStatement instanceof SelectStatement ? Optional.of(getDefaultQueryResult()) : Optional.empty();
+        }
+        return dialectEngine.getSaneQueryResult(sqlStatement, ex);
+    }
+    
+    private QueryResult getDefaultQueryResult() {
+        RawQueryResultColumnMetaData queryResultColumnMetaData = new RawQueryResultColumnMetaData("", "", "", Types.VARCHAR, "VARCHAR", 255, 0);
+        MemoryQueryResultDataRow resultDataRow = new MemoryQueryResultDataRow(Collections.singletonList("1"));
+        return new RawMemoryQueryResult(new RawQueryResultMetaData(Collections.singletonList(queryResultColumnMetaData)), Collections.singletonList(resultDataRow));
+    }
 }
