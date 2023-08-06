@@ -20,16 +20,24 @@ package org.apache.shardingsphere.infra.datasource.props;
 import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
+import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.synonym.ConnectionPropertySynonyms;
+import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DataSourcePropertiesCreatorTest {
     
@@ -63,6 +71,19 @@ class DataSourcePropertiesCreatorTest {
         assertThat(DataSourcePropertiesCreator.create(createDataSource()), is(new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
     }
     
+    @Test
+    void assertCreateConfiguration() {
+        DataSourceProperties dataSourceProperties = mock(DataSourceProperties.class);
+        ConnectionPropertySynonyms connectionPropertySynonyms = new ConnectionPropertySynonyms(createStandardProperties(), createPropertySynonyms());
+        PoolPropertySynonyms poolPropertySynonyms = new PoolPropertySynonyms(createStandardProperties(), createPropertySynonyms());
+        CustomDataSourceProperties customDataSourceProperties = new CustomDataSourceProperties(createProperties(),
+                Arrays.asList("username", "password", "closed"), Collections.singletonList("closed"), Collections.singletonMap("username", "user"));
+        when(dataSourceProperties.getConnectionPropertySynonyms()).thenReturn(connectionPropertySynonyms);
+        when(dataSourceProperties.getPoolPropertySynonyms()).thenReturn(poolPropertySynonyms);
+        when(dataSourceProperties.getCustomDataSourceProperties()).thenReturn(customDataSourceProperties);
+        DataSourcePropertiesCreator.createConfiguration(dataSourceProperties);
+    }
+    
     private DataSource createDataSource() {
         MockedDataSource result = new MockedDataSource();
         result.setDriverClassName(MockedDataSource.class.getName());
@@ -79,6 +100,28 @@ class DataSourcePropertiesCreatorTest {
         result.put("username", "root");
         result.put("password", "root");
         result.put("maximumPoolSize", "-1");
+        return result;
+    }
+    
+    private Map<String, Object> createStandardProperties() {
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        // This is to test the case where the property type is mismatched.
+        result.put("connectionTimeoutMilliseconds", "null");
+        result.put("idleTimeoutMilliseconds", 180000);
+        result.put("maxLifetimeMilliseconds", 180000);
+        result.put("maxPoolSize", 30);
+        result.put("minPoolSize", 10);
+        result.put("readOnly", false);
+        return result;
+    }
+    
+    private Map<String, String> createPropertySynonyms() {
+        Map<String, String> result = new LinkedHashMap<>(5, 1F);
+        result.put("connectionTimeoutMilliseconds", "connectionTimeout");
+        result.put("idleTimeoutMilliseconds", "idleTimeout");
+        result.put("maxLifetimeMilliseconds", "maxLifetime");
+        result.put("maxPoolSize", "maximumPoolSize");
+        result.put("minPoolSize", "minimumIdle");
         return result;
     }
 }

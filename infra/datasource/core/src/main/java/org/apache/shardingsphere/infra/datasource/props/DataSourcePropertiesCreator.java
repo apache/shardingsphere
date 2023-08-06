@@ -143,16 +143,47 @@ public final class DataSourcePropertiesCreator {
     
     private static PoolConfiguration getPoolConfiguration(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourceProperties customDataSourceProperties) {
         Map<String, Object> standardProperties = poolPropertySynonyms.getStandardProperties();
-        Long connectionTimeoutMilliseconds = standardProperties.containsKey("connectionTimeoutMilliseconds")
-                ? Long.valueOf(String.valueOf(standardProperties.get("connectionTimeoutMilliseconds")))
-                : null;
-        Long idleTimeoutMilliseconds = standardProperties.containsKey("idleTimeoutMilliseconds") ? Long.valueOf(String.valueOf(standardProperties.get("idleTimeoutMilliseconds"))) : null;
-        Long maxLifetimeMilliseconds = standardProperties.containsKey("maxLifetimeMilliseconds") ? Long.valueOf(String.valueOf(standardProperties.get("maxLifetimeMilliseconds"))) : null;
-        Integer maxPoolSize = standardProperties.containsKey("maxPoolSize") ? Integer.valueOf(String.valueOf(standardProperties.get("maxPoolSize"))) : null;
-        Integer minPoolSize = standardProperties.containsKey("minPoolSize") ? Integer.valueOf(String.valueOf(standardProperties.get("minPoolSize"))) : null;
-        Boolean readOnly = standardProperties.containsKey("readOnly") ? Boolean.valueOf(String.valueOf(standardProperties.get("readOnly"))) : null;
+        Long connectionTimeoutMilliseconds = toLong(standardProperties, "connectionTimeoutMilliseconds", null);
+        Long idleTimeoutMilliseconds = toLong(standardProperties, "idleTimeoutMilliseconds", null);
+        Long maxLifetimeMilliseconds = toLong(standardProperties, "maxLifetimeMilliseconds", null);
+        Integer maxPoolSize = toInt(standardProperties, "maxPoolSize", null);
+        Integer minPoolSize = toInt(standardProperties, "minPoolSize", null);
+        Boolean readOnly = toBoolean(standardProperties, "readOnly", null);
         Properties customProperties = new Properties();
         customProperties.putAll(customDataSourceProperties.getProperties());
         return new PoolConfiguration(connectionTimeoutMilliseconds, idleTimeoutMilliseconds, maxLifetimeMilliseconds, maxPoolSize, minPoolSize, readOnly, customProperties);
+    }
+    
+    private static Long toLong(final Map<String, Object> properties, final String name, final Long defaultValue) {
+        if (!properties.containsKey(name)) {
+            return defaultValue;
+        }
+        try {
+            return Long.parseLong(String.valueOf(properties.get(name)));
+        } catch (final NumberFormatException ex) {
+            return defaultValue;
+        }
+    }
+    
+    private static Integer toInt(final Map<String, Object> properties, final String name, final Integer defaultValue) {
+        if (!properties.containsKey(name)) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(String.valueOf(properties.get(name)));
+        } catch (final NumberFormatException ex) {
+            return defaultValue;
+        }
+    }
+    
+    private static Boolean toBoolean(final Map<String, Object> properties, final String name, final Boolean defaultValue) {
+        if (!properties.containsKey(name)) {
+            return defaultValue;
+        }
+        try {
+            return Boolean.parseBoolean(String.valueOf(properties.get(name)));
+        } catch (final NumberFormatException ex) {
+            return defaultValue;
+        }
     }
 }
