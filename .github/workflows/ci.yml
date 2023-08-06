@@ -63,7 +63,7 @@ jobs:
     name: CI - Compile by JDK 11 and Run on JDK 8
     needs: global-environment
     runs-on: windows-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v3
       - name: Setup JDK 11 for Build
