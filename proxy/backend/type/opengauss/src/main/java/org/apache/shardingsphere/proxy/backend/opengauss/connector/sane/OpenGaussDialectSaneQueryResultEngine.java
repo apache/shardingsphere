@@ -17,22 +17,25 @@
 
 package org.apache.shardingsphere.proxy.backend.opengauss.connector.sane;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class OpenGaussSaneQueryResultEngineTest {
+/**
+ * Sane query result engine for openGauss.
+ */
+public final class OpenGaussDialectSaneQueryResultEngine implements DialectSaneQueryResultEngine {
     
-    @Test
-    void assertGetSaneQueryResult() {
-        assertThat(new OpenGaussSaneQueryResultEngine().getSaneQueryResult(null, null), is(Optional.empty()));
+    @Override
+    public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement, final SQLException ex) {
+        return Optional.empty();
     }
     
-    @Test
-    void assertGetType() {
-        assertThat(new OpenGaussSaneQueryResultEngine().getType().getType(), is("openGauss"));
+    @Override
+    public String getDatabaseType() {
+        return "openGauss";
     }
 }

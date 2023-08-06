@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
-import org.apache.shardingsphere.proxy.backend.connector.sane.SaneQueryResultEngine;
+import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
@@ -44,7 +44,7 @@ import java.util.Optional;
 /**
  * Sane query result engine for MySQL.
  */
-public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
+public final class MySQLDialectSaneQueryResultEngine implements DialectSaneQueryResultEngine {
     
     private static final int ER_PARSE_ERROR = 1064;
     

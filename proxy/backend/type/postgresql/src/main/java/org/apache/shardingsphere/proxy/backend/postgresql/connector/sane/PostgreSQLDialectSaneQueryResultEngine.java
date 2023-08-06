@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.opengauss.connector.sane;
+package org.apache.shardingsphere.proxy.backend.postgresql.connector.sane;
 
-import org.apache.shardingsphere.proxy.backend.connector.sane.SaneQueryResultEngine;
+import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -25,9 +25,9 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * Sane query result engine for openGauss.
+ * Sane query result engine for PostgreSQL.
  */
-public final class OpenGaussSaneQueryResultEngine implements SaneQueryResultEngine {
+public final class PostgreSQLDialectSaneQueryResultEngine implements DialectSaneQueryResultEngine {
     
     @Override
     public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement, final SQLException ex) {
@@ -36,6 +36,6 @@ public final class OpenGaussSaneQueryResultEngine implements SaneQueryResultEngi
     
     @Override
     public String getDatabaseType() {
-        return "openGauss";
+        return "PostgreSQL";
     }
 }
