@@ -87,7 +87,7 @@ public final class ShadowConvertRuleConfigurationProvider implements ConvertRule
     }
     
     @Override
-    public String getType() {
-        return ShadowRuleConfiguration.class.getName();
+    public Class<ShadowRuleConfiguration> getType() {
+        return ShadowRuleConfiguration.class;
     }
 }
