@@ -97,7 +97,12 @@ alterTrigger
     ;    
 
 triggerCompileClause
-    : COMPILE DEBUG? (compilerParametersClause*)? (REUSE SETTINGS)?
+    : COMPILE (
+    (DEBUG compilerParametersClause* (REUSE SETTINGS)?)
+    | (compilerParametersClause+ (REUSE SETTINGS)?)
+    | (REUSE SETTINGS)
+    | (DEBUG REUSE SETTINGS)
+    )?
     ;
 
 compilerParametersClause
@@ -215,7 +220,7 @@ oidIndexClause
     ;
 
 createRelationalTableClause
-    : (LP_ relationalProperties RP_)? collationClause? commitClause? physicalProperties? tableProperties?
+    : (LP_ relationalProperties RP_) collationClause? commitClause? physicalProperties? tableProperties?
     ;
     
 createMemOptimizeClause
@@ -516,7 +521,9 @@ alterExternalTable
     ;
 
 objectProperties
-    : ((columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint)?)
+    : ((columnName | attributeName) (DEFAULT expr))
+    | ((columnName | attributeName) (inlineConstraint* | inlineRefConstraint))
+    | ((columnName | attributeName) (DEFAULT expr) (inlineConstraint* | inlineRefConstraint))
     | outOfLineConstraint
     | outOfLineRefConstraint
     | supplementalLoggingProps
@@ -735,7 +742,9 @@ tableCompression
     ;
 
 inmemoryTableClause
-    : ((INMEMORY inmemoryAttributes?) | NO INMEMORY)? (inmemoryColumnClause)?
+    : ((INMEMORY inmemoryAttributes?) | NO INMEMORY)
+    | (inmemoryColumnClause)
+    | ((INMEMORY inmemoryAttributes?) | NO INMEMORY) (inmemoryColumnClause)
     ;
 
 inmemoryAttributes
