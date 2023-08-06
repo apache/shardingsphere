@@ -1472,6 +1472,7 @@ alterSessionSetClauseOption
     | containerClause
     | rowArchivalVisibilityClause
     | defaultCollationClause
+    | eventsClause
     ;
 
 parameterClause
@@ -1492,6 +1493,10 @@ rowArchivalVisibilityClause
 
 defaultCollationClause
     : DEFAULT_COLLATION EQ_ (collationName | NONE)
+    ;
+
+eventsClause
+    : (EVENTS EQ_? STRING_)+
     ;
 
 alterDatabaseDictionary
