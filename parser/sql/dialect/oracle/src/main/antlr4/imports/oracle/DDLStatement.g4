@@ -1196,6 +1196,10 @@ passwordParameters
     | PASSWORD_ROLLOVER_TIME (expr | DEFAULT)
     ;
 
+alterRollbackSegment
+    : ALTER ROLLBACK SEGMENT rollbackSegmentName (ONLINE | OFFLINE | storageClause | SHRINK (TO sizeClause)?)
+    ;
+
 packageCompileClause
     : COMPILE DEBUG? (PACKAGE | SPECIFICATION | BODY)? (compilerParametersClause*)? (REUSE SETTINGS)?
     ;

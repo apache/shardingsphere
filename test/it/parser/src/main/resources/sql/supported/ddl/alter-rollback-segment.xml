@@ -16,10 +16,7 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <alter-profile sql-case-id="alter_profile_limit_idle_time" />
-    <alter-profile sql-case-id="alter_profile_limit_password_reuse_time_password_reuse_max_unlimited" />
-    <alter-profile sql-case-id="alter_profile_limit_password_verify_function" />
-    <alter-profile sql-case-id="alter_profile_limit_failed_login_attempts_password_lock_time" />
-    <alter-profile sql-case-id="alter_profile_limit_password_reuse_time_default_password_reuse_max_unlimited" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="alter_rollback_segment_shrink_to_m" value="ALTER ROLLBACK SEGMENT rbs_one SHRINK TO 100M" db-types="Oracle" />
+    <sql-case id="alter_rollback_segment_online" value="ALTER ROLLBACK SEGMENT rbs_one ONLINE" db-types="Oracle" />
+</sql-cases>
