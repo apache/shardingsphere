@@ -17,6 +17,11 @@
   -->
 
 <sql-cases>
-    <sql-case id="alter_profile_limit_failed_login_attempts_password_lock_time" value="ALTER PROFILE prof LIMIT FAILED_LOGIN_ATTEMPTS 9 PASSWORD_LOCK_TIME 10;" db-types="Oracle" />
+    <sql-case id="alter_profile_limit_failed_login_attempts_password_lock_time1" value="ALTER PROFILE prof LIMIT FAILED_LOGIN_ATTEMPTS 9 PASSWORD_LOCK_TIME 10;" db-types="Oracle" />
+    <sql-case id="alter_profile_limit_failed_login_attempts_password_lock_time2" value="ALTER PROFILE app_user LIMIT FAILED_LOGIN_ATTEMPTS 5 PASSWORD_LOCK_TIME 1" db-types="Oracle" />
     <sql-case id="alter_profile_limit_password_reuse_time_default_password_reuse_max_unlimited" value="ALTER PROFILE app_user LIMIT PASSWORD_REUSE_TIME DEFAULT PASSWORD_REUSE_MAX UNLIMITED;" db-types="Oracle" />
+    <sql-case id="alter_profile_limit_idle_time_default" value="ALTER PROFILE app_user LIMIT IDLE_TIME DEFAULT" db-types="Oracle" />
+    <sql-case id="alter_profile_limit_session_per_user" value="ALTER PROFILE app_user LIMIT SESSIONS_PER_USER 5" db-types="Oracle" />
+    <sql-case id="alter_profile_limit_password_file_time_password_grace_time" value="ALTER PROFILE app_user2 LIMIT PASSWORD_LIFE_TIME 90 PASSWORD_GRACE_TIME 5" db-types="Oracle" />
+    <sql-case id="alter_profile_limit_idle_time_unlimited" value="ALTER PROFILE app_user2 LIMIT IDLE_TIME UNLIMITED" db-types="Oracle" />
 </sql-cases>

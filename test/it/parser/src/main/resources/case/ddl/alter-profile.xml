@@ -17,6 +17,11 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-profile sql-case-id="alter_profile_limit_failed_login_attempts_password_lock_time" />
+    <alter-profile sql-case-id="alter_profile_limit_failed_login_attempts_password_lock_time1" />
+    <alter-profile sql-case-id="alter_profile_limit_failed_login_attempts_password_lock_time2" />
     <alter-profile sql-case-id="alter_profile_limit_password_reuse_time_default_password_reuse_max_unlimited" />
+    <alter-profile sql-case-id="alter_profile_limit_idle_time_default" />
+    <alter-profile sql-case-id="alter_profile_limit_session_per_user" />
+    <alter-profile sql-case-id="alter_profile_limit_password_file_time_password_grace_time" />
+    <alter-profile sql-case-id="alter_profile_limit_idle_time_unlimited" />
 </sql-parser-test-cases>
