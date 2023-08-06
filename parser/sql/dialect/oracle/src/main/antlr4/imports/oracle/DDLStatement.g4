@@ -3742,10 +3742,6 @@ alterTablespace
     )
     ;
 
-tablespaceRetentionClause
-    : RETENTION (GUARANTEE | NOGUARANTEE)
-    ;
-
 newTablespaceName
     : identifier
     ;
@@ -3856,10 +3852,6 @@ alterAttributeDefinition
 
 alterCollectionClauses
     : MODIFY (LIMIT INTEGER_ | ELEMENT TYPE dataType)
-    ;
-
-exceptionsClause
-    : EXCEPTIONS INTO (schemaName DOT_)? tableName
     ;
 
 dependentHandlingClause
