@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.nodepath;
+package org.apache.shardingsphere.mode.path;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.nodepath.item.NamedRuleItemNodePath;
-import org.apache.shardingsphere.infra.metadata.nodepath.item.UniqueRuleItemNodePath;
-import org.apache.shardingsphere.infra.metadata.nodepath.root.RuleRootNodePath;
+import org.apache.shardingsphere.mode.path.item.NamedRuleItemNodePath;
+import org.apache.shardingsphere.mode.path.item.UniqueRuleItemNodePath;
+import org.apache.shardingsphere.mode.path.root.RuleRootNodePath;
 
 import java.util.Collection;
 import java.util.HashMap;
