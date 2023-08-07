@@ -67,7 +67,7 @@ public final class ShowStreamingJobStatusExecutor implements QueryableRALExecuto
     }
     
     @Override
-    public String getType() {
-        return ShowStreamingStatusStatement.class.getName();
+    public Class<ShowStreamingStatusStatement> getType() {
+        return ShowStreamingStatusStatement.class;
     }
 }

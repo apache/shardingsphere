@@ -62,7 +62,7 @@ public final class ShowComputeNodesExecutor implements InstanceContextRequiredQu
     }
     
     @Override
-    public String getType() {
-        return ShowComputeNodesStatement.class.getName();
+    public Class<ShowComputeNodesStatement> getType() {
+        return ShowComputeNodesStatement.class;
     }
 }
