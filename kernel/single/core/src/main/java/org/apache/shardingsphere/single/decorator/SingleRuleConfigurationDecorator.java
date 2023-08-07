@@ -61,7 +61,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         if (!isExpandRequired(splitTables)) {
             return splitTables;
         }
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources);
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, dataSources);
         Map<String, DataSource> aggregatedDataSources = SingleTableLoadUtils.getAggregatedDataSourceMap(enabledDataSources, builtRules);
         DatabaseType databaseType = DatabaseTypeEngine.getStorageType(enabledDataSources.values());
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(builtRules);

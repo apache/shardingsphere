@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -105,7 +105,7 @@ class ContextManagerTest {
     
     @Test
     void assertGetDataSourceMap() {
-        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
+        ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
         ShardingSphereDatabase database =
                 new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         when(metaDataContexts.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(database);
@@ -212,7 +212,7 @@ class ContextManagerTest {
     
     @Test
     void assertAlterRuleConfiguration() {
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSources = Collections.singletonMap("ds_0", new MockedDataSource());
         when(resourceMetaData.getStorageNodeMetaData().getDataSources()).thenReturn(dataSources);
         when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(StorageUtils.getStorageUnits(dataSources));
@@ -238,8 +238,8 @@ class ContextManagerTest {
                 .getResourceMetaData().getStorageNodeMetaData().getDataSources().get("foo_ds"));
     }
     
-    private ShardingSphereResourceMetaData createOriginalResource() {
-        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS);
+    private ResourceMetaData createOriginalResource() {
+        ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> originalDataSources = new LinkedHashMap<>(2, 1F);
         originalDataSources.put("ds_1", new MockedDataSource());
         originalDataSources.put("ds_2", new MockedDataSource());

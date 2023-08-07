@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUn
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -61,7 +61,7 @@ class ShowStorageUnitExecutorTest {
     
     @BeforeEach
     void before() {
-        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", createDataSources());
+        ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", createDataSources());
         ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(Collections.singleton(createShardingRule()));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData()).thenReturn(metaData);

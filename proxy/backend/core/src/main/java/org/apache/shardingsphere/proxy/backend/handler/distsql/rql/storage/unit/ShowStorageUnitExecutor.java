@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.proxy.backend.util.StorageUnitUtils;
 
 import javax.sql.DataSource;
@@ -66,7 +66,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
-        ShardingSphereResourceMetaData resourceMetaData = database.getResourceMetaData();
+        ResourceMetaData resourceMetaData = database.getResourceMetaData();
         Map<String, DataSourceProperties> dataSourcePropsMap = getDataSourcePropsMap(database, sqlStatement);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {

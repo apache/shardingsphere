@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
@@ -94,7 +94,7 @@ class ShowRulesUsedStorageUnitExecutorTest {
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(
                 Arrays.asList(mockShardingRule(), mockReadwriteSplittingRule(), mockEncryptRule(), mockShadowRule(), mockMaskRule()));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
-        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
+        ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         return result;
     }
@@ -154,7 +154,7 @@ class ShowRulesUsedStorageUnitExecutorTest {
     private ShardingSphereDatabase mockEmptyDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("empty_ds", new MockedDataSource()));
+        ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", Collections.singletonMap("empty_ds", new MockedDataSource()));
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         return result;
     }

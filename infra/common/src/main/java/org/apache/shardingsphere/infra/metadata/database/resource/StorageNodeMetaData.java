@@ -24,11 +24,11 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * ShardingSphere storage node meta data.
+ * Storage node meta data.
  */
-@Getter
 @RequiredArgsConstructor
-public final class ShardingSphereStorageNodeMetaData {
+@Getter
+public final class StorageNodeMetaData {
     
     private final Map<String, DataSource> dataSources;
 }

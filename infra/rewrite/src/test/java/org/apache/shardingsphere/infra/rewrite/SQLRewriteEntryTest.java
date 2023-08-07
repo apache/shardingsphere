@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
@@ -80,8 +80,8 @@ class SQLRewriteEntryTest {
         assertThat(sqlRewriteResult.getSqlRewriteUnits().size(), is(2));
     }
     
-    private ShardingSphereResourceMetaData mockResource() {
-        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
+    private ResourceMetaData mockResource() {
+        ResourceMetaData result = mock(ResourceMetaData.class);
         Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
         databaseTypes.put("ds_0", TypedSPILoader.getService(DatabaseType.class, "H2"));
         databaseTypes.put("ds_1", TypedSPILoader.getService(DatabaseType.class, "MySQL"));
