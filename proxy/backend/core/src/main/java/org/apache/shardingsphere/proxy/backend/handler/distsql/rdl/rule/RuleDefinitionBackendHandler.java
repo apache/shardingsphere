@@ -100,7 +100,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private RuleConfiguration decorateRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
-        Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass().getName());
+        Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass());
         return decorator.map(optional -> optional.decorate(database.getName(), database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(), ruleConfig)).orElse(ruleConfig);
     }
     

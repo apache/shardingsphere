@@ -173,7 +173,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
     }
     
     @Override
-    public String getType() {
-        return SingleRuleConfiguration.class.getName();
+    public Class<SingleRuleConfiguration> getType() {
+        return SingleRuleConfiguration.class;
     }
 }
