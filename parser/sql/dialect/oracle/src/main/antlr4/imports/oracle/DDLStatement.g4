@@ -220,7 +220,21 @@ oidIndexClause
     ;
 
 createRelationalTableClause
-    : (LP_ relationalProperties RP_) collationClause? commitClause? physicalProperties? tableProperties?
+    : (LP_ relationalProperties RP_)
+    | (LP_ relationalProperties RP_) collationClause
+    | (LP_ relationalProperties RP_) commitClause
+    | (LP_ relationalProperties RP_) physicalProperties
+    | (LP_ relationalProperties RP_) tableProperties
+    | (LP_ relationalProperties RP_) collationClause commitClause
+    | (LP_ relationalProperties RP_) collationClause physicalProperties
+    | (LP_ relationalProperties RP_) collationClause tableProperties
+    | (LP_ relationalProperties RP_) collationClause commitClause physicalProperties
+    | (LP_ relationalProperties RP_) collationClause commitClause tableProperties
+    | (LP_ relationalProperties RP_) collationClause commitClause physicalProperties tableProperties
+    | (LP_ relationalProperties RP_) commitClause physicalProperties
+    | (LP_ relationalProperties RP_) commitClause tableProperties
+    | (LP_ relationalProperties RP_) commitClause physicalProperties tableProperties
+    | (LP_ relationalProperties RP_) physicalProperties tableProperties
     ;
     
 createMemOptimizeClause
