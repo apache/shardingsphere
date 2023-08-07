@@ -54,16 +54,16 @@ public final class ResourceMetaData {
     }
     
     public ResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources);
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, dataSources);
         Map<String, DatabaseType> storageTypes = createStorageTypes(dataSources, enabledDataSources);
-        this.dataSourcePropsMap = DataSourcePropertiesCreator.create(dataSources);
+        dataSourcePropsMap = DataSourcePropertiesCreator.create(dataSources);
         storageNodeMetaData = new StorageNodeMetaData(dataSources);
         storageUnitMetaData = new StorageUnitMetaData(dataSources, storageTypes, StorageUtils.getStorageUnits(dataSources), enabledDataSources);
         
     }
     
     public ResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, storageResource.getStorageNodes());
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, storageResource.getStorageNodes());
         Map<String, DatabaseType> storageTypes = createStorageTypes(storageResource.getStorageNodes(), enabledDataSources);
         storageNodeMetaData = new StorageNodeMetaData(storageResource.getStorageNodes());
         storageUnitMetaData = new StorageUnitMetaData(storageResource.getStorageNodes(), storageTypes, storageResource.getStorageUnits(), enabledDataSources);
