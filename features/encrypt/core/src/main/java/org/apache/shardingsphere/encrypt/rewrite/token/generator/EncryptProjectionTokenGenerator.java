@@ -25,6 +25,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
@@ -130,7 +131,8 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
             String tableName = columnTableNames.get(each.getExpression());
             Optional<EncryptTable> encryptTable = null == tableName ? Optional.empty() : encryptRule.findEncryptTable(tableName);
             if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(each.getColumnLabel()) || containsTableSubquery(selectStatementContext)) {
-                projections.add(each.getAlias().map(optional -> (Projection) new ColumnProjection(null, optional, null, databaseType)).orElse(each));
+                projections.add(each.getAlias().filter(alias -> !DerivedColumn.isDerivedColumnName(alias.getValue()))
+                        .map(optional -> (Projection) new ColumnProjection(null, optional, null, databaseType)).orElse(each));
             } else if (each instanceof ColumnProjection) {
                 projections.addAll(generateProjections(encryptTable.get().getEncryptColumn(((ColumnProjection) each).getName().getValue()), (ColumnProjection) each, subqueryType, true, segment));
             }
