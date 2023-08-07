@@ -20,14 +20,14 @@ package org.apache.shardingsphere.transaction.xa.atomikos.manager;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.SystemException;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.XADataSource;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 
 /**
  * Atomikos XA transaction manager provider.
