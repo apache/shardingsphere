@@ -35,7 +35,7 @@ jobs:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - CheckStyle
     needs: global-environment
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-8-cores
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
