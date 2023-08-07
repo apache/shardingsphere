@@ -19,31 +19,29 @@ package org.apache.shardingsphere.infra.binder.segment.projection.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
-import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
-
-import java.util.Map;
+import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubquerySegmentBinder;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 
 /**
- * Column projection segment binder.
+ * Subquery projection segment binder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ColumnProjectionSegmentBinder {
+public final class SubqueryProjectionSegmentBinder {
     
     /**
-     * Bind column projection segment with metadata.
+     * Bind subquery projection segment with metadata.
      *
-     * @param segment table segment
-     * @param tableBinderContexts table binder contexts
-     * @return bounded column projection segment
+     * @param segment subquery projection segment
+     * @param metaData meta data
+     * @param defaultDatabaseName default database name
+     * @return bounded subquery projection segment
      */
-    public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ColumnSegment boundedColumn = ColumnSegmentBinder.bind(segment.getColumn(), tableBinderContexts);
-        ColumnProjectionSegment result = new ColumnProjectionSegment(boundedColumn);
+    public static SubqueryProjectionSegment bind(final SubqueryProjectionSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+        SubquerySegment boundedSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), metaData, defaultDatabaseName);
+        SubqueryProjectionSegment result = new SubqueryProjectionSegment(boundedSubquerySegment, segment.getText());
         segment.getAliasSegment().ifPresent(result::setAlias);
-        result.setVisible(segment.isVisible());
         return result;
     }
 }

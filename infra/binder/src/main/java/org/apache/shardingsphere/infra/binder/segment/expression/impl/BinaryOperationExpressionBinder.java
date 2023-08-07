@@ -15,33 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.expression;
+package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
- * Subquery segment binder.
+ * Binary operation expression binder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SubquerySegmentBinder {
+public final class BinaryOperationExpressionBinder {
     
     /**
-     * Bind subquery segment with metadata.
+     * Bind binary operation expression with metadata.
      *
      * @param segment subquery segment
      * @param metaData metaData
      * @param defaultDatabaseName default database name
-     * @return bounded subquery segment
+     * @return bounded binary operation expression segment
      */
-    public static SubquerySegment bind(final SubquerySegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        SelectStatement boundedSelectStatement = new SelectStatementBinder().bind(segment.getSelect(), metaData, defaultDatabaseName);
-        SubquerySegment result = new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundedSelectStatement);
-        result.setSubqueryType(segment.getSubqueryType());
-        return result;
+    public static BinaryOperationExpression bind(final BinaryOperationExpression segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+        ExpressionSegment boundedLeft = ExpressionSegmentBinder.bind(segment.getLeft(), metaData, defaultDatabaseName);
+        ExpressionSegment boundedRight = ExpressionSegmentBinder.bind(segment.getRight(), metaData, defaultDatabaseName);
+        return new BinaryOperationExpression(segment.getStartIndex(), segment.getStopIndex(), boundedLeft, boundedRight, segment.getOperator(), segment.getText());
     }
 }
