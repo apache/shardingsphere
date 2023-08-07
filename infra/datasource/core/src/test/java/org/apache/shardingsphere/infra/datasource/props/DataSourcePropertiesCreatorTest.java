@@ -105,7 +105,6 @@ class DataSourcePropertiesCreatorTest {
     
     private Map<String, Object> createStandardProperties() {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
-        // This is to test the case where the property type is mismatched.
         result.put("connectionTimeoutMilliseconds", "null");
         result.put("idleTimeoutMilliseconds", 180000);
         result.put("maxLifetimeMilliseconds", 180000);
