@@ -91,7 +91,7 @@ public final class ShowUnusedShardingAlgorithmsExecutor implements RQLExecutor<S
     }
     
     @Override
-    public String getType() {
-        return ShowUnusedShardingAlgorithmsStatement.class.getName();
+    public Class<ShowUnusedShardingAlgorithmsStatement> getType() {
+        return ShowUnusedShardingAlgorithmsStatement.class;
     }
 }

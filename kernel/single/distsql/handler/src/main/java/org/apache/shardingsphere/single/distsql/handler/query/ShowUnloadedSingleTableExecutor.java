@@ -66,7 +66,7 @@ public final class ShowUnloadedSingleTableExecutor implements RQLExecutor<ShowUn
     }
     
     @Override
-    public String getType() {
-        return ShowUnloadedSingleTableStatement.class.getName();
+    public Class<ShowUnloadedSingleTableStatement> getType() {
+        return ShowUnloadedSingleTableStatement.class;
     }
 }
