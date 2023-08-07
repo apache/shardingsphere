@@ -38,7 +38,7 @@ public final class HBaseQueryFactory {
      * @return instance of database backend handler
      */
     public static ProxyBackendHandler newInstance(final SQLStatement sqlStatement) {
-        HBaseQueryResultSet resultSet = TypedSPILoader.getService(HBaseQueryResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        HBaseQueryResultSet resultSet = TypedSPILoader.getService(HBaseQueryResultSet.class, sqlStatement.getClass(), new Properties());
         return new HBaseBackendQueryHandler(sqlStatement, resultSet);
     }
 }

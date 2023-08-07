@@ -205,7 +205,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
     }
     
     @Override
-    public String getType() {
-        return MySQLSelectStatement.class.getCanonicalName();
+    public Class<MySQLSelectStatement> getType() {
+        return MySQLSelectStatement.class;
     }
 }
