@@ -43,15 +43,14 @@ jobs:
         with:
           path: |
             ~/.m2/repository
-#            ${{ github.workspace }}/**/checkstyle-cachefile
+            ${{ github.workspace }}/**/checkstyle-cachefile
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-checkstyle-cache-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-checkstyle-cache-
       - name: Run CheckStyle
         run: |
-          time ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C -q
-          time ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C -q
-          time ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
+          find ${{ github.workspace }} -type f -name "checkstyle-cachefile" -exec cat {} \;
+          ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
 
   check-spotless:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
