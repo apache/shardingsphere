@@ -20,6 +20,9 @@ package org.apache.shardingsphere.data.pipeline.common.pojo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Table based pipeline job info.
  */
@@ -34,9 +37,19 @@ public final class TableBasedPipelineJobInfo implements PipelineJobInfo {
     // TODO Rename
     private final String table;
     
-    public TableBasedPipelineJobInfo(final PipelineJobMetaData jobMetaData, final String table) {
+    private final List<String> columnNames;
+    
+    public TableBasedPipelineJobInfo(final PipelineJobMetaData jobMetaData, final String tableName) {
         this.jobMetaData = jobMetaData;
         databaseName = null;
-        this.table = table;
+        this.tableName = tableName;
+        columnNames = Collections.emptyList();
+    }
+    
+    public TableBasedPipelineJobInfo(final PipelineJobMetaData jobMetaData, final String databaseName, final String tableName) {
+        this.jobMetaData = jobMetaData;
+        this.databaseName = databaseName;
+        this.tableName = tableName;
+        columnNames = Collections.emptyList();
     }
 }
