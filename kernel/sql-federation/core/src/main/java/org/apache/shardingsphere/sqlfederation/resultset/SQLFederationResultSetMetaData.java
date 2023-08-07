@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 
 import java.sql.ResultSetMetaData;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -182,9 +181,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
                 expandProjections.size() < column ? new ColumnProjection(null, resultColumnType.getFieldList().get(column - 1).getName(), null, selectStatementContext.getDatabaseType())
                         : expandProjections.get(column - 1);
         if (projection instanceof ColumnProjection) {
-            Map<String, String> tableNamesByColumnProjection =
-                    selectStatementContext.getTablesContext().findTableNamesByColumnProjection(Collections.singletonList((ColumnProjection) projection), schema);
-            return Optional.of(tableNamesByColumnProjection.get(projection.getExpression()));
+            return Optional.of(((ColumnProjection) projection).getOriginalTable().getValue());
         }
         return Optional.empty();
     }
