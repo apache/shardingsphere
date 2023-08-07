@@ -86,11 +86,13 @@
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
             <version>${atomikos.version}</version>
+            <classifier>jakarta</classifier>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jdbc</artifactId>
             <version>${atomikos.version}</version>
+            <classifier>jakarta</classifier>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -99,18 +101,13 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.narayana.jta</groupId>
-            <artifactId>jta</artifactId>
+            <artifactId>narayana-jta-jakarta</artifactId>
             <version>${narayana.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.narayana.jts</groupId>
-            <artifactId>narayana-jts-integration</artifactId>
+            <artifactId>narayana-jts-integration-jakarta</artifactId>
             <version>${narayana.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss</groupId>
-            <artifactId>jboss-transaction-spi</artifactId>
-            <version>${jboss-transaction-spi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>

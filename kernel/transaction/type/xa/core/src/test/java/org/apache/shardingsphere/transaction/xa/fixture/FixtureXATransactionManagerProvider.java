@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.transaction.xa.fixture;
 
+import jakarta.transaction.TransactionManager;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.XADataSource;
-import javax.transaction.TransactionManager;
 
 public final class FixtureXATransactionManagerProvider implements XATransactionManagerProvider {
     

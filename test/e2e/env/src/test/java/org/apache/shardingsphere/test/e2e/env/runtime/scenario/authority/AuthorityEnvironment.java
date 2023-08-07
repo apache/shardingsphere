@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority;
 
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
 import java.util.LinkedList;
 
