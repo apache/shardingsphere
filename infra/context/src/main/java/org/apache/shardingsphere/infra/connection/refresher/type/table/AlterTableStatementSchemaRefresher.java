@@ -76,7 +76,7 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
     }
     
     @Override
-    public String getType() {
-        return AlterTableStatement.class.getName();
+    public Class<AlterTableStatement> getType() {
+        return AlterTableStatement.class;
     }
 }

@@ -69,7 +69,7 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
     }
     
     @Override
-    public String getType() {
-        return CreateViewStatement.class.getName();
+    public Class<CreateViewStatement> getType() {
+        return CreateViewStatement.class;
     }
 }

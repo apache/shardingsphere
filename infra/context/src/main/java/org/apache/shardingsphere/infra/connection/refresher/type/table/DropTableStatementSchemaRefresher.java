@@ -56,7 +56,7 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
     }
     
     @Override
-    public String getType() {
-        return DropTableStatement.class.getName();
+    public Class<DropTableStatement> getType() {
+        return DropTableStatement.class;
     }
 }
