@@ -44,7 +44,7 @@ jobs:
           path: |
             ~/.m2/repository
             ${{ github.workspace }}/**/checkstyle-cachefile
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-checkstyle-cache-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-checkstyle-cache-${{ github.sha }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-checkstyle-cache-
       - name: Run CheckStyle
