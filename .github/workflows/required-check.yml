@@ -39,6 +39,13 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
+      - name: Get Cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-checkstyle-cache-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-checkstyle-cache-
       - name: Run CheckStyle
         run: ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
 
