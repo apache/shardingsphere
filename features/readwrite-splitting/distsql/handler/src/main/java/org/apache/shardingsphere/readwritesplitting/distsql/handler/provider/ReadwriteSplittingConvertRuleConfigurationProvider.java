@@ -86,7 +86,7 @@ public final class ReadwriteSplittingConvertRuleConfigurationProvider implements
     }
     
     @Override
-    public String getType() {
-        return ReadwriteSplittingRuleConfiguration.class.getName();
+    public Class<ReadwriteSplittingRuleConfiguration> getType() {
+        return ReadwriteSplittingRuleConfiguration.class;
     }
 }
