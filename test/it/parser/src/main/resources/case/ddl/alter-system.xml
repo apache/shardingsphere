@@ -44,4 +44,6 @@
     <alter-system sql-case-id="alter_system_reset_open_cursors_scope_sid" />
     <alter-system sql-case-id="alter_system_set_db_recovery_file_dest_size_g" />
     <alter-system sql-case-id="alter_system_set_parameter_recyclebin_scope" />
+    <alter-system sql-case-id="alter_system_set_events1" />
+    <alter-system sql-case-id="alter_system_set_events2" />
 </sql-parser-test-cases>
