@@ -118,7 +118,7 @@ public final class AlterTrafficRuleStatementUpdater implements GlobalRuleRALUpda
     }
     
     @Override
-    public String getType() {
-        return AlterTrafficRuleStatement.class.getName();
+    public Class<AlterTrafficRuleStatement> getType() {
+        return AlterTrafficRuleStatement.class;
     }
 }

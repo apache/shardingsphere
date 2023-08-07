@@ -43,7 +43,7 @@ public final class NewUpdatableGlobalRuleRALBackendHandler implements DistSQLBac
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ResponseHeader execute() {
-        GlobalRuleRALUpdater globalRuleUpdater = TypedSPILoader.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getName());
+        GlobalRuleRALUpdater globalRuleUpdater = TypedSPILoader.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass());
         Class<? extends RuleConfiguration> ruleConfigClass = globalRuleUpdater.getRuleConfigurationClass();
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         Collection<RuleConfiguration> ruleConfigurations = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
