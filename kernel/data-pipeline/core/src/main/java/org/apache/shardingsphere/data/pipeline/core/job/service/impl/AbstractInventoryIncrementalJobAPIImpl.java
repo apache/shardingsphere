@@ -122,7 +122,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
             InventoryIncrementalJobItemProgress jobItemProgress = entry.getValue();
             String errorMessage = getJobItemErrorMessage(jobId, shardingItem);
             if (null == jobItemProgress) {
-                result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTable(), null, startTimeMillis, 0, errorMessage));
+                result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTableName(), null, startTimeMillis, 0, errorMessage));
                 continue;
             }
             int inventoryFinishedPercentage = 0;
@@ -131,7 +131,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
             } else if (0 != jobItemProgress.getProcessedRecordsCount() && 0 != jobItemProgress.getInventoryRecordsCount()) {
                 inventoryFinishedPercentage = (int) Math.min(100, jobItemProgress.getProcessedRecordsCount() * 100 / jobItemProgress.getInventoryRecordsCount());
             }
-            result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTable(), jobItemProgress, startTimeMillis, inventoryFinishedPercentage, errorMessage));
+            result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTableName(), jobItemProgress, startTimeMillis, inventoryFinishedPercentage, errorMessage));
         }
         return result;
     }

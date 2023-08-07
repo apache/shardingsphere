@@ -34,8 +34,7 @@ public final class TableBasedPipelineJobInfo implements PipelineJobInfo {
     
     private final String databaseName;
     
-    // TODO Rename
-    private final String table;
+    private final String tableName;
     
     private final List<String> columnNames;
     
