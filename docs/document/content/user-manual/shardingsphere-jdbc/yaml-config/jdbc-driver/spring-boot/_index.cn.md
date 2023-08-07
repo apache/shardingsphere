@@ -35,30 +35,9 @@ spring.datasource.url=jdbc:shardingsphere:classpath:xxx.yaml
 
 直接使用该数据源；或者将 ShardingSphereDataSource 配置在 JPA、Hibernate、MyBatis 等 ORM 框架中配合使用。
 
-## 针对 Spring Boot OSS 3 的处理
-
-Spring Boot OSS 3 对 Jakarta EE 和 Java 17 进行了 “大爆炸” 升级，涉及大量复杂情况。
-
-ShardingSphere 的 XA 分布式事务尚未在 Spring Boot OSS 3 上就绪，此限制同样适用于其他基于 Jakarta EE 9+ 的 Web Framework，如
-Quarkus 3，Micronaut Framework 4 和 Helidon 3。
-
-用户仅需要配置如下。
-
-```xml
-<project>
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc</artifactId>
-            <version>${shardingsphere.version}</version>
-        </dependency>
-    </dependencies>
-</project>
-```
-
 ## 针对低版本的 Spring Boot OSS 2 的特殊处理
 
-ShardingSphere 的所有特性均可在 Spring Boot OSS 2 上使用，但低版本的 Spring Boot OSS 可能需要手动指定 SnakeYAML 的版本为 2.2 。 
+低版本的 Spring Boot OSS 可能需要手动指定 SnakeYAML 的版本为 2.2 。
 这在 Maven 的 `pom.xml` 体现为如下内容。
 
 ```xml
@@ -95,3 +74,5 @@ ShardingSphere 的所有特性均可在 Spring Boot OSS 2 上使用，但低版�
     </dependencies>
 </project>
 ```
+
+此外，ShardingSphere 的 XA 分布式事务在 Spring Boot OSS 2.x 上无法集成于 Spring 自有注解。

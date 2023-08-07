@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration;
 
 import com.google.common.base.Strings;
+import jakarta.xml.bind.JAXB;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTyp
 import org.awaitility.Awaitility;
 import org.opengauss.util.PSQLException;
 
-import javax.xml.bind.JAXB;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;

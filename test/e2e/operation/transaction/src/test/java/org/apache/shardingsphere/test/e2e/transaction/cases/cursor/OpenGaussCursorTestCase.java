@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTes
 import org.apache.shardingsphere.test.e2e.transaction.engine.command.CursorSQLCommand;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
-import javax.xml.bind.JAXB;
+import jakarta.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

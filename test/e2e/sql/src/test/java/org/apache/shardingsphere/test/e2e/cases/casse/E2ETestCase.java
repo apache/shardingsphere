@@ -21,10 +21,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.cases.casse.assertion.E2ETestCaseAssertion;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 import java.util.LinkedList;
 
