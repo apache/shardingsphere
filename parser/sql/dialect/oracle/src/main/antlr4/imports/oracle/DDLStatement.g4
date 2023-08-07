@@ -398,11 +398,16 @@ alterDefinitionClause
     ;
 
 alterTableProperties
-    : renameTableSpecification | REKEY encryptionSpecification
+    : renameTableSpecification | REKEY encryptionSpecification | supplementalTableLogging
     ;
 
 renameTableSpecification
     : RENAME TO identifier
+    ;
+
+supplementalTableLogging
+    : ADD SUPPLEMENTAL LOG (supplementalLogGrpClause | supplementalIdKeyClause) (COMMA_ SUPPLEMENTAL LOG (supplementalLogGrpClause | supplementalIdKeyClause))*
+    | DROP SUPPLEMENTAL LOG (supplementalIdKeyClause | GROUP logGroupName) (COMMA_ SUPPLEMENTAL LOG (supplementalIdKeyClause | GROUP logGroupName))*
     ;
 
 dropSynonym
