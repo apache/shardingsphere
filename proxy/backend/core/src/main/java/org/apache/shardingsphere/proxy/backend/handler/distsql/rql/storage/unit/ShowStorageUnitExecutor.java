@@ -141,7 +141,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     }
     
     @Override
-    public String getType() {
-        return ShowStorageUnitsStatement.class.getName();
+    public Class<ShowStorageUnitsStatement> getType() {
+        return ShowStorageUnitsStatement.class;
     }
 }

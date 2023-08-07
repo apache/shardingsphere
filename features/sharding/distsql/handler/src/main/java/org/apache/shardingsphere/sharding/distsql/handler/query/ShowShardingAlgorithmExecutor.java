@@ -63,7 +63,7 @@ public final class ShowShardingAlgorithmExecutor implements RQLExecutor<ShowShar
     }
     
     @Override
-    public String getType() {
-        return ShowShardingAlgorithmsStatement.class.getName();
+    public Class<ShowShardingAlgorithmsStatement> getType() {
+        return ShowShardingAlgorithmsStatement.class;
     }
 }
