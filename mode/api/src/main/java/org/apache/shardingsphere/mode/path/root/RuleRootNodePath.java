@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.nodepath.root;
+package org.apache.shardingsphere.mode.path.root;
 
 import lombok.Getter;
 

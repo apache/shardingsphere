@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.spi;
 
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
