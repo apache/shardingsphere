@@ -910,7 +910,9 @@ tablePartitionDescription
     ;
 
 inmemoryClause
-    : INMEMORY inmemoryAttributes? | NO INMEMORY
+    : INMEMORY inmemoryAttributes
+    | INMEMORY
+    | NO INMEMORY
     ;
 
 varrayColProperties
@@ -1085,7 +1087,10 @@ referencePartitioning
     ;
 
 referencePartitionDesc
-    : PARTITION partitionName? tablePartitionDescription?
+    : PARTITION
+    | PARTITION partitionName
+    | PARTITION tablePartitionDescription
+    | PARTITION partitionName tablePartitionDescription
     ;
 
 constraint
@@ -1094,6 +1099,7 @@ constraint
 
 systemPartitioning
     : PARTITION BY SYSTEM (PARTITIONS NUMBER_ | referencePartitionDesc (COMMA_ referencePartitionDesc)*)?
+    | PARTITION BY SYSTEM
     ;
 
 consistentHashPartitions
@@ -1125,7 +1131,14 @@ listPartitionsetClause
     ;
 
 attributeClusteringClause
-    : CLUSTERING clusteringJoin? clusterClause clusteringWhen? zonemapClause?
+    : CLUSTERING clusterClause
+    | CLUSTERING clusteringJoin clusterClause
+    | CLUSTERING clusterClause clusteringWhen
+    | CLUSTERING clusteringJoin clusterClause clusteringWhen
+    | CLUSTERING clusterClause zonemapClause
+    | CLUSTERING clusteringJoin clusterClause zonemapClause
+    | CLUSTERING clusterClause clusteringWhen zonemapClause
+    | CLUSTERING clusteringJoin clusterClause clusteringWhen zonemapClause
     ;
 
 clusteringJoin
@@ -2724,7 +2737,20 @@ alterAuditPolicy
     ;
 
 subAuditClause
-    : (privilegeAuditClause)? (actionAuditClause)? (roleAuditClause)? (ONLY TOPLEVEL)?
+    : privilegeAuditClause
+    | actionAuditClause
+    | roleAuditClause
+    | ONLY TOPLEVEL
+    | (privilegeAuditClause actionAuditClause)
+    | (privilegeAuditClause roleAuditClause)
+    | (privilegeAuditClause ONLY TOPLEVEL)
+    | (actionAuditClause roleAuditClause)
+    | (actionAuditClause ONLY TOPLEVEL)
+    | (actionAuditClause roleAuditClause ONLY TOPLEVEL)
+    | (privilegeAuditClause roleAuditClause ONLY TOPLEVEL)
+    | (privilegeAuditClause actionAuditClause ONLY TOPLEVEL)
+    | (privilegeAuditClause actionAuditClause roleAuditClause)
+    | (privilegeAuditClause actionAuditClause roleAuditClause ONLY TOPLEVEL)
     ;
 
 privilegeAuditClause
@@ -2919,7 +2945,9 @@ alterOperator
 
 addBindingClause
     : ADD BINDING LP_ parameterType (COMMA_ parameterType)* RP_
-      RETURN LP_ returnType RP_ implementationClause? usingFunctionClause
+      RETURN LP_ returnType RP_ implementationClause usingFunctionClause
+    | ADD BINDING LP_ parameterType (COMMA_ parameterType)* RP_
+      RETURN LP_ returnType RP_ usingFunctionClause
     ;
 
 implementationClause
