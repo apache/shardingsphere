@@ -114,7 +114,7 @@ public final class UnloadSingleTableStatementUpdater implements RuleDefinitionAl
     }
     
     @Override
-    public String getType() {
-        return UnloadSingleTableStatement.class.getName();
+    public Class<UnloadSingleTableStatement> getType() {
+        return UnloadSingleTableStatement.class;
     }
 }
