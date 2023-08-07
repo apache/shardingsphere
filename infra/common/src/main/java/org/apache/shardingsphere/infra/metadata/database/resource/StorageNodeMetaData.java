@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.state.exception;
+package org.apache.shardingsphere.infra.metadata.database.resource;
 
-import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.sql.SQLException;
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
- * Data source state exception.
+ * Storage node meta data.
  */
-public final class UnavailableDataSourceException extends ShardingSphereServerException {
+@RequiredArgsConstructor
+@Getter
+public final class StorageNodeMetaData {
     
-    private static final long serialVersionUID = -8058761885303180333L;
-    
-    private static final String ERROR_CATEGORY = "DATA-SOURCE";
-    
-    private static final int ERROR_CODE = 1;
-    
-    public UnavailableDataSourceException(final SQLException cause, final String dataSourceName) {
-        super(ERROR_CATEGORY, ERROR_CODE, String.format("Data source `%s` is unavailable.", dataSourceName), cause);
-    }
+    private final Map<String, DataSource> dataSources;
 }

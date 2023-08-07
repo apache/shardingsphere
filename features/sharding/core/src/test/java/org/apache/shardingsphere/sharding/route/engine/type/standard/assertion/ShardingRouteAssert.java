@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -78,7 +78,7 @@ public final class ShardingRouteAssert {
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType,
                 new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, singleRule, timestampServiceRule));
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(resourceMetaData.getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", databaseType));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 DefaultDatabase.LOGIC_NAME, databaseType, resourceMetaData, ruleMetaData, schemas);
@@ -89,7 +89,7 @@ public final class ShardingRouteAssert {
     }
     
     private static ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereResourceMetaData.class),
+        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ResourceMetaData.class),
                 mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
     }
     

@@ -74,7 +74,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     }
     
     @Override
-    public String getType() {
-        return DropIndexStatement.class.getName();
+    public Class<DropIndexStatement> getType() {
+        return DropIndexStatement.class;
     }
 }

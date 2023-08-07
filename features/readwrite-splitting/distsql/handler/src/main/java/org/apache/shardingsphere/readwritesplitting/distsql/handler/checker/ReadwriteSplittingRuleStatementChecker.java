@@ -25,7 +25,7 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfi
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -125,7 +125,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
     
     private static void checkDuplicateRuleNamesWithExistsDataSources(final ShardingSphereDatabase database, final Collection<ReadwriteSplittingRuleSegment> segments) {
         Collection<String> currentRuleNames = new HashSet<>();
-        ShardingSphereResourceMetaData resourceMetaData = database.getResourceMetaData();
+        ResourceMetaData resourceMetaData = database.getResourceMetaData();
         if (null != resourceMetaData && null != resourceMetaData.getDataSources()) {
             currentRuleNames.addAll(resourceMetaData.getDataSources().keySet());
         }

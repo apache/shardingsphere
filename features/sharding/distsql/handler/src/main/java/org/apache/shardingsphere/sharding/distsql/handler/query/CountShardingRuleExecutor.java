@@ -57,7 +57,7 @@ public final class CountShardingRuleExecutor implements RQLExecutor<CountShardin
     }
     
     @Override
-    public String getType() {
-        return CountShardingRuleStatement.class.getName();
+    public Class<CountShardingRuleStatement> getType() {
+        return CountShardingRuleStatement.class;
     }
 }

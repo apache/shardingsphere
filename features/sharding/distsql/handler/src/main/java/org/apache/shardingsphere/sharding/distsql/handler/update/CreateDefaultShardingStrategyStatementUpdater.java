@@ -140,7 +140,7 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     }
     
     @Override
-    public String getType() {
-        return CreateDefaultShardingStrategyStatement.class.getName();
+    public Class<CreateDefaultShardingStrategyStatement> getType() {
+        return CreateDefaultShardingStrategyStatement.class;
     }
 }

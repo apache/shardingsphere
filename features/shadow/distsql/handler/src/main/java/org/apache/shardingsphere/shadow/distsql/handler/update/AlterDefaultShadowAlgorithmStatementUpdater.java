@@ -90,7 +90,7 @@ public final class AlterDefaultShadowAlgorithmStatementUpdater implements RuleDe
     }
     
     @Override
-    public String getType() {
-        return AlterDefaultShadowAlgorithmStatement.class.getName();
+    public Class<AlterDefaultShadowAlgorithmStatement> getType() {
+        return AlterDefaultShadowAlgorithmStatement.class;
     }
 }

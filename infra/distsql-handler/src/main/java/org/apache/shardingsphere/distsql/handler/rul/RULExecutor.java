@@ -49,4 +49,7 @@ public interface RULExecutor<T extends RULStatement> extends TypedSPI {
     default Collection<LocalDataQueryResultRow> getRows(T sqlStatement) {
         return Collections.emptyList();
     }
+    
+    @Override
+    Class<T> getType();
 }

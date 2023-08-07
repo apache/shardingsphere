@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
 
@@ -38,35 +38,35 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * ShardingSphere resource meta data.
+ * Resource meta data.
  */
 @Getter
-public final class ShardingSphereResourceMetaData {
+public final class ResourceMetaData {
     
-    private final ShardingSphereStorageNodeMetaData storageNodeMetaData;
+    private final StorageNodeMetaData storageNodeMetaData;
     
-    private final ShardingSphereStorageUnitMetaData storageUnitMetaData;
+    private final StorageUnitMetaData storageUnitMetaData;
     
     private final Map<String, DataSourceProperties> dataSourcePropsMap;
     
-    public ShardingSphereResourceMetaData(final Map<String, DataSource> dataSources) {
+    public ResourceMetaData(final Map<String, DataSource> dataSources) {
         this(null, dataSources);
     }
     
-    public ShardingSphereResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources);
+    public ResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, dataSources);
         Map<String, DatabaseType> storageTypes = createStorageTypes(dataSources, enabledDataSources);
-        this.dataSourcePropsMap = DataSourcePropertiesCreator.create(dataSources);
-        storageNodeMetaData = new ShardingSphereStorageNodeMetaData(dataSources);
-        storageUnitMetaData = new ShardingSphereStorageUnitMetaData(dataSources, storageTypes, StorageUtils.getStorageUnits(dataSources), enabledDataSources);
+        dataSourcePropsMap = DataSourcePropertiesCreator.create(dataSources);
+        storageNodeMetaData = new StorageNodeMetaData(dataSources);
+        storageUnitMetaData = new StorageUnitMetaData(dataSources, storageTypes, StorageUtils.getStorageUnits(dataSources), enabledDataSources);
         
     }
     
-    public ShardingSphereResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, storageResource.getStorageNodes());
+    public ResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, storageResource.getStorageNodes());
         Map<String, DatabaseType> storageTypes = createStorageTypes(storageResource.getStorageNodes(), enabledDataSources);
-        storageNodeMetaData = new ShardingSphereStorageNodeMetaData(storageResource.getStorageNodes());
-        storageUnitMetaData = new ShardingSphereStorageUnitMetaData(storageResource.getStorageNodes(), storageTypes, storageResource.getStorageUnits(), enabledDataSources);
+        storageNodeMetaData = new StorageNodeMetaData(storageResource.getStorageNodes());
+        storageUnitMetaData = new StorageUnitMetaData(storageResource.getStorageNodes(), storageTypes, storageResource.getStorageUnits(), enabledDataSources);
         this.dataSourcePropsMap = dataSourcePropsMap;
     }
     

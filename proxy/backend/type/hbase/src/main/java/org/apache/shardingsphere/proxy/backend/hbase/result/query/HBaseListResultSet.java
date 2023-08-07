@@ -111,7 +111,7 @@ public final class HBaseListResultSet implements HBaseQueryResultSet {
      * @return type name
      */
     @Override
-    public String getType() {
-        return MySQLShowTablesStatement.class.getCanonicalName();
+    public Class<MySQLShowTablesStatement> getType() {
+        return MySQLShowTablesStatement.class;
     }
 }

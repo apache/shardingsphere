@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -177,7 +177,7 @@ class ShowDatabasesExecutorTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mockAuthorityRule()));
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(getDatabases(),
-                mock(ShardingSphereResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties())));
+                mock(ResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }

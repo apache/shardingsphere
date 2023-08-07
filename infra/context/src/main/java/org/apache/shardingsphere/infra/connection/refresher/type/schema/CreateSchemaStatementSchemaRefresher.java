@@ -39,7 +39,7 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
     }
     
     @Override
-    public String getType() {
-        return CreateSchemaStatement.class.getName();
+    public Class<CreateSchemaStatement> getType() {
+        return CreateSchemaStatement.class;
     }
 }

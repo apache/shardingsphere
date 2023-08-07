@@ -72,7 +72,7 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
     }
     
     @Override
-    public String getType() {
-        return CreateTableStatement.class.getName();
+    public Class<CreateTableStatement> getType() {
+        return CreateTableStatement.class;
     }
 }

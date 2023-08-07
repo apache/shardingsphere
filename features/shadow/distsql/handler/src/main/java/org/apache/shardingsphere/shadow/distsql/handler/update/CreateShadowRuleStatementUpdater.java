@@ -100,7 +100,7 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     }
     
     @Override
-    public String getType() {
-        return CreateShadowRuleStatement.class.getName();
+    public Class<CreateShadowRuleStatement> getType() {
+        return CreateShadowRuleStatement.class;
     }
 }

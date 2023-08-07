@@ -49,7 +49,7 @@ public final class ShowMigrationCheckAlgorithmsExecutor implements QueryableRALE
     }
     
     @Override
-    public String getType() {
-        return ShowMigrationCheckAlgorithmsStatement.class.getName();
+    public Class<ShowMigrationCheckAlgorithmsStatement> getType() {
+        return ShowMigrationCheckAlgorithmsStatement.class;
     }
 }

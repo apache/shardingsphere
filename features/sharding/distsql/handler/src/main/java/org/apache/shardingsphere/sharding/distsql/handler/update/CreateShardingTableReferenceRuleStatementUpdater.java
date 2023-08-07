@@ -126,7 +126,7 @@ public final class CreateShardingTableReferenceRuleStatementUpdater implements R
     }
     
     @Override
-    public String getType() {
-        return CreateShardingTableReferenceRuleStatement.class.getName();
+    public Class<CreateShardingTableReferenceRuleStatement> getType() {
+        return CreateShardingTableReferenceRuleStatement.class;
     }
 }

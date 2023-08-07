@@ -147,7 +147,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     }
     
     @Override
-    public String getType() {
-        return AlterEncryptRuleStatement.class.getName();
+    public Class<AlterEncryptRuleStatement> getType() {
+        return AlterEncryptRuleStatement.class;
     }
 }

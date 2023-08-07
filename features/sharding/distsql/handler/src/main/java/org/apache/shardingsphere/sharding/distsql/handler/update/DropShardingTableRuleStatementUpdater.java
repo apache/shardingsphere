@@ -21,8 +21,8 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -171,7 +171,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
     }
     
     @Override
-    public String getType() {
-        return DropShardingTableRuleStatement.class.getName();
+    public Class<DropShardingTableRuleStatement> getType() {
+        return DropShardingTableRuleStatement.class;
     }
 }

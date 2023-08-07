@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterSto
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -65,7 +65,7 @@ class UnregisterStorageUnitBackendHandlerTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResourceMetaData resourceMetaData;
+    private ResourceMetaData resourceMetaData;
     
     @Mock
     private DataSource dataSource;
@@ -88,7 +88,7 @@ class UnregisterStorageUnitBackendHandlerTest {
     
     @BeforeEach
     void setUp() {
-        resourceMetaData = mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS);
+        resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);

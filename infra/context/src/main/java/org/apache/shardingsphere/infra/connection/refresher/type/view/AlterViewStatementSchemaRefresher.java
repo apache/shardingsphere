@@ -91,7 +91,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
     }
     
     @Override
-    public String getType() {
-        return AlterViewStatement.class.getName();
+    public Class<AlterViewStatement> getType() {
+        return AlterViewStatement.class;
     }
 }

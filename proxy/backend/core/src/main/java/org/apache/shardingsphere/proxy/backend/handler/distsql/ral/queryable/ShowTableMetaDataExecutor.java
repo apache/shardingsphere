@@ -63,7 +63,7 @@ public final class ShowTableMetaDataExecutor implements DatabaseRequiredQueryabl
     }
     
     @Override
-    public String getType() {
-        return ShowTableMetaDataStatement.class.getName();
+    public Class<ShowTableMetaDataStatement> getType() {
+        return ShowTableMetaDataStatement.class;
     }
 }

@@ -168,7 +168,7 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
     }
     
     @Override
-    public String getType() {
-        return ConvertYamlConfigurationStatement.class.getName();
+    public Class<ConvertYamlConfigurationStatement> getType() {
+        return ConvertYamlConfigurationStatement.class;
     }
 }

@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.backend.hbase.result.query;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
 import java.util.Collection;
 
 /**
@@ -53,4 +55,7 @@ public interface HBaseQueryResultSet extends TypedSPI {
      * @return row data
      */
     Collection<Object> getRowData();
+    
+    @Override
+    Class<? extends SQLStatement> getType();
 }

@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.resource;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import javax.sql.DataSource;
-import java.util.Map;
+package org.apache.shardingsphere.infra.state.datasource;
 
 /**
- * ShardingSphere storage node meta data.
+ * Data source state.
  */
-@Getter
-@RequiredArgsConstructor
-public final class ShardingSphereStorageNodeMetaData {
+public enum DataSourceState {
     
-    private final Map<String, DataSource> dataSources;
+    ENABLED, DISABLED
 }

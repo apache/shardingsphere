@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.SQLRouter;
@@ -178,7 +178,7 @@ class SingleSQLRouterTest {
         routeContext.getRouteUnits().add(readWriteRouteUnit);
         routeContext.getRouteUnits().add(writeRouteUnit);
         SingleSQLRouter sqlRouter = (SingleSQLRouter) OrderedSPILoader.getServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
-        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS),
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS),
                 new ShardingSphereRuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
         sqlRouter.decorateRouteContext(routeContext, createQueryContext(), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
         Iterator<String> routedDataSourceNames = routeContext.getActualDataSourceNames().iterator();
