@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.rule;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -60,13 +60,13 @@ class TransactionRuleTest {
         assertNotNull(actual.getResource());
         assertThat(actual.getDatabases().size(), is(2));
         assertTrue(actual.getDatabases().containsKey(SHARDING_DB_1));
-        ShardingSphereResourceMetaData resourceMetaData1 = actual.getDatabases().get(SHARDING_DB_1).getResourceMetaData();
+        ResourceMetaData resourceMetaData1 = actual.getDatabases().get(SHARDING_DB_1).getResourceMetaData();
         assertThat(resourceMetaData1.getDataSources().size(), is(2));
         assertTrue(resourceMetaData1.getDataSources().containsKey("ds_0"));
         assertTrue(resourceMetaData1.getDataSources().containsKey("ds_1"));
         assertThat(resourceMetaData1.getStorageTypes().size(), is(2));
         assertTrue(actual.getDatabases().containsKey(SHARDING_DB_2));
-        ShardingSphereResourceMetaData resourceMetaData2 = actual.getDatabases().get(SHARDING_DB_2).getResourceMetaData();
+        ResourceMetaData resourceMetaData2 = actual.getDatabases().get(SHARDING_DB_2).getResourceMetaData();
         assertThat(resourceMetaData2.getDataSources().size(), is(2));
         assertTrue(resourceMetaData2.getDataSources().containsKey("ds_0"));
         assertTrue(resourceMetaData2.getDataSources().containsKey("ds_1"));
@@ -92,14 +92,14 @@ class TransactionRuleTest {
     
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        ShardingSphereResourceMetaData resourceMetaData = createResourceMetaData();
+        ResourceMetaData resourceMetaData = createResourceMetaData();
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         when(result.getName()).thenReturn("sharding_db");
         return result;
     }
     
-    private ShardingSphereResourceMetaData createResourceMetaData() {
-        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
+    private ResourceMetaData createResourceMetaData() {
+        ResourceMetaData result = mock(ResourceMetaData.class);
         Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
@@ -113,14 +113,14 @@ class TransactionRuleTest {
     
     private ShardingSphereDatabase createAddDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        ShardingSphereResourceMetaData resourceMetaData = createAddResourceMetaData();
+        ResourceMetaData resourceMetaData = createAddResourceMetaData();
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         when(result.getName()).thenReturn(SHARDING_DB_2);
         return result;
     }
     
-    private ShardingSphereResourceMetaData createAddResourceMetaData() {
-        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
+    private ResourceMetaData createAddResourceMetaData() {
+        ResourceMetaData result = mock(ResourceMetaData.class);
         Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());

@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
@@ -103,7 +103,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
                 metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageTypes());
     }
     
-    private JDBCExecutorCallback<ExecuteResult> createOpenGaussSystemCatalogAdminQueryCallback(final DatabaseType protocolType, final ShardingSphereResourceMetaData resourceMetaData,
+    private JDBCExecutorCallback<ExecuteResult> createOpenGaussSystemCatalogAdminQueryCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
                                                                                                final SQLStatement sqlStatement) {
         return new JDBCExecutorCallback<ExecuteResult>(protocolType, resourceMetaData, sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown()) {
             

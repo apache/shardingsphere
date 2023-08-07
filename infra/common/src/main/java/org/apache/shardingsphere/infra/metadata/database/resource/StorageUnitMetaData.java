@@ -34,10 +34,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * ShardingSphere storage unit meta data.
+ * Storage unit meta data.
  */
 @Getter
-public final class ShardingSphereStorageUnitMetaData {
+public final class StorageUnitMetaData {
     
     private final Map<String, DataSource> dataSources;
     
@@ -47,8 +47,8 @@ public final class ShardingSphereStorageUnitMetaData {
     
     private final Map<String, ConnectionProperties> connectionPropsMap;
     
-    public ShardingSphereStorageUnitMetaData(final Map<String, DataSource> dataSources, final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnit> storageUnits,
-                                             final Map<String, DataSource> enabledDataSources) {
+    public StorageUnitMetaData(final Map<String, DataSource> dataSources, final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnit> storageUnits,
+                               final Map<String, DataSource> enabledDataSources) {
         this.storageUnits = storageUnits;
         this.dataSources = getStorageUnitDataSources(dataSources, storageUnits);
         this.storageTypes = getStorageUnitTypes(storageTypes);
