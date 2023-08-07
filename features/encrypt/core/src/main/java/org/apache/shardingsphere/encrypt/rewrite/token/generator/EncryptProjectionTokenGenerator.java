@@ -92,7 +92,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 ColumnProjection columnProjection = buildColumnProjection(columnSegment);
                 String originalColumnName = columnProjection.getOriginalColumn().getValue();
                 Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(columnProjection.getOriginalTable().getValue());
-                if (encryptTable.isPresent() && (encryptTable.get().isEncryptColumn(originalColumnName)) && !containsTableSubquery(selectStatementContext.getSqlStatement().getFrom())) {
+                if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(originalColumnName) && !containsTableSubquery(selectStatementContext.getSqlStatement().getFrom())) {
                     sqlTokens.add(generateSQLToken(encryptTable.get().getEncryptColumn(originalColumnName), columnSegment, columnProjection, subqueryType));
                 }
             }

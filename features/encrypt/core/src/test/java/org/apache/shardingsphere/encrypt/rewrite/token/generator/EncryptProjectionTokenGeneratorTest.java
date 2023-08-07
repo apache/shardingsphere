@@ -79,6 +79,8 @@ class EncryptProjectionTokenGeneratorTest {
         SimpleTableSegment doctorTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor")));
         doctorTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
         ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
+        column.setOriginalColumn(new IdentifierValue("mobile"));
+        column.setOriginalTable(new IdentifierValue("doctor"));
         column.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
         ProjectionsSegment projections = mock(ProjectionsSegment.class);
         when(projections.getProjections()).thenReturn(Collections.singletonList(new ColumnProjectionSegment(column)));
@@ -98,6 +100,8 @@ class EncryptProjectionTokenGeneratorTest {
         SimpleTableSegment doctorTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor")));
         doctorTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
         ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
+        column.setOriginalColumn(new IdentifierValue("mobile"));
+        column.setOriginalTable(new IdentifierValue("doctor"));
         column.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
         ProjectionsSegment projections = mock(ProjectionsSegment.class);
         when(projections.getProjections()).thenReturn(Collections.singletonList(new ColumnProjectionSegment(column)));
