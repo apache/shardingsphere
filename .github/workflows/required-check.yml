@@ -44,6 +44,7 @@ jobs:
           path: |
             ~/.m2/repository
             ${{ github.workspace }}/**/checkstyle-cachefile
+            ${{ github.workspace }}/.mvn/wrapper/maven-wrapper.jar
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-checkstyle-cache-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-checkstyle-cache-
