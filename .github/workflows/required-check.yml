@@ -35,8 +35,8 @@ jobs:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - CheckStyle
     needs: global-environment
-    runs-on: ubuntu-latest-4-cores
-    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -57,7 +57,7 @@ jobs:
     name: Check - Spotless
     needs: global-environment
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v3
       - name: Run Spotless
@@ -68,7 +68,7 @@ jobs:
     name: Check - License
     needs: global-environment
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v3
       - name: Run Apache Rat
