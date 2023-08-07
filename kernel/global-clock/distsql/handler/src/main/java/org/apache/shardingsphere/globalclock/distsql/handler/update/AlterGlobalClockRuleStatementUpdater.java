@@ -41,7 +41,7 @@ public final class AlterGlobalClockRuleStatementUpdater implements GlobalRuleRAL
     }
     
     @Override
-    public String getType() {
-        return AlterGlobalClockRuleStatement.class.getName();
+    public Class<AlterGlobalClockRuleStatement> getType() {
+        return AlterGlobalClockRuleStatement.class;
     }
 }
