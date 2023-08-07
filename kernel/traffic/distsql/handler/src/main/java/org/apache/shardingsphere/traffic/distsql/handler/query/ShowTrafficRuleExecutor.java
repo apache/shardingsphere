@@ -61,7 +61,7 @@ public final class ShowTrafficRuleExecutor implements MetaDataRequiredQueryableR
     }
     
     @Override
-    public String getType() {
-        return ShowTrafficRulesStatement.class.getName();
+    public Class<ShowTrafficRulesStatement> getType() {
+        return ShowTrafficRulesStatement.class;
     }
 }

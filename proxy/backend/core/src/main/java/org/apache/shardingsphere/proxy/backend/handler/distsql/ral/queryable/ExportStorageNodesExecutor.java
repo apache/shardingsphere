@@ -21,15 +21,15 @@ import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQuery
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportStorageNodesStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNode;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNodes;
 import org.apache.shardingsphere.proxy.backend.util.ExportUtils;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
@@ -106,7 +106,7 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
     }
     
     @Override
-    public String getType() {
-        return ExportStorageNodesStatement.class.getName();
+    public Class<ExportStorageNodesStatement> getType() {
+        return ExportStorageNodesStatement.class;
     }
 }

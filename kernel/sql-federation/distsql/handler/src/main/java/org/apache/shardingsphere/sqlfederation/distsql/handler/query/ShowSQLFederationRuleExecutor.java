@@ -46,7 +46,7 @@ public final class ShowSQLFederationRuleExecutor implements MetaDataRequiredQuer
     }
     
     @Override
-    public String getType() {
-        return ShowSQLFederationRuleStatement.class.getName();
+    public Class<ShowSQLFederationRuleStatement> getType() {
+        return ShowSQLFederationRuleStatement.class;
     }
 }
