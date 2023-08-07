@@ -155,7 +155,7 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     }
     
     @Override
-    public String getType() {
-        return LoadSingleTableStatement.class.getName();
+    public Class<LoadSingleTableStatement> getType() {
+        return LoadSingleTableStatement.class;
     }
 }

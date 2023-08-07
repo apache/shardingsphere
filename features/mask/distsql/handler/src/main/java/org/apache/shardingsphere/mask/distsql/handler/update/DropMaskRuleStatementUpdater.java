@@ -101,7 +101,7 @@ public final class DropMaskRuleStatementUpdater implements RuleDefinitionDropUpd
     }
     
     @Override
-    public String getType() {
-        return DropMaskRuleStatement.class.getName();
+    public Class<DropMaskRuleStatement> getType() {
+        return DropMaskRuleStatement.class;
     }
 }

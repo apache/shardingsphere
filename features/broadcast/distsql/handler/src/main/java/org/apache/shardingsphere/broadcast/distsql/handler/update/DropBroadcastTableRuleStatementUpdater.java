@@ -85,7 +85,7 @@ public final class DropBroadcastTableRuleStatementUpdater implements RuleDefinit
     }
     
     @Override
-    public String getType() {
-        return DropBroadcastTableRuleStatement.class.getName();
+    public Class<DropBroadcastTableRuleStatement> getType() {
+        return DropBroadcastTableRuleStatement.class;
     }
 }

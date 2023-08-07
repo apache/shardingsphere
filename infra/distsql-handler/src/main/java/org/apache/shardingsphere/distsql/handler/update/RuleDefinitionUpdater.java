@@ -47,4 +47,7 @@ public interface RuleDefinitionUpdater<T extends SQLStatement, R extends RuleCon
      * @return rule configuration class
      */
     Class<R> getRuleConfigurationClass();
+    
+    @Override
+    Class<T> getType();
 }

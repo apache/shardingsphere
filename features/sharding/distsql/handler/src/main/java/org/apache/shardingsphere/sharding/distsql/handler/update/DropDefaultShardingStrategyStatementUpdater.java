@@ -103,7 +103,7 @@ public final class DropDefaultShardingStrategyStatementUpdater implements RuleDe
     }
     
     @Override
-    public String getType() {
-        return DropDefaultShardingStrategyStatement.class.getName();
+    public Class<DropDefaultShardingStrategyStatement> getType() {
+        return DropDefaultShardingStrategyStatement.class;
     }
 }
