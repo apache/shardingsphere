@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Optional;
@@ -46,7 +46,7 @@ public final class RefreshDatabaseMetaDataUpdater implements RALUpdater<RefreshD
     }
     
     @Override
-    public String getType() {
-        return RefreshDatabaseMetaDataStatement.class.getName();
+    public Class<RefreshDatabaseMetaDataStatement> getType() {
+        return RefreshDatabaseMetaDataStatement.class;
     }
 }

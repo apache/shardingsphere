@@ -39,7 +39,7 @@ public final class AlterInventoryIncrementalRuleUpdater implements RALUpdater<Al
     }
     
     @Override
-    public String getType() {
-        return AlterInventoryIncrementalRuleStatement.class.getName();
+    public Class<AlterInventoryIncrementalRuleStatement> getType() {
+        return AlterInventoryIncrementalRuleStatement.class;
     }
 }

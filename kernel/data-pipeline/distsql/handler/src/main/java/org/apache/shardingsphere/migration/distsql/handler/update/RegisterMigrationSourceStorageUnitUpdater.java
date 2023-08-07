@@ -25,8 +25,8 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.converter.DataSourceSegmentsConverter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
@@ -58,7 +58,7 @@ public final class RegisterMigrationSourceStorageUnitUpdater implements RALUpdat
     }
     
     @Override
-    public String getType() {
-        return RegisterMigrationSourceStorageUnitStatement.class.getName();
+    public Class<RegisterMigrationSourceStorageUnitStatement> getType() {
+        return RegisterMigrationSourceStorageUnitStatement.class;
     }
 }

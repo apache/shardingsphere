@@ -36,7 +36,7 @@ public final class RollbackMigrationUpdater implements RALUpdater<RollbackMigrat
     }
     
     @Override
-    public String getType() {
-        return RollbackMigrationStatement.class.getName();
+    public Class<RollbackMigrationStatement> getType() {
+        return RollbackMigrationStatement.class;
     }
 }
