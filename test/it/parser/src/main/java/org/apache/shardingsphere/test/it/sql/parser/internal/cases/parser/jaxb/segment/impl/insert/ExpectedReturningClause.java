@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert;
 
+import jakarta.xml.bind.annotation.XmlElement;
 import lombok.Getter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjections;
-
-import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Expected returning clause.
