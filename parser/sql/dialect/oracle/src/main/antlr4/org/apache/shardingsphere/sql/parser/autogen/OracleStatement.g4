@@ -117,6 +117,7 @@ execute
     | alterCluster
     | alterOperator
     | alterProfile
+    | alterRollbackSegment
     | alterDiskgroup
     | alterIndexType
     | alterMaterializedView
