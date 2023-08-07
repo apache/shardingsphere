@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -138,7 +138,7 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     }
     
     @Override
-    public String getType() {
-        return DropShadowRuleStatement.class.getName();
+    public Class<DropShadowRuleStatement> getType() {
+        return DropShadowRuleStatement.class;
     }
 }

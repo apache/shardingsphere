@@ -74,7 +74,7 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
     }
     
     @Override
-    public String getType() {
-        return CreateBroadcastTableRuleStatement.class.getName();
+    public Class<CreateBroadcastTableRuleStatement> getType() {
+        return CreateBroadcastTableRuleStatement.class;
     }
 }

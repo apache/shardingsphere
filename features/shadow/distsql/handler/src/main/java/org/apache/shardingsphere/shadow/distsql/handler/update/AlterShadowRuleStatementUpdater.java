@@ -99,7 +99,7 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     }
     
     @Override
-    public String getType() {
-        return AlterShadowRuleStatement.class.getName();
+    public Class<AlterShadowRuleStatement> getType() {
+        return AlterShadowRuleStatement.class;
     }
 }
