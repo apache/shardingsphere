@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.state.exception;
-
-import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
-
-import java.sql.SQLException;
+package org.apache.shardingsphere.infra.state.datasource;
 
 /**
- * Data source state exception.
+ * Data source state.
  */
-public final class UnavailableDataSourceException extends ShardingSphereServerException {
+public enum DataSourceState {
     
-    private static final long serialVersionUID = -8058761885303180333L;
-    
-    private static final String ERROR_CATEGORY = "DATA-SOURCE";
-    
-    private static final int ERROR_CODE = 1;
-    
-    public UnavailableDataSourceException(final SQLException cause, final String dataSourceName) {
-        super(ERROR_CATEGORY, ERROR_CODE, String.format("Data source `%s` is unavailable.", dataSourceName), cause);
-    }
+    ENABLED, DISABLED
 }
