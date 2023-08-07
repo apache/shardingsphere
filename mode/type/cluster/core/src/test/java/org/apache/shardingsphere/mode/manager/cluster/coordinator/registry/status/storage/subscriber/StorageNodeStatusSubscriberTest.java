@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber;
 
-import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;

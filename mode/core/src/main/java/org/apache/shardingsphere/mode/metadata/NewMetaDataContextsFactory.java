@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedD
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;

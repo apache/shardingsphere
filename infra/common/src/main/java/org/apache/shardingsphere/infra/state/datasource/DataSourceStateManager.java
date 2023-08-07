@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.state;
+package org.apache.shardingsphere.infra.state.datasource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
-import org.apache.shardingsphere.infra.datasource.state.exception.UnavailableDataSourceException;
+import org.apache.shardingsphere.infra.state.datasource.exception.UnavailableDataSourceException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
