@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 public final class InExpressionBinder {
     
     /**
-     * Bind subquery expression segment with metadata.
+     * Bind in expression segment with metadata.
      *
      * @param segment in expression
      * @param metaData metaData

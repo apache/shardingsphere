@@ -32,7 +32,7 @@ public final class WhereSegmentBinder {
     /**
      * Bind where segment with metadata.
      *
-     * @param segment table segment
+     * @param segment where segment
      * @param metaData meta data
      * @param defaultDatabaseName default database name
      * @return bounded where segment

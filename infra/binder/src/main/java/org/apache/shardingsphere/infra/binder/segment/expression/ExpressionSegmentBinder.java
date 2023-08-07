@@ -39,7 +39,7 @@ public final class ExpressionSegmentBinder {
     /**
      * Bind expression segment with metadata.
      *
-     * @param segment subquery segment
+     * @param segment expression segment
      * @param metaData metaData
      * @param defaultDatabaseName default database name
      * @return bounded expression segment

@@ -32,10 +32,10 @@ public final class ExistsSubqueryExpressionBinder {
     /**
      * Bind exists subquery expression with metadata.
      *
-     * @param segment subquery segment
+     * @param segment exists subquery expression segment
      * @param metaData metaData
      * @param defaultDatabaseName default database name
-     * @return bounded exists subquery expression
+     * @return bounded exists subquery expression segment
      */
     public static ExistsSubqueryExpression bind(final ExistsSubqueryExpression segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
         SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), metaData, defaultDatabaseName);

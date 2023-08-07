@@ -32,7 +32,7 @@ public final class SubqueryExpressionSegmentBinder {
     /**
      * Bind subquery expression segment with metadata.
      *
-     * @param segment subquery segment
+     * @param segment subquery expression segment
      * @param metaData metaData
      * @param defaultDatabaseName default database name
      * @return bounded subquery expression segment

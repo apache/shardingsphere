@@ -33,7 +33,7 @@ public final class BinaryOperationExpressionBinder {
     /**
      * Bind binary operation expression with metadata.
      *
-     * @param segment subquery segment
+     * @param segment binary operation expression segment
      * @param metaData metaData
      * @param defaultDatabaseName default database name
      * @return bounded binary operation expression segment
