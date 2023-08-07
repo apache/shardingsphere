@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.test.it.rewrite.loader;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.rewrite.entity.RewriteAssertionsRootEntity;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 
 /**

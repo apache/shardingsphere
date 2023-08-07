@@ -26,18 +26,6 @@
     <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
     <name>${project.artifactId}</name>
     
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.atomikos</groupId>
-                <artifactId>transactions-essentials</artifactId>
-                <version>${atomikos.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -48,14 +36,19 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>
+            <version>${atomikos.version}</version>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
+            <version>${atomikos.version}</version>
+            <classifier>jakarta</classifier>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jdbc</artifactId>
+            <version>${atomikos.version}</version>
+            <classifier>jakarta</classifier>
         </dependency>
     </dependencies>
 </project>

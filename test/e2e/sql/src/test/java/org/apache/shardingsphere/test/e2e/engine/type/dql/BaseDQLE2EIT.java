@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.engine.type.dql;
 
+import jakarta.xml.bind.JAXBException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioData
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
