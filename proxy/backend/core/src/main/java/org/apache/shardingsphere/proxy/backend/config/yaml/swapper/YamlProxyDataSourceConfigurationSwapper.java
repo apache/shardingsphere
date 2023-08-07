@@ -38,7 +38,7 @@ public final class YamlProxyDataSourceConfigurationSwapper {
     }
     
     private ConnectionConfiguration swapConnectionConfiguration(final YamlProxyDataSourceConfiguration yamlConfig) {
-        return new ConnectionConfiguration(yamlConfig.getUrl(), yamlConfig.getUsername(), yamlConfig.getPassword());
+        return new ConnectionConfiguration(yamlConfig.getDataSourceClassName(), yamlConfig.getUrl(), yamlConfig.getUsername(), yamlConfig.getPassword());
     }
     
     private PoolConfiguration swapPoolConfiguration(final YamlProxyDataSourceConfiguration yamlConfig) {

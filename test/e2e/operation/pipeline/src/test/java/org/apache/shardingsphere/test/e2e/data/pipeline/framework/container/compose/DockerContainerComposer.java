@@ -74,7 +74,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             storageContainer.setNetworkAliases(Collections.singletonList(String.join(".", databaseType.getType().toLowerCase() + "_" + i, "host")));
             storageContainers.add(storageContainer);
         }
-        AdaptorContainerConfiguration containerConfig = PipelineProxyClusterContainerConfigurationFactory.newInstance(databaseType, storageContainerImage);
+        AdaptorContainerConfiguration containerConfig = PipelineProxyClusterContainerConfigurationFactory.newInstance(databaseType);
         ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(
                 AdapterMode.CLUSTER, AdapterType.PROXY, databaseType, null, "", containerConfig);
         for (DockerStorageContainer each : storageContainers) {

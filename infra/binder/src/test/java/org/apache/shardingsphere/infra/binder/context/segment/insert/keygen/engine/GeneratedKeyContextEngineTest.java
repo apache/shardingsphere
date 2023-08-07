@@ -59,7 +59,7 @@ class GeneratedKeyContextEngineTest {
     @BeforeEach
     void setUp() {
         ShardingSphereTable table = new ShardingSphereTable(
-                "tbl", Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, true, false, true, false)), Collections.emptyList(), Collections.emptyList());
+                "tbl", Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, true, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
         schema = new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap());
     }
     

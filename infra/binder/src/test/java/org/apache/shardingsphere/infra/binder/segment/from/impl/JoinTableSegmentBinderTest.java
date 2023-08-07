@@ -198,17 +198,55 @@ class JoinTableSegmentBinderTest {
         assertThat(((ColumnProjectionSegment) actual.get(4)).getColumn().getOriginalTable().getValue(), is("t_order_item"));
     }
     
+    @Test
+    void assertBindWithMultiTableJoin() {
+        JoinTableSegment joinTableSegment = mock(JoinTableSegment.class);
+        JoinTableSegment leftTable = mockLeftJoinSegment();
+        SimpleTableSegment rightTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item")));
+        rightTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("i")));
+        when(joinTableSegment.getLeft()).thenReturn(leftTable);
+        when(joinTableSegment.getRight()).thenReturn(rightTable);
+        ShardingSphereMetaData metaData = createMetaData();
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
+        assertTrue(actual.getLeft() instanceof JoinTableSegment);
+        assertTrue(((JoinTableSegment) actual.getLeft()).getLeft() instanceof SimpleTableSegment);
+        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getLeft()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getLeft()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertTrue(((JoinTableSegment) actual.getLeft()).getRight() instanceof SimpleTableSegment);
+        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getRight()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getRight()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertTrue(actual.getRight() instanceof SimpleTableSegment);
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getJoinTableProjectionSegments().size(), is(10));
+        assertTrue(tableBinderContexts.containsKey("o"));
+        assertTrue(tableBinderContexts.containsKey("o2"));
+        assertTrue(tableBinderContexts.containsKey("i"));
+    }
+    
+    private JoinTableSegment mockLeftJoinSegment() {
+        JoinTableSegment result = mock(JoinTableSegment.class);
+        SimpleTableSegment leftTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        leftTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        SimpleTableSegment rightTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        rightTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("o2")));
+        when(result.getLeft()).thenReturn(leftTable);
+        when(result.getRight()).thenReturn(rightTable);
+        return result;
+    }
+    
     private ShardingSphereMetaData createMetaData() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
         when(schema.getTable("t_order").getColumnValues()).thenReturn(Arrays.asList(
-                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false)));
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)));
         when(schema.getTable("t_order_item").getColumnValues()).thenReturn(Arrays.asList(
-                new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true, false),
-                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false)));
+                new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         return result;

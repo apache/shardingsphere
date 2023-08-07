@@ -105,7 +105,7 @@ public final class EncryptConvertRuleConfigurationProvider implements ConvertRul
     }
     
     @Override
-    public String getType() {
-        return EncryptRuleConfiguration.class.getName();
+    public Class<EncryptRuleConfiguration> getType() {
+        return EncryptRuleConfiguration.class;
     }
 }

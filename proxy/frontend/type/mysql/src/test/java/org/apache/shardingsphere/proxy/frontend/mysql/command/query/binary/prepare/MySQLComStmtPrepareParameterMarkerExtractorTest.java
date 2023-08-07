@@ -54,9 +54,9 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
     private ShardingSphereSchema prepareSchema() {
         ShardingSphereTable table = new ShardingSphereTable();
-        table.putColumn(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true));
-        table.putColumn(new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false));
-        table.putColumn(new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true));
+        table.putColumn(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false));
+        table.putColumn(new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false));
+        table.putColumn(new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false));
         ShardingSphereSchema result = new ShardingSphereSchema();
         result.getTables().put("user", table);
         return result;

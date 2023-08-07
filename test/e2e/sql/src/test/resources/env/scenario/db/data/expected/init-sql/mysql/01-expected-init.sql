@@ -34,7 +34,7 @@ CREATE VIEW expected_dataset.t_order_subquery_view AS SELECT * FROM expected_dat
 CREATE VIEW expected_dataset.t_order_aggregation_view AS SELECT MAX(p.price) AS max_price, MIN(p.price) AS min_price, SUM(p.price) AS sum_price, AVG(p.price) AS avg_price, COUNT(1) AS count FROM expected_dataset.t_order o INNER JOIN expected_dataset.t_order_item i ON o.order_id = i.order_id INNER JOIN expected_dataset.t_product p ON i.product_id = p.product_id GROUP BY o.order_id HAVING SUM(p.price) > 10000 ORDER BY max_price;
 CREATE VIEW expected_dataset.t_order_union_view AS SELECT * FROM expected_dataset.t_order WHERE order_id > 2000 UNION SELECT * FROM expected_dataset.t_order WHERE order_id > 1500;
 -- TODO replace these tables with standard tables
-CREATE TABLE expected_dataset.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
+CREATE TABLE expected_dataset.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id), UNIQUE KEY (id, status));
 CREATE TABLE expected_dataset.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 
 CREATE INDEX order_index_t_order ON expected_dataset.t_order (order_id);

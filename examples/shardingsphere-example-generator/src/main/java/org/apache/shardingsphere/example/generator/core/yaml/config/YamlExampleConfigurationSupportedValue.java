@@ -35,7 +35,7 @@ public enum YamlExampleConfigurationSupportedValue {
     
     MODES("modes", new HashSet<>(Arrays.asList("memory", "proxy", "cluster-zookeeper", "cluster-etcd", "standalone"))),
     
-    TRANSACTIONS("transactions", new HashSet<>(Arrays.asList("local", "xa-atomikos", "xa-narayana", "xa-bitronix", "base-seata"))),
+    TRANSACTIONS("transactions", new HashSet<>(Arrays.asList("local", "xa-atomikos", "xa-narayana", "base-seata"))),
     
     FEATURES("features", new HashSet<>(Arrays.asList("shadow", "sharding", "readwrite-splitting", "encrypt", "db-discovery", "mask"))),
     

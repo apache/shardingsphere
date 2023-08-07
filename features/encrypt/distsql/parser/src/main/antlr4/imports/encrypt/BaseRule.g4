@@ -32,12 +32,25 @@ algorithmTypeName
     ;
 
 buildInEncryptAlgorithmType
+    : standardEncryptAlgorithm
+    | assistedEncryptAlgorithm
+    | likeEncryptAlgorithm
+    ;
+
+standardEncryptAlgorithm
     : MD5
     | AES
     | RC4
     | SM3
     | SM4
-    | CHAR_DIGEST_LIKE
+    ;
+
+assistedEncryptAlgorithm
+    : MD5
+    ;
+
+likeEncryptAlgorithm
+    : CHAR_DIGEST_LIKE
     ;
 
 propertiesDefinition

@@ -39,9 +39,7 @@ public interface TypedSPI {
      * 
      * @return type
      */
-    default Object getType() {
-        return null;
-    }
+    Object getType();
     
     /**
      * Get type aliases.
