@@ -47,7 +47,7 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
     }
     
     @Override
-    public String getType() {
-        return DropSchemaStatement.class.getName();
+    public Class<DropSchemaStatement> getType() {
+        return DropSchemaStatement.class;
     }
 }
