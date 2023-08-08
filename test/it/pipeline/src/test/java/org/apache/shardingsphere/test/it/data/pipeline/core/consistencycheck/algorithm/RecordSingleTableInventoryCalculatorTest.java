@@ -50,9 +50,9 @@ class RecordSingleTableInventoryCalculatorTest {
     
     @BeforeAll
     static void setUp() throws Exception {
-        source = new PipelineDataSourceWrapper(createHikariDataSource("source_ds"), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        source = new PipelineDataSourceWrapper(createHikariDataSource("source_ds"), TypedSPILoader.getService(DatabaseType.class, "H2"));
         createTableAndInitData(source, "t_order_copy");
-        target = new PipelineDataSourceWrapper(createHikariDataSource("target_ds"), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        target = new PipelineDataSourceWrapper(createHikariDataSource("target_ds"), TypedSPILoader.getService(DatabaseType.class, "H2"));
         createTableAndInitData(target, "t_order");
     }
     

@@ -33,7 +33,6 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.Data
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
@@ -176,7 +175,7 @@ class MigrationJobAPITest {
     @Test
     void assertBuildTableDataConsistencyCheckerWithNullType() {
         TableDataConsistencyChecker actual = jobAPI.buildTableDataConsistencyChecker(null, null);
-        assertInstanceOf(SingleTableInventoryCalculator.class, actual);
+        assertInstanceOf(TableDataConsistencyChecker.class, actual);
     }
     
     @Test

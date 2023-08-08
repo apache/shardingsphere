@@ -33,7 +33,7 @@ public final class TableDataConsistencyCheckerFixture implements TableDataConsis
     
     @Override
     public DataConsistencyCheckResult checkSingleTableInventoryData(final TableDataConsistencyCheckParameter param) {
-        return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(1, 1), new DataConsistencyContentCheckResult(true));
+        return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(2, 2), new DataConsistencyContentCheckResult(true));
     }
     
     @Override
