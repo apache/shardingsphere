@@ -27,7 +27,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,53 +50,67 @@ class RecordSingleTableInventoryCalculatedResultTest {
         assertThat(actual, is(expected));
     }
     
-    private List<Object> buildFixedFullTypeRecord() {
-        return Arrays.asList(true, Byte.MAX_VALUE, Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, 1.23F, 2.3456D, BigDecimal.valueOf(1.23456789D), "ok",
-                new Time(123456789L), new Date(123456789L), new Timestamp(123456789L), new int[]{1, 2, 3}, null);
+    private Map<String, Object> buildFixedFullTypeRecord() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("c_bool", true);
+        result.put("c_int1", Byte.MAX_VALUE);
+        result.put("c_int2", Short.MAX_VALUE);
+        result.put("c_int4", Integer.MAX_VALUE);
+        result.put("c_int8", Long.MAX_VALUE);
+        result.put("c_float", 1.23F);
+        result.put("c_double", 2.3456D);
+        result.put("c_decimal", BigDecimal.valueOf(1.23456789D));
+        result.put("c_varchar", "ok");
+        result.put("c_time", new Time(123456789L));
+        result.put("c_date", new Date(123456789L));
+        result.put("c_timestamp", new Timestamp(123456789L));
+        result.put("c_array", new int[]{1, 2, 3});
+        result.put("c_blob", null);
+        return result;
     }
     
     @Test
     void assertFullTypeRecordsEqualsWithDifferentDecimalScale() {
-        RecordSingleTableInventoryCalculatedResult expected = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singleton(buildFixedFullTypeRecord()));
-        List<Object> record = buildFixedFullTypeRecord();
-        for (int index = 0; index < record.size(); index++) {
-            if (record.get(index) instanceof BigDecimal) {
-                BigDecimal decimal = (BigDecimal) record.get(index);
-                record.set(index, decimal.setScale(decimal.scale() + 1, RoundingMode.CEILING));
+        RecordSingleTableInventoryCalculatedResult expected = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord()));
+        Map<String, Object> record = buildFixedFullTypeRecord();
+        record.forEach((key, value) -> {
+            if (value instanceof BigDecimal) {
+                BigDecimal decimal = (BigDecimal) value;
+                record.put(key, decimal.setScale(decimal.scale() + 1, RoundingMode.CEILING));
             }
-        }
-        RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singleton(record));
+        });
+        RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(record));
         assertThat(actual, is(expected));
     }
     
     @Test
     void assertRecordsCountNotEquals() {
-        RecordSingleTableInventoryCalculatedResult result1 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singleton(Collections.singleton(buildFixedFullTypeRecord())));
+        RecordSingleTableInventoryCalculatedResult result1 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord()));
         RecordSingleTableInventoryCalculatedResult result2 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.emptyList());
         assertNotEquals(result1, result2);
     }
     
     @Test
     void assertMaxUniqueKeyValueNotEquals() {
-        RecordSingleTableInventoryCalculatedResult result1 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singleton(Collections.singleton(buildFixedFullTypeRecord())));
-        RecordSingleTableInventoryCalculatedResult result2 = new RecordSingleTableInventoryCalculatedResult(1001, Collections.singleton(Collections.singleton(buildFixedFullTypeRecord())));
+        RecordSingleTableInventoryCalculatedResult result1 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(buildFixedFullTypeRecord()));
+        RecordSingleTableInventoryCalculatedResult result2 = new RecordSingleTableInventoryCalculatedResult(1001, Collections.singletonList(buildFixedFullTypeRecord()));
         assertNotEquals(result1, result2);
     }
     
     @Test
     void assertRandomColumnValueNotEquals() {
-        List<Object> record = buildFixedFullTypeRecord();
-        RecordSingleTableInventoryCalculatedResult result1 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singleton(record));
-        for (int index = 0; index < record.size(); index++) {
+        Map<String, Object> record = buildFixedFullTypeRecord();
+        RecordSingleTableInventoryCalculatedResult result1 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singletonList(record));
+        record.forEach((key, value) -> {
             RecordSingleTableInventoryCalculatedResult result2 = new RecordSingleTableInventoryCalculatedResult(1000,
-                    Collections.singleton(modifyColumnValueRandomly(buildFixedFullTypeRecord(), index)));
+                    Collections.singletonList(modifyColumnValueRandomly(buildFixedFullTypeRecord(), key)));
             assertNotEquals(result1, result2);
-        }
+        });
     }
     
-    private List<Object> modifyColumnValueRandomly(final List<Object> record, final int index) {
-        Object value = record.get(index);
-        record.set(index, getModifiedValue(value));
+    private Map<String, Object> modifyColumnValueRandomly(final Map<String, Object> record, final String key) {
+        Object value = record.get(key);
+        record.put(key, getModifiedValue(value));
         return record;
     }
     

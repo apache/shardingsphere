@@ -23,8 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.query.JDBCStreamQueryBuilder;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineDataConsistencyCalculateSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.SingleTableInventoryCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordSingleTableInventoryCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.dumper.ColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
@@ -39,7 +39,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -56,17 +59,16 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
     public Optional<SingleTableInventoryCalculatedResult> calculateChunk(final SingleTableInventoryCalculateParameter param) {
         CalculationContext calculationContext = getOrCreateCalculationContext(param);
         try {
-            Collection<Collection<Object>> records = new LinkedList<>();
+            List<Map<String, Object>> records = new LinkedList<>();
             Object maxUniqueKeyValue = null;
             ColumnValueReaderEngine columnValueReaderEngine = new ColumnValueReaderEngine(param.getDatabaseType());
             ResultSet resultSet = calculationContext.getResultSet();
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             while (resultSet.next()) {
                 ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName()));
-                ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-                int columnCount = resultSetMetaData.getColumnCount();
-                Collection<Object> columnRecord = new LinkedList<>();
-                for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                    columnRecord.add(columnValueReaderEngine.read(resultSet, resultSetMetaData, columnIndex));
+                Map<String, Object> columnRecord = new LinkedHashMap<>();
+                for (int columnIndex = 1, columnCount = resultSetMetaData.getColumnCount(); columnIndex <= columnCount; columnIndex++) {
+                    columnRecord.put(resultSetMetaData.getColumnLabel(columnIndex), columnValueReaderEngine.read(resultSet, resultSetMetaData, columnIndex));
                 }
                 records.add(columnRecord);
                 maxUniqueKeyValue = columnValueReaderEngine.read(resultSet, resultSetMetaData, param.getUniqueKey().getOrdinalPosition());
