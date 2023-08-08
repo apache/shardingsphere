@@ -17,11 +17,10 @@
   -->
 
 <sql-parser-test-cases>
-    <create-materialized-view sql-case-id="create_materialized_view_with_if_not_exists" />
-    <create-materialized-view sql-case-id="create_materialized_view" />
-    <create-materialized-view sql-case-id="create_materialized_view_with_using" />
-    <create-materialized-view sql-case-id="create_materialized_view_with_no_data" />
-    <create-materialized-view sql-case-id="create_materialized_view_with_data" />
-    <create-materialized-view sql-case-id="create_materialized_view_with_refresh_fast" />
-    <create-materialized-view sql-case-id="create_materialized_view_with_refresh_fast_query_rewrite" />
+    <create-materialized-view-log sql-case-id="create_materialized_view_log_with" />
+    <create-materialized-view-log sql-case-id="create_materialized_view_log_with_including_new" />
+    <create-materialized-view-log sql-case-id="create_materialized_view_log_with_tablespace" />
+    <create-materialized-view-log sql-case-id="create_materialized_view_log_with_table_schema" />
+    <create-materialized-view-log sql-case-id="create_materialized_view_log_with_object_id" />
+    <create-materialized-view-log sql-case-id="create_materialized_view_log_with_row_id" />
 </sql-parser-test-cases>

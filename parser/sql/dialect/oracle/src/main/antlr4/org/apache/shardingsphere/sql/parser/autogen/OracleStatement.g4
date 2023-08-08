@@ -119,6 +119,8 @@ execute
     | alterProfile
     | alterDiskgroup
     | alterIndexType
+    | createMaterializedView
+    | createMaterializedViewLog
     | alterMaterializedView
     | alterMaterializedViewLog
     | alterFunction

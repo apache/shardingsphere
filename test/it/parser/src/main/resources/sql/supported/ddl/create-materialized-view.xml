@@ -22,4 +22,15 @@
     <sql-case id="create_materialized_view_with_using" value="CREATE MATERIALIZED VIEW mat_view_heap_psql USING heap_psql AS SELECT f1 from tbl_heap_psql;" db-types="PostgreSQL" />
     <sql-case id="create_materialized_view_with_no_data" value="CREATE MATERIALIZED VIEW matview_schema.mv_nodata1 (a) AS   SELECT generate_series(1, 10) WITH NO DATA;" db-types="PostgreSQL" />
     <sql-case id="create_materialized_view_with_data" value="CREATE MATERIALIZED VIEW matview_schema.mv_withdata1 (a) AS   SELECT generate_series(1, 10) WITH DATA;" db-types="PostgreSQL" />
+    <sql-case id="create_materialized_view_with_refresh_fast" value="CREATE MATERIALIZED VIEW warranty_orders REFRESH FAST AS
+    SELECT order_id, line_item_id, product_id FROM order_items WHERE EXISTS
+    (SELECT * FROM inventories i WHERE o.product_id = i.product_id AND i.quantity_on_hand IS NOT NULL)
+    UNION
+    SELECT order_id, line_item_id, product_id FROM order_items WHERE quantity > 5;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_refresh_fast_query_rewrite" value="CREATE MATERIALIZED VIEW SH.CUST_MV$SUB1
+    REFRESH FAST WITH ROWID ON COMMIT ENABLE QUERY REWRITE
+    AS SELECT SH.SALES.PROD_ID C1, SH.CUSTOMERS.CUST_ID C2,
+    SUM(SH.SALES.AMOUNT_SOLD) M1, COUNT(SH.SALES.AMOUNT_SOLD) M2, COUNT(*) M3 FROM SH.SALES, SH.CUSTOMERS
+    WHERE SH.CUSTOMERS.CUST_ID = SH.SALES.CUST_ID AND (SH.SALES.CUST_ID IN (1012, 1010, 1005))
+    GROUP BY SH.SALES.PROD_ID, SH.CUSTOMERS.CUST_ID;" db-types="Oracle" />
 </sql-cases>
