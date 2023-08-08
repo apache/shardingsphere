@@ -379,6 +379,10 @@ packageName
     : (owner DOT_)? name
     ;
 
+profileName
+    : identifier
+    ;
+
 rollbackSegmentName
     : identifier
     ;
