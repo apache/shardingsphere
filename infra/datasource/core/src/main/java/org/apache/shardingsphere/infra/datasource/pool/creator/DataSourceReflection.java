@@ -122,7 +122,7 @@ public final class DataSourceReflection {
      */
     public void setField(final String fieldName, final Object fieldValue) {
         if (null != fieldValue && !isSkippedProperty(fieldName)) {
-            findSetterMethod(fieldName).ifPresent(optional -> setField(optional, fieldValue));
+            findSetterMethod(fieldName, fieldValue.getClass()).ifPresent(optional -> setField(optional, fieldValue));
         }
     }
     
@@ -151,15 +151,17 @@ public final class DataSourceReflection {
         return SKIPPED_PROPERTY_KEYS.contains(key);
     }
     
-    private Optional<Method> findSetterMethod(final String fieldName) {
+    private Optional<Method> findSetterMethod(final String fieldName, final Class<?> fieldValueType) {
         String setterMethodName = SETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, fieldName);
-        return Arrays.stream(dataSourceMethods).filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length).findFirst();
+        return Arrays.stream(dataSourceMethods)
+                .filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length && each.getParameterTypes()[0].isAssignableFrom(fieldValueType)).findFirst();
     }
     
     /**
      * Add default data source properties.
+     * @param dataSourcePoolMetaData data source pool meta data
      */
-    public void addDefaultDataSourceProperties() {
+    public void addDefaultDataSourceProperties(final DataSourcePoolMetaData dataSourcePoolMetaData) {
         DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource,
                 TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSource.getClass().getName())
                         .map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
@@ -170,13 +172,15 @@ public final class DataSourceReflection {
         }
         ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(jdbcUrl.get())).parse(jdbcUrl.get(), null, null);
         Properties queryProps = connectionProps.getQueryProperties();
+        Properties properties = jdbcConnectionProps.get();
         for (Entry<Object, Object> entry : connectionProps.getDefaultQueryProperties().entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
-            if (!containsDefaultProperty(defaultPropertyKey, jdbcConnectionProps.get(), queryProps)) {
-                jdbcConnectionProps.get().setProperty(defaultPropertyKey, defaultPropertyValue);
+            if (!containsDefaultProperty(defaultPropertyKey, properties, queryProps)) {
+                properties.setProperty(defaultPropertyKey, defaultPropertyValue);
             }
         }
+        this.setField(dataSourcePoolMetaData.getFieldMetaData().getJdbcUrlPropertiesFieldName(), properties);
     }
     
     private boolean containsDefaultProperty(final String defaultPropertyKey, final Properties targetDataSourceProps, final Properties queryProps) {

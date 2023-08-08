@@ -36,19 +36,29 @@ public final class DataSourcePoolMetaDataReflection {
     
     /**
      * Get JDBC URL.
+     * Get it directly through the attribute first, and get it through the get method when it is empty
      *
      * @return JDBC URL
      */
     public Optional<String> getJdbcUrl() {
-        return ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
+        Optional<String> jdbcUrl = ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
+        if (!jdbcUrl.isPresent()) {
+            return ReflectionUtils.getFieldValueByGetMethod(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
+        }
+        return jdbcUrl;
     }
     
     /**
      * Get JDBC connection properties.
+     * Get it directly through the attribute first, and get it through the get method when it is empty
      * 
      * @return JDBC connection properties
      */
     public Optional<Properties> getJdbcConnectionProperties() {
-        return ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
+        Optional<Properties> properties = ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
+        if (!properties.isPresent()) {
+            return ReflectionUtils.getFieldValueByGetMethod(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
+        }
+        return properties;
     }
 }
