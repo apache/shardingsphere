@@ -268,11 +268,11 @@ public final class DataSourcePoolCreator {
             DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(targetDataSource, poolMetaData.getFieldMetaData());
             Optional<Properties> jdbcConnectionPropOptional = dataSourcePoolMetaDataReflection.getJdbcConnectionProperties();
             if (jdbcConnectionPropOptional.isPresent()) {
-                Properties jdbcConnectionProperties = jdbcConnectionPropOptional.get();
+                Properties jdbcConnectionProps = jdbcConnectionPropOptional.get();
                 for (Entry<String, Object> entry : jdbcUrlProps.entrySet()) {
-                    jdbcConnectionProperties.setProperty(entry.getKey(), entry.getValue().toString());
+                    jdbcConnectionProps.setProperty(entry.getKey(), entry.getValue().toString());
                 }
-                dataSourceReflection.setField(jdbcUrlPropertiesFieldName, jdbcConnectionProperties);
+                dataSourceReflection.setField(jdbcUrlPropertiesFieldName, jdbcConnectionProps);
             }
         }
     }

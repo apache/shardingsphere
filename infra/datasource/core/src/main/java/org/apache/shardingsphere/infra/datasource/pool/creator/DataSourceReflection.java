@@ -122,7 +122,7 @@ public final class DataSourceReflection {
      */
     public void setField(final String fieldName, final Object fieldValue) {
         if (null != fieldValue && !isSkippedProperty(fieldName)) {
-            findSetterMethod(fieldName, fieldValue.getClass()).ifPresent(optional -> setField(optional, fieldValue));
+            findSetterMethod(fieldName).ifPresent(optional -> setField(optional, fieldValue));
         }
     }
     
@@ -130,6 +130,9 @@ public final class DataSourceReflection {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setField(final Method method, final Object fieldValue) {
         Class<?> paramType = method.getParameterTypes()[0];
+        if (String.class == paramType && Properties.class.isAssignableFrom(fieldValue.getClass())) {
+            return;
+        }
         if (int.class == paramType || Integer.class == paramType) {
             method.invoke(dataSource, Integer.parseInt(fieldValue.toString()));
         } else if (long.class == paramType || Long.class == paramType) {
@@ -151,10 +154,9 @@ public final class DataSourceReflection {
         return SKIPPED_PROPERTY_KEYS.contains(key);
     }
     
-    private Optional<Method> findSetterMethod(final String fieldName, final Class<?> fieldValueType) {
+    private Optional<Method> findSetterMethod(final String fieldName) {
         String setterMethodName = SETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, fieldName);
-        return Arrays.stream(dataSourceMethods)
-                .filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length && each.getParameterTypes()[0].isAssignableFrom(fieldValueType)).findFirst();
+        return Arrays.stream(dataSourceMethods).filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length).findFirst();
     }
     
     /**
