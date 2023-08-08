@@ -31,9 +31,9 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionUtils {
-
+    
     private static final String GETTER_PREFIX = "get";
-
+    
     /**
      * Get field value.
      * 
@@ -137,7 +137,7 @@ public final class ReflectionUtils {
         }
         return result;
     }
-
+    
     /**
      * Get field value by get method.
      *
@@ -153,10 +153,10 @@ public final class ReflectionUtils {
             T value = invokeMethod(method, target);
             return Optional.ofNullable(value);
         }
-
+        
         return Optional.empty();
     }
-
+    
     private static Method findMethod(final Class<?> clazz, final String methodName, final Class<?>... parameterTypes) {
         try {
             return clazz.getMethod(methodName, parameterTypes);
