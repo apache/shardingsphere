@@ -31,13 +31,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class C3P0DataSourcePoolCreatorTest {
+    
+    /**
+     * 1. Create a ComboPooledDataSource instance.
+     * 2. Set the properties of the ComboPooledDataSource instance.
+     * 3. Return the ComboPooledDataSource instance.
+     * c3p0 will automatically add username and password to properties  {@see DriverManagerDataSource#setUser}
+     */
     @Test
     void assertCreateDataSource() {
         ComboPooledDataSource actual = (ComboPooledDataSource) DataSourcePoolCreator.create(new DataSourceProperties(ComboPooledDataSource.class.getName(), createDataSourceProperties()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUser(), is("root"));
         assertThat(actual.getPassword(), is("root"));
-        // c3p0 will automatically add username and password to properties  {@see DriverManagerDataSource#setUser}
         assertThat(actual.getProperties(), is(PropertiesBuilder.build(new PropertiesBuilder.Property("foo", "foo_value"), new PropertiesBuilder.Property("bar", "bar_value"),
                 new PropertiesBuilder.Property("password", "root"), new PropertiesBuilder.Property("user", "root"))));
     }
