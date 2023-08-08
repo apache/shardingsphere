@@ -31,6 +31,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class DruidDataSourcePoolCreatorTest {
+    
     @Test
     void assertCreateDataSource() {
         DruidDataSource actual = (DruidDataSource) DataSourcePoolCreator.create(new DataSourceProperties(DruidDataSource.class.getName(), createDataSourceProperties()));
