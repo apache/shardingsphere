@@ -50,6 +50,12 @@ jobs:
       - name: Run CheckStyle
         run: |
           ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
+          tar -czvf /tmp/shardingsphere.tar ${{ github.workspace }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: e2e-image
+          path: /tmp/shardingsphere.tar
+          retention-days: 10
 
   check-spotless:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
