@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
-import org.apache.shardingsphere.infra.metadata.statistics.event.ShardingSphereSchemaDataAlteredEvent;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLockPersistService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.ShardingSphereSchemaDataAlteredEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
