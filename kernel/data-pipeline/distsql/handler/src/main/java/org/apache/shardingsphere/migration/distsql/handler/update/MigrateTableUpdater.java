@@ -41,7 +41,7 @@ public final class MigrateTableUpdater implements RALUpdater<MigrateTableStateme
     }
     
     @Override
-    public String getType() {
-        return MigrateTableStatement.class.getName();
+    public Class<MigrateTableStatement> getType() {
+        return MigrateTableStatement.class;
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.query;
 
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.CountShardingRuleExecutor;
@@ -70,8 +70,8 @@ class CountShardingRuleExecutorTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("db_1");
-        ShardingSphereRuleMetaData shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(Collections.singletonList(mockShardingRule()));
-        when(result.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singletonList(mockShardingRule()));
+        when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;
     }
     

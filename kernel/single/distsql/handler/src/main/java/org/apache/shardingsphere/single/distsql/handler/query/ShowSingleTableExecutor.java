@@ -62,7 +62,7 @@ public final class ShowSingleTableExecutor implements RQLExecutor<ShowSingleTabl
     }
     
     @Override
-    public String getType() {
-        return ShowSingleTableStatement.class.getName();
+    public Class<ShowSingleTableStatement> getType() {
+        return ShowSingleTableStatement.class;
     }
 }

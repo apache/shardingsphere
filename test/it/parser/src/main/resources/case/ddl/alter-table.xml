@@ -1266,4 +1266,10 @@
     <alter-table sql-case-id="alter_table_order_by">
         <table name="t_order" start-index="12" stop-index="18" />
     </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_supplemental_log_group">
+        <table name="EMPLOYEES" start-index="12" stop-index="23">
+            <owner start-index="12" stop-index="13" name="HR" />
+        </table>
+    </alter-table>
 </sql-parser-test-cases>

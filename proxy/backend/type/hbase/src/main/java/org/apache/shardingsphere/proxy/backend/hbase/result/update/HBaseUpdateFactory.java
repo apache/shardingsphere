@@ -38,7 +38,7 @@ public final class HBaseUpdateFactory {
      * @return instance of database backend handler
      */
     public static ProxyBackendHandler newInstance(final SQLStatement sqlStatement) {
-        HBaseUpdater updater = TypedSPILoader.getService(HBaseUpdater.class, sqlStatement.getClass().getCanonicalName(), new Properties());
+        HBaseUpdater updater = TypedSPILoader.getService(HBaseUpdater.class, sqlStatement.getClass(), new Properties());
         return new HBaseBackendUpdateHandler(sqlStatement, updater);
     }
 }

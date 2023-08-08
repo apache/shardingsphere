@@ -35,7 +35,7 @@ public final class UnregisterMigrationSourceStorageUnitUpdater implements RALUpd
     }
     
     @Override
-    public String getType() {
-        return UnregisterMigrationSourceStorageUnitStatement.class.getName();
+    public Class<UnregisterMigrationSourceStorageUnitStatement> getType() {
+        return UnregisterMigrationSourceStorageUnitStatement.class;
     }
 }

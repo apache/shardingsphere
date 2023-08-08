@@ -56,7 +56,7 @@ public final class AlterSQLParserRuleStatementUpdater implements GlobalRuleRALUp
     }
     
     @Override
-    public String getType() {
-        return AlterSQLParserRuleStatement.class.getName();
+    public Class<AlterSQLParserRuleStatement> getType() {
+        return AlterSQLParserRuleStatement.class;
     }
 }

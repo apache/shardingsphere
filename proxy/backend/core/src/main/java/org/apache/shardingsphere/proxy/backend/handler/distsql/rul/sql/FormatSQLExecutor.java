@@ -52,7 +52,7 @@ public final class FormatSQLExecutor implements ConnectionSessionRequiredRULExec
     }
     
     @Override
-    public String getType() {
-        return FormatStatement.class.getName();
+    public Class<FormatStatement> getType() {
+        return FormatStatement.class;
     }
 }

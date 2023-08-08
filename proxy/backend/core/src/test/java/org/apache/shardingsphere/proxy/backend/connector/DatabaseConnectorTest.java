@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResu
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -113,10 +113,10 @@ class DatabaseConnectorTest {
     }
     
     private ContextManager mockContextManager() {
-        ShardingSphereRuleMetaData globalRuleMetaData =
-                new ShardingSphereRuleMetaData(Arrays.asList(new SQLParserRule(new SQLParserRuleConfiguration(false, mock(CacheOption.class), mock(CacheOption.class))), sqlFederationRule));
+        RuleMetaData globalRuleMetaData =
+                new RuleMetaData(Arrays.asList(new SQLParserRule(new SQLParserRuleConfiguration(false, mock(CacheOption.class), mock(CacheOption.class))), sqlFederationRule));
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(mockDatabases(), mock(ShardingSphereResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(mockDatabases(), mock(ResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties())));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;

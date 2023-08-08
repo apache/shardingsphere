@@ -112,7 +112,7 @@ public final class AlterMaskRuleStatementUpdater implements RuleDefinitionAlterU
     }
     
     @Override
-    public String getType() {
-        return AlterMaskRuleStatement.class.getName();
+    public Class<AlterMaskRuleStatement> getType() {
+        return AlterMaskRuleStatement.class;
     }
 }

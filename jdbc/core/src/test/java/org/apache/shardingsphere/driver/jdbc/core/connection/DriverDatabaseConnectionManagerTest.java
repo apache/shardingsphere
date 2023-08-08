@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -79,7 +79,7 @@ class DriverDatabaseConnectionManagerTest {
         MetaDataPersistService persistService = mockMetaDataPersistService();
         when(result.getMetaDataContexts().getPersistService()).thenReturn(persistService);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
-                new ShardingSphereRuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class, RETURNS_DEEP_STUBS))));
+                new RuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class, RETURNS_DEEP_STUBS))));
         when(result.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(
                 Collections.singletonList(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_version")));
         Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();

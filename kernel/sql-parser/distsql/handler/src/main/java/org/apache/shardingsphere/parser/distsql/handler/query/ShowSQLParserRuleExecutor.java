@@ -47,7 +47,7 @@ public final class ShowSQLParserRuleExecutor implements MetaDataRequiredQueryabl
     }
     
     @Override
-    public String getType() {
-        return ShowSQLParserRuleStatement.class.getName();
+    public Class<ShowSQLParserRuleStatement> getType() {
+        return ShowSQLParserRuleStatement.class;
     }
 }

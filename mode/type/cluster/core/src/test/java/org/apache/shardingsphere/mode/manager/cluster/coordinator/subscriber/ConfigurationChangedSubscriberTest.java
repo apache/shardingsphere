@@ -31,8 +31,8 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
@@ -91,7 +91,7 @@ class ConfigurationChangedSubscriberTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereRuleMetaData globalRuleMetaData;
+    private RuleMetaData globalRuleMetaData;
     
     @BeforeEach
     void setUp() throws SQLException {
@@ -112,7 +112,7 @@ class ConfigurationChangedSubscriberTest {
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
         when(database.getName()).thenReturn("db");
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(resourceMetaData.getStorageNodeMetaData().getDataSources()).thenReturn(Collections.emptyMap());
         when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());

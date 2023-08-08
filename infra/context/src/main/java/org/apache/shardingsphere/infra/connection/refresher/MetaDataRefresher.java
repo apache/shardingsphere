@@ -48,4 +48,7 @@ public interface MetaDataRefresher<T extends SQLStatement> extends TypedSPI {
      */
     void refresh(ModeContextManager modeContextManager, ShardingSphereDatabase database, Collection<String> logicDataSourceNames, String schemaName,
                  T sqlStatement, ConfigurationProperties props) throws SQLException;
+    
+    @Override
+    Class<T> getType();
 }

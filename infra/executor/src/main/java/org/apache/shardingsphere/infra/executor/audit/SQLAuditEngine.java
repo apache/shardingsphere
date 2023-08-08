@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -50,7 +50,7 @@ public final class SQLAuditEngine {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void audit(final SQLStatementContext sqlStatementContext, final List<Object> params,
-                             final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final Grantee grantee, final HintValueContext hintValueContext) {
+                             final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final Grantee grantee, final HintValueContext hintValueContext) {
         Collection<ShardingSphereRule> rules = new LinkedList<>(globalRuleMetaData.getRules());
         if (null != database) {
             rules.addAll(database.getRuleMetaData().getRules());

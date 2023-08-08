@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 
 import java.util.Map;
 import java.util.Objects;
@@ -32,7 +32,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public final class SwitchingResource {
     
-    private final ShardingSphereResourceMetaData resourceMetaData;
+    private final ResourceMetaData resourceMetaData;
     
     @Getter
     private final StorageResource newStorageResource;

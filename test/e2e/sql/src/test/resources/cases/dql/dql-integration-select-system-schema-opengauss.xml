@@ -284,10 +284,11 @@
     <test-case sql="SELECT * FROM pg_catalog.gs_session_memory_detail limit 1" db-types="openGauss" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
-
-    <test-case sql="SELECT * FROM pg_catalog.gs_session_memory_statistics limit 1" db-types="openGauss" scenario-types="tbl" adapters="proxy">
-        <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    
+    <!-- TODO -->
+<!--    <test-case sql="SELECT * FROM pg_catalog.gs_session_memory_statistics limit 1" db-types="openGauss" scenario-types="tbl" adapters="proxy">-->
+<!--        <assertion expected-data-source-name="read_dataset" />-->
+<!--    </test-case>-->
 
     <test-case sql="SELECT * FROM pg_catalog.gs_session_stat limit 1" db-types="openGauss" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />

@@ -116,6 +116,8 @@ execute
     | alterAuditPolicy
     | alterCluster
     | alterOperator
+    | alterProfile
+    | alterRollbackSegment
     | alterDiskgroup
     | alterIndexType
     | alterMaterializedView

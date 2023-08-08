@@ -106,7 +106,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
                     String dataTypeName = resultSet.getString("TYPE_NAME");
                     boolean primaryKey = primaryKeys.contains(columnName);
                     boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
-                    boolean isUniqueKey = primaryKey || uniqueKeys.values().stream().anyMatch(names -> names.contains(columnName));
+                    boolean isUniqueKey = uniqueKeys.values().stream().anyMatch(names -> names.contains(columnName));
                     PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(ordinalPosition, columnName, dataType, dataTypeName, isNullable, primaryKey, isUniqueKey);
                     columnMetaDataMap.put(columnName, columnMetaData);
                 }

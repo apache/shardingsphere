@@ -49,4 +49,7 @@ public interface QueryableRALExecutor<T extends QueryableRALStatement> extends T
     default Collection<LocalDataQueryResultRow> getRows(T sqlStatement) {
         return Collections.emptyList();
     }
+    
+    @Override
+    Class<T> getType();
 }

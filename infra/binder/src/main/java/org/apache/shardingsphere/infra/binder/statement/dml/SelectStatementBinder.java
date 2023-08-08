@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.segment.combine.CombineSegmentBind
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.projection.ProjectionsSegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.where.WhereSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
@@ -43,9 +44,9 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
         TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getFrom(), metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), tableBinderContexts);
         result.setFrom(boundedTableSegment);
-        result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), boundedTableSegment, tableBinderContexts));
+        result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), metaData, defaultDatabaseName, boundedTableSegment, tableBinderContexts));
         // TODO support other segment bind in select statement
-        sqlStatement.getWhere().ifPresent(result::setWhere);
+        sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, metaData, defaultDatabaseName)));
         sqlStatement.getGroupBy().ifPresent(result::setGroupBy);
         sqlStatement.getHaving().ifPresent(result::setHaving);
         sqlStatement.getOrderBy().ifPresent(result::setOrderBy);

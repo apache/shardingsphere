@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.fixture.CreateFixtureRuleStatement;
@@ -69,7 +69,7 @@ class RuleDefinitionBackendHandlerTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS);
+        RuleMetaData ruleMetaData = mock(RuleMetaData.class, RETURNS_DEEP_STUBS);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;

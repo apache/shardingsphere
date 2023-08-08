@@ -24,7 +24,7 @@ import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 
 import java.lang.reflect.Method;
 
@@ -40,7 +40,7 @@ public abstract class TracingJDBCExecutorCallbackAdvice<T> implements InstanceMe
     @Override
     public final void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-        ShardingSphereResourceMetaData resourceMetaData = AgentReflectionUtils.getFieldValue(target, "resourceMetaData");
+        ResourceMetaData resourceMetaData = AgentReflectionUtils.getFieldValue(target, "resourceMetaData");
         ConnectionProperties connectionProps = resourceMetaData.getConnectionProperties(executionUnit.getExecutionUnit().getDataSourceName());
         DatabaseType storageType = resourceMetaData.getStorageType(executionUnit.getExecutionUnit().getDataSourceName());
         recordExecuteInfo(RootSpanContext.get(), target, executionUnit, (boolean) args[1], connectionProps, storageType);

@@ -45,7 +45,7 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
     }
     
     @Override
-    public String getType() {
-        return AlterSchemaStatement.class.getName();
+    public Class<AlterSchemaStatement> getType() {
+        return AlterSchemaStatement.class;
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 
@@ -45,7 +45,7 @@ public final class StorageUnitUtils {
      * @param initialCapacity the initial capacity for map
      * @return in used storage units
      */
-    public static Map<String, Collection<String>> getInUsedStorageUnits(final ShardingSphereRuleMetaData ruleMetaData, final int initialCapacity) {
+    public static Map<String, Collection<String>> getInUsedStorageUnits(final RuleMetaData ruleMetaData, final int initialCapacity) {
         Map<String, Collection<String>> result = new LinkedHashMap<>(initialCapacity, 1F);
         getFromDataSourceContainedRules(result, ruleMetaData.findRules(DataSourceContainedRule.class));
         getFromDataNodeContainedRules(result, ruleMetaData.findRules(DataNodeContainedRule.class));

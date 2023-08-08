@@ -79,7 +79,7 @@ public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRAL
     }
     
     @Override
-    public String getType() {
-        return AlterTransactionRuleStatement.class.getName();
+    public Class<AlterTransactionRuleStatement> getType() {
+        return AlterTransactionRuleStatement.class;
     }
 }
