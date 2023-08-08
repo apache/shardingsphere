@@ -57,7 +57,7 @@ public final class ShowShardingTableReferenceRuleExecutor implements RQLExecutor
     }
     
     @Override
-    public String getType() {
-        return ShowShardingTableReferenceRulesStatement.class.getName();
+    public Class<ShowShardingTableReferenceRulesStatement> getType() {
+        return ShowShardingTableReferenceRulesStatement.class;
     }
 }

@@ -107,7 +107,7 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
     }
     
     @Override
-    public String getType() {
-        return DropEncryptRuleStatement.class.getName();
+    public Class<DropEncryptRuleStatement> getType() {
+        return DropEncryptRuleStatement.class;
     }
 }

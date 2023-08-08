@@ -19,7 +19,9 @@ package org.apache.shardingsphere.sqlfederation.compiler.context;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.compiler.context.parser.OptimizerParserContext;
 import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContext;
@@ -55,7 +57,7 @@ class OptimizerContextTest {
     
     private ShardingSphereDatabase createShardingSphereDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getProtocolType().getType()).thenReturn("MySQL");
+        when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         return result;
     }
 }

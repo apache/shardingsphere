@@ -412,11 +412,16 @@ alterDefinitionClause
     ;
 
 alterTableProperties
-    : renameTableSpecification | REKEY encryptionSpecification
+    : renameTableSpecification | REKEY encryptionSpecification | supplementalTableLogging
     ;
 
 renameTableSpecification
     : RENAME TO identifier
+    ;
+
+supplementalTableLogging
+    : ADD SUPPLEMENTAL LOG (supplementalLogGrpClause | supplementalIdKeyClause) (COMMA_ SUPPLEMENTAL LOG (supplementalLogGrpClause | supplementalIdKeyClause))*
+    | DROP SUPPLEMENTAL LOG (supplementalIdKeyClause | GROUP logGroupName) (COMMA_ SUPPLEMENTAL LOG (supplementalIdKeyClause | GROUP logGroupName))*
     ;
 
 dropSynonym
@@ -1193,6 +1198,40 @@ alterPackage
     )
     ;
 
+alterProfile
+    : ALTER PROFILE profileName LIMIT (resourceParameters | passwordParameters)+ (CONTAINER EQ_ (CURRENT | ALL))?
+    ;
+
+resourceParameters
+    : (SESSIONS_PER_USER
+    | CPU_PER_SESSION
+    | CPU_PER_CALL
+    | CONNECT_TIME
+    | IDLE_TIME
+    | LOGICAL_READS_PER_SESSION
+    | LOGICAL_READS_PER_CALL
+    | COMPOSITE_LIMIT
+    ) (INTEGER_ | UNLIMITED | DEFAULT)
+    | PRIVATE_SGA (sizeClause | UNLIMITED | DEFAULT)
+    ;
+
+passwordParameters
+    : (FAILED_LOGIN_ATTEMPTS
+    | PASSWORD_LIFE_TIME
+    | PASSWORD_REUSE_TIME
+    | PASSWORD_REUSE_MAX
+    | PASSWORD_LOCK_TIME
+    | PASSWORD_GRACE_TIME
+    | INACTIVE_ACCOUNT_TIME
+    ) (expr | UNLIMITED | DEFAULT)
+    | PASSWORD_VERIFY_FUNCTION (function | NULL | DEFAULT)
+    | PASSWORD_ROLLOVER_TIME (expr | DEFAULT)
+    ;
+
+alterRollbackSegment
+    : ALTER ROLLBACK SEGMENT rollbackSegmentName (ONLINE | OFFLINE | storageClause | SHRINK (TO sizeClause)?)
+    ;
+
 packageCompileClause
     : COMPILE DEBUG? (PACKAGE | SPECIFICATION | BODY)? (compilerParametersClause*)? (REUSE SETTINGS)?
     ;
@@ -1478,6 +1517,7 @@ alterSessionSetClauseOption
     | containerClause
     | rowArchivalVisibilityClause
     | defaultCollationClause
+    | eventsClause
     ;
 
 parameterClause
@@ -1498,6 +1538,10 @@ rowArchivalVisibilityClause
 
 defaultCollationClause
     : DEFAULT_COLLATION EQ_ (collationName | NONE)
+    ;
+
+eventsClause
+    : (EVENTS EQ_? STRING_)+
     ;
 
 alterDatabaseDictionary
@@ -1945,11 +1989,11 @@ flushClauseOption
     ;
 
 disconnectSessionClause
-    : DISCONNECT SESSION SQ_ INTEGER_ COMMA_ INTEGER_ SQ_ POST_TRANSACTION?
+    : DISCONNECT SESSION STRING_ POST_TRANSACTION?
     ;
 
 killSessionClause
-    : KILL SESSION SQ_ INTEGER_ COMMA_ INTEGER_ (COMMA_ AT_ INTEGER_)? SQ_
+    : KILL SESSION STRING_
     ;
 
 startRollingMigrationClause
@@ -1993,7 +2037,7 @@ disableAffinityClause
     ;
 
 alterSystemSetClause
-    : setParameterClause | useStoredOutlinesClause | globalTopicEnabledClause
+    : setParameterClause | useStoredOutlinesClause | globalTopicEnabledClause | dbRecoveryFileDestSizeClause | eventsClause
     ;
 
 alterSystemResetClause
@@ -2040,6 +2084,10 @@ globalTopicEnabledClause
     : GLOBAL_TOPIC_ENABLED EQ_ (TRUE | FALSE)
     ;
 
+dbRecoveryFileDestSizeClause
+    : DB_RECOVERY_FILE_DEST_SIZE EQ_ INTEGER_ capacityUnit?
+    ;
+
 alterSystemCommentClause
     : COMMENT EQ_ stringLiterals
     ;
@@ -2049,7 +2097,7 @@ containerCurrentAllClause
     ;
 
 scopeClause
-    : SCOPE EQ_ (MEMORY | SPFILE | BOTH) | SID EQ_ (SQ_ sessionId SQ_ | SQ_ ASTERISK_ SQ_)
+    : SCOPE EQ_ (MEMORY | SPFILE | BOTH) | SID EQ_ (sessionId | SQ_ ASTERISK_ SQ_)
     ;
 
 analyze
@@ -3108,7 +3156,7 @@ usergroupClauses
     ;
 
 userClauses
-    : (ADD USER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
+    : (ADD USER username (COMMA_ username)*
     | DROP USER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)* (CASCADE)?
     | REPLACE USER SQ_ username SQ_ WITH SQ_ username SQ_ (COMMA_ SQ_ username SQ_ WITH SQ_ username SQ_)*)
     ;
@@ -3700,7 +3748,7 @@ segmentManagementClause
     ;
 
 tablespaceGroupClause
-    : ON TABLESPACE GROUP tablespaceGroupName
+    : TABLESPACE GROUP tablespaceGroupName
     ;
 
 temporaryTablespaceClause
@@ -3762,7 +3810,7 @@ datafileTempfileClauses
     : ADD (datafileSpecification | tempfileSpecification)
     | DROP (DATAFILE | TEMPFILE) (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
     | SHRINK TEMPFILE (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
-    | RENAME DATAFILE fileSpecification TO fileSpecification
+    | RENAME DATAFILE fileSpecification (COMMA_ fileSpecification)* TO fileSpecification (COMMA_ fileSpecification)*
     | (DATAFILE | TEMPFILE) (ONLINE|OFFLINE)
     ;
 

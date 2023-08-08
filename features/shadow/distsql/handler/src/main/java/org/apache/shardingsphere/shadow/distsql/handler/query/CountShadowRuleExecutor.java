@@ -51,7 +51,7 @@ public final class CountShadowRuleExecutor implements RQLExecutor<CountShadowRul
     }
     
     @Override
-    public String getType() {
-        return CountShadowRuleStatement.class.getName();
+    public Class<CountShadowRuleStatement> getType() {
+        return CountShadowRuleStatement.class;
     }
 }

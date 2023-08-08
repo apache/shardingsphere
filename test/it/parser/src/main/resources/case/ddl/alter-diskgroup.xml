@@ -52,4 +52,5 @@
     <alter-diskgroup sql-case-id="alter_diskgroup_enable_volume" />
     <alter-diskgroup sql-case-id="alter_diskgroup_all_disable_volume_all" />
     <alter-diskgroup sql-case-id="alter_diskgroup_drop_volume" />
+    <alter-diskgroup sql-case-id="alter_diskgroup_data_add_user" />
 </sql-parser-test-cases>

@@ -60,7 +60,7 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
     }
     
     @Override
-    public String getType() {
-        return CreateIndexStatement.class.getName();
+    public Class<CreateIndexStatement> getType() {
+        return CreateIndexStatement.class;
     }
 }

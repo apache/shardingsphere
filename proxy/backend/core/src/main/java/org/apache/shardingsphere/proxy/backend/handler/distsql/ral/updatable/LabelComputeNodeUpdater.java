@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelComputeNodeStatement;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
@@ -57,7 +57,7 @@ public final class LabelComputeNodeUpdater implements RALUpdater<LabelComputeNod
     }
     
     @Override
-    public String getType() {
-        return LabelComputeNodeStatement.class.getName();
+    public Class<LabelComputeNodeStatement> getType() {
+        return LabelComputeNodeStatement.class;
     }
 }

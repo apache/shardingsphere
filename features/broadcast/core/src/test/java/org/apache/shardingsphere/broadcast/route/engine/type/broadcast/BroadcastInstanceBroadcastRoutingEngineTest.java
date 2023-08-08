@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.broadcast.route.engine.type.broadcast;
 
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,7 @@ class BroadcastInstanceBroadcastRoutingEngineTest {
     
     @Test
     void assertRoute() {
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(resourceMetaData.getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("ds_0"));
         BroadcastInstanceBroadcastRoutingEngine engine = new BroadcastInstanceBroadcastRoutingEngine(resourceMetaData);
         BroadcastRule broadcastRule = mock(BroadcastRule.class);

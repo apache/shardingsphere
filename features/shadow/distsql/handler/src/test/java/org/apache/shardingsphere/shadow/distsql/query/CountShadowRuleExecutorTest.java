@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.query;
 
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.shadow.distsql.handler.query.CountShadowRuleExecutor;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CountShadowRuleStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -64,7 +64,7 @@ class CountShadowRuleExecutorTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("db_1");
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mockShadowRule()));
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(mockShadowRule()));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;
     }

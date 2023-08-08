@@ -36,7 +36,7 @@ public final class DropStreamingUpdater implements RALUpdater<DropStreamingState
     }
     
     @Override
-    public String getType() {
-        return DropStreamingStatement.class.getName();
+    public Class<DropStreamingStatement> getType() {
+        return DropStreamingStatement.class;
     }
 }

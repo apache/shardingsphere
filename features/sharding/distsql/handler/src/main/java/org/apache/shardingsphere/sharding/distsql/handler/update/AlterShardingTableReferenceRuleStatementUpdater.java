@@ -131,7 +131,7 @@ public final class AlterShardingTableReferenceRuleStatementUpdater implements Ru
     }
     
     @Override
-    public String getType() {
-        return AlterShardingTableReferenceRuleStatement.class.getName();
+    public Class<AlterShardingTableReferenceRuleStatement> getType() {
+        return AlterShardingTableReferenceRuleStatement.class;
     }
 }

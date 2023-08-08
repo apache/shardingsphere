@@ -48,7 +48,7 @@ public final class ShowComputeNodeModeExecutor implements InstanceContextRequire
     }
     
     @Override
-    public String getType() {
-        return ShowComputeNodeModeStatement.class.getName();
+    public Class<ShowComputeNodeModeStatement> getType() {
+        return ShowComputeNodeModeStatement.class;
     }
 }

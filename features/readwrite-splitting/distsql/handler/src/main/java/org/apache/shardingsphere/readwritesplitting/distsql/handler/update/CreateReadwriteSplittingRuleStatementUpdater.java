@@ -71,7 +71,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     }
     
     @Override
-    public String getType() {
-        return CreateReadwriteSplittingRuleStatement.class.getName();
+    public Class<CreateReadwriteSplittingRuleStatement> getType() {
+        return CreateReadwriteSplittingRuleStatement.class;
     }
 }

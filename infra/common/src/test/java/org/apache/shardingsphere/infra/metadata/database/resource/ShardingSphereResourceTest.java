@@ -31,7 +31,7 @@ class ShardingSphereResourceTest {
     @Test
     void assertClose() {
         MockedDataSource dataSource = new MockedDataSource();
-        new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", dataSource)).close(dataSource);
+        new ResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", dataSource)).close(dataSource);
         Awaitility.await().atMost(1L, TimeUnit.MINUTES).pollInterval(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
         assertTrue(dataSource.isClosed());
     }

@@ -74,7 +74,7 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     }
     
     @Override
-    public String getType() {
-        return AlterIndexStatement.class.getName();
+    public Class<AlterIndexStatement> getType() {
+        return AlterIndexStatement.class;
     }
 }

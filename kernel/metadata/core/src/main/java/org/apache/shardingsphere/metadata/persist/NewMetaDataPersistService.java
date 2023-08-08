@@ -113,7 +113,7 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
         Collection<RuleConfiguration> result = new LinkedList<>();
         for (ShardingSphereRule each : rules) {
             RuleConfiguration ruleConfig = each.getConfiguration();
-            Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass().getName());
+            Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass());
             result.add(decorator.map(optional -> optional.decorate(databaseName, dataSources, rules, ruleConfig)).orElse(ruleConfig));
         }
         return result;

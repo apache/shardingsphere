@@ -23,7 +23,7 @@ import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -68,7 +68,7 @@ class ShowBroadcastTableRuleExecutorTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mockBroadcastRule()));
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(mockBroadcastRule()));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;
     }

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -58,8 +57,6 @@ class EncryptProjectionTokenGeneratorTest {
     @BeforeEach
     void setup() {
         generator.setEncryptRule(mockEncryptRule());
-        generator.setDatabaseName("db_schema");
-        generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
     }
     
     private EncryptRule mockEncryptRule() {
@@ -82,6 +79,8 @@ class EncryptProjectionTokenGeneratorTest {
         SimpleTableSegment doctorTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor")));
         doctorTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
         ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
+        column.setOriginalColumn(new IdentifierValue("mobile"));
+        column.setOriginalTable(new IdentifierValue("doctor"));
         column.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
         ProjectionsSegment projections = mock(ProjectionsSegment.class);
         when(projections.getProjections()).thenReturn(Collections.singletonList(new ColumnProjectionSegment(column)));
@@ -101,6 +100,8 @@ class EncryptProjectionTokenGeneratorTest {
         SimpleTableSegment doctorTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor")));
         doctorTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
         ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
+        column.setOriginalColumn(new IdentifierValue("mobile"));
+        column.setOriginalTable(new IdentifierValue("doctor"));
         column.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
         ProjectionsSegment projections = mock(ProjectionsSegment.class);
         when(projections.getProjections()).thenReturn(Collections.singletonList(new ColumnProjectionSegment(column)));

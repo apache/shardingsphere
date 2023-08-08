@@ -62,7 +62,7 @@ public final class TypedSPILoader {
                 return Optional.of(each);
             }
         }
-        return findDefaultService(serviceInterface);
+        return Optional.empty();
     }
     
     private static <T extends TypedSPI> Optional<T> findDefaultService(final Class<T> serviceInterface) {

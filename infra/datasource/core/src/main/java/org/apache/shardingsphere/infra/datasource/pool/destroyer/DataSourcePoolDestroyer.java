@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSo
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -53,8 +54,8 @@ public final class DataSourcePoolDestroyer {
     }
     
     private void waitUntilActiveConnectionComplete() {
-        DataSourcePoolActiveDetector dataSourcePoolActiveDetector = TypedSPILoader.getService(DataSourcePoolActiveDetector.class, dataSource.getClass().getName());
-        while (dataSourcePoolActiveDetector.containsActiveConnection(dataSource)) {
+        Optional<DataSourcePoolActiveDetector> activeDetector = TypedSPILoader.findService(DataSourcePoolActiveDetector.class, dataSource.getClass().getName());
+        while (activeDetector.isPresent() && activeDetector.get().containsActiveConnection(dataSource)) {
             try {
                 Thread.sleep(10L);
             } catch (final InterruptedException ignore) {

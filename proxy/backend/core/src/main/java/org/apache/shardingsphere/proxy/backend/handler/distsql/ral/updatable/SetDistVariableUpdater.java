@@ -117,7 +117,7 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
     }
     
     @Override
-    public String getType() {
-        return SetDistVariableStatement.class.getName();
+    public Class<SetDistVariableStatement> getType() {
+        return SetDistVariableStatement.class;
     }
 }
