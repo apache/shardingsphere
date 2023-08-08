@@ -2745,4 +2745,28 @@
             <simple-table start-index="110" stop-index="113" name="DUAL" />
         </from>
     </select>
+    
+    <select sql-case-id="select_prediction_probability_function">
+        <projections start-index="7" stop-index="73">
+            <expression-projection start-index="7" stop-index="73" text="PREDICTION_PROBABILITY(dt_sh_clas_sample, 1 USING *)" alias="cust_card_prob">
+                <function start-index="7" stop-index="73" function-name="PREDICTION_PROBABILITY" alias="cust_card_prob" text="PREDICTION_PROBABILITY(dt_sh_clas_sample, 1 USING *)" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table start-index="80" stop-index="98" name="mining_data_apply_v" />
+        </from>
+        <where start-index="100" stop-index="121">
+            <expr>
+                <binary-operation-expression start-index="106" stop-index="121">
+                    <left>
+                        <column name="cust_id" start-index="106" stop-index="112" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression start-index="116" stop-index="121" value="101488" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
