@@ -49,7 +49,7 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-checkstyle-cache-
       - name: Run CheckStyle
         run: |
-          ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
+          find . -name checkstyle-cachefile;
           ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
 
   check-spotless:
