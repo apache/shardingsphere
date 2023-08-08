@@ -136,9 +136,9 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                     projections.addAll(generateProjections(encryptColumn, (ColumnProjection) each, subqueryType, true, segment));
                     continue;
                 }
-                projections.add(each.getAlias().filter(alias -> !DerivedColumn.isDerivedColumnName(alias.getValue()))
-                        .map(optional -> (Projection) new ColumnProjection(null, optional, null, databaseType)).orElse(each));
             }
+            projections.add(each.getAlias().filter(alias -> !DerivedColumn.isDerivedColumnName(alias.getValue()))
+                    .map(optional -> (Projection) new ColumnProjection(null, optional, null, databaseType)).orElse(each));
         }
         int startIndex = segment.getOwner().isPresent() ? segment.getOwner().get().getStartIndex() : segment.getStartIndex();
         previousSQLTokens.removeIf(each -> each.getStartIndex() == startIndex);
