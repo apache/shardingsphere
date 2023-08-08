@@ -53,7 +53,7 @@ jobs:
           tar -czvf /tmp/shardingsphere.tar ${{ github.workspace }}
       - uses: actions/upload-artifact@v3
         with:
-          name: e2e-image
+          name: ss-tar
           path: /tmp/shardingsphere.tar
           retention-days: 10
 
