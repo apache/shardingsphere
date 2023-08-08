@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -86,7 +86,7 @@ class FrontDatabaseProtocolTypeFactoryTest {
     private ContextManager mockContextManager(final Map<String, ShardingSphereDatabase> databases, final Properties props) {
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, mock(ResourceMetaData.class),
-                        mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(props)));
+                        mock(RuleMetaData.class), new ConfigurationProperties(props)));
         return new ContextManager(metaDataContexts, mock(InstanceContext.class));
     }
 }

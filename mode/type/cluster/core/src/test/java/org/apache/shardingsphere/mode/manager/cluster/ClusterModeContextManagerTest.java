@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -266,7 +266,7 @@ class ClusterModeContextManagerTest {
         MetaDataPersistService persistService = new MetaDataPersistService(
                 new ProcessListClusterPersistRepositoryFixture());
         Map<String, ShardingSphereDatabase> databases = new HashMap<>();
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>());
+        RuleMetaData globalRuleMetaData = new RuleMetaData(new LinkedList<>());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService,
                 new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), globalRuleMetaData, new ConfigurationProperties(new Properties())));
         ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
@@ -385,8 +385,8 @@ class ClusterModeContextManagerTest {
     
     private ShardingSphereMetaData createShardingSphereMetaData() {
         return new ShardingSphereMetaData(Collections.singletonMap("db", new ShardingSphereDatabase("db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
-                new ResourceMetaData("db", Collections.emptyMap()), new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.emptyMap())),
-                mock(ResourceMetaData.class), new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+                new ResourceMetaData("db", Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyMap())),
+                mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
     
     @Test

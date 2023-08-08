@@ -30,14 +30,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
- * ShardingSphere rule meta data.
+ * Rule meta data.
  */
 @Getter
-public final class ShardingSphereRuleMetaData {
+public final class RuleMetaData {
     
     private final Collection<ShardingSphereRule> rules;
     
-    public ShardingSphereRuleMetaData(final Collection<ShardingSphereRule> rules) {
+    public RuleMetaData(final Collection<ShardingSphereRule> rules) {
         this.rules = new CopyOnWriteArrayList<>(rules);
     }
     

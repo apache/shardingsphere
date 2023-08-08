@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -265,7 +265,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithOtherSelectStatementForDatabaseName() {
         ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", Collections.singletonMap("ds", new MockedDataSource()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", databaseType, resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyMap());
         Map<String, ShardingSphereDatabase> result = Collections.singletonMap("db_0", database);
         initProxyContext(result);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("db_0"));
@@ -283,7 +283,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithOtherSelectStatementForNullDatabaseName() {
         ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", Collections.singletonMap("ds_0", new MockedDataSource()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", databaseType, resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyMap());
         Map<String, ShardingSphereDatabase> result = Collections.singletonMap("db_0", database);
         initProxyContext(result);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("db_0"));
@@ -355,7 +355,7 @@ class MySQLAdminExecutorCreatorTest {
     private void initProxyContext(final Map<String, ShardingSphereDatabase> databases) {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }

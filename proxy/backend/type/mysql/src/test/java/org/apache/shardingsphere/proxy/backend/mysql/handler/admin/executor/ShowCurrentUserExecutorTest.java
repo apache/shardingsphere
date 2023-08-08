@@ -21,7 +21,7 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -72,12 +72,12 @@ class ShowCurrentUserExecutorTest {
         return result;
     }
     
-    private ShardingSphereRuleMetaData mockShardingSphereRuleMetaData() {
+    private RuleMetaData mockShardingSphereRuleMetaData() {
         AuthorityRule authorityRule = mock(AuthorityRule.class);
         ShardingSphereUser shardingSphereUser = mock(ShardingSphereUser.class);
         when(shardingSphereUser.getGrantee()).thenReturn(new Grantee("root", "%"));
         when(authorityRule.findUser(GRANTEE)).thenReturn(Optional.of(shardingSphereUser));
-        return new ShardingSphereRuleMetaData(Collections.singletonList(authorityRule));
+        return new RuleMetaData(Collections.singletonList(authorityRule));
     }
     
     private ConnectionSession mockConnectionSession() {

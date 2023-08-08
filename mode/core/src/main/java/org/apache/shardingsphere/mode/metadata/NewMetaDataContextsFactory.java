@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaDa
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.NewInternalMetaDataFactory;
@@ -96,7 +96,7 @@ public final class NewMetaDataContextsFactory {
                 ? NewInternalMetaDataFactory.create(persistService, effectiveDatabaseConfigs, props, instanceContext)
                 : ExternalMetaDataFactory.create(effectiveDatabaseConfigs, props, instanceContext);
         ResourceMetaData globalResourceMetaData = new ResourceMetaData(globalDataSources);
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props));
+        RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props));
         MetaDataContexts result = new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalResourceMetaData, globalRuleMetaData, props));
         if (!isDatabaseMetaDataExisted) {
             persistDatabaseConfigurations(result, param);

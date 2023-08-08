@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMeta
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
@@ -91,7 +91,7 @@ class ConfigurationChangedSubscriberTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereRuleMetaData globalRuleMetaData;
+    private RuleMetaData globalRuleMetaData;
     
     @BeforeEach
     void setUp() throws SQLException {

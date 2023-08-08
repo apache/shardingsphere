@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -88,7 +88,7 @@ class OrderByStreamMergedResultTest {
     
     private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
         return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ResourceMetaData.class),
-                mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     @Test
@@ -217,7 +217,7 @@ class OrderByStreamMergedResultTest {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Arrays.asList(column1, column2), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", table), Collections.emptyMap());
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
-                TypedSPILoader.getService(DatabaseType.class, "MySQL"), mock(ResourceMetaData.class), mock(ShardingSphereRuleMetaData.class),
+                TypedSPILoader.getService(DatabaseType.class, "MySQL"), mock(ResourceMetaData.class), mock(RuleMetaData.class),
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
     }
 }

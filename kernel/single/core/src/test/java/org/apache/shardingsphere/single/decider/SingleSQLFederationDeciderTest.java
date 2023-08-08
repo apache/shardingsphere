@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -50,7 +50,7 @@ class SingleSQLFederationDeciderTest {
     void assertDecideWhenNotContainsSingleTable() {
         SelectStatementContext select = createStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>();
-        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), mock(SingleRule.class), includedDataNodes));
+        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(), mock(SingleRule.class), includedDataNodes));
         assertTrue(includedDataNodes.isEmpty());
     }
     
@@ -61,7 +61,7 @@ class SingleSQLFederationDeciderTest {
         SelectStatementContext select = createStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>();
         when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(true);
-        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, includedDataNodes));
+        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(2));
     }
     
@@ -72,7 +72,7 @@ class SingleSQLFederationDeciderTest {
         SelectStatementContext select = createStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>();
         when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(false);
-        assertTrue(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, includedDataNodes));
+        assertTrue(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(2));
     }
     
@@ -83,7 +83,7 @@ class SingleSQLFederationDeciderTest {
         SelectStatementContext select = createStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_0", "t_user")));
         when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(true);
-        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, includedDataNodes));
+        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(3));
     }
     
@@ -94,7 +94,7 @@ class SingleSQLFederationDeciderTest {
         SelectStatementContext select = createStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_1", "t_user")));
         when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(false);
-        assertTrue(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, includedDataNodes));
+        assertTrue(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(3));
     }
     

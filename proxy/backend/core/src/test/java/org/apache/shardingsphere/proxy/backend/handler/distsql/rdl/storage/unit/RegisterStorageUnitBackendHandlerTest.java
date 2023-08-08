@@ -26,7 +26,7 @@ import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegmen
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -71,7 +71,7 @@ class RegisterStorageUnitBackendHandlerTest {
     void setUp() throws ReflectiveOperationException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        when(database.getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
+        when(database.getRuleMetaData()).thenReturn(mock(RuleMetaData.class));
         handler = new RegisterStorageUnitBackendHandler(mock(RegisterStorageUnitStatement.class), connectionSession);
         Plugins.getMemberAccessor().set(handler.getClass().getDeclaredField("validateHandler"), handler, mock(DataSourcePropertiesValidateHandler.class));
     }
