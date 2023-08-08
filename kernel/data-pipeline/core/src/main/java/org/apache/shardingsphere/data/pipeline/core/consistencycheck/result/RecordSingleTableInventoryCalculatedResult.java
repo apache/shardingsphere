@@ -32,11 +32,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Data match calculated result.
+ * Record single table inventory calculated result.
  */
 @Getter
 @Slf4j
-public final class DataMatchCalculatedResult implements DataConsistencyCalculatedResult {
+public final class RecordSingleTableInventoryCalculatedResult implements SingleTableInventoryCalculatedResult {
     
     private final Object maxUniqueKeyValue;
     
@@ -45,7 +45,7 @@ public final class DataMatchCalculatedResult implements DataConsistencyCalculate
     @Getter(AccessLevel.NONE)
     private final Collection<Collection<Object>> records;
     
-    public DataMatchCalculatedResult(final Object maxUniqueKeyValue, final Collection<Collection<Object>> records) {
+    public RecordSingleTableInventoryCalculatedResult(final Object maxUniqueKeyValue, final Collection<Collection<Object>> records) {
         this.maxUniqueKeyValue = maxUniqueKeyValue;
         recordsCount = records.size();
         this.records = records;
@@ -65,11 +65,11 @@ public final class DataMatchCalculatedResult implements DataConsistencyCalculate
         if (this == o) {
             return true;
         }
-        if (!(o instanceof DataMatchCalculatedResult)) {
-            log.warn("DataMatchCalculatedResult type not match, o.className={}.", o.getClass().getName());
+        if (!(o instanceof RecordSingleTableInventoryCalculatedResult)) {
+            log.warn("RecordSingleTableInventoryCalculatedResult type not match, o.className={}.", o.getClass().getName());
             return false;
         }
-        final DataMatchCalculatedResult that = (DataMatchCalculatedResult) o;
+        final RecordSingleTableInventoryCalculatedResult that = (RecordSingleTableInventoryCalculatedResult) o;
         if (recordsCount != that.recordsCount || !Objects.equals(maxUniqueKeyValue, that.maxUniqueKeyValue)) {
             log.warn("Record count or max unique key value not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}.",
                     recordsCount, that.recordsCount, maxUniqueKeyValue, that.maxUniqueKeyValue);

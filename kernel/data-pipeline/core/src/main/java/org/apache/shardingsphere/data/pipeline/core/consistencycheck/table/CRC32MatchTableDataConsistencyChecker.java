@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.CRC32MatchDataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.CRC32SingleTableInventoryCalculator;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
@@ -33,11 +33,11 @@ import java.util.LinkedList;
 @SPIDescription("Match CRC32 of records.")
 public final class CRC32MatchTableDataConsistencyChecker extends MatchingTableDataConsistencyChecker {
     
-    private final DataConsistencyCalculateAlgorithm calculateAlgorithm = new CRC32MatchDataConsistencyCalculateAlgorithm();
+    private final SingleTableInventoryCalculator calculator = new CRC32SingleTableInventoryCalculator();
     
     @Override
-    protected DataConsistencyCalculateAlgorithm getDataConsistencyCalculateAlgorithm() {
-        return calculateAlgorithm;
+    protected SingleTableInventoryCalculator getSingleTableInventoryCalculator() {
+        return calculator;
     }
     
     @Override

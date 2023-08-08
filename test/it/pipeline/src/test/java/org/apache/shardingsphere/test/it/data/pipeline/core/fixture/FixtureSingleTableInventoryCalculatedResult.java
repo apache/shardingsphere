@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineCancellable;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 
-/**
- * Data consistency calculate algorithm.
- */
-public interface DataConsistencyCalculateAlgorithm extends PipelineCancellable {
+import java.util.Optional;
+
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@Getter
+public final class FixtureSingleTableInventoryCalculatedResult implements SingleTableInventoryCalculatedResult {
     
-    /**
-     * Calculate data for consistency check.
-     *
-     * @param param data consistency calculate parameter
-     * @return calculated result
-     */
-    Iterable<DataConsistencyCalculatedResult> calculate(DataConsistencyCalculateParameter param);
+    private final int recordsCount;
+    
+    @Override
+    public Optional<Object> getMaxUniqueKeyValue() {
+        return Optional.empty();
+    }
 }

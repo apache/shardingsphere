@@ -21,12 +21,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.SingleTableInventoryCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCountCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
@@ -64,13 +64,13 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
     
     private DataConsistencyCheckResult checkSingleTableInventoryData(final TableDataConsistencyCheckParameter param, final ThreadPoolExecutor executor) {
         Map<String, Object> tableCheckPositions = param.getProgressContext().getTableCheckPositions();
-        DataConsistencyCalculateParameter sourceParam = new DataConsistencyCalculateParameter(param.getSourceDataSource(), param.getSourceTable(),
+        SingleTableInventoryCalculateParameter sourceParam = new SingleTableInventoryCalculateParameter(param.getSourceDataSource(), param.getSourceTable(),
                 param.getColumnNames(), param.getUniqueKey(), tableCheckPositions.get(param.getSourceTable().getTableName().getOriginal()));
-        DataConsistencyCalculateParameter targetParam = new DataConsistencyCalculateParameter(param.getTargetDataSource(), param.getTargetTable(),
+        SingleTableInventoryCalculateParameter targetParam = new SingleTableInventoryCalculateParameter(param.getTargetDataSource(), param.getTargetTable(),
                 param.getColumnNames(), param.getUniqueKey(), tableCheckPositions.get(param.getTargetTable().getTableName().getOriginal()));
-        DataConsistencyCalculateAlgorithm calculateAlgorithm = getDataConsistencyCalculateAlgorithm();
-        Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = waitFuture(executor.submit(() -> calculateAlgorithm.calculate(sourceParam))).iterator();
-        Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> calculateAlgorithm.calculate(targetParam))).iterator();
+        SingleTableInventoryCalculator calculator = getSingleTableInventoryCalculator();
+        Iterator<SingleTableInventoryCalculatedResult> sourceCalculatedResults = waitFuture(executor.submit(() -> calculator.calculate(sourceParam))).iterator();
+        Iterator<SingleTableInventoryCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> calculator.calculate(targetParam))).iterator();
         try {
             return checkSingleTableInventoryData(sourceCalculatedResults, targetCalculatedResults, param, executor);
         } finally {
@@ -79,8 +79,8 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
         }
     }
     
-    private DataConsistencyCheckResult checkSingleTableInventoryData(final Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults,
-                                                                     final Iterator<DataConsistencyCalculatedResult> targetCalculatedResults,
+    private DataConsistencyCheckResult checkSingleTableInventoryData(final Iterator<SingleTableInventoryCalculatedResult> sourceCalculatedResults,
+                                                                     final Iterator<SingleTableInventoryCalculatedResult> targetCalculatedResults,
                                                                      final TableDataConsistencyCheckParameter param, final ThreadPoolExecutor executor) {
         long sourceRecordsCount = 0;
         long targetRecordsCount = 0;
@@ -89,8 +89,8 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
             if (null != param.getReadRateLimitAlgorithm()) {
                 param.getReadRateLimitAlgorithm().intercept(JobOperationType.SELECT, 1);
             }
-            DataConsistencyCalculatedResult sourceCalculatedResult = waitFuture(executor.submit(sourceCalculatedResults::next));
-            DataConsistencyCalculatedResult targetCalculatedResult = waitFuture(executor.submit(targetCalculatedResults::next));
+            SingleTableInventoryCalculatedResult sourceCalculatedResult = waitFuture(executor.submit(sourceCalculatedResults::next));
+            SingleTableInventoryCalculatedResult targetCalculatedResult = waitFuture(executor.submit(targetCalculatedResults::next));
             sourceRecordsCount += sourceCalculatedResult.getRecordsCount();
             targetRecordsCount += targetCalculatedResult.getRecordsCount();
             contentMatched = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
@@ -107,7 +107,7 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
             param.getProgressContext().onProgressUpdated(new PipelineJobProgressUpdatedParameter(sourceCalculatedResult.getRecordsCount()));
         }
         if (sourceCalculatedResults.hasNext()) {
-            // TODO Refactor DataConsistencyCalculatedResult to represent inaccurate number
+            // TODO Refactor SingleTableInventoryCalculatedResult to represent inaccurate number
             return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(sourceRecordsCount + 1, targetRecordsCount), new DataConsistencyContentCheckResult(false));
         }
         if (targetCalculatedResults.hasNext()) {
@@ -135,15 +135,15 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
         }
     }
     
-    protected abstract DataConsistencyCalculateAlgorithm getDataConsistencyCalculateAlgorithm();
+    protected abstract SingleTableInventoryCalculator getSingleTableInventoryCalculator();
     
     @Override
     public void cancel() {
-        getDataConsistencyCalculateAlgorithm().cancel();
+        getSingleTableInventoryCalculator().cancel();
     }
     
     @Override
     public boolean isCanceling() {
-        return getDataConsistencyCalculateAlgorithm().isCanceling();
+        return getSingleTableInventoryCalculator().isCanceling();
     }
 }

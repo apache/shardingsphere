@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.query.JDBCStreamQueryBuilder;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineDataConsistencyCalculateSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataMatchCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.SingleTableInventoryCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordSingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.dumper.ColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
@@ -44,16 +44,16 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Data match data consistency calculate algorithm.
+ * Record single table inventory calculator.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractStreamingDataConsistencyCalculateAlgorithm {
+public final class RecordSingleTableInventoryCalculator extends AbstractStreamingSingleTableInventoryCalculator {
     
     private final int chunkSize;
     
     @Override
-    public Optional<DataConsistencyCalculatedResult> calculateChunk(final DataConsistencyCalculateParameter param) {
+    public Optional<SingleTableInventoryCalculatedResult> calculateChunk(final SingleTableInventoryCalculateParameter param) {
         CalculationContext calculationContext = getOrCreateCalculationContext(param);
         try {
             Collection<Collection<Object>> records = new LinkedList<>();
@@ -77,7 +77,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             if (records.isEmpty()) {
                 calculationContext.close();
             }
-            return records.isEmpty() ? Optional.empty() : Optional.of(new DataMatchCalculatedResult(maxUniqueKeyValue, records));
+            return records.isEmpty() ? Optional.empty() : Optional.of(new RecordSingleTableInventoryCalculatedResult(maxUniqueKeyValue, records));
         } catch (final PipelineSQLException ex) {
             calculationContext.close();
             throw ex;
@@ -89,7 +89,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         }
     }
     
-    private CalculationContext getOrCreateCalculationContext(final DataConsistencyCalculateParameter param) {
+    private CalculationContext getOrCreateCalculationContext(final SingleTableInventoryCalculateParameter param) {
         CalculationContext result = (CalculationContext) param.getCalculationContext();
         if (null != result) {
             return result;
@@ -106,14 +106,14 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         return result;
     }
     
-    private CalculationContext createCalculationContext(final DataConsistencyCalculateParameter param) throws SQLException {
+    private CalculationContext createCalculationContext(final SingleTableInventoryCalculateParameter param) throws SQLException {
         Connection connection = param.getDataSource().getConnection();
         CalculationContext result = new CalculationContext(connection);
         param.setCalculationContext(result);
         return result;
     }
     
-    private void fulfillCalculationContext(final CalculationContext calculationContext, final DataConsistencyCalculateParameter param) throws SQLException {
+    private void fulfillCalculationContext(final CalculationContext calculationContext, final SingleTableInventoryCalculateParameter param) throws SQLException {
         String sql = getQuerySQL(param);
         PreparedStatement preparedStatement = JDBCStreamQueryBuilder.build(param.getDatabaseType(), calculationContext.getConnection(), sql);
         setCurrentStatement(preparedStatement);
@@ -129,7 +129,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         calculationContext.setResultSet(resultSet);
     }
     
-    private String getQuerySQL(final DataConsistencyCalculateParameter param) {
+    private String getQuerySQL(final SingleTableInventoryCalculateParameter param) {
         if (null == param.getUniqueKey()) {
             throw new UnsupportedOperationException("Data consistency of DATA_MATCH type not support table without unique key and primary key now");
         }

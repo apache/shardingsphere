@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.SingleTableInventoryCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -30,14 +30,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Streaming data consistency calculate algorithm.
+ * Abstract streaming single table inventory calculator.
  */
 @Getter
 @Slf4j
-public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends AbstractDataConsistencyCalculateAlgorithm {
+public abstract class AbstractStreamingSingleTableInventoryCalculator extends AbstractSingleTableInventoryCalculator {
     
     @Override
-    public final Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
+    public final Iterable<SingleTableInventoryCalculatedResult> calculate(final SingleTableInventoryCalculateParameter param) {
         return new ResultIterable(param);
     }
     
@@ -47,30 +47,30 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
      * @param param data consistency calculate parameter
      * @return optional calculated result, empty means there's no more result
      */
-    protected abstract Optional<DataConsistencyCalculatedResult> calculateChunk(DataConsistencyCalculateParameter param);
+    protected abstract Optional<SingleTableInventoryCalculatedResult> calculateChunk(SingleTableInventoryCalculateParameter param);
     
     /**
      * It's not thread-safe, it should be executed in only one thread at the same time.
      */
     @RequiredArgsConstructor
-    private final class ResultIterable implements Iterable<DataConsistencyCalculatedResult> {
+    private final class ResultIterable implements Iterable<SingleTableInventoryCalculatedResult> {
         
-        private final DataConsistencyCalculateParameter param;
+        private final SingleTableInventoryCalculateParameter param;
         
         @Override
-        public Iterator<DataConsistencyCalculatedResult> iterator() {
+        public Iterator<SingleTableInventoryCalculatedResult> iterator() {
             return new ResultIterator(param);
         }
     }
     
     @RequiredArgsConstructor
-    private final class ResultIterator implements Iterator<DataConsistencyCalculatedResult> {
+    private final class ResultIterator implements Iterator<SingleTableInventoryCalculatedResult> {
         
         private final AtomicBoolean currentChunkCalculated = new AtomicBoolean();
         
-        private final AtomicReference<Optional<DataConsistencyCalculatedResult>> nextResult = new AtomicReference<>();
+        private final AtomicReference<Optional<SingleTableInventoryCalculatedResult>> nextResult = new AtomicReference<>();
         
-        private final DataConsistencyCalculateParameter param;
+        private final SingleTableInventoryCalculateParameter param;
         
         @Override
         public boolean hasNext() {
@@ -79,9 +79,9 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
         }
         
         @Override
-        public DataConsistencyCalculatedResult next() {
+        public SingleTableInventoryCalculatedResult next() {
             calculateIfNecessary();
-            Optional<DataConsistencyCalculatedResult> result = nextResult.get();
+            Optional<SingleTableInventoryCalculatedResult> result = nextResult.get();
             nextResult.set(null);
             currentChunkCalculated.set(false);
             return result.orElseThrow(NoSuchElementException::new);

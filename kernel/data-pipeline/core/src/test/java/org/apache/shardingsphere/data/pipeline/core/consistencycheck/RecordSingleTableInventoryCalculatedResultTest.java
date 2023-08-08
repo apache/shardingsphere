@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataMatchCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordSingleTableInventoryCalculatedResult;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -33,19 +33,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-class DataMatchCalculatedResultTest {
+class RecordSingleTableInventoryCalculatedResultTest {
     
     @Test
     void assertEmptyRecordsEquals() {
-        DataMatchCalculatedResult actual = new DataMatchCalculatedResult(0, Collections.emptyList());
-        DataMatchCalculatedResult expected = new DataMatchCalculatedResult(0, Collections.emptyList());
+        RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(0, Collections.emptyList());
+        RecordSingleTableInventoryCalculatedResult expected = new RecordSingleTableInventoryCalculatedResult(0, Collections.emptyList());
         assertThat(actual, is(expected));
     }
     
     @Test
     void assertFullTypeRecordsEquals() {
-        DataMatchCalculatedResult actual = new DataMatchCalculatedResult(1000, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
-        DataMatchCalculatedResult expected = new DataMatchCalculatedResult(1000, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
+        RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(1000, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
+        RecordSingleTableInventoryCalculatedResult expected = new RecordSingleTableInventoryCalculatedResult(1000, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
         assertThat(actual, is(expected));
     }
     
@@ -56,7 +56,7 @@ class DataMatchCalculatedResultTest {
     
     @Test
     void assertFullTypeRecordsEqualsWithDifferentDecimalScale() {
-        DataMatchCalculatedResult expected = new DataMatchCalculatedResult(1000, Collections.singleton(buildFixedFullTypeRecord()));
+        RecordSingleTableInventoryCalculatedResult expected = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singleton(buildFixedFullTypeRecord()));
         List<Object> record = buildFixedFullTypeRecord();
         for (int index = 0; index < record.size(); index++) {
             if (record.get(index) instanceof BigDecimal) {
@@ -64,30 +64,31 @@ class DataMatchCalculatedResultTest {
                 record.set(index, decimal.setScale(decimal.scale() + 1, RoundingMode.CEILING));
             }
         }
-        DataMatchCalculatedResult actual = new DataMatchCalculatedResult(1000, Collections.singleton(record));
+        RecordSingleTableInventoryCalculatedResult actual = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singleton(record));
         assertThat(actual, is(expected));
     }
     
     @Test
     void assertRecordsCountNotEquals() {
-        DataMatchCalculatedResult result1 = new DataMatchCalculatedResult(1000, Collections.singleton(Collections.singleton(buildFixedFullTypeRecord())));
-        DataMatchCalculatedResult result2 = new DataMatchCalculatedResult(1000, Collections.emptyList());
+        RecordSingleTableInventoryCalculatedResult result1 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singleton(Collections.singleton(buildFixedFullTypeRecord())));
+        RecordSingleTableInventoryCalculatedResult result2 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.emptyList());
         assertNotEquals(result1, result2);
     }
     
     @Test
     void assertMaxUniqueKeyValueNotEquals() {
-        DataMatchCalculatedResult result1 = new DataMatchCalculatedResult(1000, Collections.singleton(Collections.singleton(buildFixedFullTypeRecord())));
-        DataMatchCalculatedResult result2 = new DataMatchCalculatedResult(1001, Collections.singleton(Collections.singleton(buildFixedFullTypeRecord())));
+        RecordSingleTableInventoryCalculatedResult result1 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singleton(Collections.singleton(buildFixedFullTypeRecord())));
+        RecordSingleTableInventoryCalculatedResult result2 = new RecordSingleTableInventoryCalculatedResult(1001, Collections.singleton(Collections.singleton(buildFixedFullTypeRecord())));
         assertNotEquals(result1, result2);
     }
     
     @Test
     void assertRandomColumnValueNotEquals() {
         List<Object> record = buildFixedFullTypeRecord();
-        DataMatchCalculatedResult result1 = new DataMatchCalculatedResult(1000, Collections.singleton(record));
+        RecordSingleTableInventoryCalculatedResult result1 = new RecordSingleTableInventoryCalculatedResult(1000, Collections.singleton(record));
         for (int index = 0; index < record.size(); index++) {
-            DataMatchCalculatedResult result2 = new DataMatchCalculatedResult(1000, Collections.singleton(modifyColumnValueRandomly(buildFixedFullTypeRecord(), index)));
+            RecordSingleTableInventoryCalculatedResult result2 = new RecordSingleTableInventoryCalculatedResult(1000,
+                    Collections.singleton(modifyColumnValueRandomly(buildFixedFullTypeRecord(), index)));
             assertNotEquals(result1, result2);
         }
     }

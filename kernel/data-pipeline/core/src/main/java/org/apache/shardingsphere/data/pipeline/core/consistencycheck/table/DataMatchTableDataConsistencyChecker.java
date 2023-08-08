@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordSingleTableInventoryCalculator;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
@@ -38,11 +38,11 @@ public final class DataMatchTableDataConsistencyChecker extends MatchingTableDat
     
     private static final int DEFAULT_CHUNK_SIZE = 1000;
     
-    private DataConsistencyCalculateAlgorithm calculateAlgorithm;
+    private SingleTableInventoryCalculator calculator;
     
     @Override
     public void init(final Properties props) {
-        calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm(getChunkSize(props));
+        calculator = new RecordSingleTableInventoryCalculator(getChunkSize(props));
     }
     
     private int getChunkSize(final Properties props) {
@@ -61,8 +61,8 @@ public final class DataMatchTableDataConsistencyChecker extends MatchingTableDat
     }
     
     @Override
-    protected DataConsistencyCalculateAlgorithm getDataConsistencyCalculateAlgorithm() {
-        return calculateAlgorithm;
+    protected SingleTableInventoryCalculator getSingleTableInventoryCalculator() {
+        return calculator;
     }
     
     @Override

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +27,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Abstract data consistency calculate algorithm.
+ * Abstract single table inventory calculator.
  */
 @Slf4j
-public abstract class AbstractDataConsistencyCalculateAlgorithm implements DataConsistencyCalculateAlgorithm {
+public abstract class AbstractSingleTableInventoryCalculator implements SingleTableInventoryCalculator {
     
     private final AtomicBoolean canceling = new AtomicBoolean(false);
     
@@ -64,7 +64,7 @@ public abstract class AbstractDataConsistencyCalculateAlgorithm implements DataC
     
     /**
      * Is canceling.
-     * 
+     *
      * @return is canceling or not
      */
     public final boolean isCanceling() {

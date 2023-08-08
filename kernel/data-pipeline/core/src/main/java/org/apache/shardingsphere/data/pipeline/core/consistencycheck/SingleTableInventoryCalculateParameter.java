@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Data consistency calculate parameter.
+ * Single table inventory calculate parameter.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataConsistencyCalculateParameter {
+public final class SingleTableInventoryCalculateParameter {
     
     /**
      * Data source of source side or target side.
