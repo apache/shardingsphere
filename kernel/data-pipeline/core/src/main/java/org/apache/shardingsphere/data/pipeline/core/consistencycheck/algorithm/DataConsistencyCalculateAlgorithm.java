@@ -18,17 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
 
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineCancellable;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
-
-import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * Data consistency calculate algorithm.
  */
-public interface DataConsistencyCalculateAlgorithm extends ShardingSphereAlgorithm {
+public interface DataConsistencyCalculateAlgorithm extends PipelineCancellable {
     
     /**
      * Calculate data for consistency check.
@@ -37,25 +33,4 @@ public interface DataConsistencyCalculateAlgorithm extends ShardingSphereAlgorit
      * @return calculated result
      */
     Iterable<DataConsistencyCalculatedResult> calculate(DataConsistencyCalculateParameter param);
-    
-    /**
-     * Cancel calculation.
-     *
-     * @throws SQLException SQL exception if cancel underlying SQL execution failure
-     */
-    void cancel() throws SQLException;
-    
-    /**
-     * Is calculation canceling.
-     *
-     * @return canceling or not
-     */
-    boolean isCanceling();
-    
-    /**
-     * Get supported database types.
-     * 
-     * @return supported database types
-     */
-    Collection<DatabaseType> getSupportedDatabaseTypes();
 }

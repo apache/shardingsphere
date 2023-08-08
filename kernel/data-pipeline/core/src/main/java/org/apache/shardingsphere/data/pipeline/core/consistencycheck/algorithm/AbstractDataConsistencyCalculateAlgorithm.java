@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -39,8 +40,9 @@ public abstract class AbstractDataConsistencyCalculateAlgorithm implements DataC
         currentStatement.set(statement);
     }
     
+    @SneakyThrows(SQLException.class)
     @Override
-    public void cancel() throws SQLException {
+    public void cancel() {
         canceling.set(true);
         Statement statement = currentStatement.get();
         if (null == statement || statement.isClosed()) {

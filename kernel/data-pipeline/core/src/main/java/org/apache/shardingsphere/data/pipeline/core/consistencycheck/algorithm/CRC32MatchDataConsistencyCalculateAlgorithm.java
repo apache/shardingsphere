@@ -25,11 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsist
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedCRC32DataConsistencyCalculateAlgorithmException;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,7 +33,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,7 +40,6 @@ import java.util.stream.Collectors;
 /**
  * CRC32 match data consistency calculate algorithm.
  */
-@SPIDescription("Match CRC32 of records.")
 @Slf4j
 public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractDataConsistencyCalculateAlgorithm {
     
@@ -71,20 +65,6 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
         } catch (final SQLException ex) {
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
         }
-    }
-    
-    @Override
-    public String getType() {
-        return "CRC32_MATCH";
-    }
-    
-    @Override
-    public Collection<DatabaseType> getSupportedDatabaseTypes() {
-        Collection<DatabaseType> result = new LinkedList<>();
-        DatabaseType supportedDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        result.add(supportedDatabaseType);
-        result.addAll(new DatabaseTypeRegistry(supportedDatabaseType).getAllBranchDatabaseTypes());
-        return result;
     }
     
     @RequiredArgsConstructor

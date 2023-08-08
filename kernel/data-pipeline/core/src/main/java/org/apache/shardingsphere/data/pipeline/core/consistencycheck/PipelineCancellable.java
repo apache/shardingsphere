@@ -17,21 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
-
-import java.util.Map;
-
 /**
- * Pipeline data consistency checker.
+ * Pipeline cancellable interface.
  */
-public interface PipelineDataConsistencyChecker {
+public interface PipelineCancellable {
     
     /**
-     * Data consistency check.
-     *
-     * @param tableDataConsistencyChecker table data consistency checker
-     * @return check results. key is logic table name, value is check result.
+     * Cancel calculation.
      */
-    Map<String, DataConsistencyCheckResult> check(TableDataConsistencyChecker tableDataConsistencyChecker);
+    void cancel();
+    
+    /**
+     * Is calculation canceling.
+     *
+     * @return canceling or not
+     */
+    boolean isCanceling();
 }

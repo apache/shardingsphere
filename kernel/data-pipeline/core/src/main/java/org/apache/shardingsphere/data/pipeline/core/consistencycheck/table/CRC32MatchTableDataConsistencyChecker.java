@@ -15,42 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.CRC32MatchDataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
 
-@SPIDescription("Fixture description.")
-public final class DataConsistencyCalculateAlgorithmFixture implements DataConsistencyCalculateAlgorithm {
+/**
+ * CRC32 match table data consistency checker.
+ */
+@SPIDescription("Match CRC32 of records.")
+public final class CRC32MatchTableDataConsistencyChecker extends MatchingTableDataConsistencyChecker {
+    
+    private final DataConsistencyCalculateAlgorithm calculateAlgorithm = new CRC32MatchDataConsistencyCalculateAlgorithm();
     
     @Override
-    public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
-        return Collections.singletonList(new FixtureDataConsistencyCalculatedResult(2));
-    }
-    
-    @Override
-    public void cancel() {
-    }
-    
-    @Override
-    public boolean isCanceling() {
-        return false;
+    protected DataConsistencyCalculateAlgorithm getDataConsistencyCalculateAlgorithm() {
+        return calculateAlgorithm;
     }
     
     @Override
     public Collection<DatabaseType> getSupportedDatabaseTypes() {
-        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
+        Collection<DatabaseType> result = new LinkedList<>();
+        DatabaseType supportedDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        result.add(supportedDatabaseType);
+        result.addAll(new DatabaseTypeRegistry(supportedDatabaseType).getAllBranchDatabaseTypes());
+        return result;
     }
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "CRC32_MATCH";
     }
 }

@@ -26,14 +26,11 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsist
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataMatchCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.dumper.ColumnValueReaderEngine;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,41 +41,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Data match data consistency calculate algorithm.
  */
-@SPIDescription("Match raw data of records.")
+@RequiredArgsConstructor
 @Slf4j
 public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractStreamingDataConsistencyCalculateAlgorithm {
     
-    private static final String CHUNK_SIZE_KEY = "chunk-size";
-    
-    private static final int DEFAULT_CHUNK_SIZE = 1000;
-    
-    private int chunkSize;
-    
-    @Override
-    public void init(final Properties props) {
-        chunkSize = getChunkSize(props);
-    }
-    
-    private int getChunkSize(final Properties props) {
-        int result;
-        try {
-            result = Integer.parseInt(props.getProperty(CHUNK_SIZE_KEY, Integer.toString(DEFAULT_CHUNK_SIZE)));
-        } catch (final NumberFormatException ignore) {
-            log.warn("'chunk-size' is not a valid number, use default value {}", DEFAULT_CHUNK_SIZE);
-            return DEFAULT_CHUNK_SIZE;
-        }
-        if (result <= 0) {
-            log.warn("Invalid 'chunk-size': {}, use default value {}", result, DEFAULT_CHUNK_SIZE);
-            return DEFAULT_CHUNK_SIZE;
-        }
-        return result;
-    }
+    private final int chunkSize;
     
     @Override
     public Optional<DataConsistencyCalculatedResult> calculateChunk(final DataConsistencyCalculateParameter param) {
@@ -165,16 +137,6 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         Collection<String> columnNames = param.getColumnNames().isEmpty() ? Collections.singleton("*") : param.getColumnNames();
         boolean firstQuery = null == param.getTableCheckPosition();
         return pipelineSQLBuilder.buildQueryAllOrderingSQL(param.getSchemaName(), param.getLogicTableName(), columnNames, param.getUniqueKey().getName(), firstQuery);
-    }
-    
-    @Override
-    public String getType() {
-        return "DATA_MATCH";
-    }
-    
-    @Override
-    public Collection<DatabaseType> getSupportedDatabaseTypes() {
-        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
     }
     
     @RequiredArgsConstructor

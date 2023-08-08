@@ -15,23 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineCancellable;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * Pipeline data consistency checker.
+ * Table data consistency checker.
  */
-public interface PipelineDataConsistencyChecker {
+public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm, PipelineCancellable {
     
     /**
-     * Data consistency check.
+     * Data consistency check for single table inventory data.
      *
-     * @param tableDataConsistencyChecker table data consistency checker
-     * @return check results. key is logic table name, value is check result.
+     * @param param check parameter
+     * @return check result
      */
-    Map<String, DataConsistencyCheckResult> check(TableDataConsistencyChecker tableDataConsistencyChecker);
+    DataConsistencyCheckResult checkSingleTableInventoryData(TableDataConsistencyCheckParameter param);
+    
+    /**
+     * Get supported database types.
+     *
+     * @return supported database types
+     */
+    Collection<DatabaseType> getSupportedDatabaseTypes();
 }

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.D
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCountCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
@@ -173,8 +174,8 @@ class MigrationJobAPITest {
     }
     
     @Test
-    void assertBuildNullDataConsistencyCalculateAlgorithm() {
-        DataConsistencyCalculateAlgorithm actual = jobAPI.buildDataConsistencyCalculateAlgorithm(null, null);
+    void assertBuildTableDataConsistencyCheckerWithNullType() {
+        TableDataConsistencyChecker actual = jobAPI.buildTableDataConsistencyChecker(null, null);
         assertInstanceOf(DataConsistencyCalculateAlgorithm.class, actual);
     }
     
@@ -184,8 +185,8 @@ class MigrationJobAPITest {
         initTableData(jobConfig);
         Optional<String> jobId = jobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
-        DataConsistencyCalculateAlgorithm calculateAlgorithm = jobAPI.buildDataConsistencyCalculateAlgorithm("FIXTURE", null);
-        Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobConfig, calculateAlgorithm, new ConsistencyCheckJobItemProgressContext(jobId.get(), 0));
+        TableDataConsistencyChecker actual = jobAPI.buildTableDataConsistencyChecker("FIXTURE", null);
+        Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobConfig, actual, new ConsistencyCheckJobItemProgressContext(jobId.get(), 0));
         assertThat(checkResultMap.size(), is(1));
         String checkKey = "ds_0.t_order";
         assertTrue(checkResultMap.get(checkKey).getCountCheckResult().isMatched());

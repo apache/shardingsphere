@@ -43,8 +43,8 @@ import org.apache.shardingsphere.data.pipeline.common.task.progress.IncrementalT
 import org.apache.shardingsphere.data.pipeline.common.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
@@ -209,7 +209,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         Collection<DataConsistencyCheckAlgorithmInfo> result = new LinkedList<>();
-        for (DataConsistencyCalculateAlgorithm each : ShardingSphereServiceLoader.getServiceInstances(DataConsistencyCalculateAlgorithm.class)) {
+        for (TableDataConsistencyChecker each : ShardingSphereServiceLoader.getServiceInstances(TableDataConsistencyChecker.class)) {
             SPIDescription description = each.getClass().getAnnotation(SPIDescription.class);
             result.add(new DataConsistencyCheckAlgorithmInfo(each.getType(), getSupportedDatabaseTypes(each.getSupportedDatabaseTypes()), null == description ? "" : description.value()));
         }
@@ -221,17 +221,17 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     }
     
     @Override
-    public DataConsistencyCalculateAlgorithm buildDataConsistencyCalculateAlgorithm(final String algorithmType, final Properties algorithmProps) {
-        return TypedSPILoader.getService(DataConsistencyCalculateAlgorithm.class, null == algorithmType ? "DATA_MATCH" : algorithmType, algorithmProps);
+    public TableDataConsistencyChecker buildTableDataConsistencyChecker(final String algorithmType, final Properties algorithmProps) {
+        return TypedSPILoader.getService(TableDataConsistencyChecker.class, null == algorithmType ? "DATA_MATCH" : algorithmType, algorithmProps);
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final PipelineJobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculateAlgorithm,
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final PipelineJobConfiguration jobConfig, final TableDataConsistencyChecker tableDataConsistencyChecker,
                                                                         final ConsistencyCheckJobItemProgressContext progressContext) {
         String jobId = jobConfig.getJobId();
         PipelineDataConsistencyChecker dataConsistencyChecker = buildPipelineDataConsistencyChecker(jobConfig, buildPipelineProcessContext(jobConfig), progressContext);
-        Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.check(calculateAlgorithm);
-        log.info("job {} with check algorithm '{}' data consistency checker result {}", jobId, calculateAlgorithm.getType(), result);
+        Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.check(tableDataConsistencyChecker);
+        log.info("job {} with check algorithm '{}' data consistency checker result {}", jobId, tableDataConsistencyChecker.getType(), result);
         return result;
     }
     

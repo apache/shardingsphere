@@ -15,29 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
-import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
-import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -48,74 +44,50 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Single table inventory data consistency checker.
+ * Matching table data consistency checker.
  */
 @Slf4j
 @RequiredArgsConstructor
-public final class SingleTableInventoryDataConsistencyChecker {
+public abstract class MatchingTableDataConsistencyChecker implements TableDataConsistencyChecker {
     
-    private final String jobId;
-    
-    private final PipelineDataSourceWrapper sourceDataSource;
-    
-    private final PipelineDataSourceWrapper targetDataSource;
-    
-    private final SchemaTableName sourceTable;
-    
-    private final SchemaTableName targetTable;
-    
-    private final List<String> columnNames;
-    
-    private final PipelineColumnMetaData uniqueKey;
-    
-    private final JobRateLimitAlgorithm readRateLimitAlgorithm;
-    
-    private final ConsistencyCheckJobItemProgressContext progressContext;
-    
-    /**
-     * Data consistency check.
-     *
-     * @param calculateAlgorithm calculate algorithm
-     * @return data consistency check result
-     */
-    public DataConsistencyCheckResult check(final DataConsistencyCalculateAlgorithm calculateAlgorithm) {
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(jobId) + "-check-%d");
+    @Override
+    public DataConsistencyCheckResult checkSingleTableInventoryData(final TableDataConsistencyCheckParameter param) {
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(param.getJobId()) + "-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         try {
-            return check(calculateAlgorithm, executor);
+            return checkSingleTableInventoryData(param, executor);
         } finally {
             executor.shutdown();
             executor.shutdownNow();
         }
     }
     
-    private DataConsistencyCheckResult check(final DataConsistencyCalculateAlgorithm calculateAlgorithm, final ThreadPoolExecutor executor) {
-        String schemaName = sourceTable.getSchemaName().getOriginal();
-        String sourceTableName = sourceTable.getTableName().getOriginal();
-        Map<String, Object> tableCheckPositions = progressContext.getTableCheckPositions();
-        DataConsistencyCalculateParameter sourceParam = new DataConsistencyCalculateParameter(sourceDataSource,
-                schemaName, sourceTableName, columnNames, sourceDataSource.getDatabaseType(), uniqueKey, tableCheckPositions.get(sourceTableName));
-        String targetTableName = targetTable.getTableName().getOriginal();
-        DataConsistencyCalculateParameter targetParam = new DataConsistencyCalculateParameter(targetDataSource,
-                targetTable.getSchemaName().getOriginal(), targetTableName, columnNames, targetDataSource.getDatabaseType(), uniqueKey, tableCheckPositions.get(targetTableName));
+    private DataConsistencyCheckResult checkSingleTableInventoryData(final TableDataConsistencyCheckParameter param, final ThreadPoolExecutor executor) {
+        Map<String, Object> tableCheckPositions = param.getProgressContext().getTableCheckPositions();
+        DataConsistencyCalculateParameter sourceParam = new DataConsistencyCalculateParameter(param.getSourceDataSource(), param.getSourceTable(),
+                param.getColumnNames(), param.getUniqueKey(), tableCheckPositions.get(param.getSourceTable().getTableName().getOriginal()));
+        DataConsistencyCalculateParameter targetParam = new DataConsistencyCalculateParameter(param.getTargetDataSource(), param.getTargetTable(),
+                param.getColumnNames(), param.getUniqueKey(), tableCheckPositions.get(param.getTargetTable().getTableName().getOriginal()));
+        DataConsistencyCalculateAlgorithm calculateAlgorithm = getDataConsistencyCalculateAlgorithm();
         Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = waitFuture(executor.submit(() -> calculateAlgorithm.calculate(sourceParam))).iterator();
         Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> calculateAlgorithm.calculate(targetParam))).iterator();
         try {
-            return check(sourceCalculatedResults, targetCalculatedResults, executor);
+            return checkSingleTableInventoryData(sourceCalculatedResults, targetCalculatedResults, param, executor);
         } finally {
             QuietlyCloser.close(sourceParam.getCalculationContext());
             QuietlyCloser.close(targetParam.getCalculationContext());
         }
     }
     
-    private DataConsistencyCheckResult check(final Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults,
-                                             final Iterator<DataConsistencyCalculatedResult> targetCalculatedResults, final ThreadPoolExecutor executor) {
+    private DataConsistencyCheckResult checkSingleTableInventoryData(final Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults,
+                                                                     final Iterator<DataConsistencyCalculatedResult> targetCalculatedResults,
+                                                                     final TableDataConsistencyCheckParameter param, final ThreadPoolExecutor executor) {
         long sourceRecordsCount = 0;
         long targetRecordsCount = 0;
         boolean contentMatched = true;
         while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
-            if (null != readRateLimitAlgorithm) {
-                readRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
+            if (null != param.getReadRateLimitAlgorithm()) {
+                param.getReadRateLimitAlgorithm().intercept(JobOperationType.SELECT, 1);
             }
             DataConsistencyCalculatedResult sourceCalculatedResult = waitFuture(executor.submit(sourceCalculatedResults::next));
             DataConsistencyCalculatedResult targetCalculatedResult = waitFuture(executor.submit(targetCalculatedResults::next));
@@ -123,16 +95,16 @@ public final class SingleTableInventoryDataConsistencyChecker {
             targetRecordsCount += targetCalculatedResult.getRecordsCount();
             contentMatched = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
             if (!contentMatched) {
-                log.info("content matched false, jobId={}, sourceTable={}, targetTable={}, uniqueKey={}", jobId, sourceTable, targetTable, uniqueKey);
+                log.info("content matched false, jobId={}, sourceTable={}, targetTable={}, uniqueKey={}", param.getJobId(), param.getSourceTable(), param.getTargetTable(), param.getUniqueKey());
                 break;
             }
             if (sourceCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
-                progressContext.getTableCheckPositions().put(sourceTable.getTableName().getOriginal(), sourceCalculatedResult.getMaxUniqueKeyValue().get());
+                param.getProgressContext().getTableCheckPositions().put(param.getSourceTable().getTableName().getOriginal(), sourceCalculatedResult.getMaxUniqueKeyValue().get());
             }
             if (targetCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
-                progressContext.getTableCheckPositions().put(targetTable.getTableName().getOriginal(), targetCalculatedResult.getMaxUniqueKeyValue().get());
+                param.getProgressContext().getTableCheckPositions().put(param.getTargetTable().getTableName().getOriginal(), targetCalculatedResult.getMaxUniqueKeyValue().get());
             }
-            progressContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(sourceCalculatedResult.getRecordsCount()));
+            param.getProgressContext().onProgressUpdated(new PipelineJobProgressUpdatedParameter(sourceCalculatedResult.getRecordsCount()));
         }
         if (sourceCalculatedResults.hasNext()) {
             // TODO Refactor DataConsistencyCalculatedResult to represent inaccurate number
@@ -161,5 +133,17 @@ public final class SingleTableInventoryDataConsistencyChecker {
             }
             throw new SQLWrapperException(new SQLException(ex));
         }
+    }
+    
+    protected abstract DataConsistencyCalculateAlgorithm getDataConsistencyCalculateAlgorithm();
+    
+    @Override
+    public void cancel() {
+        getDataConsistencyCalculateAlgorithm().cancel();
+    }
+    
+    @Override
+    public boolean isCanceling() {
+        return getDataConsistencyCalculateAlgorithm().isCanceling();
     }
 }

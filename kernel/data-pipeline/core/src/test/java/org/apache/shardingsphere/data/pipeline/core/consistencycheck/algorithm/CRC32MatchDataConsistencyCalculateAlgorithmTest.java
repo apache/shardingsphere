@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
 
+import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
@@ -64,7 +65,8 @@ class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     void setUp() throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true, true);
-        parameter = new DataConsistencyCalculateParameter(pipelineDataSource, null, "foo_tbl", Arrays.asList("foo_col", "bar_col"), databaseType, uniqueKey, Collections.emptyMap());
+        parameter = new DataConsistencyCalculateParameter(pipelineDataSource, new SchemaTableName(null, "foo_tbl"), Arrays.asList("foo_col", "bar_col"), uniqueKey, Collections.emptyMap());
+        when(pipelineDataSource.getDatabaseType()).thenReturn(databaseType);
         when(pipelineDataSource.getConnection()).thenReturn(connection);
     }
     
