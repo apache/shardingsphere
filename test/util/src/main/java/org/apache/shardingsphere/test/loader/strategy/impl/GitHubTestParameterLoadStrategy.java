@@ -82,7 +82,7 @@ public final class GitHubTestParameterLoadStrategy implements TestParameterLoadS
     
     private String loadContent(final URI casesURI) {
         try {
-            final URLConnection urlConnection = casesURI.toURL().openConnection();
+            URLConnection urlConnection = casesURI.toURL().openConnection();
             if (StringUtils.isNotBlank(TestUtilEnvironment.getInstance().getGithubToken())) {
                 urlConnection.setRequestProperty("Authorization", "Bearer " + TestUtilEnvironment.getInstance().getGithubToken());
             }
