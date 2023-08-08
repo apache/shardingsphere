@@ -153,7 +153,6 @@ public final class ReflectionUtils {
             T value = invokeMethod(method, target);
             return Optional.ofNullable(value);
         }
-        
         return Optional.empty();
     }
     
@@ -161,7 +160,6 @@ public final class ReflectionUtils {
         try {
             return clazz.getMethod(methodName, parameterTypes);
         } catch (NoSuchMethodException e) {
-            // Try superclass if method not found in this class
             Class<?> superclass = clazz.getSuperclass();
             if (superclass != null && superclass != Object.class) {
                 return findMethod(superclass, methodName, parameterTypes);

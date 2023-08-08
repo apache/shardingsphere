@@ -32,12 +32,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class C3P0DataSourcePoolCreatorTest {
     
-    /**
-     * 1. Create a ComboPooledDataSource instance.
-     * 2. Set the properties of the ComboPooledDataSource instance.
-     * 3. Return the ComboPooledDataSource instance.
-     * c3p0 will automatically add username and password to properties  {@see DriverManagerDataSource#setUser}
-     */
     @Test
     void assertCreateDataSource() {
         ComboPooledDataSource actual = (ComboPooledDataSource) DataSourcePoolCreator.create(new DataSourceProperties(ComboPooledDataSource.class.getName(), createDataSourceProperties()));
