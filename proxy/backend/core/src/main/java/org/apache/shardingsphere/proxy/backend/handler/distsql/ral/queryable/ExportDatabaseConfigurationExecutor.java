@@ -48,7 +48,7 @@ public final class ExportDatabaseConfigurationExecutor implements DatabaseRequir
     }
     
     @Override
-    public String getType() {
-        return ExportDatabaseConfigurationStatement.class.getName();
+    public Class<ExportDatabaseConfigurationStatement> getType() {
+        return ExportDatabaseConfigurationStatement.class;
     }
 }

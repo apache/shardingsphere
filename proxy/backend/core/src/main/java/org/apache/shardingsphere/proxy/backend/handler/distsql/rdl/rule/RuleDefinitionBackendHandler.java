@@ -55,7 +55,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     protected ResponseHeader execute(final String databaseName, final T sqlStatement) {
-        RuleDefinitionUpdater ruleDefinitionUpdater = TypedSPILoader.getService(RuleDefinitionUpdater.class, sqlStatement.getClass().getName());
+        RuleDefinitionUpdater ruleDefinitionUpdater = TypedSPILoader.getService(RuleDefinitionUpdater.class, sqlStatement.getClass());
         Class<? extends RuleConfiguration> ruleConfigClass = ruleDefinitionUpdater.getRuleConfigurationClass();
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(database, ruleConfigClass).orElse(null);
@@ -100,7 +100,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private RuleConfiguration decorateRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
-        Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass().getName());
+        Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass());
         return decorator.map(optional -> optional.decorate(database.getName(), database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(), ruleConfig)).orElse(ruleConfig);
     }
     

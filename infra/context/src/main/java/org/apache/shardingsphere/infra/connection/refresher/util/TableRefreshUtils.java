@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
@@ -45,7 +45,7 @@ public final class TableRefreshUtils {
      * @param tableSegments table segments
      * @return whether the rule need to be refreshed
      */
-    public static boolean isRuleRefreshRequired(final ShardingSphereRuleMetaData ruleMetaData, final String schemaName, final Collection<SimpleTableSegment> tableSegments) {
+    public static boolean isRuleRefreshRequired(final RuleMetaData ruleMetaData, final String schemaName, final Collection<SimpleTableSegment> tableSegments) {
         for (SimpleTableSegment each : tableSegments) {
             if (isRuleRefreshRequired(ruleMetaData, schemaName, each.getTableName().getIdentifier().getValue())) {
                 return true;
@@ -62,7 +62,7 @@ public final class TableRefreshUtils {
      * @param tableName table name
      * @return whether the rule need to be refreshed
      */
-    public static boolean isRuleRefreshRequired(final ShardingSphereRuleMetaData ruleMetaData, final String schemaName, final String tableName) {
+    public static boolean isRuleRefreshRequired(final RuleMetaData ruleMetaData, final String schemaName, final String tableName) {
         Optional<MutableDataNodeRule> singleRule = ruleMetaData.findSingleRule(MutableDataNodeRule.class);
         if (!singleRule.isPresent()) {
             return false;

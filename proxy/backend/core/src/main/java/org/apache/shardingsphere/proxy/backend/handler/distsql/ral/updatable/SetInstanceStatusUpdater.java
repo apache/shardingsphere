@@ -19,11 +19,11 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetInstanceStatusStatement;
-import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.mode.event.compute.ComputeNodeStatusChangedEvent;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 /**
@@ -60,7 +60,7 @@ public final class SetInstanceStatusUpdater implements RALUpdater<SetInstanceSta
     }
     
     @Override
-    public String getType() {
-        return SetInstanceStatusStatement.class.getName();
+    public Class<SetInstanceStatusStatement> getType() {
+        return SetInstanceStatusStatement.class;
     }
 }

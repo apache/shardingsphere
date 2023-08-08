@@ -28,7 +28,6 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.p
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.exception.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -36,6 +35,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -60,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 /**
  * COM_STMT_PREPARE command executor for MySQL.
@@ -143,13 +142,11 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     private Collection<MySQLPacket> createProjectionColumnDefinition41Packets(final SelectStatementContext selectStatementContext, final int characterSet) {
         Collection<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
         ShardingSphereSchema schema = getSchema(selectStatementContext);
-        Map<String, String> columnToTableMap = selectStatementContext.getTablesContext()
-                .findTableNamesByColumnProjection(projections.stream().filter(ColumnProjection.class::isInstance).map(ColumnProjection.class::cast).collect(Collectors.toList()), schema);
         Collection<MySQLPacket> result = new ArrayList<>(projections.size());
         for (Projection each : projections) {
             // TODO Calculate column definition flag for other projection types
-            if (each instanceof ColumnProjection && null != ((ColumnProjection) each).getOriginalColumn()) {
-                result.add(Optional.ofNullable(columnToTableMap.get(each.getExpression())).map(schema::getTable)
+            if (each instanceof ColumnProjection) {
+                result.add(Optional.ofNullable(schema.getTable(((ColumnProjection) each).getOriginalTable().getValue()))
                         .map(table -> table.getColumns().get(((ColumnProjection) each).getOriginalColumn().getValue()))
                         .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateColumnDefinitionFlag(column), MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
                         .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING)));

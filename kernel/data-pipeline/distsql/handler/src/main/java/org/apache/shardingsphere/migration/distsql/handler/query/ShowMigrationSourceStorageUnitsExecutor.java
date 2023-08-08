@@ -53,7 +53,7 @@ public final class ShowMigrationSourceStorageUnitsExecutor implements QueryableR
     }
     
     @Override
-    public String getType() {
-        return ShowMigrationSourceStorageUnitsStatement.class.getName();
+    public Class<ShowMigrationSourceStorageUnitsStatement> getType() {
+        return ShowMigrationSourceStorageUnitsStatement.class;
     }
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.connection.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -48,7 +48,7 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
+        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         boolean isSingleTable = isSingleTable(tableName, database);
         if (isSingleTable) {
             ruleMetaData.findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
@@ -72,7 +72,7 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
     }
     
     @Override
-    public String getType() {
-        return CreateTableStatement.class.getName();
+    public Class<CreateTableStatement> getType() {
+        return CreateTableStatement.class;
     }
 }

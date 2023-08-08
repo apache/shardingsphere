@@ -36,8 +36,8 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -119,7 +119,7 @@ class ExportMetaDataExecutorTest {
     private ContextManager mockEmptyContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(new HashMap<>(),
-                new ShardingSphereResourceMetaData(Collections.emptyMap()), new ShardingSphereRuleMetaData(Collections.singletonList(
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singletonList(
                         new GlobalClockRule(new DefaultGlobalClockRuleConfigurationBuilder().build(), Collections.emptyMap()))),
                 new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -145,8 +145,8 @@ class ExportMetaDataExecutorTest {
     
     private ContextManager mockContextManager() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(Collections.singletonMap(database.getName(), database),
-                new ShardingSphereResourceMetaData(Collections.emptyMap()),
-                new ShardingSphereRuleMetaData(Arrays.asList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build(), Collections.emptyMap()),
+                new ResourceMetaData(Collections.emptyMap()),
+                new RuleMetaData(Arrays.asList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build(), Collections.emptyMap()),
                         new GlobalClockRule(new DefaultGlobalClockRuleConfigurationBuilder().build(), Collections.singletonMap(database.getName(), database)))),
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true")))));
         InstanceContext instanceContext = new InstanceContext(

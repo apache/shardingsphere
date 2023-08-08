@@ -89,7 +89,7 @@ public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRules
     }
     
     @Override
-    public String getType() {
-        return ShowShadowRulesStatement.class.getName();
+    public Class<ShowShadowRulesStatement> getType() {
+        return ShowShadowRulesStatement.class;
     }
 }

@@ -49,7 +49,7 @@ public final class ShowSQLTranslatorRuleExecutor implements MetaDataRequiredQuer
     }
     
     @Override
-    public String getType() {
-        return ShowSQLTranslatorRuleStatement.class.getName();
+    public Class<ShowSQLTranslatorRuleStatement> getType() {
+        return ShowSQLTranslatorRuleStatement.class;
     }
 }

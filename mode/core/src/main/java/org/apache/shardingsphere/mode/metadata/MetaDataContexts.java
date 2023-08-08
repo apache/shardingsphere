@@ -61,11 +61,10 @@ public final class MetaDataContexts implements AutoCloseable {
         if (null == protocolType) {
             return new ShardingSphereStatistics();
         }
-        // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
-        Optional<ShardingSphereStatisticsBuilder> statisticsBuilder = DatabaseTypedSPILoader.findService(ShardingSphereStatisticsBuilder.class, dialectDatabaseMetaData.getDefaultSchema().isPresent()
-                ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")
-                : protocolType);
+        // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
+        DatabaseType databaseType = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL") : protocolType;
+        Optional<ShardingSphereStatisticsBuilder> statisticsBuilder = DatabaseTypedSPILoader.findService(ShardingSphereStatisticsBuilder.class, databaseType);
         if (!statisticsBuilder.isPresent()) {
             return new ShardingSphereStatistics();
         }

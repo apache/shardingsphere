@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
@@ -111,7 +111,7 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
         if (requiredDataSources.isEmpty()) {
             return;
         }
-        ShardingSphereResourceMetaData resourceMetaData = database.getResourceMetaData();
+        ResourceMetaData resourceMetaData = database.getResourceMetaData();
         Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(resourceMetaData.getDataSources(), database.getRuleMetaData().getRules());
         Map<String, Map<String, Collection<String>>> actualTableNodes = new LinkedHashMap<>();
         for (String each : requiredDataSources) {
@@ -155,7 +155,7 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
     }
     
     @Override
-    public String getType() {
-        return LoadSingleTableStatement.class.getName();
+    public Class<LoadSingleTableStatement> getType() {
+        return LoadSingleTableStatement.class;
     }
 }

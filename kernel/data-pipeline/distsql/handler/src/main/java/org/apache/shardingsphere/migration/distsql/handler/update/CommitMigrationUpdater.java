@@ -37,7 +37,7 @@ public final class CommitMigrationUpdater implements RALUpdater<CommitMigrationS
     }
     
     @Override
-    public String getType() {
-        return CommitMigrationStatement.class.getName();
+    public Class<CommitMigrationStatement> getType() {
+        return CommitMigrationStatement.class;
     }
 }

@@ -70,7 +70,7 @@ public final class ShowMaskRuleExecutor implements RQLExecutor<ShowMaskRulesStat
     }
     
     @Override
-    public String getType() {
-        return ShowMaskRulesStatement.class.getName();
+    public Class<ShowMaskRulesStatement> getType() {
+        return ShowMaskRulesStatement.class;
     }
 }

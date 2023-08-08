@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mask.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 import org.apache.shardingsphere.mask.distsql.parser.statement.CountMaskRuleStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
@@ -61,7 +61,7 @@ class CountMaskRuleExecutorTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("mask_db");
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mockMaskRule()));
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(mockMaskRule()));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;
     }

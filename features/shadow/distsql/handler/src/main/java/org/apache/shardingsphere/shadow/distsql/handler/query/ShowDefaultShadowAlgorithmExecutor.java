@@ -69,7 +69,7 @@ public final class ShowDefaultShadowAlgorithmExecutor implements RQLExecutor<Sho
     }
     
     @Override
-    public String getType() {
-        return ShowDefaultShadowAlgorithmStatement.class.getName();
+    public Class<ShowDefaultShadowAlgorithmStatement> getType() {
+        return ShowDefaultShadowAlgorithmStatement.class;
     }
 }
