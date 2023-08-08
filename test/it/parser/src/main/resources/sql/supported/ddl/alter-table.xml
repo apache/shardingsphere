@@ -158,5 +158,11 @@
     <sql-case id="alter_table_drop_expression" value="ALTER TABLE t_order ALTER COLUMN a DROP EXPRESSION;" db-types="PostgreSQL" />
     <sql-case id="alter_table_modify_column_precision_with_decimal" value="ALTER TABLE t_order MODIFY COLUMN a VARCHAR(10.000000000001)" db-types="MySQL" />
     <sql-case id="alter_table_order_by" value="ALTER TABLE t_order ORDER BY t_order.id, t_order.status desc" db-types="MySQL" />
-    <sql-case id="alter_table_add_supplemental_log_group" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG GROUP emp_fulltime (EMPLOYEE_ID, LAST_NAME, DEPARTMENT_ID)" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_group1" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG GROUP emp_fulltime (EMPLOYEE_ID, LAST_NAME, DEPARTMENT_ID)" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_group2" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG GROUP emp_parttime (EMPLOYEE_ID, LAST_NAME, DEPARTMENT_ID) ALWAYS" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_group3" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG GROUP emp_parttime(DEPARTMENT_ID NO LOG, EMPLOYEE_ID)" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_data1" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG DATA (PRIMARY KEY) COLUMNS" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_data2" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG DATA (UNIQUE) COLUMNS" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_data3" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS" db-types="Oracle" />
+    <sql-case id="alter_table_move" value="ALTER TABLE admin_docindex MOVE" db-types="Oracle" />
 </sql-cases>

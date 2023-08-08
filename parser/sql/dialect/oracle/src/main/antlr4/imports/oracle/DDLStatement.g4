@@ -392,6 +392,7 @@ tableAlias
 alterDefinitionClause
     : (alterTableProperties
     | columnClauses
+    | moveTableClause
     | constraintClauses
     | alterTablePartitioning ((DEFERRED| IMMEDIATE) INVALIDATION)?
     | alterExternalTable)?
@@ -484,6 +485,11 @@ checkpointNumber
 
 renameColumnClause
     : RENAME COLUMN columnName TO columnName
+    ;
+
+moveTableClause
+    : MOVE filterCondition? ONLINE? segmentAttributesClause? tableCompression? indexOrgTableClause? ((lobStorageClause | varrayColProperties)+)? parallelClause? allowDisallowClustering?
+    ( UPDATE INDEXES (LP_ indexName (segmentAttributesClause | updateIndexPartition) RP_ (COMMA_ indexName (segmentAttributesClause | updateIndexPartition))*)?)?
     ;
 
 constraintClauses
