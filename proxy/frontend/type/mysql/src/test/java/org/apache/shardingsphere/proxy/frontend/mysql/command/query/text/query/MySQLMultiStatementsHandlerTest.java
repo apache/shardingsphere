@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
@@ -106,8 +106,8 @@ class MySQLMultiStatementsHandlerTest {
                 .thenReturn(Collections.singletonMap("foo_ds", TypedSPILoader.getService(DatabaseType.class, "FIXTURE")));
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData())
-                .thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(
+                .thenReturn(new RuleMetaData(Collections.emptyList()));
+        RuleMetaData globalRuleMetaData = new RuleMetaData(
                 Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
                         new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);

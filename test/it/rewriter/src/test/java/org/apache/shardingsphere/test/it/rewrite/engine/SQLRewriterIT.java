@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
@@ -126,11 +126,11 @@ public abstract class SQLRewriterIT {
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(testParams.getInputSQL(), false);
         Collection<ShardingSphereRule> databaseRules = createDatabaseRules(databaseConfig, schemaName, sqlStatement);
-        ShardingSphereRuleMetaData databaseRuleMetaData = new ShardingSphereRuleMetaData(databaseRules);
+        RuleMetaData databaseRuleMetaData = new RuleMetaData(databaseRules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resourceMetaData, databaseRuleMetaData, mockSchemas(schemaName));
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1F);
         databases.put(schemaName, database);
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(createGlobalRules());
+        RuleMetaData globalRuleMetaData = new RuleMetaData(createGlobalRules());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), globalRuleMetaData, mock(ConfigurationProperties.class));
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, schemaName).bind(sqlStatement, Collections.emptyList());
         if (sqlStatementContext instanceof ParameterAware) {

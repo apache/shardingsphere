@@ -25,7 +25,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.MaskRule;
@@ -91,7 +91,7 @@ class ShowRulesUsedStorageUnitExecutorTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(
+        RuleMetaData ruleMetaData = new RuleMetaData(
                 Arrays.asList(mockShardingRule(), mockReadwriteSplittingRule(), mockEncryptRule(), mockShadowRule(), mockMaskRule()));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
@@ -153,7 +153,7 @@ class ShowRulesUsedStorageUnitExecutorTest {
     
     private ShardingSphereDatabase mockEmptyDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", Collections.singletonMap("empty_ds", new MockedDataSource()));
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         return result;

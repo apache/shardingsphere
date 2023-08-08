@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.enums.Quo
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -265,7 +265,7 @@ class SelectStatementContextTest {
     
     private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockDatabase()), mock(ResourceMetaData.class),
-                mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         return new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
@@ -492,7 +492,7 @@ class SelectStatementContextTest {
         projectionsSegment.getProjections().add(projectionSegment);
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockDatabase()), mock(ResourceMetaData.class),
-                mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         assertTrue(new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME).isContainsSubquery());
     }
     
@@ -526,7 +526,7 @@ class SelectStatementContextTest {
         projectionsSegment.getProjections().add(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR));
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockDatabase()), mock(ResourceMetaData.class),
-                mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         SelectStatementContext selectStatementContext = new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertTrue(selectStatementContext.isContainsDollarParameterMarker());
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -568,14 +568,14 @@ class SelectStatementContextTest {
         projectionsSegment.getProjections().add(new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, "COUNT(1)", "distinctExpression"));
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockDatabase()), mock(ResourceMetaData.class),
-                mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         SelectStatementContext selectStatementContext = new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertTrue(selectStatementContext.isContainsPartialDistinctAggregation());
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
         return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ResourceMetaData.class),
-                mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     private OrderByItemSegment createOrderByItemSegment(final String type) {
@@ -622,7 +622,7 @@ class SelectStatementContextTest {
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockDatabase()), mock(ResourceMetaData.class),
-                mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         SelectStatementContext actual = new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertTrue(actual.isContainsEnhancedTable());
     }

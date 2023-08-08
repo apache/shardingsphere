@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -88,7 +88,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
         when(database.getName()).thenReturn("schema");
         ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", createDataSource());
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new MockDataSourceContainedRule())));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new MockDataSourceContainedRule())));
     }
     
     @Test

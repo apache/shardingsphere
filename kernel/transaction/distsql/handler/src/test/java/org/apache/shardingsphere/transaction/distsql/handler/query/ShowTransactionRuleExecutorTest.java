@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -46,7 +46,7 @@ class ShowTransactionRuleExecutorTest {
     @Test
     void assertExecuteWithXA() {
         ShowTransactionRuleExecutor executor = new ShowTransactionRuleExecutor();
-        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData(TransactionType.XA.name(), "Atomikos",
+        RuleMetaData ruleMetaData = mockGlobalRuleMetaData(TransactionType.XA.name(), "Atomikos",
                 PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts")));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class), ruleMetaData, new ConfigurationProperties(new Properties()));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowTransactionRuleStatement.class));
@@ -63,7 +63,7 @@ class ShowTransactionRuleExecutorTest {
     @Test
     void assertExecuteWithLocal() {
         ShowTransactionRuleExecutor executor = new ShowTransactionRuleExecutor();
-        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData(TransactionType.LOCAL.name(), null, new Properties());
+        RuleMetaData ruleMetaData = mockGlobalRuleMetaData(TransactionType.LOCAL.name(), null, new Properties());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class), ruleMetaData, new ConfigurationProperties(new Properties()));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowTransactionRuleStatement.class));
         assertThat(actual.size(), is(1));
@@ -85,9 +85,9 @@ class ShowTransactionRuleExecutorTest {
         assertThat(iterator.next(), is("props"));
     }
     
-    private ShardingSphereRuleMetaData mockGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
+    private RuleMetaData mockGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
         TransactionRule transactionRule = new TransactionRule(createTransactionRuleConfiguration(defaultType, providerType, props), Collections.emptyMap());
-        return new ShardingSphereRuleMetaData(Collections.singleton(transactionRule));
+        return new RuleMetaData(Collections.singleton(transactionRule));
     }
     
     private TransactionRuleConfiguration createTransactionRuleConfiguration(final String defaultType, final String providerType, final Properties props) {

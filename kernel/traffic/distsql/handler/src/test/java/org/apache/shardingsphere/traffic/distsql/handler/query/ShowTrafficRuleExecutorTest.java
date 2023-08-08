@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -86,7 +86,7 @@ class ShowTrafficRuleExecutorTest {
         TrafficRule trafficRule = mock(TrafficRule.class);
         when(trafficRule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
         return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class),
-                new ShardingSphereRuleMetaData(Collections.singleton(trafficRule)), new ConfigurationProperties(new Properties()));
+                new RuleMetaData(Collections.singleton(trafficRule)), new ConfigurationProperties(new Properties()));
     }
     
     private TrafficRuleConfiguration createTrafficRuleConfiguration() {

@@ -26,9 +26,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ShardingSphereRuleMetaDataTest {
+class RuleMetaDataTest {
     
-    private final ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(new ShardingSphereRuleFixture()));
+    private final RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(new ShardingSphereRuleFixture()));
     
     @Test
     void assertFindRules() {

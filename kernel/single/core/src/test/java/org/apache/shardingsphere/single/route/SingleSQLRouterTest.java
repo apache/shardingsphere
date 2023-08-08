@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -72,7 +72,7 @@ class SingleSQLRouterTest {
         rule.getSingleTableDataNodes().put("t_order", Collections.singletonList(createDataNode("foo_ds")));
         ShardingSphereDatabase database = mockSingleDatabase();
         RouteContext actual = new SingleSQLRouter().createRouteContext(createQueryContext(),
-                mock(ShardingSphereRuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
+                mock(RuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("foo_ds"));
@@ -93,7 +93,7 @@ class SingleSQLRouterTest {
         rule.getSingleTableDataNodes().put("t_order", Collections.singletonList(createDataNode("write_ds")));
         ShardingSphereDatabase database = mockReadwriteSplittingDatabase();
         RouteContext actual = new SingleSQLRouter().createRouteContext(createQueryContext(),
-                mock(ShardingSphereRuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
+                mock(RuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("readwrite_ds"));
@@ -113,7 +113,7 @@ class SingleSQLRouterTest {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createMultiDataSourceMap(), Collections.emptyList());
         ShardingSphereDatabase database = mockDatabaseWithMultipleResources();
         RouteContext actual = new SingleSQLRouter().createRouteContext(createQueryContext(),
-                mock(ShardingSphereRuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
+                mock(RuleMetaData.class), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
         List<RouteUnit> routeUnits = new ArrayList<>(actual.getRouteUnits());
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is(routeUnits.get(0).getDataSourceMapper().getActualName()));
@@ -179,7 +179,7 @@ class SingleSQLRouterTest {
         routeContext.getRouteUnits().add(writeRouteUnit);
         SingleSQLRouter sqlRouter = (SingleSQLRouter) OrderedSPILoader.getServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS),
-                new ShardingSphereRuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
+                new RuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
         sqlRouter.decorateRouteContext(routeContext, createQueryContext(), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
         Iterator<String> routedDataSourceNames = routeContext.getActualDataSourceNames().iterator();
         assertThat(routedDataSourceNames.next(), is("write_ds"));

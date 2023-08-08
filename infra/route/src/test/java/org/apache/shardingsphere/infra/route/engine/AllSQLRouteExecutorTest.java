@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.route.engine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.impl.AllSQLRouteExecutor;
@@ -44,7 +44,7 @@ class AllSQLRouteExecutorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getDataSources().keySet()).thenReturn(Stream.of(name).collect(Collectors.toSet()));
         AllSQLRouteExecutor allSQLRouteExecutor = new AllSQLRouteExecutor();
-        RouteContext actual = allSQLRouteExecutor.route(new ConnectionContext(), mock(QueryContext.class), mock(ShardingSphereRuleMetaData.class), database);
+        RouteContext actual = allSQLRouteExecutor.route(new ConnectionContext(), mock(QueryContext.class), mock(RuleMetaData.class), database);
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is(name));

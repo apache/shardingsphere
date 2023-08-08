@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.statement.CountEncryptRu
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
 import org.junit.jupiter.api.Test;
 
@@ -61,7 +61,7 @@ class CountEncryptRuleExecutorTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("db_1");
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mockEncryptRule()));
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(mockEncryptRule()));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;
     }

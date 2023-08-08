@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.statement.queryable.ShowSQLFederationRuleStatement;
@@ -67,6 +67,6 @@ class ShowSQLFederationRuleExecutorTest {
         SQLFederationRule sqlFederationRule = mock(SQLFederationRule.class);
         when(sqlFederationRule.getConfiguration()).thenReturn(new SQLFederationRuleConfiguration(true, new CacheOption(2000, 65535L)));
         return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class),
-                new ShardingSphereRuleMetaData(Collections.singleton(sqlFederationRule)), new ConfigurationProperties(new Properties()));
+                new RuleMetaData(Collections.singleton(sqlFederationRule)), new ConfigurationProperties(new Properties()));
     }
 }

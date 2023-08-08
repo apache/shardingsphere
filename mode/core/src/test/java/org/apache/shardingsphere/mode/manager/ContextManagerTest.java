@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -98,7 +98,7 @@ class ContextManagerTest {
         when(result.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", TypedSPILoader.getService(DatabaseType.class, "FIXTURE")));
         MutableDataNodeRule mutableDataNodeRule = mock(MutableDataNodeRule.class, RETURNS_DEEP_STUBS);
         when(mutableDataNodeRule.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(mock(DataNode.class)));
-        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mutableDataNodeRule)));
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mutableDataNodeRule)));
         when(result.getSchemas()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", new ShardingSphereSchema())));
         return result;
     }
@@ -107,7 +107,7 @@ class ContextManagerTest {
     void assertGetDataSourceMap() {
         ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
         ShardingSphereDatabase database =
-                new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+                new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), resourceMetaData, mock(RuleMetaData.class), Collections.emptyMap());
         when(metaDataContexts.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(database);
         assertThat(contextManager.getDataSourceMap(DefaultDatabase.LOGIC_NAME).size(), is(1));
     }
@@ -217,9 +217,9 @@ class ContextManagerTest {
         when(resourceMetaData.getStorageNodeMetaData().getDataSources()).thenReturn(dataSources);
         when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(StorageUtils.getStorageUnits(dataSources));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
-                TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+                TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), resourceMetaData, mock(RuleMetaData.class), Collections.emptyMap());
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(metaDataContexts.getPersistService()).thenReturn(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS));
         contextManager.getConfigurationContextManager().alterRuleConfiguration("foo_db", Collections.singleton(new FixtureDistributedRuleConfiguration()));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getConfigurations().size(), is(1));
@@ -230,7 +230,7 @@ class ContextManagerTest {
         ShardingSphereDatabase originalDatabaseMetaData = new ShardingSphereDatabase(
                 "foo_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), createOriginalResource(), createOriginalRuleMetaData(), Collections.emptyMap());
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(originalDatabaseMetaData);
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         contextManager.getConfigurationContextManager().alterDataSourceUnitsConfiguration("foo_db",
                 Collections.singletonMap("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("test", "test"))));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources().size(), is(3));
@@ -249,8 +249,8 @@ class ContextManagerTest {
         return result;
     }
     
-    private ShardingSphereRuleMetaData createOriginalRuleMetaData() {
-        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
+    private RuleMetaData createOriginalRuleMetaData() {
+        RuleMetaData result = mock(RuleMetaData.class);
         when(result.getConfigurations()).thenReturn(Collections.singleton(mock(RuleConfiguration.class)));
         return result;
     }

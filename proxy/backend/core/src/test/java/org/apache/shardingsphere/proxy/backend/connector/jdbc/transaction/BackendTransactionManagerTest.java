@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -186,16 +186,16 @@ class BackendTransactionManagerTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereRuleMetaData globalRuleMetaData = mockGlobalRuleMetaData();
+        RuleMetaData globalRuleMetaData = mockGlobalRuleMetaData();
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         return result;
     }
     
-    private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
+    private RuleMetaData mockGlobalRuleMetaData() {
         ShardingSphereTransactionManagerEngine transactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
         when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingSphereTransactionManager);
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getResource()).thenReturn(transactionManagerEngine);
-        return new ShardingSphereRuleMetaData(Collections.singleton(transactionRule));
+        return new RuleMetaData(Collections.singleton(transactionRule));
     }
 }

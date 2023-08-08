@@ -20,7 +20,7 @@ package org.apache.shardingsphere.logging.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
@@ -41,7 +41,7 @@ public final class LoggingUtils {
      * @param globalRuleMetaData ShardingSphere global rule metaData
      * @return ShardingSphere-SQL logger
      */
-    public static Optional<ShardingSphereLogger> getSQLLogger(final ShardingSphereRuleMetaData globalRuleMetaData) {
+    public static Optional<ShardingSphereLogger> getSQLLogger(final RuleMetaData globalRuleMetaData) {
         return globalRuleMetaData.findSingleRule(LoggingRule.class).isPresent() ? getSQLLogger(globalRuleMetaData.getSingleRule(LoggingRule.class).getConfiguration()) : Optional.empty();
     }
     
