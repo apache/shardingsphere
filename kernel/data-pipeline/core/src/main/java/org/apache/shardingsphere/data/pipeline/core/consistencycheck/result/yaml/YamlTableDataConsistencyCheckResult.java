@@ -22,24 +22,24 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Yaml data consistency check result config.
+ * Yaml table data consistency check result config.
  */
 @Getter
 @Setter
-public final class YamlDataConsistencyCheckResult implements YamlConfiguration {
+public final class YamlTableDataConsistencyCheckResult implements YamlConfiguration {
     
-    private YamlDataConsistencyCountCheckResult countCheckResult;
+    private YamlTableDataConsistencyCountCheckResult countCheckResult;
     
-    private YamlDataConsistencyContentCheckResult contentCheckResult;
+    private YamlTableDataConsistencyContentCheckResult contentCheckResult;
     
     private String ignoredType;
     
     /**
-     * YAML data consistency count result.
+     * YAML table data consistency count result.
      */
     @Getter
     @Setter
-    public static class YamlDataConsistencyCountCheckResult implements YamlConfiguration {
+    public static class YamlTableDataConsistencyCountCheckResult implements YamlConfiguration {
         
         private long sourceRecordsCount;
         
@@ -49,11 +49,11 @@ public final class YamlDataConsistencyCheckResult implements YamlConfiguration {
     }
     
     /**
-     * YAML data consistency content result.
+     * YAML table data consistency content result.
      */
     @Getter
     @Setter
-    public static class YamlDataConsistencyContentCheckResult implements YamlConfiguration {
+    public static class YamlTableDataConsistencyContentCheckResult implements YamlConfiguration {
         
         private boolean matched;
     }

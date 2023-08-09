@@ -66,7 +66,7 @@ class ExportDatabaseConfigurationExecutorTest {
     @Test
     void assertExecute() {
         when(database.getName()).thenReturn("normal_db");
-        when(database.getResourceMetaData().getDataSourcePropsMap()).thenReturn(DataSourcePropertiesCreator.create(createDataSourceMap()));
+        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap()).thenReturn(DataSourcePropertiesCreator.create(createDataSourceMap()));
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         Collection<LocalDataQueryResultRow> actual = new ExportDatabaseConfigurationExecutor().getRows(database, new ExportDatabaseConfigurationStatement(mock(DatabaseSegment.class), null));
         assertThat(actual.size(), is(1));
@@ -77,7 +77,7 @@ class ExportDatabaseConfigurationExecutorTest {
     @Test
     void assertExecuteWithEmptyDatabase() {
         when(database.getName()).thenReturn("empty_db");
-        when(database.getResourceMetaData().getDataSourcePropsMap()).thenReturn(Collections.emptyMap());
+        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap()).thenReturn(Collections.emptyMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ExportDatabaseConfigurationStatement sqlStatement = new ExportDatabaseConfigurationStatement(new DatabaseSegment(0, 0, new IdentifierValue("empty_db")), null);
         Collection<LocalDataQueryResultRow> actual = new ExportDatabaseConfigurationExecutor().getRows(database, sqlStatement);

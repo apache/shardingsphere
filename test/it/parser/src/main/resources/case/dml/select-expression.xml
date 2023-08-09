@@ -2709,7 +2709,25 @@
     
     <select sql-case-id="select_collect_expression">
         <projections start-index="7" stop-index="92">
-            <expression-projection start-index="7" stop-index="92" text="CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t)" alias="Warehouses" />
+            <expression-projection text="CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t)" alias="Warehouses" start-index="7" stop-index="92" literal-start-index="7" literal-stop-index="92">
+                <literalText>CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t)</literalText>
+                <expr>
+                    <function function-name="CAST" text="CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t)" start-index="7" stop-index="79" literal-start-index="7" literal-stop-index="79">
+                        <parameter>
+                            <function function-name="COLLECT" text="COLLECT(warehouse_name ORDER BY warehouse_name)" start-index="12" stop-index="58" literal-start-index="12" literal-stop-index="58">
+                                <parameter>
+                                    <column name="warehouse_name" start-index="20" stop-index="33" literal-start-index="20" literal-stop-index="33" />
+                                </parameter>
+                                <literalText>COLLECT(warehouse_name ORDER BY warehouse_name)</literalText>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <data-type value="warehouse_name_t" start-index="63" stop-index="78" />
+                        </parameter>
+                        <literalText>CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table start-index="99" stop-index="108" name="warehouses" />
@@ -2768,5 +2786,40 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+    
+    <select sql-case-id="select_prediction_set_function">
+        <projections start-index="7" stop-index="63">
+            <expression-projection start-index="7" stop-index="63" text="PREDICTION_SET(dt_sh_clas_sample COST MODEL USING *)" alias="pset">
+                <function function-name="PREDICTION_SET" start-index="7" stop-index="63" text="PREDICTION_SET(dt_sh_clas_sample COST MODEL USING *)" alias="pset" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table start-index="70" stop-index="88" name="mining_data_apply_v" />
+        </from>
+        <where start-index="90" stop-index="111">
+            <expr>
+                <binary-operation-expression start-index="96" stop-index="111">
+                    <left>
+                        <column name="cust_id" start-index="96" stop-index="102" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="100011" start-index="106" stop-index="111" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_cursor_function">
+        <projections start-index="7" stop-index="100">
+            <expression-projection start-index="7" stop-index="100" text="CURSOR(SELECTsalary,commission_pctFROMemployeeseWHEREe.department_id=d.department_id)">
+                <function function-name="CURSOR" start-index="7" stop-index="100" text="CURSOR(SELECT salary, commission_pct FROM employees e WHERE e.department_id = d.department_id)" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="departments" alias="d" start-index="107" stop-index="119" />
+        </from>
     </select>
 </sql-parser-test-cases>

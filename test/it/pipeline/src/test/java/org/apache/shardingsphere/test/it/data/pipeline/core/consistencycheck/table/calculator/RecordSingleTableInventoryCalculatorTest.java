@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.consistencycheck.algorithm;
+package org.apache.shardingsphere.test.it.data.pipeline.core.consistencycheck.table.calculator;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordSingleTableInventoryCalculator;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculateParameter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -37,13 +36,14 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DataMatchDataConsistencyCalculateAlgorithmTest {
+class RecordSingleTableInventoryCalculatorTest {
     
     private static PipelineDataSourceWrapper source;
     
@@ -51,9 +51,9 @@ class DataMatchDataConsistencyCalculateAlgorithmTest {
     
     @BeforeAll
     static void setUp() throws Exception {
-        source = new PipelineDataSourceWrapper(createHikariDataSource("source_ds"), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        source = new PipelineDataSourceWrapper(createHikariDataSource("source_ds"), TypedSPILoader.getService(DatabaseType.class, "H2"));
         createTableAndInitData(source, "t_order_copy");
-        target = new PipelineDataSourceWrapper(createHikariDataSource("target_ds"), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        target = new PipelineDataSourceWrapper(createHikariDataSource("target_ds"), TypedSPILoader.getService(DatabaseType.class, "H2"));
         createTableAndInitData(target, "t_order");
     }
     
@@ -91,12 +91,12 @@ class DataMatchDataConsistencyCalculateAlgorithmTest {
     
     @Test
     void assertCalculateFromBegin() throws ReflectiveOperationException {
-        DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
-        Plugins.getMemberAccessor().set(DataMatchDataConsistencyCalculateAlgorithm.class.getDeclaredField("chunkSize"), calculateAlgorithm, 5);
-        DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 0);
-        Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParam);
-        DataConsistencyCalculateParameter targetParam = generateParameter(target, "t_order", 0);
-        Optional<DataConsistencyCalculatedResult> targetCalculateResult = calculateAlgorithm.calculateChunk(targetParam);
+        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(1000);
+        Plugins.getMemberAccessor().set(RecordSingleTableInventoryCalculator.class.getDeclaredField("chunkSize"), calculator, 5);
+        SingleTableInventoryCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 0);
+        Optional<SingleTableInventoryCalculatedResult> sourceCalculateResult = calculator.calculateChunk(sourceParam);
+        SingleTableInventoryCalculateParameter targetParam = generateParameter(target, "t_order", 0);
+        Optional<SingleTableInventoryCalculatedResult> targetCalculateResult = calculator.calculateChunk(targetParam);
         assertTrue(sourceCalculateResult.isPresent());
         assertTrue(targetCalculateResult.isPresent());
         assertTrue(sourceCalculateResult.get().getMaxUniqueKeyValue().isPresent());
@@ -108,12 +108,12 @@ class DataMatchDataConsistencyCalculateAlgorithmTest {
     
     @Test
     void assertCalculateFromMiddle() throws ReflectiveOperationException {
-        DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
-        Plugins.getMemberAccessor().set(DataMatchDataConsistencyCalculateAlgorithm.class.getDeclaredField("chunkSize"), calculateAlgorithm, 5);
-        DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 5);
-        Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParam);
-        DataConsistencyCalculateParameter targetParam = generateParameter(target, "t_order", 5);
-        Optional<DataConsistencyCalculatedResult> targetCalculateResult = calculateAlgorithm.calculateChunk(targetParam);
+        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(1000);
+        Plugins.getMemberAccessor().set(RecordSingleTableInventoryCalculator.class.getDeclaredField("chunkSize"), calculator, 5);
+        SingleTableInventoryCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 5);
+        Optional<SingleTableInventoryCalculatedResult> sourceCalculateResult = calculator.calculateChunk(sourceParam);
+        SingleTableInventoryCalculateParameter targetParam = generateParameter(target, "t_order", 5);
+        Optional<SingleTableInventoryCalculatedResult> targetCalculateResult = calculator.calculateChunk(targetParam);
         assertTrue(sourceCalculateResult.isPresent());
         assertTrue(targetCalculateResult.isPresent());
         assertTrue(sourceCalculateResult.get().getMaxUniqueKeyValue().isPresent());
@@ -123,26 +123,8 @@ class DataMatchDataConsistencyCalculateAlgorithmTest {
         assertThat(sourceCalculateResult.get(), is(targetCalculateResult.get()));
     }
     
-    @Test
-    void assertInitWithWrongProps() {
-        DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
-        calculateAlgorithm.init(PropertiesBuilder.build(new Property("chunk-size", "wrong")));
-        DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 0);
-        Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParam);
-        DataConsistencyCalculateParameter targetParam = generateParameter(target, "t_order", 0);
-        Optional<DataConsistencyCalculatedResult> targetCalculateResult = calculateAlgorithm.calculateChunk(targetParam);
-        assertTrue(sourceCalculateResult.isPresent());
-        assertTrue(targetCalculateResult.isPresent());
-        assertTrue(sourceCalculateResult.get().getMaxUniqueKeyValue().isPresent());
-        assertTrue(targetCalculateResult.get().getMaxUniqueKeyValue().isPresent());
-        assertThat(sourceCalculateResult.get().getMaxUniqueKeyValue().get(), is(targetCalculateResult.get().getMaxUniqueKeyValue().get()));
-        assertThat(targetCalculateResult.get().getMaxUniqueKeyValue().get(), is(10L));
-        assertThat(sourceCalculateResult.get(), is(targetCalculateResult.get()));
-    }
-    
-    private DataConsistencyCalculateParameter generateParameter(final PipelineDataSourceWrapper dataSource, final String logicTableName, final Object dataCheckPosition) {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
-        PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "integer", false, true, true);
-        return new DataConsistencyCalculateParameter(dataSource, null, logicTableName, Collections.emptyList(), databaseType, uniqueKey, dataCheckPosition);
+    private SingleTableInventoryCalculateParameter generateParameter(final PipelineDataSourceWrapper dataSource, final String logicTableName, final Object dataCheckPosition) {
+        List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "integer", false, true, true));
+        return new SingleTableInventoryCalculateParameter(dataSource, new SchemaTableName(null, logicTableName), Collections.emptyList(), uniqueKeys, dataCheckPosition);
     }
 }

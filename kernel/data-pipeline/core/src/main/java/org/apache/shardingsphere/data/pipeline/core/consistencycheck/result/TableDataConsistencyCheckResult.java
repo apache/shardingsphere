@@ -21,25 +21,25 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * Data consistency check result.
+ * Table data consistency check result.
  */
 @Getter
 @ToString
-public final class DataConsistencyCheckResult {
+public final class TableDataConsistencyCheckResult {
     
-    private final DataConsistencyCheckIgnoredType ignoredType;
+    private final TableDataConsistencyCheckIgnoredType ignoredType;
     
-    private final DataConsistencyCountCheckResult countCheckResult;
+    private final TableDataConsistencyCountCheckResult countCheckResult;
     
-    private final DataConsistencyContentCheckResult contentCheckResult;
+    private final TableDataConsistencyContentCheckResult contentCheckResult;
     
-    public DataConsistencyCheckResult(final DataConsistencyCountCheckResult countCheckResult, final DataConsistencyContentCheckResult contentCheckResult) {
+    public TableDataConsistencyCheckResult(final TableDataConsistencyCountCheckResult countCheckResult, final TableDataConsistencyContentCheckResult contentCheckResult) {
         ignoredType = null;
         this.countCheckResult = countCheckResult;
         this.contentCheckResult = contentCheckResult;
     }
     
-    public DataConsistencyCheckResult(final DataConsistencyCheckIgnoredType ignoredType) {
+    public TableDataConsistencyCheckResult(final TableDataConsistencyCheckIgnoredType ignoredType) {
         this.ignoredType = ignoredType;
         countCheckResult = null;
         contentCheckResult = null;

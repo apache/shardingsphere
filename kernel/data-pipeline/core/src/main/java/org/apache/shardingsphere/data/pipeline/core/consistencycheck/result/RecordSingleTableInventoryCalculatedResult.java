@@ -19,33 +19,32 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.result;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCheckUtils;
 
-import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Data match calculated result.
+ * Record single table inventory calculated result.
  */
 @Getter
 @Slf4j
-public final class DataMatchCalculatedResult implements DataConsistencyCalculatedResult {
+public final class RecordSingleTableInventoryCalculatedResult implements SingleTableInventoryCalculatedResult {
     
     private final Object maxUniqueKeyValue;
     
     private final int recordsCount;
     
     @Getter(AccessLevel.NONE)
-    private final Collection<Collection<Object>> records;
+    private final List<Map<String, Object>> records;
     
-    public DataMatchCalculatedResult(final Object maxUniqueKeyValue, final Collection<Collection<Object>> records) {
+    public RecordSingleTableInventoryCalculatedResult(final Object maxUniqueKeyValue, final List<Map<String, Object>> records) {
         this.maxUniqueKeyValue = maxUniqueKeyValue;
         recordsCount = records.size();
         this.records = records;
@@ -56,7 +55,6 @@ public final class DataMatchCalculatedResult implements DataConsistencyCalculate
         return Optional.of(maxUniqueKeyValue);
     }
     
-    @SneakyThrows(SQLException.class)
     @Override
     public boolean equals(final Object o) {
         if (null == o) {
@@ -65,23 +63,23 @@ public final class DataMatchCalculatedResult implements DataConsistencyCalculate
         if (this == o) {
             return true;
         }
-        if (!(o instanceof DataMatchCalculatedResult)) {
-            log.warn("DataMatchCalculatedResult type not match, o.className={}.", o.getClass().getName());
+        if (!(o instanceof RecordSingleTableInventoryCalculatedResult)) {
+            log.warn("RecordSingleTableInventoryCalculatedResult type not match, o.className={}.", o.getClass().getName());
             return false;
         }
-        final DataMatchCalculatedResult that = (DataMatchCalculatedResult) o;
+        final RecordSingleTableInventoryCalculatedResult that = (RecordSingleTableInventoryCalculatedResult) o;
         if (recordsCount != that.recordsCount || !Objects.equals(maxUniqueKeyValue, that.maxUniqueKeyValue)) {
             log.warn("Record count or max unique key value not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}.",
                     recordsCount, that.recordsCount, maxUniqueKeyValue, that.maxUniqueKeyValue);
             return false;
         }
         EqualsBuilder equalsBuilder = new EqualsBuilder();
-        Iterator<Collection<Object>> thisRecordsIterator = records.iterator();
-        Iterator<Collection<Object>> thatRecordsIterator = that.records.iterator();
+        Iterator<Map<String, Object>> thisRecordsIterator = records.iterator();
+        Iterator<Map<String, Object>> thatRecordsIterator = that.records.iterator();
         while (thisRecordsIterator.hasNext() && thatRecordsIterator.hasNext()) {
             equalsBuilder.reset();
-            Collection<Object> thisRecord = thisRecordsIterator.next();
-            Collection<Object> thatRecord = thatRecordsIterator.next();
+            Map<String, Object> thisRecord = thisRecordsIterator.next();
+            Map<String, Object> thatRecord = thatRecordsIterator.next();
             if (thisRecord.size() != thatRecord.size()) {
                 log.warn("Record column size not match, size1={}, size2={}, record1={}, record2={}.", thisRecord.size(), thatRecord.size(), thisRecord, thatRecord);
                 return false;

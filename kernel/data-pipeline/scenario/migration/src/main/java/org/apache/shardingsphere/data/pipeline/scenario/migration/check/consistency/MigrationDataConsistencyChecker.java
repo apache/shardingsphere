@@ -19,9 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.check.consist
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.TableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
@@ -38,9 +36,9 @@ import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTa
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.SingleTableInventoryDataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckParameter;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineDatabaseTypeException;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
@@ -76,34 +74,31 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> check(final DataConsistencyCalculateAlgorithm calculateAlgorithm) {
-        verifyPipelineDatabaseType(calculateAlgorithm, jobConfig.getSources().values().iterator().next());
-        verifyPipelineDatabaseType(calculateAlgorithm, jobConfig.getTarget());
+    public Map<String, TableDataConsistencyCheckResult> check(final TableDataConsistencyChecker tableChecker) {
+        verifyPipelineDatabaseType(tableChecker, jobConfig.getSources().values().iterator().next());
+        verifyPipelineDatabaseType(tableChecker, jobConfig.getTarget());
         List<String> sourceTableNames = new LinkedList<>();
         jobConfig.getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes()
                 .forEach(dataNode -> sourceTableNames.add(DataNodeUtils.formatWithSchema(dataNode)))));
         progressContext.setRecordsCount(getRecordsCount());
         progressContext.getTableNames().addAll(sourceTableNames);
         progressContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
-        Map<String, DataConsistencyCheckResult> result = new LinkedHashMap<>();
-        PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
-        try {
+        Map<String, TableDataConsistencyCheckResult> result = new LinkedHashMap<>();
+        try (PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager()) {
             AtomicBoolean checkFailed = new AtomicBoolean(false);
             for (JobDataNodeLine each : jobConfig.getJobShardingDataNodes()) {
-                each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> check(calculateAlgorithm, result, dataSourceManager, checkFailed, each, entry, dataNode)));
+                each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> check(tableChecker, result, dataSourceManager, checkFailed, each, entry, dataNode)));
             }
-        } finally {
-            dataSourceManager.close();
         }
         return result;
     }
     
-    private void check(final DataConsistencyCalculateAlgorithm calculateAlgorithm, final Map<String, DataConsistencyCheckResult> checkResults, final PipelineDataSourceManager dataSourceManager,
+    private void check(final TableDataConsistencyChecker tableChecker, final Map<String, TableDataConsistencyCheckResult> checkResults, final PipelineDataSourceManager dataSourceManager,
                        final AtomicBoolean checkFailed, final JobDataNodeLine jobDataNodeLine, final JobDataNodeEntry entry, final DataNode dataNode) {
         if (checkFailed.get()) {
             return;
         }
-        DataConsistencyCheckResult checkResult = checkSingleTable(entry.getLogicTableName(), dataNode, calculateAlgorithm, dataSourceManager);
+        TableDataConsistencyCheckResult checkResult = checkSingleTable(entry.getLogicTableName(), dataNode, tableChecker, dataSourceManager);
         checkResults.put(DataNodeUtils.formatWithSchema(dataNode), checkResult);
         if (!checkResult.isMatched()) {
             log.info("unmatched on table '{}', ignore left tables", jobDataNodeLine);
@@ -111,26 +106,25 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         }
     }
     
-    private DataConsistencyCheckResult checkSingleTable(final String targetTableName, final DataNode dataNode,
-                                                        final DataConsistencyCalculateAlgorithm calculateAlgorithm, final PipelineDataSourceManager dataSourceManager) {
-        SchemaTableName sourceTable = new SchemaTableName(new SchemaName(dataNode.getSchemaName()), new TableName(dataNode.getTableName()));
-        SchemaTableName targetTable = new SchemaTableName(new SchemaName(dataNode.getSchemaName()), new TableName(targetTableName));
+    private TableDataConsistencyCheckResult checkSingleTable(final String targetTableName, final DataNode dataNode,
+                                                             final TableDataConsistencyChecker tableChecker, final PipelineDataSourceManager dataSourceManager) {
+        SchemaTableName sourceTable = new SchemaTableName(dataNode.getSchemaName(), dataNode.getTableName());
+        SchemaTableName targetTable = new SchemaTableName(dataNode.getSchemaName(), targetTableName);
         PipelineDataSourceWrapper sourceDataSource = dataSourceManager.getDataSource(jobConfig.getSources().get(dataNode.getDataSourceName()));
         PipelineDataSourceWrapper targetDataSource = dataSourceManager.getDataSource(jobConfig.getTarget());
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(dataNode.getSchemaName(), dataNode.getTableName());
         ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(dataNode.getSchemaName(), dataNode.getTableName()));
         List<String> columnNames = tableMetaData.getColumnNames();
-        List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtils.getUniqueKeyColumns(
+        List<PipelineColumnMetaData> uniqueKeys = PipelineTableMetaDataUtils.getUniqueKeyColumns(
                 sourceTable.getSchemaName().getOriginal(), sourceTable.getTableName().getOriginal(), metaDataLoader);
-        PipelineColumnMetaData uniqueKey = uniqueKeyColumns.isEmpty() ? null : uniqueKeyColumns.get(0);
-        SingleTableInventoryDataConsistencyChecker singleTableInventoryChecker = new SingleTableInventoryDataConsistencyChecker(
-                jobConfig.getJobId(), sourceDataSource, targetDataSource, sourceTable, targetTable, columnNames, uniqueKey, readRateLimitAlgorithm, progressContext);
-        return singleTableInventoryChecker.check(calculateAlgorithm);
+        TableDataConsistencyCheckParameter param = new TableDataConsistencyCheckParameter(
+                jobConfig.getJobId(), sourceDataSource, targetDataSource, sourceTable, targetTable, columnNames, uniqueKeys, readRateLimitAlgorithm, progressContext);
+        return tableChecker.checkSingleTableInventoryData(param);
     }
     
-    private void verifyPipelineDatabaseType(final DataConsistencyCalculateAlgorithm calculateAlgorithm, final PipelineDataSourceConfiguration dataSourceConfig) {
-        ShardingSpherePreconditions.checkState(calculateAlgorithm.getSupportedDatabaseTypes().contains(dataSourceConfig.getDatabaseType()),
+    private void verifyPipelineDatabaseType(final TableDataConsistencyChecker tableChecker, final PipelineDataSourceConfiguration dataSourceConfig) {
+        ShardingSpherePreconditions.checkState(tableChecker.getSupportedDatabaseTypes().contains(dataSourceConfig.getDatabaseType()),
                 () -> new UnsupportedPipelineDatabaseTypeException(dataSourceConfig.getDatabaseType()));
     }
     

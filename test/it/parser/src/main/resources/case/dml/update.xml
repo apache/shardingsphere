@@ -1034,8 +1034,18 @@
                             <from start-index="59" stop-index="72">
                                 <simple-table name="people_demo2" alias="q" start-index="59" stop-index="72" />
                             </from>
-                            <projections start-index="45" stop-index="52">
-                                <expression-projection text="VALUE(q)" start-index="45" stop-index="52" />
+                            <projections start-index="45" stop-index="52" literal-start-index="45" literal-stop-index="52">
+                                <expression-projection text="VALUE(q)" start-index="45" stop-index="52" literal-start-index="45" literal-stop-index="52">
+                                    <literalText>VALUE(q)</literalText>
+                                    <expr>
+                                        <function function-name="VALUE" text="VALUE(q)" start-index="45" stop-index="52" literal-start-index="45" literal-stop-index="52">
+                                            <parameter>
+                                                <column name="q" start-index="51" stop-index="51" literal-start-index="51" literal-stop-index="51" />
+                                            </parameter>
+                                            <literalText>VALUE(q)</literalText>
+                                        </function>
+                                    </expr>
+                                </expression-projection>
                             </projections>
                             <where start-index="74" stop-index="112">
                                 <expr>
