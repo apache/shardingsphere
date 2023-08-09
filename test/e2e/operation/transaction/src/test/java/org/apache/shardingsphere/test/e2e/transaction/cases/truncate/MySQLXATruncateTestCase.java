@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.truncate;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;

@@ -58,3 +58,8 @@
 
 **/.helmignore
 **/_helpers.tpl
+
+# test files
+
+**/export-metadata-configuration.data
+

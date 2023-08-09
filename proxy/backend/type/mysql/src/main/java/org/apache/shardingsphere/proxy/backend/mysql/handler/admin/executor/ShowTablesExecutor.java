@@ -19,7 +19,8 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.infra.util.regular.RegularUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -80,7 +81,8 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private QueryResult getQueryResult(final String databaseName) {
-        if (!databaseType.getSystemSchemas().contains(databaseName) && !ProxyContext.getInstance().getDatabase(databaseName).isComplete()) {
+        SystemDatabase systemDatabase = new SystemDatabase(databaseType);
+        if (!systemDatabase.getSystemSchemas().contains(databaseName) && !ProxyContext.getInstance().getDatabase(databaseName).isComplete()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
         List<MemoryQueryResultDataRow> rows = getAllTableNames(databaseName).stream().map(each -> {
@@ -97,10 +99,10 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     private Collection<String> getAllTableNames(final String databaseName) {
         Collection<String> result = ProxyContext.getInstance()
                 .getDatabase(databaseName).getSchema(databaseName).getTables().values().stream().map(ShardingSphereTable::getName).collect(Collectors.toList());
-        if (showTablesStatement.getFilter().isPresent()) {
-            Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(optional -> SQLUtils.convertLikePatternToRegex(optional.getPattern()));
-            return pattern.isPresent() ? result.stream().filter(each -> RegularUtils.matchesCaseInsensitive(pattern.get(), each)).collect(Collectors.toList()) : result;
+        if (!showTablesStatement.getFilter().isPresent()) {
+            return result;
         }
-        return result;
+        Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(optional -> SQLUtils.convertLikePatternToRegex(optional.getPattern()));
+        return pattern.isPresent() ? result.stream().filter(each -> Pattern.compile(pattern.get(), Pattern.CASE_INSENSITIVE).matcher(each).matches()).collect(Collectors.toList()) : result;
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.config.props.temporary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
+import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.infra.datasource.props;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeChecker;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -74,7 +73,7 @@ public final class DataSourcePropertiesValidator {
         DataSource dataSource = null;
         try {
             dataSource = DataSourcePoolCreator.create(dataSourceProps);
-            checkFailFast(dataSourceName, dataSource);
+            checkFailFast(dataSource);
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -86,9 +85,10 @@ public final class DataSourcePropertiesValidator {
         }
     }
     
-    private void checkFailFast(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            DatabaseTypeChecker.checkSupportedStorageType(connection.getMetaData().getURL(), dataSourceName);
+    private void checkFailFast(final DataSource dataSource) throws SQLException {
+        // CHECKSTYLE:OFF
+        try (Connection ignored = dataSource.getConnection()) {
+            // CHECKSTYLE:ON
         }
     }
 }

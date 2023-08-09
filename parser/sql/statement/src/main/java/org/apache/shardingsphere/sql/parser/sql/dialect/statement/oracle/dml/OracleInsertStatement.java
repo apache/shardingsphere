@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
@@ -31,18 +30,7 @@ import java.util.Optional;
 @Setter
 public final class OracleInsertStatement extends InsertStatement implements OracleStatement {
     
-    private SubquerySegment selectSubquery;
-    
     private InsertMultiTableElementSegment insertMultiTableElementSegment;
-    
-    /**
-     * Get insert select segment.
-     *
-     * @return insert select segment
-     */
-    public Optional<SubquerySegment> getSelectSubquery() {
-        return Optional.ofNullable(selectSubquery);
-    }
     
     /**
      * Get insert multi table element segment.

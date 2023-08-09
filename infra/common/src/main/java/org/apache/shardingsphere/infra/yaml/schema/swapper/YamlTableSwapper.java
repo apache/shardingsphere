@@ -66,7 +66,10 @@ public final class YamlTableSwapper implements YamlConfigurationSwapper<YamlShar
     }
     
     private ShardingSphereIndex swapIndex(final YamlShardingSphereIndex index) {
-        return new ShardingSphereIndex(index.getName());
+        ShardingSphereIndex result = new ShardingSphereIndex(index.getName());
+        result.getColumns().addAll(index.getColumns());
+        result.setUnique(index.isUnique());
+        return result;
     }
     
     private Collection<ShardingSphereColumn> swapColumns(final Map<String, YamlShardingSphereColumn> indexes) {
@@ -74,7 +77,8 @@ public final class YamlTableSwapper implements YamlConfigurationSwapper<YamlShar
     }
     
     private ShardingSphereColumn swapColumn(final YamlShardingSphereColumn column) {
-        return new ShardingSphereColumn(column.getName(), column.getDataType(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive(), column.isVisible(), column.isUnsigned());
+        return new ShardingSphereColumn(column.getName(), column.getDataType(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive(), column.isVisible(), column.isUnsigned(),
+                column.isNullable());
     }
     
     private Map<String, YamlShardingSphereConstraint> swapYamlConstraints(final Collection<ShardingSphereConstraint> constrains) {
@@ -95,6 +99,8 @@ public final class YamlTableSwapper implements YamlConfigurationSwapper<YamlShar
     private YamlShardingSphereIndex swapYamlIndex(final ShardingSphereIndex index) {
         YamlShardingSphereIndex result = new YamlShardingSphereIndex();
         result.setName(index.getName());
+        result.getColumns().addAll(index.getColumns());
+        result.setUnique(index.isUnique());
         return result;
     }
     
@@ -111,6 +117,7 @@ public final class YamlTableSwapper implements YamlConfigurationSwapper<YamlShar
         result.setDataType(column.getDataType());
         result.setVisible(column.isVisible());
         result.setUnsigned(column.isUnsigned());
+        result.setNullable(column.isNullable());
         return result;
     }
 }

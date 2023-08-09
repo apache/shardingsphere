@@ -36,7 +36,7 @@ public final class EncryptRuleBuilder implements DatabaseRuleBuilder<EncryptRule
     @Override
     public EncryptRule build(final EncryptRuleConfiguration config, final String databaseName,
                              final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new EncryptRule(config);
+        return new EncryptRule(databaseName, config);
     }
     
     @Override

@@ -315,7 +315,7 @@ createRole
     ;
 
 dropRole
-    : DROP ROLE
+    : DROP ROLE roleName
     ;
 
 alterRole

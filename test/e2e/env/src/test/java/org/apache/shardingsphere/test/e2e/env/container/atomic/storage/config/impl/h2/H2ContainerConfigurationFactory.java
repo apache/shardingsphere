@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.i
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.h2.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.h2.type.H2DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.DuplicateInsertDataRecordException;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
@@ -316,13 +316,13 @@ class ShardingInsertStatementValidatorTest {
     private TablesContext createSingleTablesContext() {
         List<SimpleTableSegment> result = new LinkedList<>();
         result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        return new TablesContext(result, DatabaseTypeFactory.get("MySQL"));
+        return new TablesContext(result, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
     }
     
     private TablesContext createMultiTablesContext() {
         List<SimpleTableSegment> result = new LinkedList<>();
         result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         result.add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
-        return new TablesContext(result, DatabaseTypeFactory.get("MySQL"));
+        return new TablesContext(result, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
     }
 }

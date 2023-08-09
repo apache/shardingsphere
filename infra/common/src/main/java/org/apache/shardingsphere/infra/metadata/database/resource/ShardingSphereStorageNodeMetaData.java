@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -27,14 +27,8 @@ import java.util.Map;
  * ShardingSphere storage node meta data.
  */
 @Getter
+@RequiredArgsConstructor
 public final class ShardingSphereStorageNodeMetaData {
     
     private final Map<String, DataSource> dataSources;
-    
-    private final Map<String, DatabaseType> storageTypes;
-    
-    public ShardingSphereStorageNodeMetaData(final Map<String, DataSource> dataSources, final Map<String, DatabaseType> storageTypes) {
-        this.dataSources = dataSources;
-        this.storageTypes = storageTypes;
-    }
 }

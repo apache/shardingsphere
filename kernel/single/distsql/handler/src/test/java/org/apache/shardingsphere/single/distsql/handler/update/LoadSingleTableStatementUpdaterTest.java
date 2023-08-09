@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.single.distsql.handler.update;
 
-import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.segment.SingleTableSegment;
 import org.apache.shardingsphere.single.distsql.statement.rdl.LoadSingleTableStatement;
@@ -56,7 +57,7 @@ class LoadSingleTableStatementUpdaterTest {
     void setUp() {
         database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.emptyList());
-        when(database.getProtocolType()).thenReturn(mock(MySQLDatabaseType.class));
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         schema = mock(ShardingSphereSchema.class);
         when(database.getSchema("foo_db")).thenReturn(schema);
     }

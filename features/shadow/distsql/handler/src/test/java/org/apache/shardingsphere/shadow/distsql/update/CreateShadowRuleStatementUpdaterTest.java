@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.CreateShadowRuleStatementUpdater;
@@ -125,7 +125,7 @@ class CreateShadowRuleStatementUpdaterTest {
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("type", PropertiesBuilder.build(new Property("type", "value"))));
         CreateShadowRuleStatement sqlStatement = new CreateShadowRuleStatement(false,
                 Collections.singleton(new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment)))));
-        assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, sqlStatement, currentConfig));
+        assertThrows(ServiceProviderNotFoundException.class, () -> updater.checkSQLStatement(database, sqlStatement, currentConfig));
     }
     
     @Test

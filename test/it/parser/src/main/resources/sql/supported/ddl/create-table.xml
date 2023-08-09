@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="create_table_with_column_dec" value="create table test3(id int auto_increment, col1 dec default 0 not null, col2 DEC(6,2) default 0 not null, col3 FLOAT default 0 not null, col4 DECIMAL(8,3) default 0 not null, constraint test3_pk primary key (id))" db-types="MySQL" />
     <sql-case id="create_table_with_backtick_engine_with_string" value="create table `t``1`(a int) engine='Innodb'" db-types="MySQL" />
     <sql-case id="create_table_with_backtick_engine_innodb" value="create table `t``1`(a int) engine=INNODB" db-types="MySQL" />
     <sql-case id="create_table_with_backtick_engine_myisam" value="create table `t``1`(a int) engine=myisam" db-types="MySQL" />
@@ -146,4 +147,5 @@
     <sql-case id="create_table_with_unsigned_int_cast_function" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS UNSIGNED INT ARRAY))))" db-types="MySQL" />
     <sql-case id="create_table_with_unsigned_int" value="CREATE TABLE t_order (order_id INT, user_id INT, status UNSIGNED INT)" db-types="MySQL" />
     <sql-case id="create_table_with_partition_less_than" value="CREATE TABLE t_sales (order_id INTEGER NOT NULL, goods_name CHAR(20) NOT NULL, sales_date DATE NOT NULL, sales_volume INTEGER, sales_store CHAR(20), PRIMARY KEY ( order_id )) PARTITION BY RANGE (sales_date) (PARTITION season1 VALUES LESS THAN('2023-04-01 00:00:00'),PARTITION season2 VALUES LESS THAN('2023-07-01 00:00:00'),PARTITION season3 VALUES LESS THAN('2023-10-01 00:00:00'),PARTITION season4 VALUES LESS THAN(MAXVALUE))" db-types="openGauss"/>
+    <sql-case id="create_table_with_negative_data_type" value="CREATE TABLE T(COL1 NUMBER, COL2 NUMBER(3), COL3 NUMBER(3,2), COL4 NUMBER(6,-2))" db-types="Oracle" />
 </sql-cases>

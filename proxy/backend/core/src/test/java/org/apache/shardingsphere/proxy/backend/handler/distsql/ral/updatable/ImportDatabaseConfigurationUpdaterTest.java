@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
@@ -104,7 +104,7 @@ class ImportDatabaseConfigurationUpdaterTest {
     
     @Test
     void assertImportInvalidAlgorithm() {
-        assertThrows(ServiceProviderNotFoundServerException.class, () -> assertExecute("sharding_db", "/conf/import/config-invalid-algorithm.yaml"));
+        assertThrows(ServiceProviderNotFoundException.class, () -> assertExecute("sharding_db", "/conf/import/config-invalid-algorithm.yaml"));
     }
     
     private void assertExecute(final String databaseName, final String filePath) throws SQLException {

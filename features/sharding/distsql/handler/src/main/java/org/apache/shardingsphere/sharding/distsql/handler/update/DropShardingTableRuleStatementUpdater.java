@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredR
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -127,7 +127,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
         UnusedAlgorithmFinder.find(currentRuleConfig).forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));
         dropUnusedKeyGenerator(currentRuleConfig);
         dropUnusedAuditor(currentRuleConfig);
-        return isEmptyShardingTables(currentRuleConfig) && isEmptyShardingStrategy(currentRuleConfig);
+        return currentRuleConfig.isEmpty();
     }
     
     private void dropShardingTable(final ShardingRuleConfiguration currentRuleConfig, final String tableName) {
@@ -163,14 +163,6 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
             inUsedAuditors.addAll(currentRuleConfig.getDefaultAuditStrategy().getAuditorNames());
         }
         return currentRuleConfig.getAuditors().keySet().stream().filter(each -> !inUsedAuditors.contains(each)).collect(Collectors.toSet());
-    }
-    
-    private boolean isEmptyShardingTables(final ShardingRuleConfiguration currentRuleConfig) {
-        return currentRuleConfig.getTables().isEmpty() && currentRuleConfig.getAutoTables().isEmpty();
-    }
-    
-    private boolean isEmptyShardingStrategy(final ShardingRuleConfiguration currentRuleConfig) {
-        return null == currentRuleConfig.getDefaultDatabaseShardingStrategy() && null == currentRuleConfig.getDefaultTableShardingStrategy();
     }
     
     @Override

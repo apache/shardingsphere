@@ -26,22 +26,23 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.dialect.postgresql.exception.metadata.ColumnNotFoundException;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.postgresql.exception.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -388,12 +389,15 @@ class PostgreSQLComDescribeExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(DATABASE_NAME, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)));
         Collection<ShardingSphereColumn> columnMetaData = Arrays.asList(
-                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false),
-                new ShardingSphereColumn("k", Types.INTEGER, true, false, false, true, false),
-                new ShardingSphereColumn("c", Types.CHAR, true, false, false, true, false),
-                new ShardingSphereColumn("pad", Types.CHAR, true, false, false, true, false));
+                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("k", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("c", Types.CHAR, true, false, false, true, false, false),
+                new ShardingSphereColumn("pad", Types.CHAR, true, false, false, true, false, false));
         ShardingSphereTable table = new ShardingSphereTable(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public").getTable(TABLE_NAME)).thenReturn(table);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public")).thenReturn(schema);
+        when(schema.getTable(TABLE_NAME)).thenReturn(table);
+        when(schema.getAllColumnNames(TABLE_NAME)).thenReturn(Arrays.asList("id", "k", "c", "pad"));
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageTypes())
                 .thenReturn(Collections.singletonMap("ds_0", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));

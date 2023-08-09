@@ -24,13 +24,13 @@ import java.sql.Types;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingSphereTableTest {
     
@@ -43,8 +43,8 @@ class ShardingSphereTableTest {
     
     @Test
     void assertPutColumn() {
-        ShardingSphereColumn column1 = new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false);
-        ShardingSphereColumn column2 = new ShardingSphereColumn("foo_column_2", Types.INTEGER, false, true, false, true, false);
+        ShardingSphereColumn column1 = new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false, false);
+        ShardingSphereColumn column2 = new ShardingSphereColumn("foo_column_2", Types.INTEGER, false, true, false, true, false, false);
         shardingSphereTable.putColumn(column1);
         shardingSphereTable.putColumn(column2);
         assertThat(shardingSphereTable.getColumn("foo_column_1"), is(column1));
@@ -54,7 +54,7 @@ class ShardingSphereTableTest {
     
     @Test
     void assertGetColumn() {
-        ShardingSphereColumn column = new ShardingSphereColumn("foo_column", Types.INTEGER, true, true, false, true, false);
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_column", Types.INTEGER, true, true, false, true, false, false);
         shardingSphereTable.putColumn(column);
         assertThat(shardingSphereTable.getColumn("foo_column"), is(column));
         assertThat(shardingSphereTable.getColumn("FOO_COLUMN"), is(column));
@@ -63,8 +63,8 @@ class ShardingSphereTableTest {
     
     @Test
     void assertGetColumns() {
-        ShardingSphereColumn column1 = new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false);
-        ShardingSphereColumn column2 = new ShardingSphereColumn("foo_column_2", Types.INTEGER, false, true, false, true, false);
+        ShardingSphereColumn column1 = new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false, false);
+        ShardingSphereColumn column2 = new ShardingSphereColumn("foo_column_2", Types.INTEGER, false, true, false, true, false, false);
         shardingSphereTable.putColumn(column1);
         shardingSphereTable.putColumn(column2);
         assertThat(shardingSphereTable.getColumnValues(), hasItems(column1, column2));
@@ -73,7 +73,7 @@ class ShardingSphereTableTest {
     
     @Test
     void assertContainsColumn() {
-        ShardingSphereColumn column = new ShardingSphereColumn("foo_column", Types.INTEGER, true, true, false, true, false);
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_column", Types.INTEGER, true, true, false, true, false, false);
         shardingSphereTable.putColumn(column);
         assertTrue(shardingSphereTable.containsColumn("foo_column"));
         assertFalse(shardingSphereTable.containsColumn("invalid"));
@@ -144,10 +144,10 @@ class ShardingSphereTableTest {
     
     @Test
     void assertTableEquals() {
-        shardingSphereTable.putColumn(new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false));
+        shardingSphereTable.putColumn(new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false, false));
         shardingSphereTable.putIndex(new ShardingSphereIndex("foo_index_1"));
         ShardingSphereTable otherTable = new ShardingSphereTable();
-        otherTable.putColumn(new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false));
+        otherTable.putColumn(new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false, false));
         otherTable.putIndex(new ShardingSphereIndex("foo_index_1"));
         assertEquals(shardingSphereTable, otherTable);
     }

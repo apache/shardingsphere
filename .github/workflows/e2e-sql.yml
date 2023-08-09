@@ -19,7 +19,7 @@ name: E2E - SQL
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ dev ]
     paths:
       - '.github/workflows/e2e-sql.yml'
       - '**/pom.xml'
@@ -59,13 +59,17 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
-  REPOSITORY_NAME: shardingsphere
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
   SEGMENT_DOWNLOAD_TIMEOUT_MINS: 1
 
 jobs:
+  global-environment:
+    name: Import Global Environment
+    uses: ./.github/workflows/required-reusable.yml
+
   build-e2e-image:
     name: Build E2E Image
+    needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -73,31 +77,30 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: 11
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-${{ github.sha }}
           restore-keys: |
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Build E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
-      - name: Verify CI
-        run: ./mvnw -B install -pl test/e2e/sql -Dspotless.apply.skip=true
       - name: Save E2E Image
-        run: docker save -o /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar apache/shardingsphere-proxy-test:latest
+        run: docker save -o /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - uses: actions/upload-artifact@v3
         with:
           name: e2e-image
-          path: /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
-          retention-days: 1
+          path: /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-test.tar
+          retention-days: 10
   
   e2e-sql:
-    name: ${{ matrix.adapter }} - ${{ matrix.scenario }} - ${{ matrix.mode }} on ${{ matrix.database }}
+    name: E2E - SQL
+    needs: [ build-e2e-image, global-environment ]
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: build-e2e-image
     strategy:
       max-parallel: 20
       fail-fast: false
@@ -128,17 +131,16 @@ jobs:
           - adapter: proxy
             mode: Standalone
             scenario: passthrough
-    
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 8
+          java-version: 11
       - name: Download E2E Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
@@ -147,6 +149,6 @@ jobs:
           path: /tmp/
       - name: Load E2E Image
         if: matrix.adapter == 'proxy'
-        run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
+        run: docker load -i /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-test.tar
       - name: Run E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.run.additional.cases=false -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.databases=${{ matrix.database }} ${{ matrix.additional-options }}

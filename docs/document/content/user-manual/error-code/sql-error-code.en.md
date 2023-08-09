@@ -268,7 +268,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt.                                          |
 | 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule.                                              |
 | HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s.                                     |
-| HY004     | 20781       | \`%s\` column's encryptor name \`%s\` does not match encrypt algorithm type \`%s\`.                |
+| HY004     | 20781       | \`%s\` column's encryptor name \`%s\` does not match encrypt algorithm type \`%s\ in database \`%s\`.|
 | 44000     | 20703       | Cipher column of \`%s\` can not be null in database \`%s\`.                                        |
 | 44000     | 20704       | Can not find (STANDARD\|ASSIST_QUERY\|LIKE_QUERY) encryptor in table \`%s\` and column \`%s\`.     |
 | 44000     | 20705       | Assisted query column of \`%s\` can not be null in database \`%s\`.                                |
@@ -294,6 +294,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | SQL State | Vendor Code | Reason                                                      |
 |-----------|-------------|-------------------------------------------------------------|
 | HY000     | 20980       | Mask algorithm \`%s\` initialization failed, reason is: %s. |
+| 42S02     | 20990       | Invalid mask algorithm \`%s\` in database \`%s\`.           |
 
 ## Other Exception
 

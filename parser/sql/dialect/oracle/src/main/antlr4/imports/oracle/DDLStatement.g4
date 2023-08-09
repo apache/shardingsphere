@@ -31,6 +31,54 @@ createIndex
     : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause usableSpecification? invalidationSpecification?
     ;
 
+createType
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? TYPE plsqlTypeSource
+    ;
+
+plsqlTypeSource
+    : typeName (objectBaseTypeDef | objectSubTypeDef)
+    ;
+
+objectBaseTypeDef
+    : (IS | AS) (objectTypeDef | varrayTypeSpec | nestedTableTypeSpec)
+    ;
+
+objectTypeDef
+    : OBJECT LP_ dataTypeDefinition (COMMA_ dataTypeDefinition)* RP_ finalClause? instantiableClause? persistableClause?
+    ;
+
+finalClause
+    : NOT? FINAL
+    ;
+
+instantiableClause
+    : NOT? INSTANTIABLE
+    ;
+
+persistableClause
+    : NOT? PERSISTABLE
+    ;
+
+varrayTypeSpec
+    : VARRAY (LP_ INTEGER_ RP_)? OF typeSpec
+    ;
+
+nestedTableTypeSpec
+    : TABLE OF typeSpec
+    ;
+
+typeSpec
+    : ((LP_ dataType RP_) | dataType) (NOT NULL)? persistableClause?
+    ;
+
+dataTypeDefinition
+    : name dataType
+    ;
+
+objectSubTypeDef
+    : UNDER typeName LP_ dataTypeDefinition (COMMA_ dataTypeDefinition)* RP_ finalClause? instantiableClause?
+    ;
+
 alterTable
     : ALTER TABLE tableName memOptimizeClause alterDefinitionClause enableDisableClauses
     ;
@@ -475,22 +523,84 @@ objectProperties
     ;
 
 alterIndexInformationClause
-    : rebuildClause ((DEFERRED|IMMEDIATE) | INVALIDATION)?
+    : (deallocateUnusedClause
+    | allocateExtentClause
+    | shrinkClause
     | parallelClause
+    | physicalAttributesClause
+    | loggingClause
+    | partialIndexClause)+
+    | rebuildClause ((DEFERRED | IMMEDIATE) | INVALIDATION)?
+    | parallelClause
+    | PARAMETERS LP_ odciParameters RP_
     | COMPILE
     | (ENABLE | DISABLE)
-    | UNUSABLE ONLINE? ((DEFERRED|IMMEDIATE)|INVALIDATION)?
+    | UNUSABLE ONLINE? ((DEFERRED | IMMEDIATE) | INVALIDATION)?
     | (VISIBLE | INVISIBLE)
     | renameIndexClause
     | COALESCE CLEANUP? ONLY? parallelClause?
     | ((MONITORING | NOMONITORING) USAGE)
     | UPDATE BLOCK REFERENCES
+    | alterIndexPartitioning
     ;
 
 renameIndexClause
     : (RENAME TO indexName)?
     ;
-    
+
+alterIndexPartitioning
+    : modifyIndexDefaultAttrs
+    | addHashIndexPartition
+    | modifyIndexPartition
+    | renameIndexPartition
+    | dropIndexPartition
+    | splitIndexPartition
+    | coalesceIndexPartition
+    | modifyIndexsubPartition
+    ;
+
+modifyIndexDefaultAttrs
+    : MODIFY DEFAULT ATTRIBUTES (FOR PARTITION partitionName)? (physicalAttributesClause | TABLESPACE (tablespaceName | DEFAULT) | loggingClause)+
+    ;
+
+addHashIndexPartition
+    : ADD PARTITION partitionName? (TABLESPACE tablespaceName)? indexCompression? parallelClause?
+    ;
+
+modifyIndexPartition
+    : MODIFY PARTITION partitionName
+    ( (deallocateUnusedClause | allocateExtentClause | physicalAttributesClause | loggingClause | indexCompression)+
+    | PARAMETERS LP_ odciParameters RP_
+    | COALESCE (CLEANUP | ONLY | parallelClause)?
+    | UPDATE BLOCK REFERENCES
+    | UNUSABLE
+    )
+    ;
+
+renameIndexPartition
+    : RENAME (PARTITION partitionName | SUBPARTITION subpartitionName) TO newName
+    ;
+
+dropIndexPartition
+    : DROP PARTITION partitionName
+    ;
+
+splitIndexPartition
+    : SPLIT PARTITION partitionName AT LP_ literals (COMMA_ literals)* RP_ (INTO LP_ indexPartitionDescription COMMA_ indexPartitionDescription RP_)? (parallelClause)?
+    ;
+
+indexPartitionDescription
+    : PARTITION (partitionName ((segmentAttributesClause | indexCompression)+ | PARAMETERS LP_ odciParameters RP_)? (USABLE | UNUSABLE)?)?
+    ;
+
+coalesceIndexPartition
+    : COALESCE PARTITION parallelClause?
+    ;
+
+modifyIndexsubPartition
+    : MODIFY SUBPARTITION subpartitionName (UNUSABLE | allocateExtentClause | deallocateUnusedClause)
+    ;
+
 objectTableSubstitution
     : NOT? SUBSTITUTABLE AT ALL LEVELS
     ;
@@ -520,7 +630,15 @@ enableDisableOthers
     ;
 
 rebuildClause
-    : REBUILD parallelClause?
+    : REBUILD (PARTITION partitionName | SUBPARTITION subpartitionName | REVERSE | NOREVERSE)?
+    ( parallelClause
+    | TABLESPACE tablespaceName
+    | PARAMETERS LP_ odciParameters RP_
+    | ONLINE
+    | physicalAttributesClause
+    | indexCompression
+    | loggingClause
+    | partialIndexClause)*
     ;
 
 parallelClause
@@ -579,16 +697,20 @@ loggingClause
     : LOGGING | NOLOGGING |  FILESYSTEM_LIKE_LOGGING
     ;
 
+partialIndexClause
+    : INDEXING (PARTIAL | FULL)
+    ;
+
 storageClause
     : STORAGE LP_
     (INITIAL sizeClause
     | NEXT sizeClause
-    | MINEXTENTS NUMBER_
-    | MAXEXTENTS (NUMBER_ | UNLIMITED)
+    | MINEXTENTS INTEGER_
+    | MAXEXTENTS (INTEGER_ | UNLIMITED)
     | maxsizeClause
-    | PCTINCREASE NUMBER_
-    | FREELISTS NUMBER_
-    | FREELIST GROUPS NUMBER_
+    | PCTINCREASE INTEGER_
+    | FREELISTS INTEGER_
+    | FREELIST GROUPS INTEGER_
     | OPTIMAL (sizeClause | NULL)?
     | BUFFER_POOL (KEEP | RECYCLE | DEFAULT)
     | FLASH_CACHE (KEEP | NONE | DEFAULT)
@@ -2420,7 +2542,7 @@ alterFlashbackArchive
     ( SET DEFAULT
     | (ADD | MODIFY) TABLESPACE tablespaceName flashbackArchiveQuota?
     | REMOVE TABLESPACE tablespaceName
-    | MODIFY RETENTION flashbackArchiveRetention
+    | MODIFY RETENTION? flashbackArchiveRetention
     | PURGE purgeClause
     | NO? OPTIMIZE DATA)
     ;
@@ -2451,7 +2573,7 @@ attribute
     ;
 
 attributeNameAndValue
-    : SQ_ attributeName SQ_ EQ_ SQ_ attributeValue SQ_
+    : attributeName EQ_ attributeValue
     ;
 
 dropDiskgroup
@@ -2545,7 +2667,7 @@ zonemapRefreshClause
     ;
 
 alterJava
-   : ALTER JAVA (SOURCE | CLASS) objectName resolveClauses (COMPILE | RESOLVE | invokerRightsClause)
+   : ALTER JAVA (SOURCE | CLASS) objectName resolveClauses? (COMPILE | RESOLVE | invokerRightsClause)
    ;
 
 resolveClauses
@@ -2829,7 +2951,7 @@ dropDiskClause
     ;
 
 resizeDiskClause
-    : RESIZE ALL (SIZE sizeClause)?
+    : RESIZE (ALL | DISKS IN FAILGROUP failgroupName) (SIZE sizeClause)?
     ;
 
 rebalanceDiskgroupClause
@@ -2875,7 +2997,7 @@ diskOfflineClause
     ;
 
 timeoutClause
-    : DROP AFTER INTEGER_ (M | H)
+    : DROP AFTER INTEGER_ TIME_UNIT
     ;
 
 checkDiskgroupClause
@@ -2888,7 +3010,7 @@ diskgroupTemplateClauses
     ;
 
 qualifiedTemplateClause
-    : ATTRIBUTE LP_ redundancyClause stripingClause diskRegionClause RP_
+    : (ATTRIBUTE | ATTRIBUTES) LP_ redundancyClause stripingClause diskRegionClause RP_
     ;
 
 redundancyClause
@@ -2948,7 +3070,7 @@ convertRedundancyClause
 
 usergroupClauses
     : (ADD USERGROUP SQ_ usergroupName SQ_ WITH MEMBER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
-    | MODIFY USERGROUP SQ_ usergroupName SQ_ (ADD | DROP) MEMBER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
+    | MODIFY USERGROUP usergroupName (ADD | DROP) MEMBER username (COMMA_ username)*
     | DROP USERGROUP SQ_ usergroupName SQ_)
     ;
 
@@ -2968,7 +3090,7 @@ fileOwnerClause
     ;
 
 setOwnerClause
-    :OWNER EQ_ SQ_ username SQ_ | GROUP EQ_ SQ_ usergroupName SQ_
+    : OWNER EQ_ username | GROUP EQ_ usergroupName
     ;
 
 scrubClause
@@ -3529,14 +3651,201 @@ dropMaterializedZonemap
     : DROP MATERIALIZED ZONEMAP zonemapName
     ;
 
+tablespaceEncryptionSpec
+    : USING encryptAlgorithmName
+    ;
+
+tableCompressionTableSpace
+    : COMPRESS
+    | COMPRESS BASIC
+    | COMPRESS (FOR (OLTP | ((QUERY | ARCHIVE) (LOW | HIGH)?)))
+    | NOCOMPRESS
+    ;
+
+segmentManagementClause
+    : SEGMENT SPACE MANAGEMENT (AUTO|MANUAL)
+    ;
+
+tablespaceGroupClause
+    : ON TABLESPACE GROUP tablespaceGroupName
+    ;
+
+temporaryTablespaceClause
+    : TEMPORARY TABLESPACE tablespaceName (TEMPFILE fileSpecification (COMMA_ fileSpecification)* )? tablespaceGroupClause? extentManagementClause?
+    ;
+
+tablespaceRetentionClause
+    : RETENTION (GUARANTEE | NOGUARANTEE)
+    ;
+
+undoTablespaceClause
+    : UNDO TABLESPACE tablespaceName (DATAFILE fileSpecification (COMMA_ fileSpecification)*)? extentManagementClause? tablespaceRetentionClause?
+    ;
+
 createTablespace
-    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? permanentTablespaceClause
+    : CREATE (BIGFILE|SMALLFILE)? (DATAFILE fileSpecifications)? (permanentTablespaceClause | temporaryTablespaceClause | undoTablespaceClause)
     ;
 
 permanentTablespaceClause
-    : TABLESPACE tablespaceName (ONLINE|OFFLINE)
+    : TABLESPACE tablespaceName (
+    (MINIMUM EXTEND sizeClause)
+    | (BLOCKSIZE INTEGER_ K?)
+    | loggingClause
+    | (FORCE LOGGING)
+    | ENCRYPTION tablespaceEncryptionSpec
+    | DEFAULT tableCompressionTableSpace? storageClause?
+    | (ONLINE|OFFLINE)
+    | extentManagementClause
+    | segmentManagementClause
+    | flashbackModeClause
+    )
+    ;
+
+alterTablespace
+    : ALTER TABLESPACE tablespaceName
+    ( MINIMUM EXTENT sizeClause
+    | RESIZE sizeClause
+    | COALESCE
+    | SHRINK SPACE (KEEP sizeClause)?
+    | RENAME TO newTablespaceName
+    | (BEGIN|END) BACKUP
+    | datafileTempfileClauses
+    | tablespaceLoggingClauses
+    | tablespaceGroupClause
+    | tablespaceStateClauses
+    | autoextendClause
+    | flashbackModeClause
+    | tablespaceRetentionClause
+    | alterTablespaceEncryption
+    | lostWriteProtection
+    )
+    ;
+
+tablespaceRetentionClause
+    : RETENTION (GUARANTEE | NOGUARANTEE)
+    ;
+
+newTablespaceName
+    : identifier
+    ;
+
+datafileTempfileClauses
+    : ADD (datafileSpecification | tempfileSpecification)
+    | DROP (DATAFILE | TEMPFILE) (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
+    | SHRINK TEMPFILE (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
+    | RENAME DATAFILE fileSpecification TO fileSpecification
+    | (DATAFILE | TEMPFILE) (ONLINE|OFFLINE)
+    ;
+
+datafileSpecification
+    : DATAFILE
+      (COMMA_? datafileTempfileSpec)
+    ;
+
+tempfileSpecification
+    : TEMPFILE
+      (COMMA_? datafileTempfileSpec)
+    ;
+
+tablespaceLoggingClauses
+    : loggingClause
+    | NO? FORCE LOGGING
+    ;
+
+tablespaceStateClauses
+    : ONLINE
+    | OFFLINE (NORMAL | TEMPORARY | IMMEDIATE)?
+    | READ (ONLY | WRITE)
+    | PERMANENT
+    | TEMPORARY
+    ;
+
+tablespaceFileNameConvert
+    : FILE_NAME_CONVERT EQ_ LP_ CHAR_STRING COMMA_ CHAR_STRING (COMMA_ CHAR_STRING COMMA_ CHAR_STRING)* RP_ KEEP?
+    ;
+
+alterTablespaceEncryption
+    : ENCRYPTION ( OFFLINE (tablespaceEncryptionSpec? ENCRYPT | DECRYPT)
+                 | ONLINE (tablespaceEncryptionSpec? (ENCRYPT | REKEY) | DECRYPT) tablespaceFileNameConvert?
+                 | FINISH (ENCRYPT | REKEY | DECRYPT) tablespaceFileNameConvert?
+                 )
     ;
 
 dropFunction
     : DROP FUNCTION (schemaName DOT_)? function
+    ;
+
+compileTypeClause
+    : COMPILE DEBUG? (SPECIFICATION|BODY)? compilerParametersClause? REUSE SETTINGS
+    ;
+
+inheritanceClauses
+    : (NOT? (OVERRIDING | FINAL | INSTANTIABLE))+
+    ;
+
+procedureSpec
+    : PROCEDURE procedureName LP_ (parameterValue typeName (COMMA_ parameterValue typeName)*) RP_ ((IS | AS) callSpec)?
+    ;
+
+returnClause
+    : RETURN dataType ((IS | AS) callSpec)?
+    ;
+
+functionSpec
+    : FUNCTION name LP_ (parameterValue dataType (COMMA_ parameterValue dataType)*) RP_ returnClause
+    ;
+
+subprogramSpec
+    : (MEMBER | STATIC) (procedureSpec | functionSpec)
+    ;
+
+constructorSpec
+    : FINAL? INSTANTIABLE? CONSTRUCTOR FUNCTION typeName
+    (LP_ (SELF IN OUT dataType COMMA_)? parameterValue dataType (COMMA_ parameterValue dataType)* RP_)?
+    RETURN SELF AS RESULT ((AS | IS) callSpec)?
+    ;
+
+mapOrderFunctionSpec
+    : (MAP | ORDER) MEMBER functionSpec
+    ;
+
+restrictReferencesPragma
+    : PRAGMA RESTRICT_REFERENCES
+    LP_ (subprogramName | methodName | DEFAULT) COMMA_
+    (RNDS | WNDS | RNPS | WNPS | TRUST)
+    (COMMA_ (RNDS | WNDS | RNPS | WNPS | TRUST))* RP_
+    ;
+
+elementSpecification
+    : inheritanceClauses? (subprogramSpec | constructorSpec | mapOrderFunctionSpec)+ (COMMA_ restrictReferencesPragma)?
+    ;
+
+replaceTypeClause
+    : REPLACE invokerRightsClause? AS OBJECT LP_ (attributeName dataType (COMMA_ (elementSpecification | attributeName dataType))*) RP_
+    ;
+
+alterMethodSpec
+    : (ADD | DROP) (mapOrderFunctionSpec | subprogramSpec) ((ADD | DROP) (mapOrderFunctionSpec | subprogramSpec))*
+    ;
+
+alterAttributeDefinition
+    : (ADD | MODIFY) ATTRIBUTE ( attributeName dataType? | LP_ attributeName dataType (COMMA_ attributeName dataType)* RP_)
+      | DROP ATTRIBUTE ( attributeName | LP_ attributeName (COMMA_ attributeName)* RP_)
+    ;
+
+alterCollectionClauses
+    : MODIFY (LIMIT INTEGER_ | ELEMENT TYPE dataType)
+    ;
+
+alterType
+    : ALTER TYPE typeName (compileTypeClause | replaceTypeClause | RESET
+    | (alterMethodSpec | alterAttributeDefinition | alterCollectionClauses | NOT (INSTANTIABLE | FINAL)))?
+    ;
+
+createCluster
+    : CREATE CLUSTER (schemaName DOT_)? clusterName
+    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
+    (physicalAttributesClause | SET sizeClause | TABLESPACE tablespaceName | INDEX |
+    (SINGLE TABLE)? HASHKEYS INTEGER_ (HASH IS functionName LP_ (argument (COMMA_ argument)*) RP_)?)?
+    parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
     ;

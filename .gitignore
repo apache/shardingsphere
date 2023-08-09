@@ -49,5 +49,5 @@ Thumbs.db
 gen/
 *.tokens
 
-# profiler  ignore
+# profiler ignore
 .profiler/

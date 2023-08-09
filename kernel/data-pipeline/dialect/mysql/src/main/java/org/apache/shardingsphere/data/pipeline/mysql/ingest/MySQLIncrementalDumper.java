@@ -47,9 +47,11 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ConnectInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandler;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
-import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -87,10 +89,11 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         this.metaDataLoader = metaDataLoader;
         YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcConfig();
         log.info("incremental dump, jdbcUrl={}", jdbcConfig.getUrl());
-        DataSourceMetaData metaData = TypedSPILoader.getService(DatabaseType.class, "MySQL").getDataSourceMetaData(jdbcConfig.getUrl(), null);
-        ConnectInfo connectInfo = new ConnectInfo(generateServerId(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword());
+        ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        ConnectionProperties connectionProps = parser.parse(jdbcConfig.getUrl(), null, null);
+        ConnectInfo connectInfo = new ConnectInfo(generateServerId(), connectionProps.getHostname(), connectionProps.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword());
         client = new MySQLClient(connectInfo, dumperConfig.isDecodeWithTX());
-        catalog = metaData.getCatalog();
+        catalog = connectionProps.getCatalog();
     }
     
     private int generateServerId() {

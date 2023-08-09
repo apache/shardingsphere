@@ -22,7 +22,7 @@ import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.yaml.swapper.YamlBroadcastRuleConfigurationSwapper;
-import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguratio
 import org.apache.shardingsphere.encrypt.yaml.swapper.YamlCompatibleEncryptRuleConfigurationSwapper;
 import org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -42,8 +42,8 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCrea
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.MaskRule;
@@ -260,7 +260,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     private void addEncryptRuleConfiguration(final EncryptRuleConfiguration encryptRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
         encryptRuleConfigImportChecker.check(database, encryptRuleConfig);
         allRuleConfigs.add(encryptRuleConfig);
-        database.getRuleMetaData().getRules().add(new EncryptRule(encryptRuleConfig));
+        database.getRuleMetaData().getRules().add(new EncryptRule(database.getName(), encryptRuleConfig));
     }
     
     private void addShadowRuleConfiguration(final ShadowRuleConfiguration shadowRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {

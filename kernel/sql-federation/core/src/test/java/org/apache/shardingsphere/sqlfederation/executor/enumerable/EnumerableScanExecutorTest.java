@@ -19,12 +19,14 @@ package org.apache.shardingsphere.sqlfederation.executor.enumerable;
 
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.junit.jupiter.api.Test;
@@ -44,7 +46,7 @@ class EnumerableScanExecutorTest {
     @Test
     void assertExecuteWithStatistics() {
         OptimizerContext optimizerContext = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
-        when(optimizerContext.getParserContext(any()).getDatabaseType().getType()).thenReturn("PostgreSQL");
+        when(optimizerContext.getParserContext(any()).getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         TableScanExecutorContext executorContext = mock(TableScanExecutorContext.class);
         when(executorContext.getDatabaseName()).thenReturn("db");
         when(executorContext.getSchemaName()).thenReturn("pg_catalog");

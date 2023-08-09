@@ -114,7 +114,7 @@ unreservedWord1
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
     | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | MINUTE | ANY 
-    | LENGTH | SINGLE_C | capacityUnit | TARGET | PUBLIC | ID | STATE | PRIORITY
+    | LENGTH | SINGLE_C | capacityUnit | TIME_UNIT | TARGET | PUBLIC | ID | STATE | PRIORITY
     | CONSTRAINT | PRIMARY | FOREIGN | KEY | POSITION | PRECISION | FUNCTION | PROCEDURE | SPECIFICATION | CASE
     | WHEN | CAST | TRIM | SUBSTRING | FULL | INNER | OUTER | LEFT | RIGHT | CROSS
     | USING | FALSE | SAVEPOINT | BODY | CHARACTER | ARRAY | TIME | TIMEOUT | TIMESTAMP | LOCALTIME
@@ -325,10 +325,10 @@ unreservedWord3
     | USE_PRIVATE_OUTLINES | USE_SEMI | USE_TTT_FOR_GSETS | USE_WEAK_NAME_RESL | VALIDATE | VALIDATION | VARIANCE | VAR_POP
     | VAR_SAMP | VECTOR_READ | VECTOR_READ_TRACE | VERSIONING | VERSIONS_ENDSCN | VERSIONS_ENDTIME | VERSIONS_OPERATION
     | VERSIONS_STARTSCN | VERSIONS_STARTTIME | VERSIONS_XID | VOLUME | VSIZE | WELLFORMED | WHENEVER | WHITESPACE
-    | WIDTH_BUCKET | WRAPPED | XID | XMLATTRIBUTES | XMLCAST | XMLCDATA | XMLCOLATTVAL | XMLCOMMENT | XMLCONCAT | XMLDIFF
+    | WIDTH_BUCKET | WRAPPED | XID | XMLAGG | XMLATTRIBUTES | XMLCAST | XMLCDATA | XMLCOLATTVAL | XMLCOMMENT | XMLCONCAT | XMLDIFF
     | XMLEXISTS | XMLEXISTS2 | XMLFOREST | XMLINDEX_REWRITE | XMLINDEX_REWRITE_IN_SELECT | XMLINDEX_SEL_IDX_TBL | XMLISNODE
     | XMLISVALID | XMLNAMESPACES | XMLPARSE | XMLPATCH | XMLPI | XMLQUERY | XMLROOT | XMLSERIALIZE | XMLTABLE | XMLTOOBJECT
-    | XMLTRANSFORM | XMLTRANSFORMBLOB | XML_DML_RWT_STMT | XPATHTABLE | XS_SYS_CONTEXT | X_DYN_PRUNE
+    | XMLTRANSFORM | XMLTRANSFORMBLOB | XML_DML_RWT_STMT | XPATHTABLE | XS_SYS_CONTEXT | X_DYN_PRUNE | RESULT
     ;
 
 schemaName
@@ -352,7 +352,7 @@ materializedViewName
     ;
 
 columnName
-    : (owner DOT_)? name
+    : (owner DOT_)? name (DOT_ nestedItem)*
     ;
 
 objectName
@@ -431,6 +431,14 @@ tablespaceName
     : identifier
     ;
 
+subprogramName
+    : identifier
+    ;
+
+methodName
+    : identifier
+    ;
+
 tablespaceSetName
     : identifier
     ;
@@ -449,6 +457,10 @@ policyName
 
 functionName
     : identifier
+    ;
+
+featureId
+    : numberLiterals
     ;
 
 dbLink
@@ -523,6 +535,10 @@ containerName
     : identifier
     ;
 
+newName
+    : identifier
+    ;
+
 partitionName
     : identifier
     ;
@@ -537,6 +553,10 @@ partitionKeyValue
 
 subpartitionKeyValue
     : INTEGER_ | dateTimeLiterals
+    ;
+
+encryptAlgorithmName
+    : STRING_
     ;
 
 zonemapName
@@ -588,7 +608,7 @@ alias
     ;
 
 dataTypeLength
-    : LP_ (INTEGER_ (COMMA_ INTEGER_)? (CHAR | BYTE)?)? RP_
+    : LP_ (INTEGER_ (COMMA_ (MINUS_)? INTEGER_)? (CHAR | BYTE)?)? RP_
     ;
 
 primaryKey
@@ -610,9 +630,8 @@ expr
     | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
-    | aggregationFunction
-    | analyticFunction
     | expr datetimeExpr
+    | multisetExpr
     ;
 
 andOperator
@@ -630,6 +649,7 @@ notOperator
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
     | PRIOR predicate
+    | CONNECT_BY_ROOT predicate
     | booleanPrimary SAFE_EQ_ predicate
     | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
@@ -656,12 +676,14 @@ bitExpr
     | bitExpr SIGNED_LEFT_SHIFT_ bitExpr
     | bitExpr SIGNED_RIGHT_SHIFT_ bitExpr
     | bitExpr PLUS_ bitExpr
+    | simpleExpr
     | bitExpr MINUS_ bitExpr
     | bitExpr ASTERISK_ bitExpr
     | bitExpr SLASH_ bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr CARET_ bitExpr
-    | simpleExpr
+    | bitExpr DOT_ bitExpr
+    | bitExpr ARROW_ bitExpr
     ;
 
 simpleExpr
@@ -674,7 +696,7 @@ simpleExpr
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
     | caseExpression
-    | columnName
+    | columnName joinOperator?
     | privateExprOfDb
     | PRIOR identifier
     ;
@@ -684,12 +706,20 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? overClause? overClause?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? orderByClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? keepClause? overClause? overClause?
+    ;
+
+keepClause
+    : KEEP LP_ DENSE_RANK (FIRST | LAST) orderByClause RP_ overClause?
     ;
 
 aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG | PERCENT_RANK | PERCENTILE_CONT | PERCENTILE_DISC | CUME_DIST | RANK
     | REGR_SLOPE | REGR_INTERCEPT | REGR_COUNT | REGR_R2 | REGR_AVGX | REGR_AVGY | REGR_SXX | REGR_SYY | REGR_SXY
+    | COLLECT | CORR | CORR_S | CORR_K | COVAR_POP | COVAR_SAMP | DENSE_RANK | FIRST 
+    | GROUP_ID | GROUPING_ID | LAST | MEDIAN | STATS_BINOMIAL_TEST | STATS_CROSSTAB | STATS_F_TEST | STATS_KS_TEST 
+    | STATS_MODE | STATS_MW_TEST | STATS_ONE_WAY_ANOVA | STATS_T_TEST_ONE | STATS_T_TEST_PAIRED | STATS_T_TEST_INDEP 
+    | STATS_T_TEST_INDEPU | STATS_WSR_TEST | STDDEV | STDDEV_POP | STDDEV_SAMP | VAR_POP | VAR_SAMP | VARIANCE
     ;
 
 listaggOverflowClause
@@ -711,7 +741,16 @@ windowingClause
 
 analyticFunction
     : specifiedAnalyticFunctionName = (LEAD | LAG) ((LP_ expr leadLagInfo? RP_ respectOrIgnoreNulls?) | (LP_ expr respectOrIgnoreNulls? leadLagInfo? RP_)) overClause
+    | specifiedAnalyticFunctionName = (NTILE | MEDIAN | RATIO_TO_REPORT) LP_ expr RP_ overClause?
+    | specifiedAnalyticFunctionName = NTH_VALUE LP_ expr COMMA_ expr RP_ fromFirstOrLast? respectOrIgnoreNulls? overClause
+    | specifiedAnalyticFunctionName = (PERCENTILE_CONT | PERCENTILE_DISC | LISTAGG) LP_ expr (COMMA_ expr)* RP_ WITHIN GROUP LP_ orderByClause RP_ overClause?
+    | specifiedAnalyticFunctionName = (CORR | COVAR_POP | COVAR_SAMP) LP_ expr COMMA_ expr RP_ overClause?
+    | specifiedAnalyticFunctionName = (PERCENT_RANK | RANK | ROW_NUMBER) LP_ RP_ overClause
     | analyticFunctionName LP_ dataType* RP_ overClause
+    ;
+
+fromFirstOrLast
+    : FROM FIRST | FROM LAST
     ;
 
 leadLagInfo
@@ -719,7 +758,38 @@ leadLagInfo
     ;
 
 specialFunction
-    : castFunction  | charFunction | extractFunction | formatFunction | firstOrLastValueFunction
+    : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction | setFunction
+    ;
+
+setFunction
+    : SET LP_ expr RP_
+    ;
+
+featureFunction
+    : featureFunctionName LP_ (schemaName DOT_)? modelName (COMMA_ featureId)? (COMMA_ numberLiterals (COMMA_ numberLiterals)?)?
+    (DESC | ASC | ABS)? miningAttributeClause (AND miningAttributeClause)? RP_
+    ;
+
+featureFunctionName
+    : FEATURE_COMPARE | FEATURE_DETAILS | FEATURE_SET | FEATURE_ID | FEATURE_VALUE | CLUSTER_DETAILS | CLUSTER_DISTANCE | CLUSTER_ID | CLUSTER_PROBABILITY | CLUSTER_SET
+    ;
+
+miningAttributeClause
+    : USING (ASTERISK_ | (schemaName DOT_)? tableName DOT_ ASTERISK_ | expr (AS? alias)?)
+    ;
+
+trimFunction
+    : TRIM LP_ trimOperands? expr RP_
+    ;
+
+trimOperands
+    : (trimType expr? FROM) | (expr FROM)
+    ;
+
+trimType
+    : LEADING
+    | TRAILING
+    | BOTH
     ;
 
 firstOrLastValueFunction
@@ -739,11 +809,17 @@ formatFunction
     ;
 
 castFunction
-    : (CAST | XMLCAST) LP_ expr AS dataType RP_
+    : CAST LP_ ((MULTISET subquery) | expr) AS dataType RP_
+    | XMLCAST LP_ expr AS dataType RP_
     ;
 
 charFunction
-    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier)? RP_
+    : (CHR | CHAR) LP_ expr (COMMA_ expr)* (USING charSet)? RP_
+    ;
+
+charSet
+    : NCHAR_CS
+    | ignoredIdentifier
     ;
     
 extractFunction
@@ -751,11 +827,15 @@ extractFunction
     ;
 
 regularFunction
-    : regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : (owner DOT_)? regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
 regularFunctionName
     : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL | DECODE
+    ;
+
+joinOperator
+    : LP_ PLUS_ RP_
     ;
 
 caseExpression
@@ -851,7 +931,23 @@ elseClause
     ;
 
 intervalExpression
-    : LP_ expr MINUS_ expr RP_ (DAY (LP_ NUMBER_ RP_)? TO SECOND (LP_ NUMBER_ RP_)? | YEAR (LP_ NUMBER_ RP_)? TO MONTH)
+    : LP_ expr MINUS_ expr RP_ (intervalDayToSecondExpression | intervalYearToMonthExpression)
+    ;
+
+intervalDayToSecondExpression
+    : DAY (LP_ leadingFieldPrecision RP_)? TO SECOND (LP_ fractionalSecondPrecision RP_)?
+    ;
+
+intervalYearToMonthExpression
+    : YEAR (LP_ leadingFieldPrecision RP_)? TO MONTH
+    ;
+
+leadingFieldPrecision
+    : INTEGER_
+    ;
+
+fractionalSecondPrecision
+    : INTEGER_
     ;
 
 objectAccessExpression
@@ -1620,7 +1716,7 @@ libName
 externalDatatype
     : dataType
     ;
-    
+
 capacityUnit
     : ('K' | 'M' | 'G' | 'T' | 'P' | 'E')
     ;
@@ -1826,6 +1922,11 @@ xmlFunction
     | xmlSerializeFunction
     | xmlTableFunction
     | xmlIsSchemaValidFunction
+    | specifiedFunctionName = (SYS_XMLGEN | SYS_XMLAGG | APPENDCHILDXML | DELETEXML | EXISTSNODE | EXTRACT | EXTRACTVALUE 
+        | INSERTCHILDXML | INSERTCHILDXMLAFTER | INSERTCHILDXMLBEFORE | INSERTXMLAFTER | INSERTXMLBEFORE
+        | SYS_DBURIGEN | UPDATEXML | XMLCONCAT | XMLDIFF | XMLEXISTS | XMLISVALID | XMLPATCH | XMLSEQUENCE | XMLTRANSFORM) exprList
+    | specifiedFunctionName = (DEPTH | PATH) LP_ correlationInteger RP_
+    | specifiedFunctionName = XMLCOMMENT LP_ stringLiterals RP_
     ;
 
 xmlAggFunction
@@ -1833,7 +1934,11 @@ xmlAggFunction
     ;
 
 xmlColattvalFunction
-    : XMLCOLATTVAL LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+    : XMLCOLATTVAL LP_ expr (xmlAsAliasOrEvalnameExpr)? (COMMA_ expr (xmlAsAliasOrEvalnameExpr)?)* RP_
+    ;
+
+xmlAsAliasOrEvalnameExpr
+    :AS (alias | EVALNAME expr)
     ;
 
 xmlExistsFunction
@@ -1841,7 +1946,7 @@ xmlExistsFunction
     ;
 
 xmlForestFunction
-   : XMLFOREST LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+   : XMLFOREST LP_ expr (xmlAsAliasOrEvalnameExpr)? (COMMA_ expr (xmlAsAliasOrEvalnameExpr)?)* RP_
    ;
 
 xmlParseFunction
@@ -1894,4 +1999,14 @@ xmlTableOptions
 
 xmlTableColumn
     : columnName (FOR ORDINALITY | (dataType | XMLTYPE (LP_ SEQUENCE RP_ BY REF)?) (PATH STRING_)? (DEFAULT expr)?)
+    ;
+
+multisetExpr
+    : columnName MULTISET multisetOperator (ALL | DISTINCT)? columnName
+    ;
+
+multisetOperator
+    : EXCEPT
+    | INTERSECT
+    | UNION
     ;

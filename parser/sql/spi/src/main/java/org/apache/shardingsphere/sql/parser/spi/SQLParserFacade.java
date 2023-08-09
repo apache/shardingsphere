@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.spi;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 
 /**
  * SQL parser facade.
  */
+@SingletonSPI
 public interface SQLParserFacade extends TypedSPI {
     
     /**

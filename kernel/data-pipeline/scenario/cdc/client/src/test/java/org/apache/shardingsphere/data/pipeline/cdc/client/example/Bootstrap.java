@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.client.example;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
-import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.client.config.CDCClientConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoggerExceptionHandler;
+import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.CDCLoginParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartStreamingParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 
 import java.util.Collections;
@@ -32,19 +36,18 @@ public final class Bootstrap {
      *
      * @param args args
      */
+    @SneakyThrows(InterruptedException.class)
     public static void main(final String[] args) {
         // Pay attention to the time zone, to avoid the problem of incorrect time zone, it is best to ensure that the time zone of the program is consistent with the time zone of the database server
-        // and mysql-connector-java 5.x version will ignore serverTimezone jdbc parameter and use the default time zone in the program
         // TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        StartCDCClientParameter parameter = new StartCDCClientParameter();
-        parameter.setAddress("127.0.0.1");
-        parameter.setPort(33071);
-        parameter.setUsername("root");
-        parameter.setPassword("root");
-        parameter.setDatabase("sharding_db");
-        parameter.setFull(true);
-        parameter.setSchemaTables(Collections.singletonList(SchemaTable.newBuilder().setTable("t_order").build()));
-        CDCClient cdcClient = new CDCClient(parameter, records -> log.info("records: {}", records));
-        cdcClient.start();
+        String address = "127.0.0.1";
+        CDCClientConfiguration clientConfig = new CDCClientConfiguration(address, 33071, records -> log.info("records: {}", records), new LoggerExceptionHandler());
+        try (CDCClient cdcClient = new CDCClient(clientConfig)) {
+            cdcClient.connect();
+            cdcClient.login(new CDCLoginParameter("root", "root"));
+            String streamingId = cdcClient.startStreaming(new StartStreamingParameter("sharding_db", Collections.singleton(SchemaTable.newBuilder().setTable("t_order").build()), true));
+            log.info("Streaming id={}", streamingId);
+            cdcClient.await();
+        }
     }
 }

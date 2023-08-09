@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.engine.ProjectionEngine;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.engine.ProjectionEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -60,7 +60,7 @@ public final class NoResourceShowExecutor implements DatabaseAdminQueryExecutor 
     public void execute(final ConnectionSession connectionSession) {
         TableSegment tableSegment = sqlStatement.getFrom();
         expressions = sqlStatement.getProjections().getProjections().stream().filter(each -> !(each instanceof ShorthandProjectionSegment))
-                .map(each -> new ProjectionEngine(null, Collections.emptyMap(), null).createProjection(tableSegment, each))
+                .map(each -> new ProjectionEngine(null).createProjection(tableSegment, each))
                 .filter(Optional::isPresent).map(each -> each.get().getAlias().isPresent() ? each.get().getAlias().get() : each.get().getExpression()).collect(Collectors.toList());
         mergedResult = new TransparentMergedResult(getQueryResult());
     }

@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -113,6 +113,8 @@ class PostgreSQLBatchedStatementsExecutorTest {
     private InsertStatementContext mockInsertStatementContext() {
         PostgreSQLInsertStatement insertStatement = mock(PostgreSQLInsertStatement.class, RETURNS_DEEP_STUBS);
         when(insertStatement.getTable().getTableName().getIdentifier().getValue()).thenReturn("t");
+        when(insertStatement.getValues()).thenReturn(Collections.emptyList());
+        when(insertStatement.getCommentSegments()).thenReturn(Collections.emptyList());
         InsertStatementContext result = mock(InsertStatementContext.class);
         when(result.getSqlStatement()).thenReturn(insertStatement);
         return result;

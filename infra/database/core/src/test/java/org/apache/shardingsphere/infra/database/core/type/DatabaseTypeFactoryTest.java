@@ -21,21 +21,22 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DatabaseTypeFactoryTest {
     
     @Test
     void assertGetDatabaseTypeWithTrunkURL() {
-        assertThat(DatabaseTypeFactory.get("jdbc:infra.fixture://localhost:3306/test").getType(), is("INFRA.TRUNK.FIXTURE"));
+        assertThat(DatabaseTypeFactory.get("jdbc:trunk://localhost:3306/test").getType(), is("TRUNK"));
     }
     
     @Test
     void assertGetDatabaseTypeWithBranchURL() {
-        assertThat(DatabaseTypeFactory.get("jdbc:infra.fixture:branch://localhost:3306/test").getType(), is("INFRA.BRANCH.FIXTURE"));
+        assertThat(DatabaseTypeFactory.get("jdbc:trunk:branch://localhost:3306/test").getType(), is("BRANCH"));
     }
     
     @Test
     void assertGetDatabaseTypeWithUnrecognizedURL() {
-        assertThat(DatabaseTypeFactory.get("jdbc:not-existed:test").getType(), is("INFRA.TRUNK.FIXTURE"));
+        assertThrows(UnsupportedStorageTypeException.class, () -> DatabaseTypeFactory.get("jdbc:not-existed:test"));
     }
 }

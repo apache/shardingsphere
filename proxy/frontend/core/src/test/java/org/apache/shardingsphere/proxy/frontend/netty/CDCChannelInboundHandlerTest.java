@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -100,7 +100,7 @@ class CDCChannelInboundHandlerTest {
         assertTrue(expectedGreetingResult.hasServerGreetingResult());
         CDCResponse expectedLoginResult = channel.readOutbound();
         assertThat(expectedLoginResult.getStatus(), is(Status.FAILED));
-        assertThat(expectedLoginResult.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
+        assertThat(expectedLoginResult.getErrorCode(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertFalse(channel.isOpen());
     }
     

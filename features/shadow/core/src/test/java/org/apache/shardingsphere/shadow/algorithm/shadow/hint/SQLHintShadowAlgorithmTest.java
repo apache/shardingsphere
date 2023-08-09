@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;

@@ -61,6 +61,138 @@
         </where>
     </select>
 
+    <select sql-case-id="select_udf_function_mysqltest1_f1">
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="mysqltest1.f1()" start-index="7" stop-index="21">
+                <function function-name="mysqltest1.f1()" alias="creation_date" start-index="7" stop-index="21" text="mysqltest1.f1()" />
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_case_when_with_mul_condition">
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="case 1*0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" start-index="7" stop-index="52">
+                <expr>
+                    <case-when-expression>
+                        <case-expr start-index="12" stop-index="14">
+                            <binary-operation-expression start-index="12" stop-index="14">
+                                <left>
+                                    <literal-expression value="1" start-index="12" stop-index="12" />
+                                </left>
+                                <operator>*</operator>
+                                <right>
+                                    <literal-expression value="0" start-index="14" stop-index="14" />
+                                </right>
+                            </binary-operation-expression>
+                        </case-expr>
+                        <when-exprs>
+                            <literal-expression value="a" start-index="21" stop-index="23" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="true" start-index="30" stop-index="35" />
+                        </then-exprs>
+                        <else-expr>
+                            <literal-expression value="false" start-index="42" stop-index="48" />
+                        </else-expr>
+                    </case-when-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_case_when_with_sub_condition">
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="case 1-0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" start-index="7" stop-index="52">
+                <expr>
+                    <case-when-expression>
+                        <case-expr start-index="12" stop-index="14">
+                            <binary-operation-expression start-index="12" stop-index="14">
+                                <left>
+                                    <literal-expression value="1" start-index="12" stop-index="12" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <literal-expression value="0" start-index="14" stop-index="14" />
+                                </right>
+                            </binary-operation-expression>
+                        </case-expr>
+                        <when-exprs>
+                            <literal-expression value="a" start-index="21" stop-index="23" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="true" start-index="30" stop-index="35" />
+                        </then-exprs>
+                        <else-expr>
+                            <literal-expression value="false" start-index="42" stop-index="48" />
+                        </else-expr>
+                    </case-when-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_case_when_with_add_condition">
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="case 1+0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" start-index="7" stop-index="52">
+                <expr>
+                    <case-when-expression>
+                        <case-expr start-index="12" stop-index="14">
+                            <binary-operation-expression start-index="12" stop-index="14">
+                                <left>
+                                    <literal-expression value="1" start-index="12" stop-index="12" />
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <literal-expression value="0" start-index="14" stop-index="14" />
+                                </right>
+                            </binary-operation-expression>
+                        </case-expr>
+                        <when-exprs>
+                            <literal-expression value="a" start-index="21" stop-index="23" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="true" start-index="30" stop-index="35" />
+                        </then-exprs>
+                        <else-expr>
+                            <literal-expression value="false" start-index="42" stop-index="48" />
+                        </else-expr>
+                    </case-when-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_case_when_with_div_condition">
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="case 1/0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" start-index="7" stop-index="52">
+                <expr>
+                    <case-when-expression>
+                        <case-expr start-index="12" stop-index="14">
+                            <binary-operation-expression start-index="12" stop-index="14">
+                                <left>
+                                    <literal-expression value="1" start-index="12" stop-index="12" />
+                                </left>
+                                <operator>/</operator>
+                                <right>
+                                    <literal-expression value="0" start-index="14" stop-index="14" />
+                                </right>
+                            </binary-operation-expression>
+                        </case-expr>
+                        <when-exprs>
+                            <literal-expression value="a" start-index="21" stop-index="23" />
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="true" start-index="30" stop-index="35" />
+                        </then-exprs>
+                        <else-expr>
+                            <literal-expression value="false" start-index="42" stop-index="48" />
+                        </else-expr>
+                    </case-when-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_expression">
         <from>
             <simple-table name="t_order" alias="o" start-index="38" stop-index="49" />
@@ -89,6 +221,32 @@
                 <owner name="o" start-index="60" stop-index="60" />
             </column-item>
         </order-by>
+    </select>
+
+    <select sql-case-id="select_with_encode_function">
+        <from>
+            <simple-table name="test_bytea" start-index="54" stop-index="63" />
+        </from>
+        <projections start-index="7" stop-index="47">
+            <expression-projection text="ENCODE(test_datetype_col::bytea,'escape')" start-index="7" stop-index="47">
+                <expr>
+                    <function function-name="ENCODE" start-index="7" stop-index="47" text="ENCODE(test_datetype_col::bytea,'escape')">
+                        <parameter>
+                            <type-cast-expression>
+                                <expression>
+                                    <column name="test_datetype_col" start-index="14" stop-index="30" >
+                                    </column>
+                                </expression>
+                                <data-type>bytea</data-type>
+                            </type-cast-expression>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="escape" start-index="39" stop-index="46" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 
     <select sql-case-id="select_with_date_function">
@@ -2445,6 +2603,146 @@
         </projections>
         <from>
             <simple-table name="t_order_item" start-index="51" stop-index="62" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_dbms_logmnr_mine_value_regular_function">
+        <projections start-index="7" stop-index="63">
+            <expression-projection text="DBMS_LOGMNR.MINE_VALUE(UNDO_VALUE, 'HR.EMPLOYEES.SALARY')" start-index="7" stop-index="63">
+                <function function-name="MINE_VALUE" text="DBMS_LOGMNR.MINE_VALUE(UNDO_VALUE, 'HR.EMPLOYEES.SALARY')" owner="DBMS_LOGMNR">
+                    <parameter>
+                        <column name="UNDO_VALUE" />
+                        <column name="HR.EMPLOYEES.SALARY" />
+                    </parameter>
+                </function>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="V$LOGMNR_CONTENTS" start-index="70" stop-index="86" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_interval_day_to_second_expression">
+        <projections start-index="7" stop-index="50">
+            <expression-projection text="(SYSTIMESTAMP - order_date) DAY(9) TO SECOND" start-index="7" stop-index="50">
+                <function>
+                    <interval-expression>
+                        <left>
+                            <column name="SYSTIMESTAMP" start-index="" stop-index=""/>
+                        </left>
+                        <operator>-</operator>
+                        <right>
+                            <column name="order_date" start-index="" stop-index="" />
+                        </right>
+                        <interval-day-to-second-expr>
+                            <leading-field-precision>9</leading-field-precision>
+                        </interval-day-to-second-expr>
+                    </interval-expression>
+                </function>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="orders" start-index="57" stop-index="62" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_feature_function">
+        <projections start-index="7" stop-index="45">
+            <expression-projection text="FEATURE_VALUE(nmf_sh_sample, 3 USING *)" start-index="7" stop-index="45">
+                <function function-name="FEATURE_VALUE" text="FEATURE_VALUE(nmf_sh_sample, 3 USING *)" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="nmf_sh_sample_apply_prepared" start-index="52" stop-index="79" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_cluster_function">
+        <projections start-index="7" stop-index="55">
+            <expression-projection text="CLUSTER_PROBABILITY(km_sh_clus_sample, 2 USING *)" start-index="7" stop-index="55">
+                <function function-name="CLUSTER_PROBABILITY" text="CLUSTER_PROBABILITY(km_sh_clus_sample, 2 USING *)" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="mining_data_apply_v" start-index="62" stop-index="80" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_multiset_except_expression">
+        <from>
+            <simple-table name="customers_demo" start-index="103" stop-index="116" />
+        </from>
+        <projections start-index="7" stop-index="96">
+            <column-projection name="customer_id" start-index="7" stop-index="17" />
+            <expression-projection text="cust_address_ntab MULTISET EXCEPT DISTINCT cust_address2_ntab" alias="multiset_except" start-index="20" stop-index="96" />
+        </projections>
+        <order-by>
+            <column-item name="customer_id" order-direction="ASC" start-index="127" stop-index="137"/>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_multiset_intersect_expression">
+        <from>
+            <simple-table name="customers_demo" start-index="109" stop-index="122" />
+        </from>
+        <projections start-index="7" stop-index="102">
+            <column-projection name="customer_id" start-index="7" stop-index="17" />
+            <expression-projection text="cust_address_ntab MULTISET INTERSECT DISTINCT cust_address2_ntab" alias="multiset_intersect" start-index="20" stop-index="102" />
+        </projections>
+        <order-by>
+            <column-item name="customer_id" order-direction="ASC" start-index="133" stop-index="143"/>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_multiset_union_expression">
+        <from>
+            <simple-table name="customers_demo" start-index="92" stop-index="105" />
+        </from>
+        <projections start-index="7" stop-index="85">
+            <column-projection name="customer_id" start-index="7" stop-index="17" />
+            <expression-projection text="cust_address_ntab MULTISET UNION cust_address2_ntab" alias="multiset_union" start-index="20" stop-index="85" />
+        </projections>
+        <order-by>
+            <column-item name="customer_id" order-direction="ASC" start-index="116" stop-index="126"/>
+        </order-by>
+    </select>
+    
+    <select sql-case-id="select_collect_expression">
+        <projections start-index="7" stop-index="92">
+            <expression-projection start-index="7" stop-index="92" text="CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t)" alias="Warehouses" />
+        </projections>
+        <from>
+            <simple-table start-index="99" stop-index="108" name="warehouses" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_expr_dot_expr">
+        <projections start-index="7" stop-index="43">
+            <expression-projection start-index="7" stop-index="43" text="DBURIType('/HR/DEPARTMENTS').getXML()">
+                <binary-operation-expression start-index="7" stop-index="43">
+                    <left>
+                        <function function-name="DBURIType" text="DBURIType('/HR/DEPARTMENTS')" />
+                    </left>
+                    <operator>.</operator>
+                    <right>
+                        <function function-name="getXML" text="getXML()" />
+                    </right>
+                </binary-operation-expression>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table start-index="50" stop-index="53" name="DUAL" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_arrow_symbol_in_function">
+        <projections start-index="7" stop-index="103">
+            <expression-projection start-index="7" stop-index="103" text="DECODE(DBMS_COMPRESSION.GET_COMPRESSION_TYPE(ownname => 'HR'), 'No Compression')" alias="compression_type">
+                <function function-name="DECODE" text="DECODE(DBMS_COMPRESSION.GET_COMPRESSION_TYPE(ownname => 'HR'), 'No Compression')" alias="compression_type" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table start-index="110" stop-index="113" name="DUAL" />
         </from>
     </select>
 </sql-parser-test-cases>

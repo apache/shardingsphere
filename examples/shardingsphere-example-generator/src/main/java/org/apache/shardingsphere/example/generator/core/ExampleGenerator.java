@@ -22,7 +22,8 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -32,6 +33,7 @@ import java.util.Properties;
 /**
  * Example generator.
  */
+@SingletonSPI
 public interface ExampleGenerator extends TypedSPI {
     
     String DEFAULT_OUTPUT = "./examples/shardingsphere-example-generator/target/generated-sources/";

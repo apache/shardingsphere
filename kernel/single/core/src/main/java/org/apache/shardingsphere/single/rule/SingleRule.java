@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.single.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -180,7 +181,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     
     private Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<SimpleTableSegment> tableSegments) {
         Collection<QualifiedTable> result = new LinkedList<>();
-        String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, database.getName());
+        String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(database.getName());
         for (SimpleTableSegment each : tableSegments) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
             result.add(new QualifiedTable(actualSchemaName, each.getTableName().getIdentifier().getValue()));

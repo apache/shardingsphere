@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.framework.container.confi
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;

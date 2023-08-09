@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import java.util.Collection;
 

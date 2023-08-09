@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.database;
 
-import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;

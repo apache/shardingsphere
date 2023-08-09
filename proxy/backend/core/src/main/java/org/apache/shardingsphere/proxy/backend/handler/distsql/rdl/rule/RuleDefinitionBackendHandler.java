@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -98,13 +98,10 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         return result;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private RuleConfiguration decorateRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
-        if (TypedSPILoader.contains(RuleConfigurationDecorator.class, ruleConfig.getClass().getName())) {
-            return TypedSPILoader.getService(RuleConfigurationDecorator.class, ruleConfig.getClass().getName()).decorate(database.getName(),
-                    database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(), ruleConfig);
-        }
-        return ruleConfig;
+        Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass().getName());
+        return decorator.map(optional -> optional.decorate(database.getName(), database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(), ruleConfig)).orElse(ruleConfig);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

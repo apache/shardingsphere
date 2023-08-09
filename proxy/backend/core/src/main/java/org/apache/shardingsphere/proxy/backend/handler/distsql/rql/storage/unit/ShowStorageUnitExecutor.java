@@ -20,8 +20,10 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.storage.unit
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
-import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
@@ -70,14 +72,14 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
             String key = entry.getKey();
             DataSourceProperties dataSourceProps = entry.getValue();
-            DataSourceMetaData metaData = resourceMetaData.getDataSourceMetaData(key);
+            ConnectionProperties connectionProps = resourceMetaData.getConnectionProperties(key);
             Map<String, Object> standardProps = dataSourceProps.getPoolPropertySynonyms().getStandardProperties();
             Map<String, Object> otherProps = dataSourceProps.getCustomDataSourceProperties().getProperties();
             result.add(new LocalDataQueryResultRow(key,
                     resourceMetaData.getStorageType(key).getType(),
-                    metaData.getHostname(),
-                    metaData.getPort(),
-                    metaData.getCatalog(),
+                    connectionProps.getHostname(),
+                    connectionProps.getPort(),
+                    connectionProps.getCatalog(),
                     getStandardProperty(standardProps, CONNECTION_TIMEOUT_MILLISECONDS),
                     getStandardProperty(standardProps, IDLE_TIMEOUT_MILLISECONDS),
                     getStandardProperty(standardProps, MAX_LIFETIME_MILLISECONDS),
@@ -113,9 +115,10 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     private DataSourceProperties getDataSourceProperties(final Map<String, DataSourceProperties> dataSourcePropsMap, final String storageUnitName,
                                                          final DatabaseType databaseType, final DataSource dataSource) {
         DataSourceProperties result = getDataSourceProperties(dataSource);
-        if (databaseType.isInstanceConnectionAvailable() && dataSourcePropsMap.containsKey(storageUnitName)) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        if (dialectDatabaseMetaData.isInstanceConnectionAvailable() && dataSourcePropsMap.containsKey(storageUnitName)) {
             DataSourceProperties unitDataSourceProperties = dataSourcePropsMap.get(storageUnitName);
-            for (final Entry<String, Object> entry : unitDataSourceProperties.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
+            for (Entry<String, Object> entry : unitDataSourceProperties.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
                 if (null != entry.getValue()) {
                     result.getPoolPropertySynonyms().getStandardProperties().put(entry.getKey(), entry.getValue());
                 }

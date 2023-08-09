@@ -24,14 +24,10 @@ CREATE DATABASE tbl;
 
 CREATE TABLE tbl.t_order_0(order_id BIGINT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE tbl.t_order_item_0(item_id BIGINT PRIMARY KEY, order_id BIGINT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
-CREATE TABLE tbl.t_order_federate_sharding_0 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
-CREATE TABLE tbl.t_order_item_federate_sharding_0 (item_id BIGINT NOT NULL, order_id BIGINT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
 CREATE INDEX order_index_t_order_0 ON tbl.t_order_0 (order_id);
 
 CREATE TABLE tbl.t_order_1(order_id BIGINT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE tbl.t_order_item_1(item_id BIGINT PRIMARY KEY, order_id BIGINT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
-CREATE TABLE tbl.t_order_federate_sharding_1 (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
-CREATE TABLE tbl.t_order_item_federate_sharding_1 (item_id BIGINT NOT NULL, order_id BIGINT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
 CREATE INDEX order_index_t_order_1 ON tbl.t_order_1 (order_id);
 
 CREATE TABLE tbl.t_order_2(order_id BIGINT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);

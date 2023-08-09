@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.database.core.spi;
 
 import org.apache.shardingsphere.infra.database.core.spi.fixture.DatabaseTypedSPIFixture;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -29,16 +29,16 @@ class DatabaseTypedSPILoaderTest {
     
     @Test
     void assertFindServiceWithTrunkDatabaseType() {
-        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE")).isPresent());
+        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "TRUNK")).isPresent());
     }
     
     @Test
     void assertFindServiceWithBranchDatabaseType() {
-        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "INFRA.BRANCH.FIXTURE")).isPresent());
+        assertTrue(DatabaseTypedSPILoader.findService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "BRANCH")).isPresent());
     }
     
     @Test
     void assertGetServiceWithRegisteredDatabaseType() {
-        assertDoesNotThrow(() -> DatabaseTypedSPILoader.getService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "INFRA.TRUNK.FIXTURE")));
+        assertDoesNotThrow(() -> DatabaseTypedSPILoader.getService(DatabaseTypedSPIFixture.class, TypedSPILoader.getService(DatabaseType.class, "TRUNK")));
     }
 }

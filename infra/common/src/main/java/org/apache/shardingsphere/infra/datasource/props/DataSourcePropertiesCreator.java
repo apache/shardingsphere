@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMe
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.synonym.ConnectionPropertySynonyms;
 import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;

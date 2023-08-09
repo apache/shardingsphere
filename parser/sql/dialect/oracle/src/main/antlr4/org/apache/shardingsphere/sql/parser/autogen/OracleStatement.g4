@@ -139,10 +139,14 @@ execute
     | alterResourceCost
     | alterRole
     | createTablespace
+    | alterTablespace
     | dropSequence
     | dropProfile
     | dropFunction
     | dropCluster
     | systemAction
+    | alterType
+    | createType
+    | createCluster
     ) SEMI_?
     ;

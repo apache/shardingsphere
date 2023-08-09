@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.7. </b>"
+pre = "<b>5.3. </b>"
 title = "数据分片"
-weight = 7
+weight = 3
 chapter = true
 +++
 
@@ -75,7 +75,7 @@ chapter = true
 
 ### 已知实现
 
-| *配置标识*                | *详细说明*                      | *全限定类名*                                                                                                                                                                                                                                                               |
-|--------------------------|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DatabaseTimestampService | 从数据库中获取当前时间进行路由      | [`org.apache.shardingsphere.timeservice.type.database.DatabaseTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/database/src/main/java/org/apache/shardingsphere/timeservice/type/database/DatabaseTimestampService.java) |
+| *配置标识*                   | *详细说明*             | *全限定类名*                                                                                                                                                                                                                                                                  |
+|--------------------------|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DatabaseTimestampService | 从数据库中获取当前时间进行路由    | [`org.apache.shardingsphere.timeservice.type.database.DatabaseTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/database/src/main/java/org/apache/shardingsphere/timeservice/type/database/DatabaseTimestampService.java) |
 | SystemTimestampService   | 从应用系统时间中获取当前时间进行路由 | [`org.apache.shardingsphere.timeservice.type.system.SystemTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/system/src/main/java/org/apache/shardingsphere/timeservice/type/system/SystemTimestampService.java)           |

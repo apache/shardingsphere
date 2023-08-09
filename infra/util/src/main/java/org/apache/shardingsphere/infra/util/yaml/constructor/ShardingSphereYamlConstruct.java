@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.yaml.constructor;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.yaml.snakeyaml.constructor.Construct;
 
 /**
