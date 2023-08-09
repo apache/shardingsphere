@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calc
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.SingleTableInventoryCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 
 import java.util.Iterator;

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineCancellable;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.SingleTableInventoryCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 
 /**
