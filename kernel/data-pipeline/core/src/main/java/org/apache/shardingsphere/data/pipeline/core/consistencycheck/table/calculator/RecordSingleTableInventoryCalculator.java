@@ -122,10 +122,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
             preparedStatement.setFetchSize(chunkSize);
         }
         calculationContext.setPreparedStatement(preparedStatement);
-        Object tableCheckPosition = param.getTableCheckPosition();
-        if (null != tableCheckPosition) {
-            preparedStatement.setObject(1, tableCheckPosition);
-        }
+        setParameters(preparedStatement, param);
         ResultSet resultSet = preparedStatement.executeQuery();
         calculationContext.setResultSet(resultSet);
     }
@@ -138,6 +135,13 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         Collection<String> columnNames = param.getColumnNames().isEmpty() ? Collections.singleton("*") : param.getColumnNames();
         boolean firstQuery = null == param.getTableCheckPosition();
         return pipelineSQLBuilder.buildQueryAllOrderingSQL(param.getSchemaName(), param.getLogicTableName(), columnNames, param.getFirstUniqueKey().getName(), firstQuery);
+    }
+    
+    private void setParameters(final PreparedStatement preparedStatement, final SingleTableInventoryCalculateParameter param) throws SQLException {
+        Object tableCheckPosition = param.getTableCheckPosition();
+        if (null != tableCheckPosition) {
+            preparedStatement.setObject(1, tableCheckPosition);
+        }
     }
     
     @RequiredArgsConstructor
