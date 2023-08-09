@@ -192,7 +192,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     private PipelineDataSourceConfiguration buildTargetPipelineDataSourceConfiguration(final ShardingSphereDatabase targetDatabase) {
         Map<String, Map<String, Object>> targetDataSourceProps = new HashMap<>();
         YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
-        for (Entry<String, DataSourceProperties> entry : targetDatabase.getResourceMetaData().getDataSourcePropsMap().entrySet()) {
+        for (Entry<String, DataSourceProperties> entry : targetDatabase.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap().entrySet()) {
             Map<String, Object> dataSourceProps = dataSourceConfigSwapper.swapToMap(entry.getValue());
             targetDataSourceProps.put(entry.getKey(), dataSourceProps);
         }

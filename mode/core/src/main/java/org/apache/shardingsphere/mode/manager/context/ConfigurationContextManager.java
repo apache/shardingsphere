@@ -274,7 +274,7 @@ public final class ConfigurationContextManager {
         StorageResource newStorageResource = new StorageResource(newStorageNodes, newStorageUnits);
         return Collections.singletonMap(database.getName().toLowerCase(),
                 new ShardingSphereDatabase(database.getName(), database.getProtocolType(),
-                        new ResourceMetaData(database.getName(), newStorageResource, database.getResourceMetaData().getDataSourcePropsMap()),
+                        new ResourceMetaData(database.getName(), newStorageResource, database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap()),
                         database.getRuleMetaData(), database.getSchemas()));
     }
     
@@ -348,7 +348,8 @@ public final class ConfigurationContextManager {
                 ? metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getConfigurations()
                 : ruleConfigs;
         StorageResource storageResource = new StorageResource(resourceMetaData.getStorageNodeMetaData().getDataSources(), resourceMetaData.getStorageUnitMetaData().getStorageUnits());
-        DatabaseConfiguration toBeCreatedDatabaseConfig = new DataSourceProvidedDatabaseConfiguration(storageResource, toBeCreatedRuleConfigs, resourceMetaData.getDataSourcePropsMap());
+        DatabaseConfiguration toBeCreatedDatabaseConfig = new DataSourceProvidedDatabaseConfiguration(
+                storageResource, toBeCreatedRuleConfigs, resourceMetaData.getStorageUnitMetaData().getDataSourcePropsMap());
         ShardingSphereDatabase changedDatabase = createChangedDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(), internalLoadMetaData,
                 metaDataContexts.get().getPersistService(), toBeCreatedDatabaseConfig, metaDataContexts.get().getMetaData().getProps(), instanceContext);
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(metaDataContexts.get().getMetaData().getDatabases());

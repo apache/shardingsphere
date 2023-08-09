@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
 
@@ -41,6 +42,8 @@ public final class StorageUnitMetaData {
     
     private final Map<String, DataSource> dataSources;
     
+    private final Map<String, DataSourceProperties> dataSourcePropsMap;
+    
     private final Map<String, DatabaseType> storageTypes;
     
     private final Map<String, StorageUnit> storageUnits;
@@ -51,8 +54,18 @@ public final class StorageUnitMetaData {
                                final Map<String, DataSource> enabledDataSources) {
         this.storageUnits = storageUnits;
         this.dataSources = getStorageUnitDataSources(dataSources, storageUnits);
+        dataSourcePropsMap = DataSourcePropertiesCreator.create(dataSources);
         this.storageTypes = getStorageUnitTypes(storageTypes);
-        this.connectionPropsMap = createConnectionPropertiesMap(enabledDataSources, storageTypes, storageUnits);
+        connectionPropsMap = createConnectionPropertiesMap(enabledDataSources, storageTypes, storageUnits);
+    }
+    
+    public StorageUnitMetaData(final Map<String, DataSource> dataSources, final Map<String, DataSourceProperties> dataSourcePropsMap,
+                               final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnit> storageUnits, final Map<String, DataSource> enabledDataSources) {
+        this.storageUnits = storageUnits;
+        this.dataSources = getStorageUnitDataSources(dataSources, storageUnits);
+        this.dataSourcePropsMap = dataSourcePropsMap;
+        this.storageTypes = getStorageUnitTypes(storageTypes);
+        connectionPropsMap = createConnectionPropertiesMap(enabledDataSources, storageTypes, storageUnits);
     }
     
     private Map<String, DataSource> getStorageUnitDataSources(final Map<String, DataSource> storageNodes, final Map<String, StorageUnit> storageUnits) {
