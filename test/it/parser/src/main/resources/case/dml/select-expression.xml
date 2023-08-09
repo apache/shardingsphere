@@ -2769,4 +2769,28 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_prediction_set_function">
+        <projections start-index="7" stop-index="63">
+            <expression-projection start-index="7" stop-index="63" text="PREDICTION_SET(dt_sh_clas_sample COST MODEL USING *)" alias="pset">
+                <function function-name="PREDICTION_SET" start-index="7" stop-index="63" text="PREDICTION_SET(dt_sh_clas_sample COST MODEL USING *)" alias="pset" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table start-index="70" stop-index="88" name="mining_data_apply_v" />
+        </from>
+        <where start-index="90" stop-index="111">
+            <expr>
+                <binary-operation-expression start-index="96" stop-index="111">
+                    <left>
+                        <column name="cust_id" start-index="96" stop-index="102" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="100011" start-index="106" stop-index="111" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
