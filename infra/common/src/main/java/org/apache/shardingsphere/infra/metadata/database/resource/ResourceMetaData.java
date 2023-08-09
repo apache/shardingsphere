@@ -70,6 +70,14 @@ public final class ResourceMetaData {
         this.dataSourcePropsMap = dataSourcePropsMap;
     }
     
+    private Map<String, DatabaseType> createStorageTypes(final Map<String, DataSource> dataSources, final Map<String, DataSource> enabledDataSources) {
+        Map<String, DatabaseType> result = new LinkedHashMap<>(dataSources.size(), 1F);
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            result.put(entry.getKey(), DatabaseTypeEngine.getStorageType(enabledDataSources.containsKey(entry.getKey()) ? Collections.singleton(entry.getValue()) : Collections.emptyList()));
+        }
+        return result;
+    }
+    
     /**
      * Get data sources.
      *
@@ -86,16 +94,6 @@ public final class ResourceMetaData {
      */
     public Map<String, DatabaseType> getStorageTypes() {
         return storageUnitMetaData.getStorageTypes();
-    }
-    
-    private Map<String, DatabaseType> createStorageTypes(final Map<String, DataSource> dataSources, final Map<String, DataSource> enabledDataSources) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(dataSources.size(), 1F);
-        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            DatabaseType storageType = enabledDataSources.containsKey(entry.getKey()) ? DatabaseTypeEngine.getStorageType(Collections.singletonList(entry.getValue()))
-                    : DatabaseTypeEngine.getStorageType(Collections.emptyList());
-            result.put(entry.getKey(), storageType);
-        }
-        return result;
     }
     
     /**
