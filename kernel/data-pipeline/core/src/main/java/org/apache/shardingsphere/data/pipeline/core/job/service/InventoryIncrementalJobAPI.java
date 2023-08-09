@@ -25,8 +25,8 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo
 import org.apache.shardingsphere.data.pipeline.common.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -99,24 +99,24 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
     
     /**
-     * Build data consistency calculate algorithm.
+     * Build data consistency checker.
      *
      * @param algorithmType algorithm type
      * @param algorithmProps algorithm properties
      * @return calculate algorithm
      */
-    DataConsistencyCalculateAlgorithm buildDataConsistencyCalculateAlgorithm(String algorithmType, Properties algorithmProps);
+    TableDataConsistencyChecker buildTableDataConsistencyChecker(String algorithmType, Properties algorithmProps);
     
     /**
      * Do data consistency check.
      *
      * @param pipelineJobConfig job configuration
-     * @param calculateAlgorithm calculate algorithm
+     * @param tableChecker table data consistency checker
      * @param progressContext consistency check job item progress context
      * @return each logic table check result
      */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(PipelineJobConfiguration pipelineJobConfig, DataConsistencyCalculateAlgorithm calculateAlgorithm,
-                                                                 ConsistencyCheckJobItemProgressContext progressContext);
+    Map<String, TableDataConsistencyCheckResult> dataConsistencyCheck(PipelineJobConfiguration pipelineJobConfig, TableDataConsistencyChecker tableChecker,
+                                                                      ConsistencyCheckJobItemProgressContext progressContext);
     
     /**
      * Aggregate data consistency check results.
@@ -125,7 +125,7 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      * @param checkResults check results
      * @return check success or not
      */
-    boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResults);
+    boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, TableDataConsistencyCheckResult> checkResults);
     
     /**
      * Commit pipeline job.

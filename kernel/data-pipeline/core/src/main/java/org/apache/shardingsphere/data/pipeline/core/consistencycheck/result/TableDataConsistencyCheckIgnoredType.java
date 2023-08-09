@@ -17,24 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.result;
 
-import java.util.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Data consistency calculated result.
+ * Table data consistency check ignored type.
  */
-public interface DataConsistencyCalculatedResult {
+@RequiredArgsConstructor
+@Getter
+public enum TableDataConsistencyCheckIgnoredType {
     
-    /**
-     * Get max unique key value.
-     *
-     * @return max unique key value
-     */
-    Optional<Object> getMaxUniqueKeyValue();
+    NO_UNIQUE_KEY("Table data consistency check are not supported for tables without unique key");
     
-    /**
-     * Get records count.
-     *
-     * @return records count
-     */
-    int getRecordsCount();
+    private final String message;
 }

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
+import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -39,6 +39,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,9 +51,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CRC32MatchDataConsistencyCalculateAlgorithmTest {
+class CRC32SingleTableInventoryCalculatorTest {
     
-    private DataConsistencyCalculateParameter parameter;
+    private SingleTableInventoryCalculateParameter parameter;
     
     @Mock
     private PipelineDataSourceWrapper pipelineDataSource;
@@ -63,8 +64,9 @@ class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     @BeforeEach
     void setUp() throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-        PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true, true);
-        parameter = new DataConsistencyCalculateParameter(pipelineDataSource, null, "foo_tbl", Arrays.asList("foo_col", "bar_col"), databaseType, uniqueKey, Collections.emptyMap());
+        List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true, true));
+        parameter = new SingleTableInventoryCalculateParameter(pipelineDataSource, new SchemaTableName(null, "foo_tbl"), Arrays.asList("foo_col", "bar_col"), uniqueKeys, Collections.emptyMap());
+        when(pipelineDataSource.getDatabaseType()).thenReturn(databaseType);
         when(pipelineDataSource.getConnection()).thenReturn(connection);
     }
     
@@ -74,7 +76,7 @@ class CRC32MatchDataConsistencyCalculateAlgorithmTest {
         when(connection.prepareStatement("SELECT CRC32(foo_col) FROM foo_tbl")).thenReturn(preparedStatement0);
         PreparedStatement preparedStatement1 = mockPreparedStatement(456L, 10);
         when(connection.prepareStatement("SELECT CRC32(bar_col) FROM foo_tbl")).thenReturn(preparedStatement1);
-        Iterator<DataConsistencyCalculatedResult> actual = new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter).iterator();
+        Iterator<SingleTableInventoryCalculatedResult> actual = new CRC32SingleTableInventoryCalculator().calculate(parameter).iterator();
         assertThat(actual.next().getRecordsCount(), is(10));
         assertFalse(actual.hasNext());
     }
@@ -91,6 +93,6 @@ class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     @Test
     void assertCalculateFailed() throws SQLException {
         when(connection.prepareStatement(anyString())).thenThrow(new SQLException());
-        assertThrows(PipelineTableDataConsistencyCheckLoadingFailedException.class, () -> new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter));
+        assertThrows(PipelineTableDataConsistencyCheckLoadingFailedException.class, () -> new CRC32SingleTableInventoryCalculator().calculate(parameter));
     }
 }

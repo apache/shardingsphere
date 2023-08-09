@@ -784,11 +784,11 @@ setFunction
 
 featureFunction
     : featureFunctionName LP_ (schemaName DOT_)? modelName (COMMA_ featureId)? (COMMA_ numberLiterals (COMMA_ numberLiterals)?)?
-    (DESC | ASC | ABS)? miningAttributeClause (AND miningAttributeClause)? RP_
+    (DESC | ASC | ABS)? (COST MODEL (AUTO)?)? miningAttributeClause (AND miningAttributeClause)? RP_
     ;
 
 featureFunctionName
-    : FEATURE_COMPARE | FEATURE_DETAILS | FEATURE_SET | FEATURE_ID | FEATURE_VALUE | CLUSTER_DETAILS | CLUSTER_DISTANCE | CLUSTER_ID | CLUSTER_PROBABILITY | CLUSTER_SET | PREDICTION_PROBABILITY
+    : FEATURE_COMPARE | FEATURE_DETAILS | FEATURE_SET | FEATURE_ID | FEATURE_VALUE | CLUSTER_DETAILS | CLUSTER_DISTANCE | CLUSTER_ID | CLUSTER_PROBABILITY | CLUSTER_SET | PREDICTION_PROBABILITY | PREDICTION_SET
     ;
 
 miningAttributeClause
@@ -1795,7 +1795,7 @@ matchString
     ;
 
 parameterType
-    : identifier
+    : (owner DOT_)? identifier
     ;
 
 returnType

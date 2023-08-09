@@ -17,25 +17,24 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.result;
 
-import lombok.Getter;
-import lombok.ToString;
+import java.util.Optional;
 
 /**
- * Data consistency count check result.
+ * Single table inventory calculated result.
  */
-@Getter
-@ToString
-public final class DataConsistencyCountCheckResult {
+public interface SingleTableInventoryCalculatedResult {
     
-    private final long sourceRecordsCount;
+    /**
+     * Get max unique key value.
+     *
+     * @return max unique key value
+     */
+    Optional<Object> getMaxUniqueKeyValue();
     
-    private final long targetRecordsCount;
-    
-    private final boolean matched;
-    
-    public DataConsistencyCountCheckResult(final long sourceRecordsCount, final long targetRecordsCount) {
-        this.sourceRecordsCount = sourceRecordsCount;
-        this.targetRecordsCount = targetRecordsCount;
-        matched = sourceRecordsCount == targetRecordsCount;
-    }
+    /**
+     * Get records count.
+     *
+     * @return records count
+     */
+    int getRecordsCount();
 }

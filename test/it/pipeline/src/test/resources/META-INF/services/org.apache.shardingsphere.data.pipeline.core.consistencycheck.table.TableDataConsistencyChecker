@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.CRC32MatchDataConsistencyCalculateAlgorithm
-org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataMatchDataConsistencyCalculateAlgorithm
+org.apache.shardingsphere.test.it.data.pipeline.core.fixture.TableDataConsistencyCheckerFixture
