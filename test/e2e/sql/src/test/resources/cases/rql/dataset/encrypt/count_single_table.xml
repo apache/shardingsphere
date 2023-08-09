@@ -20,5 +20,5 @@
         <column name="database" />
         <column name="count" />
     </metadata>
-    <row values="encrypt| 4" />
+    <row values="encrypt| 6" />
 </dataset>
