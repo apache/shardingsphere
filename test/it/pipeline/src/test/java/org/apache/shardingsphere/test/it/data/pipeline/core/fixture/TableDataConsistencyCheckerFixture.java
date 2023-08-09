@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyContentCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCountCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyContentCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -32,8 +32,8 @@ import java.util.Collection;
 public final class TableDataConsistencyCheckerFixture implements TableDataConsistencyChecker {
     
     @Override
-    public DataConsistencyCheckResult checkSingleTableInventoryData(final TableDataConsistencyCheckParameter param) {
-        return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(2, 2), new DataConsistencyContentCheckResult(true));
+    public TableDataConsistencyCheckResult checkSingleTableInventoryData(final TableDataConsistencyCheckParameter param) {
+        return new TableDataConsistencyCheckResult(new TableDataConsistencyCountCheckResult(2, 2), new TableDataConsistencyContentCheckResult(true));
     }
     
     @Override

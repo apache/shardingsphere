@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
@@ -96,11 +96,11 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             JobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
             InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, jobType.getType());
             PipelineJobConfiguration parentJobConfig = jobAPI.getJobConfiguration(parentJobId);
-            TableDataConsistencyChecker tableDataConsistencyChecker = jobAPI.buildTableDataConsistencyChecker(checkJobConfig.getAlgorithmTypeName(), checkJobConfig.getAlgorithmProps());
-            ConsistencyCheckTasksRunner.this.tableDataConsistencyChecker.set(tableDataConsistencyChecker);
-            Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult;
+            TableDataConsistencyChecker tableChecker = jobAPI.buildTableDataConsistencyChecker(checkJobConfig.getAlgorithmTypeName(), checkJobConfig.getAlgorithmProps());
+            ConsistencyCheckTasksRunner.this.tableDataConsistencyChecker.set(tableChecker);
+            Map<String, TableDataConsistencyCheckResult> dataConsistencyCheckResult;
             try {
-                dataConsistencyCheckResult = jobAPI.dataConsistencyCheck(parentJobConfig, tableDataConsistencyChecker, jobItemContext.getProgressContext());
+                dataConsistencyCheckResult = jobAPI.dataConsistencyCheck(parentJobConfig, tableChecker, jobItemContext.getProgressContext());
                 PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(parentJobId)).persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
             } finally {
                 jobItemContext.getProgressContext().setCheckEndTimeMillis(System.currentTimeMillis());
@@ -109,9 +109,9 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         
         @Override
         protected void doStop() {
-            TableDataConsistencyChecker checker = tableDataConsistencyChecker.get();
-            if (null != checker) {
-                checker.cancel();
+            TableDataConsistencyChecker tableChecker = tableDataConsistencyChecker.get();
+            if (null != tableChecker) {
+                tableChecker.cancel();
             }
         }
     }
@@ -128,8 +128,8 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         
         @Override
         public void onFailure(final Throwable throwable) {
-            TableDataConsistencyChecker checker = tableDataConsistencyChecker.get();
-            if (null != checker && checker.isCanceling()) {
+            TableDataConsistencyChecker tableChecker = tableDataConsistencyChecker.get();
+            if (null != tableChecker && tableChecker.isCanceling()) {
                 log.info("onFailure, canceling, check job id: {}, parent job id: {}", checkJobId, parentJobId);
                 checkJobAPI.stop(checkJobId);
                 return;

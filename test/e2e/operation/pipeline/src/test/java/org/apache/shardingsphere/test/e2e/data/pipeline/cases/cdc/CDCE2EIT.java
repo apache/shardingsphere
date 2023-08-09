@@ -34,7 +34,7 @@ import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSou
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
@@ -203,8 +203,8 @@ class CDCE2EIT {
         ConsistencyCheckJobItemProgressContext progressContext = new ConsistencyCheckJobItemProgressContext("", 0);
         TableDataConsistencyCheckParameter param = new TableDataConsistencyCheckParameter("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
                 tableMetaData.getColumnNames(), primaryKeyMetaData, null, progressContext);
-        TableDataConsistencyChecker tableDataConsistencyChecker = TypedSPILoader.getService(TableDataConsistencyChecker.class, "DATA_MATCH", new Properties());
-        DataConsistencyCheckResult checkResult = tableDataConsistencyChecker.checkSingleTableInventoryData(param);
+        TableDataConsistencyChecker tableChecker = TypedSPILoader.getService(TableDataConsistencyChecker.class, "DATA_MATCH", new Properties());
+        TableDataConsistencyCheckResult checkResult = tableChecker.checkSingleTableInventoryData(param);
         assertTrue(checkResult.isMatched());
     }
     

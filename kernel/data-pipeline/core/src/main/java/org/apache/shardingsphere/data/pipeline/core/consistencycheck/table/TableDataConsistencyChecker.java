@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineCancellable;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
@@ -35,7 +35,7 @@ public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm, Pi
      * @param param check parameter
      * @return check result
      */
-    DataConsistencyCheckResult checkSingleTableInventoryData(TableDataConsistencyCheckParameter param);
+    TableDataConsistencyCheckResult checkSingleTableInventoryData(TableDataConsistencyCheckParameter param);
     
     /**
      * Get supported database types.

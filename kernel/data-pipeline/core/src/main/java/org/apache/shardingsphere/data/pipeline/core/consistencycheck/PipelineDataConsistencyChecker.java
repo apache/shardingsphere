@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 
 import java.util.Map;
@@ -30,8 +30,8 @@ public interface PipelineDataConsistencyChecker {
     /**
      * Data consistency check.
      *
-     * @param tableDataConsistencyChecker table data consistency checker
+     * @param tableChecker table data consistency checker
      * @return check results. key is logic table name, value is check result.
      */
-    Map<String, DataConsistencyCheckResult> check(TableDataConsistencyChecker tableDataConsistencyChecker);
+    Map<String, TableDataConsistencyCheckResult> check(TableDataConsistencyChecker tableChecker);
 }

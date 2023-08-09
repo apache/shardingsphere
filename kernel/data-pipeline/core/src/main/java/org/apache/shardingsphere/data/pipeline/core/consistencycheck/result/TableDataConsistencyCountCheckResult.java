@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * Data consistency count check result.
+ * Table data consistency count check result.
  */
 @Getter
 @ToString
-public final class DataConsistencyCountCheckResult {
+public final class TableDataConsistencyCountCheckResult {
     
     private final long sourceRecordsCount;
     
@@ -33,7 +33,7 @@ public final class DataConsistencyCountCheckResult {
     
     private final boolean matched;
     
-    public DataConsistencyCountCheckResult(final long sourceRecordsCount, final long targetRecordsCount) {
+    public TableDataConsistencyCountCheckResult(final long sourceRecordsCount, final long targetRecordsCount) {
         this.sourceRecordsCount = sourceRecordsCount;
         this.targetRecordsCount = targetRecordsCount;
         matched = sourceRecordsCount == targetRecordsCount;
