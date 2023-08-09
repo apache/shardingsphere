@@ -2793,4 +2793,15 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_cursor_function">
+        <projections start-index="7" stop-index="100">
+            <expression-projection start-index="7" stop-index="100" text="CURSOR(SELECTsalary,commission_pctFROMemployeeseWHEREe.department_id=d.department_id)">
+                <function function-name="CURSOR" start-index="7" stop-index="100" text="CURSOR(SELECT salary, commission_pct FROM employees e WHERE e.department_id = d.department_id)" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="departments" alias="d" start-index="107" stop-index="119" />
+        </from>
+    </select>
 </sql-parser-test-cases>
