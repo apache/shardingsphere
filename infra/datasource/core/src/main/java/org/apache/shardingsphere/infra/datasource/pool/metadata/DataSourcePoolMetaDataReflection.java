@@ -42,23 +42,25 @@ public final class DataSourcePoolMetaDataReflection {
      */
     public Optional<String> getJdbcUrl() {
         Optional<String> jdbcUrl = ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
-        if (!jdbcUrl.isPresent()) {
+        if (jdbcUrl.isPresent()) {
+            return jdbcUrl;
+        } else {
             return ReflectionUtils.getFieldValueByGetMethod(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
         }
-        return jdbcUrl;
     }
     
     /**
      * Get JDBC connection properties.
      * Get it directly through the attribute first, and get it through the get method when it is empty
-     * 
+     *
      * @return JDBC connection properties
      */
     public Optional<Properties> getJdbcConnectionProperties() {
         Optional<Properties> properties = ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
-        if (!properties.isPresent()) {
+        if (properties.isPresent()) {
+            return properties;
+        } else {
             return ReflectionUtils.getFieldValueByGetMethod(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
         }
-        return properties;
     }
 }

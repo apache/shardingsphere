@@ -148,23 +148,24 @@ public final class ReflectionUtils {
      */
     public static <T> Optional<T> getFieldValueByGetMethod(final Object target, final String fieldName) {
         String getterName = GETTER_PREFIX + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, fieldName);
-        final Method method = findMethod(target.getClass(), getterName);
-        if (method != null) {
-            T value = invokeMethod(method, target);
+        final Optional<Method> method = findMethod(target.getClass(), getterName);
+        if (method.isPresent()) {
+            T value = invokeMethod(method.get(), target);
             return Optional.ofNullable(value);
+        } else {
+            return Optional.empty();
         }
-        return Optional.empty();
     }
     
-    private static Method findMethod(final Class<?> clazz, final String methodName, final Class<?>... parameterTypes) {
+    private static Optional<Method> findMethod(final Class<?> clazz, final String methodName, final Class<?>... parameterTypes) {
         try {
-            return clazz.getMethod(methodName, parameterTypes);
+            return Optional.of(clazz.getMethod(methodName, parameterTypes));
         } catch (NoSuchMethodException e) {
             Class<?> superclass = clazz.getSuperclass();
-            if (superclass != null && superclass != Object.class) {
+            if (null != superclass && Object.class != superclass) {
                 return findMethod(superclass, methodName, parameterTypes);
             }
         }
-        return null;
+        return Optional.empty();
     }
 }
