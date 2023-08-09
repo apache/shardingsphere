@@ -35,8 +35,8 @@ import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSou
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.DataMatchTableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckParameter;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -69,6 +69,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -202,7 +203,8 @@ class CDCE2EIT {
         ConsistencyCheckJobItemProgressContext progressContext = new ConsistencyCheckJobItemProgressContext("", 0);
         TableDataConsistencyCheckParameter param = new TableDataConsistencyCheckParameter("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
                 tableMetaData.getColumnNames(), primaryKeyMetaData, null, progressContext);
-        DataConsistencyCheckResult checkResult = new DataMatchTableDataConsistencyChecker().checkSingleTableInventoryData(param);
+        TableDataConsistencyChecker tableDataConsistencyChecker = TypedSPILoader.getService(TableDataConsistencyChecker.class, "DATA_MATCH", new Properties());
+        DataConsistencyCheckResult checkResult = tableDataConsistencyChecker.checkSingleTableInventoryData(param);
         assertTrue(checkResult.isMatched());
     }
     
