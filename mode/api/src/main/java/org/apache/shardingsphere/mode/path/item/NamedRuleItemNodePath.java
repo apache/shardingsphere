@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.nodepath.item;
+package org.apache.shardingsphere.mode.path.item;
 
-import org.apache.shardingsphere.infra.metadata.nodepath.root.RuleRootNodePath;
+import org.apache.shardingsphere.mode.path.root.RuleRootNodePath;
 
 import java.util.Optional;
 import java.util.regex.Matcher;

@@ -77,7 +77,7 @@ public final class DatabaseTypeEngine {
     private static Map<String, DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSource> result = new LinkedHashMap<>();
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
-            result.putAll(DataSourceStateManager.getInstance().getEnabledDataSourceMap(entry.getKey(), entry.getValue().getDataSources()));
+            result.putAll(DataSourceStateManager.getInstance().getEnabledDataSources(entry.getKey(), entry.getValue().getDataSources()));
         }
         return result;
     }
@@ -91,7 +91,7 @@ public final class DatabaseTypeEngine {
      */
     public static Map<String, DatabaseType> getStorageTypes(final String databaseName, final DatabaseConfiguration databaseConfig) {
         Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1F);
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, databaseConfig.getDataSources());
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig.getDataSources());
         for (Entry<String, DataSource> entry : enabledDataSources.entrySet()) {
             result.put(entry.getKey(), getStorageType(entry.getValue()));
         }

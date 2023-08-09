@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCrea
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResourceWithProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -45,7 +45,7 @@ public final class ResourceSwitchManager {
      * @param toBeChangedDataSourceProps to be changed data source properties map
      * @return created switching resource
      */
-    public SwitchingResource create(final ShardingSphereResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
+    public SwitchingResource create(final ResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         resourceMetaData.getDataSourcePropsMap().putAll(toBeChangedDataSourceProps);
         StorageResourceWithProperties toBeChangedStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(toBeChangedDataSourceProps);
         return new SwitchingResource(resourceMetaData, createNewStorageResource(resourceMetaData, toBeChangedStorageResource),
@@ -59,7 +59,7 @@ public final class ResourceSwitchManager {
      * @param toBeDeletedDataSourceProps to be deleted data source properties map
      * @return created switching resource
      */
-    public SwitchingResource createByDropResource(final ShardingSphereResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> toBeDeletedDataSourceProps) {
+    public SwitchingResource createByDropResource(final ResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> toBeDeletedDataSourceProps) {
         resourceMetaData.getDataSourcePropsMap().keySet().removeIf(toBeDeletedDataSourceProps::containsKey);
         StorageResourceWithProperties toToBeRemovedStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(toBeDeletedDataSourceProps);
         return new SwitchingResource(resourceMetaData, new StorageResource(Collections.emptyMap(), Collections.emptyMap()),
@@ -78,7 +78,7 @@ public final class ResourceSwitchManager {
      * @param toBeChangedDataSourceProps to be changed data source properties map
      * @return created switching resource
      */
-    public SwitchingResource createByAlterDataSourceProps(final ShardingSphereResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
+    public SwitchingResource createByAlterDataSourceProps(final ResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         resourceMetaData.getDataSourcePropsMap().keySet().removeIf(each -> !toBeChangedDataSourceProps.containsKey(each));
         resourceMetaData.getDataSourcePropsMap().putAll(toBeChangedDataSourceProps);
         StorageResourceWithProperties toBeChangedStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(toBeChangedDataSourceProps);
@@ -88,13 +88,13 @@ public final class ResourceSwitchManager {
         return new SwitchingResource(resourceMetaData, createNewStorageResource(resourceMetaData, toBeChangedStorageResource), staleStorageResource, toBeChangedDataSourceProps);
     }
     
-    private StorageResource createNewStorageResource(final ShardingSphereResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeChangedStorageResource) {
+    private StorageResource createNewStorageResource(final ResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeChangedStorageResource) {
         Map<String, DataSource> storageNodes = getNewStorageNodes(resourceMetaData, toBeChangedStorageResource.getStorageNodes(), toBeChangedStorageResource.getDataSourcePropertiesMap());
         Map<String, StorageUnit> storageUnits = getNewStorageUnits(resourceMetaData, toBeChangedStorageResource.getStorageUnits());
         return new StorageResource(storageNodes, storageUnits);
     }
     
-    private Map<String, DataSource> getNewStorageNodes(final ShardingSphereResourceMetaData resourceMetaData, final Map<String, DataSource> toBeChangedStorageNodes,
+    private Map<String, DataSource> getNewStorageNodes(final ResourceMetaData resourceMetaData, final Map<String, DataSource> toBeChangedStorageNodes,
                                                        final Map<String, DataSourceProperties> dataSourcePropertiesMap) {
         Map<String, DataSource> result = new LinkedHashMap<>(resourceMetaData.getStorageNodeMetaData().getDataSources());
         result.keySet().removeAll(getToBeDeletedDataSources(resourceMetaData.getStorageNodeMetaData().getDataSources(), toBeChangedStorageNodes.keySet()).keySet());
@@ -103,7 +103,7 @@ public final class ResourceSwitchManager {
         return result;
     }
     
-    private Map<String, StorageUnit> getNewStorageUnits(final ShardingSphereResourceMetaData resourceMetaData, final Map<String, StorageUnit> toBeChangedStorageUnits) {
+    private Map<String, StorageUnit> getNewStorageUnits(final ResourceMetaData resourceMetaData, final Map<String, StorageUnit> toBeChangedStorageUnits) {
         Map<String, StorageUnit> result = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaData().getStorageUnits());
         result.keySet().removeAll(getToBeDeletedStorageUnits(resourceMetaData.getStorageUnitMetaData().getStorageUnits(), toBeChangedStorageUnits.keySet()).keySet());
         result.putAll(getChangedStorageUnits(resourceMetaData.getStorageUnitMetaData().getStorageUnits(), toBeChangedStorageUnits));
@@ -136,7 +136,7 @@ public final class ResourceSwitchManager {
         return result;
     }
     
-    private StorageResource getToBeRemovedStaleDataSources(final ShardingSphereResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeRemovedStorageResource) {
+    private StorageResource getToBeRemovedStaleDataSources(final ResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeRemovedStorageResource) {
         Map<String, StorageUnit> reservedStorageUnits = resourceMetaData.getStorageUnitMetaData().getStorageUnits().entrySet().stream()
                 .filter(entry -> !toBeRemovedStorageResource.getStorageUnits().containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
         Collection<String> inUsedDataSourceNames = reservedStorageUnits.values().stream().map(StorageUnit::getNodeName).collect(Collectors.toSet());
@@ -148,7 +148,7 @@ public final class ResourceSwitchManager {
         return new StorageResource(staleStorageNodes, staleStorageUnits);
     }
     
-    private StorageResource getStaleDataSources(final ShardingSphereResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeChangedStorageResource) {
+    private StorageResource getStaleDataSources(final ResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeChangedStorageResource) {
         Map<String, DataSource> storageNodes = new LinkedHashMap<>(resourceMetaData.getStorageNodeMetaData().getDataSources().size(), 1F);
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaData().getStorageUnits().size(), 1F);
         storageNodes.putAll(getToBeChangedDataSources(resourceMetaData.getStorageNodeMetaData().getDataSources(), toBeChangedStorageResource.getDataSourcePropertiesMap()));

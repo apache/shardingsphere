@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -69,14 +69,14 @@ class SQLFederationEngineTest {
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.singletonList("information_schema"));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
-                databaseType, mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
-        assertTrue(engine.decide(sqlStatementContext, Collections.emptyList(), database, mock(ShardingSphereRuleMetaData.class)));
+                databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), mock(RuleMetaData.class), Collections.emptyMap());
+        assertTrue(engine.decide(sqlStatementContext, Collections.emptyList(), database, mock(RuleMetaData.class)));
         engine.close();
     }
     
     private SQLFederationEngine createSQLFederationEngine(final Collection<ShardingSphereRule> globalRules, final Collection<ShardingSphereRule> databaseRules) {
         when(metaData.getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(databaseRules);
-        when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(globalRules));
+        when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(globalRules));
         return new SQLFederationEngine(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, metaData, mock(ShardingSphereStatistics.class), mock(JDBCExecutor.class));
     }
     
@@ -86,8 +86,8 @@ class SQLFederationEngineTest {
                 Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(false, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
         SQLFederationEngine engine = createSQLFederationEngine(globalRules, Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
-                databaseType, mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(globalRules), Collections.emptyMap());
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(globalRules);
+                databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(globalRules), Collections.emptyMap());
+        RuleMetaData globalRuleMetaData = new RuleMetaData(globalRules);
         assertFalse(engine.decide(mock(CommonSQLStatementContext.class), Collections.emptyList(), database, globalRuleMetaData));
         engine.close();
     }
@@ -98,8 +98,8 @@ class SQLFederationEngineTest {
                 Collections.singletonList(new SQLFederationRule(new SQLFederationRuleConfiguration(true, mock(CacheOption.class)), Collections.emptyMap(), mock(ConfigurationProperties.class)));
         SQLFederationEngine engine = createSQLFederationEngine(globalRules, Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
-                databaseType, mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(globalRules), Collections.emptyMap());
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(globalRules);
+                databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(globalRules), Collections.emptyMap());
+        RuleMetaData globalRuleMetaData = new RuleMetaData(globalRules);
         assertFalse(engine.decide(mock(CommonSQLStatementContext.class), Collections.emptyList(), database, globalRuleMetaData));
         engine.close();
     }
@@ -111,8 +111,8 @@ class SQLFederationEngineTest {
         Collection<ShardingSphereRule> databaseRules = Collections.singletonList(new SQLFederationDeciderRuleMatchFixture());
         SQLFederationEngine engine = createSQLFederationEngine(globalRules, databaseRules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
-                databaseType, mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(globalRules), Collections.emptyMap());
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(globalRules);
+                databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(globalRules), Collections.emptyMap());
+        RuleMetaData globalRuleMetaData = new RuleMetaData(globalRules);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getDatabaseType()).thenReturn(databaseType);
         assertTrue(engine.decide(selectStatementContext, Collections.emptyList(), database, globalRuleMetaData));
@@ -126,10 +126,10 @@ class SQLFederationEngineTest {
         Collection<ShardingSphereRule> databaseRules = Collections.singletonList(new SQLFederationDeciderRuleNotMatchFixture());
         SQLFederationEngine engine = createSQLFederationEngine(globalRules, databaseRules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
-                databaseType, mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(databaseRules), Collections.emptyMap());
+                databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(databaseRules), Collections.emptyMap());
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getDatabaseType()).thenReturn(databaseType);
-        assertFalse(engine.decide(selectStatementContext, Collections.emptyList(), database, new ShardingSphereRuleMetaData(globalRules)));
+        assertFalse(engine.decide(selectStatementContext, Collections.emptyList(), database, new RuleMetaData(globalRules)));
         engine.close();
     }
     
@@ -141,10 +141,10 @@ class SQLFederationEngineTest {
                 new SQLFederationDeciderRuleMatchFixture());
         SQLFederationEngine engine = createSQLFederationEngine(globalRules, databaseRules);
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
-                databaseType, mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(databaseRules), Collections.emptyMap());
+                databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(databaseRules), Collections.emptyMap());
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getDatabaseType()).thenReturn(databaseType);
-        assertTrue(engine.decide(selectStatementContext, Collections.emptyList(), database, new ShardingSphereRuleMetaData(globalRules)));
+        assertTrue(engine.decide(selectStatementContext, Collections.emptyList(), database, new RuleMetaData(globalRules)));
         engine.close();
     }
 }

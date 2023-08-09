@@ -99,17 +99,17 @@ public final class DataSourceStateManager {
      * @return enabled data sources
      */
     public Collection<DataSource> getEnabledDataSources(final String databaseName, final DatabaseConfiguration databaseConfig) {
-        return databaseConfig.getDataSources().isEmpty() ? Collections.emptyList() : getEnabledDataSourceMap(databaseName, databaseConfig.getDataSources()).values();
+        return databaseConfig.getDataSources().isEmpty() ? Collections.emptyList() : getEnabledDataSources(databaseName, databaseConfig.getDataSources()).values();
     }
     
     /**
-     * Get enabled data source map.
+     * Get enabled data sources.
      *
      * @param databaseName database name
      * @param dataSources data sources
-     * @return enabled data source map
+     * @return enabled data sources
      */
-    public Map<String, DataSource> getEnabledDataSourceMap(final String databaseName, final Map<String, DataSource> dataSources) {
+    public Map<String, DataSource> getEnabledDataSources(final String databaseName, final Map<String, DataSource> dataSources) {
         if (dataSources.isEmpty() || !initialized.get()) {
             return dataSources;
         }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -58,7 +58,7 @@ class ShowSingleTableExecutorTest {
         Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
         singleTableDataNodeMap.put("t_order", Collections.singletonList(new DataNode("ds_1", "t_order")));
         singleTableDataNodeMap.put("t_order_item", Collections.singletonList(new DataNode("ds_2", "t_order_item")));
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(mockSingleRule(singleTableDataNodeMap))));
+        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(Collections.singleton(mockSingleRule(singleTableDataNodeMap))));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     

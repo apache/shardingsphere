@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.resource;
+package org.apache.shardingsphere.infra.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import javax.sql.DataSource;
-import java.util.Map;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * ShardingSphere storage node meta data.
+ * Unknown column exception.
  */
-@Getter
-@RequiredArgsConstructor
-public final class ShardingSphereStorageNodeMetaData {
+public final class UnknownColumnException extends MetaDataSQLException {
     
-    private final Map<String, DataSource> dataSources;
+    private static final long serialVersionUID = -1305402273592303335L;
+    
+    public UnknownColumnException(final String columnName) {
+        super(XOpenSQLState.NOT_FOUND, 6, "Unknown column '%s' in 'field list'.", columnName);
+    }
 }

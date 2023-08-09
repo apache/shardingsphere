@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.segment.expression;
+package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.exception.AmbiguousColumnException;
+import org.apache.shardingsphere.infra.exception.UnknownColumnException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -67,11 +69,11 @@ public final class ColumnSegmentBinder {
         for (TableSegmentBinderContext each : tableBinderContexts) {
             ProjectionSegment projectionSegment = each.getProjectionSegmentByColumnLabel(columnName);
             if (projectionSegment instanceof ColumnProjectionSegment) {
-                ShardingSpherePreconditions.checkState(null == result, () -> new IllegalStateException(String.format("Column '%s' in field list is ambiguous.", columnName)));
+                ShardingSpherePreconditions.checkState(null == result, () -> new AmbiguousColumnException(columnName));
                 result = ((ColumnProjectionSegment) projectionSegment).getColumn();
             }
         }
-        ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalStateException(String.format("Unknown column '%s' in 'field list'.", columnName)));
+        ShardingSpherePreconditions.checkNotNull(result, () -> new UnknownColumnException(columnName));
         return result;
     }
 }
