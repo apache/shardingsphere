@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.consistencycheck.algorithm;
+package org.apache.shardingsphere.test.it.data.pipeline.core.consistencycheck.table.calculator;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
