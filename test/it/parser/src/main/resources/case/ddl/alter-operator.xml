@@ -22,4 +22,5 @@
     <alter-operator sql-case-id="alter_operator_set" />
     <alter-operator sql-case-id="alter_operator_set_restrict_join" />
     <alter-operator sql-case-id="alter_operator_compile" />
+    <alter-operator sql-case-id="alter_operator_add_binding_return_number_using" />
 </sql-parser-test-cases>
