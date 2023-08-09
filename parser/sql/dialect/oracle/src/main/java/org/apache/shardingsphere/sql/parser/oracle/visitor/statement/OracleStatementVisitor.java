@@ -905,12 +905,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             result.getParameters()
                     .add(new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.subquery()))));
         } else {
-            ASTNode exprSegment = visit(ctx.expr());
-            if (exprSegment instanceof ColumnSegment) {
-                result.getParameters().add((ColumnSegment) exprSegment);
-            } else if (exprSegment instanceof LiteralExpressionSegment) {
-                result.getParameters().add((LiteralExpressionSegment) exprSegment);
-            }
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         }
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         return result;
