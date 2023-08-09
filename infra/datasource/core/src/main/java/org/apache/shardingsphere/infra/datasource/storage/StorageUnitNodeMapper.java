@@ -22,11 +22,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Storage unit.
+ * Storage unit and node mapper.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StorageUnit {
+public final class StorageUnitNodeMapper {
     
     private final String name;
     
@@ -36,21 +36,21 @@ public final class StorageUnit {
     
     private final String url;
     
-    public StorageUnit(final String name, final String nodeName, final String url) {
+    public StorageUnitNodeMapper(final String name, final String nodeName, final String url) {
         this(name, nodeName, null, url);
-    }
-    
-    private boolean isSameCatalog(final StorageUnit storageUnit) {
-        return null == catalog ? null == storageUnit : catalog.equalsIgnoreCase(storageUnit.getCatalog());
     }
     
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof StorageUnit) {
-            StorageUnit storageUnit = (StorageUnit) obj;
-            return storageUnit.name.equalsIgnoreCase(name) && storageUnit.nodeName.equalsIgnoreCase(nodeName) && isSameCatalog(storageUnit);
+        if (obj instanceof StorageUnitNodeMapper) {
+            StorageUnitNodeMapper storageUnitNodeMapper = (StorageUnitNodeMapper) obj;
+            return storageUnitNodeMapper.name.equalsIgnoreCase(name) && storageUnitNodeMapper.nodeName.equalsIgnoreCase(nodeName) && isSameCatalog(storageUnitNodeMapper);
         }
         return false;
+    }
+    
+    private boolean isSameCatalog(final StorageUnitNodeMapper storageUnitNodeMapper) {
+        return null == catalog ? null == storageUnitNodeMapper : catalog.equalsIgnoreCase(storageUnitNodeMapper.getCatalog());
     }
     
     @Override

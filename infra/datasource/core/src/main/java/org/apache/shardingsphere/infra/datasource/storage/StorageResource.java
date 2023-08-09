@@ -33,19 +33,19 @@ public class StorageResource {
     
     private final Map<String, DataSource> storageNodes;
     
-    private final Map<String, StorageUnit> storageUnits;
+    private final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers;
     
     private final Map<String, DataSource> wrappedDataSources;
     
-    public StorageResource(final Map<String, DataSource> storageNodes, final Map<String, StorageUnit> storageUnits) {
+    public StorageResource(final Map<String, DataSource> storageNodes, final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers) {
         this.storageNodes = storageNodes;
-        this.storageUnits = storageUnits;
-        wrappedDataSources = getWrappedDataSources(storageUnits);
+        this.storageUnitNodeMappers = storageUnitNodeMappers;
+        wrappedDataSources = createWrappedDataSources();
     }
     
-    private Map<String, DataSource> getWrappedDataSources(final Map<String, StorageUnit> storageUnits) {
-        Map<String, DataSource> result = new LinkedHashMap<>(storageUnits.size(), 1F);
-        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
+    private Map<String, DataSource> createWrappedDataSources() {
+        Map<String, DataSource> result = new LinkedHashMap<>(storageUnitNodeMappers.size(), 1F);
+        for (Entry<String, StorageUnitNodeMapper> entry : storageUnitNodeMappers.entrySet()) {
             DataSource dataSource = storageNodes.get(entry.getValue().getNodeName());
             if (null != dataSource) {
                 result.put(entry.getKey(), new ShardingSphereStorageDataSourceWrapper(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));

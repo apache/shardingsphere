@@ -34,17 +34,17 @@ import java.util.Map.Entry;
 public final class StorageUtils {
     
     /**
-     * Get storage units from provided data sources.
+     * Get storage unit node mappers from provided data sources.
      *
      * @param dataSources data sources
-     * @return storage units
+     * @return storage unit node mappers
      */
-    public static Map<String, StorageUnit> getStorageUnits(final Map<String, DataSource> dataSources) {
-        Map<String, StorageUnit> result = new LinkedHashMap<>(dataSources.size(), 1F);
+    public static Map<String, StorageUnitNodeMapper> getStorageUnitNodeMappers(final Map<String, DataSource> dataSources) {
+        Map<String, StorageUnitNodeMapper> result = new LinkedHashMap<>(dataSources.size(), 1F);
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             DataSourceProperties dataSourceProperties = DataSourcePropertiesCreator.create(entry.getValue());
             String url = dataSourceProperties.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-            result.put(entry.getKey(), new StorageUnit(entry.getKey(), entry.getKey(), url));
+            result.put(entry.getKey(), new StorageUnitNodeMapper(entry.getKey(), entry.getKey(), url));
         }
         return result;
     }
