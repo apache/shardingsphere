@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckIgnoredType;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckIgnoredType;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCountCheckResult;
@@ -56,7 +56,7 @@ public final class YamlTableDataConsistencyCheckResultSwapper implements YamlCon
             return null;
         }
         if (!Strings.isNullOrEmpty(yamlConfig.getIgnoredType())) {
-            return new TableDataConsistencyCheckResult(DataConsistencyCheckIgnoredType.valueOf(yamlConfig.getIgnoredType()));
+            return new TableDataConsistencyCheckResult(TableDataConsistencyCheckIgnoredType.valueOf(yamlConfig.getIgnoredType()));
         }
         YamlTableDataConsistencyCountCheckResult yamlCountCheck = yamlConfig.getCountCheckResult();
         TableDataConsistencyCountCheckResult countCheckResult = new TableDataConsistencyCountCheckResult(yamlCountCheck.getSourceRecordsCount(), yamlCountCheck.getTargetRecordsCount());

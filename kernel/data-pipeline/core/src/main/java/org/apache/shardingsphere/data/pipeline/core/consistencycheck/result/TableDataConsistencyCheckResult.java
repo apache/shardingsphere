@@ -27,7 +27,7 @@ import lombok.ToString;
 @ToString
 public final class TableDataConsistencyCheckResult {
     
-    private final DataConsistencyCheckIgnoredType ignoredType;
+    private final TableDataConsistencyCheckIgnoredType ignoredType;
     
     private final TableDataConsistencyCountCheckResult countCheckResult;
     
@@ -39,7 +39,7 @@ public final class TableDataConsistencyCheckResult {
         this.contentCheckResult = contentCheckResult;
     }
     
-    public TableDataConsistencyCheckResult(final DataConsistencyCheckIgnoredType ignoredType) {
+    public TableDataConsistencyCheckResult(final TableDataConsistencyCheckIgnoredType ignoredType) {
         this.ignoredType = ignoredType;
         countCheckResult = null;
         contentCheckResult = null;
