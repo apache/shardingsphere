@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropert
 import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.datasource.storage.StorageUnit;
+import org.apache.shardingsphere.infra.datasource.storage.StorageUnitNodeMapper;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -46,31 +46,27 @@ public final class StorageUnitMetaData {
     
     private final Map<String, DatabaseType> storageTypes;
     
-    private final Map<String, StorageUnit> storageUnits;
+    private final Map<String, StorageUnitNodeMapper> unitNodeMappers;
     
     private final Map<String, ConnectionProperties> connectionPropsMap;
     
-    public StorageUnitMetaData(final Map<String, DataSource> dataSources, final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnit> storageUnits,
+    public StorageUnitMetaData(final Map<String, DataSource> dataSources, final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnitNodeMapper> unitNodeMappers,
                                final Map<String, DataSource> enabledDataSources) {
-        this.storageUnits = storageUnits;
-        this.dataSources = getStorageUnitDataSources(dataSources, storageUnits);
-        dataSourcePropsMap = DataSourcePropertiesCreator.create(dataSources);
-        this.storageTypes = getStorageUnitTypes(storageTypes);
-        connectionPropsMap = createConnectionPropertiesMap(enabledDataSources, storageTypes, storageUnits);
+        this(dataSources, DataSourcePropertiesCreator.create(dataSources), storageTypes, unitNodeMappers, enabledDataSources);
     }
     
     public StorageUnitMetaData(final Map<String, DataSource> dataSources, final Map<String, DataSourceProperties> dataSourcePropsMap,
-                               final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnit> storageUnits, final Map<String, DataSource> enabledDataSources) {
-        this.storageUnits = storageUnits;
-        this.dataSources = getStorageUnitDataSources(dataSources, storageUnits);
+                               final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnitNodeMapper> unitNodeMappers, final Map<String, DataSource> enabledDataSources) {
+        this.unitNodeMappers = unitNodeMappers;
+        this.dataSources = getStorageUnitDataSources(dataSources, unitNodeMappers);
         this.dataSourcePropsMap = dataSourcePropsMap;
         this.storageTypes = getStorageUnitTypes(storageTypes);
-        connectionPropsMap = createConnectionPropertiesMap(enabledDataSources, storageTypes, storageUnits);
+        connectionPropsMap = createConnectionPropertiesMap(enabledDataSources, storageTypes, unitNodeMappers);
     }
     
-    private Map<String, DataSource> getStorageUnitDataSources(final Map<String, DataSource> storageNodes, final Map<String, StorageUnit> storageUnits) {
+    private Map<String, DataSource> getStorageUnitDataSources(final Map<String, DataSource> storageNodes, final Map<String, StorageUnitNodeMapper> storageUnits) {
         Map<String, DataSource> result = new LinkedHashMap<>(storageUnits.size(), 1F);
-        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
+        for (Entry<String, StorageUnitNodeMapper> entry : storageUnits.entrySet()) {
             DataSource dataSource = storageNodes.get(entry.getValue().getNodeName());
             result.put(entry.getKey(), new ShardingSphereStorageDataSourceWrapper(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));
         }
@@ -78,8 +74,8 @@ public final class StorageUnitMetaData {
     }
     
     private Map<String, DatabaseType> getStorageUnitTypes(final Map<String, DatabaseType> storageTypes) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(storageUnits.size(), 1F);
-        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
+        Map<String, DatabaseType> result = new LinkedHashMap<>(unitNodeMappers.size(), 1F);
+        for (Entry<String, StorageUnitNodeMapper> entry : unitNodeMappers.entrySet()) {
             DatabaseType storageType = storageTypes.containsKey(entry.getValue().getNodeName())
                     ? storageTypes.get(entry.getValue().getNodeName())
                     : DatabaseTypeEngine.getStorageType(Collections.emptyList());
@@ -89,9 +85,9 @@ public final class StorageUnitMetaData {
     }
     
     private Map<String, ConnectionProperties> createConnectionPropertiesMap(final Map<String, DataSource> enabledDataSources,
-                                                                            final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnit> storageUnits) {
+                                                                            final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnitNodeMapper> storageUnits) {
         Map<String, ConnectionProperties> result = new LinkedHashMap<>(storageUnits.size(), 1F);
-        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
+        for (Entry<String, StorageUnitNodeMapper> entry : storageUnits.entrySet()) {
             String nodeName = entry.getValue().getNodeName();
             if (enabledDataSources.containsKey(nodeName)) {
                 Map<String, Object> standardProps = DataSourcePropertiesCreator.create(enabledDataSources.get(nodeName)).getConnectionPropertySynonyms().getStandardProperties();

@@ -215,7 +215,7 @@ class ContextManagerTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSources = Collections.singletonMap("ds_0", new MockedDataSource());
         when(resourceMetaData.getStorageNodeMetaData().getDataSources()).thenReturn(dataSources);
-        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(StorageUtils.getStorageUnits(dataSources));
+        when(resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers()).thenReturn(StorageUtils.getStorageUnitNodeMappers(dataSources));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
                 TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), resourceMetaData, mock(RuleMetaData.class), Collections.emptyMap());
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
@@ -245,7 +245,7 @@ class ContextManagerTest {
         originalDataSources.put("ds_2", new MockedDataSource());
         when(result.getDataSources()).thenReturn(originalDataSources);
         when(result.getStorageNodeMetaData().getDataSources()).thenReturn(originalDataSources);
-        when(result.getStorageUnitMetaData().getStorageUnits()).thenReturn(StorageUtils.getStorageUnits(originalDataSources));
+        when(result.getStorageUnitMetaData().getUnitNodeMappers()).thenReturn(StorageUtils.getStorageUnitNodeMappers(originalDataSources));
         return result;
     }
     

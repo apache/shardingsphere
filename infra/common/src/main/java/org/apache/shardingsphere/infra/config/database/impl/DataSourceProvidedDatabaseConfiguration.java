@@ -46,7 +46,7 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
     
     public DataSourceProvidedDatabaseConfiguration(final Map<String, DataSource> dataSources, final Collection<RuleConfiguration> ruleConfigurations) {
         this.ruleConfigurations = ruleConfigurations;
-        this.storageResource = new StorageResource(dataSources, StorageUtils.getStorageUnits(dataSources));
+        this.storageResource = new StorageResource(dataSources, StorageUtils.getStorageUnitNodeMappers(dataSources));
         dataSourcePropsMap = createDataSourcePropertiesMap(dataSources);
     }
     
