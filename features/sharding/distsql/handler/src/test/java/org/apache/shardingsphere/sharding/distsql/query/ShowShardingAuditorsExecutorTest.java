@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingAuditorsExecutor;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAuditorsStatement;
@@ -46,7 +46,7 @@ class ShowShardingAuditorsExecutorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule)));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         RQLExecutor<ShowShardingAuditorsStatement> executor = new ShowShardingAuditorsExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowShardingAuditorsStatement.class));
         assertThat(actual.size(), is(1));

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -60,7 +60,7 @@ class ShowDistVariablesExecutorTest {
     void assertExecute() {
         when(metaData.getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system_log_level", "INFO"))));
         when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
-        when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
+        when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, mock(ShowDistVariablesStatement.class));
         assertThat(actual.size(), is(20));
@@ -73,7 +73,7 @@ class ShowDistVariablesExecutorTest {
     void assertExecuteWithLike() {
         when(metaData.getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system_log_level", "INFO"))));
         when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
-        when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
+        when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariablesStatement("sql_%"));
         assertThat(actual.size(), is(2));

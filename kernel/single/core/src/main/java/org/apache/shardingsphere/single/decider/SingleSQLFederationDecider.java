@@ -20,7 +20,7 @@ package org.apache.shardingsphere.single.decider;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -37,7 +37,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
     
     @Override
     public boolean decide(final SelectStatementContext selectStatementContext, final List<Object> parameters,
-                          final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule, final Collection<DataNode> includedDataNodes) {
+                          final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule, final Collection<DataNode> includedDataNodes) {
         Collection<QualifiedTable> singleTables = getSingleTables(selectStatementContext, database, rule);
         if (singleTables.isEmpty()) {
             return false;

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowUnloadedSingleTableStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -59,14 +59,14 @@ public final class ShowUnloadedSingleTableExecutor implements RQLExecutor<ShowUn
     }
     
     private Map<String, Collection<DataNode>> getActualDataNodes(final ShardingSphereDatabase database) {
-        ShardingSphereResourceMetaData resourceMetaData = database.getResourceMetaData();
+        ResourceMetaData resourceMetaData = database.getResourceMetaData();
         Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(resourceMetaData.getDataSources(), database.getRuleMetaData().getRules());
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(database.getRuleMetaData().getRules());
         return SingleTableDataNodeLoader.load(database.getName(), database.getProtocolType(), aggregateDataSourceMap, excludedTables);
     }
     
     @Override
-    public String getType() {
-        return ShowUnloadedSingleTableStatement.class.getName();
+    public Class<ShowUnloadedSingleTableStatement> getType() {
+        return ShowUnloadedSingleTableStatement.class;
     }
 }

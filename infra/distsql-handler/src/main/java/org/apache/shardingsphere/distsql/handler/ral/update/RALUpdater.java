@@ -40,4 +40,7 @@ public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
      */
     default void executeUpdate(String databaseName, T sqlStatement) throws SQLException {
     }
+    
+    @Override
+    Class<T> getType();
 }

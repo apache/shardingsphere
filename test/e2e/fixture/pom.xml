@@ -32,7 +32,6 @@
         <narayana.version>5.12.4.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-        <btm.version>2.1.3</btm.version>
     </properties>
     
     <dependencies>
@@ -111,16 +110,6 @@
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
             <version>${jboss-logging.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.btm</groupId>
-            <artifactId>btm</artifactId>
-            <version>${btm.version}</version>
         </dependency>
     </dependencies>
     

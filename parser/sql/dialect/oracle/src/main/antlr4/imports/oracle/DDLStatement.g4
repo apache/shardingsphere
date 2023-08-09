@@ -97,7 +97,12 @@ alterTrigger
     ;    
 
 triggerCompileClause
-    : COMPILE DEBUG? (compilerParametersClause*)? (REUSE SETTINGS)?
+    : COMPILE (
+    (DEBUG compilerParametersClause* (REUSE SETTINGS)?)
+    | (compilerParametersClause+ (REUSE SETTINGS)?)
+    | (REUSE SETTINGS)
+    | (DEBUG REUSE SETTINGS)
+    )?
     ;
 
 compilerParametersClause
@@ -215,7 +220,7 @@ oidIndexClause
     ;
 
 createRelationalTableClause
-    : (LP_ relationalProperties RP_)? collationClause? commitClause? physicalProperties? tableProperties?
+    : (LP_ relationalProperties RP_) collationClause? commitClause? physicalProperties? tableProperties?
     ;
     
 createMemOptimizeClause
@@ -393,11 +398,16 @@ alterDefinitionClause
     ;
 
 alterTableProperties
-    : renameTableSpecification | REKEY encryptionSpecification
+    : renameTableSpecification | REKEY encryptionSpecification | supplementalTableLogging
     ;
 
 renameTableSpecification
     : RENAME TO identifier
+    ;
+
+supplementalTableLogging
+    : ADD SUPPLEMENTAL LOG (supplementalLogGrpClause | supplementalIdKeyClause) (COMMA_ SUPPLEMENTAL LOG (supplementalLogGrpClause | supplementalIdKeyClause))*
+    | DROP SUPPLEMENTAL LOG (supplementalIdKeyClause | GROUP logGroupName) (COMMA_ SUPPLEMENTAL LOG (supplementalIdKeyClause | GROUP logGroupName))*
     ;
 
 dropSynonym
@@ -516,7 +526,9 @@ alterExternalTable
     ;
 
 objectProperties
-    : ((columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint)?)
+    : ((columnName | attributeName) (DEFAULT expr))
+    | ((columnName | attributeName) (inlineConstraint* | inlineRefConstraint))
+    | ((columnName | attributeName) (DEFAULT expr) (inlineConstraint* | inlineRefConstraint))
     | outOfLineConstraint
     | outOfLineRefConstraint
     | supplementalLoggingProps
@@ -735,7 +747,9 @@ tableCompression
     ;
 
 inmemoryTableClause
-    : ((INMEMORY inmemoryAttributes?) | NO INMEMORY)? (inmemoryColumnClause)?
+    : ((INMEMORY inmemoryAttributes?) | NO INMEMORY)
+    | (inmemoryColumnClause)
+    | ((INMEMORY inmemoryAttributes?) | NO INMEMORY) (inmemoryColumnClause)
     ;
 
 inmemoryAttributes
@@ -896,7 +910,9 @@ tablePartitionDescription
     ;
 
 inmemoryClause
-    : INMEMORY inmemoryAttributes? | NO INMEMORY
+    : INMEMORY inmemoryAttributes
+    | INMEMORY
+    | NO INMEMORY
     ;
 
 varrayColProperties
@@ -1071,7 +1087,10 @@ referencePartitioning
     ;
 
 referencePartitionDesc
-    : PARTITION partitionName? tablePartitionDescription?
+    : PARTITION
+    | PARTITION partitionName
+    | PARTITION tablePartitionDescription
+    | PARTITION partitionName tablePartitionDescription
     ;
 
 constraint
@@ -1080,6 +1099,7 @@ constraint
 
 systemPartitioning
     : PARTITION BY SYSTEM (PARTITIONS NUMBER_ | referencePartitionDesc (COMMA_ referencePartitionDesc)*)?
+    | PARTITION BY SYSTEM
     ;
 
 consistentHashPartitions
@@ -1111,7 +1131,14 @@ listPartitionsetClause
     ;
 
 attributeClusteringClause
-    : CLUSTERING clusteringJoin? clusterClause clusteringWhen? zonemapClause?
+    : CLUSTERING clusterClause
+    | CLUSTERING clusteringJoin clusterClause
+    | CLUSTERING clusterClause clusteringWhen
+    | CLUSTERING clusteringJoin clusterClause clusteringWhen
+    | CLUSTERING clusterClause zonemapClause
+    | CLUSTERING clusteringJoin clusterClause zonemapClause
+    | CLUSTERING clusterClause clusteringWhen zonemapClause
+    | CLUSTERING clusteringJoin clusterClause clusteringWhen zonemapClause
     ;
 
 clusteringJoin
@@ -1185,6 +1212,10 @@ passwordParameters
     ) (expr | UNLIMITED | DEFAULT)
     | PASSWORD_VERIFY_FUNCTION (function | NULL | DEFAULT)
     | PASSWORD_ROLLOVER_TIME (expr | DEFAULT)
+    ;
+
+alterRollbackSegment
+    : ALTER ROLLBACK SEGMENT rollbackSegmentName (ONLINE | OFFLINE | storageClause | SHRINK (TO sizeClause)?)
     ;
 
 packageCompileClause
@@ -1992,7 +2023,7 @@ disableAffinityClause
     ;
 
 alterSystemSetClause
-    : setParameterClause | useStoredOutlinesClause | globalTopicEnabledClause | dbRecoveryFileDestSizeClause
+    : setParameterClause | useStoredOutlinesClause | globalTopicEnabledClause | dbRecoveryFileDestSizeClause | eventsClause
     ;
 
 alterSystemResetClause
@@ -2706,7 +2737,20 @@ alterAuditPolicy
     ;
 
 subAuditClause
-    : (privilegeAuditClause)? (actionAuditClause)? (roleAuditClause)? (ONLY TOPLEVEL)?
+    : privilegeAuditClause
+    | actionAuditClause
+    | roleAuditClause
+    | ONLY TOPLEVEL
+    | (privilegeAuditClause actionAuditClause)
+    | (privilegeAuditClause roleAuditClause)
+    | (privilegeAuditClause ONLY TOPLEVEL)
+    | (actionAuditClause roleAuditClause)
+    | (actionAuditClause ONLY TOPLEVEL)
+    | (actionAuditClause roleAuditClause ONLY TOPLEVEL)
+    | (privilegeAuditClause roleAuditClause ONLY TOPLEVEL)
+    | (privilegeAuditClause actionAuditClause ONLY TOPLEVEL)
+    | (privilegeAuditClause actionAuditClause roleAuditClause)
+    | (privilegeAuditClause actionAuditClause roleAuditClause ONLY TOPLEVEL)
     ;
 
 privilegeAuditClause
@@ -2901,7 +2945,9 @@ alterOperator
 
 addBindingClause
     : ADD BINDING LP_ parameterType (COMMA_ parameterType)* RP_
-      RETURN LP_ returnType RP_ implementationClause? usingFunctionClause
+      RETURN LP_ returnType RP_ implementationClause usingFunctionClause
+    | ADD BINDING LP_ parameterType (COMMA_ parameterType)* RP_
+      RETURN LP_ returnType RP_ usingFunctionClause
     ;
 
 implementationClause
@@ -4198,10 +4244,6 @@ alterTablespace
     )
     ;
 
-tablespaceRetentionClause
-    : RETENTION (GUARANTEE | NOGUARANTEE)
-    ;
-
 newTablespaceName
     : identifier
     ;
@@ -4312,10 +4354,6 @@ alterAttributeDefinition
 
 alterCollectionClauses
     : MODIFY (LIMIT INTEGER_ | ELEMENT TYPE dataType)
-    ;
-
-exceptionsClause
-    : EXCEPTIONS INTO (schemaName DOT_)? tableName
     ;
 
 dependentHandlingClause

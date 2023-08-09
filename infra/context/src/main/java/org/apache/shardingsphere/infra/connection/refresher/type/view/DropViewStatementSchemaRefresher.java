@@ -44,7 +44,7 @@ public final class DropViewStatementSchemaRefresher implements MetaDataRefresher
     }
     
     @Override
-    public String getType() {
-        return DropViewStatement.class.getName();
+    public Class<DropViewStatement> getType() {
+        return DropViewStatement.class;
     }
 }

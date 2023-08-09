@@ -34,7 +34,7 @@ public final class StopMigrationCheckUpdater implements RALUpdater<StopMigration
     }
     
     @Override
-    public String getType() {
-        return StopMigrationCheckStatement.class.getName();
+    public Class<StopMigrationCheckStatement> getType() {
+        return StopMigrationCheckStatement.class;
     }
 }

@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
+import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseRegionWarmUpContext;
-import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,7 +57,7 @@ public final class HBaseRegionReloadUpdater implements HBaseUpdater {
     }
     
     @Override
-    public String getType() {
-        return MySQLFlushStatement.class.getCanonicalName();
+    public Class<MySQLFlushStatement> getType() {
+        return MySQLFlushStatement.class;
     }
 }

@@ -42,7 +42,7 @@ public final class CheckMigrationJobUpdater implements RALUpdater<CheckMigration
     }
     
     @Override
-    public String getType() {
-        return CheckMigrationStatement.class.getName();
+    public Class<CheckMigrationStatement> getType() {
+        return CheckMigrationStatement.class;
     }
 }

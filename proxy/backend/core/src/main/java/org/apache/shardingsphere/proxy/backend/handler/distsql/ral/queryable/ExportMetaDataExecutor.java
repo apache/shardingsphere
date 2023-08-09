@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -35,7 +36,6 @@ import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInf
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedSnapshotInfo;
 import org.apache.shardingsphere.proxy.backend.util.ExportUtils;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -130,7 +130,7 @@ public final class ExportMetaDataExecutor implements MetaDataRequiredQueryableRA
     }
     
     @Override
-    public String getType() {
-        return ExportMetaDataStatement.class.getName();
+    public Class<ExportMetaDataStatement> getType() {
+        return ExportMetaDataStatement.class;
     }
 }

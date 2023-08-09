@@ -31,7 +31,6 @@ transactions:
   - local
   - xa-atomikos
   - xa-narayana
-  - xa-bitronix
   - base-seata
 
 # supported: sharding,readwrite-splitting,encrypt,shadow,mask

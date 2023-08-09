@@ -21,7 +21,7 @@ import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration
 import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.metadata.nodepath.BroadcastRuleNodePathProvider;
 import org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.nodepath.RuleNodePath;
+import org.apache.shardingsphere.mode.path.RuleNodePath;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;

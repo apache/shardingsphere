@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.projection.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.segment.expression.ColumnSegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;

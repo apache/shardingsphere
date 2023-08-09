@@ -47,7 +47,7 @@ public final class CountBroadcastRuleExecutor implements RQLExecutor<CountBroadc
     }
     
     @Override
-    public String getType() {
-        return CountBroadcastRuleStatement.class.getName();
+    public Class<CountBroadcastRuleStatement> getType() {
+        return CountBroadcastRuleStatement.class;
     }
 }

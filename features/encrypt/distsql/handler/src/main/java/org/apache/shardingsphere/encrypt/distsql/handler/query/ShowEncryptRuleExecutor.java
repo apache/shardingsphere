@@ -95,7 +95,7 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
     }
     
     @Override
-    public String getType() {
-        return ShowEncryptRulesStatement.class.getName();
+    public Class<ShowEncryptRulesStatement> getType() {
+        return ShowEncryptRulesStatement.class;
     }
 }

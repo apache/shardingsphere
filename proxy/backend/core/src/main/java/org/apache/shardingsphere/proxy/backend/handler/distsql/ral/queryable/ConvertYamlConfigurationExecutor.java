@@ -81,9 +81,9 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         StringBuilder result = new StringBuilder();
         appendResourceDistSQL(yamlConfig, result);
         for (RuleConfiguration each : swapToRuleConfigs(yamlConfig).values()) {
-            String type = each.getClass().getName();
+            Class<? extends RuleConfiguration> type = each.getClass();
             if (each instanceof CompatibleEncryptRuleConfiguration) {
-                type = ((CompatibleEncryptRuleConfiguration) each).convertToEncryptRuleConfiguration().getClass().getName();
+                type = ((CompatibleEncryptRuleConfiguration) each).convertToEncryptRuleConfiguration().getClass();
             }
             ConvertRuleConfigurationProvider convertRuleConfigProvider = TypedSPILoader.getService(ConvertRuleConfigurationProvider.class, type);
             result.append(convertRuleConfigProvider.convert(each));
@@ -168,7 +168,7 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
     }
     
     @Override
-    public String getType() {
-        return ConvertYamlConfigurationStatement.class.getName();
+    public Class<ConvertYamlConfigurationStatement> getType() {
+        return ConvertYamlConfigurationStatement.class;
     }
 }

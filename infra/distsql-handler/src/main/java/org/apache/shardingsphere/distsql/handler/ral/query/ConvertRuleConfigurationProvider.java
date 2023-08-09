@@ -84,4 +84,7 @@ public interface ConvertRuleConfigurationProvider extends TypedSPI {
         }
         return result.toString();
     }
+    
+    @Override
+    Class<? extends RuleConfiguration> getType();
 }

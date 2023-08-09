@@ -74,7 +74,7 @@ public final class ShowDefaultShardingStrategyExecutor implements RQLExecutor<Sh
     }
     
     @Override
-    public String getType() {
-        return ShowDefaultShardingStrategyStatement.class.getName();
+    public Class<ShowDefaultShardingStrategyStatement> getType() {
+        return ShowDefaultShardingStrategyStatement.class;
     }
 }

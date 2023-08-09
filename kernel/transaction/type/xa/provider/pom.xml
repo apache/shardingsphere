@@ -30,6 +30,5 @@
     <modules>
         <module>atomikos</module>
         <module>narayana</module>
-        <module>bitronix</module>
     </modules>
 </project>

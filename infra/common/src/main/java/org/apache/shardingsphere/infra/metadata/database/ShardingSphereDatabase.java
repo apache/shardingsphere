@@ -25,11 +25,10 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -55,14 +55,14 @@ public final class ShardingSphereDatabase {
     
     private final DatabaseType protocolType;
     
-    private final ShardingSphereResourceMetaData resourceMetaData;
+    private final ResourceMetaData resourceMetaData;
     
-    private final ShardingSphereRuleMetaData ruleMetaData;
+    private final RuleMetaData ruleMetaData;
     
     private final Map<String, ShardingSphereSchema> schemas;
     
-    public ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ShardingSphereResourceMetaData resourceMetaData,
-                                  final ShardingSphereRuleMetaData ruleMetaData, final Map<String, ShardingSphereSchema> schemas) {
+    public ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
+                                  final RuleMetaData ruleMetaData, final Map<String, ShardingSphereSchema> schemas) {
         this.name = name;
         this.protocolType = protocolType;
         this.resourceMetaData = resourceMetaData;
@@ -87,7 +87,7 @@ public final class ShardingSphereDatabase {
                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, databaseConfig, instanceContext);
         Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(GenericSchemaBuilder
-                .build(new GenericSchemaBuilderMaterial(protocolType, storageTypes, DataSourceStateManager.getInstance().getEnabledDataSourceMap(name, databaseConfig.getDataSources()), databaseRules,
+                .build(new GenericSchemaBuilderMaterial(protocolType, storageTypes, DataSourceStateManager.getInstance().getEnabledDataSources(name, databaseConfig.getDataSources()), databaseRules,
                         props, new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(name))));
         SystemSchemaBuilder.build(name, protocolType, props).forEach(schemas::putIfAbsent);
         return create(name, protocolType, databaseConfig, databaseRules, schemas);
@@ -118,14 +118,14 @@ public final class ShardingSphereDatabase {
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                 final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
-        ShardingSphereResourceMetaData resourceMetaData = createResourceMetaData(name, databaseConfig.getStorageResource(), databaseConfig.getDataSourcePropsMap());
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(rules);
+        ResourceMetaData resourceMetaData = createResourceMetaData(name, databaseConfig.getStorageResource(), databaseConfig.getDataSourcePropsMap());
+        RuleMetaData ruleMetaData = new RuleMetaData(rules);
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, ruleMetaData, schemas);
     }
     
-    private static ShardingSphereResourceMetaData createResourceMetaData(final String databaseName, final StorageResource storageResource,
-                                                                         final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        return new ShardingSphereResourceMetaData(databaseName, storageResource, dataSourcePropsMap);
+    private static ResourceMetaData createResourceMetaData(final String databaseName, final StorageResource storageResource,
+                                                           final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        return new ResourceMetaData(databaseName, storageResource, dataSourcePropsMap);
     }
     
     /**

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.switcher;
 
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ class ResourceSwitchManagerTest {
     @Test
     void assertCreate() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        SwitchingResource actual = new ResourceSwitchManager().create(new ShardingSphereResourceMetaData("sharding_db", dataSourceMap), createToBeChangedDataSourcePropsMap());
+        SwitchingResource actual = new ResourceSwitchManager().create(new ResourceMetaData("sharding_db", dataSourceMap), createToBeChangedDataSourcePropsMap());
         assertNewDataSources(actual);
         actual.closeStaleDataSources();
         assertStaleDataSources(dataSourceMap);
@@ -51,7 +51,7 @@ class ResourceSwitchManagerTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
-        SwitchingResource actual = new ResourceSwitchManager().createByAlterDataSourceProps(new ShardingSphereResourceMetaData("sharding_db", dataSourceMap), Collections.emptyMap());
+        SwitchingResource actual = new ResourceSwitchManager().createByAlterDataSourceProps(new ResourceMetaData("sharding_db", dataSourceMap), Collections.emptyMap());
         assertTrue(actual.getNewStorageResource().getStorageNodes().isEmpty());
         assertThat(actual.getStaleStorageResource().getStorageNodes().size(), is(2));
         actual.closeStaleDataSources();

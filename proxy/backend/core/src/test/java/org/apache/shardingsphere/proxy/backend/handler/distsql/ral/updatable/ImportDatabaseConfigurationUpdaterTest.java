@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
@@ -125,7 +125,7 @@ class ImportDatabaseConfigurationUpdaterTest {
     private ContextManager mockContextManager(final String databaseName) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);

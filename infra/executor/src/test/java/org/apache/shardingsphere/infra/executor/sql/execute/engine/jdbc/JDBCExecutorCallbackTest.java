@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -65,7 +65,7 @@ class JDBCExecutorCallbackTest {
     @Test
     void assertExecuteFailedAndProtocolTypeDifferentWithDatabaseType() throws SQLException {
         Object saneResult = new Object();
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(resourceMetaData.getStorageType("ds")).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         JDBCExecutorCallback<Object> callback =
                 new JDBCExecutorCallback<Object>(TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, mock(SelectStatement.class), true) {
@@ -86,7 +86,7 @@ class JDBCExecutorCallbackTest {
     
     @Test
     void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() {
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(resourceMetaData.getStorageType("ds")).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         JDBCExecutorCallback<Object> callback =
                 new JDBCExecutorCallback<Object>(TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, mock(SelectStatement.class), true) {

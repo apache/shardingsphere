@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.impl.ProxyPreparedStatementExecutorCallback;
@@ -48,7 +48,7 @@ public final class ProxyJDBCExecutorCallbackFactory {
      * @return created instance
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
-    public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType protocolType, final ShardingSphereResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
+    public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
                                                         final DatabaseConnector databaseConnector, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown,
                                                         final boolean isFetchMetaData) {
         if (JDBCDriverType.STATEMENT.equals(type)) {

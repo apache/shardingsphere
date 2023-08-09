@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -67,17 +67,17 @@ class ShowCurrentUserExecutorTest {
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(new HashMap<>(), mock(ShardingSphereResourceMetaData.class), mockShardingSphereRuleMetaData(), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(new HashMap<>(), mock(ResourceMetaData.class), mockShardingSphereRuleMetaData(), new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }
     
-    private ShardingSphereRuleMetaData mockShardingSphereRuleMetaData() {
+    private RuleMetaData mockShardingSphereRuleMetaData() {
         AuthorityRule authorityRule = mock(AuthorityRule.class);
         ShardingSphereUser shardingSphereUser = mock(ShardingSphereUser.class);
         when(shardingSphereUser.getGrantee()).thenReturn(new Grantee("root", "%"));
         when(authorityRule.findUser(GRANTEE)).thenReturn(Optional.of(shardingSphereUser));
-        return new ShardingSphereRuleMetaData(Collections.singletonList(authorityRule));
+        return new RuleMetaData(Collections.singletonList(authorityRule));
     }
     
     private ConnectionSession mockConnectionSession() {

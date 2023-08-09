@@ -32,11 +32,11 @@ dropEncryptRule
     ;
 
 encryptRuleDefinition
-    : tableName LP_ COLUMNS LP_ encryptColumnDefinition (COMMA_ encryptColumnDefinition)* RP_ RP_
+    : tableName encryptTableRuleDefinition
     ;
 
-resourceName
-    : IDENTIFIER_
+encryptTableRuleDefinition
+    : LP_ COLUMNS LP_ encryptColumnDefinition (COMMA_ encryptColumnDefinition)* RP_ RP_
     ;
 
 encryptColumnDefinition

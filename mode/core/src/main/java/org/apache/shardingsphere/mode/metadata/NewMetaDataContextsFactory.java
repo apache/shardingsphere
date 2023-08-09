@@ -26,14 +26,14 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedD
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.factory.NewInternalMetaDataFactory;
@@ -95,8 +95,8 @@ public final class NewMetaDataContextsFactory {
         Map<String, ShardingSphereDatabase> databases = isDatabaseMetaDataExisted
                 ? NewInternalMetaDataFactory.create(persistService, effectiveDatabaseConfigs, props, instanceContext)
                 : ExternalMetaDataFactory.create(effectiveDatabaseConfigs, props, instanceContext);
-        ShardingSphereResourceMetaData globalResourceMetaData = new ShardingSphereResourceMetaData(globalDataSources);
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props));
+        ResourceMetaData globalResourceMetaData = new ResourceMetaData(globalDataSources);
+        RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props));
         MetaDataContexts result = new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalResourceMetaData, globalRuleMetaData, props));
         if (!isDatabaseMetaDataExisted) {
             persistDatabaseConfigurations(result, param);

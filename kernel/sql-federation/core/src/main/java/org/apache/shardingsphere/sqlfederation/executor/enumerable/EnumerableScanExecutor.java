@@ -47,7 +47,7 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
@@ -107,7 +107,7 @@ public final class EnumerableScanExecutor {
     
     private final OptimizerContext optimizerContext;
     
-    private final ShardingSphereRuleMetaData globalRuleMetaData;
+    private final RuleMetaData globalRuleMetaData;
     
     private final TableScanExecutorContext executorContext;
     

@@ -147,7 +147,7 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
     }
     
     @Override
-    public String getType() {
-        return ShowRulesUsedStorageUnitStatement.class.getName();
+    public Class<ShowRulesUsedStorageUnitStatement> getType() {
+        return ShowRulesUsedStorageUnitStatement.class;
     }
 }

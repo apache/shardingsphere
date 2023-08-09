@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -48,7 +48,7 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
+        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         if (isSingleTable(viewName, database)) {
             ruleMetaData.findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
         }
@@ -69,7 +69,7 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
     }
     
     @Override
-    public String getType() {
-        return CreateViewStatement.class.getName();
+    public Class<CreateViewStatement> getType() {
+        return CreateViewStatement.class;
     }
 }
