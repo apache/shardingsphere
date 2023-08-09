@@ -36,6 +36,6 @@ public final class TableDataConsistencyCountCheckResult {
     public TableDataConsistencyCountCheckResult(final long sourceRecordsCount, final long targetRecordsCount) {
         this.sourceRecordsCount = sourceRecordsCount;
         this.targetRecordsCount = targetRecordsCount;
-        matched = sourceRecordsCount == targetRecordsCount;
+        matched = sourceRecordsCount >= 0 && sourceRecordsCount == targetRecordsCount;
     }
 }

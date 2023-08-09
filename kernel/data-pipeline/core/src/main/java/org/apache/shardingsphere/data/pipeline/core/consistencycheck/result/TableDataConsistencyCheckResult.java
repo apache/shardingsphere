@@ -41,8 +41,8 @@ public final class TableDataConsistencyCheckResult {
     
     public TableDataConsistencyCheckResult(final TableDataConsistencyCheckIgnoredType ignoredType) {
         this.ignoredType = ignoredType;
-        countCheckResult = null;
-        contentCheckResult = null;
+        countCheckResult = new TableDataConsistencyCountCheckResult(-1, -1);
+        contentCheckResult = new TableDataConsistencyContentCheckResult(false);
     }
     
     /**
