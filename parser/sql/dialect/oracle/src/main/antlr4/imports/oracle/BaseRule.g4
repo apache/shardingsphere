@@ -328,7 +328,7 @@ unreservedWord3
     | WIDTH_BUCKET | WRAPPED | XID | XMLAGG | XMLATTRIBUTES | XMLCAST | XMLCDATA | XMLCOLATTVAL | XMLCOMMENT | XMLCONCAT | XMLDIFF
     | XMLEXISTS | XMLEXISTS2 | XMLFOREST | XMLINDEX_REWRITE | XMLINDEX_REWRITE_IN_SELECT | XMLINDEX_SEL_IDX_TBL | XMLISNODE
     | XMLISVALID | XMLNAMESPACES | XMLPARSE | XMLPATCH | XMLPI | XMLQUERY | XMLROOT | XMLSERIALIZE | XMLTABLE | XMLTOOBJECT
-    | XMLTRANSFORM | XMLTRANSFORMBLOB | XML_DML_RWT_STMT | XPATHTABLE | XS_SYS_CONTEXT | X_DYN_PRUNE | RESULT | TABLE
+    | XMLTRANSFORM | XMLTRANSFORMBLOB | XML_DML_RWT_STMT | XPATHTABLE | XS_SYS_CONTEXT | X_DYN_PRUNE | RESULT | TABLE | NUMBER
     ;
 
 schemaName
@@ -771,7 +771,11 @@ leadLagInfo
 
 specialFunction
     : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
-    | setFunction | translateFunction
+    | setFunction | translateFunction | cursorFunction
+    ;
+
+cursorFunction
+    : CURSOR subquery
     ;
 
 translateFunction
