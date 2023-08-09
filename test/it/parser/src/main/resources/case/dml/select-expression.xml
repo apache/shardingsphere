@@ -2709,7 +2709,25 @@
     
     <select sql-case-id="select_collect_expression">
         <projections start-index="7" stop-index="92">
-            <expression-projection start-index="7" stop-index="92" text="CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t)" alias="Warehouses" />
+            <expression-projection text="CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t)" alias="Warehouses" start-index="7" stop-index="92" literal-start-index="7" literal-stop-index="92">
+                <literalText>CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t)</literalText>
+                <expr>
+                    <function function-name="CAST" text="CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t)" start-index="7" stop-index="79" literal-start-index="7" literal-stop-index="79">
+                        <parameter>
+                            <function function-name="COLLECT" text="COLLECT(warehouse_name ORDER BY warehouse_name)" start-index="12" stop-index="58" literal-start-index="12" literal-stop-index="58">
+                                <parameter>
+                                    <column name="warehouse_name" start-index="20" stop-index="33" literal-start-index="20" literal-stop-index="33" />
+                                </parameter>
+                                <literalText>COLLECT(warehouse_name ORDER BY warehouse_name)</literalText>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <data-type value="warehouse_name_t" start-index="63" stop-index="78" />
+                        </parameter>
+                        <literalText>CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table start-index="99" stop-index="108" name="warehouses" />
