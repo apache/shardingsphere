@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
-
-import java.util.Map;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineCancellable;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 
 /**
- * Pipeline data consistency checker.
+ * Single table inventory calculator.
  */
-public interface PipelineDataConsistencyChecker {
+public interface SingleTableInventoryCalculator extends PipelineCancellable {
     
     /**
-     * Data consistency check.
+     * Calculate for single table inventory data.
      *
-     * @param tableChecker table data consistency checker
-     * @return check results. key is logic table name, value is check result.
+     * @param param calculate parameter
+     * @return calculated result
      */
-    Map<String, TableDataConsistencyCheckResult> check(TableDataConsistencyChecker tableChecker);
+    Iterable<SingleTableInventoryCalculatedResult> calculate(SingleTableInventoryCalculateParameter param);
 }

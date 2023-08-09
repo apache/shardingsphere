@@ -17,22 +17,23 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyContentCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCountCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckParameter;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
 
 import java.util.Collection;
-import java.util.Collections;
 
 @SPIDescription("Fixture description.")
-public final class DataConsistencyCalculateAlgorithmFixture implements DataConsistencyCalculateAlgorithm {
+public final class TableDataConsistencyCheckerFixture implements TableDataConsistencyChecker {
     
     @Override
-    public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
-        return Collections.singletonList(new FixtureDataConsistencyCalculatedResult(2));
+    public TableDataConsistencyCheckResult checkSingleTableInventoryData(final TableDataConsistencyCheckParameter param) {
+        return new TableDataConsistencyCheckResult(new TableDataConsistencyCountCheckResult(2, 2), new TableDataConsistencyContentCheckResult(true));
     }
     
     @Override

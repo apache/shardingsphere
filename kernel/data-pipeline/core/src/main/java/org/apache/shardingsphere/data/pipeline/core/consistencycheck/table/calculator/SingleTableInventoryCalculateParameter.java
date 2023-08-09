@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -27,11 +28,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Data consistency calculate parameter.
+ * Single table inventory calculate parameter.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataConsistencyCalculateParameter {
+public final class SingleTableInventoryCalculateParameter {
     
     /**
      * Data source of source side or target side.
@@ -39,23 +40,55 @@ public final class DataConsistencyCalculateParameter {
      */
     private final PipelineDataSourceWrapper dataSource;
     
-    private final String schemaName;
-    
-    private final String logicTableName;
+    private final SchemaTableName table;
     
     private final List<String> columnNames;
-    
-    private final DatabaseType databaseType;
     
     /**
      * It could be primary key.
      * It could be used in order by clause.
      */
-    private final PipelineColumnMetaData uniqueKey;
+    private final List<PipelineColumnMetaData> uniqueKeys;
     
     private final Object tableCheckPosition;
     
     private final AtomicReference<AutoCloseable> calculationContext = new AtomicReference<>();
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    public DatabaseType getDatabaseType() {
+        return dataSource.getDatabaseType();
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @return schema name
+     */
+    public String getSchemaName() {
+        return table.getSchemaName().getOriginal();
+    }
+    
+    /**
+     * Get logic table name.
+     *
+     * @return logic table name
+     */
+    public String getLogicTableName() {
+        return table.getTableName().getOriginal();
+    }
+    
+    /**
+     * Get first unique key.
+     *
+     * @return first unique key
+     */
+    public PipelineColumnMetaData getFirstUniqueKey() {
+        return uniqueKeys.get(0);
+    }
     
     /**
      * Get calculation context.

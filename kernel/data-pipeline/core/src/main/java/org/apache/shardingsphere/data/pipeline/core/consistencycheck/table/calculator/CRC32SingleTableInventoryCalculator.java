@@ -15,21 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineDataConsistencyCalculateSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
-import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedCRC32DataConsistencyCalculateAlgorithmException;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedCRC32SingleTableInventoryCalculatorException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,28 +32,26 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * CRC32 match data consistency calculate algorithm.
+ * CRC32 single table inventory calculator.
  */
-@SPIDescription("Match CRC32 of records.")
 @Slf4j
-public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractDataConsistencyCalculateAlgorithm {
+public final class CRC32SingleTableInventoryCalculator extends AbstractSingleTableInventoryCalculator {
     
     @Override
-    public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
+    public Iterable<SingleTableInventoryCalculatedResult> calculate(final SingleTableInventoryCalculateParameter param) {
         PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder = new PipelineDataConsistencyCalculateSQLBuilder(param.getDatabaseType());
         List<CalculatedItem> calculatedItems = param.getColumnNames().stream().map(each -> calculateCRC32(pipelineSQLBuilder, param, each)).collect(Collectors.toList());
         return Collections.singletonList(new CalculatedResult(calculatedItems.get(0).getRecordsCount(), calculatedItems.stream().map(CalculatedItem::getCrc32).collect(Collectors.toList())));
     }
     
-    private CalculatedItem calculateCRC32(final PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder, final DataConsistencyCalculateParameter param, final String columnName) {
+    private CalculatedItem calculateCRC32(final PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder, final SingleTableInventoryCalculateParameter param, final String columnName) {
         Optional<String> sql = pipelineSQLBuilder.buildCRC32SQL(param.getSchemaName(), param.getLogicTableName(), columnName);
-        ShardingSpherePreconditions.checkState(sql.isPresent(), () -> new UnsupportedCRC32DataConsistencyCalculateAlgorithmException(param.getDatabaseType()));
+        ShardingSpherePreconditions.checkState(sql.isPresent(), () -> new UnsupportedCRC32SingleTableInventoryCalculatorException(param.getDatabaseType()));
         try (
                 Connection connection = param.getDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql.get());
@@ -73,20 +66,6 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
         }
     }
     
-    @Override
-    public String getType() {
-        return "CRC32_MATCH";
-    }
-    
-    @Override
-    public Collection<DatabaseType> getSupportedDatabaseTypes() {
-        Collection<DatabaseType> result = new LinkedList<>();
-        DatabaseType supportedDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        result.add(supportedDatabaseType);
-        result.addAll(new DatabaseTypeRegistry(supportedDatabaseType).getAllBranchDatabaseTypes());
-        return result;
-    }
-    
     @RequiredArgsConstructor
     @Getter
     private static final class CalculatedItem {
@@ -98,7 +77,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
     
     @RequiredArgsConstructor
     @Getter
-    private static final class CalculatedResult implements DataConsistencyCalculatedResult {
+    private static final class CalculatedResult implements SingleTableInventoryCalculatedResult {
         
         private final int recordsCount;
         
@@ -113,7 +92,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
                 return true;
             }
             if (getClass() != o.getClass()) {
-                log.warn("DataMatchCalculatedResult type not match, o.className={}", o.getClass().getName());
+                log.warn("RecordSingleTableInventoryCalculatedResult type not match, o.className={}", o.getClass().getName());
                 return false;
             }
             final CalculatedResult that = (CalculatedResult) o;

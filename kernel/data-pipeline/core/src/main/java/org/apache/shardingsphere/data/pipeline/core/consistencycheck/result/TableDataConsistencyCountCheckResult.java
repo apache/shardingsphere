@@ -18,16 +18,24 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.result;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Data consistency check ignored type.
+ * Table data consistency count check result.
  */
-@RequiredArgsConstructor
 @Getter
-public enum DataConsistencyCheckIgnoredType {
+@ToString
+public final class TableDataConsistencyCountCheckResult {
     
-    NO_UNIQUE_KEY("Data consistency check are not supported for tables without unique key");
+    private final long sourceRecordsCount;
     
-    private final String message;
+    private final long targetRecordsCount;
+    
+    private final boolean matched;
+    
+    public TableDataConsistencyCountCheckResult(final long sourceRecordsCount, final long targetRecordsCount) {
+        this.sourceRecordsCount = sourceRecordsCount;
+        this.targetRecordsCount = targetRecordsCount;
+        matched = sourceRecordsCount == targetRecordsCount;
+    }
 }
