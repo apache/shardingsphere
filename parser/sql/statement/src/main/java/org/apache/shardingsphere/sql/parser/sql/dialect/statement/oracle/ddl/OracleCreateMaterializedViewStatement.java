@@ -23,5 +23,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * OracleSQL create materialized view statement.
  */
-public class OracleCreateMaterializedViewStatement extends CreateMaterializedViewStatement implements OracleStatement {
+public final class OracleCreateMaterializedViewStatement extends CreateMaterializedViewStatement implements OracleStatement {
 }

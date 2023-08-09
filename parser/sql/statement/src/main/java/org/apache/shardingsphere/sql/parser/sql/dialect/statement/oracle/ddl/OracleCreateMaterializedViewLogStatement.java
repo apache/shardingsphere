@@ -23,5 +23,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle create materialized view log statement.
  */
-public class OracleCreateMaterializedViewLogStatement extends AbstractSQLStatement implements OracleStatement {
+public final class OracleCreateMaterializedViewLogStatement extends AbstractSQLStatement implements OracleStatement {
 }
