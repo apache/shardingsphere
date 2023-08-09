@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 
-import java.util.Map;
+import java.util.Optional;
 
-/**
- * Pipeline data consistency checker.
- */
-public interface PipelineDataConsistencyChecker {
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@Getter
+public final class FixtureSingleTableInventoryCalculatedResult implements SingleTableInventoryCalculatedResult {
     
-    /**
-     * Data consistency check.
-     *
-     * @param tableChecker table data consistency checker
-     * @return check results. key is logic table name, value is check result.
-     */
-    Map<String, TableDataConsistencyCheckResult> check(TableDataConsistencyChecker tableChecker);
+    private final int recordsCount;
+    
+    @Override
+    public Optional<Object> getMaxUniqueKeyValue() {
+        return Optional.empty();
+    }
 }

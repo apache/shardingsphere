@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
-
-import java.util.Optional;
-
-@RequiredArgsConstructor
-@EqualsAndHashCode
-@Getter
-public final class FixtureDataConsistencyCalculatedResult implements DataConsistencyCalculatedResult {
+/**
+ * Pipeline cancellable interface.
+ */
+public interface PipelineCancellable {
     
-    private final int recordsCount;
+    /**
+     * Cancel calculation.
+     */
+    void cancel();
     
-    @Override
-    public Optional<Object> getMaxUniqueKeyValue() {
-        return Optional.empty();
-    }
+    /**
+     * Is calculation canceling.
+     *
+     * @return canceling or not
+     */
+    boolean isCanceling();
 }

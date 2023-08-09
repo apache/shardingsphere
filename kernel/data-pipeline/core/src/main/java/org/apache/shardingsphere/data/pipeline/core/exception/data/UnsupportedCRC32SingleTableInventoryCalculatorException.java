@@ -22,13 +22,13 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Unsupported CRC32 data consistency calculate algorithm exception.
+ * Unsupported CRC32 single table inventory calculator exception.
  */
-public final class UnsupportedCRC32DataConsistencyCalculateAlgorithmException extends PipelineSQLException {
+public final class UnsupportedCRC32SingleTableInventoryCalculatorException extends PipelineSQLException {
     
     private static final long serialVersionUID = 580323508713524816L;
     
-    public UnsupportedCRC32DataConsistencyCalculateAlgorithmException(final DatabaseType databaseType) {
+    public UnsupportedCRC32SingleTableInventoryCalculatorException(final DatabaseType databaseType) {
         super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 53, String.format("Unsupported CRC32 data consistency calculate algorithm with database type `%s`.", databaseType.getType()));
     }
 }

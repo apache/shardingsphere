@@ -15,46 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCalculatedResult;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineCancellable;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * Data consistency calculate algorithm.
+ * Table data consistency checker.
  */
-public interface DataConsistencyCalculateAlgorithm extends ShardingSphereAlgorithm {
+public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm, PipelineCancellable {
     
     /**
-     * Calculate data for consistency check.
+     * Data consistency check for single table inventory data.
      *
-     * @param param data consistency calculate parameter
-     * @return calculated result
+     * @param param check parameter
+     * @return check result
      */
-    Iterable<DataConsistencyCalculatedResult> calculate(DataConsistencyCalculateParameter param);
-    
-    /**
-     * Cancel calculation.
-     *
-     * @throws SQLException SQL exception if cancel underlying SQL execution failure
-     */
-    void cancel() throws SQLException;
-    
-    /**
-     * Is calculation canceling.
-     *
-     * @return canceling or not
-     */
-    boolean isCanceling();
+    TableDataConsistencyCheckResult checkSingleTableInventoryData(TableDataConsistencyCheckParameter param);
     
     /**
      * Get supported database types.
-     * 
+     *
      * @return supported database types
      */
     Collection<DatabaseType> getSupportedDatabaseTypes();
