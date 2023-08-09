@@ -36,6 +36,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -123,7 +124,7 @@ class RecordSingleTableInventoryCalculatorTest {
     }
     
     private SingleTableInventoryCalculateParameter generateParameter(final PipelineDataSourceWrapper dataSource, final String logicTableName, final Object dataCheckPosition) {
-        PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "integer", false, true, true);
-        return new SingleTableInventoryCalculateParameter(dataSource, new SchemaTableName(null, logicTableName), Collections.emptyList(), uniqueKey, dataCheckPosition);
+        List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "integer", false, true, true));
+        return new SingleTableInventoryCalculateParameter(dataSource, new SchemaTableName(null, logicTableName), Collections.emptyList(), uniqueKeys, dataCheckPosition);
     }
 }

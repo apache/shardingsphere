@@ -65,9 +65,9 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
     private TableDataConsistencyCheckResult checkSingleTableInventoryData(final TableDataConsistencyCheckParameter param, final ThreadPoolExecutor executor) {
         Map<String, Object> tableCheckPositions = param.getProgressContext().getTableCheckPositions();
         SingleTableInventoryCalculateParameter sourceParam = new SingleTableInventoryCalculateParameter(param.getSourceDataSource(), param.getSourceTable(),
-                param.getColumnNames(), param.getUniqueKey(), tableCheckPositions.get(param.getSourceTable().getTableName().getOriginal()));
+                param.getColumnNames(), param.getUniqueKeys(), tableCheckPositions.get(param.getSourceTable().getTableName().getOriginal()));
         SingleTableInventoryCalculateParameter targetParam = new SingleTableInventoryCalculateParameter(param.getTargetDataSource(), param.getTargetTable(),
-                param.getColumnNames(), param.getUniqueKey(), tableCheckPositions.get(param.getTargetTable().getTableName().getOriginal()));
+                param.getColumnNames(), param.getUniqueKeys(), tableCheckPositions.get(param.getTargetTable().getTableName().getOriginal()));
         SingleTableInventoryCalculator calculator = getSingleTableInventoryCalculator();
         Iterator<SingleTableInventoryCalculatedResult> sourceCalculatedResults = waitFuture(executor.submit(() -> calculator.calculate(sourceParam))).iterator();
         Iterator<SingleTableInventoryCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> calculator.calculate(targetParam))).iterator();
@@ -95,7 +95,7 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
             targetRecordsCount += targetCalculatedResult.getRecordsCount();
             contentMatched = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
             if (!contentMatched) {
-                log.info("content matched false, jobId={}, sourceTable={}, targetTable={}, uniqueKey={}", param.getJobId(), param.getSourceTable(), param.getTargetTable(), param.getUniqueKey());
+                log.info("content matched false, jobId={}, sourceTable={}, targetTable={}, uniqueKeys={}", param.getJobId(), param.getSourceTable(), param.getTargetTable(), param.getUniqueKeys());
                 break;
             }
             if (sourceCalculatedResult.getMaxUniqueKeyValue().isPresent()) {

@@ -41,6 +41,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -65,8 +66,8 @@ class CRC32SingleTableInventoryCalculatorTest {
     @BeforeEach
     void setUp() throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-        PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true, true);
-        parameter = new SingleTableInventoryCalculateParameter(pipelineDataSource, new SchemaTableName(null, "foo_tbl"), Arrays.asList("foo_col", "bar_col"), uniqueKey, Collections.emptyMap());
+        List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true, true));
+        parameter = new SingleTableInventoryCalculateParameter(pipelineDataSource, new SchemaTableName(null, "foo_tbl"), Arrays.asList("foo_col", "bar_col"), uniqueKeys, Collections.emptyMap());
         when(pipelineDataSource.getDatabaseType()).thenReturn(databaseType);
         when(pipelineDataSource.getConnection()).thenReturn(connection);
     }

@@ -71,7 +71,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
                     columnRecord.put(resultSetMetaData.getColumnLabel(columnIndex), columnValueReaderEngine.read(resultSet, resultSetMetaData, columnIndex));
                 }
                 records.add(columnRecord);
-                maxUniqueKeyValue = columnValueReaderEngine.read(resultSet, resultSetMetaData, param.getUniqueKey().getOrdinalPosition());
+                maxUniqueKeyValue = columnValueReaderEngine.read(resultSet, resultSetMetaData, param.getFirstUniqueKey().getOrdinalPosition());
                 if (records.size() == chunkSize) {
                     break;
                 }
@@ -132,13 +132,13 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
     }
     
     private String getQuerySQL(final SingleTableInventoryCalculateParameter param) {
-        if (null == param.getUniqueKey()) {
+        if (null == param.getFirstUniqueKey()) {
             throw new UnsupportedOperationException("Data consistency of DATA_MATCH type not support table without unique key and primary key now");
         }
         PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder = new PipelineDataConsistencyCalculateSQLBuilder(param.getDatabaseType());
         Collection<String> columnNames = param.getColumnNames().isEmpty() ? Collections.singleton("*") : param.getColumnNames();
         boolean firstQuery = null == param.getTableCheckPosition();
-        return pipelineSQLBuilder.buildQueryAllOrderingSQL(param.getSchemaName(), param.getLogicTableName(), columnNames, param.getUniqueKey().getName(), firstQuery);
+        return pipelineSQLBuilder.buildQueryAllOrderingSQL(param.getSchemaName(), param.getLogicTableName(), columnNames, param.getFirstUniqueKey().getName(), firstQuery);
     }
     
     @RequiredArgsConstructor

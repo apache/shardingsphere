@@ -66,6 +66,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -199,10 +200,10 @@ class CDCE2EIT {
     private void assertDataMatched(final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource, final SchemaTableName schemaTableName) {
         StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaTableName.getSchemaName().getOriginal(), schemaTableName.getTableName().getOriginal());
-        PipelineColumnMetaData primaryKeyMetaData = tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
+        List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0)));
         ConsistencyCheckJobItemProgressContext progressContext = new ConsistencyCheckJobItemProgressContext("", 0);
         TableDataConsistencyCheckParameter param = new TableDataConsistencyCheckParameter("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
-                tableMetaData.getColumnNames(), primaryKeyMetaData, null, progressContext);
+                tableMetaData.getColumnNames(), uniqueKeys, null, progressContext);
         TableDataConsistencyChecker tableChecker = TypedSPILoader.getService(TableDataConsistencyChecker.class, "DATA_MATCH", new Properties());
         TableDataConsistencyCheckResult checkResult = tableChecker.checkSingleTableInventoryData(param);
         assertTrue(checkResult.isMatched());

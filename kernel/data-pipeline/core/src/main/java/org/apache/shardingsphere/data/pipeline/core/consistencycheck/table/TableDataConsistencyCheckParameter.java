@@ -46,7 +46,7 @@ public final class TableDataConsistencyCheckParameter {
     
     private final List<String> columnNames;
     
-    private final PipelineColumnMetaData uniqueKey;
+    private final List<PipelineColumnMetaData> uniqueKeys;
     
     private final JobRateLimitAlgorithm readRateLimitAlgorithm;
     

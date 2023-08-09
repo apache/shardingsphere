@@ -48,7 +48,7 @@ public final class SingleTableInventoryCalculateParameter {
      * It could be primary key.
      * It could be used in order by clause.
      */
-    private final PipelineColumnMetaData uniqueKey;
+    private final List<PipelineColumnMetaData> uniqueKeys;
     
     private final Object tableCheckPosition;
     
@@ -79,6 +79,15 @@ public final class SingleTableInventoryCalculateParameter {
      */
     public String getLogicTableName() {
         return table.getTableName().getOriginal();
+    }
+    
+    /**
+     * Get first unique key.
+     *
+     * @return first unique key
+     */
+    public PipelineColumnMetaData getFirstUniqueKey() {
+        return uniqueKeys.get(0);
     }
     
     /**
