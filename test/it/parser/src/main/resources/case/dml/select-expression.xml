@@ -2822,4 +2822,34 @@
             <simple-table name="departments" alias="d" start-index="107" stop-index="119" />
         </from>
     </select>
+    
+    <select sql-case-id="select_prediction_bounds_function">
+        <projections start-index="7" stop-index="13">
+            <column-projection name="cust_id" start-index="7" stop-index="13" />
+        </projections>
+        <from>
+            <simple-table name="mining_data_apply_v" start-index="20" stop-index="38" />
+        </from>
+        <where start-index="40" stop-index="107">
+            <expr>
+                <binary-operation-expression start-index="46" stop-index="107">
+                    <left>
+                        <binary-operation-expression start-index="46" stop-index="102">
+                            <left>
+                                <function function-name="PREDICTION_BOUNDS" start-index="46" stop-index="96" text="PREDICTION_BOUNDS(glmr_sh_regr_sample,0.98 USING *)" />
+                            </left>
+                            <operator>.</operator>
+                            <right>
+                                <column start-index="98" stop-index="102" name="LOWER" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression start-index="106" stop-index="107" value="24" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
