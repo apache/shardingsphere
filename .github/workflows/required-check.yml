@@ -50,11 +50,20 @@ jobs:
       - name: Run CheckStyle
         run: |
           ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
-          tar -czvf /tmp/shardingsphere.tar ${{ github.workspace }}
+          tar -czvf /tmp/shardingsphere-1.tar ${{ github.workspace }}
       - uses: actions/upload-artifact@v3
         with:
           name: ss-tar
-          path: /tmp/shardingsphere.tar
+          path: /tmp/shardingsphere-1.tar
+          retention-days: 10
+      - name: Run CheckStyle-2
+        run: |
+          ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
+          tar -czvf /tmp/shardingsphere-2.tar ${{ github.workspace }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ss-tar-2
+          path: /tmp/shardingsphere-2.tar
           retention-days: 10
 
   check-spotless:
