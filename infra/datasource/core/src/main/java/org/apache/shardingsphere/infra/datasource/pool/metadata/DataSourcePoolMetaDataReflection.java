@@ -36,7 +36,6 @@ public final class DataSourcePoolMetaDataReflection {
     
     /**
      * Get JDBC URL.
-     * Get it directly through the attribute first, and get it through the get method when it is empty
      *
      * @return JDBC URL
      */
@@ -51,7 +50,6 @@ public final class DataSourcePoolMetaDataReflection {
     
     /**
      * Get JDBC connection properties.
-     * Get it directly through the attribute first, and get it through the get method when it is empty
      *
      * @return JDBC connection properties
      */

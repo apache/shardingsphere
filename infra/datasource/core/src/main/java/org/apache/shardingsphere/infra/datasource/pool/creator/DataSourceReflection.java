@@ -161,6 +161,7 @@ public final class DataSourceReflection {
     
     /**
      * Add default data source properties.
+     *
      * @param dataSourcePoolMetaData data source pool meta data
      */
     public void addDefaultDataSourceProperties(final DataSourcePoolMetaData dataSourcePoolMetaData) {
@@ -174,15 +175,15 @@ public final class DataSourceReflection {
         }
         ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(jdbcUrl.get())).parse(jdbcUrl.get(), null, null);
         Properties queryProps = connectionProps.getQueryProperties();
-        Properties properties = jdbcConnectionProps.get();
+        Properties jdbcProps = jdbcConnectionProps.get();
         for (Entry<Object, Object> entry : connectionProps.getDefaultQueryProperties().entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
-            if (!containsDefaultProperty(defaultPropertyKey, properties, queryProps)) {
-                properties.setProperty(defaultPropertyKey, defaultPropertyValue);
+            if (!containsDefaultProperty(defaultPropertyKey, jdbcProps, queryProps)) {
+                jdbcProps.setProperty(defaultPropertyKey, defaultPropertyValue);
             }
         }
-        this.setField(dataSourcePoolMetaData.getFieldMetaData().getJdbcUrlPropertiesFieldName(), properties);
+        setField(dataSourcePoolMetaData.getFieldMetaData().getJdbcUrlPropertiesFieldName(), jdbcProps);
     }
     
     private boolean containsDefaultProperty(final String defaultPropertyKey, final Properties targetDataSourceProps, final Properties queryProps) {
