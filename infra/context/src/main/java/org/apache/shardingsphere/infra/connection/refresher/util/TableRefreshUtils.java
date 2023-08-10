@@ -52,7 +52,7 @@ public final class TableRefreshUtils {
      * @return table name
      */
     public static String getTableName(final DatabaseType databaseType, final IdentifierValue identifierValue) {
-        if ((databaseType instanceof OracleDatabaseType || databaseType instanceof PostgreSQLDatabaseType) && identifierValue.getQuoteCharacter().equals(QuoteCharacter.NONE)) {
+        if (databaseType instanceof OracleDatabaseType && identifierValue.getQuoteCharacter().equals(QuoteCharacter.NONE)) {
             return identifierValue.getValue().toUpperCase();
         }
         return identifierValue.getValue();
