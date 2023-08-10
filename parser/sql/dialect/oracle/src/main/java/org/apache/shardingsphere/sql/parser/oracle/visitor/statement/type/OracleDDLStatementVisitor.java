@@ -530,7 +530,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitModifyColProperties(final ModifyColPropertiesContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
+        DataTypeSegment dataType = null != ctx.dataType() ? (DataTypeSegment) visit(ctx.dataType()) : null;
         // TODO visit pk and reference table
         return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false);
     }
