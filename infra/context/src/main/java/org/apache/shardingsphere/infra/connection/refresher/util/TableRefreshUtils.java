@@ -21,12 +21,19 @@ import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
+import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -36,6 +43,31 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableRefreshUtils {
+    
+    /**
+     * Get table name.
+     *
+     * @param databaseType database type
+     * @param identifierValue identifier value
+     * @return table name
+     */
+    public static String getTableName(final DatabaseType databaseType, final IdentifierValue identifierValue) {
+        if (databaseType instanceof OracleDatabaseType || databaseType instanceof PostgreSQLDatabaseType || identifierValue.getQuoteCharacter().equals(QuoteCharacter.NONE)) {
+            return identifierValue.getValue().toUpperCase();
+        }
+        return identifierValue.getValue();
+    }
+    
+    /**
+     * Judge whether single table.
+     *
+     * @param tableName table name
+     * @param database database
+     * @return whether single table
+     */
+    public static boolean isSingleTable(final String tableName, final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().findRules(TableContainedRule.class).stream().noneMatch(each -> each.getDistributedTableMapper().contains(tableName));
+    }
     
     /**
      * Judge whether the rule need to be refreshed.
