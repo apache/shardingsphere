@@ -54,6 +54,9 @@ public final class DataSourcePoolMetaDataReflection {
      * @return JDBC connection properties
      */
     public Optional<Properties> getJdbcConnectionProperties() {
+        if (null == dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName()) {
+            return Optional.empty();
+        }
         Optional<Properties> properties = ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
         if (properties.isPresent()) {
             return properties;
