@@ -2384,4 +2384,30 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_with_national_character_set">
+        <table name="customers" start-index="12" stop-index="20" literal-start-index="12" literal-stop-index="20" />
+        <columns start-index="21" stop-index="21" literal-start-index="21" literal-stop-index="21" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1000" start-index="30" stop-index="33" literal-start-index="30" literal-stop-index="33" />
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="TO_NCHAR" text="TO_NCHAR('John Smith')" start-index="36" stop-index="57" literal-start-index="36" literal-stop-index="57">
+                        <parameter>
+                            <literal-expression value="John Smith" start-index="45" stop-index="56" literal-start-index="45" literal-stop-index="56" />
+                        </parameter>
+                        <literalText>TO_NCHAR('John Smith')</literalText>
+                    </function>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="'500 Oracle Parkway" start-index="59" stop-index="79" literal-start-index="59" literal-stop-index="79" />
+                </assignment-value>
+                <assignment-value>
+                    <column name="sysdate" start-index="81" stop-index="87" literal-start-index="81" literal-stop-index="87" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>
