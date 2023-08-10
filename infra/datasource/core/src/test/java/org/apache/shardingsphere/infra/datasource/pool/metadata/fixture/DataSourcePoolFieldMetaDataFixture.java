@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
-public final class MockedDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
+public final class DataSourcePoolFieldMetaDataFixture implements DataSourcePoolFieldMetaData {
     
     @Override
     public String getJdbcUrlFieldName() {

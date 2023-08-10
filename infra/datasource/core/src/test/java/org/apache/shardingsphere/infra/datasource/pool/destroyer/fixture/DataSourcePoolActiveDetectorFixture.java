@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public final class MockedDataSourcePoolActiveDetector implements DataSourcePoolActiveDetector {
+public final class DataSourcePoolActiveDetectorFixture implements DataSourcePoolActiveDetector {
     
     @SneakyThrows(SQLException.class)
     @Override

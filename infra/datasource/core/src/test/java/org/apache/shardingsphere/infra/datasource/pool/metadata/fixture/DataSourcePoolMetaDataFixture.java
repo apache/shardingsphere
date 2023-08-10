@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaData {
+public final class DataSourcePoolMetaDataFixture implements DataSourcePoolMetaData {
     
     @Override
     public Map<String, Object> getDefaultProperties() {
@@ -55,8 +55,8 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     @Override
-    public MockedDataSourcePoolFieldMetaData getFieldMetaData() {
-        return new MockedDataSourcePoolFieldMetaData();
+    public DataSourcePoolFieldMetaDataFixture getFieldMetaData() {
+        return new DataSourcePoolFieldMetaDataFixture();
     }
     
     @Override
