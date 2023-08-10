@@ -17,6 +17,10 @@
   -->
 
 <sql-cases>
+    <sql-case id="alter_table_move_tablespace_overflow_tablespace" value="ALTER TABLE admin_docindex MOVE TABLESPACE admin_tbs2 OVERFLOW TABLESPACE admin_tbs3" db-types="Oracle" />
+    <sql-case id="alter_table_move_nocompress" value="ALTER TABLE admin_iot5 MOVE NOCOMPRESS" db-types="Oracle" />
+    <sql-case id="alter_table_enable_row_movement" value="ALTER TABLE SYSTEM.AUD$ ENABLE ROW MOVEMENT" db-types="Oracle" />
+    <sql-case id="alter_table_shrink_space_cascade" value="ALTER TABLE SYSTEM.AUD$ SHRINK SPACE CASCADE" db-types="Oracle" />
     <sql-case id="alter_table" value="ALTER TABLE t_log ADD name varchar(10)" db-types="MySQL, PostgreSQL,openGauss" />
     <sql-case id="alter_table_oracle" value="ALTER TABLE t_log ADD (name varchar(10))" db-types="Oracle" />
     <sql-case id="alter_table_not_null" value="alter table t1 add c2 real  not null" db-types="MySQL" />

@@ -413,7 +413,30 @@ alterDefinitionClause
     ;
 
 alterTableProperties
-    : renameTableSpecification | REKEY encryptionSpecification | supplementalTableLogging
+    : ((physicalAttributesClause
+    | loggingClause
+    | tableCompression
+    | inmemoryTableClause
+    | ilmClause
+    | supplementalTableLogging
+    | allocateExtentClause
+    | deallocateUnusedClause
+    | (CACHE | NOCACHE)
+    | upgradeTableClause
+    | recordsPerBlockClause
+    | parallelClause
+    | rowMovementClause
+    | logicalReplicationClause
+    | flashbackArchiveClause)+ | renameTableSpecification) alterIotClauses? alterXMLSchemaClause?
+    | shrinkClause
+    | READ ONLY
+    | READ WRITE
+    | REKEY encryptionSpecification
+    | DEFAULT COLLATION collationName
+    | NO? ROW ARCHIVAL
+    | ADD attributeClusteringClause
+    | MODIFY CLUSTERING clusteringWhen? zonemapClause?
+    | DROP CLUSTERING
     ;
 
 renameTableSpecification
@@ -1193,6 +1216,10 @@ rowMovementClause
     : (ENABLE | DISABLE) ROW MOVEMENT
     ;
 
+logicalReplicationClause
+    : (ENABLE | DISABLE) LOGICAL REPLICATION
+    ;
+
 flashbackArchiveClause
     : FLASHBACK ARCHIVE flashbackArchiveName? | NO FLASHBACK ARCHIVE
     ;
@@ -1334,6 +1361,14 @@ allocateExtentClause
 
 partitionSpec
     : PARTITION partitionName? tablePartitionDescription?
+    ;
+
+upgradeTableClause
+    : UPGRADE (NOT? INCLUDING DATA)? columnProperties?
+    ;
+
+recordsPerBlockClause
+    : (MINIMIZE | NOMINIMIZE) RECORDS_PER_BLOCK
     ;
 
 partitionAttributes
@@ -3322,10 +3357,14 @@ modifylobParameters
     | deallocateUnusedClause
     ;
 
- alterIotClauses
+alterIotClauses
     : indexOrgTableClause
     | alterOverflowClause
     | COALESCE
+    ;
+
+alterXMLSchemaClause
+    : ALLOW (ANYSCHEMA | NONSCHEMA) | DISALLOW NONSCHEMA
     ;
 
 alterOverflowClause
