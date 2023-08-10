@@ -2852,4 +2852,26 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_prediction_function">
+        <projections start-index="7" stop-index="17">
+            <column-projection name="cust_gender" start-index="7" stop-index="17" />
+        </projections>
+        <from>
+            <simple-table name="mining_data_apply_v" start-index="24" stop-index="42" />
+        </from>
+        <where start-index="44" stop-index="153">
+            <expr>
+                <binary-operation-expression start-index="50" stop-index="153">
+                    <left>
+                        <function function-name="PREDICTION" start-index="50" stop-index="149" text="PREDICTION (nb_sh_clas_sample COST MODEL AUTO USING cust_marital_status, aeducation, household_size)" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="153" stop-index="153" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
