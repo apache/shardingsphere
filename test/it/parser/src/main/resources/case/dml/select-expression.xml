@@ -2687,7 +2687,21 @@
         </from>
         <projections start-index="7" stop-index="102">
             <column-projection name="customer_id" start-index="7" stop-index="17" />
-            <expression-projection text="cust_address_ntab MULTISET INTERSECT DISTINCT cust_address2_ntab" alias="multiset_intersect" start-index="20" stop-index="102" />
+            <expression-projection text="cust_address_ntab MULTISET INTERSECT DISTINCT cust_address2_ntab" alias="multiset_intersect" start-index="20" stop-index="102" literal-start-index="20" literal-stop-index="102">
+                <literalText>cust_address_ntab MULTISET INTERSECT DISTINCT cust_address2_ntab</literalText>
+                <expr>
+                    <multiset-expression>
+                        <left>
+                            <column name="cust_address_ntab" start-index="20" stop-index="36" literal-start-index="20" literal-stop-index="36" />
+                        </left>
+                        <right>
+                            <column name="cust_address2_ntab" start-index="66" stop-index="83" literal-start-index="66" literal-stop-index="83" />
+                        </right>
+                        <operator>INTERSECT</operator>
+                        <keyWord>DISTINCT</keyWord>
+                    </multiset-expression>
+                </expr>
+            </expression-projection>
         </projections>
         <order-by>
             <column-item name="customer_id" order-direction="ASC" start-index="133" stop-index="143"/>

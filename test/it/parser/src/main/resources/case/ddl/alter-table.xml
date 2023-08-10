@@ -1326,4 +1326,17 @@
     <alter-table sql-case-id="alter_table_move">
         <table name="admin_docindex" start-index="12" stop-index="25" />
     </alter-table>
+    
+    <alter-table sql-case-id="alter_table_move_online">
+        <table name="admin_docindex" start-index="12" stop-index="25" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify">
+        <table name="customers" start-index="12" stop-index="20" />
+        <modify-column>
+            <column-definition start-index="30" stop-index="51">
+                <column start-index="30" stop-index="43" name="online_acct_pw" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
 </sql-parser-test-cases>

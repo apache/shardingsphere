@@ -169,4 +169,6 @@
     <sql-case id="alter_table_add_supplemental_log_data2" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG DATA (UNIQUE) COLUMNS" db-types="Oracle" />
     <sql-case id="alter_table_add_supplemental_log_data3" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS" db-types="Oracle" />
     <sql-case id="alter_table_move" value="ALTER TABLE admin_docindex MOVE" db-types="Oracle" />
+    <sql-case id="alter_table_move_online" value="ALTER TABLE admin_docindex MOVE ONLINE" db-types="Oracle" />
+    <sql-case id="alter_table_modify" value="ALTER TABLE customers MODIFY (online_acct_pw DECRYPT)" db-types="Oracle" />
 </sql-cases>
