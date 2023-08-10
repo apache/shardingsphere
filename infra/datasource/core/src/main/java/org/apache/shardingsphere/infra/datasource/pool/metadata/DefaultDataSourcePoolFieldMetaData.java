@@ -23,16 +23,6 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata;
 public final class DefaultDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
     @Override
-    public String getUsernameFieldName() {
-        return "username";
-    }
-    
-    @Override
-    public String getPasswordFieldName() {
-        return "password";
-    }
-    
-    @Override
     public String getJdbcUrlFieldName() {
         return "url";
     }
