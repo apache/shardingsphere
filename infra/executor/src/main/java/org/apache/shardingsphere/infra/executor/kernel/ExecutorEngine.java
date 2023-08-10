@@ -58,16 +58,6 @@ public final class ExecutorEngine implements AutoCloseable {
     }
     
     /**
-     * Create executor engine with CPU.
-     *
-     * @return created executor engine
-     */
-    public static ExecutorEngine createExecutorEngineWithCPU() {
-        int cpuThreadCount = CPU_CORES * 2 - 1;
-        return new ExecutorEngine(cpuThreadCount);
-    }
-    
-    /**
      * Execute.
      *
      * @param executionGroupContext execution group context
