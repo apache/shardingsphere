@@ -36,7 +36,7 @@ import java.util.Optional;
 public final class CollateExpressionConverter implements SQLSegmentConverter<CollateExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(CollateExpression segment) {
+    public Optional<SqlNode> convert(final CollateExpression segment) {
         List<SqlNode> sqlNodes = new LinkedList<>();
         sqlNodes.add(new SqlIdentifier(segment.getColumnName().get().getIdentifier().getValue(), SqlParserPos.ZERO));
         sqlNodes.add(new ExpressionConverter().convert(segment.getCollateName()).orElse(SqlNodeList.EMPTY));
