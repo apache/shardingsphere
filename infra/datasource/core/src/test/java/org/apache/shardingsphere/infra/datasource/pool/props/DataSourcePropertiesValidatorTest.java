@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.props;
+package org.apache.shardingsphere.infra.datasource.pool.props;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;

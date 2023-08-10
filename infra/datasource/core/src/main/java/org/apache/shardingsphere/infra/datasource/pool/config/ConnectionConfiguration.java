@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.storage;
+package org.apache.shardingsphere.infra.datasource.pool.config;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
-
-import javax.sql.DataSource;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Storage resource with data source properties.
+ * Connection configuration.
  */
+@RequiredArgsConstructor
 @Getter
-public final class StorageResourceWithProperties extends StorageResource {
+public final class ConnectionConfiguration {
     
-    private final Map<String, DataSourceProperties> dataSourcePropertiesMap;
+    private final String dataSourceClassName;
     
-    public StorageResourceWithProperties(final Map<String, DataSource> storageNodes,
-                                         final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final Map<String, DataSourceProperties> dataSourcePropertiesMap) {
-        super(storageNodes, storageUnitNodeMappers);
-        this.dataSourcePropertiesMap = dataSourcePropertiesMap;
-    }
+    private final String url;
+    
+    private final String username;
+    
+    private final String password;
 }

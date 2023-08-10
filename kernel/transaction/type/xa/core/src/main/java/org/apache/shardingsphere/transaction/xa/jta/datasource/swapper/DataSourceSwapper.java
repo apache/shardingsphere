@@ -21,7 +21,7 @@ import com.google.common.base.CaseFormat;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XADataSourceInitializeException;
 

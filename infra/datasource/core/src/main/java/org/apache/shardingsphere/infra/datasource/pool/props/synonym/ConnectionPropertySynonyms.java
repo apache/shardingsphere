@@ -15,16 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.props;
+package org.apache.shardingsphere.infra.datasource.pool.props.synonym;
+
+import lombok.EqualsAndHashCode;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
- * Invalid data source properties exception.
+ * Connection property synonyms.
  */
-public final class InvalidDataSourcePropertiesException extends Exception {
+@EqualsAndHashCode(callSuper = true)
+public final class ConnectionPropertySynonyms extends PropertySynonyms {
     
-    private static final long serialVersionUID = -7221138369057943935L;
+    private static final Collection<String> STANDARD_PROPERTY_KEYS = new HashSet<>();
     
-    public InvalidDataSourcePropertiesException(final String dataSourceName, final String errorMessage) {
-        super(String.format("Invalid data source `%s`, error message is: %s", dataSourceName, errorMessage));
+    static {
+        STANDARD_PROPERTY_KEYS.add("dataSourceClassName");
+        STANDARD_PROPERTY_KEYS.add("url");
+        STANDARD_PROPERTY_KEYS.add("username");
+        STANDARD_PROPERTY_KEYS.add("password");
+    }
+    
+    public ConnectionPropertySynonyms(final Map<String, Object> props, final Map<String, String> propertySynonyms) {
+        super(props, STANDARD_PROPERTY_KEYS, propertySynonyms);
     }
 }

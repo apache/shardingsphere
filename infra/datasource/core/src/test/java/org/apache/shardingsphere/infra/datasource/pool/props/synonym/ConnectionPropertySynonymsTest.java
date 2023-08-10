@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.props.synonym;
+package org.apache.shardingsphere.infra.datasource.pool.props.synonym;
 
 import org.junit.jupiter.api.Test;
 

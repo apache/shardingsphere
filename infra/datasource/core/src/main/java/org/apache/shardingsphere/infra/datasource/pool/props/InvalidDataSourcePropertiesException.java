@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.config;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package org.apache.shardingsphere.infra.datasource.pool.props;
 
 /**
- * Data source configuration.
+ * Invalid data source properties exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DataSourceConfiguration {
+public final class InvalidDataSourcePropertiesException extends Exception {
     
-    private final ConnectionConfiguration connection;
+    private static final long serialVersionUID = -7221138369057943935L;
     
-    private final PoolConfiguration pool;
+    public InvalidDataSourcePropertiesException(final String dataSourceName, final String errorMessage) {
+        super(String.format("Invalid data source `%s`, error message is: %s", dataSourceName, errorMessage));
+    }
 }

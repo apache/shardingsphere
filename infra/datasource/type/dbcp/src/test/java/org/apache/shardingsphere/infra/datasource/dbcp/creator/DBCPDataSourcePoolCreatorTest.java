@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.datasource.dbcp.creator;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;

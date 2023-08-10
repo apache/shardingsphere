@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
 
 /**
  * Default data source pool properties validator.

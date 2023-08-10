@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.props;
+package org.apache.shardingsphere.infra.datasource.pool.props;
 
 import com.google.common.base.Objects;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.synonym.ConnectionPropertySynonyms;
-import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
+import org.apache.shardingsphere.infra.datasource.pool.props.synonym.ConnectionPropertySynonyms;
+import org.apache.shardingsphere.infra.datasource.pool.props.synonym.PoolPropertySynonyms;
+import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;

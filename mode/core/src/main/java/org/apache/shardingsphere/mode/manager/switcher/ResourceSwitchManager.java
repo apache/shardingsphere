@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.manager.switcher;
 
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResourceWithProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnitNodeMapper;

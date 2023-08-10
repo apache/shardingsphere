@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.hikari.metadata;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.util.concurrent.TimeUnit;

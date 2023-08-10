@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.props.synonym;
+package org.apache.shardingsphere.infra.datasource.pool.props.synonym;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,8 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class PoolPropertySynonymsTest {
     
