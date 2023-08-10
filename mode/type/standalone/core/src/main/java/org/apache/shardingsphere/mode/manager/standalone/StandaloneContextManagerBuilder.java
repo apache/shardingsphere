@@ -68,9 +68,4 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     public String getType() {
         return "Compatible_Standalone";
     }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
 }
