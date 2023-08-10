@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropert
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -128,8 +128,8 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     }
     
     private DataSourceProperties getDataSourceProperties(final DataSource dataSource) {
-        return dataSource instanceof ShardingSphereStorageDataSourceWrapper
-                ? DataSourcePropertiesCreator.create(((ShardingSphereStorageDataSourceWrapper) dataSource).getDataSource())
+        return dataSource instanceof CatalogSwitchableDataSource
+                ? DataSourcePropertiesCreator.create(((CatalogSwitchableDataSource) dataSource).getDataSource())
                 : DataSourcePropertiesCreator.create(dataSource);
     }
     

@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnitNodeMapper;
 
 import javax.sql.DataSource;
@@ -68,7 +68,7 @@ public final class StorageUnitMetaData {
         Map<String, DataSource> result = new LinkedHashMap<>(storageUnits.size(), 1F);
         for (Entry<String, StorageUnitNodeMapper> entry : storageUnits.entrySet()) {
             DataSource dataSource = storageNodes.get(entry.getValue().getNodeName());
-            result.put(entry.getKey(), new ShardingSphereStorageDataSourceWrapper(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));
+            result.put(entry.getKey(), new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));
         }
         return result;
     }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.metadata.persist.service.config.database.datasource.DataSourceUnitPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;

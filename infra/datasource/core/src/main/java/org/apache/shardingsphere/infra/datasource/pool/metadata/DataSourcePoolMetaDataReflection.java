@@ -40,15 +40,25 @@ public final class DataSourcePoolMetaDataReflection {
      * @return JDBC URL
      */
     public Optional<String> getJdbcUrl() {
-        return ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
+        Optional<String> jdbcUrl = ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
+        if (jdbcUrl.isPresent()) {
+            return jdbcUrl;
+        } else {
+            return ReflectionUtils.getFieldValueByGetMethod(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
+        }
     }
     
     /**
      * Get JDBC connection properties.
-     * 
+     *
      * @return JDBC connection properties
      */
     public Optional<Properties> getJdbcConnectionProperties() {
-        return ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
+        Optional<Properties> properties = ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
+        if (properties.isPresent()) {
+            return properties;
+        } else {
+            return ReflectionUtils.getFieldValueByGetMethod(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
+        }
     }
 }

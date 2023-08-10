@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.storage;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
 
 import javax.sql.DataSource;
 import java.util.Map;
