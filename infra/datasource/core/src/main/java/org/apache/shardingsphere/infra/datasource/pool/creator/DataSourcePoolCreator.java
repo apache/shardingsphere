@@ -44,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Data source pool creator.
@@ -203,8 +204,8 @@ public final class DataSourcePoolCreator {
         if (poolMetaData.isPresent()) {
             setDefaultFields(dataSourceReflection, poolMetaData.get());
             setConfiguredFields(dataSourceProps, dataSourceReflection, poolMetaData.get());
-            appendJdbcUrlProperties(dataSourceProps.getCustomDataSourceProperties(), result, poolMetaData.get());
-            dataSourceReflection.addDefaultDataSourceProperties();
+            appendJdbcUrlProperties(dataSourceProps.getCustomDataSourceProperties(), result, poolMetaData.get(), dataSourceReflection);
+            dataSourceReflection.addDefaultDataSourceProperties(poolMetaData.get());
         } else {
             setConfiguredFields(dataSourceProps, dataSourceReflection);
         }
@@ -259,14 +260,22 @@ public final class DataSourcePoolCreator {
     }
     
     @SuppressWarnings("unchecked")
-    private static void appendJdbcUrlProperties(final CustomDataSourceProperties customDataSourceProps, final DataSource targetDataSource, final DataSourcePoolMetaData poolMetaData) {
+    private static void appendJdbcUrlProperties(final CustomDataSourceProperties customDataSourceProps, final DataSource targetDataSource, final DataSourcePoolMetaData poolMetaData,
+                                                final DataSourceReflection dataSourceReflection) {
         String jdbcUrlPropertiesFieldName = poolMetaData.getFieldMetaData().getJdbcUrlPropertiesFieldName();
         if (null != jdbcUrlPropertiesFieldName && customDataSourceProps.getProperties().containsKey(jdbcUrlPropertiesFieldName)) {
             Map<String, Object> jdbcUrlProps = (Map<String, Object>) customDataSourceProps.getProperties().get(jdbcUrlPropertiesFieldName);
             DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(targetDataSource, poolMetaData.getFieldMetaData());
-            for (Entry<String, Object> entry : jdbcUrlProps.entrySet()) {
-                dataSourcePoolMetaDataReflection.getJdbcConnectionProperties().ifPresent(optional -> optional.setProperty(entry.getKey(), entry.getValue().toString()));
-            }
+            Optional<Properties> jdbcConnectionPropOptional = dataSourcePoolMetaDataReflection.getJdbcConnectionProperties();
+            jdbcConnectionPropOptional.ifPresent(optional -> setJdbcUrlProperties(dataSourceReflection, optional, jdbcUrlProps, jdbcUrlPropertiesFieldName));
         }
+    }
+    
+    private static void setJdbcUrlProperties(final DataSourceReflection dataSourceReflection, final Properties jdbcConnectionProps, final Map<String, Object> customProps,
+                                             final String jdbcUrlPropertiesFieldName) {
+        for (Entry<String, Object> entry : customProps.entrySet()) {
+            jdbcConnectionProps.setProperty(entry.getKey(), entry.getValue().toString());
+        }
+        dataSourceReflection.setField(jdbcUrlPropertiesFieldName, jdbcConnectionProps);
     }
 }

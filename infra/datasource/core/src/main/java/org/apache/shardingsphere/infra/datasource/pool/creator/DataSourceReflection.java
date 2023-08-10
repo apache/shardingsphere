@@ -130,6 +130,9 @@ public final class DataSourceReflection {
     @SneakyThrows(ReflectiveOperationException.class)
     private void setField(final Method method, final Object fieldValue) {
         Class<?> paramType = method.getParameterTypes()[0];
+        if (String.class == paramType && Properties.class.isAssignableFrom(fieldValue.getClass())) {
+            return;
+        }
         if (int.class == paramType || Integer.class == paramType) {
             method.invoke(dataSource, Integer.parseInt(fieldValue.toString()));
         } else if (long.class == paramType || Long.class == paramType) {
@@ -158,8 +161,10 @@ public final class DataSourceReflection {
     
     /**
      * Add default data source properties.
+     *
+     * @param dataSourcePoolMetaData data source pool meta data
      */
-    public void addDefaultDataSourceProperties() {
+    public void addDefaultDataSourceProperties(final DataSourcePoolMetaData dataSourcePoolMetaData) {
         DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource,
                 TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSource.getClass().getName())
                         .map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
@@ -170,13 +175,15 @@ public final class DataSourceReflection {
         }
         ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(jdbcUrl.get())).parse(jdbcUrl.get(), null, null);
         Properties queryProps = connectionProps.getQueryProperties();
+        Properties jdbcProps = jdbcConnectionProps.get();
         for (Entry<Object, Object> entry : connectionProps.getDefaultQueryProperties().entrySet()) {
             String defaultPropertyKey = entry.getKey().toString();
             String defaultPropertyValue = entry.getValue().toString();
-            if (!containsDefaultProperty(defaultPropertyKey, jdbcConnectionProps.get(), queryProps)) {
-                jdbcConnectionProps.get().setProperty(defaultPropertyKey, defaultPropertyValue);
+            if (!containsDefaultProperty(defaultPropertyKey, jdbcProps, queryProps)) {
+                jdbcProps.setProperty(defaultPropertyKey, defaultPropertyValue);
             }
         }
+        setField(dataSourcePoolMetaData.getFieldMetaData().getJdbcUrlPropertiesFieldName(), jdbcProps);
     }
     
     private boolean containsDefaultProperty(final String defaultPropertyKey, final Properties targetDataSourceProps, final Properties queryProps) {
