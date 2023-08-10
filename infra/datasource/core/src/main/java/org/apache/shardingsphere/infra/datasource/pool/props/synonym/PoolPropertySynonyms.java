@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.props.synonym;
+package org.apache.shardingsphere.infra.datasource.pool.props.synonym;
 
 import lombok.EqualsAndHashCode;
 
@@ -24,21 +24,23 @@ import java.util.HashSet;
 import java.util.Map;
 
 /**
- * Connection property synonyms.
+ * Pool property synonyms.
  */
 @EqualsAndHashCode(callSuper = true)
-public final class ConnectionPropertySynonyms extends PropertySynonyms {
+public final class PoolPropertySynonyms extends PropertySynonyms {
     
     private static final Collection<String> STANDARD_PROPERTY_KEYS = new HashSet<>();
     
     static {
-        STANDARD_PROPERTY_KEYS.add("dataSourceClassName");
-        STANDARD_PROPERTY_KEYS.add("url");
-        STANDARD_PROPERTY_KEYS.add("username");
-        STANDARD_PROPERTY_KEYS.add("password");
+        STANDARD_PROPERTY_KEYS.add("connectionTimeoutMilliseconds");
+        STANDARD_PROPERTY_KEYS.add("idleTimeoutMilliseconds");
+        STANDARD_PROPERTY_KEYS.add("maxLifetimeMilliseconds");
+        STANDARD_PROPERTY_KEYS.add("maxPoolSize");
+        STANDARD_PROPERTY_KEYS.add("minPoolSize");
+        STANDARD_PROPERTY_KEYS.add("readOnly");
     }
     
-    public ConnectionPropertySynonyms(final Map<String, Object> props, final Map<String, String> propertySynonyms) {
+    public PoolPropertySynonyms(final Map<String, Object> props, final Map<String, String> propertySynonyms) {
         super(props, STANDARD_PROPERTY_KEYS, propertySynonyms);
     }
 }

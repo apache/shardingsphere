@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.config;
+package org.apache.shardingsphere.infra.datasource.pool.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Connection configuration.
+ * Data source configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ConnectionConfiguration {
+public final class DataSourceConfiguration {
     
-    private final String dataSourceClassName;
+    private final ConnectionConfiguration connection;
     
-    private final String url;
-    
-    private final String username;
-    
-    private final String password;
+    private final PoolConfiguration pool;
 }
