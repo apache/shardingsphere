@@ -2888,4 +2888,27 @@
             </expr>
         </where>
     </select>
+    <select sql-case-id="select_prediction_details_function">
+        <projections start-index="7" stop-index="51">
+            <expression-projection start-index="7" stop-index="51" text="PREDICTION_DETAILS(DT_SH_Clas_sample using *)">
+                <function function-name="PREDICTION_DETAILS" start-index="7" stop-index="51" text="PREDICTION_DETAILS(DT_SH_Clas_sample using *)" />
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="mining_data_apply_v" start-index="58" stop-index="76" />
+        </from>
+        <where start-index="78" stop-index="105">
+            <expr>
+                <binary-operation-expression start-index="84" stop-index="105">
+                    <left>
+                        <column start-index="84" stop-index="93" name="occupation" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="TechSup" start-index="97" stop-index="105" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
