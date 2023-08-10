@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
@@ -61,7 +61,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         if (!isExpandRequired(splitTables)) {
             return splitTables;
         }
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources);
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, dataSources);
         Map<String, DataSource> aggregatedDataSources = SingleTableLoadUtils.getAggregatedDataSourceMap(enabledDataSources, builtRules);
         DatabaseType databaseType = DatabaseTypeEngine.getStorageType(enabledDataSources.values());
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(builtRules);
@@ -173,7 +173,7 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
     }
     
     @Override
-    public String getType() {
-        return SingleRuleConfiguration.class.getName();
+    public Class<SingleRuleConfiguration> getType() {
+        return SingleRuleConfiguration.class;
     }
 }

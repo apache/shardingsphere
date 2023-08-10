@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.spi;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPI;
@@ -48,5 +48,5 @@ public interface SQLFederationDecider<T extends ShardingSphereRule> extends Orde
      * @return use SQL federation or not
      */
     boolean decide(SelectStatementContext selectStatementContext, List<Object> parameters,
-                   ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, Collection<DataNode> includedDataNodes);
+                   RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, Collection<DataNode> includedDataNodes);
 }

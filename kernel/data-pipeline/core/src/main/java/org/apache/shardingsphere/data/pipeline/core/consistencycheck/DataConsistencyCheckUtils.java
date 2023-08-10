@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
@@ -27,8 +28,9 @@ import java.math.RoundingMode;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.sql.SQLXML;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
@@ -45,16 +47,15 @@ public final class DataConsistencyCheckUtils {
      * @param thatRecord that record
      * @param equalsBuilder equals builder
      * @return true if records equals, otherwise false
-     * @throws SQLException if getting special value failed
      */
-    public static boolean recordsEquals(final Collection<Object> thisRecord, final Collection<Object> thatRecord, final EqualsBuilder equalsBuilder) throws SQLException {
-        Iterator<Object> thisRecordIterator = thisRecord.iterator();
-        Iterator<Object> thatRecordIterator = thatRecord.iterator();
+    public static boolean recordsEquals(final Map<String, Object> thisRecord, final Map<String, Object> thatRecord, final EqualsBuilder equalsBuilder) {
+        Iterator<Entry<String, Object>> thisRecordIterator = thisRecord.entrySet().iterator();
+        Iterator<Entry<String, Object>> thatRecordIterator = thatRecord.entrySet().iterator();
         int columnIndex = 0;
         while (thisRecordIterator.hasNext() && thatRecordIterator.hasNext()) {
             ++columnIndex;
-            Object thisColumnValue = thisRecordIterator.next();
-            Object thatColumnValue = thatRecordIterator.next();
+            Object thisColumnValue = thisRecordIterator.next().getValue();
+            Object thatColumnValue = thatRecordIterator.next().getValue();
             if (!isMatched(equalsBuilder, thisColumnValue, thatColumnValue)) {
                 log.warn("Record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}.", columnIndex, thisColumnValue, thatColumnValue,
                         null != thisColumnValue ? thisColumnValue.getClass().getName() : "", null == thatColumnValue ? "" : thatColumnValue.getClass().getName());
@@ -64,7 +65,8 @@ public final class DataConsistencyCheckUtils {
         return true;
     }
     
-    private static boolean isMatched(final EqualsBuilder equalsBuilder, final Object thisColumnValue, final Object thatColumnValue) throws SQLException {
+    @SneakyThrows(SQLException.class)
+    private static boolean isMatched(final EqualsBuilder equalsBuilder, final Object thisColumnValue, final Object thatColumnValue) {
         if (thisColumnValue instanceof SQLXML && thatColumnValue instanceof SQLXML) {
             return ((SQLXML) thisColumnValue).getString().equals(((SQLXML) thatColumnValue).getString());
         }

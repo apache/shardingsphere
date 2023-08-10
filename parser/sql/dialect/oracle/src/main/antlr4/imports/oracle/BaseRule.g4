@@ -180,7 +180,7 @@ unreservedWord1
     | HOST | PORT | EVERY | MINUTES | HOURS | NORELOCATE | SAVE | DISCARD | APPLICATION | INSTALL
     | MINIMUM | VERSION | UNINSTALL | COMPATIBILITY | MATERIALIZE | SUBTYPE | RECORD | CONSTANT | CURSOR
     | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA | PERCENT_RANK | ROWID
-    | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE | EVALNAME | LEVEL | CONTENT
+    | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE | EVALNAME | LEVEL | CONTENT | ON
     ;
     
 unreservedWord2
@@ -200,7 +200,7 @@ unreservedWord2
     | CREATE_STORED_OUTLINES | CROSSEDITION | CSCONVERT | CUBE_GB | CUME_DIST | CUME_DISTM | CURRENT | CURRENTV | CURRENT_DATE
     | CURRENT_SCHEMA | CURRENT_TIME | CURRENT_TIMESTAMP | CURSOR_SHARING_EXACT | CURSOR_SPECIFIC_SEGMENT | CV
     | DATABASE_DEFAULT | DATAOBJNO | DATAOBJ_TO_PARTITION | DATE_MODE | DBA | DBMS_STATS | DB_ROLE_CHANGE | DB_VERSION
-    | DEBUGGER | DECLARE | DECOMPOSE | DECR | DEFAULTS | DEFINED | DEGREE | DELAY | DELETEXML | DENSE_RANKM | DEQUEUE | DEREF
+    | DEBUGGER | DECLARE | DECOMPOSE | DECR | DEFAULT | DEFAULTS | DEFINED | DEGREE | DELAY | DELETEXML | DENSE_RANKM | DEQUEUE | DEREF
     | DEREF_NO_REWRITE | DETACHED | DIRECT_LOAD | DISABLE_PRESET | DISABLE_RPKE | DISTINGUISHED | DML_UPDATE | DOCFIDELITY
     | DOCUMENT | DOMAIN_INDEX_FILTER | DOMAIN_INDEX_NO_SORT | DOMAIN_INDEX_SORT | DRIVING_SITE | DROP_COLUMN | DROP_GROUP
     | DST_UPGRADE_INSERT_CONV | DUMP | DYNAMIC | DYNAMIC_SAMPLING | DYNAMIC_SAMPLING_EST_CDN | EACH | EDITIONING | EDITIONS
@@ -328,7 +328,7 @@ unreservedWord3
     | WIDTH_BUCKET | WRAPPED | XID | XMLAGG | XMLATTRIBUTES | XMLCAST | XMLCDATA | XMLCOLATTVAL | XMLCOMMENT | XMLCONCAT | XMLDIFF
     | XMLEXISTS | XMLEXISTS2 | XMLFOREST | XMLINDEX_REWRITE | XMLINDEX_REWRITE_IN_SELECT | XMLINDEX_SEL_IDX_TBL | XMLISNODE
     | XMLISVALID | XMLNAMESPACES | XMLPARSE | XMLPATCH | XMLPI | XMLQUERY | XMLROOT | XMLSERIALIZE | XMLTABLE | XMLTOOBJECT
-    | XMLTRANSFORM | XMLTRANSFORMBLOB | XML_DML_RWT_STMT | XPATHTABLE | XS_SYS_CONTEXT | X_DYN_PRUNE | RESULT
+    | XMLTRANSFORM | XMLTRANSFORMBLOB | XML_DML_RWT_STMT | XPATHTABLE | XS_SYS_CONTEXT | X_DYN_PRUNE | RESULT | TABLE | NUMBER
     ;
 
 schemaName
@@ -352,7 +352,7 @@ materializedViewName
     ;
 
 columnName
-    : (owner DOT_)? name (DOT_ nestedItem)*
+    : (owner? DOT_)? name (DOT_ nestedItem)*
     ;
 
 objectName
@@ -377,6 +377,14 @@ function
 
 packageName
     : (owner DOT_)? name
+    ;
+
+profileName
+    : identifier
+    ;
+
+rollbackSegmentName
+    : identifier
     ;
 
 typeName
@@ -452,6 +460,10 @@ ilmPolicyName
     ;
 
 policyName
+    : identifier
+    ;
+
+connectionQualifier
     : identifier
     ;
 
@@ -758,7 +770,16 @@ leadLagInfo
     ;
 
 specialFunction
-    : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction | setFunction
+    : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
+    | setFunction | translateFunction | cursorFunction
+    ;
+
+cursorFunction
+    : CURSOR subquery
+    ;
+
+translateFunction
+    : TRANSLATE LP_ expr USING (CHAR_CS | NCHAR_CS) RP_
     ;
 
 setFunction
@@ -767,15 +788,20 @@ setFunction
 
 featureFunction
     : featureFunctionName LP_ (schemaName DOT_)? modelName (COMMA_ featureId)? (COMMA_ numberLiterals (COMMA_ numberLiterals)?)?
-    (DESC | ASC | ABS)? miningAttributeClause (AND miningAttributeClause)? RP_
+    (DESC | ASC | ABS)? cost_matrix_clause? miningAttributeClause (AND miningAttributeClause)? RP_
     ;
 
 featureFunctionName
     : FEATURE_COMPARE | FEATURE_DETAILS | FEATURE_SET | FEATURE_ID | FEATURE_VALUE | CLUSTER_DETAILS | CLUSTER_DISTANCE | CLUSTER_ID | CLUSTER_PROBABILITY | CLUSTER_SET
+    | PREDICTION_PROBABILITY | PREDICTION_SET | PREDICTION_BOUNDS | PREDICTION | PREDICTION_DETAILS
+    ;
+
+cost_matrix_clause
+    : COST (MODEL (AUTO)?)? | LP_ literals RP_ (COMMA_ LP_ literals RP_)* VALUES LP_ LP_ literals (COMMA_ literals)* RP_ (COMMA_ LP_ literals (COMMA_ literals)* RP_) RP_
     ;
 
 miningAttributeClause
-    : USING (ASTERISK_ | (schemaName DOT_)? tableName DOT_ ASTERISK_ | expr (AS? alias)?)
+    : USING (ASTERISK_ | ((schemaName DOT_)? tableName DOT_ ASTERISK_ | expr (AS? alias)?) (COMMA_ ((schemaName DOT_)? tableName DOT_ ASTERISK_ | expr (AS? alias)?))*)
     ;
 
 trimFunction
@@ -1143,7 +1169,7 @@ dateValue
     ;
 
 sessionId
-    : numberLiterals
+    : STRING_
     ;
 
 serialNumber
@@ -1761,10 +1787,6 @@ attributeValue
     : identifier
     ;
 
-profileName
-    : identifier
-    ;
-
 joinGroupName
     : identifier
     ;
@@ -1782,7 +1804,7 @@ matchString
     ;
 
 parameterType
-    : identifier
+    : (owner DOT_)? identifier
     ;
 
 returnType

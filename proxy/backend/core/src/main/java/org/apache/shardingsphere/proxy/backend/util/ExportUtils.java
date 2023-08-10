@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -83,11 +83,11 @@ public final class ExportUtils {
     }
     
     private static void appendDataSourceConfigurations(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
-        if (database.getResourceMetaData().getDataSourcePropsMap().isEmpty()) {
+        if (database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap().isEmpty()) {
             return;
         }
         stringBuilder.append("dataSources:").append(System.lineSeparator());
-        for (Entry<String, DataSourceProperties> entry : database.getResourceMetaData().getDataSourcePropsMap().entrySet()) {
+        for (Entry<String, DataSourceProperties> entry : database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap().entrySet()) {
             appendDataSourceConfiguration(entry.getKey(), entry.getValue(), stringBuilder);
         }
     }
@@ -105,7 +105,7 @@ public final class ExportUtils {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static void appendRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs, final StringBuilder stringBuilder) {
-        if (ruleConfigs.isEmpty()) {
+        if (ruleConfigs.isEmpty() || ruleConfigs.stream().allMatch(each -> ((DatabaseRuleConfiguration) each).isEmpty())) {
             return;
         }
         stringBuilder.append("rules:").append(System.lineSeparator());

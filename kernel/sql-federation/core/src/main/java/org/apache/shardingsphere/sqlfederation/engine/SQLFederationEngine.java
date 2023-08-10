@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
@@ -115,7 +115,7 @@ public final class SQLFederationEngine implements AutoCloseable {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public boolean decide(final SQLStatementContext sqlStatementContext, final List<Object> parameters,
-                          final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData) {
+                          final ShardingSphereDatabase database, final RuleMetaData globalRuleMetaData) {
         // TODO BEGIN: move this logic to SQLFederationDecider implement class when we remove sql federation type
         if (isQuerySystemSchema(sqlStatementContext, database)) {
             return true;

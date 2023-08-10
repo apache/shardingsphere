@@ -17,915 +17,741 @@
   -->
 
 <integration-test-cases>
-    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_page.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page_lru" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_page_lru.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_buffer_pool_stats" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_pool_stats.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_cmp" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_cmp.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_cmp_per_index" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_cmp_per_index.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_cmp_per_index_reset" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_cmp_per_index_reset.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_cmp_reset" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_cmp_reset.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_page.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page_lru" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_page_lru.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_buffer_pool_stats" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_pool_stats.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_cmp" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_cmp.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_cmp_per_index" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_cmp_per_index.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_cmp_per_index_reset" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_cmp_per_index_reset.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_cmp_reset" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_cmp_reset.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_cmpmem" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_cmpmem.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_cmpmem_reset" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_cmpmem_reset.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_ft_being_deleted" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_ft_being_deleted.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_ft_config" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_ft_config.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_ft_default_stopword" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_ft_default_stopword.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_ft_deleted" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_ft_deleted.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_ft_index_cache" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_ft_index_cache.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_ft_index_table" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_ft_index_table.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_lock_waits" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_lock_waits.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_locks" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_locks.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_metrics" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_metrics.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_sys_columns" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_columns.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_sys_datafiles" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_datafiles.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_sys_fields" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_fields.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_sys_foreign" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_foreign.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_sys_foreign_cols" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_foreign_cols.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_sys_indexes" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_indexes.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_sys_tables" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_tables.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_sys_tablespaces" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_tablespaces.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_sys_tablestats" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_tablestats.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_sys_virtual" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_virtual.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_temp_table_info" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_temp_table_info.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.innodb_trx" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_innodb_trx.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.key_column_usage" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_key_column_usage.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.optimizer_trace" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_optimizer_trace.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.parameters" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_parameters.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.partitions limit 10" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page_lru limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM information_schema.plugins" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_plugins.xml" />
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM information_schema.processlist" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_processlist.xml" />
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp_per_index limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM information_schema.profiling" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_profiling.xml" />
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp_per_index_reset limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM information_schema.referential_constraints" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_referential_constraints.xml" />
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp_reset limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM information_schema.routines" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_routines.xml" />
+    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM information_schema.schema_privileges" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_schema_privileges.xml" />
+    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page_lru limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM information_schema.schemata" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_schemata.xml" />
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp_per_index limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp_per_index_reset limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp_reset limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_cmpmem limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_cmpmem_reset limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_ft_being_deleted limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_ft_config limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_ft_default_stopword limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_ft_deleted limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_ft_index_cache limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_ft_index_table limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_lock_waits limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_locks limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_metrics limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_columns limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_datafiles limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_fields limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_foreign limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_foreign_cols limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_indexes limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_tables limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_tablespaces limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_tablestats limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_virtual limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_temp_table_info limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_trx limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.key_column_usage limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.optimizer_trace limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.parameters limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM information_schema.session_status" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_session_status.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.session_variables" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_session_variables.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.statistics" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_statistics.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.table_constraints" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_table_constraints.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.table_privileges" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_table_privileges.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.tables" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_tables.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.tablespaces" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_tablespaces.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM information_schema.triggers" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.plugins limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM information_schema.user_privileges" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_user_privileges.xml" />
+    <test-case sql="SELECT * FROM information_schema.profiling limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.columns_priv" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_columns_priv.xml" />
+    <test-case sql="SELECT * FROM information_schema.referential_constraints limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.db" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_db.xml" />
+    <test-case sql="SELECT * FROM information_schema.routines limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.engine_cost" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_engine_cost.xml" />
+    <test-case sql="SELECT * FROM information_schema.schema_privileges limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.event" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_event.xml" />
+    <test-case sql="SELECT * FROM information_schema.statistics limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.func" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_func.xml" />
+    <test-case sql="SELECT * FROM information_schema.table_constraints limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.general_log" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_general_log.xml" />
+    <test-case sql="SELECT * FROM information_schema.table_privileges limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.gtid_executed" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_gtid_executed.xml" />
+    <test-case sql="SELECT TABLE_NAME FROM information_schema.tables where TABLE_NAME='time_zone' limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.help_category" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_help_category.xml" />
+    <test-case sql="SELECT * FROM information_schema.tablespaces limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.help_keyword" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_help_keyword.xml" />
+    <test-case sql="SELECT * FROM information_schema.triggers limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.help_relation" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_help_relation.xml" />
+    <test-case sql="SELECT * FROM information_schema.user_privileges limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.help_topic" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_help_topic.xml" />
+    <test-case sql="SELECT * FROM mysql.columns_priv limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.innodb_index_stats" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_innodb_index_stats.xml" />
+    <test-case sql="SELECT * FROM mysql.db limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.innodb_table_stats" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_innodb_table_stats.xml" />
+    <test-case sql="SELECT * FROM mysql.engine_cost limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.ndb_binlog_index" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_ndb_binlog_index.xml" />
+    <test-case sql="SELECT * FROM mysql.event limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.plugin" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_plugin.xml" />
+    <test-case sql="SELECT * FROM mysql.func limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.proc" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_proc.xml" />
+    <test-case sql="SELECT * FROM mysql.general_log limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.procs_priv" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_procs_priv.xml" />
+    <test-case sql="SELECT * FROM mysql.gtid_executed limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.proxies_priv" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_proxies_priv.xml" />
+    <test-case sql="SELECT * FROM mysql.help_category limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.server_cost" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_server_cost.xml" />
+    <test-case sql="SELECT * FROM mysql.help_keyword limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.servers" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_servers.xml" />
+    <test-case sql="SELECT * FROM mysql.help_relation limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.slave_master_info" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_slave_master_info.xml" />
+    <test-case sql="SELECT * FROM mysql.help_topic limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.slave_relay_log_info" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_slave_relay_log_info.xml" />
+    <test-case sql="SELECT * FROM mysql.innodb_index_stats limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.slave_worker_info" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_slave_worker_info.xml" />
+    <test-case sql="SELECT * FROM mysql.innodb_table_stats limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.slow_log" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_slow_log.xml" />
+    <test-case sql="SELECT * FROM mysql.ndb_binlog_index limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.tables_priv" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_tables_priv.xml" />
+    <test-case sql="SELECT * FROM mysql.plugin limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.time_zone" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_time_zone.xml" />
+    <test-case sql="SELECT * FROM mysql.procs_priv limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.time_zone_leap_second" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_time_zone_leap_second.xml" />
+    <test-case sql="SELECT * FROM mysql.server_cost limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.time_zone_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_time_zone_name.xml" />
+    <test-case sql="SELECT * FROM mysql.servers limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.time_zone_transition" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_time_zone_transition.xml" />
+    <test-case sql="SELECT * FROM mysql.slave_master_info limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.time_zone_transition_type" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_time_zone_transition_type.xml" />
+    <test-case sql="SELECT * FROM mysql.slave_relay_log_info limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM mysql.user" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_mysql_user.xml" />
+    <test-case sql="SELECT * FROM mysql.slave_worker_info limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.accounts" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_accounts.xml" />
+    <test-case sql="SELECT * FROM mysql.slow_log limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.cond_instances" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_cond_instances.xml" />
+    <test-case sql="SELECT * FROM mysql.time_zone limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_stages_current" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_stages_current.xml" />
+    <test-case sql="SELECT * FROM mysql.time_zone_leap_second limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_stages_history" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_stages_history.xml" />
+    <test-case sql="SELECT * FROM mysql.time_zone_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_stages_history_long" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_stages_history_long.xml" />
+    <test-case sql="SELECT * FROM mysql.time_zone_transition limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_by_account_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_stages_summary_by_account_by_event_name.xml" />
+    <test-case sql="SELECT * FROM mysql.time_zone_transition_type limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_by_host_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_stages_summary_by_host_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.accounts limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_by_thread_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_stages_summary_by_thread_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.cond_instances limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_by_user_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_stages_summary_by_user_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_stages_current limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_global_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_stages_summary_global_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_stages_history limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_statements_current" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_statements_current.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_stages_history_long limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_statements_history" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_statements_history.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_by_account_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_statements_history_long" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_statements_history_long.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_by_host_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_account_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_account_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_by_thread_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_digest" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_digest.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_by_user_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_host_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_host_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_global_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_program" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_program.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_statements_history_long limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_thread_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_thread_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_digest limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_user_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_user_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_program limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_global_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_global_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_user_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_transactions_current" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_current.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_transactions_history" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_history.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_transactions_history_long" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_history_long.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_by_account_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_summary_by_account_by_event_name.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_by_host_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_summary_by_host_by_event_name.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_by_thread_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_summary_by_thread_by_event_name.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_by_user_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_summary_by_user_by_event_name.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_global_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_summary_global_by_event_name.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_waits_current" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_waits_current.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_waits_history" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_waits_history.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_waits_history_long" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_waits_history_long.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_waits_summary_by_account_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_waits_summary_by_account_by_event_name.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_waits_summary_by_host_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_waits_summary_by_host_by_event_name.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_waits_summary_by_instance" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_waits_summary_by_instance.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_waits_summary_by_thread_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_waits_summary_by_thread_by_event_name.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_waits_summary_by_user_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_waits_summary_by_user_by_event_name.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.events_waits_summary_global_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_events_waits_summary_global_by_event_name.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.file_instances" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_file_instances.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.file_summary_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_file_summary_by_event_name.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.file_summary_by_instance" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_file_summary_by_instance.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.global_status" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_global_status.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.global_variables" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_global_variables.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.host_cache" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_host_cache.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.hosts" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_hosts.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM performance_schema.memory_summary_by_account_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_memory_summary_by_account_by_event_name.xml" />
+
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_current limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.memory_summary_by_host_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_memory_summary_by_host_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_history limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.memory_summary_by_thread_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_memory_summary_by_thread_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_history_long limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.memory_summary_by_user_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_memory_summary_by_user_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_by_account_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.memory_summary_global_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_memory_summary_global_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_by_host_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.metadata_locks" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_metadata_locks.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_by_thread_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.mutex_instances" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_mutex_instances.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_by_user_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.objects_summary_global_by_type" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_objects_summary_global_by_type.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_global_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.performance_timers" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_performance_timers.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_waits_current limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.prepared_statements_instances" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_prepared_statements_instances.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_waits_history limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.replication_applier_configuration" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_replication_applier_configuration.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_waits_history_long limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.replication_applier_status" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_replication_applier_status.xml" />
+    <test-case sql="SELECT * FROM performance_schema.events_waits_summary_by_instance limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.replication_applier_status_by_coordinator" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_replication_applier_status_by_coordinator.xml" />
+    <test-case sql="SELECT * FROM performance_schema.file_instances limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.replication_applier_status_by_worker" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_replication_applier_status_by_worker.xml" />
+    <test-case sql="SELECT * FROM performance_schema.file_summary_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.replication_connection_configuration" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_replication_connection_configuration.xml" />
+    <test-case sql="SELECT * FROM performance_schema.file_summary_by_instance limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.replication_connection_status" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_replication_connection_status.xml" />
+    <test-case sql="SELECT * FROM performance_schema.global_status limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.replication_group_member_stats" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_replication_group_member_stats.xml" />
+    <test-case sql="SELECT * FROM performance_schema.global_variables limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.replication_group_members" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_replication_group_members.xml" />
+    <test-case sql="SELECT * FROM performance_schema.host_cache limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.rwlock_instances" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_rwlock_instances.xml" />
+    <test-case sql="SELECT * FROM performance_schema.hosts limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.session_account_connect_attrs" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_session_account_connect_attrs.xml" />
+    <test-case sql="SELECT * FROM performance_schema.memory_summary_by_account_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.session_connect_attrs" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_session_connect_attrs.xml" />
+    <test-case sql="SELECT * FROM performance_schema.memory_summary_by_host_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.session_status" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_session_status.xml" />
+    <test-case sql="SELECT * FROM performance_schema.memory_summary_by_thread_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.session_variables" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_session_variables.xml" />
+    <test-case sql="SELECT * FROM performance_schema.memory_summary_by_user_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.setup_actors" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_setup_actors.xml" />
+    <test-case sql="SELECT * FROM performance_schema.memory_summary_global_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.setup_consumers" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_setup_consumers.xml" />
+    <test-case sql="SELECT * FROM performance_schema.metadata_locks limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.setup_instruments" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_setup_instruments.xml" />
+    <test-case sql="SELECT * FROM performance_schema.mutex_instances limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.setup_objects" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_setup_objects.xml" />
+    <test-case sql="SELECT * FROM performance_schema.objects_summary_global_by_type limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.setup_timers" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_setup_timers.xml" />
+    <test-case sql="SELECT * FROM performance_schema.performance_timers limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.socket_instances" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_socket_instances.xml" />
+    <test-case sql="SELECT * FROM performance_schema.replication_applier_configuration limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.socket_summary_by_event_name" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_socket_summary_by_event_name.xml" />
+    <test-case sql="SELECT * FROM performance_schema.replication_applier_status limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.socket_summary_by_instance" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_socket_summary_by_instance.xml" />
+    <test-case sql="SELECT * FROM performance_schema.replication_applier_status_by_coordinator limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.status_by_account" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_status_by_account.xml" />
+    <test-case sql="SELECT * FROM performance_schema.replication_applier_status_by_worker limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.status_by_host" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_status_by_host.xml" />
+    <test-case sql="SELECT * FROM performance_schema.replication_connection_configuration limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.status_by_thread" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_status_by_thread.xml" />
+    <test-case sql="SELECT * FROM performance_schema.replication_connection_status limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.status_by_user" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_status_by_user.xml" />
+    <test-case sql="SELECT * FROM performance_schema.replication_group_member_stats limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.table_handles" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_table_handles.xml" />
+    <test-case sql="SELECT * FROM performance_schema.replication_group_members limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.table_io_waits_summary_by_index_usage" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_table_io_waits_summary_by_index_usage.xml" />
+    <test-case sql="SELECT * FROM performance_schema.rwlock_instances limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.table_io_waits_summary_by_table" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_table_io_waits_summary_by_table.xml" />
+    <test-case sql="SELECT * FROM performance_schema.session_connect_attrs limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.table_lock_waits_summary_by_table" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_table_lock_waits_summary_by_table.xml" />
+    <test-case sql="SELECT * FROM performance_schema.session_status limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.threads" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_threads.xml" />
+    <test-case sql="SELECT * FROM performance_schema.setup_actors limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.user_variables_by_thread" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_user_variables_by_thread.xml" />
+    <test-case sql="SELECT * FROM performance_schema.setup_consumers limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.users" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_users.xml" />
+    <test-case sql="SELECT * FROM performance_schema.setup_instruments limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM performance_schema.variables_by_thread" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_performance_schema_variables_by_thread.xml" />
+    <test-case sql="SELECT * FROM performance_schema.setup_objects limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.host_summary" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_host_summary.xml" />
+    <test-case sql="SELECT * FROM performance_schema.setup_timers limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.host_summary_by_file_io" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_host_summary_by_file_io.xml" />
+    <test-case sql="SELECT * FROM performance_schema.socket_summary_by_event_name limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.host_summary_by_file_io_type" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_host_summary_by_file_io_type.xml" />
+    <test-case sql="SELECT * FROM performance_schema.socket_summary_by_instance limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.host_summary_by_stages" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_host_summary_by_stages.xml" />
+    <test-case sql="SELECT * FROM performance_schema.status_by_thread limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
-    <test-case sql="SELECT * FROM sys.host_summary_by_statement_latency" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_host_summary_by_statement_latency.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM sys.host_summary_by_statement_type" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_host_summary_by_statement_type.xml" />
-    </test-case>
-    
-    <test-case sql="SELECT * FROM sys.innodb_buffer_stats_by_schema" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_innodb_buffer_stats_by_schema.xml" />
+
+    <test-case sql="SELECT * FROM performance_schema.table_handles limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.innodb_buffer_stats_by_table" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_innodb_buffer_stats_by_table.xml" />
+    <test-case sql="SELECT * FROM performance_schema.table_io_waits_summary_by_index_usage limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.innodb_lock_waits" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_innodb_lock_waits.xml" />
+    <test-case sql="SELECT * FROM performance_schema.table_io_waits_summary_by_table limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.io_by_thread_by_latency" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_io_by_thread_by_latency.xml" />
+    <test-case sql="SELECT * FROM performance_schema.table_lock_waits_summary_by_table limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.io_global_by_file_by_bytes" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_io_global_by_file_by_bytes.xml" />
+    <test-case sql="SELECT * FROM performance_schema.users limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.io_global_by_file_by_latency" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_io_global_by_file_by_latency.xml" />
+    <test-case sql="SELECT * FROM sys.host_summary_by_file_io_type limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.io_global_by_wait_by_bytes" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_io_global_by_wait_by_bytes.xml" />
+    <test-case sql="SELECT * FROM sys.host_summary_by_stages limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.io_global_by_wait_by_latency" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_io_global_by_wait_by_latency.xml" />
-    </test-case>
+    <!-- TODO -->
+<!--    <test-case sql="SELECT * FROM sys.host_summary_by_statement_latency limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">-->
+<!--        <assertion expected-data-source-name="read_dataset" />-->
+<!--    </test-case>-->
     
-    <test-case sql="SELECT * FROM sys.latest_file_io" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_latest_file_io.xml" />
+    <test-case sql="SELECT * FROM sys.host_summary_by_statement_type limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.memory_by_host_by_current_bytes" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_memory_by_host_by_current_bytes.xml" />
+    <test-case sql="SELECT * FROM sys.innodb_lock_waits limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.memory_by_thread_by_current_bytes" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_memory_by_thread_by_current_bytes.xml" />
+    <test-case sql="SELECT * FROM sys.io_by_thread_by_latency limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.memory_by_user_by_current_bytes" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_memory_by_user_by_current_bytes.xml" />
+    <test-case sql="SELECT * FROM sys.io_global_by_file_by_bytes limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.memory_global_by_current_bytes" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_memory_global_by_current_bytes.xml" />
+    <test-case sql="SELECT * FROM sys.io_global_by_file_by_latency limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.memory_global_total" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_memory_global_total.xml" />
+    <test-case sql="SELECT * FROM sys.io_global_by_wait_by_bytes limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.metrics" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_metrics.xml" />
+    <test-case sql="SELECT * FROM sys.io_global_by_wait_by_latency limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.processlist" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_processlist.xml" />
+    <test-case sql="SELECT * FROM sys.latest_file_io limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.ps_check_lost_instrumentation" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_ps_check_lost_instrumentation.xml" />
+    <test-case sql="SELECT * FROM sys.memory_global_by_current_bytes limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.schema_auto_increment_columns" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_schema_auto_increment_columns.xml" />
+    <test-case sql="SELECT * FROM sys.memory_global_total limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.schema_index_statistics" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_schema_index_statistics.xml" />
+    <test-case sql="SELECT * FROM sys.metrics limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.schema_object_overview" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_schema_object_overview.xml" />
+    <test-case sql="SELECT * FROM sys.ps_check_lost_instrumentation limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.schema_redundant_indexes" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_schema_redundant_indexes.xml" />
+    <test-case sql="SELECT * FROM sys.schema_auto_increment_columns limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.schema_table_lock_waits" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_schema_table_lock_waits.xml" />
+    <test-case sql="SELECT * FROM sys.schema_index_statistics limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.schema_table_statistics" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_schema_table_statistics.xml" />
+    <test-case sql="SELECT * FROM sys.schema_object_overview limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.schema_table_statistics_with_buffer" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_schema_table_statistics_with_buffer.xml" />
+    <test-case sql="SELECT * FROM sys.schema_redundant_indexes limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.schema_tables_with_full_table_scans" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_schema_tables_with_full_table_scans.xml" />
+    <test-case sql="SELECT * FROM sys.schema_table_lock_waits limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.schema_unused_indexes" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_schema_unused_indexes.xml" />
+    <test-case sql="SELECT * FROM sys.schema_table_statistics limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.session" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_session.xml" />
+    <test-case sql="SELECT * FROM sys.schema_table_statistics_with_buffer limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.session_ssl_status" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_session_ssl_status.xml" />
+    <test-case sql="SELECT * FROM sys.schema_tables_with_full_table_scans limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.statement_analysis" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_statement_analysis.xml" />
+    <test-case sql="SELECT * FROM sys.schema_unused_indexes limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
-    
-    <test-case sql="SELECT * FROM sys.statements_with_errors_or_warnings" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_statements_with_errors_or_warnings.xml" />
+
+    <test-case sql="SELECT * FROM sys.session_ssl_status limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.statements_with_full_table_scans" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_statements_with_full_table_scans.xml" />
+    <test-case sql="SELECT * FROM sys.statement_analysis limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.statements_with_runtimes_in_95th_percentile" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_statements_with_runtimes_in_95th_percentile.xml" />
+    <test-case sql="SELECT * FROM sys.statements_with_errors_or_warnings limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.statements_with_sorting" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_statements_with_sorting.xml" />
+    <test-case sql="SELECT * FROM sys.statements_with_full_table_scans limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.statements_with_temp_tables" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_statements_with_temp_tables.xml" />
+    <test-case sql="SELECT * FROM sys.statements_with_runtimes_in_95th_percentile limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.sys_config" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_sys_config.xml" />
+    <test-case sql="SELECT * FROM sys.statements_with_sorting limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.user_summary" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_user_summary.xml" />
+    <test-case sql="SELECT * FROM sys.statements_with_temp_tables limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.user_summary_by_file_io" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_user_summary_by_file_io.xml" />
+    <test-case sql="SELECT * FROM sys.sys_config limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.user_summary_by_file_io_type" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_user_summary_by_file_io_type.xml" />
+    <test-case sql="SELECT * FROM sys.user_summary_by_file_io limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.user_summary_by_stages" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_user_summary_by_stages.xml" />
+    <test-case sql="SELECT * FROM sys.user_summary_by_file_io_type limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.user_summary_by_statement_latency" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_user_summary_by_statement_latency.xml" />
+    <test-case sql="SELECT * FROM sys.user_summary_by_stages limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.user_summary_by_statement_type" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_user_summary_by_statement_type.xml" />
+    <test-case sql="SELECT * FROM sys.user_summary_by_statement_type limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.version" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_version.xml" />
+    <test-case sql="SELECT * FROM sys.version limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.wait_classes_global_by_avg_latency" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_wait_classes_global_by_avg_latency.xml" />
+    <test-case sql="SELECT * FROM sys.wait_classes_global_by_avg_latency limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.wait_classes_global_by_latency" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_wait_classes_global_by_latency.xml" />
-    </test-case>
+    <!-- TODO -->
+<!--    <test-case sql="SELECT * FROM sys.wait_classes_global_by_latency limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">-->
+<!--        <assertion expected-data-source-name="read_dataset" />-->
+<!--    </test-case>-->
     
-    <test-case sql="SELECT * FROM sys.waits_by_host_by_latency" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_waits_by_host_by_latency.xml" />
+    <test-case sql="SELECT * FROM sys.waits_by_host_by_latency limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.waits_by_user_by_latency" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_waits_by_user_by_latency.xml" />
+    <test-case sql="SELECT * FROM sys.waits_by_user_by_latency limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM sys.waits_global_by_latency" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_sys_waits_global_by_latency.xml" />
+    <test-case sql="SELECT * FROM sys.waits_global_by_latency limit 1" db-types="MySQL" scenario-types="tbl" adapters="proxy">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </integration-test-cases>

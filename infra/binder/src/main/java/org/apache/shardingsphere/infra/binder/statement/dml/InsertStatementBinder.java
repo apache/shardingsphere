@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.segment.expression.SubquerySegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubquerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;

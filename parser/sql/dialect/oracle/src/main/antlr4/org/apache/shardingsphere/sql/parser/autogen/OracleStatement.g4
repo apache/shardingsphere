@@ -17,7 +17,7 @@
 
 grammar OracleStatement;
 
-import DMLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import DMLStatement, TCLStatement, DCLStatement, DALStatement, PLSQL;
 
 execute
     : (select
@@ -116,6 +116,8 @@ execute
     | alterAuditPolicy
     | alterCluster
     | alterOperator
+    | alterProfile
+    | alterRollbackSegment
     | alterDiskgroup
     | alterIndexType
     | alterMaterializedView

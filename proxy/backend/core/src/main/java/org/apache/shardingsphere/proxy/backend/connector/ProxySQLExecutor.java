@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.connector;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
@@ -43,7 +43,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.ProxyJDBCExecutor;
@@ -233,11 +232,7 @@ public final class ProxySQLExecutor {
     
     private List<ExecuteResult> getSaneExecuteResults(final ExecutionContext executionContext, final SQLException originalException) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName()).getProtocolType();
-        Optional<ExecuteResult> executeResult = DatabaseTypedSPILoader.getService(SaneQueryResultEngine.class, databaseType)
-                .getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement(), originalException);
-        if (executeResult.isPresent()) {
-            return Collections.singletonList(executeResult.get());
-        }
-        throw originalException;
+        Optional<ExecuteResult> executeResult = new SaneQueryResultEngine(databaseType).getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement(), originalException);
+        return executeResult.map(Collections::singletonList).orElseThrow(() -> originalException);
     }
 }

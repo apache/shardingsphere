@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
@@ -137,14 +137,14 @@ class MySQLComQueryPacketExecutorTest {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", databaseType));
         when(result.getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(databaseType);
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(
+        RuleMetaData globalRuleMetaData = new RuleMetaData(
                 Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
                         new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
         when(result.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(result.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
         when(result.getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(result.getMetaData().getDatabase("foo_db")).thenReturn(database);
         return result;
         

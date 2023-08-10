@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.resource;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 
 import javax.sql.DataSource;
@@ -86,7 +86,9 @@ public final class YamlDataSourceConfigurationSwapper {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Map<String, Object> getProperties(final Map<String, Object> yamlConfig) {
         Map<String, Object> result = new HashMap<>(yamlConfig);
-        result.remove(DATA_SOURCE_CLASS_NAME_KEY);
+        if ("com.zaxxer.hikari.HikariDataSource".equals(result.get(DATA_SOURCE_CLASS_NAME_KEY).toString())) {
+            result.remove(DATA_SOURCE_CLASS_NAME_KEY);
+        }
         if (null != yamlConfig.get(CUSTOM_POOL_PROPS_KEY)) {
             result.putAll((Map) yamlConfig.get(CUSTOM_POOL_PROPS_KEY));
         }

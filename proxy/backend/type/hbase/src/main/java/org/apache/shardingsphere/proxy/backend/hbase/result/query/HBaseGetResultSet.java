@@ -181,7 +181,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
         if (expressionSegment instanceof BetweenExpression) {
             result.append(((BetweenExpression) expressionSegment).getBetweenExpr());
         } else if (expressionSegment instanceof BinaryOperationExpression) {
-            result.append(((BinaryOperationExpression) expressionSegment).getText());
+            result.append(expressionSegment.getText());
         }
         return result.toString();
     }
@@ -205,7 +205,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
     }
     
     @Override
-    public String getType() {
-        return MySQLSelectStatement.class.getCanonicalName();
+    public Class<MySQLSelectStatement> getType() {
+        return MySQLSelectStatement.class;
     }
 }

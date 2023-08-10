@@ -20,11 +20,11 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlockClusterStatement;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStatusChangedEvent;
@@ -66,7 +66,7 @@ public final class UnlockClusterUpdater implements RALUpdater<UnlockClusterState
     }
     
     @Override
-    public String getType() {
-        return UnlockClusterStatement.class.getName();
+    public Class<UnlockClusterStatement> getType() {
+        return UnlockClusterStatement.class;
     }
 }

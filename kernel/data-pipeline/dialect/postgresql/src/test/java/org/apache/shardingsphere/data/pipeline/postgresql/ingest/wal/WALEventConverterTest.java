@@ -31,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumn
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
@@ -42,13 +43,11 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Place
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.postgresql.replication.LogSequenceNumber;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -76,8 +75,6 @@ class WALEventConverterTest {
     
     private WALEventConverter walEventConverter;
     
-    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
-    
     private final LogSequenceNumber logSequenceNumber = LogSequenceNumber.valueOf("0/14EFDB8");
     
     private PipelineTableMetaData pipelineTableMetaData;
@@ -85,14 +82,10 @@ class WALEventConverterTest {
     @BeforeEach
     void setUp() {
         dumperConfig = mockDumperConfiguration();
+        PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         walEventConverter = new WALEventConverter(dumperConfig, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig())));
         initTableData(dumperConfig);
         pipelineTableMetaData = new PipelineTableMetaData("t_order", mockOrderColumnsMetaDataMap(), Collections.emptyList());
-    }
-    
-    @AfterEach
-    void tearDown() {
-        dataSourceManager.close();
     }
     
     private DumperConfiguration mockDumperConfiguration() {
@@ -105,8 +98,9 @@ class WALEventConverterTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final DumperConfiguration dumperConfig) {
-        DataSource dataSource = new DefaultPipelineDataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
         try (
+                PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");

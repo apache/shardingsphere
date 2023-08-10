@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CharFu
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConstraintNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CursorFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeNameContext;
@@ -871,7 +872,30 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.setFunction()) {
             return visit(ctx.setFunction());
         }
+        if (null != ctx.translateFunction()) {
+            return visit(ctx.translateFunction());
+        }
+        if (null != ctx.cursorFunction()) {
+            return visit(ctx.cursorFunction());
+        }
         throw new IllegalStateException("SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, trimFunction or featureFunction.");
+    }
+    
+    @Override
+    public ASTNode visitCursorFunction(final CursorFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CURSOR().toString(), ctx.getText());
+        result.getParameters()
+                .add(new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.subquery()))));
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitTranslateFunction(final OracleStatementParser.TranslateFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRANSLATE().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        TerminalNode charSet = null != ctx.NCHAR_CS() ? ctx.NCHAR_CS() : ctx.CHAR_CS();
+        result.getParameters().add(new LiteralExpressionSegment(charSet.getSymbol().getStartIndex(), charSet.getSymbol().getStopIndex(), charSet.getText()));
+        return result;
     }
     
     @Override
@@ -893,12 +917,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             result.getParameters()
                     .add(new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.subquery()))));
         } else {
-            ASTNode exprSegment = visit(ctx.expr());
-            if (exprSegment instanceof ColumnSegment) {
-                result.getParameters().add((ColumnSegment) exprSegment);
-            } else if (exprSegment instanceof LiteralExpressionSegment) {
-                result.getParameters().add((LiteralExpressionSegment) exprSegment);
-            }
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         }
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         return result;

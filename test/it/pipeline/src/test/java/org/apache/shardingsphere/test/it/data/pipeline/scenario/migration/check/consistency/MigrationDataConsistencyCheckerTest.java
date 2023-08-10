@@ -19,9 +19,11 @@ package org.apache.shardingsphere.test.it.data.pipeline.scenario.migration.check
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency.MigrationDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
@@ -30,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.context.Migrat
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.DataConsistencyCalculateAlgorithmFixture;
+import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.TableDataConsistencyCheckerFixture;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -62,8 +64,8 @@ class MigrationDataConsistencyCheckerTest {
         GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey());
         governanceRepositoryAPI.persist(String.format("/pipeline/jobs/%s/config", jobConfig.getJobId()), YamlEngine.marshal(jobConfigurationPOJO));
         governanceRepositoryAPI.persistJobItemProgress(jobConfig.getJobId(), 0, "");
-        Map<String, DataConsistencyCheckResult> actual = new MigrationDataConsistencyChecker(jobConfig, new MigrationProcessContext(jobConfig.getJobId(), null),
-                createConsistencyCheckJobItemProgressContext()).check(new DataConsistencyCalculateAlgorithmFixture());
+        Map<String, TableDataConsistencyCheckResult> actual = new MigrationDataConsistencyChecker(jobConfig, new MigrationProcessContext(jobConfig.getJobId(), null),
+                createConsistencyCheckJobItemProgressContext()).check(new TableDataConsistencyCheckerFixture());
         String checkKey = "ds_0.t_order";
         assertTrue(actual.get(checkKey).getCountCheckResult().isMatched());
         assertThat(actual.get(checkKey).getCountCheckResult().getSourceRecordsCount(), is(actual.get(checkKey).getCountCheckResult().getTargetRecordsCount()));
@@ -83,7 +85,9 @@ class MigrationDataConsistencyCheckerTest {
     
     private void initTableData(final PipelineDataSourceConfiguration dataSourceConfig) throws SQLException {
         try (
-                Connection connection = new DefaultPipelineDataSourceManager().getDataSource(dataSourceConfig).getConnection();
+                PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dataSourceConfig);
+                Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT(11))");

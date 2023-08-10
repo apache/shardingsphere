@@ -137,7 +137,7 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
     }
     
     @Override
-    public String getType() {
-        return AlterDefaultShardingStrategyStatement.class.getName();
+    public Class<AlterDefaultShardingStrategyStatement> getType() {
+        return AlterDefaultShardingStrategyStatement.class;
     }
 }

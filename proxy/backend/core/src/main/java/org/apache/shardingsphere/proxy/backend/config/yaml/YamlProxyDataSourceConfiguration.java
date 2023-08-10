@@ -30,6 +30,8 @@ import java.util.Properties;
 @Setter
 public final class YamlProxyDataSourceConfiguration implements YamlConfiguration {
     
+    private String dataSourceClassName;
+    
     private String url;
     
     private String username;

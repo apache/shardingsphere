@@ -56,7 +56,7 @@ public final class ShowLogicalTableExecutor implements RQLExecutor<ShowLogicalTa
     }
     
     @Override
-    public String getType() {
-        return ShowLogicalTablesStatement.class.getName();
+    public Class<ShowLogicalTablesStatement> getType() {
+        return ShowLogicalTablesStatement.class;
     }
 }

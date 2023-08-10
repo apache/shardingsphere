@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -79,7 +79,7 @@ class BatchPreparedStatementExecutorTest {
     
     private static final String SQL = "DELETE FROM table_x WHERE id=?";
     
-    private final ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithCPU();
+    private final ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithSize(Runtime.getRuntime().availableProcessors() * 2 - 1);
     
     private BatchPreparedStatementExecutor executor;
     
@@ -105,11 +105,11 @@ class BatchPreparedStatementExecutorTest {
     
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(mockTransactionRule(), new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build())));
+        RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(mockTransactionRule(), new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build())));
         when(result.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(result.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageTypes())
                 .thenReturn(Collections.singletonMap("ds_0", TypedSPILoader.getService(DatabaseType.class, "H2")));
-        ShardingSphereRuleMetaData databaseRuleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mockShardingRule()));
+        RuleMetaData databaseRuleMetaData = new RuleMetaData(Collections.singleton(mockShardingRule()));
         when(result.getMetaData().getDatabase("foo_db").getRuleMetaData()).thenReturn(databaseRuleMetaData);
         return result;
     }

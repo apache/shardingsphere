@@ -48,9 +48,10 @@ public final class SQLRULBackendHandler<T extends RULStatement> extends RULBacke
     
     private MergedResult mergedResult;
     
+    @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() throws SQLException {
-        RULExecutor<T> executor = TypedSPILoader.getService(RULExecutor.class, getSqlStatement().getClass().getName());
+        RULExecutor<T> executor = TypedSPILoader.getService(RULExecutor.class, getSqlStatement().getClass());
         queryHeaders = createQueryHeader(executor);
         mergedResult = createMergedResult(executor);
         return new QueryResponseHeader(queryHeaders);

@@ -208,7 +208,7 @@ public final class ShardingConvertRuleConfigurationProvider implements ConvertRu
     }
     
     @Override
-    public String getType() {
-        return ShardingRuleConfiguration.class.getName();
+    public Class<ShardingRuleConfiguration> getType() {
+        return ShardingRuleConfiguration.class;
     }
 }

@@ -24,12 +24,12 @@ import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropert
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.proxy.backend.util.StorageUnitUtils;
 
 import javax.sql.DataSource;
@@ -66,7 +66,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
-        ShardingSphereResourceMetaData resourceMetaData = database.getResourceMetaData();
+        ResourceMetaData resourceMetaData = database.getResourceMetaData();
         Map<String, DataSourceProperties> dataSourcePropsMap = getDataSourcePropsMap(database, sqlStatement);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
@@ -93,7 +93,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     
     private Map<String, DataSourceProperties> getDataSourcePropsMap(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(database.getResourceMetaData().getDataSources().size(), 1F);
-        Map<String, DataSourceProperties> dataSourcePropsMap = database.getResourceMetaData().getDataSourcePropsMap();
+        Map<String, DataSourceProperties> dataSourcePropsMap = database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap();
         Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
         Optional<Integer> usageCountOptional = sqlStatement.getUsageCount();
         if (usageCountOptional.isPresent()) {
@@ -128,8 +128,8 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     }
     
     private DataSourceProperties getDataSourceProperties(final DataSource dataSource) {
-        return dataSource instanceof ShardingSphereStorageDataSourceWrapper
-                ? DataSourcePropertiesCreator.create(((ShardingSphereStorageDataSourceWrapper) dataSource).getDataSource())
+        return dataSource instanceof CatalogSwitchableDataSource
+                ? DataSourcePropertiesCreator.create(((CatalogSwitchableDataSource) dataSource).getDataSource())
                 : DataSourcePropertiesCreator.create(dataSource);
     }
     
@@ -141,7 +141,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     }
     
     @Override
-    public String getType() {
-        return ShowStorageUnitsStatement.class.getName();
+    public Class<ShowStorageUnitsStatement> getType() {
+        return ShowStorageUnitsStatement.class;
     }
 }

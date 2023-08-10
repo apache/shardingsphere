@@ -116,4 +116,10 @@
     <sql-case id="select_collect_expression" value="SELECT CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t) &quot;Warehouses&quot; FROM warehouses;" db-types="Oracle" />
     <sql-case id="select_expr_dot_expr" value="SELECT DBURIType('/HR/DEPARTMENTS').getXML() FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_arrow_symbol_in_function" value="SELECT DECODE(DBMS_COMPRESSION.GET_COMPRESSION_TYPE(ownname => 'HR'), 'No Compression') compression_type FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_prediction_probability_function" value="SELECT PREDICTION_PROBABILITY(dt_sh_clas_sample, 1 USING *) cust_card_prob FROM mining_data_apply_v WHERE cust_id = 101488;" db-types="Oracle" />
+    <sql-case id="select_prediction_set_function" value="SELECT PREDICTION_SET(dt_sh_clas_sample COST MODEL USING *) pset FROM mining_data_apply_v WHERE cust_id = 100011" db-types="Oracle" />
+    <sql-case id="select_cursor_function" value="SELECT CURSOR(SELECT salary, commission_pct FROM employees e WHERE e.department_id = d.department_id) FROM departments d;" db-types="Oracle" />
+    <sql-case id="select_prediction_bounds_function" value="SELECT cust_id FROM mining_data_apply_v WHERE PREDICTION_BOUNDS(glmr_sh_regr_sample,0.98 USING *).LOWER = 24;" db-types="Oracle" />
+    <sql-case id="select_prediction_function" value="SELECT cust_gender FROM mining_data_apply_v WHERE PREDICTION (nb_sh_clas_sample COST MODEL AUTO USING cust_marital_status, aeducation, household_size) = 1;" db-types="Oracle" />
+    <sql-case id="select_prediction_details_function" value="SELECT PREDICTION_DETAILS(DT_SH_Clas_sample using *) FROM mining_data_apply_v WHERE occupation = 'TechSup'" db-types="Oracle" />
 </sql-cases>

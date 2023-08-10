@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.distsql.handler.validate;
 
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesValidator;
 
 import java.util.Collection;
 import java.util.Map;

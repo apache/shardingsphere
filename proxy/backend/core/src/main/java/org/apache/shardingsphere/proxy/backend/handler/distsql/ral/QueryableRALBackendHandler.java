@@ -72,7 +72,7 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> i
     @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() {
-        QueryableRALExecutor<T> executor = TypedSPILoader.getService(QueryableRALExecutor.class, sqlStatement.getClass().getName());
+        QueryableRALExecutor<T> executor = TypedSPILoader.getService(QueryableRALExecutor.class, sqlStatement.getClass());
         mergedResult = getMergedResult(executor);
         queryHeaders = createQueryHeader(executor.getColumnNames());
         return new QueryResponseHeader(queryHeaders);

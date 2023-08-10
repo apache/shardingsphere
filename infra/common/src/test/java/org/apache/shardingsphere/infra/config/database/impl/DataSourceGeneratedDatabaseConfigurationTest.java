@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
-import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
+import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataSourceGeneratedDatabaseConfigurationTest {
@@ -43,10 +42,8 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     void assertGetDataSources() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getDataSources().get("normal_db");
-        assertTrue(dataSource instanceof ShardingSphereStorageDataSourceWrapper);
-        ShardingSphereStorageDataSourceWrapper wrapper = (ShardingSphereStorageDataSourceWrapper) dataSource;
-        assertTrue(wrapper.getDataSource() instanceof HikariDataSource);
-        assertNull(wrapper.getCatalog());
+        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
+        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof HikariDataSource);
     }
     
     @Test
@@ -62,10 +59,8 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     void assertGetStorageUnits() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getDataSources().get("normal_db");
-        assertTrue(dataSource instanceof ShardingSphereStorageDataSourceWrapper);
-        ShardingSphereStorageDataSourceWrapper wrapper = (ShardingSphereStorageDataSourceWrapper) dataSource;
-        assertTrue(wrapper.getDataSource() instanceof HikariDataSource);
-        assertNull(wrapper.getCatalog());
+        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
+        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof HikariDataSource);
     }
     
     @Test
@@ -88,7 +83,8 @@ class DataSourceGeneratedDatabaseConfigurationTest {
         assertThat(poolStandardProps.get("minPoolSize"), is(1));
         assertFalse((Boolean) poolStandardProps.get("readOnly"));
         Map<String, Object> connStandardProps = props.getConnectionPropertySynonyms().getStandardProperties();
-        assertThat(connStandardProps.size(), is(3));
+        assertThat(connStandardProps.size(), is(4));
+        assertThat(connStandardProps.get("dataSourceClassName"), is("com.zaxxer.hikari.HikariDataSource"));
         assertThat(connStandardProps.get("url"), is("jdbc:mock://127.0.0.1/normal_db"));
         assertThat(connStandardProps.get("username"), is("root"));
         assertThat(connStandardProps.get("password"), is(""));
@@ -100,7 +96,8 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     
     private Map<String, DataSourceConfiguration> createDataSources() {
         PoolConfiguration poolConfig = new PoolConfiguration(2000L, 1000L, 1000L, 2, 1, false, new Properties());
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(new ConnectionConfiguration("jdbc:mock://127.0.0.1/normal_db", "root", ""), poolConfig);
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(
+                new ConnectionConfiguration("com.zaxxer.hikari.HikariDataSource", "jdbc:mock://127.0.0.1/normal_db", "root", ""), poolConfig);
         return Collections.singletonMap("normal_db", dataSourceConfig);
     }
 }

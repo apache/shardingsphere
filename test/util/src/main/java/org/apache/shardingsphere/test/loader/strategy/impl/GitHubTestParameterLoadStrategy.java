@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.loader.strategy.impl;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.shardingsphere.test.env.env.TestUtilEnvironment;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
 import org.apache.shardingsphere.test.loader.summary.FileSummary;
 
@@ -27,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URLConnection;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -41,6 +44,9 @@ public final class GitHubTestParameterLoadStrategy implements TestParameterLoadS
     
     @Override
     public Collection<FileSummary> loadSQLCaseFileSummaries(final URI uri) {
+        if (uri.toString().isEmpty()) {
+            return Collections.emptyList();
+        }
         String content = loadContent(getGitHubApiUri(uri));
         if (content.isEmpty()) {
             return Collections.emptyList();
@@ -53,7 +59,7 @@ public final class GitHubTestParameterLoadStrategy implements TestParameterLoadS
         List<String> htmlURLs = documentContext.read("$..html_url");
         int length = documentContext.read("$.length()");
         for (int i = 0; i < length; i++) {
-            String fileName = fileNames.get(i).split("\\.")[0];
+            String fileName = fileNames.get(i);
             String folderType = folderTypes.get(i);
             String downloadURL = downloadURLs.get(i);
             String htmlURL = htmlURLs.get(i);
@@ -75,10 +81,14 @@ public final class GitHubTestParameterLoadStrategy implements TestParameterLoadS
     }
     
     private String loadContent(final URI casesURI) {
-        try (
-                InputStreamReader in = new InputStreamReader(casesURI.toURL().openStream());
-                BufferedReader reader = new BufferedReader(in)) {
-            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        try {
+            URLConnection urlConnection = casesURI.toURL().openConnection();
+            if (StringUtils.isNotBlank(TestUtilEnvironment.getInstance().getGithubToken())) {
+                urlConnection.setRequestProperty("Authorization", "Bearer " + TestUtilEnvironment.getInstance().getGithubToken());
+            }
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+            }
         } catch (final IOException ex) {
             log.warn("Load failed, reason is: ", ex);
             return "";

@@ -23,11 +23,12 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -146,23 +147,27 @@ class SelectInformationSchemataExecutorTest {
         AuthorityRule authorityRule = mock(AuthorityRule.class);
         when(authorityRule.findPrivileges(grantee)).thenReturn(Optional.of(new DatabasePermittedPrivileges(Collections.singleton("auth_db"))));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(
+        MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
+        ShardingSphereDataPersistService shardingSphereDataPersistService = mock(ShardingSphereDataPersistService.class);
+        when(shardingSphereDataPersistService.load(any())).thenReturn(Optional.empty());
+        when(metaDataPersistService.getShardingSphereDataPersistService()).thenReturn(shardingSphereDataPersistService);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaDataPersistService, new ShardingSphereMetaData(
                 Arrays.stream(databases).collect(Collectors.toMap(ShardingSphereDatabase::getName, each -> each, (key, value) -> value)),
-                mock(ShardingSphereResourceMetaData.class), new ShardingSphereRuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties())));
+                mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }
     
-    private ShardingSphereDatabase createDatabase(final String databaseName, final ShardingSphereResourceMetaData resourceMetaData) {
-        return new ShardingSphereDatabase(databaseName, TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+    private ShardingSphereDatabase createDatabase(final String databaseName, final ResourceMetaData resourceMetaData) {
+        return new ShardingSphereDatabase(databaseName, TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, mock(RuleMetaData.class), Collections.emptyMap());
     }
     
     private ShardingSphereDatabase createDatabase(final String databaseName) {
-        return createDatabase(databaseName, new ShardingSphereResourceMetaData(databaseName, Collections.emptyMap()));
+        return createDatabase(databaseName, new ResourceMetaData(databaseName, Collections.emptyMap()));
     }
     
     private ShardingSphereDatabase createDatabase(final Map<String, String> expectedResultSetMap) throws SQLException {
-        return createDatabase("auth_db", new ShardingSphereResourceMetaData("auth_db", Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))));
+        return createDatabase("auth_db", new ResourceMetaData("auth_db", Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))));
     }
     
     private Connection mockConnection(final Map<String, String> expectedResultSetMap) throws SQLException {

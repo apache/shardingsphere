@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
@@ -27,7 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.sane.SaneQueryResultEngine;
@@ -54,7 +53,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     private boolean hasMetaData;
     
-    protected ProxyJDBCExecutorCallback(final DatabaseType protocolType, final ShardingSphereResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
+    protected ProxyJDBCExecutorCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
                                         final DatabaseConnector databaseConnector,
                                         final boolean isReturnGeneratedKeys, final boolean isExceptionThrown, final boolean fetchMetaData) {
         super(protocolType, resourceMetaData, sqlStatement, isExceptionThrown);
@@ -103,7 +102,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     @Override
     protected final Optional<ExecuteResult> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
-        return DatabaseTypedSPILoader.getService(SaneQueryResultEngine.class, getProtocolTypeType()).getSaneQueryResult(sqlStatement, ex);
+        return new SaneQueryResultEngine(getProtocolTypeType()).getSaneQueryResult(sqlStatement, ex);
     }
     
     private DatabaseType getProtocolTypeType() {

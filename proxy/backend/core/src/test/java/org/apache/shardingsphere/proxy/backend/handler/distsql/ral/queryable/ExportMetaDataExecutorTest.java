@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -36,8 +36,8 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -107,7 +107,7 @@ class ExportMetaDataExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("empty_metadata"));
-        when(database.getResourceMetaData().getDataSourcePropsMap()).thenReturn(Collections.emptyMap());
+        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap()).thenReturn(Collections.emptyMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ExportMetaDataStatement sqlStatement = new ExportMetaDataStatement(null);
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
@@ -119,7 +119,7 @@ class ExportMetaDataExecutorTest {
     private ContextManager mockEmptyContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(new HashMap<>(),
-                new ShardingSphereResourceMetaData(Collections.emptyMap()), new ShardingSphereRuleMetaData(Collections.singletonList(
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singletonList(
                         new GlobalClockRule(new DefaultGlobalClockRuleConfigurationBuilder().build(), Collections.emptyMap()))),
                 new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -131,7 +131,7 @@ class ExportMetaDataExecutorTest {
         when(database.getName()).thenReturn("normal_db");
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("empty_metadata"));
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        when(database.getResourceMetaData().getDataSourcePropsMap()).thenReturn(DataSourcePropertiesCreator.create(dataSourceMap));
+        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap()).thenReturn(DataSourcePropertiesCreator.create(dataSourceMap));
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -145,8 +145,8 @@ class ExportMetaDataExecutorTest {
     
     private ContextManager mockContextManager() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(Collections.singletonMap(database.getName(), database),
-                new ShardingSphereResourceMetaData(Collections.emptyMap()),
-                new ShardingSphereRuleMetaData(Arrays.asList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build(), Collections.emptyMap()),
+                new ResourceMetaData(Collections.emptyMap()),
+                new RuleMetaData(Arrays.asList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build(), Collections.emptyMap()),
                         new GlobalClockRule(new DefaultGlobalClockRuleConfigurationBuilder().build(), Collections.singletonMap(database.getName(), database)))),
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true")))));
         InstanceContext instanceContext = new InstanceContext(

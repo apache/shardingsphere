@@ -73,7 +73,7 @@ public final class ShowUnusedShardingAuditorsExecutor implements RQLExecutor<Sho
     }
     
     @Override
-    public String getType() {
-        return ShowUnusedShardingAuditorsStatement.class.getName();
+    public Class<ShowUnusedShardingAuditorsStatement> getType() {
+        return ShowUnusedShardingAuditorsStatement.class;
     }
 }
