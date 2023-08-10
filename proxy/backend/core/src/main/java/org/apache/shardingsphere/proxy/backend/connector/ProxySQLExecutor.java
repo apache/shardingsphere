@@ -172,8 +172,9 @@ public final class ProxySQLExecutor {
         int maxConnectionsSizePerQuery = ProxyContext.getInstance()
                 .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isReturnGeneratedKeys = executionContext.getSqlStatementContext().getSqlStatement() instanceof MySQLInsertStatement;
-        return hasRawExecutionRule(rules) ? rawExecute(executionContext, rules, maxConnectionsSizePerQuery)
-                : useDriverToExecute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
+        return hasRawExecutionRule(rules)
+                ? rawExecute(executionContext, rules, maxConnectionsSizePerQuery)
+                : useDriverToExecute(executionContext, maxConnectionsSizePerQuery, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
     }
     
     private boolean hasRawExecutionRule(final Collection<ShardingSphereRule> rules) {
@@ -199,12 +200,12 @@ public final class ProxySQLExecutor {
         return rawExecutor.execute(executionGroupContext, executionContext.getQueryContext(), new RawSQLExecutorCallback());
     }
     
-    private List<ExecuteResult> useDriverToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules,
+    private List<ExecuteResult> useDriverToExecute(final ExecutionContext executionContext,
                                                    final int maxConnectionsSizePerQuery, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         JDBCBackendStatement statementManager = (JDBCBackendStatement) databaseConnectionManager.getConnectionSession().getStatementManager();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
-                type, maxConnectionsSizePerQuery, databaseConnectionManager, statementManager, new StatementOption(isReturnGeneratedKeys), rules,
-                ProxyContext.getInstance().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName()).getResourceMetaData().getStorageTypes());
+                type, maxConnectionsSizePerQuery, databaseConnectionManager, statementManager, new StatementOption(isReturnGeneratedKeys),
+                ProxyContext.getInstance().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName()));
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
         try {
             executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(),

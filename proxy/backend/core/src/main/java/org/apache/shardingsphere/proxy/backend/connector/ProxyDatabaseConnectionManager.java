@@ -70,7 +70,8 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     private final Collection<TransactionHook> transactionHooks = ShardingSphereServiceLoader.getServiceInstances(TransactionHook.class);
     
     @Override
-    public List<Connection> getConnections(final String dataSourceName, final int connectionOffset, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+    public List<Connection> getConnections(final String dataSourceName, final String catalogName,
+                                           final int connectionOffset, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         Preconditions.checkNotNull(connectionSession.getDatabaseName(), "Current database name is null.");
         Collection<Connection> connections;
         synchronized (cachedConnections) {
@@ -95,6 +96,11 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
             result = allConnections.subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName, newConnections);
+            }
+        }
+        if (null != catalogName) {
+            for (Connection each : result) {
+                each.setCatalog(catalogName);
             }
         }
         return result;

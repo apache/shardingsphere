@@ -167,8 +167,7 @@ public final class PreviewExecutor implements ConnectionSessionRequiredRULExecut
         int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connectionSession.getDatabaseConnectionManager(),
                 (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(isReturnGeneratedKeys),
-                metaDataContexts.getMetaData().getDatabase(getDatabaseName(connectionSession)).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(getDatabaseName(connectionSession)).getResourceMetaData().getStorageTypes());
+                metaDataContexts.getMetaData().getDatabase(getDatabaseName(connectionSession)));
     }
     
     private String getDatabaseName(final ConnectionSession connectionSession) {

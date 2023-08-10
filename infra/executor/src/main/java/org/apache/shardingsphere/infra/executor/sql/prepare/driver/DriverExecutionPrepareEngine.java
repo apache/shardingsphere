@@ -24,11 +24,10 @@ import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.DriverExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,17 +53,19 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("rawtypes")
     private final SQLExecutionUnitBuilder sqlExecutionUnitBuilder;
     
+    private final ShardingSphereDatabase database;
+    
     private final Map<String, DatabaseType> databaseTypes;
     
     public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final DatabaseConnectionManager<C> databaseConnectionManager,
-                                        final ExecutorStatementManager<C, ?, ?> statementManager, final StorageResourceOption option, final Collection<ShardingSphereRule> rules,
-                                        final Map<String, DatabaseType> databaseTypes) {
-        super(maxConnectionsSizePerQuery, rules);
+                                        final ExecutorStatementManager<C, ?, ?> statementManager, final StorageResourceOption option, final ShardingSphereDatabase database) {
+        super(maxConnectionsSizePerQuery, database.getRuleMetaData().getRules());
         this.databaseConnectionManager = databaseConnectionManager;
         this.statementManager = statementManager;
         this.option = option;
         sqlExecutionUnitBuilder = getCachedSqlExecutionUnitBuilder(type);
-        this.databaseTypes = databaseTypes;
+        this.database = database;
+        this.databaseTypes = database.getResourceMetaData().getStorageTypes();
     }
     
     /**
@@ -85,7 +86,8 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @Override
     protected List<ExecutionGroup<T>> group(final String dataSourceName, final int connectionOffset, final List<List<SQLUnit>> sqlUnitGroups, final ConnectionMode connectionMode) throws SQLException {
         List<ExecutionGroup<T>> result = new LinkedList<>();
-        List<C> connections = databaseConnectionManager.getConnections(dataSourceName, connectionOffset, sqlUnitGroups.size(), connectionMode);
+        String catalogName = database.getResourceMetaData().getStorageUnitMetaData().getUnitNodeMappers().get(dataSourceName).getCatalog();
+        List<C> connections = databaseConnectionManager.getConnections(dataSourceName, catalogName, connectionOffset, sqlUnitGroups.size(), connectionMode);
         int count = 0;
         for (List<SQLUnit> each : sqlUnitGroups) {
             result.add(createExecutionGroup(dataSourceName, each, connections.get(count++), connectionMode));

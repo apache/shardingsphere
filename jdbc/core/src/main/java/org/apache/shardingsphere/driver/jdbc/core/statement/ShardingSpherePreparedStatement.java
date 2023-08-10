@@ -318,8 +318,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine() {
         int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, maxConnectionsSizePerQuery, connection.getDatabaseConnectionManager(), statementManager,
-                statementOption, metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageTypes());
+                statementOption, metaDataContexts.getMetaData().getDatabase(databaseName));
     }
     
     @Override
@@ -658,13 +657,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private void initBatchPreparedStatementExecutor() throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, metaDataContexts.getMetaData().getProps()
-                .<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), connection.getDatabaseConnectionManager(), statementManager, statementOption,
-                metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageTypes());
+                .<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), connection.getDatabaseConnectionManager(),
+                statementManager, statementOption, metaDataContexts.getMetaData().getDatabase(databaseName));
         List<ExecutionUnit> executionUnits = new ArrayList<>(batchPreparedStatementExecutor.getBatchExecutionUnits().size());
         for (BatchExecutionUnit each : batchPreparedStatementExecutor.getBatchExecutionUnits()) {
-            ExecutionUnit executionUnit = each.getExecutionUnit();
-            executionUnits.add(executionUnit);
+            executionUnits.add(each.getExecutionUnit());
         }
         batchPreparedStatementExecutor.init(prepareEngine.prepare(executionContext.getRouteContext(), executionUnits, new ExecutionGroupReportContext(databaseName)));
         setBatchParametersForStatements();

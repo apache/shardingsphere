@@ -412,7 +412,8 @@ class PostgreSQLComDescribeExecutorTest {
         when(connection.prepareStatement(sql).getParameterMetaData()).thenReturn(parameterMetaData);
         ResultSetMetaData resultSetMetaData = prepareResultSetMetaData();
         when(connection.prepareStatement(sql).getMetaData()).thenReturn(resultSetMetaData);
-        when(databaseConnectionManager.getConnections(nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        when(databaseConnectionManager.getConnections(
+                nullable(String.class), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
     }
     

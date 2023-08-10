@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertie
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -34,17 +32,8 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataSourceGeneratedDatabaseConfigurationTest {
-    
-    @Test
-    void assertGetDataSources() {
-        DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("normal_db");
-        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
-        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof HikariDataSource);
-    }
     
     @Test
     void assertGetStorageNodes() {
@@ -53,14 +42,6 @@ class DataSourceGeneratedDatabaseConfigurationTest {
         assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mock://127.0.0.1/normal_db"));
         assertThat(hikariDataSource.getUsername(), is("root"));
         assertThat(hikariDataSource.getPassword(), is(""));
-    }
-    
-    @Test
-    void assertGetStorageUnits() {
-        DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("normal_db");
-        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
-        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof HikariDataSource);
     }
     
     @Test

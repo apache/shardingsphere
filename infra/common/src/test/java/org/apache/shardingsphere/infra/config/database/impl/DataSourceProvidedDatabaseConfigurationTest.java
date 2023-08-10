@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.config.database.impl;
 
-import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -29,17 +28,8 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataSourceProvidedDatabaseConfigurationTest {
-    
-    @Test
-    void assertGetDataSources() {
-        DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("foo_ds");
-        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
-        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof MockedDataSource);
-    }
     
     @Test
     void assertGetStorageNodes() {
@@ -48,14 +38,6 @@ class DataSourceProvidedDatabaseConfigurationTest {
         assertThat(dataSource.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(dataSource.getUsername(), is("root"));
         assertThat(dataSource.getPassword(), is("root"));
-    }
-    
-    @Test
-    void assertGetStorageUnits() {
-        DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("foo_ds");
-        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
-        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof MockedDataSource);
     }
     
     @Test

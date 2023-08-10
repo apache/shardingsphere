@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConne
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
@@ -80,12 +81,15 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     @Getter
     private final ConnectionContext connectionContext;
     
+    private final StorageUnitMetaData storageUnitMetaData;
+    
     public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
         dataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
         dataSourceMap.putAll(getTrafficDataSourceMap(databaseName, contextManager));
         physicalDataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
         connectionTransaction = createConnectionTransaction(databaseName, contextManager);
         connectionContext = new ConnectionContext(cachedConnections::keySet);
+        storageUnitMetaData = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResourceMetaData().getStorageUnitMetaData();
     }
     
     private Map<String, DataSource> getTrafficDataSourceMap(final String databaseName, final ContextManager contextManager) {
@@ -306,11 +310,14 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public Connection getRandomConnection() throws SQLException {
-        return getConnections(getRandomPhysicalDataSourceName(), 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        String dataSourceName = getRandomPhysicalDataSourceName();
+        String catalogName = storageUnitMetaData.getUnitNodeMappers().get(dataSourceName).getCatalog();
+        return getConnections(dataSourceName, catalogName, 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
     @Override
-    public List<Connection> getConnections(final String dataSourceName, final int connectionOffset, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+    public List<Connection> getConnections(final String dataSourceName, final String catalogName,
+                                           final int connectionOffset, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         DataSource dataSource = dataSourceMap.get(dataSourceName);
         Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
@@ -336,6 +343,11 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, newConnections);
             }
+        }
+        if (null != catalogName) {
+            for (Connection each : result) {
+                each.setCatalog(catalogName);
+            }    
         }
         return result;
     }

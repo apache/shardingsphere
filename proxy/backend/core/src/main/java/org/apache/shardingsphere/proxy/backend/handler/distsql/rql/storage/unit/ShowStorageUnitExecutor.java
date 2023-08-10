@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropert
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -114,7 +113,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     
     private DataSourceProperties getDataSourceProperties(final Map<String, DataSourceProperties> dataSourcePropsMap, final String storageUnitName,
                                                          final DatabaseType databaseType, final DataSource dataSource) {
-        DataSourceProperties result = getDataSourceProperties(dataSource);
+        DataSourceProperties result = DataSourcePropertiesCreator.create(dataSource);
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         if (dialectDatabaseMetaData.isInstanceConnectionAvailable() && dataSourcePropsMap.containsKey(storageUnitName)) {
             DataSourceProperties unitDataSourceProperties = dataSourcePropsMap.get(storageUnitName);
@@ -125,12 +124,6 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
             }
         }
         return result;
-    }
-    
-    private DataSourceProperties getDataSourceProperties(final DataSource dataSource) {
-        return dataSource instanceof CatalogSwitchableDataSource
-                ? DataSourcePropertiesCreator.create(((CatalogSwitchableDataSource) dataSource).getDataSource())
-                : DataSourcePropertiesCreator.create(dataSource);
     }
     
     private String getStandardProperty(final Map<String, Object> standardProps, final String key) {
