@@ -38,9 +38,6 @@ public final class CatalogSwitchableDataSource implements DataSource, AutoClosea
     
     private final String catalog;
     
-    @Getter
-    private final String url;
-    
     @Override
     public Connection getConnection() throws SQLException {
         Connection result = dataSource.getConnection();

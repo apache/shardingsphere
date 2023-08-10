@@ -52,7 +52,7 @@ public final class DataSourceSwapper {
      */
     public XADataSource swap(final DataSource dataSource) {
         XADataSource result = createXADataSource();
-        DataSource readDataSource = dataSource instanceof CatalogSwitchableDataSource ? (CatalogSwitchableDataSource) dataSource : dataSource;
+        DataSource readDataSource = dataSource instanceof CatalogSwitchableDataSource ? ((CatalogSwitchableDataSource) dataSource).getDataSource() : dataSource;
         setProperties(result, getDatabaseAccessConfiguration(readDataSource));
         return result;
     }
