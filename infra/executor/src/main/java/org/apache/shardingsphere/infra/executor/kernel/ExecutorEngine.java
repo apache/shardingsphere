@@ -39,8 +39,6 @@ import java.util.concurrent.Future;
 @Getter
 public final class ExecutorEngine implements AutoCloseable {
     
-    private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
-    
     private final ExecutorServiceManager executorServiceManager;
     
     private ExecutorEngine(final int executorSize) {
@@ -55,16 +53,6 @@ public final class ExecutorEngine implements AutoCloseable {
      */
     public static ExecutorEngine createExecutorEngineWithSize(final int executorSize) {
         return new ExecutorEngine(executorSize);
-    }
-    
-    /**
-     * Create executor engine with CPU.
-     *
-     * @return created executor engine
-     */
-    public static ExecutorEngine createExecutorEngineWithCPU() {
-        int cpuThreadCount = CPU_CORES * 2 - 1;
-        return new ExecutorEngine(cpuThreadCount);
     }
     
     /**

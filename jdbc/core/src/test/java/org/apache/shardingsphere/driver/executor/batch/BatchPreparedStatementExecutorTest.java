@@ -79,7 +79,7 @@ class BatchPreparedStatementExecutorTest {
     
     private static final String SQL = "DELETE FROM table_x WHERE id=?";
     
-    private final ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithCPU();
+    private final ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithSize(Runtime.getRuntime().availableProcessors() * 2 - 1);
     
     private BatchPreparedStatementExecutor executor;
     
