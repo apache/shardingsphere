@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.fixture.infra.datasource.pool.metadata;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DefaultDataSourcePoolPropertiesValidator;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.impl.DefaultDataSourcePoolPropertiesValidator;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.impl;
 
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
 /**
- * Default data source pool properties validator.
+ * Default data source pool field meta data.
  */
-public final class DefaultDataSourcePoolPropertiesValidator implements DataSourcePoolPropertiesValidator {
+public final class DefaultDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
     @Override
-    public void validateProperties(final DataSourceProperties dataSourceProps) {
+    public String getJdbcUrlFieldName() {
+        return "url";
+    }
+    
+    @Override
+    public String getJdbcUrlPropertiesFieldName() {
+        return null;
     }
 }
