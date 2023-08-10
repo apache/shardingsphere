@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Hikari data source pool meta data.
@@ -101,8 +102,8 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     @Override
-    public DataSourcePoolPropertiesValidator getDataSourcePoolPropertiesValidator() {
-        return new HikariDataSourcePoolPropertiesValidator();
+    public Optional<DataSourcePoolPropertiesValidator> getDataSourcePoolPropertiesValidator() {
+        return Optional.of(new HikariDataSourcePoolPropertiesValidator());
     }
     
     @Override

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.datasource.pool.props;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
@@ -62,8 +61,7 @@ public final class DataSourcePropertiesValidator {
             return;
         }
         try {
-            DataSourcePoolPropertiesValidator propertiesValidator = poolMetaData.get().getDataSourcePoolPropertiesValidator();
-            propertiesValidator.validateProperties(dataSourceProps);
+            poolMetaData.get().getDataSourcePoolPropertiesValidator().ifPresent(optional -> optional.validate(dataSourceProps));
         } catch (final IllegalArgumentException ex) {
             throw new InvalidDataSourcePropertiesException(dataSourceName, ex.getMessage());
         }

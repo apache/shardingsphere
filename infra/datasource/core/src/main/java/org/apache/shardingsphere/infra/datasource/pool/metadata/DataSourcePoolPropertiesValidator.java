@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertie
 public interface DataSourcePoolPropertiesValidator {
     
     /**
-     * Check properties.
+     * Validate data source properties.
      * 
-     * @param dataSourceProps Data source properties
+     * @param dataSourceProps data source properties
      */
-    void validateProperties(DataSourceProperties dataSourceProps);
+    void validate(DataSourceProperties dataSourceProps);
 }

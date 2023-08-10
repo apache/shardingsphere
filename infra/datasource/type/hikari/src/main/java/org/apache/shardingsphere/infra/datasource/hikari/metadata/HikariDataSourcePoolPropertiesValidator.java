@@ -35,7 +35,7 @@ public final class HikariDataSourcePoolPropertiesValidator implements DataSource
     private static final long KEEP_ALIVE_TIME_FLOOR = TimeUnit.SECONDS.toMillis(30);
     
     @Override
-    public void validateProperties(final DataSourceProperties dataSourceProps) {
+    public void validate(final DataSourceProperties dataSourceProps) {
         validateConnectionTimeout(dataSourceProps);
         validateIdleTimeout(dataSourceProps);
         validateMaxLifetime(dataSourceProps);
