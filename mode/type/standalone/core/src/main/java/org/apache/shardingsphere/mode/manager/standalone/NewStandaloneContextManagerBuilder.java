@@ -58,11 +58,11 @@ public final class NewStandaloneContextManagerBuilder implements ContextManagerB
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter param) {
         return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()),
-                new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new StandaloneModeContextManager(), new GlobalLockContext(null), new EventBusContext());
+                new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new NewStandaloneModeContextManager(), new GlobalLockContext(null), new EventBusContext());
     }
     
     private void setContextManagerAware(final ContextManager contextManager) {
-        ((StandaloneModeContextManager) contextManager.getInstanceContext().getModeContextManager()).setContextManagerAware(contextManager);
+        ((NewStandaloneModeContextManager) contextManager.getInstanceContext().getModeContextManager()).setContextManagerAware(contextManager);
     }
     
     @Override
