@@ -22,6 +22,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -49,6 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Database connection manager of ShardingSphere-Proxy.
  */
+@Slf4j
 @RequiredArgsConstructor
 @Getter
 public final class ProxyDatabaseConnectionManager implements DatabaseConnectionManager<Connection> {
@@ -100,8 +102,8 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         }
         if (null != catalogName) {
             for (Connection each : result) {
-                System.out.println("=========before catalog======:" + each.getCatalog());
-                System.out.println("=========catalog======:" + catalogName);
+                log.error("=========before catalog======:" + each.getCatalog());
+                log.error("=========catalog======:" + catalogName);
                 each.setCatalog(catalogName);
             }
         }
