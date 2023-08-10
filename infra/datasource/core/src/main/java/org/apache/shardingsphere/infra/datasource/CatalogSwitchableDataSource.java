@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -29,17 +28,15 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 /**
- * ShardingSphere storage data source wrapper.
+ * Catalog switchable data source.
  */
 @RequiredArgsConstructor
-@Getter
-public final class ShardingSphereStorageDataSourceWrapper implements DataSource, AutoCloseable {
+public final class CatalogSwitchableDataSource implements DataSource, AutoCloseable {
     
+    @Getter
     private final DataSource dataSource;
     
     private final String catalog;
-    
-    private final String url;
     
     @Override
     public Connection getConnection() throws SQLException {
@@ -90,12 +87,10 @@ public final class ShardingSphereStorageDataSourceWrapper implements DataSource,
         return dataSource.isWrapperFor(iface);
     }
     
-    @SneakyThrows
     @Override
-    public void close() {
-        if (!(dataSource instanceof AutoCloseable)) {
-            return;
+    public void close() throws Exception {
+        if (dataSource instanceof AutoCloseable) {
+            ((AutoCloseable) dataSource).close();
         }
-        ((AutoCloseable) dataSource).close();
     }
 }

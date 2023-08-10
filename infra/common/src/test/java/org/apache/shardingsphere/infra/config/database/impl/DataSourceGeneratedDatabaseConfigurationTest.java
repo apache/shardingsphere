@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
+import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
@@ -34,7 +34,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataSourceGeneratedDatabaseConfigurationTest {
@@ -43,10 +42,8 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     void assertGetDataSources() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getDataSources().get("normal_db");
-        assertTrue(dataSource instanceof ShardingSphereStorageDataSourceWrapper);
-        ShardingSphereStorageDataSourceWrapper wrapper = (ShardingSphereStorageDataSourceWrapper) dataSource;
-        assertTrue(wrapper.getDataSource() instanceof HikariDataSource);
-        assertNull(wrapper.getCatalog());
+        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
+        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof HikariDataSource);
     }
     
     @Test
@@ -62,10 +59,8 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     void assertGetStorageUnits() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getDataSources().get("normal_db");
-        assertTrue(dataSource instanceof ShardingSphereStorageDataSourceWrapper);
-        ShardingSphereStorageDataSourceWrapper wrapper = (ShardingSphereStorageDataSourceWrapper) dataSource;
-        assertTrue(wrapper.getDataSource() instanceof HikariDataSource);
-        assertNull(wrapper.getCatalog());
+        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
+        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof HikariDataSource);
     }
     
     @Test
