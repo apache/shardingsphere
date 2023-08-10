@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
+import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourceReflection;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourceProperties;
@@ -85,7 +86,10 @@ public final class DataSourcePropertiesCreator {
      * @return created data source properties
      */
     public static DataSourceProperties create(final DataSource dataSource) {
-        return new DataSourceProperties(dataSource.getClass().getName(), createProperties(dataSource));
+        return dataSource instanceof CatalogSwitchableDataSource
+                ? new DataSourceProperties(((CatalogSwitchableDataSource) dataSource).getDataSource().getClass().getName(),
+                        createProperties(((CatalogSwitchableDataSource) dataSource).getDataSource()))
+                : new DataSourceProperties(dataSource.getClass().getName(), createProperties(dataSource));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

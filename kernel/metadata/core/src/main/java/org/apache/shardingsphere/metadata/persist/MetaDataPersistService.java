@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolD
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
@@ -114,15 +115,15 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     
     private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final DatabaseConfiguration databaseConfigs) {
         if (!databaseConfigs.getDataSources().isEmpty() && databaseConfigs.getDataSourcePropsMap().isEmpty()) {
-            return getDataSourcePropertiesMap(databaseConfigs.getStorageResource().getStorageNodes());
+            return getDataSourcePropertiesMap(databaseConfigs.getStorageResource().getStorageNodeDataSources());
         }
         return databaseConfigs.getDataSourcePropsMap();
     }
     
-    private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(dataSourceMap.size(), 1F);
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
+    private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<StorageNode, DataSource> storageNodeDataSources) {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(storageNodeDataSources.size(), 1F);
+        for (Entry<StorageNode, DataSource> entry : storageNodeDataSources.entrySet()) {
+            result.put(entry.getKey().getName(), DataSourcePropertiesCreator.create(entry.getValue()));
         }
         return result;
     }
@@ -131,7 +132,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     public Map<String, DataSourceConfiguration> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceUnitService.load(databaseName);
         if (databaseConfigs.containsKey(databaseName) && !databaseConfigs.get(databaseName).getDataSources().isEmpty()) {
-            databaseConfigs.get(databaseName).getStorageResource().getStorageNodes().values().forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
+            databaseConfigs.get(databaseName).getStorageResource().getStorageNodeDataSources().values().forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
         }
         return persistedDataPropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
                 entry -> DataSourcePropertiesCreator.createConfiguration(entry.getValue()), (key, value) -> value, LinkedHashMap::new));

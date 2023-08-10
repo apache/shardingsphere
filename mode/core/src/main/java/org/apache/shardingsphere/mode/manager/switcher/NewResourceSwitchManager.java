@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.switcher;
 
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResourceWithProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnitNodeMapper;
@@ -51,10 +52,10 @@ public final class NewResourceSwitchManager {
     }
     
     private StorageResource getRegisterNewStorageResource(final ResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeCreatedStorageResource) {
-        Map<String, DataSource> storageNodes = new LinkedHashMap<>(toBeCreatedStorageResource.getStorageNodes().size(), 1F);
-        for (String each : toBeCreatedStorageResource.getStorageNodes().keySet()) {
-            if (!resourceMetaData.getStorageNodeMetaData().getDataSources().containsKey(each)) {
-                storageNodes.put(each, DataSourcePoolCreator.create(toBeCreatedStorageResource.getDataSourcePropertiesMap().get(each)));
+        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(toBeCreatedStorageResource.getStorageNodeDataSources().size(), 1F);
+        for (StorageNode each : toBeCreatedStorageResource.getStorageNodeDataSources().keySet()) {
+            if (!resourceMetaData.getStorageNodeDataSources().containsKey(each)) {
+                storageNodes.put(each, DataSourcePoolCreator.create(toBeCreatedStorageResource.getDataSourcePropertiesMap().get(each.getName())));
             }
         }
         return new StorageResource(storageNodes, toBeCreatedStorageResource.getStorageUnitNodeMappers());
@@ -75,17 +76,17 @@ public final class NewResourceSwitchManager {
     }
     
     private StorageResource getAlterNewStorageResource(final StorageResourceWithProperties toBeAlteredStorageResource) {
-        Map<String, DataSource> storageNodes = new LinkedHashMap<>(toBeAlteredStorageResource.getStorageNodes().size(), 1F);
-        for (String each : toBeAlteredStorageResource.getStorageNodes().keySet()) {
-            storageNodes.put(each, DataSourcePoolCreator.create(toBeAlteredStorageResource.getDataSourcePropertiesMap().get(each)));
+        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(toBeAlteredStorageResource.getStorageNodeDataSources().size(), 1F);
+        for (StorageNode each : toBeAlteredStorageResource.getStorageNodeDataSources().keySet()) {
+            storageNodes.put(each, DataSourcePoolCreator.create(toBeAlteredStorageResource.getDataSourcePropertiesMap().get(each.getName())));
         }
         return new StorageResource(storageNodes, toBeAlteredStorageResource.getStorageUnitNodeMappers());
     }
     
     private StorageResource getStaleStorageResource(final ResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeAlteredStorageResource) {
-        Map<String, DataSource> storageNodes = new LinkedHashMap<>(toBeAlteredStorageResource.getStorageNodes().size(), 1F);
-        for (Entry<String, DataSource> entry : resourceMetaData.getStorageNodeMetaData().getDataSources().entrySet()) {
-            if (toBeAlteredStorageResource.getStorageNodes().containsKey(entry.getKey())) {
+        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(toBeAlteredStorageResource.getStorageNodeDataSources().size(), 1F);
+        for (Entry<StorageNode, DataSource> entry : resourceMetaData.getStorageNodeDataSources().entrySet()) {
+            if (toBeAlteredStorageResource.getStorageNodeDataSources().containsKey(entry.getKey())) {
                 storageNodes.put(entry.getKey(), entry.getValue());
             }
         }
@@ -108,9 +109,9 @@ public final class NewResourceSwitchManager {
     private StorageResource getToBeRemovedStaleStorageResource(final ResourceMetaData resourceMetaData, final String storageUnitName) {
         StorageUnitNodeMapper storageUnitNodeMapper = resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers().remove(storageUnitName);
         Map<String, StorageUnitNodeMapper> reservedStorageUnitNodeMappers = resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers();
-        Map<String, DataSource> storageNodes = new LinkedHashMap<>(1, 1F);
-        if (reservedStorageUnitNodeMappers.values().stream().noneMatch(each -> each.getNodeName().equals(storageUnitNodeMapper.getNodeName()))) {
-            storageNodes.put(storageUnitNodeMapper.getNodeName(), resourceMetaData.getStorageNodeMetaData().getDataSources().get(storageUnitNodeMapper.getNodeName()));
+        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(1, 1F);
+        if (reservedStorageUnitNodeMappers.values().stream().noneMatch(each -> each.getStorageNode().equals(storageUnitNodeMapper.getStorageNode()))) {
+            storageNodes.put(storageUnitNodeMapper.getStorageNode(), resourceMetaData.getStorageNodeDataSources().get(storageUnitNodeMapper.getStorageNode()));
         }
         return new StorageResource(storageNodes, Collections.singletonMap(storageUnitName, storageUnitNodeMapper));
     }

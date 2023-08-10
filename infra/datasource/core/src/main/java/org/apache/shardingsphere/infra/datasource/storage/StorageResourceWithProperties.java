@@ -31,7 +31,7 @@ public final class StorageResourceWithProperties extends StorageResource {
     
     private final Map<String, DataSourceProperties> dataSourcePropertiesMap;
     
-    public StorageResourceWithProperties(final Map<String, DataSource> storageNodes,
+    public StorageResourceWithProperties(final Map<StorageNode, DataSource> storageNodes,
                                          final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final Map<String, DataSourceProperties> dataSourcePropertiesMap) {
         super(storageNodes, storageUnitNodeMappers);
         this.dataSourcePropertiesMap = dataSourcePropertiesMap;

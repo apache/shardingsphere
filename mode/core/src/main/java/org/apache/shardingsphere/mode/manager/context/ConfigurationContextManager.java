@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnitNodeMapper;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -269,7 +270,7 @@ public final class ConfigurationContextManager {
      * @return ShardingSphere databases
      */
     public Map<String, ShardingSphereDatabase> renewDatabase(final ShardingSphereDatabase database, final SwitchingResource resource) {
-        Map<String, DataSource> newStorageNodes = getNewStorageNodes(database.getResourceMetaData().getStorageNodeMetaData().getDataSources(), resource);
+        Map<StorageNode, DataSource> newStorageNodes = getNewStorageNodes(database.getResourceMetaData().getStorageNodeDataSources(), resource);
         Map<String, StorageUnitNodeMapper> newStorageUnitNodeMappers = getNewStorageUnitNodeMappers(database.getResourceMetaData().getStorageUnitMetaData().getUnitNodeMappers(), resource);
         StorageResource newStorageResource = new StorageResource(newStorageNodes, newStorageUnitNodeMappers);
         return Collections.singletonMap(database.getName().toLowerCase(),
@@ -278,10 +279,10 @@ public final class ConfigurationContextManager {
                         database.getRuleMetaData(), database.getSchemas()));
     }
     
-    private Map<String, DataSource> getNewStorageNodes(final Map<String, DataSource> currentStorageNodes, final SwitchingResource resource) {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, DataSource> entry : currentStorageNodes.entrySet()) {
-            if (!resource.getStaleStorageResource().getStorageNodes().containsKey(entry.getKey())) {
+    private Map<StorageNode, DataSource> getNewStorageNodes(final Map<StorageNode, DataSource> currentStorageNodes, final SwitchingResource resource) {
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>();
+        for (Entry<StorageNode, DataSource> entry : currentStorageNodes.entrySet()) {
+            if (!resource.getStaleStorageResource().getStorageNodeDataSources().containsKey(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());
             }
         }
@@ -338,8 +339,8 @@ public final class ConfigurationContextManager {
     public synchronized Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName, final boolean internalLoadMetaData,
                                                                                    final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         ResourceMetaData resourceMetaData = metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData();
-        if (null != switchingResource && null != switchingResource.getNewStorageResource() && !switchingResource.getNewStorageResource().getStorageNodes().isEmpty()) {
-            resourceMetaData.getStorageNodeMetaData().getDataSources().putAll(switchingResource.getNewStorageResource().getStorageNodes());
+        if (null != switchingResource && null != switchingResource.getNewStorageResource() && !switchingResource.getNewStorageResource().getStorageNodeDataSources().isEmpty()) {
+            resourceMetaData.getStorageNodeDataSources().putAll(switchingResource.getNewStorageResource().getStorageNodeDataSources());
         }
         if (null != switchingResource && null != switchingResource.getNewStorageResource() && !switchingResource.getNewStorageResource().getStorageUnitNodeMappers().isEmpty()) {
             resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers().putAll(switchingResource.getNewStorageResource().getStorageUnitNodeMappers());
@@ -347,7 +348,7 @@ public final class ConfigurationContextManager {
         Collection<RuleConfiguration> toBeCreatedRuleConfigs = null == ruleConfigs
                 ? metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getConfigurations()
                 : ruleConfigs;
-        StorageResource storageResource = new StorageResource(resourceMetaData.getStorageNodeMetaData().getDataSources(), resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers());
+        StorageResource storageResource = new StorageResource(resourceMetaData.getStorageNodeDataSources(), resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers());
         DatabaseConfiguration toBeCreatedDatabaseConfig = new DataSourceProvidedDatabaseConfiguration(
                 storageResource, toBeCreatedRuleConfigs, resourceMetaData.getStorageUnitMetaData().getDataSourcePropsMap());
         ShardingSphereDatabase changedDatabase = createChangedDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(), internalLoadMetaData,

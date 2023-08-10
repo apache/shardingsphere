@@ -19,14 +19,16 @@ package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnitNodeMapper;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -50,48 +52,40 @@ public final class StorageUnitMetaData {
     
     private final Map<String, ConnectionProperties> connectionPropsMap;
     
-    public StorageUnitMetaData(final Map<String, DataSource> dataSources, final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnitNodeMapper> unitNodeMappers,
-                               final Map<String, DataSource> enabledDataSources) {
-        this(dataSources, DataSourcePropertiesCreator.create(dataSources), storageTypes, unitNodeMappers, enabledDataSources);
-    }
-    
-    public StorageUnitMetaData(final Map<String, DataSource> dataSources, final Map<String, DataSourceProperties> dataSourcePropsMap,
-                               final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnitNodeMapper> unitNodeMappers, final Map<String, DataSource> enabledDataSources) {
+    public StorageUnitMetaData(final String databaseName, final Map<StorageNode, DataSource> storageNodeDataSources,
+                               final Map<String, DataSourceProperties> dataSourcePropsMap, final Map<String, StorageUnitNodeMapper> unitNodeMappers) {
         this.unitNodeMappers = unitNodeMappers;
-        this.dataSources = getStorageUnitDataSources(dataSources, unitNodeMappers);
+        this.dataSources = getStorageUnitDataSources(storageNodeDataSources, unitNodeMappers);
         this.dataSourcePropsMap = dataSourcePropsMap;
-        this.storageTypes = getStorageUnitTypes(storageTypes);
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, dataSources);
+        storageTypes = createStorageTypes(dataSources, enabledDataSources);
         connectionPropsMap = createConnectionPropertiesMap(enabledDataSources, storageTypes, unitNodeMappers);
     }
     
-    private Map<String, DataSource> getStorageUnitDataSources(final Map<String, DataSource> storageNodes, final Map<String, StorageUnitNodeMapper> storageUnits) {
-        Map<String, DataSource> result = new LinkedHashMap<>(storageUnits.size(), 1F);
-        for (Entry<String, StorageUnitNodeMapper> entry : storageUnits.entrySet()) {
-            DataSource dataSource = storageNodes.get(entry.getValue().getNodeName());
+    private Map<String, DataSource> getStorageUnitDataSources(final Map<StorageNode, DataSource> storageNodeDataSources, final Map<String, StorageUnitNodeMapper> unitNodeMappers) {
+        Map<String, DataSource> result = new LinkedHashMap<>(unitNodeMappers.size(), 1F);
+        for (Entry<String, StorageUnitNodeMapper> entry : unitNodeMappers.entrySet()) {
+            DataSource dataSource = storageNodeDataSources.get(entry.getValue().getStorageNode());
             result.put(entry.getKey(), new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));
         }
         return result;
     }
     
-    private Map<String, DatabaseType> getStorageUnitTypes(final Map<String, DatabaseType> storageTypes) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(unitNodeMappers.size(), 1F);
-        for (Entry<String, StorageUnitNodeMapper> entry : unitNodeMappers.entrySet()) {
-            DatabaseType storageType = storageTypes.containsKey(entry.getValue().getNodeName())
-                    ? storageTypes.get(entry.getValue().getNodeName())
-                    : DatabaseTypeEngine.getStorageType(Collections.emptyList());
-            result.put(entry.getKey(), storageType);
+    private Map<String, DatabaseType> createStorageTypes(final Map<String, DataSource> dataSources, final Map<String, DataSource> enabledDataSources) {
+        Map<String, DatabaseType> result = new LinkedHashMap<>(dataSources.size(), 1F);
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            result.put(entry.getKey(), DatabaseTypeEngine.getStorageType(enabledDataSources.containsKey(entry.getKey()) ? Collections.singleton(entry.getValue()) : Collections.emptyList()));
         }
         return result;
     }
     
     private Map<String, ConnectionProperties> createConnectionPropertiesMap(final Map<String, DataSource> enabledDataSources,
-                                                                            final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnitNodeMapper> storageUnits) {
-        Map<String, ConnectionProperties> result = new LinkedHashMap<>(storageUnits.size(), 1F);
-        for (Entry<String, StorageUnitNodeMapper> entry : storageUnits.entrySet()) {
-            String nodeName = entry.getValue().getNodeName();
-            if (enabledDataSources.containsKey(nodeName)) {
-                Map<String, Object> standardProps = DataSourcePropertiesCreator.create(enabledDataSources.get(nodeName)).getConnectionPropertySynonyms().getStandardProperties();
-                DatabaseType storageType = storageTypes.get(nodeName);
+                                                                            final Map<String, DatabaseType> storageTypes, final Map<String, StorageUnitNodeMapper> unitNodeMappers) {
+        Map<String, ConnectionProperties> result = new LinkedHashMap<>(unitNodeMappers.size(), 1F);
+        for (Entry<String, StorageUnitNodeMapper> entry : unitNodeMappers.entrySet()) {
+            if (enabledDataSources.containsKey(entry.getKey())) {
+                Map<String, Object> standardProps = DataSourcePropertiesCreator.create(enabledDataSources.get(entry.getKey())).getConnectionPropertySynonyms().getStandardProperties();
+                DatabaseType storageType = storageTypes.get(entry.getKey());
                 ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
                 result.put(entry.getKey(), parser.parse(standardProps.get("url").toString(), standardProps.get("username").toString(), entry.getValue().getCatalog()));
             }

@@ -24,7 +24,8 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
+import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResourceUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -214,8 +215,8 @@ class ContextManagerTest {
     void assertAlterRuleConfiguration() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSources = Collections.singletonMap("ds_0", new MockedDataSource());
-        when(resourceMetaData.getStorageNodeMetaData().getDataSources()).thenReturn(dataSources);
-        when(resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers()).thenReturn(StorageUtils.getStorageUnitNodeMappers(dataSources));
+        when(resourceMetaData.getStorageNodeDataSources()).thenReturn(StorageResourceUtils.getStorageNodeDataSources(dataSources));
+        when(resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers()).thenReturn(StorageResourceUtils.getStorageUnitNodeMappers(dataSources));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
                 TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), resourceMetaData, mock(RuleMetaData.class), Collections.emptyMap());
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
@@ -235,7 +236,7 @@ class ContextManagerTest {
                 Collections.singletonMap("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("test", "test"))));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources().size(), is(3));
         assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")
-                .getResourceMetaData().getStorageNodeMetaData().getDataSources().get("foo_ds"));
+                .getResourceMetaData().getStorageNodeDataSources().get(new StorageNode("foo_ds")));
     }
     
     private ResourceMetaData createOriginalResource() {
@@ -244,8 +245,8 @@ class ContextManagerTest {
         originalDataSources.put("ds_1", new MockedDataSource());
         originalDataSources.put("ds_2", new MockedDataSource());
         when(result.getDataSources()).thenReturn(originalDataSources);
-        when(result.getStorageNodeMetaData().getDataSources()).thenReturn(originalDataSources);
-        when(result.getStorageUnitMetaData().getUnitNodeMappers()).thenReturn(StorageUtils.getStorageUnitNodeMappers(originalDataSources));
+        when(result.getStorageNodeDataSources()).thenReturn(StorageResourceUtils.getStorageNodeDataSources(originalDataSources));
+        when(result.getStorageUnitMetaData().getUnitNodeMappers()).thenReturn(StorageResourceUtils.getStorageUnitNodeMappers(originalDataSources));
         return result;
     }
     
