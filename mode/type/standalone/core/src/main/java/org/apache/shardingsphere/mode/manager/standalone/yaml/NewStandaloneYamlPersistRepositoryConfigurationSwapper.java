@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.yaml;
 
-import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlPersistRepositoryConfigurationSwapper;
+import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 
 /**
- * Standalone YAML persist repository configuration swapper.
+ * TODO Rename StandaloneYamlPersistRepositoryConfigurationSwapper when metadata structure adjustment completed. #25485
+ * New Standalone YAML persist repository configuration swapper.
  */
-public final class StandaloneYamlPersistRepositoryConfigurationSwapper implements YamlPersistRepositoryConfigurationSwapper<StandalonePersistRepositoryConfiguration> {
+public final class NewStandaloneYamlPersistRepositoryConfigurationSwapper implements YamlPersistRepositoryConfigurationSwapper<StandalonePersistRepositoryConfiguration> {
     
     @Override
     public YamlPersistRepositoryConfiguration swapToYamlConfiguration(final StandalonePersistRepositoryConfiguration data) {
@@ -41,6 +42,6 @@ public final class StandaloneYamlPersistRepositoryConfigurationSwapper implement
     
     @Override
     public String getType() {
-        return "Compatible_Standalone";
+        return "Standalone";
     }
 }

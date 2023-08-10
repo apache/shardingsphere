@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mode.manager.standalone;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.metadata.persist.NewMetaDataPersistService;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -30,26 +30,27 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.standalone.subscriber.StandaloneProcessSubscriber;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.NewMetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 
 import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Standalone context manager builder.
+ * TODO Rename StandaloneContextManagerBuilder when metadata structure adjustment completed. #25485
+ * New Standalone context manager builder.
  */
-public final class StandaloneContextManagerBuilder implements ContextManagerBuilder {
+public final class NewStandaloneContextManagerBuilder implements ContextManagerBuilder {
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter param) throws SQLException {
         PersistRepositoryConfiguration repositoryConfig = param.getModeConfiguration().getRepository();
         StandalonePersistRepository repository = TypedSPILoader.getService(
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
-        MetaDataPersistService persistService = new MetaDataPersistService(repository);
+        NewMetaDataPersistService persistService = new NewMetaDataPersistService(repository);
         InstanceContext instanceContext = buildInstanceContext(param);
         new StandaloneProcessSubscriber(instanceContext.getEventBusContext());
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext);
+        MetaDataContexts metaDataContexts = NewMetaDataContextsFactory.create(persistService, param, instanceContext);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         setContextManagerAware(result);
         return result;
@@ -66,7 +67,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     @Override
     public String getType() {
-        return "Compatible_Standalone";
+        return "Standalone";
     }
     
     @Override
