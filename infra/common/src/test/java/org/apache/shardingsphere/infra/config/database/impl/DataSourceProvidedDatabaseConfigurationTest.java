@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.database.impl;
 
-import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
+import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -29,7 +29,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataSourceProvidedDatabaseConfigurationTest {
@@ -38,10 +37,8 @@ class DataSourceProvidedDatabaseConfigurationTest {
     void assertGetDataSources() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getDataSources().get("foo_ds");
-        assertTrue(dataSource instanceof ShardingSphereStorageDataSourceWrapper);
-        ShardingSphereStorageDataSourceWrapper wrapper = (ShardingSphereStorageDataSourceWrapper) dataSource;
-        assertTrue(wrapper.getDataSource() instanceof MockedDataSource);
-        assertNull(wrapper.getCatalog());
+        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
+        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof MockedDataSource);
     }
     
     @Test
@@ -57,10 +54,8 @@ class DataSourceProvidedDatabaseConfigurationTest {
     void assertGetStorageUnits() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getDataSources().get("foo_ds");
-        assertTrue(dataSource instanceof ShardingSphereStorageDataSourceWrapper);
-        ShardingSphereStorageDataSourceWrapper wrapper = (ShardingSphereStorageDataSourceWrapper) dataSource;
-        assertTrue(wrapper.getDataSource() instanceof MockedDataSource);
-        assertNull(wrapper.getCatalog());
+        assertTrue(dataSource instanceof CatalogSwitchableDataSource);
+        assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof MockedDataSource);
     }
     
     @Test
