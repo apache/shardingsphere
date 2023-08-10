@@ -17,23 +17,29 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlCollation;
-
+import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
-
+import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.ExpressionConverter;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
+/**
+ * Collate expression converter.
+ */
 public final class CollateExpressionConverter implements SQLSegmentConverter<CollateExpression, SqlNode> {
-
+    
     @Override
     public Optional<SqlNode> convert(CollateExpression segment) {
-        SqlCollation sqlCollation = new SqlCollation(SqlCollation.Coercibility.NONE);
-        SqlIdentifier sqlIdentifier = new SqlIdentifier(segment.getTableName().getIdentifier().getValue(), sqlCollation, SqlParserPos.ZERO);
-        return Optional.of(sqlIdentifier);
+        List<SqlNode> sqlNodes = new LinkedList<>();
+        sqlNodes.add(new SqlIdentifier(segment.getColumnName().get().getIdentifier().getValue(), SqlParserPos.ZERO));
+        sqlNodes.add(new ExpressionConverter().convert(segment.getCollateName()).orElse(SqlNodeList.EMPTY));
+        return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.COLLATE, sqlNodes, SqlParserPos.ZERO));
     }
 }
