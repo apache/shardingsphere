@@ -59,20 +59,6 @@ public final class ExecutorEngine implements AutoCloseable {
      * Execute.
      *
      * @param executionGroupContext execution group context
-     * @param callback executor callback
-     * @param <I> type of input value
-     * @param <O> type of return value
-     * @return execute result
-     * @throws SQLException throw if execute failure
-     */
-    public <I, O> List<O> execute(final ExecutionGroupContext<I> executionGroupContext, final ExecutorCallback<I, O> callback) throws SQLException {
-        return execute(executionGroupContext, null, callback, false);
-    }
-    
-    /**
-     * Execute.
-     *
-     * @param executionGroupContext execution group context
      * @param firstCallback first executor callback
      * @param callback other executor callback
      * @param serial whether using multi thread execute or not
