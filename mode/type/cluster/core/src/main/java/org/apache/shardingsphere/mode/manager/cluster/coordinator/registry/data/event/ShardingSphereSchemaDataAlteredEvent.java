@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.statistics.event;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 
 import java.util.Collection;
@@ -29,7 +30,7 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingSphereSchemaDataAlteredEvent {
+public final class ShardingSphereSchemaDataAlteredEvent implements GovernanceEvent {
     
     private final String databaseName;
     
