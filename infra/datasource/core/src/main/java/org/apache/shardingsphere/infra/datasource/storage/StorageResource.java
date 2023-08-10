@@ -48,7 +48,7 @@ public class StorageResource {
         for (Entry<String, StorageUnitNodeMapper> entry : storageUnitNodeMappers.entrySet()) {
             DataSource dataSource = storageNodes.get(entry.getValue().getNodeName());
             if (null != dataSource) {
-                result.put(entry.getKey(), new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog()));
+                result.put(entry.getKey(), new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));
             }
         }
         return result;

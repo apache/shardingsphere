@@ -68,7 +68,7 @@ public final class StorageUnitMetaData {
         Map<String, DataSource> result = new LinkedHashMap<>(storageUnits.size(), 1F);
         for (Entry<String, StorageUnitNodeMapper> entry : storageUnits.entrySet()) {
             DataSource dataSource = storageNodes.get(entry.getValue().getNodeName());
-            result.put(entry.getKey(), new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog()));
+            result.put(entry.getKey(), new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));
         }
         return result;
     }
