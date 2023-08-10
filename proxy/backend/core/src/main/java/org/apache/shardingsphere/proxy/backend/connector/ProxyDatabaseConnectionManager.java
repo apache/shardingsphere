@@ -100,6 +100,8 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         }
         if (null != catalogName) {
             for (Connection each : result) {
+                System.out.println("=========before catalog======:" + each.getCatalog());
+                System.out.println("=========catalog======:" + catalogName);
                 each.setCatalog(catalogName);
             }
         }

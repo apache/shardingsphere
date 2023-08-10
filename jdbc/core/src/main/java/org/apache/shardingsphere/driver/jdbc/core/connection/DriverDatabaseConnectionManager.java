@@ -346,6 +346,8 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         }
         if (null != catalogName) {
             for (Connection each : result) {
+                System.out.println("=========before catalog======:" + each.getCatalog());
+                System.out.println("=========catalog======:" + catalogName);
                 each.setCatalog(catalogName);
             }
         }
