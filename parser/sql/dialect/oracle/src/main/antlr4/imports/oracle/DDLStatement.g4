@@ -1072,7 +1072,21 @@ listSubpartitionDesc
     ;
 
 individualHashSubparts
-    : SUBPARTITION subpartitionName? readOnlyClause? indexingClause? partitioningStorageClause?
+    : SUBPARTITION ((subpartitionName readOnlyClause indexingClause partitioningStorageClause)
+    | (subpartitionName indexingClause partitioningStorageClause)
+    | (subpartitionName readOnlyClause partitioningStorageClause)
+    | (subpartitionName readOnlyClause indexingClause)
+    | (subpartitionName readOnlyClause)
+    | (subpartitionName indexingClause)
+    | (subpartitionName partitioningStorageClause)
+    | (subpartitionName)
+    | (readOnlyClause indexingClause partitioningStorageClause)
+    | (readOnlyClause partitioningStorageClause)
+    | (readOnlyClause indexingClause)
+    | (readOnlyClause)
+    | (indexingClause partitioningStorageClause)
+    | (partitioningStorageClause)
+    | (indexingClause))
     ;
 
 rangePartitionDesc
@@ -1233,7 +1247,21 @@ alterRollbackSegment
     ;
 
 packageCompileClause
-    : COMPILE DEBUG? (PACKAGE | SPECIFICATION | BODY)? (compilerParametersClause*)? (REUSE SETTINGS)?
+    : COMPILE DEBUG (PACKAGE | SPECIFICATION | BODY) compilerParametersClause+ (REUSE SETTINGS)
+    | COMPILE DEBUG (PACKAGE | SPECIFICATION | BODY) compilerParametersClause+
+    | COMPILE DEBUG (PACKAGE | SPECIFICATION | BODY) (REUSE SETTINGS)
+    | COMPILE DEBUG compilerParametersClause+ (REUSE SETTINGS)
+    | COMPILE DEBUG (PACKAGE | SPECIFICATION | BODY)
+    | COMPILE DEBUG compilerParametersClause+
+    | COMPILE DEBUG (REUSE SETTINGS)
+    | COMPILE DEBUG
+    | COMPILE (PACKAGE | SPECIFICATION | BODY) compilerParametersClause+ (REUSE SETTINGS)
+    | COMPILE (PACKAGE | SPECIFICATION | BODY) compilerParametersClause+
+    | COMPILE (PACKAGE | SPECIFICATION | BODY) (REUSE SETTINGS)
+    | COMPILE compilerParametersClause+ (REUSE SETTINGS)
+    | COMPILE (PACKAGE | SPECIFICATION | BODY)
+    | COMPILE compilerParametersClause+
+    | COMPILE (REUSE SETTINGS)
     ;
 
 alterSynonym
@@ -1327,7 +1355,9 @@ allocateExtentClause
     ;
 
 partitionSpec
-    : PARTITION partitionName? tablePartitionDescription?
+    : PARTITION ((partitionName tablePartitionDescription)
+    | partitionName
+    | tablePartitionDescription)
     ;
 
 partitionAttributes
@@ -1382,7 +1412,9 @@ hashSubpartsByQuantity
     ;
 
 addSystemPartitionClause
-    : tablePartitionDescription? updateIndexClauses?
+    : (tablePartitionDescription updateIndexClauses)
+    | tablePartitionDescription
+    | updateIndexClauses
     ;
 
 addHashPartitionClause
