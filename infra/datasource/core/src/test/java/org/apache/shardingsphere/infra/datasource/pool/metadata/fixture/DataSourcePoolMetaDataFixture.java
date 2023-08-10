@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.impl.DefaultDataSourcePoolPropertiesValidator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -57,11 +55,6 @@ public final class DataSourcePoolMetaDataFixture implements DataSourcePoolMetaDa
     @Override
     public DataSourcePoolFieldMetaDataFixture getFieldMetaData() {
         return new DataSourcePoolFieldMetaDataFixture();
-    }
-    
-    @Override
-    public DataSourcePoolPropertiesValidator getDataSourcePoolPropertiesValidator() {
-        return new DefaultDataSourcePoolPropertiesValidator();
     }
     
     @Override

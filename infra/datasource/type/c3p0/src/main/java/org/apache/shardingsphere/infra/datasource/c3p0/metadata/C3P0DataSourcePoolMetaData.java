@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.datasource.c3p0.metadata;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.impl.DefaultDataSourcePoolPropertiesValidator;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -96,11 +94,6 @@ public final class C3P0DataSourcePoolMetaData implements DataSourcePoolMetaData 
     @Override
     public C3P0DataSourcePoolFieldMetaData getFieldMetaData() {
         return new C3P0DataSourcePoolFieldMetaData();
-    }
-    
-    @Override
-    public DataSourcePoolPropertiesValidator getDataSourcePoolPropertiesValidator() {
-        return new DefaultDataSourcePoolPropertiesValidator();
     }
     
     @Override
