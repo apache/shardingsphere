@@ -278,7 +278,9 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     @Override
     public void alterProperties(final Properties props) {
         contextManager.getConfigurationContextManager().alterProperties(props);
-        contextManager.getMetaDataContexts().getPersistService().getPropsService().persist(props);
+        if (null != contextManager.getMetaDataContexts().getPersistService().getPropsService()) {
+            contextManager.getMetaDataContexts().getPersistService().getPropsService().persist(props);
+        }
         clearServiceCache();
     }
     

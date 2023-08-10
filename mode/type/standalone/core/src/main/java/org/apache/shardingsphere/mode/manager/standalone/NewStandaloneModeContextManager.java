@@ -315,8 +315,10 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     @Override
     public void alterProperties(final Properties props) {
         contextManager.getConfigurationContextManager().alterProperties(props);
-        Collection<MetaDataVersion> versions = contextManager.getMetaDataContexts().getPersistService().getPropsService().persistConfig(props);
-        contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(versions);
+        if (null != contextManager.getMetaDataContexts().getPersistService().getPropsService()) {
+            Collection<MetaDataVersion> versions = contextManager.getMetaDataContexts().getPersistService().getPropsService().persistConfig(props);
+            contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(versions);
+        }
         clearServiceCache();
     }
     
