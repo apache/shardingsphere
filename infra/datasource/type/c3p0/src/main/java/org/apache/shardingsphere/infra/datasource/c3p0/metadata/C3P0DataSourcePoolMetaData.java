@@ -99,12 +99,12 @@ public final class C3P0DataSourcePoolMetaData implements DataSourcePoolMetaData 
     }
     
     @Override
-    public String getType() {
-        return "com.mchange.v2.c3p0.ComboPooledDataSource";
+    public DataSourcePoolPropertiesValidator getDataSourcePoolPropertiesValidator() {
+        return new DefaultDataSourcePoolPropertiesValidator();
     }
     
     @Override
-    public DataSourcePoolPropertiesValidator getDataSourcePoolPropertiesValidator() {
-        return new DefaultDataSourcePoolPropertiesValidator();
+    public String getType() {
+        return "com.mchange.v2.c3p0.ComboPooledDataSource";
     }
 }

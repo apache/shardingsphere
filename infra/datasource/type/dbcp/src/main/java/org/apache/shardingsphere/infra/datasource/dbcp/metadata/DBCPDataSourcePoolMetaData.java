@@ -73,12 +73,12 @@ public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData 
     }
     
     @Override
-    public Collection<Object> getTypeAliases() {
-        return Arrays.asList("org.apache.commons.dbcp.BasicDataSource", "org.apache.tomcat.dbcp.dbcp2.BasicDataSource");
+    public DataSourcePoolPropertiesValidator getDataSourcePoolPropertiesValidator() {
+        return new DefaultDataSourcePoolPropertiesValidator();
     }
     
     @Override
-    public DataSourcePoolPropertiesValidator getDataSourcePoolPropertiesValidator() {
-        return new DefaultDataSourcePoolPropertiesValidator();
+    public Collection<Object> getTypeAliases() {
+        return Arrays.asList("org.apache.commons.dbcp.BasicDataSource", "org.apache.tomcat.dbcp.dbcp2.BasicDataSource");
     }
 }
