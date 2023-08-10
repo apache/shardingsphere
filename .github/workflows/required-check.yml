@@ -47,6 +47,9 @@ jobs:
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-checkstyle-cache-${{ github.sha }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-checkstyle-cache-
+      - name: Run CheckStyle
+        run: |
+          tar -czvf /tmp/shardingsphere-1.tar ${{ github.workspace }}
       - uses: actions/upload-artifact@v3
         with:
           name: ss-tar
