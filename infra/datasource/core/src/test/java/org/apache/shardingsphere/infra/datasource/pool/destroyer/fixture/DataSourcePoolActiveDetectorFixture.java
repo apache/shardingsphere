@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.destroyer.fixture;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSourcePoolActiveDetector;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolActiveDetector;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 
 import javax.sql.DataSource;
@@ -26,10 +25,11 @@ import java.sql.SQLException;
 
 public final class DataSourcePoolActiveDetectorFixture implements DataSourcePoolActiveDetector {
     
-    @SneakyThrows(SQLException.class)
     @Override
-    public boolean containsActiveConnection(final DataSource dataSource) {
-        return !dataSource.unwrap(MockedDataSource.class).getOpenedConnections().isEmpty();
+    public boolean containsActiveConnection(final DataSource dataSource) throws SQLException {
+        try (MockedDataSource wrappedDataSource = dataSource.unwrap(MockedDataSource.class)) {
+            return !wrappedDataSource.getOpenedConnections().isEmpty();
+        }
     }
     
     @Override

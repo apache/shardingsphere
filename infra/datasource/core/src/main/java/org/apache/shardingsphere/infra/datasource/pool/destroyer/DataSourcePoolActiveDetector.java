@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector;
+package org.apache.shardingsphere.infra.datasource.pool.destroyer;
 
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * Data source pool active detector.
@@ -33,6 +34,7 @@ public interface DataSourcePoolActiveDetector extends TypedSPI {
      * 
      * @param dataSource data source pool to be detected
      * @return contains active connection or not
+     * @throws SQLException SQL exception
      */
-    boolean containsActiveConnection(DataSource dataSource);
+    boolean containsActiveConnection(DataSource dataSource) throws SQLException;
 }
