@@ -138,7 +138,7 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
             return Collections.emptyList();
         }
         ModeContextManager modeContextManager = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager();
-        final RuleConfiguration toBeDroppedRuleConfig = updater.buildToBeDroppedRuleConfiguration(currentRuleConfig, sqlStatement);
+        RuleConfiguration toBeDroppedRuleConfig = updater.buildToBeDroppedRuleConfiguration(currentRuleConfig, sqlStatement);
         // TODO remove updateCurrentRuleConfiguration after update refactor completed.
         if (updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig) && ((DatabaseRuleConfiguration) currentRuleConfig).isEmpty()) {
             modeContextManager.removeRuleConfigurationItem(database.getName(), toBeDroppedRuleConfig);
