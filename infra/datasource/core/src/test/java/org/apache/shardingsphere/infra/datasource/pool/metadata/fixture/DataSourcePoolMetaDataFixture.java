@@ -32,7 +32,7 @@ public final class DataSourcePoolMetaDataFixture implements DataSourcePoolMetaDa
     }
     
     @Override
-    public Map<String, Object> getInvalidProperties() {
+    public Map<String, Object> getSkippedProperties() {
         Map<String, Object> result = new HashMap<>(2, 1F);
         result.put("maxPoolSize", -1);
         result.put("minPoolSize", -1);

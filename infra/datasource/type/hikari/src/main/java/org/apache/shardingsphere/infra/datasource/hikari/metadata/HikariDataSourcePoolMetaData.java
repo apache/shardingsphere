@@ -33,7 +33,7 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     private static final Map<String, Object> DEFAULT_PROPS = new HashMap<>(6, 1F);
     
-    private static final Map<String, Object> INVALID_PROPS = new HashMap<>(2, 1F);
+    private static final Map<String, Object> SKIPPED_PROPS = new HashMap<>(2, 1F);
     
     private static final Map<String, String> PROP_SYNONYMS = new HashMap<>(6, 1F);
     
@@ -57,8 +57,8 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     private static void buildInvalidProperties() {
-        INVALID_PROPS.put("minimumIdle", -1);
-        INVALID_PROPS.put("maximumPoolSize", -1);
+        SKIPPED_PROPS.put("minimumIdle", -1);
+        SKIPPED_PROPS.put("maximumPoolSize", -1);
     }
     
     private static void buildPropertySynonyms() {
@@ -82,8 +82,8 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     @Override
-    public Map<String, Object> getInvalidProperties() {
-        return INVALID_PROPS;
+    public Map<String, Object> getSkippedProperties() {
+        return SKIPPED_PROPS;
     }
     
     @Override

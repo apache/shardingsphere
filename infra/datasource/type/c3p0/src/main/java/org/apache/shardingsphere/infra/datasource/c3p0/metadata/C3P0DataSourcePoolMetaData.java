@@ -31,7 +31,7 @@ public final class C3P0DataSourcePoolMetaData implements DataSourcePoolMetaData 
     
     private static final Map<String, Object> DEFAULT_PROPS = new HashMap<>(6, 1F);
     
-    private static final Map<String, Object> INVALID_PROPS = new HashMap<>(2, 1F);
+    private static final Map<String, Object> SKIPPED_PROPS = new HashMap<>(2, 1F);
     
     private static final Map<String, String> PROP_SYNONYMS = new HashMap<>(5, 1F);
     
@@ -54,8 +54,8 @@ public final class C3P0DataSourcePoolMetaData implements DataSourcePoolMetaData 
     }
     
     private static void buildInvalidProperties() {
-        INVALID_PROPS.put("minPoolSize", -1);
-        INVALID_PROPS.put("maxPoolSize", -1);
+        SKIPPED_PROPS.put("minPoolSize", -1);
+        SKIPPED_PROPS.put("maxPoolSize", -1);
     }
     
     private static void buildPropertySynonyms() {
@@ -77,8 +77,8 @@ public final class C3P0DataSourcePoolMetaData implements DataSourcePoolMetaData 
     }
     
     @Override
-    public Map<String, Object> getInvalidProperties() {
-        return INVALID_PROPS;
+    public Map<String, Object> getSkippedProperties() {
+        return SKIPPED_PROPS;
     }
     
     @Override

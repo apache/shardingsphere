@@ -258,7 +258,7 @@ public final class DataSourcePoolCreator {
     }
     
     private static boolean isValidProperty(final String key, final Object value, final DataSourcePoolMetaData poolMetaData) {
-        return !poolMetaData.getInvalidProperties().containsKey(key) || null == value || !value.equals(poolMetaData.getInvalidProperties().get(key));
+        return !poolMetaData.getSkippedProperties().containsKey(key) || null == value || !value.equals(poolMetaData.getSkippedProperties().get(key));
     }
     
     @SuppressWarnings("unchecked")

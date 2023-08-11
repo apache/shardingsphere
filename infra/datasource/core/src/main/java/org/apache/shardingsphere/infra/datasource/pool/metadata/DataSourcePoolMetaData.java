@@ -38,11 +38,11 @@ public interface DataSourcePoolMetaData extends TypedSPI {
     Map<String, Object> getDefaultProperties();
     
     /**
-     * Get invalid properties.
+     * Get skipped properties.
      * 
-     * @return invalid properties
+     * @return skipped properties
      */
-    Map<String, Object> getInvalidProperties();
+    Map<String, Object> getSkippedProperties();
     
     /**
      * Get property synonyms.
