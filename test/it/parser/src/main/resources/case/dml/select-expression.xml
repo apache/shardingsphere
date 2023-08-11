@@ -1713,14 +1713,17 @@
         <projections distinct-row="false" start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <where start-index="22" stop-index="45" literal-stop-index="64">
+        <where start-index="22" stop-index="62" literal-stop-index="62">
             <expr>
-                <collate-expression start-index="28" stop-index="45" literal-stop-index="64">
+                <collate-expression start-index="28" stop-index="62" literal-stop-index="62">
                     <collate-name>
-                        <literal-expression value="'utf8mb4_0900_ai_ci'" start-index="37" stop-index="64" />
+                        <literal-expression value="utf8mb4_0900_ai_ci" start-index="37" stop-index="62" />
                         <parameter-marker-expression parameter-index="0" start-index="37" stop-index="45" />
                     </collate-name>
                 </collate-expression>
+                <expr>
+                    <column name="order_id" start-index="28" stop-index="35" />
+                </expr>
             </expr>
         </where>
     </select>

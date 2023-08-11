@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl;
 
 import org.apache.calcite.sql.SqlBasicCall;
-import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
@@ -38,7 +37,7 @@ public final class CollateExpressionConverter implements SQLSegmentConverter<Col
     @Override
     public Optional<SqlNode> convert(final CollateExpression segment) {
         List<SqlNode> sqlNodes = new LinkedList<>();
-        sqlNodes.add(new SqlIdentifier(segment.getColumnName().get().getIdentifier().getValue(), SqlParserPos.ZERO));
+        sqlNodes.add(new ExpressionConverter().convert(segment.getExpr().get()).orElse(SqlNodeList.EMPTY));
         sqlNodes.add(new ExpressionConverter().convert(segment.getCollateName()).orElse(SqlNodeList.EMPTY));
         return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.COLLATE, sqlNodes, SqlParserPos.ZERO));
     }
