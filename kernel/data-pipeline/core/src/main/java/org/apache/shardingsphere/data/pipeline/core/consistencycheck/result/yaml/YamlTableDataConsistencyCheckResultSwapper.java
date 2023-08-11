@@ -42,7 +42,6 @@ public final class YamlTableDataConsistencyCheckResultSwapper implements YamlCon
         YamlTableDataConsistencyCountCheckResult countCheckResult = new YamlTableDataConsistencyCountCheckResult();
         countCheckResult.setSourceRecordsCount(data.getCountCheckResult().getSourceRecordsCount());
         countCheckResult.setTargetRecordsCount(data.getCountCheckResult().getTargetRecordsCount());
-        countCheckResult.setMatched(data.getContentCheckResult().isMatched());
         result.setCountCheckResult(countCheckResult);
         YamlTableDataConsistencyContentCheckResult contentCheckResult = new YamlTableDataConsistencyContentCheckResult();
         contentCheckResult.setMatched(data.getContentCheckResult().isMatched());

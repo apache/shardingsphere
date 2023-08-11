@@ -44,8 +44,6 @@ public final class YamlTableDataConsistencyCheckResult implements YamlConfigurat
         private long sourceRecordsCount;
         
         private long targetRecordsCount;
-        
-        private boolean matched;
     }
     
     /**

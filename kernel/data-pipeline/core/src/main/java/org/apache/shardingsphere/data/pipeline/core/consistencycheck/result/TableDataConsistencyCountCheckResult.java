@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.result;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
  * Table data consistency count check result.
  */
+@RequiredArgsConstructor
 @Getter
 @ToString
 public final class TableDataConsistencyCountCheckResult {
@@ -31,11 +33,12 @@ public final class TableDataConsistencyCountCheckResult {
     
     private final long targetRecordsCount;
     
-    private final boolean matched;
-    
-    public TableDataConsistencyCountCheckResult(final long sourceRecordsCount, final long targetRecordsCount) {
-        this.sourceRecordsCount = sourceRecordsCount;
-        this.targetRecordsCount = targetRecordsCount;
-        matched = sourceRecordsCount >= 0 && sourceRecordsCount == targetRecordsCount;
+    /**
+     * Is matched.
+     *
+     * @return true if records count equals between source and target
+     */
+    public boolean isMatched() {
+        return sourceRecordsCount == targetRecordsCount && sourceRecordsCount >= 0;
     }
 }
