@@ -27,22 +27,22 @@ import lombok.ToString;
 @ToString
 public final class TableDataConsistencyCheckResult {
     
-    private final TableDataConsistencyCheckIgnoredType ignoredType;
-    
     private final TableDataConsistencyCountCheckResult countCheckResult;
     
     private final TableDataConsistencyContentCheckResult contentCheckResult;
     
+    private final TableDataConsistencyCheckIgnoredType ignoredType;
+    
     public TableDataConsistencyCheckResult(final TableDataConsistencyCountCheckResult countCheckResult, final TableDataConsistencyContentCheckResult contentCheckResult) {
-        ignoredType = null;
         this.countCheckResult = countCheckResult;
         this.contentCheckResult = contentCheckResult;
+        ignoredType = null;
     }
     
     public TableDataConsistencyCheckResult(final TableDataConsistencyCheckIgnoredType ignoredType) {
-        this.ignoredType = ignoredType;
         countCheckResult = new TableDataConsistencyCountCheckResult(-1, -1);
         contentCheckResult = new TableDataConsistencyContentCheckResult(false);
+        this.ignoredType = ignoredType;
     }
     
     /**
