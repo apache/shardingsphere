@@ -21,7 +21,6 @@ import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
 
 /**
  * Storage node properties.
@@ -34,9 +33,7 @@ public final class StorageNodeProperties {
     
     private final DatabaseType databaseType;
     
-    private final DataSourceProperties dataSourceProperties;
-    
-    private final String database;
+    private final String catalog;
     
     @Override
     public boolean equals(final Object obj) {

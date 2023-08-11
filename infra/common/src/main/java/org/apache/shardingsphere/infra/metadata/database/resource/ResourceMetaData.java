@@ -18,19 +18,17 @@
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
-import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResourceUtils;
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,7 +40,7 @@ import java.util.stream.Collectors;
 @Getter
 public final class ResourceMetaData {
     
-    private final StorageNodeMetaData storageNodeMetaData;
+    private final Map<StorageNode, DataSource> storageNodeDataSources;
     
     private final StorageUnitMetaData storageUnitMetaData;
     
@@ -51,26 +49,14 @@ public final class ResourceMetaData {
     }
     
     public ResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, dataSources);
-        Map<String, DatabaseType> storageTypes = createStorageTypes(dataSources, enabledDataSources);
-        storageNodeMetaData = new StorageNodeMetaData(dataSources);
-        storageUnitMetaData = new StorageUnitMetaData(dataSources, storageTypes, StorageUtils.getStorageUnitNodeMappers(dataSources), enabledDataSources);
-        
+        storageNodeDataSources = StorageResourceUtils.getStorageNodeDataSources(dataSources);
+        storageUnitMetaData = new StorageUnitMetaData(databaseName, storageNodeDataSources,
+                DataSourcePropertiesCreator.create(dataSources), StorageResourceUtils.getStorageUnitNodeMappers(dataSources));
     }
     
     public ResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, storageResource.getStorageNodes());
-        Map<String, DatabaseType> storageTypes = createStorageTypes(storageResource.getStorageNodes(), enabledDataSources);
-        storageNodeMetaData = new StorageNodeMetaData(storageResource.getStorageNodes());
-        storageUnitMetaData = new StorageUnitMetaData(storageResource.getStorageNodes(), dataSourcePropsMap, storageTypes, storageResource.getStorageUnitNodeMappers(), enabledDataSources);
-    }
-    
-    private Map<String, DatabaseType> createStorageTypes(final Map<String, DataSource> dataSources, final Map<String, DataSource> enabledDataSources) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(dataSources.size(), 1F);
-        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            result.put(entry.getKey(), DatabaseTypeEngine.getStorageType(enabledDataSources.containsKey(entry.getKey()) ? Collections.singleton(entry.getValue()) : Collections.emptyList()));
-        }
-        return result;
+        storageNodeDataSources = storageResource.getStorageNodeDataSources();
+        storageUnitMetaData = new StorageUnitMetaData(databaseName, storageNodeDataSources, dataSourcePropsMap, storageResource.getStorageUnitNodeMappers());
     }
     
     /**

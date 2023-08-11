@@ -30,21 +30,21 @@ public final class StorageUnitNodeMapper {
     
     private final String name;
     
-    private final String nodeName;
+    private final StorageNode storageNode;
     
     private final String catalog;
     
     private final String url;
     
-    public StorageUnitNodeMapper(final String name, final String nodeName, final String url) {
-        this(name, nodeName, null, url);
+    public StorageUnitNodeMapper(final String name, final StorageNode storageNode, final String url) {
+        this(name, storageNode, null, url);
     }
     
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof StorageUnitNodeMapper) {
             StorageUnitNodeMapper storageUnitNodeMapper = (StorageUnitNodeMapper) obj;
-            return storageUnitNodeMapper.name.equalsIgnoreCase(name) && storageUnitNodeMapper.nodeName.equalsIgnoreCase(nodeName) && isSameCatalog(storageUnitNodeMapper);
+            return storageUnitNodeMapper.name.equalsIgnoreCase(name) && storageUnitNodeMapper.storageNode.equals(storageNode) && isSameCatalog(storageUnitNodeMapper);
         }
         return false;
     }
@@ -55,6 +55,6 @@ public final class StorageUnitNodeMapper {
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(name.toUpperCase(), nodeName.toUpperCase(), null == catalog ? null : catalog.toUpperCase());
+        return Objects.hashCode(name.toUpperCase(), storageNode.getName().toUpperCase(), null == catalog ? null : catalog.toUpperCase());
     }
 }

@@ -31,7 +31,21 @@ import java.util.Map.Entry;
  * Storage utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StorageUtils {
+public final class StorageResourceUtils {
+    
+    /**
+     * Get storage node data sources.
+     *
+     * @param dataSources data sources
+     * @return storage node data sources
+     */
+    public static Map<StorageNode, DataSource> getStorageNodeDataSources(final Map<String, DataSource> dataSources) {
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1F);
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            result.put(new StorageNode(entry.getKey()), entry.getValue());
+        }
+        return result;
+    }
     
     /**
      * Get storage unit node mappers from provided data sources.
@@ -44,7 +58,7 @@ public final class StorageUtils {
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             DataSourceProperties dataSourceProperties = DataSourcePropertiesCreator.create(entry.getValue());
             String url = dataSourceProperties.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-            result.put(entry.getKey(), new StorageUnitNodeMapper(entry.getKey(), entry.getKey(), url));
+            result.put(entry.getKey(), new StorageUnitNodeMapper(entry.getKey(), new StorageNode(entry.getKey()), url));
         }
         return result;
     }

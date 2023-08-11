@@ -15,20 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.resource;
+package org.apache.shardingsphere.infra.datasource.storage;
 
+import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
-import java.util.Map;
-
 /**
- * Storage node meta data.
+ * Storage node.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StorageNodeMetaData {
+public final class StorageNode {
     
-    private final Map<String, DataSource> dataSources;
+    private final String name;
+    
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof StorageNode) {
+            StorageNode storageNode = (StorageNode) obj;
+            return storageNode.name.equalsIgnoreCase(name);
+        }
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name.toUpperCase());
+    }
+    
+    @Override
+    public String toString() {
+        return name;
+    }
 }

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMe
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNodeProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResourceWithProperties;
@@ -70,11 +71,12 @@ public final class DataSourcePoolCreator {
      * @return created storage resource
      */
     public static StorageResource createStorageResource(final Map<String, DataSourceProperties> dataSourcePropsMap, final boolean cacheEnabled) {
-        Map<String, DataSource> storageNodes = new LinkedHashMap<>();
+        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = new LinkedHashMap<>();
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
             StorageNodeProperties storageNodeProps = getStorageNodeProperties(entry.getKey(), entry.getValue());
-            if (storageNodes.containsKey(storageNodeProps.getName())) {
+            StorageNode storageNode = new StorageNode(storageNodeProps.getName());
+            if (storageNodes.containsKey(storageNode)) {
                 appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProps, entry.getKey(), entry.getValue());
                 continue;
             }
@@ -89,7 +91,7 @@ public final class DataSourcePoolCreator {
                 }
                 throw ex;
             }
-            storageNodes.put(storageNodeProps.getName(), dataSource);
+            storageNodes.put(storageNode, dataSource);
             appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProps, entry.getKey(), entry.getValue());
         }
         return new StorageResource(storageNodes, storageUnitNodeMappers);
@@ -102,16 +104,17 @@ public final class DataSourcePoolCreator {
      * @return created storage resource
      */
     public static StorageResourceWithProperties createStorageResourceWithoutDataSource(final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        Map<String, DataSource> storageNodes = new LinkedHashMap<>();
+        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = new LinkedHashMap<>();
         Map<String, DataSourceProperties> dataSourcePropertiesMap = new LinkedHashMap<>();
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
             StorageNodeProperties storageNodeProperties = getStorageNodeProperties(entry.getKey(), entry.getValue());
-            if (storageNodes.containsKey(storageNodeProperties.getName())) {
+            StorageNode storageNode = new StorageNode(storageNodeProperties.getName());
+            if (storageNodes.containsKey(storageNode)) {
                 appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProperties, entry.getKey(), entry.getValue());
                 continue;
             }
-            storageNodes.put(storageNodeProperties.getName(), null);
+            storageNodes.put(storageNode, null);
             appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProperties, entry.getKey(), entry.getValue());
             dataSourcePropertiesMap.put(storageNodeProperties.getName(), entry.getValue());
         }
@@ -127,8 +130,8 @@ public final class DataSourcePoolCreator {
     private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNodeProperties storageNodeProps, final String unitName, final String url) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(storageNodeProps.getDatabaseType()).getDialectDatabaseMetaData();
         return dialectDatabaseMetaData.isInstanceConnectionAvailable()
-                ? new StorageUnitNodeMapper(unitName, storageNodeProps.getName(), storageNodeProps.getDatabase(), url)
-                : new StorageUnitNodeMapper(unitName, storageNodeProps.getName(), url);
+                ? new StorageUnitNodeMapper(unitName, new StorageNode(storageNodeProps.getName()), storageNodeProps.getCatalog(), url)
+                : new StorageUnitNodeMapper(unitName, new StorageNode(storageNodeProps.getName()), url);
     }
     
     private static StorageNodeProperties getStorageNodeProperties(final String dataSourceName, final DataSourceProperties storageNodeProps) {
@@ -136,18 +139,17 @@ public final class DataSourcePoolCreator {
         String url = standardProperties.get("url").toString();
         String username = standardProperties.get("username").toString();
         DatabaseType databaseType = DatabaseTypeFactory.get(url);
-        return getStorageNodeProperties(dataSourceName, storageNodeProps, url, username, databaseType);
+        return getStorageNodeProperties(dataSourceName, url, username, databaseType);
     }
     
-    private static StorageNodeProperties getStorageNodeProperties(final String dataSourceName, final DataSourceProperties dataSourceProps,
-                                                                  final String url, final String username, final DatabaseType databaseType) {
+    private static StorageNodeProperties getStorageNodeProperties(final String dataSourceName, final String url, final String username, final DatabaseType databaseType) {
         try {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
             String nodeName = dialectDatabaseMetaData.isInstanceConnectionAvailable() ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
-            return new StorageNodeProperties(nodeName, databaseType, dataSourceProps, jdbcUrl.getDatabase());
+            return new StorageNodeProperties(nodeName, databaseType, jdbcUrl.getDatabase());
         } catch (final UnrecognizedDatabaseURLException ex) {
-            return new StorageNodeProperties(dataSourceName, databaseType, dataSourceProps, null);
+            return new StorageNodeProperties(dataSourceName, databaseType, null);
         }
     }
     

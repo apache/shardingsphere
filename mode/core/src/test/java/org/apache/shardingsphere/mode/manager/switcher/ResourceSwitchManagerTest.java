@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.switcher;
 
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.awaitility.Awaitility;
@@ -52,8 +53,8 @@ class ResourceSwitchManagerTest {
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         SwitchingResource actual = new ResourceSwitchManager().createByAlterDataSourceProps(new ResourceMetaData("sharding_db", dataSourceMap), Collections.emptyMap());
-        assertTrue(actual.getNewStorageResource().getStorageNodes().isEmpty());
-        assertThat(actual.getStaleStorageResource().getStorageNodes().size(), is(2));
+        assertTrue(actual.getNewStorageResource().getStorageNodeDataSources().isEmpty());
+        assertThat(actual.getStaleStorageResource().getStorageNodeDataSources().size(), is(2));
         actual.closeStaleDataSources();
         assertStaleDataSource((MockedDataSource) dataSourceMap.get("ds_0"));
         assertStaleDataSource((MockedDataSource) dataSourceMap.get("ds_1"));
@@ -84,10 +85,10 @@ class ResourceSwitchManagerTest {
     }
     
     private void assertNewDataSources(final SwitchingResource actual) {
-        assertThat(actual.getNewStorageResource().getStorageNodes().size(), is(3));
-        assertTrue(actual.getNewStorageResource().getStorageNodes().containsKey("not_change"));
-        assertTrue(actual.getNewStorageResource().getStorageNodes().containsKey("new"));
-        assertTrue(actual.getNewStorageResource().getStorageNodes().containsKey("replace"));
+        assertThat(actual.getNewStorageResource().getStorageNodeDataSources().size(), is(3));
+        assertTrue(actual.getNewStorageResource().getStorageNodeDataSources().containsKey(new StorageNode("not_change")));
+        assertTrue(actual.getNewStorageResource().getStorageNodeDataSources().containsKey(new StorageNode("new")));
+        assertTrue(actual.getNewStorageResource().getStorageNodeDataSources().containsKey(new StorageNode("replace")));
     }
     
     private void assertStaleDataSources(final Map<String, DataSource> originalDataSourceMap) {
