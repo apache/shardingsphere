@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.creator;
 
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -34,14 +34,14 @@ class DataSourcePoolCreatorTest {
     
     @Test
     void assertCreateMap() {
-        Map<String, DataSource> actual = DataSourcePoolCreator.create(Collections.singletonMap("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
+        Map<String, DataSource> actual = DataSourcePoolCreator.create(Collections.singletonMap("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), createProperties())));
         assertThat(actual.size(), is(1));
         assertDataSource((MockedDataSource) actual.get("foo_ds"));
     }
     
     @Test
     void assertCreate() {
-        assertDataSource((MockedDataSource) DataSourcePoolCreator.create(new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
+        assertDataSource((MockedDataSource) DataSourcePoolCreator.create(new DataSourcePoolProperties(MockedDataSource.class.getName(), createProperties())));
     }
     
     private Map<String, Object> createProperties() {

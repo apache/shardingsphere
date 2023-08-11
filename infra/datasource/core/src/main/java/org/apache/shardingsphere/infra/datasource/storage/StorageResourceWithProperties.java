@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.storage;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -29,11 +29,11 @@ import java.util.Map;
 @Getter
 public final class StorageResourceWithProperties extends StorageResource {
     
-    private final Map<String, DataSourceProperties> dataSourcePropertiesMap;
+    private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
     
     public StorageResourceWithProperties(final Map<StorageNode, DataSource> storageNodes,
-                                         final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final Map<String, DataSourceProperties> dataSourcePropertiesMap) {
+                                         final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap) {
         super(storageNodes, storageUnitNodeMappers);
-        this.dataSourcePropertiesMap = dataSourcePropertiesMap;
+        this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
     }
 }

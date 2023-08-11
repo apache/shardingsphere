@@ -31,8 +31,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNodeProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
@@ -56,24 +56,24 @@ public final class DataSourcePoolCreator {
     /**
      * Create storage resource.
      *
-     * @param dataSourcePropsMap data source properties map
+     * @param propsMap data source pool properties map
      * @return created storage resource
      */
-    public static StorageResource createStorageResource(final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        return createStorageResource(dataSourcePropsMap, true);
+    public static StorageResource createStorageResource(final Map<String, DataSourcePoolProperties> propsMap) {
+        return createStorageResource(propsMap, true);
     }
     
     /**
      * Create storage resource.
      *
-     * @param dataSourcePropsMap data source properties map
+     * @param propsMap data source pool properties map
      * @param cacheEnabled cache enabled
      * @return created storage resource
      */
-    public static StorageResource createStorageResource(final Map<String, DataSourceProperties> dataSourcePropsMap, final boolean cacheEnabled) {
+    public static StorageResource createStorageResource(final Map<String, DataSourcePoolProperties> propsMap, final boolean cacheEnabled) {
         Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = new LinkedHashMap<>();
-        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
+        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             StorageNodeProperties storageNodeProps = getStorageNodeProperties(entry.getKey(), entry.getValue());
             StorageNode storageNode = new StorageNode(storageNodeProps.getName());
             if (storageNodes.containsKey(storageNode)) {
@@ -100,14 +100,14 @@ public final class DataSourcePoolCreator {
     /**
      * Create storage resource without data source.
      *
-     * @param dataSourcePropsMap data source properties map
+     * @param propsMap data source pool properties map
      * @return created storage resource
      */
-    public static StorageResourceWithProperties createStorageResourceWithoutDataSource(final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    public static StorageResourceWithProperties createStorageResourceWithoutDataSource(final Map<String, DataSourcePoolProperties> propsMap) {
         Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = new LinkedHashMap<>();
-        Map<String, DataSourceProperties> dataSourcePropertiesMap = new LinkedHashMap<>();
-        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
+        Map<String, DataSourcePoolProperties> newPropsMap = new LinkedHashMap<>();
+        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             StorageNodeProperties storageNodeProperties = getStorageNodeProperties(entry.getKey(), entry.getValue());
             StorageNode storageNode = new StorageNode(storageNodeProperties.getName());
             if (storageNodes.containsKey(storageNode)) {
@@ -116,14 +116,14 @@ public final class DataSourcePoolCreator {
             }
             storageNodes.put(storageNode, null);
             appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProperties, entry.getKey(), entry.getValue());
-            dataSourcePropertiesMap.put(storageNodeProperties.getName(), entry.getValue());
+            newPropsMap.put(storageNodeProperties.getName(), entry.getValue());
         }
-        return new StorageResourceWithProperties(storageNodes, storageUnitNodeMappers, dataSourcePropertiesMap);
+        return new StorageResourceWithProperties(storageNodes, storageUnitNodeMappers, newPropsMap);
     }
     
     private static void appendStorageUnitNodeMapper(final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final StorageNodeProperties storageNodeProps,
-                                                    final String unitName, final DataSourceProperties dataSourceProps) {
-        String url = dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
+                                                    final String unitName, final DataSourcePoolProperties props) {
+        String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
         storageUnitNodeMappers.put(unitName, getStorageUnitNodeMapper(storageNodeProps, unitName, url));
     }
     
@@ -134,7 +134,7 @@ public final class DataSourcePoolCreator {
                 : new StorageUnitNodeMapper(unitName, new StorageNode(storageNodeProps.getName()), url);
     }
     
-    private static StorageNodeProperties getStorageNodeProperties(final String dataSourceName, final DataSourceProperties storageNodeProps) {
+    private static StorageNodeProperties getStorageNodeProperties(final String dataSourceName, final DataSourcePoolProperties storageNodeProps) {
         Map<String, Object> standardProperties = storageNodeProps.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProperties.get("url").toString();
         String username = standardProperties.get("username").toString();
@@ -160,23 +160,23 @@ public final class DataSourcePoolCreator {
     /**
      * Create data sources.
      *
-     * @param dataSourcePropsMap data source properties map
+     * @param propsMap data source pool properties map
      * @return created data sources
      */
-    public static Map<String, DataSource> create(final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        return create(dataSourcePropsMap, true);
+    public static Map<String, DataSource> create(final Map<String, DataSourcePoolProperties> propsMap) {
+        return create(propsMap, true);
     }
     
     /**
      * Create data sources.
      *
-     * @param dataSourcePropsMap data source properties map
+     * @param propsMap data source pool properties map
      * @param cacheEnabled cache enabled
      * @return created data sources
      */
-    public static Map<String, DataSource> create(final Map<String, DataSourceProperties> dataSourcePropsMap, final boolean cacheEnabled) {
+    public static Map<String, DataSource> create(final Map<String, DataSourcePoolProperties> propsMap, final boolean cacheEnabled) {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
+        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             DataSource dataSource;
             try {
                 dataSource = create(entry.getKey(), entry.getValue(), cacheEnabled);
@@ -196,20 +196,20 @@ public final class DataSourcePoolCreator {
     /**
      * Create data source.
      *
-     * @param dataSourceProps data source properties
+     * @param props data source pool properties
      * @return created data source
      */
-    public static DataSource create(final DataSourceProperties dataSourceProps) {
-        DataSource result = createDataSource(dataSourceProps.getDataSourceClassName());
-        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSourceProps.getDataSourceClassName());
+    public static DataSource create(final DataSourcePoolProperties props) {
+        DataSource result = createDataSource(props.getPoolClassName());
+        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, props.getPoolClassName());
         DataSourceReflection dataSourceReflection = new DataSourceReflection(result);
         if (poolMetaData.isPresent()) {
             setDefaultFields(dataSourceReflection, poolMetaData.get());
-            setConfiguredFields(dataSourceProps, dataSourceReflection, poolMetaData.get());
-            appendJdbcUrlProperties(dataSourceProps.getCustomDataSourceProperties(), result, poolMetaData.get(), dataSourceReflection);
-            dataSourceReflection.addDefaultDataSourceProperties(poolMetaData.get());
+            setConfiguredFields(props, dataSourceReflection, poolMetaData.get());
+            appendJdbcUrlProperties(props.getCustomDataSourcePoolProperties(), result, poolMetaData.get(), dataSourceReflection);
+            dataSourceReflection.addDefaultDataSourcePoolProperties(poolMetaData.get());
         } else {
-            setConfiguredFields(dataSourceProps, dataSourceReflection);
+            setConfiguredFields(props, dataSourceReflection);
         }
         return result;
     }
@@ -218,12 +218,12 @@ public final class DataSourcePoolCreator {
      * Create data source.
      *
      * @param dataSourceName data source name
-     * @param dataSourceProps data source properties
+     * @param props data source pool properties
      * @param cacheEnabled cache enabled
      * @return created data source
      */
-    public static DataSource create(final String dataSourceName, final DataSourceProperties dataSourceProps, final boolean cacheEnabled) {
-        DataSource result = create(dataSourceProps);
+    public static DataSource create(final String dataSourceName, final DataSourcePoolProperties props, final boolean cacheEnabled) {
+        DataSource result = create(props);
         if (cacheEnabled && !GlobalDataSourceRegistry.getInstance().getCachedDataSources().containsKey(dataSourceName)) {
             GlobalDataSourceRegistry.getInstance().getCachedDataSources().put(dataSourceName, result);
         }
@@ -241,14 +241,14 @@ public final class DataSourcePoolCreator {
         }
     }
     
-    private static void setConfiguredFields(final DataSourceProperties dataSourceProps, final DataSourceReflection dataSourceReflection) {
-        for (Entry<String, Object> entry : dataSourceProps.getAllLocalProperties().entrySet()) {
+    private static void setConfiguredFields(final DataSourcePoolProperties props, final DataSourceReflection dataSourceReflection) {
+        for (Entry<String, Object> entry : props.getAllLocalProperties().entrySet()) {
             dataSourceReflection.setField(entry.getKey(), entry.getValue());
         }
     }
     
-    private static void setConfiguredFields(final DataSourceProperties dataSourceProps, final DataSourceReflection dataSourceReflection, final DataSourcePoolMetaData poolMetaData) {
-        for (Entry<String, Object> entry : dataSourceProps.getAllLocalProperties().entrySet()) {
+    private static void setConfiguredFields(final DataSourcePoolProperties props, final DataSourceReflection dataSourceReflection, final DataSourcePoolMetaData poolMetaData) {
+        for (Entry<String, Object> entry : props.getAllLocalProperties().entrySet()) {
             String fieldName = entry.getKey();
             Object fieldValue = entry.getValue();
             if (isValidProperty(fieldName, fieldValue, poolMetaData) && !fieldName.equals(poolMetaData.getFieldMetaData().getJdbcUrlPropertiesFieldName())) {
@@ -262,11 +262,11 @@ public final class DataSourcePoolCreator {
     }
     
     @SuppressWarnings("unchecked")
-    private static void appendJdbcUrlProperties(final CustomDataSourceProperties customDataSourceProps, final DataSource targetDataSource, final DataSourcePoolMetaData poolMetaData,
+    private static void appendJdbcUrlProperties(final CustomDataSourcePoolProperties customPoolProps, final DataSource targetDataSource, final DataSourcePoolMetaData poolMetaData,
                                                 final DataSourceReflection dataSourceReflection) {
         String jdbcUrlPropertiesFieldName = poolMetaData.getFieldMetaData().getJdbcUrlPropertiesFieldName();
-        if (null != jdbcUrlPropertiesFieldName && customDataSourceProps.getProperties().containsKey(jdbcUrlPropertiesFieldName)) {
-            Map<String, Object> jdbcUrlProps = (Map<String, Object>) customDataSourceProps.getProperties().get(jdbcUrlPropertiesFieldName);
+        if (null != jdbcUrlPropertiesFieldName && customPoolProps.getProperties().containsKey(jdbcUrlPropertiesFieldName)) {
+            Map<String, Object> jdbcUrlProps = (Map<String, Object>) customPoolProps.getProperties().get(jdbcUrlPropertiesFieldName);
             DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(targetDataSource, poolMetaData.getFieldMetaData());
             dataSourcePoolMetaDataReflection.getJdbcConnectionProperties().ifPresent(optional -> setJdbcUrlProperties(dataSourceReflection, optional, jdbcUrlProps, jdbcUrlPropertiesFieldName));
         }

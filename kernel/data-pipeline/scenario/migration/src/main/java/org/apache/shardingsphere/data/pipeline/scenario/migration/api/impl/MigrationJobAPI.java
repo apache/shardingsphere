@@ -83,7 +83,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -137,7 +137,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     private YamlMigrationJobConfiguration buildYamlJobConfiguration(final PipelineContextKey contextKey, final MigrateTableStatement param) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setTargetDatabaseName(param.getTargetDatabaseName());
-        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(contextKey, new MigrationJobType());
+        Map<String, DataSourcePoolProperties> metaDataDataSource = dataSourcePersistService.load(contextKey, new MigrationJobType());
         Map<String, List<DataNode>> sourceDataNodes = new LinkedHashMap<>();
         Map<String, YamlPipelineDataSourceConfiguration> configSources = new LinkedHashMap<>();
         List<SourceTargetEntry> sourceTargetEntries = new ArrayList<>(new HashSet<>(param.getSourceTargetEntries())).stream().sorted(Comparator.comparing(SourceTargetEntry::getTargetTableName)
@@ -153,8 +153,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
             }
             ShardingSpherePreconditions.checkState(metaDataDataSource.containsKey(dataSourceName),
                     () -> new PipelineInvalidParameterException(dataSourceName + " doesn't exist. Run `SHOW MIGRATION SOURCE STORAGE UNITS;` to verify it."));
-            Map<String, Object> sourceDataSourceProps = dataSourceConfigSwapper.swapToMap(metaDataDataSource.get(dataSourceName));
-            StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
+            Map<String, Object> sourceDataSourcePoolProps = dataSourceConfigSwapper.swapToMap(metaDataDataSource.get(dataSourceName));
+            StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourcePoolProps);
             configSources.put(dataSourceName, buildYamlPipelineDataSourceConfiguration(sourceDataSourceConfig.getType(), sourceDataSourceConfig.getParameter()));
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sourceDataSourceConfig.getDatabaseType()).getDialectDatabaseMetaData();
             if (null == each.getSource().getSchemaName() && dialectDatabaseMetaData.isSchemaAvailable()) {
@@ -190,13 +190,13 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     private PipelineDataSourceConfiguration buildTargetPipelineDataSourceConfiguration(final ShardingSphereDatabase targetDatabase) {
-        Map<String, Map<String, Object>> targetDataSourceProps = new HashMap<>();
+        Map<String, Map<String, Object>> targetDataSourcePoolProps = new HashMap<>();
         YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
-        for (Entry<String, DataSourceProperties> entry : targetDatabase.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap().entrySet()) {
-            Map<String, Object> dataSourceProps = dataSourceConfigSwapper.swapToMap(entry.getValue());
-            targetDataSourceProps.put(entry.getKey(), dataSourceProps);
+        for (Entry<String, DataSourcePoolProperties> entry : targetDatabase.getResourceMetaData().getStorageUnitMetaData().getDataSourcePoolPropertiesMap().entrySet()) {
+            Map<String, Object> dataSourcePoolProps = dataSourceConfigSwapper.swapToMap(entry.getValue());
+            targetDataSourcePoolProps.put(entry.getKey(), dataSourcePoolProps);
         }
-        YamlRootConfiguration targetRootConfig = buildYamlRootConfiguration(targetDatabase.getName(), targetDataSourceProps, targetDatabase.getRuleMetaData().getConfigurations());
+        YamlRootConfiguration targetRootConfig = buildYamlRootConfiguration(targetDatabase.getName(), targetDataSourcePoolProps, targetDatabase.getRuleMetaData().getConfigurations());
         return new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
     }
     
@@ -430,19 +430,19 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
      * Add migration source resources.
      *
      * @param contextKey context key
-     * @param dataSourcePropsMap data source properties map
+     * @param propsMap data source pool properties map
      */
-    public void addMigrationSourceResources(final PipelineContextKey contextKey, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(contextKey, getJobType());
-        Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourcePropsMap.size(), 1F);
-        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
+    public void addMigrationSourceResources(final PipelineContextKey contextKey, final Map<String, DataSourcePoolProperties> propsMap) {
+        Map<String, DataSourcePoolProperties> existDataSources = dataSourcePersistService.load(contextKey, getJobType());
+        Collection<String> duplicateDataSourceNames = new HashSet<>(propsMap.size(), 1F);
+        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             if (existDataSources.containsKey(entry.getKey())) {
                 duplicateDataSourceNames.add(entry.getKey());
             }
         }
         ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(), () -> new RegisterMigrationSourceStorageUnitException(duplicateDataSourceNames));
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
-        result.putAll(dataSourcePropsMap);
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(existDataSources);
+        result.putAll(propsMap);
         dataSourcePersistService.persist(contextKey, getJobType(), result);
     }
     
@@ -453,7 +453,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
      * @param resourceNames resource names
      */
     public void dropMigrationSourceResources(final PipelineContextKey contextKey, final Collection<String> resourceNames) {
-        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(contextKey, getJobType());
+        Map<String, DataSourcePoolProperties> metaDataDataSource = dataSourcePersistService.load(contextKey, getJobType());
         List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(noExistResources.isEmpty(), () -> new UnregisterMigrationSourceStorageUnitException(noExistResources));
         for (String each : resourceNames) {
@@ -469,11 +469,11 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
      * @return migration source resources
      */
     public Collection<Collection<Object>> listMigrationSourceResources(final PipelineContextKey contextKey) {
-        Map<String, DataSourceProperties> dataSourcePropertiesMap = dataSourcePersistService.load(contextKey, getJobType());
-        Collection<Collection<Object>> result = new ArrayList<>(dataSourcePropertiesMap.size());
-        for (Entry<String, DataSourceProperties> entry : dataSourcePropertiesMap.entrySet()) {
+        Map<String, DataSourcePoolProperties> propsMap = dataSourcePersistService.load(contextKey, getJobType());
+        Collection<Collection<Object>> result = new ArrayList<>(propsMap.size());
+        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             String dataSourceName = entry.getKey();
-            DataSourceProperties value = entry.getValue();
+            DataSourcePoolProperties value = entry.getValue();
             Collection<Object> props = new LinkedList<>();
             props.add(dataSourceName);
             String url = String.valueOf(value.getConnectionPropertySynonyms().getStandardProperties().get("url"));
@@ -490,7 +490,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
             props.add(getStandardProperty(standardProps, "maxPoolSize"));
             props.add(getStandardProperty(standardProps, "minPoolSize"));
             props.add(getStandardProperty(standardProps, "readOnly"));
-            Map<String, Object> otherProps = value.getCustomDataSourceProperties().getProperties();
+            Map<String, Object> otherProps = value.getCustomDataSourcePoolProperties().getProperties();
             props.add(otherProps.isEmpty() ? "" : new Gson().toJson(otherProps));
             result.add(props);
         }

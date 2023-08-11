@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.jupiter.api.Test;
@@ -72,9 +72,9 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     }
     
     @Test
-    void assertGetDataSourceProperties() {
+    void assertGetDataSourcePoolProperties() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSourceProperties props = databaseConfig.getDataSourcePropsMap().get("normal_db");
+        DataSourcePoolProperties props = databaseConfig.getDataSourcePoolPropertiesMap().get("normal_db");
         Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
         assertThat(poolStandardProps.size(), is(6));
         assertThat(poolStandardProps.get("connectionTimeoutMilliseconds"), is(2000L));

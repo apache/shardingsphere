@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
 import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourceReflection;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.synonym.ConnectionPropertySynonyms;
 import org.apache.shardingsphere.infra.datasource.pool.props.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -39,18 +39,18 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Data source properties creator.
+ * Data source pool properties creator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourcePropertiesCreator {
+public final class DataSourcePoolPropertiesCreator {
     
     /**
-     * Create data source properties.
+     * Create data source pool properties.
      *
      * @param dataSourceConfigs data source configurations
-     * @return created data source properties
+     * @return created data source pool properties
      */
-    public static Map<String, DataSourceProperties> createFromConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
+    public static Map<String, DataSourcePoolProperties> createFromConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
         return dataSourceConfigs.entrySet().stream().collect(Collectors
                 .toMap(Entry::getKey, entry -> create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
@@ -61,8 +61,8 @@ public final class DataSourcePropertiesCreator {
      * @param dataSourceConfig data source configuration
      * @return created data source properties
      */
-    public static DataSourceProperties create(final DataSourceConfiguration dataSourceConfig) {
-        return new DataSourceProperties(dataSourceConfig.getConnection().getDataSourceClassName(), createProperties(dataSourceConfig));
+    public static DataSourcePoolProperties create(final DataSourceConfiguration dataSourceConfig) {
+        return new DataSourcePoolProperties(dataSourceConfig.getConnection().getDataSourceClassName(), createProperties(dataSourceConfig));
     }
     
     /**
@@ -71,8 +71,8 @@ public final class DataSourcePropertiesCreator {
      * @param dataSources data sources
      * @return created data source properties
      */
-    public static Map<String, DataSourceProperties> create(final Map<String, DataSource> dataSources) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
+    public static Map<String, DataSourcePoolProperties> create(final Map<String, DataSource> dataSources) {
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             result.put(entry.getKey(), create(entry.getValue()));
         }
@@ -85,11 +85,11 @@ public final class DataSourcePropertiesCreator {
      * @param dataSource data source
      * @return created data source properties
      */
-    public static DataSourceProperties create(final DataSource dataSource) {
+    public static DataSourcePoolProperties create(final DataSource dataSource) {
         return dataSource instanceof CatalogSwitchableDataSource
-                ? new DataSourceProperties(((CatalogSwitchableDataSource) dataSource).getDataSource().getClass().getName(),
+                ? new DataSourcePoolProperties(((CatalogSwitchableDataSource) dataSource).getDataSource().getClass().getName(),
                         createProperties(((CatalogSwitchableDataSource) dataSource).getDataSource()))
-                : new DataSourceProperties(dataSource.getClass().getName(), createProperties(dataSource));
+                : new DataSourcePoolProperties(dataSource.getClass().getName(), createProperties(dataSource));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -131,12 +131,12 @@ public final class DataSourcePropertiesCreator {
     /**
      * Create data source configuration.
      *
-     * @param dataSourceProps data source properties
+     * @param props data source pool properties
      * @return created data source configuration
      */
-    public static DataSourceConfiguration createConfiguration(final DataSourceProperties dataSourceProps) {
-        return new DataSourceConfiguration(getConnectionConfiguration(dataSourceProps.getConnectionPropertySynonyms()),
-                getPoolConfiguration(dataSourceProps.getPoolPropertySynonyms(), dataSourceProps.getCustomDataSourceProperties()));
+    public static DataSourceConfiguration createConfiguration(final DataSourcePoolProperties props) {
+        return new DataSourceConfiguration(getConnectionConfiguration(props.getConnectionPropertySynonyms()),
+                getPoolConfiguration(props.getPoolPropertySynonyms(), props.getCustomDataSourcePoolProperties()));
     }
     
     private static ConnectionConfiguration getConnectionConfiguration(final ConnectionPropertySynonyms connectionPropertySynonyms) {
@@ -145,7 +145,7 @@ public final class DataSourcePropertiesCreator {
                 (String) standardProperties.get("username"), (String) standardProperties.get("password"));
     }
     
-    private static PoolConfiguration getPoolConfiguration(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourceProperties customDataSourceProperties) {
+    private static PoolConfiguration getPoolConfiguration(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourcePoolProperties customDataSourcePoolProperties) {
         Map<String, Object> standardProperties = poolPropertySynonyms.getStandardProperties();
         Long connectionTimeoutMilliseconds = toLong(standardProperties, "connectionTimeoutMilliseconds", null);
         Long idleTimeoutMilliseconds = toLong(standardProperties, "idleTimeoutMilliseconds", null);
@@ -154,7 +154,7 @@ public final class DataSourcePropertiesCreator {
         Integer minPoolSize = toInt(standardProperties, "minPoolSize", null);
         Boolean readOnly = toBoolean(standardProperties, "readOnly", null);
         Properties customProperties = new Properties();
-        customProperties.putAll(customDataSourceProperties.getProperties());
+        customProperties.putAll(customDataSourcePoolProperties.getProperties());
         return new PoolConfiguration(connectionTimeoutMilliseconds, idleTimeoutMilliseconds, maxLifetimeMilliseconds, maxPoolSize, minPoolSize, readOnly, customProperties);
     }
     

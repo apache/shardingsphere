@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.datasource.pool.props;
 import com.google.common.base.Objects;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.synonym.ConnectionPropertySynonyms;
 import org.apache.shardingsphere.infra.datasource.pool.props.synonym.PoolPropertySynonyms;
-import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -34,28 +34,28 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Data source properties.
+ * Data source pool properties.
  */
 @Getter
-public final class DataSourceProperties {
+public final class DataSourcePoolProperties {
     
     private static final String DEFAULT_DATA_SOURCE_CLASS = "com.zaxxer.hikari.HikariDataSource";
     
-    private final String dataSourceClassName;
+    private final String poolClassName;
     
     private final ConnectionPropertySynonyms connectionPropertySynonyms;
     
     private final PoolPropertySynonyms poolPropertySynonyms;
     
-    private final CustomDataSourceProperties customDataSourceProperties;
+    private final CustomDataSourcePoolProperties customDataSourcePoolProperties;
     
-    public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
-        this.dataSourceClassName = dataSourceClassName;
-        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSourceClassName);
+    public DataSourcePoolProperties(final String poolClassName, final Map<String, Object> props) {
+        this.poolClassName = poolClassName;
+        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, poolClassName);
         Map<String, String> propertySynonyms = poolMetaData.isPresent() ? poolMetaData.get().getPropertySynonyms() : Collections.emptyMap();
         connectionPropertySynonyms = new ConnectionPropertySynonyms(props, propertySynonyms);
         poolPropertySynonyms = new PoolPropertySynonyms(props, propertySynonyms);
-        customDataSourceProperties = new CustomDataSourceProperties(
+        customDataSourcePoolProperties = new CustomDataSourcePoolProperties(
                 props, getStandardPropertyKeys(), poolMetaData.isPresent() ? poolMetaData.get().getTransientFieldNames() : Collections.emptyList(), propertySynonyms);
     }
     
@@ -66,12 +66,12 @@ public final class DataSourceProperties {
     }
     
     /**
-     * Get data source class name.
+     * Get data source pool class name.
      *
-     * @return data source class name
+     * @return data source pool class name
      */
-    public String getDataSourceClassName() {
-        return null == dataSourceClassName ? DEFAULT_DATA_SOURCE_CLASS : dataSourceClassName;
+    public String getPoolClassName() {
+        return null == poolClassName ? DEFAULT_DATA_SOURCE_CLASS : poolClassName;
     }
     
     /**
@@ -81,10 +81,10 @@ public final class DataSourceProperties {
      */
     public Map<String, Object> getAllStandardProperties() {
         Map<String, Object> result = new LinkedHashMap<>(
-                connectionPropertySynonyms.getStandardProperties().size() + poolPropertySynonyms.getStandardProperties().size() + customDataSourceProperties.getProperties().size(), 1F);
+                connectionPropertySynonyms.getStandardProperties().size() + poolPropertySynonyms.getStandardProperties().size() + customDataSourcePoolProperties.getProperties().size(), 1F);
         result.putAll(connectionPropertySynonyms.getStandardProperties());
         result.putAll(poolPropertySynonyms.getStandardProperties());
-        result.putAll(customDataSourceProperties.getProperties());
+        result.putAll(customDataSourcePoolProperties.getProperties());
         return result;
     }
     
@@ -95,30 +95,30 @@ public final class DataSourceProperties {
      */
     public Map<String, Object> getAllLocalProperties() {
         Map<String, Object> result = new LinkedHashMap<>(
-                connectionPropertySynonyms.getLocalProperties().size() + poolPropertySynonyms.getLocalProperties().size() + customDataSourceProperties.getProperties().size(), 1F);
+                connectionPropertySynonyms.getLocalProperties().size() + poolPropertySynonyms.getLocalProperties().size() + customDataSourcePoolProperties.getProperties().size(), 1F);
         result.putAll(connectionPropertySynonyms.getLocalProperties());
         result.putAll(poolPropertySynonyms.getLocalProperties());
-        result.putAll(customDataSourceProperties.getProperties());
+        result.putAll(customDataSourcePoolProperties.getProperties());
         return result;
     }
     
     @Override
     public boolean equals(final Object obj) {
-        return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourceProperties) obj);
+        return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourcePoolProperties) obj);
     }
     
-    private boolean equalsByProperties(final DataSourceProperties dataSourceProps) {
-        if (!dataSourceClassName.equals(dataSourceProps.dataSourceClassName)) {
+    private boolean equalsByProperties(final DataSourcePoolProperties props) {
+        if (!poolClassName.equals(props.poolClassName)) {
             return false;
         }
         for (Entry<String, Object> entry : getAllLocalProperties().entrySet()) {
-            if (!dataSourceProps.getAllLocalProperties().containsKey(entry.getKey())) {
+            if (!props.getAllLocalProperties().containsKey(entry.getKey())) {
                 continue;
             }
             if (entry.getValue() instanceof Map) {
-                return entry.getValue().equals(dataSourceProps.getAllLocalProperties().get(entry.getKey()));
+                return entry.getValue().equals(props.getAllLocalProperties().get(entry.getKey()));
             }
-            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceProps.getAllLocalProperties().get(entry.getKey())))) {
+            if (!String.valueOf(entry.getValue()).equals(String.valueOf(props.getAllLocalProperties().get(entry.getKey())))) {
                 return false;
             }
         }
@@ -131,6 +131,6 @@ public final class DataSourceProperties {
         for (Entry<String, Object> entry : getAllLocalProperties().entrySet()) {
             stringBuilder.append(entry.getKey()).append(entry.getValue());
         }
-        return Objects.hashCode(dataSourceClassName, stringBuilder.toString());
+        return Objects.hashCode(poolClassName, stringBuilder.toString());
     }
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedD
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.ProxyGlobalConfiguration;
@@ -66,7 +66,7 @@ public final class YamlProxyConfigurationSwapper {
     
     private Map<String, DataSource> swapDataSources(final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceConfigs) {
         Map<String, DataSourceConfiguration> dataSourceConfigs = swapDataSourceConfigurations(yamlDataSourceConfigs);
-        return DataSourcePoolCreator.create(DataSourcePropertiesCreator.createFromConfiguration(dataSourceConfigs));
+        return DataSourcePoolCreator.create(DataSourcePoolPropertiesCreator.createFromConfiguration(dataSourceConfigs));
     }
     
     private Map<String, DatabaseConfiguration> swapDatabaseConfigurations(final Map<String, YamlProxyDatabaseConfiguration> databaseConfigurations) {

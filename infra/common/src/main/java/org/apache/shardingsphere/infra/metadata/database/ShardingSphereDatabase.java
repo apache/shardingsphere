@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -118,14 +118,13 @@ public final class ShardingSphereDatabase {
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                 final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
-        ResourceMetaData resourceMetaData = createResourceMetaData(name, databaseConfig.getStorageResource(), databaseConfig.getDataSourcePropsMap());
+        ResourceMetaData resourceMetaData = createResourceMetaData(name, databaseConfig.getStorageResource(), databaseConfig.getDataSourcePoolPropertiesMap());
         RuleMetaData ruleMetaData = new RuleMetaData(rules);
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, ruleMetaData, schemas);
     }
     
-    private static ResourceMetaData createResourceMetaData(final String databaseName, final StorageResource storageResource,
-                                                           final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        return new ResourceMetaData(databaseName, storageResource, dataSourcePropsMap);
+    private static ResourceMetaData createResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourcePoolProperties> propsMap) {
+        return new ResourceMetaData(databaseName, storageResource, propsMap);
     }
     
     /**

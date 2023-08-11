@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 
 /**
  * Data source pool properties validator.
@@ -27,7 +27,7 @@ public interface DataSourcePoolPropertiesValidator {
     /**
      * Validate data source properties.
      * 
-     * @param dataSourceProps data source properties
+     * @param props data source pool properties
      */
-    void validate(DataSourceProperties dataSourceProps);
+    void validate(DataSourcePoolProperties props);
 }

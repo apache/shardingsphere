@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datasource.hikari.creator;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -35,14 +35,14 @@ class HikariDataSourcePoolCreatorTest {
     
     @Test
     void assertCreateDataSource() {
-        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.create(new DataSourceProperties(HikariDataSource.class.getName(), createDataSourceProperties()));
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.create(new DataSourcePoolProperties(HikariDataSource.class.getName(), createDataSourcePoolProperties()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
         assertThat(actual.getDataSourceProperties(), is(PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value"))));
     }
     
-    private Map<String, Object> createDataSourceProperties() {
+    private Map<String, Object> createDataSourcePoolProperties() {
         Map<String, Object> result = new HashMap<>();
         result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("driverClassName", MockedDataSource.class.getName());

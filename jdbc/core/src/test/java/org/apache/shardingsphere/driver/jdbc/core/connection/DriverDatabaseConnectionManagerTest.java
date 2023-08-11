@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
@@ -99,7 +99,7 @@ class DriverDatabaseConnectionManagerTest {
     private MetaDataPersistService mockMetaDataPersistService() {
         MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(result.getDataSourceUnitService().load(DefaultDatabase.LOGIC_NAME))
-                .thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new DataSourceProperties(HikariDataSource.class.getName(), createProperties())));
+                .thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new DataSourcePoolProperties(HikariDataSource.class.getName(), createProperties())));
         when(result.getGlobalRuleService().loadUsers()).thenReturn(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
         return result;
     }

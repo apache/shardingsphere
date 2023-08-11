@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit
 
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
@@ -73,7 +73,7 @@ class RegisterStorageUnitBackendHandlerTest {
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getRuleMetaData()).thenReturn(mock(RuleMetaData.class));
         handler = new RegisterStorageUnitBackendHandler(mock(RegisterStorageUnitStatement.class), connectionSession);
-        Plugins.getMemberAccessor().set(handler.getClass().getDeclaredField("validateHandler"), handler, mock(DataSourcePropertiesValidateHandler.class));
+        Plugins.getMemberAccessor().set(handler.getClass().getDeclaredField("validateHandler"), handler, mock(DataSourcePoolPropertiesValidateHandler.class));
     }
     
     @Test

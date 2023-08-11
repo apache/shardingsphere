@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -67,9 +67,9 @@ class DataSourceProvidedDatabaseConfigurationTest {
     }
     
     @Test
-    void assertGetDataSourceProperties() {
+    void assertGetDataSourcePoolProperties() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSourceProperties props = databaseConfig.getDataSourcePropsMap().get("foo_ds");
+        DataSourcePoolProperties props = databaseConfig.getDataSourcePoolPropertiesMap().get("foo_ds");
         Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
         assertThat(poolStandardProps.size(), is(0));
         Map<String, Object> connStandardProps = props.getConnectionPropertySynonyms().getStandardProperties();

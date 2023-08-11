@@ -17,14 +17,25 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.props;
 
-/**
- * Invalid data source properties exception.
- */
-public final class InvalidDataSourcePropertiesException extends Exception {
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class DataSourcePoolPropertiesValidatorTest {
     
-    private static final long serialVersionUID = -7221138369057943935L;
+    @BeforeAll
+    static void setUp() throws ClassNotFoundException {
+        Class.forName(MockedDriver.class.getName());
+    }
     
-    public InvalidDataSourcePropertiesException(final String dataSourceName, final String errorMessage) {
-        super(String.format("Invalid data source `%s`, error message is: %s", dataSourceName, errorMessage));
+    @Test
+    void assertValidateSuccess() {
+        assertTrue(new DataSourcePoolPropertiesValidator().validate(
+                Collections.singletonMap("name", new DataSourcePoolProperties(HikariDataSource.class.getName(), Collections.singletonMap("jdbcUrl", "jdbc:mock")))).isEmpty());
     }
 }

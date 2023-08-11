@@ -47,7 +47,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
@@ -105,7 +105,7 @@ class MigrationJobAPITest {
         props.put("jdbcUrl", jdbcUrl);
         props.put("username", "root");
         props.put("password", "root");
-        jobAPI.addMigrationSourceResources(PipelineContextUtils.getContextKey(), Collections.singletonMap("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props)));
+        jobAPI.addMigrationSourceResources(PipelineContextUtils.getContextKey(), Collections.singletonMap("ds_0", new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props)));
     }
     
     @AfterAll
@@ -279,7 +279,7 @@ class MigrationJobAPITest {
     @Test
     void assertAddMigrationSourceResources() {
         PipelineDataSourcePersistService persistService = new PipelineDataSourcePersistService();
-        Map<String, DataSourceProperties> actual = persistService.load(PipelineContextUtils.getContextKey(), new MigrationJobType());
+        Map<String, DataSourcePoolProperties> actual = persistService.load(PipelineContextUtils.getContextKey(), new MigrationJobType());
         assertTrue(actual.containsKey("ds_0"));
     }
     
@@ -315,10 +315,10 @@ class MigrationJobAPITest {
     }
     
     private void initIntPrimaryEnvironment() throws SQLException {
-        Map<String, DataSourceProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(PipelineContextUtils.getContextKey(), new MigrationJobType());
-        DataSourceProperties dataSourceProps = metaDataDataSource.get("ds_0");
+        Map<String, DataSourcePoolProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(PipelineContextUtils.getContextKey(), new MigrationJobType());
+        DataSourcePoolProperties props = metaDataDataSource.get("ds_0");
         try (
-                PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(dataSourceProps), databaseType);
+                PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(props), databaseType);
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");

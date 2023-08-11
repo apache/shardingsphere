@@ -32,50 +32,50 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Data source properties validator.
+ * Data source pool properties validator.
  */
-public final class DataSourcePropertiesValidator {
+public final class DataSourcePoolPropertiesValidator {
     
     /**
-     * Validate data source properties map.
+     * Validate data source pool properties map.
      * 
-     * @param dataSourcePropsMap data source properties map
+     * @param propsMap data source pool properties map
      * @return error messages
      */
-    public Collection<String> validate(final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    public Collection<String> validate(final Map<String, DataSourcePoolProperties> propsMap) {
         Collection<String> result = new LinkedList<>();
-        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
+        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             try {
                 validateProperties(entry.getKey(), entry.getValue());
                 validateConnection(entry.getKey(), entry.getValue());
-            } catch (final InvalidDataSourcePropertiesException ex) {
+            } catch (final InvalidDataSourcePoolPropertiesException ex) {
                 result.add(ex.getMessage());
             }
         }
         return result;
     }
     
-    private void validateProperties(final String dataSourceName, final DataSourceProperties dataSourceProps) throws InvalidDataSourcePropertiesException {
-        Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSourceProps.getDataSourceClassName());
+    private void validateProperties(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
+        Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, props.getPoolClassName());
         if (!metaData.isPresent()) {
             return;
         }
         try {
-            metaData.get().getDataSourcePoolPropertiesValidator().ifPresent(optional -> optional.validate(dataSourceProps));
+            metaData.get().getDataSourcePoolPropertiesValidator().ifPresent(optional -> optional.validate(props));
         } catch (final IllegalArgumentException ex) {
-            throw new InvalidDataSourcePropertiesException(dataSourceName, ex.getMessage());
+            throw new InvalidDataSourcePoolPropertiesException(dataSourceName, ex.getMessage());
         }
     }
     
-    private void validateConnection(final String dataSourceName, final DataSourceProperties dataSourceProps) throws InvalidDataSourcePropertiesException {
+    private void validateConnection(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
         DataSource dataSource = null;
         try {
-            dataSource = DataSourcePoolCreator.create(dataSourceProps);
+            dataSource = DataSourcePoolCreator.create(props);
             checkFailFast(dataSource);
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
-            throw new InvalidDataSourcePropertiesException(dataSourceName, ex.getMessage());
+            throw new InvalidDataSourcePoolPropertiesException(dataSourceName, ex.getMessage());
         } finally {
             if (null != dataSource) {
                 new DataSourcePoolDestroyer(dataSource).asyncDestroy();

@@ -60,7 +60,7 @@ public final class ConfigurationChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final DataSourceUnitsChangedEvent event) {
-        contextManager.getConfigurationContextManager().alterDataSourceUnitsConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
+        contextManager.getConfigurationContextManager().alterDataSourceUnitsConfiguration(event.getDatabaseName(), event.getDataSourcePoolPropertiesMap());
         disableDataSources();
     }
     
