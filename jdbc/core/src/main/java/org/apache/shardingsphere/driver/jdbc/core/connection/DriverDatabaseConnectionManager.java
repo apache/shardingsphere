@@ -107,13 +107,13 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                                                                                     final DataSourcePoolProperties propsSample, final String schema) {
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
         for (InstanceMetaData each : instances) {
-            result.put(each.getId(), createDataSourceProperties((ProxyInstanceMetaData) each, users, propsSample, schema));
+            result.put(each.getId(), createDataSourcePoolProperties((ProxyInstanceMetaData) each, users, propsSample, schema));
         }
         return result;
     }
     
-    private DataSourcePoolProperties createDataSourceProperties(final ProxyInstanceMetaData instanceMetaData, final Collection<ShardingSphereUser> users,
-                                                                final DataSourcePoolProperties propsSample, final String schema) {
+    private DataSourcePoolProperties createDataSourcePoolProperties(final ProxyInstanceMetaData instanceMetaData, final Collection<ShardingSphereUser> users,
+                                                                    final DataSourcePoolProperties propsSample, final String schema) {
         Map<String, Object> props = propsSample.getAllLocalProperties();
         props.put("jdbcUrl", createJdbcUrl(instanceMetaData, schema, props));
         ShardingSphereUser user = users.iterator().next();

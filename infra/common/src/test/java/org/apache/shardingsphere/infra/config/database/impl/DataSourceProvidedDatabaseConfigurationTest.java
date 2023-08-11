@@ -67,7 +67,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
     }
     
     @Test
-    void assertGetDataSourceProperties() {
+    void assertGetDataSourcePoolProperties() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
         DataSourcePoolProperties props = databaseConfig.getDataSourcePoolPropertiesMap().get("foo_ds");
         Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();

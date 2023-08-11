@@ -160,11 +160,11 @@ public final class DataSourceReflection {
     }
     
     /**
-     * Add default data source properties.
+     * Add default data source pool properties.
      *
      * @param metaData data source pool meta data
      */
-    public void addDefaultDataSourceProperties(final DataSourcePoolMetaData metaData) {
+    public void addDefaultDataSourcePoolProperties(final DataSourcePoolMetaData metaData) {
         DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource,
                 TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSource.getClass().getName())
                         .map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));

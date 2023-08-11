@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.converter.DataSourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
@@ -50,12 +50,12 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
     
     private final DatabaseType databaseType;
     
-    private final DataSourcePropertiesValidateHandler validateHandler;
+    private final DataSourcePoolPropertiesValidateHandler validateHandler;
     
     public RegisterStorageUnitBackendHandler(final RegisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
         databaseType = connectionSession.getProtocolType();
-        validateHandler = new DataSourcePropertiesValidateHandler();
+        validateHandler = new DataSourcePoolPropertiesValidateHandler();
     }
     
     @Override

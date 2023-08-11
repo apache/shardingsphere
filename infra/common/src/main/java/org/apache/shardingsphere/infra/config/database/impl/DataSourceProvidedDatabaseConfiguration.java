@@ -49,10 +49,10 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
     public DataSourceProvidedDatabaseConfiguration(final Map<String, DataSource> dataSources, final Collection<RuleConfiguration> ruleConfigurations) {
         this.ruleConfigurations = ruleConfigurations;
         this.storageResource = new StorageResource(StorageResourceUtils.getStorageNodeDataSources(dataSources), StorageResourceUtils.getStorageUnitNodeMappers(dataSources));
-        dataSourcePoolPropertiesMap = createDataSourcePropertiesMap(dataSources);
+        dataSourcePoolPropertiesMap = createDataSourcePoolPropertiesMap(dataSources);
     }
     
-    private Map<String, DataSourcePoolProperties> createDataSourcePropertiesMap(final Map<String, DataSource> dataSources) {
+    private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final Map<String, DataSource> dataSources) {
         return dataSources.entrySet().stream().collect(Collectors
                 .toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }

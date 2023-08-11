@@ -38,14 +38,14 @@ class DBCPDataSourcePoolCreatorTest {
     
     @Test
     void assertCreateDataSource() {
-        BasicDataSource actual = (BasicDataSource) DataSourcePoolCreator.create(new DataSourcePoolProperties(BasicDataSource.class.getName(), createDataSourceProperties()));
+        BasicDataSource actual = (BasicDataSource) DataSourcePoolCreator.create(new DataSourcePoolProperties(BasicDataSource.class.getName(), createDataSourcePoolProperties()));
         assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
         assertThat(getConnectionProperties(actual), is(PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value"))));
     }
     
-    private Map<String, Object> createDataSourceProperties() {
+    private Map<String, Object> createDataSourcePoolProperties() {
         Map<String, Object> result = new HashMap<>();
         result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("driverClassName", MockedDataSource.class.getName());

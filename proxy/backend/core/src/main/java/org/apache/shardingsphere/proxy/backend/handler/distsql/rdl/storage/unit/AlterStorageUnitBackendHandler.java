@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
@@ -56,12 +56,12 @@ public final class AlterStorageUnitBackendHandler extends StorageUnitDefinitionB
     
     private final DatabaseType databaseType;
     
-    private final DataSourcePropertiesValidateHandler validateHandler;
+    private final DataSourcePoolPropertiesValidateHandler validateHandler;
     
     public AlterStorageUnitBackendHandler(final AlterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
         databaseType = connectionSession.getProtocolType();
-        validateHandler = new DataSourcePropertiesValidateHandler();
+        validateHandler = new DataSourcePoolPropertiesValidateHandler();
     }
     
     @Override

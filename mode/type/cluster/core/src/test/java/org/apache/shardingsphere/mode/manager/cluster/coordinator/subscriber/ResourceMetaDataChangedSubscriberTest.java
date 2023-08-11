@@ -113,13 +113,13 @@ class ResourceMetaDataChangedSubscriberTest {
     
     @Test
     void assertRenewForDatabaseAdded() {
-        when(persistService.getDataSourceUnitService().load("db_added")).thenReturn(createDataSourcePropertiesMap());
+        when(persistService.getDataSourceUnitService().load("db_added")).thenReturn(createDataSourcePoolPropertiesMap());
         when(persistService.getDatabaseRulePersistService().load("db_added")).thenReturn(Collections.emptyList());
         subscriber.renew(new DatabaseAddedEvent("db_added"));
         assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db_added").getResourceMetaData().getDataSources());
     }
     
-    private Map<String, DataSourcePoolProperties> createDataSourcePropertiesMap() {
+    private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(3, 1F);
         result.put("primary_ds", DataSourcePoolPropertiesCreator.create(dataSource));

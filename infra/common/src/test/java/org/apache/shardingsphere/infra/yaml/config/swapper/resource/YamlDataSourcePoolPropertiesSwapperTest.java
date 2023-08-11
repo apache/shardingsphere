@@ -48,7 +48,7 @@ class YamlDataSourcePoolPropertiesSwapperTest {
     }
     
     @Test
-    void assertSwapToDataSourceProperties() {
+    void assertSwapToDataSourcePoolProperties() {
         Map<String, Object> yamlConfig = new HashMap<>(3, 1F);
         yamlConfig.put("dataSourceClassName", MockedDataSource.class.getName());
         yamlConfig.put("url", "xx:xxx");

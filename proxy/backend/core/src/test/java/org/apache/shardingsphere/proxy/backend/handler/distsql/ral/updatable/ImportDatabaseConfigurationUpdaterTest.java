@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -119,7 +119,7 @@ class ImportDatabaseConfigurationUpdaterTest {
         importDatabaseConfigUpdater = new ImportDatabaseConfigurationUpdater();
         YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
         Plugins.getMemberAccessor().set(importDatabaseConfigUpdater.getClass().getDeclaredField("databaseConfigImportExecutor"), importDatabaseConfigUpdater, databaseConfigImportExecutor);
-        Plugins.getMemberAccessor().set(databaseConfigImportExecutor.getClass().getDeclaredField("validateHandler"), databaseConfigImportExecutor, mock(DataSourcePropertiesValidateHandler.class));
+        Plugins.getMemberAccessor().set(databaseConfigImportExecutor.getClass().getDeclaredField("validateHandler"), databaseConfigImportExecutor, mock(DataSourcePoolPropertiesValidateHandler.class));
     }
     
     private ContextManager mockContextManager(final String databaseName) {

@@ -106,7 +106,7 @@ public final class DataSourcePoolCreator {
     public static StorageResourceWithProperties createStorageResourceWithoutDataSource(final Map<String, DataSourcePoolProperties> propsMap) {
         Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = new LinkedHashMap<>();
-        Map<String, DataSourcePoolProperties> dataSourcePropertiesMap = new LinkedHashMap<>();
+        Map<String, DataSourcePoolProperties> newPropsMap = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             StorageNodeProperties storageNodeProperties = getStorageNodeProperties(entry.getKey(), entry.getValue());
             StorageNode storageNode = new StorageNode(storageNodeProperties.getName());
@@ -116,9 +116,9 @@ public final class DataSourcePoolCreator {
             }
             storageNodes.put(storageNode, null);
             appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProperties, entry.getKey(), entry.getValue());
-            dataSourcePropertiesMap.put(storageNodeProperties.getName(), entry.getValue());
+            newPropsMap.put(storageNodeProperties.getName(), entry.getValue());
         }
-        return new StorageResourceWithProperties(storageNodes, storageUnitNodeMappers, dataSourcePropertiesMap);
+        return new StorageResourceWithProperties(storageNodes, storageUnitNodeMappers, newPropsMap);
     }
     
     private static void appendStorageUnitNodeMapper(final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final StorageNodeProperties storageNodeProps,
@@ -207,7 +207,7 @@ public final class DataSourcePoolCreator {
             setDefaultFields(dataSourceReflection, poolMetaData.get());
             setConfiguredFields(props, dataSourceReflection, poolMetaData.get());
             appendJdbcUrlProperties(props.getCustomDataSourcePoolProperties(), result, poolMetaData.get(), dataSourceReflection);
-            dataSourceReflection.addDefaultDataSourceProperties(poolMetaData.get());
+            dataSourceReflection.addDefaultDataSourcePoolProperties(poolMetaData.get());
         } else {
             setConfiguredFields(props, dataSourceReflection);
         }

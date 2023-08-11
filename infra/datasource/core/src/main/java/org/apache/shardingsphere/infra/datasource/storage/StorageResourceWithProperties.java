@@ -29,11 +29,11 @@ import java.util.Map;
 @Getter
 public final class StorageResourceWithProperties extends StorageResource {
     
-    private final Map<String, DataSourcePoolProperties> dataSourcePropertiesMap;
+    private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
     
     public StorageResourceWithProperties(final Map<StorageNode, DataSource> storageNodes,
-                                         final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final Map<String, DataSourcePoolProperties> dataSourcePropertiesMap) {
+                                         final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap) {
         super(storageNodes, storageUnitNodeMappers);
-        this.dataSourcePropertiesMap = dataSourcePropertiesMap;
+        this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
     }
 }

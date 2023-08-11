@@ -56,8 +56,8 @@ class DataSourceUnitPersistServiceTest {
         when(repository.getDirectly("/metadata/foo_db/versions/0/data_sources/units")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
         Map<String, DataSourcePoolProperties> actual = new DataSourceUnitPersistService(repository).load("foo_db");
         assertThat(actual.size(), is(2));
-        assertDataSourceProperties(actual.get("ds_0"), DataSourcePoolPropertiesCreator.create(createDataSource("ds_0")));
-        assertDataSourceProperties(actual.get("ds_1"), DataSourcePoolPropertiesCreator.create(createDataSource("ds_1")));
+        assertDataSourcePoolProperties(actual.get("ds_0"), DataSourcePoolPropertiesCreator.create(createDataSource("ds_0")));
+        assertDataSourcePoolProperties(actual.get("ds_1"), DataSourcePoolPropertiesCreator.create(createDataSource("ds_1")));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
@@ -66,7 +66,7 @@ class DataSourceUnitPersistServiceTest {
                 .stream().filter(each -> !"".equals(each.trim()) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
-    private void assertDataSourceProperties(final DataSourcePoolProperties actual, final DataSourcePoolProperties expected) {
+    private void assertDataSourcePoolProperties(final DataSourcePoolProperties actual, final DataSourcePoolProperties expected) {
         assertThat(actual.getPoolClassName(), is(expected.getPoolClassName()));
         assertThat(actual.getAllLocalProperties().get("url"), is(expected.getAllLocalProperties().get("url")));
         assertThat(actual.getAllLocalProperties().get("username"), is(expected.getAllLocalProperties().get("username")));

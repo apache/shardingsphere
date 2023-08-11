@@ -98,13 +98,12 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
     }
     
     @Override
-    public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfigs,
-                                      final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
-        Map<String, DataSourcePoolProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(databaseConfigs);
-        if (dataSourcePropertiesMap.isEmpty() && databaseConfigs.getRuleConfigurations().isEmpty()) {
+    public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfigs, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
+        Map<String, DataSourcePoolProperties> propsMap = getDataSourcePoolPropertiesMap(databaseConfigs);
+        if (propsMap.isEmpty() && databaseConfigs.getRuleConfigurations().isEmpty()) {
             databaseMetaDataService.addDatabase(databaseName);
         } else {
-            dataSourceUnitService.persist(databaseName, dataSourcePropertiesMap);
+            dataSourceUnitService.persist(databaseName, propsMap);
             databaseRulePersistService.persist(databaseName, decorateRuleConfigs(databaseName, dataSources, rules));
         }
     }
@@ -120,14 +119,14 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
         return result;
     }
     
-    private Map<String, DataSourcePoolProperties> getDataSourcePropertiesMap(final DatabaseConfiguration databaseConfigs) {
+    private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final DatabaseConfiguration databaseConfigs) {
         if (!databaseConfigs.getDataSources().isEmpty() && databaseConfigs.getDataSourcePoolPropertiesMap().isEmpty()) {
-            return getDataSourcePropertiesMap(databaseConfigs.getStorageResource().getStorageNodeDataSources());
+            return getDataSourcePoolPropertiesMap(databaseConfigs.getStorageResource().getStorageNodeDataSources());
         }
         return databaseConfigs.getDataSourcePoolPropertiesMap();
     }
     
-    private Map<String, DataSourcePoolProperties> getDataSourcePropertiesMap(final Map<StorageNode, DataSource> storageNodeDataSources) {
+    private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final Map<StorageNode, DataSource> storageNodeDataSources) {
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(storageNodeDataSources.size(), 1F);
         for (Entry<StorageNode, DataSource> entry : storageNodeDataSources.entrySet()) {
             result.put(entry.getKey().getName(), DataSourcePoolPropertiesCreator.create(entry.getValue()));

@@ -25,9 +25,9 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Data source properties validate handler.
+ * Data source pool properties validate handler.
  */
-public final class DataSourcePropertiesValidateHandler {
+public final class DataSourcePoolPropertiesValidateHandler {
     
     /**
      * Validate data source properties map.

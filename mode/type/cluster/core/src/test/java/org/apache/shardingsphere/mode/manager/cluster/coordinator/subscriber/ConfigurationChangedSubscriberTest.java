@@ -134,11 +134,11 @@ class ConfigurationChangedSubscriberTest {
     
     @Test
     void assertRenewForDataSourceChanged() {
-        subscriber.renew(new DataSourceUnitsChangedEvent("db", "0", createChangedDataSourcePropertiesMap()));
+        subscriber.renew(new DataSourceUnitsChangedEvent("db", "0", createChangedDataSourcePoolPropertiesMap()));
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getDataSources().containsKey("ds_2"));
     }
     
-    private Map<String, DataSourcePoolProperties> createChangedDataSourcePropertiesMap() {
+    private Map<String, DataSourcePoolProperties> createChangedDataSourcePoolPropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(3, 1F);
         result.put("primary_ds", DataSourcePoolPropertiesCreator.create(dataSource));

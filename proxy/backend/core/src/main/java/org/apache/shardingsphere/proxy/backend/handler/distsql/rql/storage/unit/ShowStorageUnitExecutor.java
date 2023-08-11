@@ -100,20 +100,20 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
             for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
                 Integer currentUsageCount = inUsedStorageUnits.containsKey(entry.getKey()) ? inUsedStorageUnits.get(entry.getKey()).size() : 0;
                 if (usageCount.get().equals(currentUsageCount)) {
-                    result.put(entry.getKey(), getDataSourceProperties(propsMap, entry.getKey(), storageTypes.get(entry.getKey()), entry.getValue()));
+                    result.put(entry.getKey(), getDataSourcePoolProperties(propsMap, entry.getKey(), storageTypes.get(entry.getKey()), entry.getValue()));
                 }
             }
         } else {
             for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
-                result.put(entry.getKey(), getDataSourceProperties(propsMap, entry.getKey(), storageTypes.get(entry.getKey()), entry.getValue()));
+                result.put(entry.getKey(), getDataSourcePoolProperties(propsMap, entry.getKey(), storageTypes.get(entry.getKey()), entry.getValue()));
             }
         }
         return result;
     }
     
-    private DataSourcePoolProperties getDataSourceProperties(final Map<String, DataSourcePoolProperties> propsMap, final String storageUnitName,
-                                                             final DatabaseType databaseType, final DataSource dataSource) {
-        DataSourcePoolProperties result = getDataSourceProperties(dataSource);
+    private DataSourcePoolProperties getDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> propsMap, final String storageUnitName,
+                                                                 final DatabaseType databaseType, final DataSource dataSource) {
+        DataSourcePoolProperties result = getDataSourcePoolProperties(dataSource);
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         if (dialectDatabaseMetaData.isInstanceConnectionAvailable() && propsMap.containsKey(storageUnitName)) {
             DataSourcePoolProperties unitDataSourcePoolProperties = propsMap.get(storageUnitName);
@@ -126,7 +126,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         return result;
     }
     
-    private DataSourcePoolProperties getDataSourceProperties(final DataSource dataSource) {
+    private DataSourcePoolProperties getDataSourcePoolProperties(final DataSource dataSource) {
         return dataSource instanceof CatalogSwitchableDataSource
                 ? DataSourcePoolPropertiesCreator.create(((CatalogSwitchableDataSource) dataSource).getDataSource())
                 : DataSourcePoolPropertiesCreator.create(dataSource);

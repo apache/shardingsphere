@@ -55,7 +55,7 @@ public final class NewResourceSwitchManager {
         Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(toBeCreatedStorageResource.getStorageNodeDataSources().size(), 1F);
         for (StorageNode each : toBeCreatedStorageResource.getStorageNodeDataSources().keySet()) {
             if (!resourceMetaData.getStorageNodeDataSources().containsKey(each)) {
-                storageNodes.put(each, DataSourcePoolCreator.create(toBeCreatedStorageResource.getDataSourcePropertiesMap().get(each.getName())));
+                storageNodes.put(each, DataSourcePoolCreator.create(toBeCreatedStorageResource.getDataSourcePoolPropertiesMap().get(each.getName())));
             }
         }
         return new StorageResource(storageNodes, toBeCreatedStorageResource.getStorageUnitNodeMappers());
@@ -78,7 +78,7 @@ public final class NewResourceSwitchManager {
     private StorageResource getAlterNewStorageResource(final StorageResourceWithProperties toBeAlteredStorageResource) {
         Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(toBeAlteredStorageResource.getStorageNodeDataSources().size(), 1F);
         for (StorageNode each : toBeAlteredStorageResource.getStorageNodeDataSources().keySet()) {
-            storageNodes.put(each, DataSourcePoolCreator.create(toBeAlteredStorageResource.getDataSourcePropertiesMap().get(each.getName())));
+            storageNodes.put(each, DataSourcePoolCreator.create(toBeAlteredStorageResource.getDataSourcePoolPropertiesMap().get(each.getName())));
         }
         return new StorageResource(storageNodes, toBeAlteredStorageResource.getStorageUnitNodeMappers());
     }

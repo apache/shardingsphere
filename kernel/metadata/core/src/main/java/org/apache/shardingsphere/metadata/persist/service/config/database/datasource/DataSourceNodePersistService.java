@@ -57,7 +57,7 @@ public final class DataSourceNodePersistService implements DatabaseBasedPersistS
     
     @Override
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
-        return isExisted(databaseName) ? getDataSourceProperties(repository.getDirectly(
+        return isExisted(databaseName) ? getDataSourcePoolProperties(repository.getDirectly(
                 DatabaseMetaDataNode.getMetaDataDataSourceNodesPath(databaseName, getDatabaseActiveVersion(databaseName)))) : new LinkedHashMap<>();
     }
     
@@ -67,7 +67,7 @@ public final class DataSourceNodePersistService implements DatabaseBasedPersistS
     }
     
     @SuppressWarnings("unchecked")
-    private Map<String, DataSourcePoolProperties> getDataSourceProperties(final String yamlContent) {
+    private Map<String, DataSourcePoolProperties> getDataSourcePoolProperties(final String yamlContent) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(yamlContent, Map.class);
         if (yamlDataSources.isEmpty()) {
             return new LinkedHashMap<>();

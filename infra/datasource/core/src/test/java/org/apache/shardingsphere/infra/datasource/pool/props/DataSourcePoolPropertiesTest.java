@@ -135,11 +135,11 @@ class DataSourcePoolPropertiesTest {
     private Map<String, Object> createUserProperties(final String username) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         result.put("username", username);
-        result.put("dataSourceProperties", getDataSourceProperties());
+        result.put("dataSourceProperties", getDataSourcePoolProperties());
         return result;
     }
     
-    private Map<String, String> getDataSourceProperties() {
+    private Map<String, String> getDataSourcePoolProperties() {
         Map<String, String> result = new LinkedHashMap<>(3, 1F);
         result.put("maintainTimeStats", "false");
         result.put("rewriteBatchedStatements", "true");

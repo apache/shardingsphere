@@ -87,7 +87,7 @@ public final class ResourceSwitchManager {
     
     private StorageResource createNewStorageResource(final ResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeChangedStorageResource) {
         Map<StorageNode, DataSource> storageNodes =
-                getNewStorageNodes(resourceMetaData, toBeChangedStorageResource.getStorageNodeDataSources(), toBeChangedStorageResource.getDataSourcePropertiesMap());
+                getNewStorageNodes(resourceMetaData, toBeChangedStorageResource.getStorageNodeDataSources(), toBeChangedStorageResource.getDataSourcePoolPropertiesMap());
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = getNewStorageUnitNodeMappers(resourceMetaData, toBeChangedStorageResource.getStorageUnitNodeMappers());
         return new StorageResource(storageNodes, storageUnitNodeMappers);
     }
@@ -149,7 +149,7 @@ public final class ResourceSwitchManager {
     private StorageResource getStaleDataSources(final ResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeChangedStorageResource) {
         Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(resourceMetaData.getStorageNodeDataSources().size(), 1F);
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers().size(), 1F);
-        storageNodes.putAll(getToBeChangedDataSources(resourceMetaData.getStorageNodeDataSources(), toBeChangedStorageResource.getDataSourcePropertiesMap()));
+        storageNodes.putAll(getToBeChangedDataSources(resourceMetaData.getStorageNodeDataSources(), toBeChangedStorageResource.getDataSourcePoolPropertiesMap()));
         storageUnitNodeMappers.putAll(getChangedStorageUnitNodeMappers(resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers(), toBeChangedStorageResource.getStorageUnitNodeMappers()));
         return new StorageResource(storageNodes, storageUnitNodeMappers);
     }
