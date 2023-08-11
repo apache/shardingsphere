@@ -73,5 +73,4 @@ public interface DataSourcePoolMetaData extends TypedSPI {
     default Optional<DataSourcePoolPropertiesValidator> getDataSourcePoolPropertiesValidator() {
         return Optional.empty();
     }
-    
 }
