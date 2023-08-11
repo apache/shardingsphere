@@ -114,10 +114,10 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     }
     
     private Map<String, DataSourcePoolProperties> getDataSourcePropertiesMap(final DatabaseConfiguration databaseConfigs) {
-        if (!databaseConfigs.getDataSources().isEmpty() && databaseConfigs.getDataSourcePropsMap().isEmpty()) {
+        if (!databaseConfigs.getDataSources().isEmpty() && databaseConfigs.getDataSourcePoolPropertiesMap().isEmpty()) {
             return getDataSourcePropertiesMap(databaseConfigs.getStorageResource().getStorageNodeDataSources());
         }
-        return databaseConfigs.getDataSourcePropsMap();
+        return databaseConfigs.getDataSourcePoolPropertiesMap();
     }
     
     private Map<String, DataSourcePoolProperties> getDataSourcePropertiesMap(final Map<StorageNode, DataSource> storageNodeDataSources) {

@@ -117,8 +117,8 @@ public final class ContextManager implements AutoCloseable {
         try {
             ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
             ResourceMetaData currentResourceMetaData = database.getResourceMetaData();
-            Map<String, DataSourcePoolProperties> dataSourceProps = metaDataContexts.get().getPersistService().getDataSourceUnitService().load(databaseName);
-            SwitchingResource switchingResource = new ResourceSwitchManager().createByAlterDataSourceProps(currentResourceMetaData, dataSourceProps);
+            Map<String, DataSourcePoolProperties> props = metaDataContexts.get().getPersistService().getDataSourceUnitService().load(databaseName);
+            SwitchingResource switchingResource = new ResourceSwitchManager().createByAlterDataSourcePoolProperties(currentResourceMetaData, props);
             metaDataContexts.get().getMetaData().getDatabases().putAll(configurationContextManager.renewDatabase(database, switchingResource));
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(databaseName, switchingResource);
             deletedSchemaNames(databaseName, reloadedMetaDataContexts.getMetaData().getDatabase(databaseName), database);

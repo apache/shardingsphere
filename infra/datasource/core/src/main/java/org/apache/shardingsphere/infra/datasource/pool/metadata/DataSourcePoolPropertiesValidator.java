@@ -27,7 +27,7 @@ public interface DataSourcePoolPropertiesValidator {
     /**
      * Validate data source properties.
      * 
-     * @param dataSourceProps data source properties
+     * @param props data source pool properties
      */
-    void validate(DataSourcePoolProperties dataSourceProps);
+    void validate(DataSourcePoolProperties props);
 }

@@ -121,8 +121,8 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         while (iterator.hasNext()) {
             Entry<String, YamlProxyDataSourceConfiguration> entry = iterator.next();
             DataSourceConfiguration dataSourceConfig = dataSourceConfigSwapper.swap(entry.getValue());
-            DataSourcePoolProperties dataSourceProps = DataSourcePoolPropertiesCreator.create(dataSourceConfig);
-            appendResource(entry.getKey(), dataSourceProps, stringBuilder);
+            DataSourcePoolProperties props = DataSourcePoolPropertiesCreator.create(dataSourceConfig);
+            appendResource(entry.getKey(), props, stringBuilder);
             if (iterator.hasNext()) {
                 stringBuilder.append(DistSQLScriptConstants.COMMA);
             }
@@ -130,12 +130,12 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
     }
     
-    private void appendResource(final String resourceName, final DataSourcePoolProperties dataSourceProps, final StringBuilder stringBuilder) {
-        Map<String, Object> connectionProps = dataSourceProps.getConnectionPropertySynonyms().getStandardProperties();
+    private void appendResource(final String resourceName, final DataSourcePoolProperties dataSourcePoolProps, final StringBuilder stringBuilder) {
+        Map<String, Object> connectionProps = dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties();
         String url = (String) connectionProps.get(DistSQLScriptConstants.KEY_URL);
         String username = (String) connectionProps.get(DistSQLScriptConstants.KEY_USERNAME);
         String password = (String) connectionProps.get(DistSQLScriptConstants.KEY_PASSWORD);
-        String props = getResourceProperties(dataSourceProps.getPoolPropertySynonyms(), dataSourceProps.getCustomDataSourcePoolProperties());
+        String props = getResourceProperties(dataSourcePoolProps.getPoolPropertySynonyms(), dataSourcePoolProps.getCustomDataSourcePoolProperties());
         if (Strings.isNullOrEmpty(password)) {
             stringBuilder.append(String.format(DistSQLScriptConstants.RESOURCE_DEFINITION_WITHOUT_PASSWORD, resourceName, url, username, props));
         } else {
@@ -143,12 +143,12 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         }
     }
     
-    private String getResourceProperties(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourcePoolProperties customDataSourceProps) {
+    private String getResourceProperties(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourcePoolProperties customDataSourcePoolProps) {
         StringBuilder result = new StringBuilder();
         appendProperties(poolPropertySynonyms.getStandardProperties(), result);
-        if (!customDataSourceProps.getProperties().isEmpty()) {
+        if (!customDataSourcePoolProps.getProperties().isEmpty()) {
             result.append(DistSQLScriptConstants.COMMA);
-            appendProperties(customDataSourceProps.getProperties(), result);
+            appendProperties(customDataSourcePoolProps.getProperties(), result);
         }
         return result.toString();
     }

@@ -162,9 +162,9 @@ public final class DataSourceReflection {
     /**
      * Add default data source properties.
      *
-     * @param dataSourcePoolMetaData data source pool meta data
+     * @param metaData data source pool meta data
      */
-    public void addDefaultDataSourceProperties(final DataSourcePoolMetaData dataSourcePoolMetaData) {
+    public void addDefaultDataSourceProperties(final DataSourcePoolMetaData metaData) {
         DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(dataSource,
                 TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSource.getClass().getName())
                         .map(DataSourcePoolMetaData::getFieldMetaData).orElseGet(DefaultDataSourcePoolFieldMetaData::new));
@@ -183,10 +183,10 @@ public final class DataSourceReflection {
                 jdbcProps.setProperty(defaultPropertyKey, defaultPropertyValue);
             }
         }
-        setField(dataSourcePoolMetaData.getFieldMetaData().getJdbcUrlPropertiesFieldName(), jdbcProps);
+        setField(metaData.getFieldMetaData().getJdbcUrlPropertiesFieldName(), jdbcProps);
     }
     
-    private boolean containsDefaultProperty(final String defaultPropertyKey, final Properties targetDataSourceProps, final Properties queryProps) {
-        return targetDataSourceProps.containsKey(defaultPropertyKey) || queryProps.containsKey(defaultPropertyKey);
+    private boolean containsDefaultProperty(final String defaultPropKey, final Properties targetProps, final Properties queryProps) {
+        return targetProps.containsKey(defaultPropKey) || queryProps.containsKey(defaultPropKey);
     }
 }

@@ -50,8 +50,8 @@ public final class DataSourceNodePersistService implements DatabaseBasedPersistS
                 YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourceConfigs)));
     }
     
-    private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
-        return dataSourcePropsMap.entrySet().stream()
+    private Map<String, Map<String, Object>> swapYamlDataSourceConfiguration(final Map<String, DataSourcePoolProperties> propsMap) {
+        return propsMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
@@ -73,7 +73,7 @@ public final class DataSourceNodePersistService implements DatabaseBasedPersistS
             return new LinkedHashMap<>();
         }
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(yamlDataSources.size());
-        yamlDataSources.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(value)));
+        yamlDataSources.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(value)));
         return result;
     }
     
@@ -81,12 +81,12 @@ public final class DataSourceNodePersistService implements DatabaseBasedPersistS
      * Append data source properties map.
      * 
      * @param databaseName database name
-     * @param toBeAppendedDataSourcePropsMap data source properties map to be appended
+     * @param toBeAppendedPropsMap data source properties map to be appended
      */
     @Override
-    public void append(final String databaseName, final Map<String, DataSourcePoolProperties> toBeAppendedDataSourcePropsMap) {
+    public void append(final String databaseName, final Map<String, DataSourcePoolProperties> toBeAppendedPropsMap) {
         Map<String, DataSourcePoolProperties> dataSourceConfigs = load(databaseName);
-        dataSourceConfigs.putAll(toBeAppendedDataSourcePropsMap);
+        dataSourceConfigs.putAll(toBeAppendedPropsMap);
         persist(databaseName, dataSourceConfigs);
     }
     

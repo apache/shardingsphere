@@ -316,9 +316,9 @@ class MigrationJobAPITest {
     
     private void initIntPrimaryEnvironment() throws SQLException {
         Map<String, DataSourcePoolProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(PipelineContextUtils.getContextKey(), new MigrationJobType());
-        DataSourcePoolProperties dataSourceProps = metaDataDataSource.get("ds_0");
+        DataSourcePoolProperties props = metaDataDataSource.get("ds_0");
         try (
-                PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(dataSourceProps), databaseType);
+                PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(props), databaseType);
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");

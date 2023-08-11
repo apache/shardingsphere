@@ -51,7 +51,7 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     @Getter
     private final String parameter;
     
-    private final DataSourcePoolProperties dataSourcePoolProperties;
+    private final DataSourcePoolProperties dataSourcePoolProps;
     
     @Getter
     private final YamlJdbcConfiguration jdbcConfig;
@@ -82,7 +82,7 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         databaseType = DatabaseTypeFactory.get(jdbcConfig.getUrl());
         yamlConfig.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
         appendJdbcQueryProperties(databaseType, yamlConfig);
-        dataSourcePoolProperties = new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(yamlConfig);
+        dataSourcePoolProps = new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(yamlConfig);
     }
     
     public StandardPipelineDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
@@ -118,6 +118,6 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     
     @Override
     public Object getDataSourceConfiguration() {
-        return dataSourcePoolProperties;
+        return dataSourcePoolProps;
     }
 }

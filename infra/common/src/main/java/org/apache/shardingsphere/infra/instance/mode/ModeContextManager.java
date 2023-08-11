@@ -82,19 +82,19 @@ public interface ModeContextManager {
      * Register storage units.
      *
      * @param databaseName database name
-     * @param toBeRegisterStorageUnitProps to be register storage unit props
+     * @param toBeRegisteredProps to be registered storage unit properties
      * @throws SQLException SQL exception
      */
-    void registerStorageUnits(String databaseName, Map<String, DataSourcePoolProperties> toBeRegisterStorageUnitProps) throws SQLException;
+    void registerStorageUnits(String databaseName, Map<String, DataSourcePoolProperties> toBeRegisteredProps) throws SQLException;
     
     /**
      * Alter storage units.
      *
      * @param databaseName database name
-     * @param toBeUpdatedStorageUnitProps to be updated storage unit props
+     * @param toBeUpdatedProps to be updated storage unit properties
      * @throws SQLException SQL exception
      */
-    void alterStorageUnits(String databaseName, Map<String, DataSourcePoolProperties> toBeUpdatedStorageUnitProps) throws SQLException;
+    void alterStorageUnits(String databaseName, Map<String, DataSourcePoolProperties> toBeUpdatedProps) throws SQLException;
     
     /**
      * Unregister storage units.

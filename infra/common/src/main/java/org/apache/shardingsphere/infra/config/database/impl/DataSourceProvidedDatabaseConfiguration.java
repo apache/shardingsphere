@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Data source provided database configuration.
  */
+@RequiredArgsConstructor
 @Getter
 public final class DataSourceProvidedDatabaseConfiguration implements DatabaseConfiguration {
     
@@ -42,19 +44,12 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
     
     private final Collection<RuleConfiguration> ruleConfigurations;
     
-    private final Map<String, DataSourcePoolProperties> dataSourcePropsMap;
+    private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
     
     public DataSourceProvidedDatabaseConfiguration(final Map<String, DataSource> dataSources, final Collection<RuleConfiguration> ruleConfigurations) {
         this.ruleConfigurations = ruleConfigurations;
         this.storageResource = new StorageResource(StorageResourceUtils.getStorageNodeDataSources(dataSources), StorageResourceUtils.getStorageUnitNodeMappers(dataSources));
-        dataSourcePropsMap = createDataSourcePropertiesMap(dataSources);
-    }
-    
-    public DataSourceProvidedDatabaseConfiguration(final StorageResource storageResource, final Collection<RuleConfiguration> ruleConfigurations,
-                                                   final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
-        this.ruleConfigurations = ruleConfigurations;
-        this.storageResource = storageResource;
-        this.dataSourcePropsMap = dataSourcePropsMap;
+        dataSourcePoolPropertiesMap = createDataSourcePropertiesMap(dataSources);
     }
     
     private Map<String, DataSourcePoolProperties> createDataSourcePropertiesMap(final Map<String, DataSource> dataSources) {

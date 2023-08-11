@@ -53,7 +53,7 @@ class YamlDataSourcePoolPropertiesSwapperTest {
         yamlConfig.put("dataSourceClassName", MockedDataSource.class.getName());
         yamlConfig.put("url", "xx:xxx");
         yamlConfig.put("username", "root");
-        DataSourcePoolProperties actual = swapper.swapToDataSourceProperties(yamlConfig);
+        DataSourcePoolProperties actual = swapper.swapToDataSourcePoolProperties(yamlConfig);
         assertThat(actual.getAllLocalProperties().size(), is(3));
         assertThat(actual.getAllLocalProperties().get("dataSourceClassName").toString(), is("org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource"));
         assertThat(actual.getAllLocalProperties().get("url").toString(), is("xx:xxx"));

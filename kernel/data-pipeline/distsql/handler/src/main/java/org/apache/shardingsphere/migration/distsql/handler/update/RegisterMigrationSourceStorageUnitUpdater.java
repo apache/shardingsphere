@@ -52,9 +52,9 @@ public final class RegisterMigrationSourceStorageUnitUpdater implements RALUpdat
                 () -> new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));
         URLBasedDataSourceSegment urlBasedDataSourceSegment = (URLBasedDataSourceSegment) dataSources.get(0);
         DatabaseType databaseType = DatabaseTypeFactory.get(urlBasedDataSourceSegment.getUrl());
-        Map<String, DataSourcePoolProperties> sourcePropertiesMap = DataSourceSegmentsConverter.convert(databaseType, dataSources);
-        validateHandler.validate(sourcePropertiesMap);
-        jobAPI.addMigrationSourceResources(PipelineContextKey.buildForProxy(), sourcePropertiesMap);
+        Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, dataSources);
+        validateHandler.validate(propsMap);
+        jobAPI.addMigrationSourceResources(PipelineContextKey.buildForProxy(), propsMap);
     }
     
     @Override

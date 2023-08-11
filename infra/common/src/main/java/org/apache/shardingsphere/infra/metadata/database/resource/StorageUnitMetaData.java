@@ -45,22 +45,22 @@ public final class StorageUnitMetaData {
     
     private final Map<String, DataSource> dataSources;
     
-    private final Map<String, DataSourcePoolProperties> dataSourcePropsMap;
+    private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
     
     private final Map<String, DatabaseType> storageTypes;
     
     private final Map<String, StorageUnitNodeMapper> unitNodeMappers;
     
-    private final Map<String, ConnectionProperties> connectionPropsMap;
+    private final Map<String, ConnectionProperties> connectionPropertiesMap;
     
     public StorageUnitMetaData(final String databaseName, final Map<StorageNode, DataSource> storageNodeDataSources,
-                               final Map<String, DataSourcePoolProperties> dataSourcePropsMap, final Map<String, StorageUnitNodeMapper> unitNodeMappers) {
+                               final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageUnitNodeMapper> unitNodeMappers) {
         this.unitNodeMappers = unitNodeMappers;
         this.dataSources = getStorageUnitDataSources(storageNodeDataSources, unitNodeMappers);
-        this.dataSourcePropsMap = dataSourcePropsMap;
+        this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
         Map<StorageNode, DataSource> enabledStorageNodeDataSources = getEnabledStorageNodeDataSources(databaseName, storageNodeDataSources);
         storageTypes = createStorageTypes(enabledStorageNodeDataSources, unitNodeMappers);
-        connectionPropsMap = createConnectionPropertiesMap(enabledStorageNodeDataSources, storageTypes, unitNodeMappers);
+        connectionPropertiesMap = createConnectionPropertiesMap(enabledStorageNodeDataSources, storageTypes, unitNodeMappers);
     }
     
     private Map<StorageNode, DataSource> getEnabledStorageNodeDataSources(final String databaseName, final Map<StorageNode, DataSource> storageNodeDataSources) {

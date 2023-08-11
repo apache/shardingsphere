@@ -35,5 +35,5 @@ public final class DataSourceUnitsChangedEvent implements GovernanceEvent {
     
     private final String databaseVersion;
     
-    private final Map<String, DataSourcePoolProperties> dataSourcePropertiesMap;
+    private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
 }

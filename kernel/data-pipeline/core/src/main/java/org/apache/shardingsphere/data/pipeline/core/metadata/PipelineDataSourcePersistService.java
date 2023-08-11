@@ -46,14 +46,14 @@ public final class PipelineDataSourcePersistService implements PipelineMetaDataP
         }
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSourcesProps, Map.class);
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(yamlDataSources.size(), 1F);
-        yamlDataSources.forEach((key, value) -> result.put(key, swapper.swapToDataSourceProperties(value)));
+        yamlDataSources.forEach((key, value) -> result.put(key, swapper.swapToDataSourcePoolProperties(value)));
         return result;
     }
     
     @Override
-    public void persist(final PipelineContextKey contextKey, final JobType jobType, final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
-        Map<String, Map<String, Object>> dataSourceMap = new LinkedHashMap<>(dataSourcePropsMap.size(), 1F);
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePropsMap.entrySet()) {
+    public void persist(final PipelineContextKey contextKey, final JobType jobType, final Map<String, DataSourcePoolProperties> propsMap) {
+        Map<String, Map<String, Object>> dataSourceMap = new LinkedHashMap<>(propsMap.size(), 1F);
+        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             dataSourceMap.put(entry.getKey(), swapper.swapToMap(entry.getValue()));
         }
         PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).persistMetaDataDataSources(jobType, YamlEngine.marshal(dataSourceMap));

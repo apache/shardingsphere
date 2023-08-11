@@ -60,8 +60,8 @@ class DataSourcePoolPropertiesTest {
     
     @Test
     void assertGetAllLocalProperties() {
-        DataSourcePoolProperties originalDataSourceProps = new DataSourcePoolProperties(MockedDataSource.class.getName(), getProperties());
-        Map<String, Object> actualAllProps = originalDataSourceProps.getAllLocalProperties();
+        DataSourcePoolProperties originalProps = new DataSourcePoolProperties(MockedDataSource.class.getName(), getProperties());
+        Map<String, Object> actualAllProps = originalProps.getAllLocalProperties();
         assertThat(actualAllProps.size(), is(7));
         assertTrue(actualAllProps.containsKey("driverClassName"));
         assertTrue(actualAllProps.containsValue(MockedDataSource.class.getName()));

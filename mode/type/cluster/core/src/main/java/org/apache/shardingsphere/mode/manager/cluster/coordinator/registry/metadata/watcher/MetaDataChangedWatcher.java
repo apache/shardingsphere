@@ -160,21 +160,21 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     @SuppressWarnings("unchecked")
     private DataSourceUnitsChangedEvent createDataSourceUnitsChangedEvent(final String databaseName, final String databaseVersion, final DataChangedEvent event) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(event.getValue(), Map.class);
-        Map<String, DataSourcePoolProperties> dataSourcePropertiesMap = yamlDataSources.isEmpty()
+        Map<String, DataSourcePoolProperties> propsMap = yamlDataSources.isEmpty()
                 ? new HashMap<>()
                 : yamlDataSources.entrySet().stream().collect(Collectors.toMap(
-                        Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return new DataSourceUnitsChangedEvent(databaseName, databaseVersion, dataSourcePropertiesMap);
+                        Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return new DataSourceUnitsChangedEvent(databaseName, databaseVersion, propsMap);
     }
     
     @SuppressWarnings("unchecked")
     private DataSourceNodesChangedEvent createDataSourceNodesChangedEvent(final String databaseName, final String databaseVersion, final DataChangedEvent event) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(event.getValue(), Map.class);
-        Map<String, DataSourcePoolProperties> dataSourcePropertiesMap = yamlDataSources.isEmpty()
+        Map<String, DataSourcePoolProperties> propsMap = yamlDataSources.isEmpty()
                 ? new HashMap<>()
                 : yamlDataSources.entrySet().stream().collect(Collectors.toMap(
-                        Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return new DataSourceNodesChangedEvent(databaseName, databaseVersion, dataSourcePropertiesMap);
+                        Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return new DataSourceNodesChangedEvent(databaseName, databaseVersion, propsMap);
     }
     
     @SuppressWarnings("unchecked")

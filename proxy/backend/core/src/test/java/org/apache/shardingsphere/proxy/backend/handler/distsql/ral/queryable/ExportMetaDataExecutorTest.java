@@ -107,7 +107,7 @@ class ExportMetaDataExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("empty_metadata"));
-        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap()).thenReturn(Collections.emptyMap());
+        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePoolPropertiesMap()).thenReturn(Collections.emptyMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ExportMetaDataStatement sqlStatement = new ExportMetaDataStatement(null);
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
@@ -131,7 +131,7 @@ class ExportMetaDataExecutorTest {
         when(database.getName()).thenReturn("normal_db");
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("empty_metadata"));
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap()).thenReturn(DataSourcePoolPropertiesCreator.create(dataSourceMap));
+        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePoolPropertiesMap()).thenReturn(DataSourcePoolPropertiesCreator.create(dataSourceMap));
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

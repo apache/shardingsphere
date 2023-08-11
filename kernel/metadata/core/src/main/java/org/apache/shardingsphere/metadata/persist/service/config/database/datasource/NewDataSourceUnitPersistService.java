@@ -90,7 +90,7 @@ public final class NewDataSourceUnitPersistService implements DatabaseBasedPersi
         for (String each : repository.getChildrenKeys(NewDatabaseMetaDataNode.getDataSourceUnitsNode(databaseName))) {
             String dataSourceValue = repository.getDirectly(NewDatabaseMetaDataNode.getDataSourceUnitNodeWithVersion(databaseName, each, getDataSourceActiveVersion(databaseName, each)));
             if (!Strings.isNullOrEmpty(dataSourceValue)) {
-                result.put(each, new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
+                result.put(each, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
             }
         }
         return result;
@@ -102,14 +102,14 @@ public final class NewDataSourceUnitPersistService implements DatabaseBasedPersi
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
         String dataSourceValue = repository.getDirectly(NewDatabaseMetaDataNode.getDataSourceUnitNodeWithVersion(databaseName, name, getDataSourceActiveVersion(databaseName, name)));
         if (!Strings.isNullOrEmpty(dataSourceValue)) {
-            result.put(name, new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
+            result.put(name, new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceValue, Map.class)));
         }
         return result;
     }
     
     @Override
-    public void append(final String databaseName, final Map<String, DataSourcePoolProperties> toBeAppendedDataSourcePropsMap) {
-        persist(databaseName, toBeAppendedDataSourcePropsMap);
+    public void append(final String databaseName, final Map<String, DataSourcePoolProperties> toBeAppendedPropsMap) {
+        persist(databaseName, toBeAppendedPropsMap);
     }
     
     private String getDataSourceActiveVersion(final String databaseName, final String dataSourceName) {

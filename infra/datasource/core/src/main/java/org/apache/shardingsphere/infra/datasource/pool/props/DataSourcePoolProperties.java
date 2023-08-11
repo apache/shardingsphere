@@ -107,18 +107,18 @@ public final class DataSourcePoolProperties {
         return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourcePoolProperties) obj);
     }
     
-    private boolean equalsByProperties(final DataSourcePoolProperties dataSourceProps) {
-        if (!poolClassName.equals(dataSourceProps.poolClassName)) {
+    private boolean equalsByProperties(final DataSourcePoolProperties props) {
+        if (!poolClassName.equals(props.poolClassName)) {
             return false;
         }
         for (Entry<String, Object> entry : getAllLocalProperties().entrySet()) {
-            if (!dataSourceProps.getAllLocalProperties().containsKey(entry.getKey())) {
+            if (!props.getAllLocalProperties().containsKey(entry.getKey())) {
                 continue;
             }
             if (entry.getValue() instanceof Map) {
-                return entry.getValue().equals(dataSourceProps.getAllLocalProperties().get(entry.getKey()));
+                return entry.getValue().equals(props.getAllLocalProperties().get(entry.getKey()));
             }
-            if (!String.valueOf(entry.getValue()).equals(String.valueOf(dataSourceProps.getAllLocalProperties().get(entry.getKey())))) {
+            if (!String.valueOf(entry.getValue()).equals(String.valueOf(props.getAllLocalProperties().get(entry.getKey())))) {
                 return false;
             }
         }

@@ -41,14 +41,14 @@ public final class NewResourceSwitchManager {
      * Register storage unit.
      *
      * @param resourceMetaData resource meta data
-     * @param dataSourceProps data source properties
+     * @param propsMap data source pool properties map
      * @return created switching resource
      */
-    public SwitchingResource registerStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> dataSourceProps) {
-        resourceMetaData.getStorageUnitMetaData().getDataSourcePropsMap().putAll(dataSourceProps);
-        StorageResourceWithProperties toBeCreatedStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(dataSourceProps);
+    public SwitchingResource registerStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> propsMap) {
+        resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().putAll(propsMap);
+        StorageResourceWithProperties toBeCreatedStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(propsMap);
         return new SwitchingResource(resourceMetaData, getRegisterNewStorageResource(resourceMetaData, toBeCreatedStorageResource),
-                new StorageResource(Collections.emptyMap(), Collections.emptyMap()), resourceMetaData.getStorageUnitMetaData().getDataSourcePropsMap());
+                new StorageResource(Collections.emptyMap(), Collections.emptyMap()));
     }
     
     private StorageResource getRegisterNewStorageResource(final ResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeCreatedStorageResource) {
@@ -65,14 +65,14 @@ public final class NewResourceSwitchManager {
      * Alter storage unit.
      *
      * @param resourceMetaData resource meta data
-     * @param dataSourceProps data source properties
+     * @param props data source pool properties
      * @return created switching resource
      */
-    public SwitchingResource alterStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> dataSourceProps) {
-        resourceMetaData.getStorageUnitMetaData().getDataSourcePropsMap().putAll(dataSourceProps);
-        StorageResourceWithProperties toBeAlteredStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(dataSourceProps);
+    public SwitchingResource alterStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> props) {
+        resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().putAll(props);
+        StorageResourceWithProperties toBeAlteredStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(props);
         return new SwitchingResource(resourceMetaData, getAlterNewStorageResource(toBeAlteredStorageResource),
-                getStaleStorageResource(resourceMetaData, toBeAlteredStorageResource), resourceMetaData.getStorageUnitMetaData().getDataSourcePropsMap());
+                getStaleStorageResource(resourceMetaData, toBeAlteredStorageResource));
     }
     
     private StorageResource getAlterNewStorageResource(final StorageResourceWithProperties toBeAlteredStorageResource) {
@@ -101,9 +101,9 @@ public final class NewResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource unregisterStorageUnit(final ResourceMetaData resourceMetaData, final String storageUnitName) {
-        resourceMetaData.getStorageUnitMetaData().getDataSourcePropsMap().remove(storageUnitName);
+        resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().remove(storageUnitName);
         return new SwitchingResource(resourceMetaData, new StorageResource(Collections.emptyMap(), Collections.emptyMap()),
-                getToBeRemovedStaleStorageResource(resourceMetaData, storageUnitName), resourceMetaData.getStorageUnitMetaData().getDataSourcePropsMap());
+                getToBeRemovedStaleStorageResource(resourceMetaData, storageUnitName));
     }
     
     private StorageResource getToBeRemovedStaleStorageResource(final ResourceMetaData resourceMetaData, final String storageUnitName) {

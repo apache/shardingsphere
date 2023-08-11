@@ -61,19 +61,19 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
     @Override
     public ResponseHeader execute(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
-        Map<String, DataSourcePoolProperties> dataSourcePropsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
+        Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
         if (sqlStatement.isIfNotExists()) {
             Collection<String> currentStorageUnits = getCurrentStorageUnitNames(databaseName);
             Collection<String> logicalDataSourceNames = getLogicalDataSourceNames(databaseName);
-            dataSourcePropsMap.keySet().removeIf(currentStorageUnits::contains);
-            dataSourcePropsMap.keySet().removeIf(logicalDataSourceNames::contains);
+            propsMap.keySet().removeIf(currentStorageUnits::contains);
+            propsMap.keySet().removeIf(logicalDataSourceNames::contains);
         }
-        if (dataSourcePropsMap.isEmpty()) {
+        if (propsMap.isEmpty()) {
             return new UpdateResponseHeader(sqlStatement);
         }
-        validateHandler.validate(dataSourcePropsMap);
+        validateHandler.validate(propsMap);
         try {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, propsMap);
         } catch (final SQLException | ShardingSphereExternalException ex) {
             log.error("Register storage unit failed", ex);
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));

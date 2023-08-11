@@ -76,10 +76,10 @@ class StandardPipelineDataSourceConfigurationTest {
     private void assertGetConfig(final StandardPipelineDataSourceConfiguration actual) {
         assertThat(actual.getDatabaseType().getType(), is("MySQL"));
         assertThat(actual.getType(), is(StandardPipelineDataSourceConfiguration.TYPE));
-        DataSourcePoolProperties dataSourceProps = (DataSourcePoolProperties) actual.getDataSourceConfiguration();
-        assertThat(dataSourceProps.getPoolClassName(), is("com.zaxxer.hikari.HikariDataSource"));
+        DataSourcePoolProperties props = (DataSourcePoolProperties) actual.getDataSourceConfiguration();
+        assertThat(props.getPoolClassName(), is("com.zaxxer.hikari.HikariDataSource"));
         assertGetJdbcConfig(actual.getJdbcConfig());
-        assertDataSourceProperties(dataSourceProps);
+        assertDataSourcePoolProperties(props);
     }
     
     private void assertGetJdbcConfig(final YamlJdbcConfiguration actual) {
@@ -88,8 +88,8 @@ class StandardPipelineDataSourceConfigurationTest {
         assertThat(actual.getPassword(), is(PASSWORD));
     }
     
-    private void assertDataSourceProperties(final DataSourcePoolProperties dataSourceProps) {
-        Map<String, Object> actual = new YamlDataSourceConfigurationSwapper().swapToMap(dataSourceProps);
+    private void assertDataSourcePoolProperties(final DataSourcePoolProperties props) {
+        Map<String, Object> actual = new YamlDataSourceConfigurationSwapper().swapToMap(props);
         assertThat(actual.get("minPoolSize"), is("1"));
     }
 }

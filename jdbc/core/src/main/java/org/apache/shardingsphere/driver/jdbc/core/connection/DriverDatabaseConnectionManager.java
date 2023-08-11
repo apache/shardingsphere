@@ -95,26 +95,26 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         }
         MetaDataBasedPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
         String actualDatabaseName = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName();
-        Map<String, DataSourcePoolProperties> dataSourcePropsMap = persistService.getDataSourceUnitService().load(actualDatabaseName);
-        Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
-        DataSourcePoolProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
+        Map<String, DataSourcePoolProperties> propsMap = persistService.getDataSourceUnitService().load(actualDatabaseName);
+        Preconditions.checkState(!propsMap.isEmpty(), "Can not get data source properties from meta data.");
+        DataSourcePoolProperties propsSample = propsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = persistService.getGlobalRuleService().loadUsers();
         Collection<InstanceMetaData> instances = contextManager.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, rule.getLabels());
-        return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, actualDatabaseName));
+        return DataSourcePoolCreator.create(createDataSourcePoolPropertiesMap(instances, users, propsSample, actualDatabaseName));
     }
     
-    private Map<String, DataSourcePoolProperties> createDataSourcePropertiesMap(final Collection<InstanceMetaData> instances, final Collection<ShardingSphereUser> users,
-                                                                                final DataSourcePoolProperties dataSourcePropsSample, final String schema) {
+    private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final Collection<InstanceMetaData> instances, final Collection<ShardingSphereUser> users,
+                                                                                    final DataSourcePoolProperties propsSample, final String schema) {
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
         for (InstanceMetaData each : instances) {
-            result.put(each.getId(), createDataSourceProperties((ProxyInstanceMetaData) each, users, dataSourcePropsSample, schema));
+            result.put(each.getId(), createDataSourceProperties((ProxyInstanceMetaData) each, users, propsSample, schema));
         }
         return result;
     }
     
     private DataSourcePoolProperties createDataSourceProperties(final ProxyInstanceMetaData instanceMetaData, final Collection<ShardingSphereUser> users,
-                                                                final DataSourcePoolProperties dataSourcePropsSample, final String schema) {
-        Map<String, Object> props = dataSourcePropsSample.getAllLocalProperties();
+                                                                final DataSourcePoolProperties propsSample, final String schema) {
+        Map<String, Object> props = propsSample.getAllLocalProperties();
         props.put("jdbcUrl", createJdbcUrl(instanceMetaData, schema, props));
         ShardingSphereUser user = users.iterator().next();
         props.put("username", user.getGrantee().getUsername());

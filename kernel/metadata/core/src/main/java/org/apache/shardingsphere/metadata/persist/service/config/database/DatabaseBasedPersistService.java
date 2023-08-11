@@ -92,8 +92,8 @@ public interface DatabaseBasedPersistService<T> {
      * Append data source properties map.
      *
      * @param databaseName database name
-     * @param toBeAppendedDataSourcePropsMap data source properties map to be appended
+     * @param toBeAppendedPropsMap data source pool properties map to be appended
      */
-    default void append(final String databaseName, final Map<String, DataSourcePoolProperties> toBeAppendedDataSourcePropsMap) {
+    default void append(final String databaseName, final Map<String, DataSourcePoolProperties> toBeAppendedPropsMap) {
     }
 }

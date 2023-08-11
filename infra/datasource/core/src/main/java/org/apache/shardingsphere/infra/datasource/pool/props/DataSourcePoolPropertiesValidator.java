@@ -39,12 +39,12 @@ public final class DataSourcePoolPropertiesValidator {
     /**
      * Validate data source pool properties map.
      * 
-     * @param dataSourcePropsMap data source properties map
+     * @param propsMap data source pool properties map
      * @return error messages
      */
-    public Collection<String> validate(final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
+    public Collection<String> validate(final Map<String, DataSourcePoolProperties> propsMap) {
         Collection<String> result = new LinkedList<>();
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePropsMap.entrySet()) {
+        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             try {
                 validateProperties(entry.getKey(), entry.getValue());
                 validateConnection(entry.getKey(), entry.getValue());
@@ -55,22 +55,22 @@ public final class DataSourcePoolPropertiesValidator {
         return result;
     }
     
-    private void validateProperties(final String dataSourceName, final DataSourcePoolProperties dataSourceProps) throws InvalidDataSourcePoolPropertiesException {
-        Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSourceProps.getPoolClassName());
+    private void validateProperties(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
+        Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, props.getPoolClassName());
         if (!metaData.isPresent()) {
             return;
         }
         try {
-            metaData.get().getDataSourcePoolPropertiesValidator().ifPresent(optional -> optional.validate(dataSourceProps));
+            metaData.get().getDataSourcePoolPropertiesValidator().ifPresent(optional -> optional.validate(props));
         } catch (final IllegalArgumentException ex) {
             throw new InvalidDataSourcePoolPropertiesException(dataSourceName, ex.getMessage());
         }
     }
     
-    private void validateConnection(final String dataSourceName, final DataSourcePoolProperties dataSourceProps) throws InvalidDataSourcePoolPropertiesException {
+    private void validateConnection(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
         DataSource dataSource = null;
         try {
-            dataSource = DataSourcePoolCreator.create(dataSourceProps);
+            dataSource = DataSourcePoolCreator.create(props);
             checkFailFast(dataSource);
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {

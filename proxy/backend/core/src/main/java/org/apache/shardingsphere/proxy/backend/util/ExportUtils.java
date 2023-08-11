@@ -83,20 +83,20 @@ public final class ExportUtils {
     }
     
     private static void appendDataSourceConfigurations(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
-        if (database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap().isEmpty()) {
+        if (database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePoolPropertiesMap().isEmpty()) {
             return;
         }
         stringBuilder.append("dataSources:").append(System.lineSeparator());
-        for (Entry<String, DataSourcePoolProperties> entry : database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap().entrySet()) {
+        for (Entry<String, DataSourcePoolProperties> entry : database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePoolPropertiesMap().entrySet()) {
             appendDataSourceConfiguration(entry.getKey(), entry.getValue(), stringBuilder);
         }
     }
     
-    private static void appendDataSourceConfiguration(final String name, final DataSourcePoolProperties dataSourceProps, final StringBuilder stringBuilder) {
+    private static void appendDataSourceConfiguration(final String name, final DataSourcePoolProperties props, final StringBuilder stringBuilder) {
         stringBuilder.append("  ").append(name).append(':').append(System.lineSeparator());
-        dataSourceProps.getConnectionPropertySynonyms().getStandardProperties()
+        props.getConnectionPropertySynonyms().getStandardProperties()
                 .forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append(System.lineSeparator()));
-        for (Entry<String, Object> entry : dataSourceProps.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
+        for (Entry<String, Object> entry : props.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
             if (null != entry.getValue()) {
                 stringBuilder.append("    ").append(entry.getKey()).append(": ").append(entry.getValue()).append(System.lineSeparator());
             }

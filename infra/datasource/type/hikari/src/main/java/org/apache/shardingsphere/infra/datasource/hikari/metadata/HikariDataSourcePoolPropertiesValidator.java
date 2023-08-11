@@ -36,8 +36,8 @@ public final class HikariDataSourcePoolPropertiesValidator implements DataSource
     private static final long MIN_KEEP_ALIVE_TIME_MILLISECONDS = TimeUnit.SECONDS.toMillis(30L);
     
     @Override
-    public void validate(final DataSourcePoolProperties dataSourceProps) {
-        Map<String, Object> allLocalProperties = dataSourceProps.getAllLocalProperties();
+    public void validate(final DataSourcePoolProperties props) {
+        Map<String, Object> allLocalProperties = props.getAllLocalProperties();
         validateConnectionTimeout(allLocalProperties);
         validateIdleTimeout(allLocalProperties);
         validateMaxLifetime(allLocalProperties);
@@ -46,53 +46,53 @@ public final class HikariDataSourcePoolPropertiesValidator implements DataSource
         validateKeepAliveTime(allLocalProperties);
     }
     
-    private void validateConnectionTimeout(final Map<String, Object> allLocalProperties) {
-        if (isExisted(allLocalProperties, "connectionTimeout")) {
-            long connectionTimeout = Long.parseLong(allLocalProperties.get("connectionTimeout").toString());
+    private void validateConnectionTimeout(final Map<String, Object> allLocalProps) {
+        if (isExisted(allLocalProps, "connectionTimeout")) {
+            long connectionTimeout = Long.parseLong(allLocalProps.get("connectionTimeout").toString());
             Preconditions.checkState(connectionTimeout >= MIN_CONNECTION_TIMEOUT_MILLISECONDS, "connectionTimeout can not less than %s ms.", MIN_CONNECTION_TIMEOUT_MILLISECONDS);
         }
     }
     
-    private void validateIdleTimeout(final Map<String, Object> allLocalProperties) {
-        if (isExisted(allLocalProperties, "idleTimeout")) {
-            long idleTimeout = Long.parseLong(allLocalProperties.get("idleTimeout").toString());
+    private void validateIdleTimeout(final Map<String, Object> allLocalProps) {
+        if (isExisted(allLocalProps, "idleTimeout")) {
+            long idleTimeout = Long.parseLong(allLocalProps.get("idleTimeout").toString());
             Preconditions.checkState(idleTimeout >= 0, "idleTimeout can not be negative.");
         }
     }
     
-    private void validateMaxLifetime(final Map<String, Object> allLocalProperties) {
-        if (isExisted(allLocalProperties, "maxLifetime")) {
-            long maxLifetime = Long.parseLong(allLocalProperties.get("maxLifetime").toString());
+    private void validateMaxLifetime(final Map<String, Object> allLocalProps) {
+        if (isExisted(allLocalProps, "maxLifetime")) {
+            long maxLifetime = Long.parseLong(allLocalProps.get("maxLifetime").toString());
             Preconditions.checkState(maxLifetime >= MIN_LIFETIME_MILLISECONDS, "maxLifetime can not less than %s ms.", MIN_LIFETIME_MILLISECONDS);
         }
     }
     
-    private void validateMaximumPoolSize(final Map<String, Object> allLocalProperties) {
-        if (isExisted(allLocalProperties, "maximumPoolSize")) {
-            int maximumPoolSize = Integer.parseInt(allLocalProperties.get("maximumPoolSize").toString());
+    private void validateMaximumPoolSize(final Map<String, Object> allLocalProps) {
+        if (isExisted(allLocalProps, "maximumPoolSize")) {
+            int maximumPoolSize = Integer.parseInt(allLocalProps.get("maximumPoolSize").toString());
             Preconditions.checkState(maximumPoolSize >= 1, "maxPoolSize can not less than 1.");
         }
     }
     
-    private void validateMinimumIdle(final Map<String, Object> allLocalProperties) {
-        if (isExisted(allLocalProperties, "minimumIdle")) {
-            int minimumIdle = Integer.parseInt(allLocalProperties.get("minimumIdle").toString());
+    private void validateMinimumIdle(final Map<String, Object> allLocalProps) {
+        if (isExisted(allLocalProps, "minimumIdle")) {
+            int minimumIdle = Integer.parseInt(allLocalProps.get("minimumIdle").toString());
             Preconditions.checkState(minimumIdle >= 0, "minimumIdle can not be negative.");
         }
     }
     
-    private void validateKeepAliveTime(final Map<String, Object> allLocalProperties) {
-        if (!isExisted(allLocalProperties, "keepaliveTime")) {
+    private void validateKeepAliveTime(final Map<String, Object> allLocalProps) {
+        if (!isExisted(allLocalProps, "keepaliveTime")) {
             return;
         }
-        int keepAliveTime = Integer.parseInt(allLocalProperties.get("keepaliveTime").toString());
+        int keepAliveTime = Integer.parseInt(allLocalProps.get("keepaliveTime").toString());
         if (0 == keepAliveTime) {
             return;
         }
         Preconditions.checkState(keepAliveTime >= MIN_KEEP_ALIVE_TIME_MILLISECONDS, "keepaliveTime can not be less than %s ms.", MIN_KEEP_ALIVE_TIME_MILLISECONDS);
     }
     
-    private boolean isExisted(final Map<String, Object> allLocalProperties, final String key) {
-        return allLocalProperties.containsKey(key) && null != allLocalProperties.get(key);
+    private boolean isExisted(final Map<String, Object> allLocalProps, final String key) {
+        return allLocalProps.containsKey(key) && null != allLocalProps.get(key);
     }
 }

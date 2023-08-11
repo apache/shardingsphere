@@ -52,9 +52,9 @@ public interface DatabaseConfiguration {
     StorageResource getStorageResource();
     
     /**
-     * Get data source props map.
+     * Get data source pool properties map.
      *
-     * @return data source props map
+     * @return data source pool properties map
      */
-    Map<String, DataSourcePoolProperties> getDataSourcePropsMap();
+    Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap();
 }

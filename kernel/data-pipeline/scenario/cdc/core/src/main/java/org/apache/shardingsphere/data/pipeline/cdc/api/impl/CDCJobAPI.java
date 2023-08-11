@@ -160,13 +160,13 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     }
     
     private ShardingSpherePipelineDataSourceConfiguration getDataSourceConfiguration(final ShardingSphereDatabase database) {
-        Map<String, Map<String, Object>> dataSourceProps = new HashMap<>();
-        for (Entry<String, DataSourcePoolProperties> entry : database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap().entrySet()) {
-            dataSourceProps.put(entry.getKey(), dataSourceConfigSwapper.swapToMap(entry.getValue()));
+        Map<String, Map<String, Object>> dataSourcePoolProps = new HashMap<>();
+        for (Entry<String, DataSourcePoolProperties> entry : database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePoolPropertiesMap().entrySet()) {
+            dataSourcePoolProps.put(entry.getKey(), dataSourceConfigSwapper.swapToMap(entry.getValue()));
         }
         YamlRootConfiguration targetRootConfig = new YamlRootConfiguration();
         targetRootConfig.setDatabaseName(database.getName());
-        targetRootConfig.setDataSources(dataSourceProps);
+        targetRootConfig.setDataSources(dataSourcePoolProps);
         Collection<YamlRuleConfiguration> yamlRuleConfigurations = ruleConfigSwapperEngine.swapToYamlRuleConfigurations(database.getRuleMetaData().getConfigurations());
         targetRootConfig.setRules(yamlRuleConfigurations);
         return new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
