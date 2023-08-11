@@ -45,7 +45,7 @@ public final class DruidDataSourcePoolMetaData implements DataSourcePoolMetaData
     }
     
     @Override
-    public Map<String, Object> getInvalidProperties() {
+    public Map<String, Object> getSkippedProperties() {
         return Collections.emptyMap();
     }
     
