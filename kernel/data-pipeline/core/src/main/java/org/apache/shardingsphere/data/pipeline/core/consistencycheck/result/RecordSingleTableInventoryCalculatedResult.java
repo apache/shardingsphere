@@ -75,7 +75,6 @@ public final class RecordSingleTableInventoryCalculatedResult implements SingleT
         Iterator<Map<String, Object>> thisRecordsIterator = records.iterator();
         Iterator<Map<String, Object>> thatRecordsIterator = that.records.iterator();
         while (thisRecordsIterator.hasNext() && thatRecordsIterator.hasNext()) {
-            equalsBuilder.reset();
             Map<String, Object> thisRecord = thisRecordsIterator.next();
             Map<String, Object> thatRecord = thatRecordsIterator.next();
             if (thisRecord.size() != thatRecord.size()) {
