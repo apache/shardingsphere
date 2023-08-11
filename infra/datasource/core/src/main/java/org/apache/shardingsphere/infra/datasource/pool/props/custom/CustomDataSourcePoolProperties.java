@@ -27,16 +27,16 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Custom data source properties.
+ * Custom data source pool properties.
  */
 @Getter
 @EqualsAndHashCode
-public final class CustomDataSourceProperties {
+public final class CustomDataSourcePoolProperties {
     
     private final Map<String, Object> properties;
     
-    public CustomDataSourceProperties(final Map<String, Object> props,
-                                      final Collection<String> standardPropertyKeys, final Collection<String> transientFieldNames, final Map<String, String> propertySynonyms) {
+    public CustomDataSourcePoolProperties(final Map<String, Object> props,
+                                          final Collection<String> standardPropertyKeys, final Collection<String> transientFieldNames, final Map<String, String> propertySynonyms) {
         properties = getProperties(props);
         standardPropertyKeys.forEach(properties::remove);
         transientFieldNames.forEach(properties::remove);

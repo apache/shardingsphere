@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -117,7 +117,7 @@ public final class ContextManager implements AutoCloseable {
         try {
             ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
             ResourceMetaData currentResourceMetaData = database.getResourceMetaData();
-            Map<String, DataSourceProperties> dataSourceProps = metaDataContexts.get().getPersistService().getDataSourceUnitService().load(databaseName);
+            Map<String, DataSourcePoolProperties> dataSourceProps = metaDataContexts.get().getPersistService().getDataSourceUnitService().load(databaseName);
             SwitchingResource switchingResource = new ResourceSwitchManager().createByAlterDataSourceProps(currentResourceMetaData, dataSourceProps);
             metaDataContexts.get().getMetaData().getDatabases().putAll(configurationContextManager.renewDatabase(database, switchingResource));
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(databaseName, switchingResource);

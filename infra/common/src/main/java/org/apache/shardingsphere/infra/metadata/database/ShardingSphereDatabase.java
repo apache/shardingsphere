@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -124,7 +124,7 @@ public final class ShardingSphereDatabase {
     }
     
     private static ResourceMetaData createResourceMetaData(final String databaseName, final StorageResource storageResource,
-                                                           final Map<String, DataSourceProperties> dataSourcePropsMap) {
+                                                           final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
         return new ResourceMetaData(databaseName, storageResource, dataSourcePropsMap);
     }
     

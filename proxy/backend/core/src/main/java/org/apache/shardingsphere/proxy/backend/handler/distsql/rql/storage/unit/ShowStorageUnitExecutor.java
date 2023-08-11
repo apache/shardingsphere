@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDa
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -67,14 +67,14 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
         ResourceMetaData resourceMetaData = database.getResourceMetaData();
-        Map<String, DataSourceProperties> dataSourcePropsMap = getDataSourcePropsMap(database, sqlStatement);
+        Map<String, DataSourcePoolProperties> dataSourcePropsMap = getDataSourcePropsMap(database, sqlStatement);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
+        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePropsMap.entrySet()) {
             String key = entry.getKey();
-            DataSourceProperties dataSourceProps = entry.getValue();
+            DataSourcePoolProperties dataSourceProps = entry.getValue();
             ConnectionProperties connectionProps = resourceMetaData.getConnectionProperties(key);
             Map<String, Object> standardProps = dataSourceProps.getPoolPropertySynonyms().getStandardProperties();
-            Map<String, Object> otherProps = dataSourceProps.getCustomDataSourceProperties().getProperties();
+            Map<String, Object> otherProps = dataSourceProps.getCustomDataSourcePoolProperties().getProperties();
             result.add(new LocalDataQueryResultRow(key,
                     resourceMetaData.getStorageType(key).getType(),
                     connectionProps.getHostname(),
@@ -91,9 +91,9 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         return result;
     }
     
-    private Map<String, DataSourceProperties> getDataSourcePropsMap(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(database.getResourceMetaData().getDataSources().size(), 1F);
-        Map<String, DataSourceProperties> dataSourcePropsMap = database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap();
+    private Map<String, DataSourcePoolProperties> getDataSourcePropsMap(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(database.getResourceMetaData().getDataSources().size(), 1F);
+        Map<String, DataSourcePoolProperties> dataSourcePropsMap = database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap();
         Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
         Optional<Integer> usageCountOptional = sqlStatement.getUsageCount();
         if (usageCountOptional.isPresent()) {
@@ -112,13 +112,13 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         return result;
     }
     
-    private DataSourceProperties getDataSourceProperties(final Map<String, DataSourceProperties> dataSourcePropsMap, final String storageUnitName,
-                                                         final DatabaseType databaseType, final DataSource dataSource) {
-        DataSourceProperties result = getDataSourceProperties(dataSource);
+    private DataSourcePoolProperties getDataSourceProperties(final Map<String, DataSourcePoolProperties> dataSourcePropsMap, final String storageUnitName,
+                                                             final DatabaseType databaseType, final DataSource dataSource) {
+        DataSourcePoolProperties result = getDataSourceProperties(dataSource);
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         if (dialectDatabaseMetaData.isInstanceConnectionAvailable() && dataSourcePropsMap.containsKey(storageUnitName)) {
-            DataSourceProperties unitDataSourceProperties = dataSourcePropsMap.get(storageUnitName);
-            for (Entry<String, Object> entry : unitDataSourceProperties.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
+            DataSourcePoolProperties unitDataSourcePoolProperties = dataSourcePropsMap.get(storageUnitName);
+            for (Entry<String, Object> entry : unitDataSourcePoolProperties.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
                 if (null != entry.getValue()) {
                     result.getPoolPropertySynonyms().getStandardProperties().put(entry.getKey(), entry.getValue());
                 }
@@ -127,10 +127,10 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         return result;
     }
     
-    private DataSourceProperties getDataSourceProperties(final DataSource dataSource) {
+    private DataSourcePoolProperties getDataSourceProperties(final DataSource dataSource) {
         return dataSource instanceof CatalogSwitchableDataSource
-                ? DataSourcePropertiesCreator.create(((CatalogSwitchableDataSource) dataSource).getDataSource())
-                : DataSourcePropertiesCreator.create(dataSource);
+                ? DataSourcePoolPropertiesCreator.create(((CatalogSwitchableDataSource) dataSource).getDataSource())
+                : DataSourcePoolPropertiesCreator.create(dataSource);
     }
     
     private String getStandardProperty(final Map<String, Object> standardProps, final String key) {

@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.druid.metadata;
-
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
+package org.apache.shardingsphere.infra.datasource.pool.props;
 
 /**
- * Druid data source pool field meta data.
+ * Invalid data source pool properties exception.
  */
-public final class DruidDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
+public final class InvalidDataSourcePoolPropertiesException extends Exception {
     
-    @Override
-    public String getJdbcUrlFieldName() {
-        return "url";
-    }
+    private static final long serialVersionUID = -7221138369057943935L;
     
-    @Override
-    public String getJdbcUrlPropertiesFieldName() {
-        return "connectionProperties";
+    public InvalidDataSourcePoolPropertiesException(final String dataSourceName, final String errorMessage) {
+        super(String.format("Invalid data source `%s`, error message is: %s", dataSourceName, errorMessage));
     }
 }

@@ -37,8 +37,8 @@ import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -147,10 +147,10 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void addResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
-        Map<String, DataSourceProperties> dataSourcePropsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1F);
+        Map<String, DataSourcePoolProperties> dataSourcePropsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1F);
         for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
             DataSourceConfiguration dataSourceConfig = dataSourceConfigSwapper.swap(entry.getValue());
-            dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(dataSourceConfig));
+            dataSourcePropsMap.put(entry.getKey(), DataSourcePoolPropertiesCreator.create(dataSourceConfig));
         }
         validateHandler.validate(dataSourcePropsMap);
         try {

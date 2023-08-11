@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datasource.c3p0.creator;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class C3P0DataSourcePoolCreatorTest {
     
     @Test
     void assertCreateDataSource() {
-        ComboPooledDataSource actual = (ComboPooledDataSource) DataSourcePoolCreator.create(new DataSourceProperties(ComboPooledDataSource.class.getName(), createDataSourceProperties()));
+        ComboPooledDataSource actual = (ComboPooledDataSource) DataSourcePoolCreator.create(new DataSourcePoolProperties(ComboPooledDataSource.class.getName(), createDataSourceProperties()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUser(), is("root"));
         assertThat(actual.getPassword(), is("root"));

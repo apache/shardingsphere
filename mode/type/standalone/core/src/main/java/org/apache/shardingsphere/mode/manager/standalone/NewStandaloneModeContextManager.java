@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.standalone;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -207,7 +207,7 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     }
     
     @Override
-    public void registerStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeRegisterStorageUnitProps) throws SQLException {
+    public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisterStorageUnitProps) throws SQLException {
         SwitchingResource switchingResource =
                 new ResourceSwitchManager().create(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisterStorageUnitProps);
         contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.getConfigurationContextManager().createChangedDatabases(databaseName, false, switchingResource, null));
@@ -222,7 +222,7 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     }
     
     @Override
-    public void alterStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeUpdatedStorageUnitProps) throws SQLException {
+    public void alterStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeUpdatedStorageUnitProps) throws SQLException {
         SwitchingResource switchingResource =
                 new ResourceSwitchManager().create(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeUpdatedStorageUnitProps);
         contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.getConfigurationContextManager().createChangedDatabases(databaseName, true, switchingResource, null));
@@ -236,9 +236,9 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) throws SQLException {
-        Map<String, DataSourceProperties> dataSourcePropsMap = contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService()
+        Map<String, DataSourcePoolProperties> dataSourcePropsMap = contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService()
                 .load(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName());
-        Map<String, DataSourceProperties> toBeDeletedDataSourcePropsMap = getToBeDeletedDataSourcePropsMap(dataSourcePropsMap, toBeDroppedStorageUnitNames);
+        Map<String, DataSourcePoolProperties> toBeDeletedDataSourcePropsMap = getToBeDeletedDataSourcePropsMap(dataSourcePropsMap, toBeDroppedStorageUnitNames);
         SwitchingResource switchingResource =
                 new ResourceSwitchManager().createByDropResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeDeletedDataSourcePropsMap);
         contextManager.getMetaDataContexts().getMetaData().getDatabases()
@@ -248,18 +248,18 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
                 contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         contextManager.deletedSchemaNames(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         contextManager.renewMetaDataContexts(reloadMetaDataContexts);
-        Map<String, DataSourceProperties> toBeReversedDataSourcePropsMap = getToBeReversedDataSourcePropsMap(dataSourcePropsMap, toBeDroppedStorageUnitNames);
+        Map<String, DataSourcePoolProperties> toBeReversedDataSourcePropsMap = getToBeReversedDataSourcePropsMap(dataSourcePropsMap, toBeDroppedStorageUnitNames);
         contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().persist(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(),
                 toBeReversedDataSourcePropsMap);
         switchingResource.closeStaleDataSources();
         clearServiceCache();
     }
     
-    private Map<String, DataSourceProperties> getToBeDeletedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
+    private Map<String, DataSourcePoolProperties> getToBeDeletedDataSourcePropsMap(final Map<String, DataSourcePoolProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
         return dataSourcePropsMap.entrySet().stream().filter(entry -> toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
-    private Map<String, DataSourceProperties> getToBeReversedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
+    private Map<String, DataSourcePoolProperties> getToBeReversedDataSourcePropsMap(final Map<String, DataSourcePoolProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
         return dataSourcePropsMap.entrySet().stream().filter(entry -> !toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     

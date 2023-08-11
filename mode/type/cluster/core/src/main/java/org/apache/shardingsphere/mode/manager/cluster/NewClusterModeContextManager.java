@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -98,13 +98,13 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     }
     
     @Override
-    public void registerStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeRegisterStorageUnitProps) {
+    public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisterStorageUnitProps) {
         contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().persistConfig(databaseName, toBeRegisterStorageUnitProps);
     }
     
     @Override
-    public void alterStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeUpdatedStorageUnitProps) {
-        DatabaseBasedPersistService<Map<String, DataSourceProperties>> dataSourceService = contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService();
+    public void alterStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeUpdatedStorageUnitProps) {
+        DatabaseBasedPersistService<Map<String, DataSourcePoolProperties>> dataSourceService = contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService();
         contextManager.getMetaDataContexts().getPersistService().getMetaDataVersionPersistService().switchActiveVersion(dataSourceService.persistConfig(databaseName, toBeUpdatedStorageUnitProps));
     }
     
@@ -114,8 +114,8 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
                 getToBeDroppedDataSourcePropsMap(contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(databaseName), toBeDroppedStorageUnitNames));
     }
     
-    private Map<String, DataSourceProperties> getToBeDroppedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>();
+    private Map<String, DataSourcePoolProperties> getToBeDroppedDataSourcePropsMap(final Map<String, DataSourcePoolProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
         for (String each : toBeDroppedResourceNames) {
             if (dataSourcePropsMap.containsKey(each)) {
                 result.put(each, dataSourcePropsMap.get(each));

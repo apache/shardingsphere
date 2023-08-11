@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 
 import javax.sql.DataSource;
@@ -40,11 +40,11 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     
     private final Collection<RuleConfiguration> ruleConfigurations;
     
-    private final Map<String, DataSourceProperties> dataSourcePropsMap;
+    private final Map<String, DataSourcePoolProperties> dataSourcePropsMap;
     
     public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs) {
         ruleConfigurations = ruleConfigs;
-        dataSourcePropsMap = DataSourcePropertiesCreator.createFromConfiguration(dataSourceConfigs);
+        dataSourcePropsMap = DataSourcePoolPropertiesCreator.createFromConfiguration(dataSourceConfigs);
         this.storageResource = DataSourcePoolCreator.createStorageResource(dataSourcePropsMap);
     }
     

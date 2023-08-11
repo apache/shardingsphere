@@ -30,7 +30,6 @@
     <modules>
         <module>c3p0</module>
         <module>dbcp</module>
-        <module>druid</module>
         <module>hikari</module>
     </modules>
 </project>

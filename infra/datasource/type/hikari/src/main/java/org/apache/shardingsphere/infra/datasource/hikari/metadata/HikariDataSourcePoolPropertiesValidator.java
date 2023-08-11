@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datasource.hikari.metadata;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +36,7 @@ public final class HikariDataSourcePoolPropertiesValidator implements DataSource
     private static final long MIN_KEEP_ALIVE_TIME_MILLISECONDS = TimeUnit.SECONDS.toMillis(30L);
     
     @Override
-    public void validate(final DataSourceProperties dataSourceProps) {
+    public void validate(final DataSourcePoolProperties dataSourceProps) {
         Map<String, Object> allLocalProperties = dataSourceProps.getAllLocalProperties();
         validateConnectionTimeout(allLocalProperties);
         validateIdleTimeout(allLocalProperties);

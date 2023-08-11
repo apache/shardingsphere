@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.datasource.dbcp.creator;
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -38,7 +38,7 @@ class DBCPDataSourcePoolCreatorTest {
     
     @Test
     void assertCreateDataSource() {
-        BasicDataSource actual = (BasicDataSource) DataSourcePoolCreator.create(new DataSourceProperties(BasicDataSource.class.getName(), createDataSourceProperties()));
+        BasicDataSource actual = (BasicDataSource) DataSourcePoolCreator.create(new DataSourcePoolProperties(BasicDataSource.class.getName(), createDataSourceProperties()));
         assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));

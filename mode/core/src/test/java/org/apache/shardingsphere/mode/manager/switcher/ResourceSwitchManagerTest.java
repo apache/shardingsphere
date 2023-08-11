@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.switcher;
 
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -67,13 +67,13 @@ class ResourceSwitchManagerTest {
         return result;
     }
     
-    private Map<String, DataSourceProperties> createToBeChangedDataSourcePropsMap() {
-        Map<String, DataSourceProperties> result = new HashMap<>(3, 1F);
-        result.put("new", new DataSourceProperties(MockedDataSource.class.getName(), getDataSourceProps(2)));
-        result.put("not_change", new DataSourceProperties(MockedDataSource.class.getName(), getDataSourceProps(2)));
+    private Map<String, DataSourcePoolProperties> createToBeChangedDataSourcePropsMap() {
+        Map<String, DataSourcePoolProperties> result = new HashMap<>(3, 1F);
+        result.put("new", new DataSourcePoolProperties(MockedDataSource.class.getName(), getDataSourceProps(2)));
+        result.put("not_change", new DataSourcePoolProperties(MockedDataSource.class.getName(), getDataSourceProps(2)));
         Map<String, Object> replaceProps = getDataSourceProps(3);
         replaceProps.put("password", "new_pwd");
-        result.put("replace", new DataSourceProperties(MockedDataSource.class.getName(), replaceProps));
+        result.put("replace", new DataSourcePoolProperties(MockedDataSource.class.getName(), replaceProps));
         return result;
     }
     

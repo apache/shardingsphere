@@ -26,9 +26,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertY
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -121,7 +121,7 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         while (iterator.hasNext()) {
             Entry<String, YamlProxyDataSourceConfiguration> entry = iterator.next();
             DataSourceConfiguration dataSourceConfig = dataSourceConfigSwapper.swap(entry.getValue());
-            DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(dataSourceConfig);
+            DataSourcePoolProperties dataSourceProps = DataSourcePoolPropertiesCreator.create(dataSourceConfig);
             appendResource(entry.getKey(), dataSourceProps, stringBuilder);
             if (iterator.hasNext()) {
                 stringBuilder.append(DistSQLScriptConstants.COMMA);
@@ -130,12 +130,12 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
     }
     
-    private void appendResource(final String resourceName, final DataSourceProperties dataSourceProps, final StringBuilder stringBuilder) {
+    private void appendResource(final String resourceName, final DataSourcePoolProperties dataSourceProps, final StringBuilder stringBuilder) {
         Map<String, Object> connectionProps = dataSourceProps.getConnectionPropertySynonyms().getStandardProperties();
         String url = (String) connectionProps.get(DistSQLScriptConstants.KEY_URL);
         String username = (String) connectionProps.get(DistSQLScriptConstants.KEY_USERNAME);
         String password = (String) connectionProps.get(DistSQLScriptConstants.KEY_PASSWORD);
-        String props = getResourceProperties(dataSourceProps.getPoolPropertySynonyms(), dataSourceProps.getCustomDataSourceProperties());
+        String props = getResourceProperties(dataSourceProps.getPoolPropertySynonyms(), dataSourceProps.getCustomDataSourcePoolProperties());
         if (Strings.isNullOrEmpty(password)) {
             stringBuilder.append(String.format(DistSQLScriptConstants.RESOURCE_DEFINITION_WITHOUT_PASSWORD, resourceName, url, username, props));
         } else {
@@ -143,7 +143,7 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         }
     }
     
-    private String getResourceProperties(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourceProperties customDataSourceProps) {
+    private String getResourceProperties(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourcePoolProperties customDataSourceProps) {
         StringBuilder result = new StringBuilder();
         appendProperties(poolPropertySynonyms.getStandardProperties(), result);
         if (!customDataSourceProps.getProperties().isEmpty()) {

@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -138,12 +138,12 @@ class ConfigurationChangedSubscriberTest {
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getDataSources().containsKey("ds_2"));
     }
     
-    private Map<String, DataSourceProperties> createChangedDataSourcePropertiesMap() {
+    private Map<String, DataSourcePoolProperties> createChangedDataSourcePropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1F);
-        result.put("primary_ds", DataSourcePropertiesCreator.create(dataSource));
-        result.put("ds_1", DataSourcePropertiesCreator.create(dataSource));
-        result.put("ds_2", DataSourcePropertiesCreator.create(dataSource));
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(3, 1F);
+        result.put("primary_ds", DataSourcePoolPropertiesCreator.create(dataSource));
+        result.put("ds_1", DataSourcePoolPropertiesCreator.create(dataSource));
+        result.put("ds_2", DataSourcePoolPropertiesCreator.create(dataSource));
         return result;
     }
     

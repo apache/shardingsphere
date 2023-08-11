@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -93,7 +93,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     @Override
     public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfigs,
                                       final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
-        Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(databaseConfigs);
+        Map<String, DataSourcePoolProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(databaseConfigs);
         if (dataSourcePropertiesMap.isEmpty() && databaseConfigs.getRuleConfigurations().isEmpty()) {
             databaseMetaDataService.addDatabase(databaseName);
         } else {
@@ -113,28 +113,28 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
         return result;
     }
     
-    private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final DatabaseConfiguration databaseConfigs) {
+    private Map<String, DataSourcePoolProperties> getDataSourcePropertiesMap(final DatabaseConfiguration databaseConfigs) {
         if (!databaseConfigs.getDataSources().isEmpty() && databaseConfigs.getDataSourcePropsMap().isEmpty()) {
             return getDataSourcePropertiesMap(databaseConfigs.getStorageResource().getStorageNodeDataSources());
         }
         return databaseConfigs.getDataSourcePropsMap();
     }
     
-    private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<StorageNode, DataSource> storageNodeDataSources) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(storageNodeDataSources.size(), 1F);
+    private Map<String, DataSourcePoolProperties> getDataSourcePropertiesMap(final Map<StorageNode, DataSource> storageNodeDataSources) {
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(storageNodeDataSources.size(), 1F);
         for (Entry<StorageNode, DataSource> entry : storageNodeDataSources.entrySet()) {
-            result.put(entry.getKey().getName(), DataSourcePropertiesCreator.create(entry.getValue()));
+            result.put(entry.getKey().getName(), DataSourcePoolPropertiesCreator.create(entry.getValue()));
         }
         return result;
     }
     
     @Override
     public Map<String, DataSourceConfiguration> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceUnitService.load(databaseName);
+        Map<String, DataSourcePoolProperties> persistedDataPropsMap = dataSourceUnitService.load(databaseName);
         if (databaseConfigs.containsKey(databaseName) && !databaseConfigs.get(databaseName).getDataSources().isEmpty()) {
             databaseConfigs.get(databaseName).getStorageResource().getStorageNodeDataSources().values().forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
         }
         return persistedDataPropsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-                entry -> DataSourcePropertiesCreator.createConfiguration(entry.getValue()), (key, value) -> value, LinkedHashMap::new));
+                entry -> DataSourcePoolPropertiesCreator.createConfiguration(entry.getValue()), (key, value) -> value, LinkedHashMap::new));
     }
 }

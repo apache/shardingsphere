@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -87,12 +87,12 @@ public final class ExportUtils {
             return;
         }
         stringBuilder.append("dataSources:").append(System.lineSeparator());
-        for (Entry<String, DataSourceProperties> entry : database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap().entrySet()) {
+        for (Entry<String, DataSourcePoolProperties> entry : database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap().entrySet()) {
             appendDataSourceConfiguration(entry.getKey(), entry.getValue(), stringBuilder);
         }
     }
     
-    private static void appendDataSourceConfiguration(final String name, final DataSourceProperties dataSourceProps, final StringBuilder stringBuilder) {
+    private static void appendDataSourceConfiguration(final String name, final DataSourcePoolProperties dataSourceProps, final StringBuilder stringBuilder) {
         stringBuilder.append("  ").append(name).append(':').append(System.lineSeparator());
         dataSourceProps.getConnectionPropertySynonyms().getStandardProperties()
                 .forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append(System.lineSeparator()));

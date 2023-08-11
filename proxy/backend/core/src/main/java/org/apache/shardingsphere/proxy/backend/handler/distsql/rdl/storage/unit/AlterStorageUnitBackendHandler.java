@@ -30,8 +30,8 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorage
 import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -67,7 +67,7 @@ public final class AlterStorageUnitBackendHandler extends StorageUnitDefinitionB
     @Override
     public ResponseHeader execute(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
-        Map<String, DataSourceProperties> dataSourcePropsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
+        Map<String, DataSourcePoolProperties> dataSourcePropsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
         validateHandler.validate(dataSourcePropsMap);
         try {
             ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterStorageUnits(databaseName, dataSourcePropsMap);
@@ -128,7 +128,7 @@ public final class AlterStorageUnitBackendHandler extends StorageUnitDefinitionB
             port = String.valueOf(segmentJdbcUrl.getPort());
             database = segmentJdbcUrl.getDatabase();
         }
-        String url = String.valueOf(DataSourcePropertiesCreator.create(dataSource).getConnectionPropertySynonyms().getStandardProperties().get("url"));
+        String url = String.valueOf(DataSourcePoolPropertiesCreator.create(dataSource).getConnectionPropertySynonyms().getStandardProperties().get("url"));
         JdbcUrl dataSourceJdbcUrl = new StandardJdbcUrlParser().parse(url);
         return Objects.equals(hostName, dataSourceJdbcUrl.getHostname()) && Objects.equals(port, String.valueOf(dataSourceJdbcUrl.getPort()))
                 && Objects.equals(database, dataSourceJdbcUrl.getDatabase());

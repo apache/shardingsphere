@@ -25,7 +25,7 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.converter.DataSourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
@@ -61,7 +61,7 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
     @Override
     public ResponseHeader execute(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
-        Map<String, DataSourceProperties> dataSourcePropsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
+        Map<String, DataSourcePoolProperties> dataSourcePropsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
         if (sqlStatement.isIfNotExists()) {
             Collection<String> currentStorageUnits = getCurrentStorageUnitNames(databaseName);
             Collection<String> logicalDataSourceNames = getLogicalDataSourceNames(databaseName);

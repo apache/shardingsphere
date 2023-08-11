@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -119,12 +119,12 @@ class ResourceMetaDataChangedSubscriberTest {
         assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db_added").getResourceMetaData().getDataSources());
     }
     
-    private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
+    private Map<String, DataSourcePoolProperties> createDataSourcePropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1F);
-        result.put("primary_ds", DataSourcePropertiesCreator.create(dataSource));
-        result.put("replica_ds_0", DataSourcePropertiesCreator.create(dataSource));
-        result.put("replica_ds_1", DataSourcePropertiesCreator.create(dataSource));
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(3, 1F);
+        result.put("primary_ds", DataSourcePoolPropertiesCreator.create(dataSource));
+        result.put("replica_ds_0", DataSourcePoolPropertiesCreator.create(dataSource));
+        result.put("replica_ds_1", DataSourcePoolPropertiesCreator.create(dataSource));
         return result;
     }
     

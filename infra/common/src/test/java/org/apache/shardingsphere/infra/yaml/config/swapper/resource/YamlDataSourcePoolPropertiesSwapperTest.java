@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.config.swapper.resource;
 
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +29,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class YamlDataSourcePropertiesSwapperTest {
+class YamlDataSourcePoolPropertiesSwapperTest {
     
     private final YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();
     
@@ -53,7 +53,7 @@ class YamlDataSourcePropertiesSwapperTest {
         yamlConfig.put("dataSourceClassName", MockedDataSource.class.getName());
         yamlConfig.put("url", "xx:xxx");
         yamlConfig.put("username", "root");
-        DataSourceProperties actual = swapper.swapToDataSourceProperties(yamlConfig);
+        DataSourcePoolProperties actual = swapper.swapToDataSourceProperties(yamlConfig);
         assertThat(actual.getAllLocalProperties().size(), is(3));
         assertThat(actual.getAllLocalProperties().get("dataSourceClassName").toString(), is("org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource"));
         assertThat(actual.getAllLocalProperties().get("url").toString(), is("xx:xxx"));
@@ -62,7 +62,7 @@ class YamlDataSourcePropertiesSwapperTest {
     
     @Test
     void assertSwapToMap() {
-        Map<String, Object> actual = swapper.swapToMap(new DataSourceProperties(MockedDataSource.class.getName(), createProperties()));
+        Map<String, Object> actual = swapper.swapToMap(new DataSourcePoolProperties(MockedDataSource.class.getName(), createProperties()));
         assertThat(actual.get("dataSourceClassName"), is(MockedDataSource.class.getName()));
         assertThat(actual.get("url").toString(), is("xx:xxx"));
         assertThat(actual.get("username").toString(), is("root"));

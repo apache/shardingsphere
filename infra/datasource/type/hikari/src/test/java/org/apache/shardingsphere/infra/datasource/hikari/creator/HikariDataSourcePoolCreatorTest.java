@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datasource.hikari.creator;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -35,7 +35,7 @@ class HikariDataSourcePoolCreatorTest {
     
     @Test
     void assertCreateDataSource() {
-        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.create(new DataSourceProperties(HikariDataSource.class.getName(), createDataSourceProperties()));
+        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.create(new DataSourcePoolProperties(HikariDataSource.class.getName(), createDataSourceProperties()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));

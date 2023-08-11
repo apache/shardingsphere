@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportStorageNodesStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -93,7 +93,7 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
             if (storageNodes.containsKey(databaseInstanceIp)) {
                 continue;
             }
-            Map<String, Object> standardProperties = DataSourcePropertiesCreator.create(entry.getValue()).getConnectionPropertySynonyms().getStandardProperties();
+            Map<String, Object> standardProperties = DataSourcePoolPropertiesCreator.create(entry.getValue()).getConnectionPropertySynonyms().getStandardProperties();
             ExportedStorageNode exportedStorageNode = new ExportedStorageNode(connectionProps.getHostname(), String.valueOf(connectionProps.getPort()),
                     String.valueOf(standardProperties.get("username")), String.valueOf(standardProperties.get("password")), connectionProps.getCatalog());
             storageNodes.put(databaseInstanceIp, exportedStorageNode);

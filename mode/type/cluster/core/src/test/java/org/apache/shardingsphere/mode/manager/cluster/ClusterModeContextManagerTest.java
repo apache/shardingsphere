@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
@@ -236,8 +236,8 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfig, modeContextManager, null, new EventBusContext())));
-        Map<String, DataSourceProperties> stringDataSourcePropertiesMap = new HashMap<>();
-        stringDataSourcePropertiesMap.put("active_version", new DataSourceProperties("active_version", new HashMap<>()));
+        Map<String, DataSourcePoolProperties> stringDataSourcePropertiesMap = new HashMap<>();
+        stringDataSourcePropertiesMap.put("active_version", new DataSourcePoolProperties("active_version", new HashMap<>()));
         assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap));
     }
     
@@ -254,9 +254,9 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfig, modeContextManager, null, new EventBusContext())));
-        Map<String, DataSourceProperties> stringDataSourcePropertiesMap = new HashMap<>();
-        stringDataSourcePropertiesMap.put("\n", new DataSourceProperties("\n", new HashMap<>()));
-        stringDataSourcePropertiesMap.put("active_version", new DataSourceProperties("active_version", new HashMap<>()));
+        Map<String, DataSourcePoolProperties> stringDataSourcePropertiesMap = new HashMap<>();
+        stringDataSourcePropertiesMap.put("\n", new DataSourcePoolProperties("\n", new HashMap<>()));
+        stringDataSourcePropertiesMap.put("active_version", new DataSourcePoolProperties("active_version", new HashMap<>()));
         assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap));
     }
     
@@ -294,7 +294,7 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfig, modeContextManager, null, new EventBusContext())));
-        Map<String, DataSourceProperties> stringDataSourcePropertiesMap = new HashMap<>(new TreeMap<>());
+        Map<String, DataSourcePoolProperties> stringDataSourcePropertiesMap = new HashMap<>(new TreeMap<>());
         assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap));
     }
     
@@ -312,8 +312,8 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfig, modeContextManager, null, new EventBusContext())));
-        Map<String, DataSourceProperties> stringDataSourcePropertiesMap = new HashMap<>();
-        stringDataSourcePropertiesMap.put("42", new DataSourceProperties("active_version", new HashMap<>()));
+        Map<String, DataSourcePoolProperties> stringDataSourcePropertiesMap = new HashMap<>();
+        stringDataSourcePropertiesMap.put("42", new DataSourcePoolProperties("active_version", new HashMap<>()));
         assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap));
     }
     

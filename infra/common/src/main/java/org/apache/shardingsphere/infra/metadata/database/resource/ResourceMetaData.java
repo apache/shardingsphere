@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResourceUtils;
@@ -51,10 +51,10 @@ public final class ResourceMetaData {
     public ResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
         storageNodeDataSources = StorageResourceUtils.getStorageNodeDataSources(dataSources);
         storageUnitMetaData = new StorageUnitMetaData(databaseName, storageNodeDataSources,
-                DataSourcePropertiesCreator.create(dataSources), StorageResourceUtils.getStorageUnitNodeMappers(dataSources));
+                DataSourcePoolPropertiesCreator.create(dataSources), StorageResourceUtils.getStorageUnitNodeMappers(dataSources));
     }
     
-    public ResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    public ResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
         storageNodeDataSources = storageResource.getStorageNodeDataSources();
         storageUnitMetaData = new StorageUnitMetaData(databaseName, storageNodeDataSources, dataSourcePropsMap, storageResource.getStorageUnitNodeMappers());
     }

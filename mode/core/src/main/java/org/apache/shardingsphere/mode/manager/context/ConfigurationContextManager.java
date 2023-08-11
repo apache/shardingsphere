@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDa
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnitNodeMapper;
@@ -77,7 +77,7 @@ public final class ConfigurationContextManager {
      * @param dataSourceProps data source properties
      */
     @SuppressWarnings("rawtypes")
-    public synchronized void registerStorageUnit(final String databaseName, final Map<String, DataSourceProperties> dataSourceProps) {
+    public synchronized void registerStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceProps) {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
@@ -96,7 +96,7 @@ public final class ConfigurationContextManager {
      * @param dataSourceProps data source properties
      */
     @SuppressWarnings("rawtypes")
-    public synchronized void alterStorageUnit(final String databaseName, final Map<String, DataSourceProperties> dataSourceProps) {
+    public synchronized void alterStorageUnit(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourceProps) {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
@@ -225,7 +225,7 @@ public final class ConfigurationContextManager {
      * @param dataSourcePropsMap altered data source properties map
      */
     @SuppressWarnings("rawtypes")
-    public synchronized void alterDataSourceUnitsConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    public synchronized void alterDataSourceUnitsConfiguration(final String databaseName, final Map<String, DataSourcePoolProperties> dataSourcePropsMap) {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);

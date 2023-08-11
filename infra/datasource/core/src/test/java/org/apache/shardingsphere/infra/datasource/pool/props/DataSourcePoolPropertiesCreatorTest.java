@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.datasource.pool.props;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.synonym.ConnectionPropertySynonyms;
 import org.apache.shardingsphere.infra.datasource.pool.props.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -39,11 +39,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class DataSourcePropertiesCreatorTest {
+class DataSourcePoolPropertiesCreatorTest {
     
     @Test
     void assertCreateWithDataSourceConfiguration() {
-        assertParameter(DataSourcePropertiesCreator.create(createResourceConfiguration()));
+        assertParameter(DataSourcePoolPropertiesCreator.create(createResourceConfiguration()));
     }
     
     private DataSourceConfiguration createResourceConfiguration() {
@@ -52,7 +52,7 @@ class DataSourcePropertiesCreatorTest {
         return new DataSourceConfiguration(connectionConfig, poolConfig);
     }
     
-    private void assertParameter(final DataSourceProperties actual) {
+    private void assertParameter(final DataSourcePoolProperties actual) {
         Map<String, Object> props = actual.getAllLocalProperties();
         assertThat(props.size(), is(10));
         assertThat(props.get("dataSourceClassName"), is("com.zaxxer.hikari.HikariDataSource"));
@@ -68,20 +68,20 @@ class DataSourcePropertiesCreatorTest {
     
     @Test
     void assertCreateWithDataSource() {
-        assertThat(DataSourcePropertiesCreator.create(createDataSource()), is(new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
+        assertThat(DataSourcePoolPropertiesCreator.create(createDataSource()), is(new DataSourcePoolProperties(MockedDataSource.class.getName(), createProperties())));
     }
     
     @Test
     void assertCreateConfiguration() {
-        DataSourceProperties dataSourceProperties = mock(DataSourceProperties.class);
+        DataSourcePoolProperties dataSourcePoolProperties = mock(DataSourcePoolProperties.class);
         ConnectionPropertySynonyms connectionPropertySynonyms = new ConnectionPropertySynonyms(createStandardProperties(), createPropertySynonyms());
         PoolPropertySynonyms poolPropertySynonyms = new PoolPropertySynonyms(createStandardProperties(), createPropertySynonyms());
-        CustomDataSourceProperties customDataSourceProperties = new CustomDataSourceProperties(createProperties(),
+        CustomDataSourcePoolProperties customDataSourcePoolProperties = new CustomDataSourcePoolProperties(createProperties(),
                 Arrays.asList("username", "password", "closed"), Collections.singletonList("closed"), Collections.singletonMap("username", "user"));
-        when(dataSourceProperties.getConnectionPropertySynonyms()).thenReturn(connectionPropertySynonyms);
-        when(dataSourceProperties.getPoolPropertySynonyms()).thenReturn(poolPropertySynonyms);
-        when(dataSourceProperties.getCustomDataSourceProperties()).thenReturn(customDataSourceProperties);
-        DataSourcePropertiesCreator.createConfiguration(dataSourceProperties);
+        when(dataSourcePoolProperties.getConnectionPropertySynonyms()).thenReturn(connectionPropertySynonyms);
+        when(dataSourcePoolProperties.getPoolPropertySynonyms()).thenReturn(poolPropertySynonyms);
+        when(dataSourcePoolProperties.getCustomDataSourcePoolProperties()).thenReturn(customDataSourcePoolProperties);
+        DataSourcePoolPropertiesCreator.createConfiguration(dataSourcePoolProperties);
     }
     
     private DataSource createDataSource() {

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -131,7 +131,7 @@ class ExportMetaDataExecutorTest {
         when(database.getName()).thenReturn("normal_db");
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("empty_metadata"));
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap()).thenReturn(DataSourcePropertiesCreator.create(dataSourceMap));
+        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePropsMap()).thenReturn(DataSourcePoolPropertiesCreator.create(dataSourceMap));
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

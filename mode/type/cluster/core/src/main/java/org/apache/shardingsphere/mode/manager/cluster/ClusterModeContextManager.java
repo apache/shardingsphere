@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -88,12 +88,12 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     }
     
     @Override
-    public void registerStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeRegisterStorageUnitProps) {
+    public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisterStorageUnitProps) {
         contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().append(databaseName, toBeRegisterStorageUnitProps);
     }
     
     @Override
-    public void alterStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeUpdatedStorageUnitProps) {
+    public void alterStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeUpdatedStorageUnitProps) {
         contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().append(databaseName, toBeUpdatedStorageUnitProps);
     }
     
@@ -103,7 +103,7 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
                 getToBeReversedDataSourcePropsMap(contextManager.getMetaDataContexts().getPersistService().getDataSourceUnitService().load(databaseName), toBeDroppedStorageUnitNames));
     }
     
-    private Map<String, DataSourceProperties> getToBeReversedDataSourcePropsMap(final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
+    private Map<String, DataSourcePoolProperties> getToBeReversedDataSourcePropsMap(final Map<String, DataSourcePoolProperties> dataSourcePropsMap, final Collection<String> toBeDroppedResourceNames) {
         return dataSourcePropsMap.entrySet().stream().filter(entry -> !toBeDroppedResourceNames.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     

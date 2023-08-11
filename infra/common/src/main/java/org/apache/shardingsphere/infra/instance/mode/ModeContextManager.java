@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.instance.mode;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
@@ -85,7 +85,7 @@ public interface ModeContextManager {
      * @param toBeRegisterStorageUnitProps to be register storage unit props
      * @throws SQLException SQL exception
      */
-    void registerStorageUnits(String databaseName, Map<String, DataSourceProperties> toBeRegisterStorageUnitProps) throws SQLException;
+    void registerStorageUnits(String databaseName, Map<String, DataSourcePoolProperties> toBeRegisterStorageUnitProps) throws SQLException;
     
     /**
      * Alter storage units.
@@ -94,7 +94,7 @@ public interface ModeContextManager {
      * @param toBeUpdatedStorageUnitProps to be updated storage unit props
      * @throws SQLException SQL exception
      */
-    void alterStorageUnits(String databaseName, Map<String, DataSourceProperties> toBeUpdatedStorageUnitProps) throws SQLException;
+    void alterStorageUnits(String databaseName, Map<String, DataSourcePoolProperties> toBeUpdatedStorageUnitProps) throws SQLException;
     
     /**
      * Unregister storage units.

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.switcher;
 
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResourceWithProperties;
@@ -44,7 +44,7 @@ public final class NewResourceSwitchManager {
      * @param dataSourceProps data source properties
      * @return created switching resource
      */
-    public SwitchingResource registerStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> dataSourceProps) {
+    public SwitchingResource registerStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> dataSourceProps) {
         resourceMetaData.getStorageUnitMetaData().getDataSourcePropsMap().putAll(dataSourceProps);
         StorageResourceWithProperties toBeCreatedStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(dataSourceProps);
         return new SwitchingResource(resourceMetaData, getRegisterNewStorageResource(resourceMetaData, toBeCreatedStorageResource),
@@ -68,7 +68,7 @@ public final class NewResourceSwitchManager {
      * @param dataSourceProps data source properties
      * @return created switching resource
      */
-    public SwitchingResource alterStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> dataSourceProps) {
+    public SwitchingResource alterStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> dataSourceProps) {
         resourceMetaData.getStorageUnitMetaData().getDataSourcePropsMap().putAll(dataSourceProps);
         StorageResourceWithProperties toBeAlteredStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(dataSourceProps);
         return new SwitchingResource(resourceMetaData, getAlterNewStorageResource(toBeAlteredStorageResource),

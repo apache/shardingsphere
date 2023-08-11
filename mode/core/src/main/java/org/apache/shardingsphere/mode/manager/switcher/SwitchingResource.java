@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.switcher;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 
@@ -41,7 +41,7 @@ public final class SwitchingResource {
     private final StorageResource staleStorageResource;
     
     @Getter
-    private final Map<String, DataSourceProperties> dataSourcePropsMap;
+    private final Map<String, DataSourcePoolProperties> dataSourcePropsMap;
     
     /**
      * Close stale data sources.
