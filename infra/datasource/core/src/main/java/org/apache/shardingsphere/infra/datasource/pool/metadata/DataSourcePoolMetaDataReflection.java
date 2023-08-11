@@ -41,11 +41,7 @@ public final class DataSourcePoolMetaDataReflection {
      */
     public Optional<String> getJdbcUrl() {
         Optional<String> jdbcUrl = ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
-        if (jdbcUrl.isPresent()) {
-            return jdbcUrl;
-        } else {
-            return ReflectionUtils.getFieldValueByGetMethod(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
-        }
+        return jdbcUrl.isPresent() ? jdbcUrl : ReflectionUtils.getFieldValueByGetMethod(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
     }
     
     /**
@@ -57,7 +53,7 @@ public final class DataSourcePoolMetaDataReflection {
         if (null == dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName()) {
             return Optional.empty();
         }
-        Optional<Properties> properties = ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
-        return properties.isPresent() ? properties : ReflectionUtils.getFieldValueByGetMethod(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
+        Optional<Properties> props = ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
+        return props.isPresent() ? props : ReflectionUtils.getFieldValueByGetMethod(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
     }
 }
