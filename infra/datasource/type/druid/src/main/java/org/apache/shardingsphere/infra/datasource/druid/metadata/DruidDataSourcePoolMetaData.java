@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.datasource.druid.metadata;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DefaultDataSourcePoolPropertiesValidator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -64,11 +62,6 @@ public final class DruidDataSourcePoolMetaData implements DataSourcePoolMetaData
     @Override
     public DruidDataSourcePoolFieldMetaData getFieldMetaData() {
         return new DruidDataSourcePoolFieldMetaData();
-    }
-    
-    @Override
-    public DataSourcePoolPropertiesValidator getDataSourcePoolPropertiesValidator() {
-        return new DefaultDataSourcePoolPropertiesValidator();
     }
     
     @Override

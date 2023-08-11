@@ -266,8 +266,7 @@ public final class DataSourcePoolCreator {
         if (null != jdbcUrlPropertiesFieldName && customDataSourceProps.getProperties().containsKey(jdbcUrlPropertiesFieldName)) {
             Map<String, Object> jdbcUrlProps = (Map<String, Object>) customDataSourceProps.getProperties().get(jdbcUrlPropertiesFieldName);
             DataSourcePoolMetaDataReflection dataSourcePoolMetaDataReflection = new DataSourcePoolMetaDataReflection(targetDataSource, poolMetaData.getFieldMetaData());
-            Optional<Properties> jdbcConnectionPropOptional = dataSourcePoolMetaDataReflection.getJdbcConnectionProperties();
-            jdbcConnectionPropOptional.ifPresent(optional -> setJdbcUrlProperties(dataSourceReflection, optional, jdbcUrlProps, jdbcUrlPropertiesFieldName));
+            dataSourcePoolMetaDataReflection.getJdbcConnectionProperties().ifPresent(optional -> setJdbcUrlProperties(dataSourceReflection, optional, jdbcUrlProps, jdbcUrlPropertiesFieldName));
         }
     }
     

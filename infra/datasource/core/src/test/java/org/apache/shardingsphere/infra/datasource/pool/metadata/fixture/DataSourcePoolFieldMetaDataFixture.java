@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.destroyer.fixture;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSourcePoolActiveDetector;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
-
-public final class MockedDataSourcePoolActiveDetector implements DataSourcePoolActiveDetector {
+public final class DataSourcePoolFieldMetaDataFixture implements DataSourcePoolFieldMetaData {
     
-    @SneakyThrows(SQLException.class)
     @Override
-    public boolean containsActiveConnection(final DataSource dataSource) {
-        return !dataSource.unwrap(MockedDataSource.class).getOpenedConnections().isEmpty();
+    public String getJdbcUrlFieldName() {
+        return "url";
     }
     
     @Override
-    public String getType() {
-        return MockedDataSource.class.getName();
+    public String getJdbcUrlPropertiesFieldName() {
+        return "jdbcUrlProperties";
     }
 }

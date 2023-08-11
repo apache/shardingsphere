@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.datasource.pool.props;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
@@ -40,12 +39,12 @@ public final class DataSourcePropertiesValidator {
     /**
      * Validate data source properties map.
      * 
-     * @param dataSourcePropertiesMap data source properties map
+     * @param dataSourcePropsMap data source properties map
      * @return error messages
      */
-    public Collection<String> validate(final Map<String, DataSourceProperties> dataSourcePropertiesMap) {
+    public Collection<String> validate(final Map<String, DataSourceProperties> dataSourcePropsMap) {
         Collection<String> result = new LinkedList<>();
-        for (Entry<String, DataSourceProperties> entry : dataSourcePropertiesMap.entrySet()) {
+        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
             try {
                 validateProperties(entry.getKey(), entry.getValue());
                 validateConnection(entry.getKey(), entry.getValue());
@@ -57,13 +56,12 @@ public final class DataSourcePropertiesValidator {
     }
     
     private void validateProperties(final String dataSourceName, final DataSourceProperties dataSourceProps) throws InvalidDataSourcePropertiesException {
-        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSourceProps.getDataSourceClassName());
-        if (!poolMetaData.isPresent()) {
+        Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSourceProps.getDataSourceClassName());
+        if (!metaData.isPresent()) {
             return;
         }
         try {
-            DataSourcePoolPropertiesValidator propertiesValidator = poolMetaData.get().getDataSourcePoolPropertiesValidator();
-            propertiesValidator.validateProperties(dataSourceProps);
+            metaData.get().getDataSourcePoolPropertiesValidator().ifPresent(optional -> optional.validate(dataSourceProps));
         } catch (final IllegalArgumentException ex) {
             throw new InvalidDataSourcePropertiesException(dataSourceName, ex.getMessage());
         }

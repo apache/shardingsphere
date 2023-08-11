@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropert
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DefaultDataSourcePoolFieldMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.impl.DefaultDataSourcePoolFieldMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;

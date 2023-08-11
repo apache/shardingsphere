@@ -15,21 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.impl;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
-public final class MockedDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
-    
-    @Override
-    public String getUsernameFieldName() {
-        return "username";
-    }
-    
-    @Override
-    public String getPasswordFieldName() {
-        return "password";
-    }
+/**
+ * Default data source pool field meta data.
+ */
+public final class DefaultDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
     @Override
     public String getJdbcUrlFieldName() {
@@ -38,6 +31,6 @@ public final class MockedDataSourcePoolFieldMetaData implements DataSourcePoolFi
     
     @Override
     public String getJdbcUrlPropertiesFieldName() {
-        return "jdbcUrlProperties";
+        return null;
     }
 }

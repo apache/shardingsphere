@@ -18,15 +18,13 @@
 package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DefaultDataSourcePoolPropertiesValidator;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaData {
+public final class DataSourcePoolMetaDataFixture implements DataSourcePoolMetaData {
     
     @Override
     public Map<String, Object> getDefaultProperties() {
@@ -55,13 +53,8 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     @Override
-    public MockedDataSourcePoolFieldMetaData getFieldMetaData() {
-        return new MockedDataSourcePoolFieldMetaData();
-    }
-    
-    @Override
-    public DataSourcePoolPropertiesValidator getDataSourcePoolPropertiesValidator() {
-        return new DefaultDataSourcePoolPropertiesValidator();
+    public DataSourcePoolFieldMetaDataFixture getFieldMetaData() {
+        return new DataSourcePoolFieldMetaDataFixture();
     }
     
     @Override

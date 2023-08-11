@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata;
+package org.apache.shardingsphere.infra.datasource.pool.destroyer.fixture;
 
-/**
- * Default data source pool field meta data.
- */
-public final class DefaultDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSourcePoolActiveDetector;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
+
+public final class DataSourcePoolActiveDetectorFixture implements DataSourcePoolActiveDetector {
     
+    @SneakyThrows(SQLException.class)
     @Override
-    public String getUsernameFieldName() {
-        return "username";
+    public boolean containsActiveConnection(final DataSource dataSource) {
+        return !dataSource.unwrap(MockedDataSource.class).getOpenedConnections().isEmpty();
     }
     
     @Override
-    public String getPasswordFieldName() {
-        return "password";
-    }
-    
-    @Override
-    public String getJdbcUrlFieldName() {
-        return "url";
-    }
-    
-    @Override
-    public String getJdbcUrlPropertiesFieldName() {
-        return null;
+    public String getType() {
+        return MockedDataSource.class.getName();
     }
 }

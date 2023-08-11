@@ -25,16 +25,6 @@ import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFi
 public final class C3P0DataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
     @Override
-    public String getUsernameFieldName() {
-        return "user";
-    }
-    
-    @Override
-    public String getPasswordFieldName() {
-        return "password";
-    }
-    
-    @Override
     public String getJdbcUrlFieldName() {
         return "jdbcUrl";
     }

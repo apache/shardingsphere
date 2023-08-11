@@ -129,7 +129,7 @@ class ShowStorageUnitExecutorTest {
             assertThat(data.getCell(9), is("100"));
             assertThat(data.getCell(10), is("10"));
             assertThat(data.getCell(11), is(""));
-            assertThat(data.getCell(12), is("{\"openedConnections\":[]}"));
+            assertThat(data.getCell(12), is("{\"openedConnections\":[],\"closed\":false}"));
             index++;
         }
     }
@@ -153,7 +153,7 @@ class ShowStorageUnitExecutorTest {
         assertThat(data.getCell(9), is("100"));
         assertThat(data.getCell(10), is("10"));
         assertThat(data.getCell(11), is(""));
-        assertThat(data.getCell(12), is("{\"openedConnections\":[]}"));
+        assertThat(data.getCell(12), is("{\"openedConnections\":[],\"closed\":false}"));
     }
     
     @Test

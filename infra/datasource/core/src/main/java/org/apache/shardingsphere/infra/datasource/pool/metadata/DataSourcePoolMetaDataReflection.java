@@ -54,11 +54,10 @@ public final class DataSourcePoolMetaDataReflection {
      * @return JDBC connection properties
      */
     public Optional<Properties> getJdbcConnectionProperties() {
-        Optional<Properties> properties = ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
-        if (properties.isPresent()) {
-            return properties;
-        } else {
-            return ReflectionUtils.getFieldValueByGetMethod(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
+        if (null == dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName()) {
+            return Optional.empty();
         }
+        Optional<Properties> properties = ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
+        return properties.isPresent() ? properties : ReflectionUtils.getFieldValueByGetMethod(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
     }
 }
