@@ -17,87 +17,82 @@
 
 package org.apache.shardingsphere.infra.datasource.hikari.metadata;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.datasource.pool.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Hikari data source pool properties validator.
+ * Data source pool properties validator of HikariCP.
  */
 public final class HikariDataSourcePoolPropertiesValidator implements DataSourcePoolPropertiesValidator {
     
-    private static final long CONNECTION_TIMEOUT_FLOOR = 250L;
+    private static final long MIN_CONNECTION_TIMEOUT_MILLISECONDS = 250L;
     
-    private static final long MAX_LIFETIME_FLOOR = TimeUnit.SECONDS.toMillis(30);
+    private static final long MIN_LIFETIME_MILLISECONDS = TimeUnit.SECONDS.toMillis(30L);
     
-    private static final long KEEP_ALIVE_TIME_FLOOR = TimeUnit.SECONDS.toMillis(30);
+    private static final long MIN_KEEP_ALIVE_TIME_MILLISECONDS = TimeUnit.SECONDS.toMillis(30L);
     
     @Override
     public void validate(final DataSourceProperties dataSourceProps) {
-        validateConnectionTimeout(dataSourceProps);
-        validateIdleTimeout(dataSourceProps);
-        validateMaxLifetime(dataSourceProps);
-        validateMaximumPoolSize(dataSourceProps);
-        validateMinimumIdle(dataSourceProps);
-        validateKeepAliveTime(dataSourceProps);
+        Map<String, Object> allLocalProperties = dataSourceProps.getAllLocalProperties();
+        validateConnectionTimeout(allLocalProperties);
+        validateIdleTimeout(allLocalProperties);
+        validateMaxLifetime(allLocalProperties);
+        validateMaximumPoolSize(allLocalProperties);
+        validateMinimumIdle(allLocalProperties);
+        validateKeepAliveTime(allLocalProperties);
     }
     
-    private void validateConnectionTimeout(final DataSourceProperties dataSourceProps) {
-        if (!checkValueExist(dataSourceProps, "connectionTimeout")) {
-            return;
+    private void validateConnectionTimeout(final Map<String, Object> allLocalProperties) {
+        if (isExisted(allLocalProperties, "connectionTimeout")) {
+            long connectionTimeout = Long.parseLong(allLocalProperties.get("connectionTimeout").toString());
+            Preconditions.checkState(connectionTimeout >= MIN_CONNECTION_TIMEOUT_MILLISECONDS, "connectionTimeout can not less than %s ms.", MIN_CONNECTION_TIMEOUT_MILLISECONDS);
         }
-        long connectionTimeout = Long.parseLong(dataSourceProps.getAllLocalProperties().get("connectionTimeout").toString());
-        ShardingSpherePreconditions.checkState(connectionTimeout >= CONNECTION_TIMEOUT_FLOOR,
-                () -> new IllegalArgumentException(String.format("connectionTimeout cannot be less than %sms", CONNECTION_TIMEOUT_FLOOR)));
     }
     
-    private void validateIdleTimeout(final DataSourceProperties dataSourceProps) {
-        if (!checkValueExist(dataSourceProps, "idleTimeout")) {
-            return;
+    private void validateIdleTimeout(final Map<String, Object> allLocalProperties) {
+        if (isExisted(allLocalProperties, "idleTimeout")) {
+            long idleTimeout = Long.parseLong(allLocalProperties.get("idleTimeout").toString());
+            Preconditions.checkState(idleTimeout >= 0, "idleTimeout can not be negative.");
         }
-        long idleTimeout = Long.parseLong(dataSourceProps.getAllLocalProperties().get("idleTimeout").toString());
-        ShardingSpherePreconditions.checkState(idleTimeout >= 0, () -> new IllegalArgumentException("idleTimeout cannot be negative"));
     }
     
-    private void validateMaxLifetime(final DataSourceProperties dataSourceProps) {
-        if (!checkValueExist(dataSourceProps, "maxLifetime")) {
-            return;
+    private void validateMaxLifetime(final Map<String, Object> allLocalProperties) {
+        if (isExisted(allLocalProperties, "maxLifetime")) {
+            long maxLifetime = Long.parseLong(allLocalProperties.get("maxLifetime").toString());
+            Preconditions.checkState(maxLifetime >= MIN_LIFETIME_MILLISECONDS, "maxLifetime can not less than %s ms.", MIN_LIFETIME_MILLISECONDS);
         }
-        long maxLifetime = Long.parseLong(dataSourceProps.getAllLocalProperties().get("maxLifetime").toString());
-        ShardingSpherePreconditions.checkState(maxLifetime >= MAX_LIFETIME_FLOOR, () -> new IllegalArgumentException(String.format("maxLifetime cannot be less than %sms", MAX_LIFETIME_FLOOR)));
     }
     
-    private void validateMaximumPoolSize(final DataSourceProperties dataSourceProps) {
-        if (!checkValueExist(dataSourceProps, "maximumPoolSize")) {
-            return;
+    private void validateMaximumPoolSize(final Map<String, Object> allLocalProperties) {
+        if (isExisted(allLocalProperties, "maximumPoolSize")) {
+            int maximumPoolSize = Integer.parseInt(allLocalProperties.get("maximumPoolSize").toString());
+            Preconditions.checkState(maximumPoolSize >= 1, "maxPoolSize can not less than 1.");
         }
-        int maximumPoolSize = Integer.parseInt(dataSourceProps.getAllLocalProperties().get("maximumPoolSize").toString());
-        ShardingSpherePreconditions.checkState(maximumPoolSize >= 1, () -> new IllegalArgumentException("maxPoolSize cannot be less than 1"));
     }
     
-    private void validateMinimumIdle(final DataSourceProperties dataSourceProps) {
-        if (!checkValueExist(dataSourceProps, "minimumIdle")) {
-            return;
+    private void validateMinimumIdle(final Map<String, Object> allLocalProperties) {
+        if (isExisted(allLocalProperties, "minimumIdle")) {
+            int minimumIdle = Integer.parseInt(allLocalProperties.get("minimumIdle").toString());
+            Preconditions.checkState(minimumIdle >= 0, "minimumIdle can not be negative.");
         }
-        int minimumIdle = Integer.parseInt(dataSourceProps.getAllLocalProperties().get("minimumIdle").toString());
-        ShardingSpherePreconditions.checkState(minimumIdle >= 0, () -> new IllegalArgumentException("minimumIdle cannot be negative"));
     }
     
-    private void validateKeepAliveTime(final DataSourceProperties dataSourceProps) {
-        if (!checkValueExist(dataSourceProps, "keepaliveTime")) {
+    private void validateKeepAliveTime(final Map<String, Object> allLocalProperties) {
+        if (!isExisted(allLocalProperties, "keepaliveTime")) {
             return;
         }
-        int keepAliveTime = Integer.parseInt(dataSourceProps.getAllLocalProperties().get("keepaliveTime").toString());
-        if (keepAliveTime == 0) {
+        int keepAliveTime = Integer.parseInt(allLocalProperties.get("keepaliveTime").toString());
+        if (0 == keepAliveTime) {
             return;
         }
-        ShardingSpherePreconditions.checkState(keepAliveTime >= KEEP_ALIVE_TIME_FLOOR,
-                () -> new IllegalArgumentException(String.format("keepaliveTime cannot be less than %sms", KEEP_ALIVE_TIME_FLOOR)));
+        Preconditions.checkState(keepAliveTime >= MIN_KEEP_ALIVE_TIME_MILLISECONDS, "keepaliveTime can not be less than %s ms.", MIN_KEEP_ALIVE_TIME_MILLISECONDS);
     }
     
-    private boolean checkValueExist(final DataSourceProperties dataSourceProps, final String key) {
-        return dataSourceProps.getAllLocalProperties().containsKey(key) && null != dataSourceProps.getAllLocalProperties().get(key);
+    private boolean isExisted(final Map<String, Object> allLocalProperties, final String key) {
+        return allLocalProperties.containsKey(key) && null != allLocalProperties.get(key);
     }
 }
