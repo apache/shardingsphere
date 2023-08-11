@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.hikari.detector;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSourcePoolActiveDetector;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolActiveDetector;
 
 import javax.sql.DataSource;
 

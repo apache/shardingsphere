@@ -19,10 +19,10 @@ package org.apache.shardingsphere.infra.datasource.pool.destroyer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSourcePoolActiveDetector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,7 +53,7 @@ public final class DataSourcePoolDestroyer {
         ((AutoCloseable) dataSource).close();
     }
     
-    private void waitUntilActiveConnectionComplete() {
+    private void waitUntilActiveConnectionComplete() throws SQLException {
         Optional<DataSourcePoolActiveDetector> activeDetector = TypedSPILoader.findService(DataSourcePoolActiveDetector.class, dataSource.getClass().getName());
         while (activeDetector.isPresent() && activeDetector.get().containsActiveConnection(dataSource)) {
             try {
