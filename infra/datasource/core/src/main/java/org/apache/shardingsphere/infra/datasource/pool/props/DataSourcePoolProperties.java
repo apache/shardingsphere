@@ -50,11 +50,11 @@ public final class DataSourcePoolProperties {
     public DataSourcePoolProperties(final String poolClassName, final Map<String, Object> props) {
         Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, poolClassName);
         this.poolClassName = metaData.map(optional -> optional.getType().toString()).orElse(poolClassName);
-        Map<String, String> propertySynonyms = metaData.isPresent() ? metaData.get().getPropertySynonyms() : Collections.emptyMap();
+        Map<String, String> propertySynonyms = metaData.map(DataSourcePoolMetaData::getPropertySynonyms).orElse(Collections.emptyMap());
         connectionPropertySynonyms = new ConnectionPropertySynonyms(props, propertySynonyms);
         poolPropertySynonyms = new PoolPropertySynonyms(props, propertySynonyms);
-        customDataSourcePoolProperties = new CustomDataSourcePoolProperties(
-                props, getStandardPropertyKeys(), metaData.isPresent() ? metaData.get().getTransientFieldNames() : Collections.emptyList(), propertySynonyms);
+        Collection<String> transientFieldNames = metaData.map(DataSourcePoolMetaData::getTransientFieldNames).orElse(Collections.emptyList());
+        customDataSourcePoolProperties = new CustomDataSourcePoolProperties(props, getStandardPropertyKeys(), transientFieldNames, propertySynonyms);
     }
     
     private Collection<String> getStandardPropertyKeys() {
