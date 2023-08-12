@@ -2118,7 +2118,7 @@ partitionExtensionClause
 
 validationClauses
     : VALIDATE REF UPDATE (SET DANGLING TO NULL)?
-    | VALIDATE STRUCTURE (CASCADE (FAST | COMPLETE (OFFLINE | ONLINE) intoClause?))?
+    | VALIDATE STRUCTURE (CASCADE (FAST | COMPLETE? (OFFLINE | ONLINE) intoClause?)?)?
     ;
 
 intoClause
