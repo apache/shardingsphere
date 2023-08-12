@@ -67,8 +67,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -130,8 +132,8 @@ class ExportMetaDataExecutorTest {
     void assertExecute() {
         when(database.getName()).thenReturn("normal_db");
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("empty_metadata"));
-        Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePoolPropertiesMap()).thenReturn(DataSourcePoolPropertiesCreator.create(dataSourceMap));
+        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePoolPropertiesMap()).thenReturn(
+                createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()))));
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

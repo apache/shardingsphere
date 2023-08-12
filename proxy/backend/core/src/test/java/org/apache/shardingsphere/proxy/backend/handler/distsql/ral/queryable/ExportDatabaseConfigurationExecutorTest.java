@@ -43,8 +43,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -66,7 +68,8 @@ class ExportDatabaseConfigurationExecutorTest {
     @Test
     void assertExecute() {
         when(database.getName()).thenReturn("normal_db");
-        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePoolPropertiesMap()).thenReturn(DataSourcePoolPropertiesCreator.create(createDataSourceMap()));
+        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePoolPropertiesMap()).thenReturn(
+                createDataSourceMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()))));
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         Collection<LocalDataQueryResultRow> actual = new ExportDatabaseConfigurationExecutor().getRows(database, new ExportDatabaseConfigurationStatement(mock(DatabaseSegment.class), null));
         assertThat(actual.size(), is(1));

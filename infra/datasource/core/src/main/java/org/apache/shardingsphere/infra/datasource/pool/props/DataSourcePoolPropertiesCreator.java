@@ -19,10 +19,10 @@ package org.apache.shardingsphere.infra.datasource.pool.props;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
-import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourceReflection;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourcePoolProperties;
@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Data source pool properties creator.
@@ -52,16 +51,6 @@ public final class DataSourcePoolPropertiesCreator {
      */
     public static DataSourcePoolProperties create(final DataSourceConfiguration config) {
         return new DataSourcePoolProperties(config.getConnection().getDataSourceClassName(), createProperties(config));
-    }
-    
-    /**
-     * Create data source properties.
-     *
-     * @param dataSources data sources
-     * @return created data source properties
-     */
-    public static Map<String, DataSourcePoolProperties> create(final Map<String, DataSource> dataSources) {
-        return dataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
