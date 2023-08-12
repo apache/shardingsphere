@@ -55,7 +55,7 @@ public final class DataSourcePoolPropertiesCreator {
     
     /**
      * Create data source properties.
-     * 
+     *
      * @param dataSource data source
      * @return created data source properties
      */
@@ -118,47 +118,48 @@ public final class DataSourcePoolPropertiesCreator {
     
     private static PoolConfiguration getPoolConfiguration(final PoolPropertySynonyms poolPropSynonyms, final CustomDataSourcePoolProperties customProps) {
         Map<String, Object> standardProps = poolPropSynonyms.getStandardProperties();
-        Long connectionTimeoutMilliseconds = toLong(standardProps, "connectionTimeoutMilliseconds", null);
-        Long idleTimeoutMilliseconds = toLong(standardProps, "idleTimeoutMilliseconds", null);
-        Long maxLifetimeMilliseconds = toLong(standardProps, "maxLifetimeMilliseconds", null);
-        Integer maxPoolSize = toInt(standardProps, "maxPoolSize", null);
-        Integer minPoolSize = toInt(standardProps, "minPoolSize", null);
-        Boolean readOnly = toBoolean(standardProps, "readOnly", null);
+        Long connectionTimeoutMilliseconds = toLong(standardProps, "connectionTimeoutMilliseconds");
+        Long idleTimeoutMilliseconds = toLong(standardProps, "idleTimeoutMilliseconds");
+        Long maxLifetimeMilliseconds = toLong(standardProps, "maxLifetimeMilliseconds");
+        Integer maxPoolSize = toInt(standardProps, "maxPoolSize");
+        Integer minPoolSize = toInt(standardProps, "minPoolSize");
+        Boolean readOnly = toBoolean(standardProps, "readOnly");
         Properties newCustomProps = new Properties();
         newCustomProps.putAll(customProps.getProperties());
         return new PoolConfiguration(connectionTimeoutMilliseconds, idleTimeoutMilliseconds, maxLifetimeMilliseconds, maxPoolSize, minPoolSize, readOnly, newCustomProps);
     }
     
-    private static Long toLong(final Map<String, Object> props, final String name, final Long defaultValue) {
+    private static Long toLong(final Map<String, Object> props, final String name) {
         if (!props.containsKey(name)) {
-            return defaultValue;
+            return null;
         }
         try {
             return Long.parseLong(String.valueOf(props.get(name)));
         } catch (final NumberFormatException ex) {
-            return defaultValue;
+            return null;
         }
     }
     
-    private static Integer toInt(final Map<String, Object> props, final String name, final Integer defaultValue) {
+    private static Integer toInt(final Map<String, Object> props, final String name) {
         if (!props.containsKey(name)) {
-            return defaultValue;
+            return null;
         }
         try {
             return Integer.parseInt(String.valueOf(props.get(name)));
         } catch (final NumberFormatException ex) {
-            return defaultValue;
+            return null;
         }
     }
     
-    private static Boolean toBoolean(final Map<String, Object> props, final String name, final Boolean defaultValue) {
+    @SuppressWarnings("SameParameterValue")
+    private static Boolean toBoolean(final Map<String, Object> props, final String name) {
         if (!props.containsKey(name)) {
-            return defaultValue;
+            return null;
         }
         try {
             return Boolean.parseBoolean(String.valueOf(props.get(name)));
         } catch (final NumberFormatException ex) {
-            return defaultValue;
+            return null;
         }
     }
 }
