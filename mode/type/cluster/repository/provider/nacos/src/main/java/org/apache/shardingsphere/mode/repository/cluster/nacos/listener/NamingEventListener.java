@@ -116,7 +116,8 @@ public final class NamingEventListener implements EventListener {
                 }
             }
             return false;
-        }).collect(Collectors.toMap(NacosMetaDataUtils::getKey, Function.identity(), (a, b) -> NacosMetaDataUtils.getTimestamp(a) > NacosMetaDataUtils.getTimestamp(b) ? a : b));
+        }).collect(Collectors.toMap(NacosMetaDataUtils::getKey, Function.identity(),
+                (oldValue, currentValue) -> NacosMetaDataUtils.getTimestamp(oldValue) > NacosMetaDataUtils.getTimestamp(currentValue) ? oldValue : currentValue));
     }
     
     /**
