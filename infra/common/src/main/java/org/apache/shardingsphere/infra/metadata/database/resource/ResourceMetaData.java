@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.datasource.storage.StorageResourceUtils;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -51,7 +52,8 @@ public final class ResourceMetaData {
     public ResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
         storageNodeDataSources = StorageResourceUtils.getStorageNodeDataSources(dataSources);
         storageUnitMetaData = new StorageUnitMetaData(databaseName, storageNodeDataSources,
-                dataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()))),
+                dataSources.entrySet().stream()
+                        .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 StorageResourceUtils.getStorageUnitNodeMappers(dataSources));
     }
     
