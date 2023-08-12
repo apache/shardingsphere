@@ -28,7 +28,10 @@ import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Data source generated database configuration.
@@ -44,7 +47,8 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     
     public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs) {
         ruleConfigurations = ruleConfigs;
-        dataSourcePoolPropertiesMap = DataSourcePoolPropertiesCreator.createFromConfiguration(dataSourceConfigs);
+        dataSourcePoolPropertiesMap = dataSourceConfigs.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         this.storageResource = DataSourcePoolCreator.createStorageResource(dataSourcePoolPropertiesMap);
     }
     
