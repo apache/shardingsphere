@@ -32,11 +32,7 @@ public final class StorageNode {
     
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof StorageNode) {
-            StorageNode storageNode = (StorageNode) obj;
-            return storageNode.name.equalsIgnoreCase(name);
-        }
-        return false;
+        return obj instanceof StorageNode && ((StorageNode) obj).name.equalsIgnoreCase(name);
     }
     
     @Override
