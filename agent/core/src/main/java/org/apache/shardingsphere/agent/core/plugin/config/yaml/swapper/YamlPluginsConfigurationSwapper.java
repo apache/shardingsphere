@@ -57,7 +57,7 @@ public final class YamlPluginsConfigurationSwapper {
     private static Map<String, PluginConfiguration> swap(final Map<String, YamlPluginConfiguration> yamlConfigs) {
         return null == yamlConfigs
                 ? Collections.emptyMap()
-                : yamlConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swap(entry.getValue()), (key, value) -> value, LinkedHashMap::new));
+                : yamlConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private static PluginConfiguration swap(final YamlPluginConfiguration yamlConfig) {
