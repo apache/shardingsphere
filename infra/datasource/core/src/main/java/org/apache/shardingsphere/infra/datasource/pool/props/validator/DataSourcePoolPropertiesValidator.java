@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.validator.typed.TypedDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
@@ -60,12 +59,12 @@ public final class DataSourcePoolPropertiesValidator {
     }
     
     private static void validateProperties(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
-        Optional<TypedDataSourcePoolPropertiesValidator> typedValidator = TypedSPILoader.findService(TypedDataSourcePoolPropertiesValidator.class, props.getPoolClassName());
-        if (!typedValidator.isPresent()) {
+        Optional<DataSourcePoolPropertiesLegalValidator> legalValidator = TypedSPILoader.findService(DataSourcePoolPropertiesLegalValidator.class, props.getPoolClassName());
+        if (!legalValidator.isPresent()) {
             return;
         }
         try {
-            typedValidator.ifPresent(optional -> optional.validate(props));
+            legalValidator.ifPresent(optional -> optional.validate(props));
         } catch (final IllegalArgumentException ex) {
             throw new InvalidDataSourcePoolPropertiesException(dataSourceName, ex.getMessage());
         }
