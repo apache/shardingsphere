@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.jupiter.api.Test;

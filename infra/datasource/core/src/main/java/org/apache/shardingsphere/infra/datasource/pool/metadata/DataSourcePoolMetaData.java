@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Data source pool meta data.
@@ -64,13 +63,4 @@ public interface DataSourcePoolMetaData extends TypedSPI {
      * @return data source pool field meta data
      */
     DataSourcePoolFieldMetaData getFieldMetaData();
-    
-    /**
-     * Get data source pool properties validator.
-     * 
-     * @return data source pool properties validator
-     */
-    default Optional<DataSourcePoolPropertiesValidator> getDataSourcePoolPropertiesValidator() {
-        return Optional.empty();
-    }
 }

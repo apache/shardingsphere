@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.props.custom;
+package org.apache.shardingsphere.infra.datasource.pool.props.domain.custom;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

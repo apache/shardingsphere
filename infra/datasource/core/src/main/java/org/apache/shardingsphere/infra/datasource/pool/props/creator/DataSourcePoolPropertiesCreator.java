@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.props;
+package org.apache.shardingsphere.infra.datasource.pool.props.creator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,9 +25,10 @@ import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfigur
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourceReflection;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.props.custom.CustomDataSourcePoolProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.synonym.ConnectionPropertySynonyms;
-import org.apache.shardingsphere.infra.datasource.pool.props.synonym.PoolPropertySynonyms;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.custom.CustomDataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.synonym.ConnectionPropertySynonyms;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;

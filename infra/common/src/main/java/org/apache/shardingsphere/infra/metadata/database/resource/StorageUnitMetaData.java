@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropert
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnitNodeMapper;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;

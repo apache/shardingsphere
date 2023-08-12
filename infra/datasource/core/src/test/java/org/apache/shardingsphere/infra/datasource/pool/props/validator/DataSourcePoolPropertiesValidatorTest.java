@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.datasource.creator;
+package org.apache.shardingsphere.infra.datasource.pool.props.validator;
 
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
+import java.util.Collections;
 
-/**
- * Standard pipeline data source creator.
- */
-public final class StandardPipelineDataSourceCreator implements PipelineDataSourceCreator {
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class DataSourcePoolPropertiesValidatorTest {
     
-    @Override
-    public DataSource createPipelineDataSource(final Object dataSourceConfig) {
-        return DataSourcePoolCreator.create((DataSourcePoolProperties) dataSourceConfig);
+    @BeforeAll
+    static void setUp() throws ClassNotFoundException {
+        Class.forName(MockedDriver.class.getName());
     }
     
-    @Override
-    public String getType() {
-        return StandardPipelineDataSourceConfiguration.TYPE;
+    @Test
+    void assertValidateSuccess() {
+        assertTrue(DataSourcePoolPropertiesValidator.validate(
+                Collections.singletonMap("name", new DataSourcePoolProperties(HikariDataSource.class.getName(), Collections.singletonMap("jdbcUrl", "jdbc:mock")))).isEmpty());
     }
 }

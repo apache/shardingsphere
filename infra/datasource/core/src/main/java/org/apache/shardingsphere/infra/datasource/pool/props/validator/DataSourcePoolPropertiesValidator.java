@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.props;
+package org.apache.shardingsphere.infra.datasource.pool.props.validator;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.validator.typed.TypedDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
@@ -34,6 +37,7 @@ import java.util.Optional;
 /**
  * Data source pool properties validator.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePoolPropertiesValidator {
     
     /**
@@ -42,7 +46,7 @@ public final class DataSourcePoolPropertiesValidator {
      * @param propsMap data source pool properties map
      * @return error messages
      */
-    public Collection<String> validate(final Map<String, DataSourcePoolProperties> propsMap) {
+    public static Collection<String> validate(final Map<String, DataSourcePoolProperties> propsMap) {
         Collection<String> result = new LinkedList<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             try {
@@ -55,19 +59,19 @@ public final class DataSourcePoolPropertiesValidator {
         return result;
     }
     
-    private void validateProperties(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
-        Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, props.getPoolClassName());
-        if (!metaData.isPresent()) {
+    private static void validateProperties(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
+        Optional<TypedDataSourcePoolPropertiesValidator> typedValidator = TypedSPILoader.findService(TypedDataSourcePoolPropertiesValidator.class, props.getPoolClassName());
+        if (!typedValidator.isPresent()) {
             return;
         }
         try {
-            metaData.get().getDataSourcePoolPropertiesValidator().ifPresent(optional -> optional.validate(props));
+            typedValidator.ifPresent(optional -> optional.validate(props));
         } catch (final IllegalArgumentException ex) {
             throw new InvalidDataSourcePoolPropertiesException(dataSourceName, ex.getMessage());
         }
     }
     
-    private void validateConnection(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
+    private static void validateConnection(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
         DataSource dataSource = null;
         try {
             dataSource = DataSourcePoolCreator.create(props);
@@ -83,7 +87,8 @@ public final class DataSourcePoolPropertiesValidator {
         }
     }
     
-    private void checkFailFast(final DataSource dataSource) throws SQLException {
+    @SuppressWarnings("EmptyTryBlock")
+    private static void checkFailFast(final DataSource dataSource) throws SQLException {
         // CHECKSTYLE:OFF
         try (Connection ignored = dataSource.getConnection()) {
             // CHECKSTYLE:ON

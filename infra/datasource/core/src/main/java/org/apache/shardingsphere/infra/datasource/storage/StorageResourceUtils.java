@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.datasource.storage;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;

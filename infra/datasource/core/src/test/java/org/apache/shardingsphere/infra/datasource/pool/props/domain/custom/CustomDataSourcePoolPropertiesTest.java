@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.props.custom;
+package org.apache.shardingsphere.infra.datasource.pool.props.domain.custom;
 
 import org.junit.jupiter.api.Test;
 

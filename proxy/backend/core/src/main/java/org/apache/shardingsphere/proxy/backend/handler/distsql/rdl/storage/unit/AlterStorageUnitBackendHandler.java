@@ -30,8 +30,8 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorage
 import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolPropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDa
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 import org.apache.shardingsphere.infra.datasource.storage.StorageUnitNodeMapper;
