@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * YAML proxy configuration swapper.
@@ -66,7 +67,7 @@ public final class YamlProxyConfigurationSwapper {
     
     private Map<String, DataSource> swapDataSources(final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceConfigs) {
         Map<String, DataSourceConfiguration> dataSourceConfigs = swapDataSourceConfigurations(yamlDataSourceConfigs);
-        return DataSourcePoolCreator.create(DataSourcePoolPropertiesCreator.createFromConfiguration(dataSourceConfigs));
+        return DataSourcePoolCreator.create(dataSourceConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()))));
     }
     
     private Map<String, DatabaseConfiguration> swapDatabaseConfigurations(final Map<String, YamlProxyDatabaseConfiguration> databaseConfigurations) {

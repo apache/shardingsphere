@@ -45,16 +45,6 @@ import java.util.stream.Collectors;
 public final class DataSourcePoolPropertiesCreator {
     
     /**
-     * Create data source pool properties.
-     *
-     * @param configs data source configurations
-     * @return created data source pool properties
-     */
-    public static Map<String, DataSourcePoolProperties> createFromConfiguration(final Map<String, DataSourceConfiguration> configs) {
-        return configs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    /**
      * Create data source properties.
      *
      * @param config data source configuration
