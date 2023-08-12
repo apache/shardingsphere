@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * Data source pool properties validator.
@@ -59,12 +58,8 @@ public final class DataSourcePoolPropertiesValidator {
     }
     
     private static void validateProperties(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
-        Optional<DataSourcePoolPropertiesContentValidator> legalValidator = TypedSPILoader.findService(DataSourcePoolPropertiesContentValidator.class, props.getPoolClassName());
-        if (!legalValidator.isPresent()) {
-            return;
-        }
         try {
-            legalValidator.ifPresent(optional -> optional.validate(props));
+            TypedSPILoader.findService(DataSourcePoolPropertiesContentValidator.class, props.getPoolClassName()).ifPresent(optional -> optional.validate(props));
         } catch (final IllegalArgumentException ex) {
             throw new InvalidDataSourcePoolPropertiesException(dataSourceName, ex.getMessage());
         }
