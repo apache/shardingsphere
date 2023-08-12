@@ -219,6 +219,10 @@ DIRECTORY
     : D I R E C T O R Y
     ;
 
+DIRECT_PATH
+    : D I R E C T UL_ P A T H
+    ;
+
 CREDENTIALS
     : C R E D E N T I A L S
     ;
