@@ -36,7 +36,7 @@ public final class DataSourcePoolPropertiesValidateHandler {
      * @throws InvalidStorageUnitsException invalid storage units exception
      */
     public void validate(final Map<String, DataSourcePoolProperties> propsMap) {
-        Collection<String> errorMessages = new DataSourcePoolPropertiesValidator().validate(propsMap);
+        Collection<String> errorMessages = DataSourcePoolPropertiesValidator.validate(propsMap);
         if (!errorMessages.isEmpty()) {
             throw new InvalidStorageUnitsException(errorMessages);
         }

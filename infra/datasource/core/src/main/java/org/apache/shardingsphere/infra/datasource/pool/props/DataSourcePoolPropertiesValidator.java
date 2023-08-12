@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.props;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
@@ -34,6 +36,7 @@ import java.util.Optional;
 /**
  * Data source pool properties validator.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourcePoolPropertiesValidator {
     
     /**
@@ -42,7 +45,7 @@ public final class DataSourcePoolPropertiesValidator {
      * @param propsMap data source pool properties map
      * @return error messages
      */
-    public Collection<String> validate(final Map<String, DataSourcePoolProperties> propsMap) {
+    public static Collection<String> validate(final Map<String, DataSourcePoolProperties> propsMap) {
         Collection<String> result = new LinkedList<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             try {
@@ -55,7 +58,7 @@ public final class DataSourcePoolPropertiesValidator {
         return result;
     }
     
-    private void validateProperties(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
+    private static void validateProperties(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
         Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, props.getPoolClassName());
         if (!metaData.isPresent()) {
             return;
@@ -67,7 +70,7 @@ public final class DataSourcePoolPropertiesValidator {
         }
     }
     
-    private void validateConnection(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
+    private static void validateConnection(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
         DataSource dataSource = null;
         try {
             dataSource = DataSourcePoolCreator.create(props);
@@ -83,7 +86,7 @@ public final class DataSourcePoolPropertiesValidator {
         }
     }
     
-    private void checkFailFast(final DataSource dataSource) throws SQLException {
+    private static void checkFailFast(final DataSource dataSource) throws SQLException {
         // CHECKSTYLE:OFF
         try (Connection ignored = dataSource.getConnection()) {
             // CHECKSTYLE:ON

@@ -35,7 +35,7 @@ class DataSourcePoolPropertiesValidatorTest {
     
     @Test
     void assertValidateSuccess() {
-        assertTrue(new DataSourcePoolPropertiesValidator().validate(
+        assertTrue(DataSourcePoolPropertiesValidator.validate(
                 Collections.singletonMap("name", new DataSourcePoolProperties(HikariDataSource.class.getName(), Collections.singletonMap("jdbcUrl", "jdbc:mock")))).isEmpty());
     }
 }
