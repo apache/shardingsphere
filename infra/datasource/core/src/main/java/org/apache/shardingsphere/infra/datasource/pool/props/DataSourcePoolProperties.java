@@ -108,17 +108,18 @@ public final class DataSourcePoolProperties {
     }
     
     private boolean equalsByProperties(final DataSourcePoolProperties props) {
-        if (!poolClassName.equals(props.poolClassName)) {
-            return false;
-        }
+        return poolClassName.equals(props.poolClassName) && equalsByLocalProperties(props.getAllLocalProperties());
+    }
+    
+    private boolean equalsByLocalProperties(final Map<String, Object> localProps) {
         for (Entry<String, Object> entry : getAllLocalProperties().entrySet()) {
-            if (!props.getAllLocalProperties().containsKey(entry.getKey())) {
+            if (!localProps.containsKey(entry.getKey())) {
                 continue;
             }
             if (entry.getValue() instanceof Map) {
-                return entry.getValue().equals(props.getAllLocalProperties().get(entry.getKey()));
+                return entry.getValue().equals(localProps.get(entry.getKey()));
             }
-            if (!String.valueOf(entry.getValue()).equals(String.valueOf(props.getAllLocalProperties().get(entry.getKey())))) {
+            if (!String.valueOf(entry.getValue()).equals(String.valueOf(localProps.get(entry.getKey())))) {
                 return false;
             }
         }
