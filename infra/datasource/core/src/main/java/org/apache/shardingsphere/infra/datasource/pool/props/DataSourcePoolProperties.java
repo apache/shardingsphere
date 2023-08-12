@@ -39,8 +39,6 @@ import java.util.Optional;
 @Getter
 public final class DataSourcePoolProperties {
     
-    private static final String DEFAULT_DATA_SOURCE_CLASS = "com.zaxxer.hikari.HikariDataSource";
-    
     private final String poolClassName;
     
     private final ConnectionPropertySynonyms connectionPropertySynonyms;
@@ -50,28 +48,19 @@ public final class DataSourcePoolProperties {
     private final CustomDataSourcePoolProperties customDataSourcePoolProperties;
     
     public DataSourcePoolProperties(final String poolClassName, final Map<String, Object> props) {
-        this.poolClassName = poolClassName;
-        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, poolClassName);
-        Map<String, String> propertySynonyms = poolMetaData.isPresent() ? poolMetaData.get().getPropertySynonyms() : Collections.emptyMap();
+        Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, poolClassName);
+        this.poolClassName = metaData.map(optional -> optional.getType().toString()).orElse(poolClassName);
+        Map<String, String> propertySynonyms = metaData.isPresent() ? metaData.get().getPropertySynonyms() : Collections.emptyMap();
         connectionPropertySynonyms = new ConnectionPropertySynonyms(props, propertySynonyms);
         poolPropertySynonyms = new PoolPropertySynonyms(props, propertySynonyms);
         customDataSourcePoolProperties = new CustomDataSourcePoolProperties(
-                props, getStandardPropertyKeys(), poolMetaData.isPresent() ? poolMetaData.get().getTransientFieldNames() : Collections.emptyList(), propertySynonyms);
+                props, getStandardPropertyKeys(), metaData.isPresent() ? metaData.get().getTransientFieldNames() : Collections.emptyList(), propertySynonyms);
     }
     
     private Collection<String> getStandardPropertyKeys() {
         Collection<String> result = new LinkedList<>(connectionPropertySynonyms.getStandardPropertyKeys());
         result.addAll(poolPropertySynonyms.getStandardPropertyKeys());
         return result;
-    }
-    
-    /**
-     * Get data source pool class name.
-     *
-     * @return data source pool class name
-     */
-    public String getPoolClassName() {
-        return null == poolClassName ? DEFAULT_DATA_SOURCE_CLASS : poolClassName;
     }
     
     /**
