@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.pool.metadata.fixture;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -59,6 +60,6 @@ public final class DataSourcePoolMetaDataFixture implements DataSourcePoolMetaDa
     
     @Override
     public String getType() {
-        return "org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource";
+        return MockedDataSource.class.getName();
     }
 }
