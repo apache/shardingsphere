@@ -108,7 +108,7 @@ jobs:
   build-proxy-native-image:
     if: github.repository == 'apache/shardingsphere'
     name: Build GraalVM Native Image
-    timeout-minutes: 90
+    timeout-minutes: 60
     permissions:
       contents: read
       packages: write
@@ -119,8 +119,8 @@ jobs:
           ref: ${{ inputs.commit-id }}
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.3.1'
-          java-version: '17'
+          java-version: '17.0.8'
+          distribution: 'graalvm-community'
           components: 'espresso,native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: 'maven'
