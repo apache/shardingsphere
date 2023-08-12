@@ -571,6 +571,10 @@ encryptAlgorithmName
     : STRING_
     ;
 
+integrityAlgorithm
+    : STRING_
+    ;
+
 zonemapName
     : identifier
     ;

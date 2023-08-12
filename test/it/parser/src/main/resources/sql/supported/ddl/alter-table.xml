@@ -171,4 +171,9 @@
     <sql-case id="alter_table_move" value="ALTER TABLE admin_docindex MOVE" db-types="Oracle" />
     <sql-case id="alter_table_move_online" value="ALTER TABLE admin_docindex MOVE ONLINE" db-types="Oracle" />
     <sql-case id="alter_table_modify" value="ALTER TABLE customers MODIFY (online_acct_pw DECRYPT)" db-types="Oracle" />
+    <sql-case id="alter_table_add_overflow_tablespace" value="ALTER TABLE admin_iot3 ADD OVERFLOW TABLESPACE admin_tbs2" db-types="Oracle" />
+    <sql-case id="alter_table_add_overflow" value="ALTER TABLE countries_demo ADD OVERFLOW" db-types="Oracle" />
+    <sql-case id="alter_table_enable_novalidate_constraint" value="ALTER TABLE dept ENABLE NOVALIDATE CONSTRAINT dname_ukey" db-types="Oracle" />
+    <sql-case id="alter_table_add_encrypt_no_salt" value="ALTER TABLE mytable ADD (online_acct_pw VARCHAR2(8) ENCRYPT NO SALT 'NOMAC')" db-types="Oracle" />
+    <sql-case id="alter_table_enable_novalidate_primary_key_enable_novalidate_constraint" value="ALTER TABLE mytable ENABLE NOVALIDATE PRIMARY KEY ENABLE NOVALIDATE CONSTRAINT emp_last_name_nn" db-types="Oracle" />
 </sql-cases>
