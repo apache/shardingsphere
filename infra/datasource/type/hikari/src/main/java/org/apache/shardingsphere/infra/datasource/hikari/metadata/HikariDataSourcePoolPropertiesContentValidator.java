@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.infra.datasource.hikari.metadata;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.datasource.pool.props.validator.typed.TypedDataSourcePoolPropertiesValidator;
+import org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesContentValidator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Data source pool properties validator of HikariCP.
+ * Data source pool properties content validator of HikariCP.
  */
-public final class HikariDataSourcePoolPropertiesValidator implements TypedDataSourcePoolPropertiesValidator {
+public final class HikariDataSourcePoolPropertiesContentValidator implements DataSourcePoolPropertiesContentValidator {
     
     private static final long MIN_CONNECTION_TIMEOUT_MILLISECONDS = 250L;
     

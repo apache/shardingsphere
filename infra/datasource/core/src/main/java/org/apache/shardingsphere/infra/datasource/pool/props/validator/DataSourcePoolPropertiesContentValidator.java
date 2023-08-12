@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.props.validator.typed;
+package org.apache.shardingsphere.infra.datasource.pool.props.validator;
 
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * Typed data source pool properties validator.
+ * Data source pool properties content validator.
  */
 @SingletonSPI
-public interface TypedDataSourcePoolPropertiesValidator extends TypedSPI {
+public interface DataSourcePoolPropertiesContentValidator extends TypedSPI {
     
     /**
      * Validate data source properties.
