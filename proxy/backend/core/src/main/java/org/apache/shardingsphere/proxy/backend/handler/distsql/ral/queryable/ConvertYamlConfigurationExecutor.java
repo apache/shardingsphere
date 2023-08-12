@@ -135,7 +135,7 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         String url = (String) connectionProps.get(DistSQLScriptConstants.KEY_URL);
         String username = (String) connectionProps.get(DistSQLScriptConstants.KEY_USERNAME);
         String password = (String) connectionProps.get(DistSQLScriptConstants.KEY_PASSWORD);
-        String props = getResourceProperties(dataSourcePoolProps.getPoolPropertySynonyms(), dataSourcePoolProps.getCustomDataSourcePoolProperties());
+        String props = getResourceProperties(dataSourcePoolProps.getPoolPropertySynonyms(), dataSourcePoolProps.getCustomProperties());
         if (Strings.isNullOrEmpty(password)) {
             stringBuilder.append(String.format(DistSQLScriptConstants.RESOURCE_DEFINITION_WITHOUT_PASSWORD, resourceName, url, username, props));
         } else {

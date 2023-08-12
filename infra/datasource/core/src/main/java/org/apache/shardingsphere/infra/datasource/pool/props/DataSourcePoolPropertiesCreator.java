@@ -136,7 +136,7 @@ public final class DataSourcePoolPropertiesCreator {
      */
     public static DataSourceConfiguration createConfiguration(final DataSourcePoolProperties props) {
         return new DataSourceConfiguration(getConnectionConfiguration(props.getConnectionPropertySynonyms()),
-                getPoolConfiguration(props.getPoolPropertySynonyms(), props.getCustomDataSourcePoolProperties()));
+                getPoolConfiguration(props.getPoolPropertySynonyms(), props.getCustomProperties()));
     }
     
     private static ConnectionConfiguration getConnectionConfiguration(final ConnectionPropertySynonyms connectionPropertySynonyms) {

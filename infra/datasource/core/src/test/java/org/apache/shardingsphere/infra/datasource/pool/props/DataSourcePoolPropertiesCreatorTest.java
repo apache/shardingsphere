@@ -80,7 +80,7 @@ class DataSourcePoolPropertiesCreatorTest {
                 Arrays.asList("username", "password", "closed"), Collections.singletonList("closed"), Collections.singletonMap("username", "user"));
         when(dataSourcePoolProperties.getConnectionPropertySynonyms()).thenReturn(connectionPropertySynonyms);
         when(dataSourcePoolProperties.getPoolPropertySynonyms()).thenReturn(poolPropertySynonyms);
-        when(dataSourcePoolProperties.getCustomDataSourcePoolProperties()).thenReturn(customDataSourcePoolProperties);
+        when(dataSourcePoolProperties.getCustomProperties()).thenReturn(customDataSourcePoolProperties);
         DataSourcePoolPropertiesCreator.createConfiguration(dataSourcePoolProperties);
     }
     

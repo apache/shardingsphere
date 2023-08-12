@@ -45,7 +45,7 @@ public final class DataSourcePoolProperties {
     
     private final PoolPropertySynonyms poolPropertySynonyms;
     
-    private final CustomDataSourcePoolProperties customDataSourcePoolProperties;
+    private final CustomDataSourcePoolProperties customProperties;
     
     public DataSourcePoolProperties(final String poolClassName, final Map<String, Object> props) {
         Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, poolClassName);
@@ -54,7 +54,7 @@ public final class DataSourcePoolProperties {
         connectionPropertySynonyms = new ConnectionPropertySynonyms(props, propertySynonyms);
         poolPropertySynonyms = new PoolPropertySynonyms(props, propertySynonyms);
         Collection<String> transientFieldNames = metaData.map(DataSourcePoolMetaData::getTransientFieldNames).orElse(Collections.emptyList());
-        customDataSourcePoolProperties = new CustomDataSourcePoolProperties(props, getStandardPropertyKeys(), transientFieldNames, propertySynonyms);
+        customProperties = new CustomDataSourcePoolProperties(props, getStandardPropertyKeys(), transientFieldNames, propertySynonyms);
     }
     
     private Collection<String> getStandardPropertyKeys() {
@@ -70,10 +70,10 @@ public final class DataSourcePoolProperties {
      */
     public Map<String, Object> getAllStandardProperties() {
         Map<String, Object> result = new LinkedHashMap<>(
-                connectionPropertySynonyms.getStandardProperties().size() + poolPropertySynonyms.getStandardProperties().size() + customDataSourcePoolProperties.getProperties().size(), 1F);
+                connectionPropertySynonyms.getStandardProperties().size() + poolPropertySynonyms.getStandardProperties().size() + customProperties.getProperties().size(), 1F);
         result.putAll(connectionPropertySynonyms.getStandardProperties());
         result.putAll(poolPropertySynonyms.getStandardProperties());
-        result.putAll(customDataSourcePoolProperties.getProperties());
+        result.putAll(customProperties.getProperties());
         return result;
     }
     
@@ -84,10 +84,10 @@ public final class DataSourcePoolProperties {
      */
     public Map<String, Object> getAllLocalProperties() {
         Map<String, Object> result = new LinkedHashMap<>(
-                connectionPropertySynonyms.getLocalProperties().size() + poolPropertySynonyms.getLocalProperties().size() + customDataSourcePoolProperties.getProperties().size(), 1F);
+                connectionPropertySynonyms.getLocalProperties().size() + poolPropertySynonyms.getLocalProperties().size() + customProperties.getProperties().size(), 1F);
         result.putAll(connectionPropertySynonyms.getLocalProperties());
         result.putAll(poolPropertySynonyms.getLocalProperties());
-        result.putAll(customDataSourcePoolProperties.getProperties());
+        result.putAll(customProperties.getProperties());
         return result;
     }
     
