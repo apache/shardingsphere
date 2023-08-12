@@ -41,9 +41,9 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Data source reflection.
+ * Data source pool reflection.
  */
-public final class DataSourceReflection {
+public final class DataSourcePoolReflection {
     
     private static final Collection<Class<?>> GENERAL_CLASS_TYPES;
     
@@ -65,7 +65,7 @@ public final class DataSourceReflection {
         SKIPPED_PROPERTY_KEYS = new HashSet<>(Arrays.asList("loginTimeout", "driverClassName"));
     }
     
-    public DataSourceReflection(final DataSource dataSource) {
+    public DataSourcePoolReflection(final DataSource dataSource) {
         this.dataSource = dataSource;
         dataSourceMethods = dataSource.getClass().getMethods();
     }

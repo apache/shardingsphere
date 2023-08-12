@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourceReflection;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolReflection;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.custom.CustomDataSourcePoolProperties;
@@ -87,7 +87,7 @@ public final class DataSourcePoolPropertiesCreator {
     private static Map<String, Object> createProperties(final DataSource dataSource) {
         Map<String, Object> result = new LinkedHashMap<>();
         Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSource.getClass().getName());
-        for (Entry<String, Object> entry : new DataSourceReflection(dataSource).convertToProperties().entrySet()) {
+        for (Entry<String, Object> entry : new DataSourcePoolReflection(dataSource).convertToProperties().entrySet()) {
             String propertyName = entry.getKey();
             Object propertyValue = entry.getValue();
             if (!metaData.isPresent() || isValidProperty(propertyName, propertyValue, metaData.get()) && !metaData.get().getTransientFieldNames().contains(propertyName)) {
