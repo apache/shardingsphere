@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.metadata;
+package org.apache.shardingsphere.infra.datasource.pool.props.validator;
 
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 
 /**
- * Data source pool properties validator.
+ * Typed data source pool properties validator.
  */
-public interface DataSourcePoolPropertiesValidator {
+public interface TypedDataSourcePoolPropertiesValidator {
     
     /**
      * Validate data source properties.

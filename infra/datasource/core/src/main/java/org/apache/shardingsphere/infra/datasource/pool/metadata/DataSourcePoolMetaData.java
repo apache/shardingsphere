@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
+import org.apache.shardingsphere.infra.datasource.pool.props.validator.TypedDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -70,7 +71,7 @@ public interface DataSourcePoolMetaData extends TypedSPI {
      * 
      * @return data source pool properties validator
      */
-    default Optional<DataSourcePoolPropertiesValidator> getDataSourcePoolPropertiesValidator() {
+    default Optional<TypedDataSourcePoolPropertiesValidator> getDataSourcePoolPropertiesValidator() {
         return Optional.empty();
     }
 }
