@@ -156,10 +156,6 @@ public final class DataSourcePoolPropertiesCreator {
         if (!props.containsKey(name)) {
             return null;
         }
-        try {
-            return Boolean.parseBoolean(String.valueOf(props.get(name)));
-        } catch (final NumberFormatException ex) {
-            return null;
-        }
+        return Boolean.parseBoolean(String.valueOf(props.get(name)));
     }
 }
