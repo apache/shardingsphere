@@ -49,7 +49,7 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
         ruleConfigurations = ruleConfigs;
         dataSourcePoolPropertiesMap = dataSourceConfigs.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        this.storageResource = DataSourcePoolCreator.createStorageResource(dataSourcePoolPropertiesMap);
+        storageResource = DataSourcePoolCreator.createStorageResource(dataSourcePoolPropertiesMap);
     }
     
     @Override
