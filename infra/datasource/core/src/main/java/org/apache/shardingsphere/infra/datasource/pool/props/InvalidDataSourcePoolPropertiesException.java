@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.props;
 
+import org.apache.shardingsphere.infra.exception.core.internal.ShardingSphereInternalException;
+
 /**
  * Invalid data source pool properties exception.
  */
-public final class InvalidDataSourcePoolPropertiesException extends Exception {
+public final class InvalidDataSourcePoolPropertiesException extends ShardingSphereInternalException {
     
     private static final long serialVersionUID = -7221138369057943935L;
     
     public InvalidDataSourcePoolPropertiesException(final String dataSourceName, final String errorMessage) {
-        super(String.format("Invalid data source `%s`, error message is: %s", dataSourceName, errorMessage));
+        super("Invalid data source `%s`, error message is: %s", dataSourceName, errorMessage);
     }
 }
