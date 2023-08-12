@@ -43,11 +43,11 @@ class DataSourcePoolPropertiesCreatorTest {
     
     @Test
     void assertCreateWithDataSourceConfiguration() {
-        assertParameter(DataSourcePoolPropertiesCreator.create(createResourceConfiguration()));
+        assertParameter(DataSourcePoolPropertiesCreator.create(createDataSourceConfiguration()));
     }
     
-    private DataSourceConfiguration createResourceConfiguration() {
-        ConnectionConfiguration connectionConfig = new ConnectionConfiguration("com.zaxxer.hikari.HikariDataSource", "jdbc:mysql://localhost:3306/demo_ds", "root", "root");
+    private DataSourceConfiguration createDataSourceConfiguration() {
+        ConnectionConfiguration connectionConfig = new ConnectionConfiguration(MockedDataSource.class.getName(), "jdbc:mock://127.0.0.1/foo_ds", "root", "root");
         PoolConfiguration poolConfig = new PoolConfiguration(null, null, null, null, null, null, null);
         return new DataSourceConfiguration(connectionConfig, poolConfig);
     }
@@ -55,8 +55,8 @@ class DataSourcePoolPropertiesCreatorTest {
     private void assertParameter(final DataSourcePoolProperties actual) {
         Map<String, Object> props = actual.getAllLocalProperties();
         assertThat(props.size(), is(10));
-        assertThat(props.get("dataSourceClassName"), is("com.zaxxer.hikari.HikariDataSource"));
-        assertThat(props.get("url"), is("jdbc:mysql://localhost:3306/demo_ds"));
+        assertThat(props.get("dataSourceClassName"), is(MockedDataSource.class.getName()));
+        assertThat(props.get("url"), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(props.get("username"), is("root"));
         assertThat(props.get("password"), is("root"));
         assertNull(props.get("maximumPoolSize"));
@@ -73,15 +73,25 @@ class DataSourcePoolPropertiesCreatorTest {
     
     @Test
     void assertCreateConfiguration() {
-        DataSourcePoolProperties dataSourcePoolProperties = mock(DataSourcePoolProperties.class);
-        ConnectionPropertySynonyms connectionPropertySynonyms = new ConnectionPropertySynonyms(createStandardProperties(), createPropertySynonyms());
-        PoolPropertySynonyms poolPropertySynonyms = new PoolPropertySynonyms(createStandardProperties(), createPropertySynonyms());
-        CustomDataSourcePoolProperties customDataSourcePoolProperties = new CustomDataSourcePoolProperties(createProperties(),
+        DataSourcePoolProperties props = mock(DataSourcePoolProperties.class);
+        ConnectionPropertySynonyms connectionPropSynonyms = new ConnectionPropertySynonyms(createStandardProperties(), createPropertySynonyms());
+        PoolPropertySynonyms poolPropSynonyms = new PoolPropertySynonyms(createStandardProperties(), createPropertySynonyms());
+        CustomDataSourcePoolProperties customProps = new CustomDataSourcePoolProperties(createProperties(),
                 Arrays.asList("username", "password", "closed"), Collections.singletonList("closed"), Collections.singletonMap("username", "user"));
-        when(dataSourcePoolProperties.getConnectionPropertySynonyms()).thenReturn(connectionPropertySynonyms);
-        when(dataSourcePoolProperties.getPoolPropertySynonyms()).thenReturn(poolPropertySynonyms);
-        when(dataSourcePoolProperties.getCustomProperties()).thenReturn(customDataSourcePoolProperties);
-        DataSourcePoolPropertiesCreator.createConfiguration(dataSourcePoolProperties);
+        when(props.getConnectionPropertySynonyms()).thenReturn(connectionPropSynonyms);
+        when(props.getPoolPropertySynonyms()).thenReturn(poolPropSynonyms);
+        when(props.getCustomProperties()).thenReturn(customProps);
+        assertPoolConfiguration(DataSourcePoolPropertiesCreator.createConfiguration(props).getPool());
+    }
+    
+    private static void assertPoolConfiguration(final PoolConfiguration actual) {
+        assertThat(actual.getIdleTimeoutMilliseconds(), is(180000L));
+        assertThat(actual.getMaxLifetimeMilliseconds(), is(180000L));
+        assertThat(actual.getMaxPoolSize(), is(30));
+        assertThat(actual.getMinPoolSize(), is(10));
+        assertThat(actual.getCustomProperties().get("driverClassName"), is(MockedDataSource.class.getName()));
+        assertThat(actual.getCustomProperties().get("url"), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.getCustomProperties().get("maximumPoolSize"), is("-1"));
     }
     
     private DataSource createDataSource() {
