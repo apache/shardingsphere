@@ -51,8 +51,7 @@ public final class DataSourcePoolPropertiesCreator {
      * @return created data source pool properties
      */
     public static Map<String, DataSourcePoolProperties> createFromConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        return dataSourceConfigs.entrySet().stream().collect(Collectors
-                .toMap(Entry::getKey, entry -> create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return dataSourceConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
@@ -72,11 +71,7 @@ public final class DataSourcePoolPropertiesCreator {
      * @return created data source properties
      */
     public static Map<String, DataSourcePoolProperties> create(final Map<String, DataSource> dataSources) {
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
-        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            result.put(entry.getKey(), create(entry.getValue()));
-        }
-        return result;
+        return dataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getValue()), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
     }
     
     /**
@@ -86,10 +81,8 @@ public final class DataSourcePoolPropertiesCreator {
      * @return created data source properties
      */
     public static DataSourcePoolProperties create(final DataSource dataSource) {
-        return dataSource instanceof CatalogSwitchableDataSource
-                ? new DataSourcePoolProperties(((CatalogSwitchableDataSource) dataSource).getDataSource().getClass().getName(),
-                        createProperties(((CatalogSwitchableDataSource) dataSource).getDataSource()))
-                : new DataSourcePoolProperties(dataSource.getClass().getName(), createProperties(dataSource));
+        DataSource realDataSource = dataSource instanceof CatalogSwitchableDataSource ? ((CatalogSwitchableDataSource) dataSource).getDataSource() : dataSource;
+        return new DataSourcePoolProperties(realDataSource.getClass().getName(), createProperties(realDataSource));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -113,19 +106,19 @@ public final class DataSourcePoolPropertiesCreator {
     
     private static Map<String, Object> createProperties(final DataSource dataSource) {
         Map<String, Object> result = new LinkedHashMap<>();
-        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSource.getClass().getName());
+        Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSource.getClass().getName());
         for (Entry<String, Object> entry : new DataSourceReflection(dataSource).convertToProperties().entrySet()) {
             String propertyName = entry.getKey();
             Object propertyValue = entry.getValue();
-            if (!poolMetaData.isPresent() || isValidProperty(propertyName, propertyValue, poolMetaData.get()) && !poolMetaData.get().getTransientFieldNames().contains(propertyName)) {
+            if (!metaData.isPresent() || isValidProperty(propertyName, propertyValue, metaData.get()) && !metaData.get().getTransientFieldNames().contains(propertyName)) {
                 result.put(propertyName, propertyValue);
             }
         }
         return result;
     }
     
-    private static boolean isValidProperty(final String key, final Object value, final DataSourcePoolMetaData poolMetaData) {
-        return !poolMetaData.getSkippedProperties().containsKey(key) || null == value || !value.equals(poolMetaData.getSkippedProperties().get(key));
+    private static boolean isValidProperty(final String key, final Object value, final DataSourcePoolMetaData metaData) {
+        return null == value || !metaData.getSkippedProperties().containsKey(key) || !value.equals(metaData.getSkippedProperties().get(key));
     }
     
     /**
