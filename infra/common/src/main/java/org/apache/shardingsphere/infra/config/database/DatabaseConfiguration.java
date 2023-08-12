@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.config.database;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.props.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
 
 import javax.sql.DataSource;

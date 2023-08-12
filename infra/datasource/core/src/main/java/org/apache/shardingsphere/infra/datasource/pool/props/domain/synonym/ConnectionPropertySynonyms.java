@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.props;
+package org.apache.shardingsphere.infra.datasource.pool.props.domain.synonym;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import lombok.EqualsAndHashCode;
 
-import java.util.Collections;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class DataSourcePoolPropertiesValidatorTest {
+/**
+ * Connection property synonyms.
+ */
+@EqualsAndHashCode(callSuper = true)
+public final class ConnectionPropertySynonyms extends PropertySynonyms {
     
-    @BeforeAll
-    static void setUp() throws ClassNotFoundException {
-        Class.forName(MockedDriver.class.getName());
+    private static final Collection<String> STANDARD_PROPERTY_KEYS = new HashSet<>();
+    
+    static {
+        STANDARD_PROPERTY_KEYS.add("dataSourceClassName");
+        STANDARD_PROPERTY_KEYS.add("url");
+        STANDARD_PROPERTY_KEYS.add("username");
+        STANDARD_PROPERTY_KEYS.add("password");
     }
     
-    @Test
-    void assertValidateSuccess() {
-        assertTrue(DataSourcePoolPropertiesValidator.validate(
-                Collections.singletonMap("name", new DataSourcePoolProperties(HikariDataSource.class.getName(), Collections.singletonMap("jdbcUrl", "jdbc:mock")))).isEmpty());
+    public ConnectionPropertySynonyms(final Map<String, Object> props, final Map<String, String> propertySynonyms) {
+        super(props, STANDARD_PROPERTY_KEYS, propertySynonyms);
     }
 }
