@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.pool.props.validator;
+package org.apache.shardingsphere.infra.datasource.pool.props.validator.typed;
 
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 

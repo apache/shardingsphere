@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.hikari.metadata;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.datasource.pool.props.validator.TypedDataSourcePoolPropertiesValidator;
+import org.apache.shardingsphere.infra.datasource.pool.props.validator.typed.TypedDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 
 import java.util.Map;

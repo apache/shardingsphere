@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.hikari.metadata;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
-import org.apache.shardingsphere.infra.datasource.pool.props.validator.TypedDataSourcePoolPropertiesValidator;
+import org.apache.shardingsphere.infra.datasource.pool.props.validator.typed.TypedDataSourcePoolPropertiesValidator;
 
 import java.util.Collection;
 import java.util.HashMap;
