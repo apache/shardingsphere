@@ -59,7 +59,7 @@ public final class DataSourcePoolPropertiesValidator {
     }
     
     private static void validateProperties(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
-        Optional<DataSourcePoolPropertiesLegalValidator> legalValidator = TypedSPILoader.findService(DataSourcePoolPropertiesLegalValidator.class, props.getPoolClassName());
+        Optional<DataSourcePoolPropertiesContentValidator> legalValidator = TypedSPILoader.findService(DataSourcePoolPropertiesContentValidator.class, props.getPoolClassName());
         if (!legalValidator.isPresent()) {
             return;
         }

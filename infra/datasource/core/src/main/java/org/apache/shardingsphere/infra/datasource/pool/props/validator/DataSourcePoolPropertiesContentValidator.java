@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * Data source pool properties legal validator.
+ * Data source pool properties content validator.
  */
 @SingletonSPI
-public interface DataSourcePoolPropertiesLegalValidator extends TypedSPI {
+public interface DataSourcePoolPropertiesContentValidator extends TypedSPI {
     
     /**
      * Validate data source properties.
