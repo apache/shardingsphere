@@ -490,7 +490,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
             props.add(getStandardProperty(standardProps, "maxPoolSize"));
             props.add(getStandardProperty(standardProps, "minPoolSize"));
             props.add(getStandardProperty(standardProps, "readOnly"));
-            Map<String, Object> otherProps = value.getCustomDataSourcePoolProperties().getProperties();
+            Map<String, Object> otherProps = value.getCustomProperties().getProperties();
             props.add(otherProps.isEmpty() ? "" : new Gson().toJson(otherProps));
             result.add(props);
         }

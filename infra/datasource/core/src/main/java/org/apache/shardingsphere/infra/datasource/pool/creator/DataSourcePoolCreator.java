@@ -206,7 +206,7 @@ public final class DataSourcePoolCreator {
         if (poolMetaData.isPresent()) {
             setDefaultFields(dataSourceReflection, poolMetaData.get());
             setConfiguredFields(props, dataSourceReflection, poolMetaData.get());
-            appendJdbcUrlProperties(props.getCustomDataSourcePoolProperties(), result, poolMetaData.get(), dataSourceReflection);
+            appendJdbcUrlProperties(props.getCustomProperties(), result, poolMetaData.get(), dataSourceReflection);
             dataSourceReflection.addDefaultDataSourcePoolProperties(poolMetaData.get());
         } else {
             setConfiguredFields(props, dataSourceReflection);

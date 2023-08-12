@@ -104,7 +104,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     private Map<Character, Integer> createCharIndexes(final Properties props) {
         String dictContent = props.containsKey(DICT_KEY) && !Strings.isNullOrEmpty(props.getProperty(DICT_KEY)) ? props.getProperty(DICT_KEY) : initDefaultDict();
-        return IntStream.range(0, dictContent.length()).boxed().collect(Collectors.toMap(dictContent::charAt, index -> index, (a, b) -> b));
+        return IntStream.range(0, dictContent.length()).boxed().collect(Collectors.toMap(dictContent::charAt, index -> index, (oldValue, currentValue) -> oldValue));
     }
     
     @SneakyThrows(IOException.class)

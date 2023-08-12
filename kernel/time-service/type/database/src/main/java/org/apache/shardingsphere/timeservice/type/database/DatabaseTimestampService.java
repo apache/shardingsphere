@@ -49,7 +49,7 @@ public final class DatabaseTimestampService implements TimestampService {
     @Override
     public void init(final Properties props) {
         dataSource = DataSourcePoolCreator.create(new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(
-                props.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue, (key, value) -> value))));
+                props.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue))));
         storageType = DatabaseTypeEngine.getStorageType(Collections.singleton(dataSource));
     }
     

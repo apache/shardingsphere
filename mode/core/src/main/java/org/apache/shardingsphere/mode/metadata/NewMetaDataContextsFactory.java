@@ -112,8 +112,7 @@ public final class NewMetaDataContextsFactory {
     
     private static Map<String, DatabaseConfiguration> createEffectiveDatabaseConfigurations(final Collection<String> databaseNames,
                                                                                             final Map<String, DatabaseConfiguration> databaseConfigs, final NewMetaDataPersistService persistService) {
-        return databaseNames.stream().collect(
-                Collectors.toMap(each -> each, each -> createEffectiveDatabaseConfiguration(each, databaseConfigs, persistService), (a, b) -> b, () -> new HashMap<>(databaseNames.size(), 1F)));
+        return databaseNames.stream().collect(Collectors.toMap(each -> each, each -> createEffectiveDatabaseConfiguration(each, databaseConfigs, persistService)));
     }
     
     private static DatabaseConfiguration createEffectiveDatabaseConfiguration(final String databaseName,
