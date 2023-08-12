@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
-import org.apache.shardingsphere.infra.datasource.pool.props.validator.typed.TypedDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Data source pool meta data.
@@ -65,13 +63,4 @@ public interface DataSourcePoolMetaData extends TypedSPI {
      * @return data source pool field meta data
      */
     DataSourcePoolFieldMetaData getFieldMetaData();
-    
-    /**
-     * Get data source pool properties validator.
-     * 
-     * @return data source pool properties validator
-     */
-    default Optional<TypedDataSourcePoolPropertiesValidator> getDataSourcePoolPropertiesValidator() {
-        return Optional.empty();
-    }
 }

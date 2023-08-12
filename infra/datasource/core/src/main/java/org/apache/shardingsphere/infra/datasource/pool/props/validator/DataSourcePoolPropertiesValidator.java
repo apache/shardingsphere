@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
-import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.validator.typed.TypedDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
@@ -60,12 +60,12 @@ public final class DataSourcePoolPropertiesValidator {
     }
     
     private static void validateProperties(final String dataSourceName, final DataSourcePoolProperties props) throws InvalidDataSourcePoolPropertiesException {
-        Optional<DataSourcePoolMetaData> metaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, props.getPoolClassName());
-        if (!metaData.isPresent()) {
+        Optional<TypedDataSourcePoolPropertiesValidator> typedValidator = TypedSPILoader.findService(TypedDataSourcePoolPropertiesValidator.class, props.getPoolClassName());
+        if (!typedValidator.isPresent()) {
             return;
         }
         try {
-            metaData.get().getDataSourcePoolPropertiesValidator().ifPresent(optional -> optional.validate(props));
+            typedValidator.ifPresent(optional -> optional.validate(props));
         } catch (final IllegalArgumentException ex) {
             throw new InvalidDataSourcePoolPropertiesException(dataSourceName, ex.getMessage());
         }

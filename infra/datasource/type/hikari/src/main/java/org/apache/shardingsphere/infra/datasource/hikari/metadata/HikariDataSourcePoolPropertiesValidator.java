@@ -95,4 +95,9 @@ public final class HikariDataSourcePoolPropertiesValidator implements TypedDataS
     private boolean isExisted(final Map<String, Object> allLocalProps, final String key) {
         return allLocalProps.containsKey(key) && null != allLocalProps.get(key);
     }
+    
+    @Override
+    public Object getType() {
+        return "com.zaxxer.hikari.HikariDataSource";
+    }
 }

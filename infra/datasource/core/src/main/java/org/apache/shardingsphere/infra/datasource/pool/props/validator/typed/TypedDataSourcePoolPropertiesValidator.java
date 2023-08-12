@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.infra.datasource.pool.props.validator.typed;
 
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
  * Typed data source pool properties validator.
  */
-public interface TypedDataSourcePoolPropertiesValidator {
+@SingletonSPI
+public interface TypedDataSourcePoolPropertiesValidator extends TypedSPI {
     
     /**
      * Validate data source properties.
