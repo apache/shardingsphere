@@ -52,7 +52,10 @@ services:
 
 ## Premise
 
-1. Install and configure `GraalVM Community Edition` or `Oracle GraalVM` for JDK 17 according to https://www.graalvm.org/downloads/. Or use `SDKMAN!`.
+1. Install and configure `GraalVM Community Edition` or `Oracle GraalVM` for JDK 17 according
+   to https://www.graalvm.org/downloads/. Or use `SDKMAN!`. If you wish to use `Oracle GraalVM`
+   with [GraalVM Free Terms and Conditions license](https://www.oracle.com/downloads/licenses/graal-free-license.html),
+   the following command should be changed to `sdk install java 17.0.8-graal`。
 
 ```shell
 sdk install java 17.0.8-graalce
