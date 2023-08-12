@@ -153,9 +153,6 @@ public final class DataSourcePoolPropertiesCreator {
     
     @SuppressWarnings("SameParameterValue")
     private static Boolean toBoolean(final Map<String, Object> props, final String name) {
-        if (!props.containsKey(name)) {
-            return null;
-        }
-        return Boolean.parseBoolean(String.valueOf(props.get(name)));
+        return props.containsKey(name) ? Boolean.parseBoolean(String.valueOf(props.get(name))) : null;
     }
 }
