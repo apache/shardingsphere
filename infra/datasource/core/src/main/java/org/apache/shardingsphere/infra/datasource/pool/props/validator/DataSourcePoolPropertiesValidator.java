@@ -87,6 +87,7 @@ public final class DataSourcePoolPropertiesValidator {
         }
     }
     
+    @SuppressWarnings("EmptyTryBlock")
     private static void checkFailFast(final DataSource dataSource) throws SQLException {
         // CHECKSTYLE:OFF
         try (Connection ignored = dataSource.getConnection()) {
