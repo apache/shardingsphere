@@ -80,7 +80,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-datasource-c3p0</artifactId>
+            <artifactId>shardingsphere-infra-datasource-hikari</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -90,15 +90,9 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-datasource-druid</artifactId>
+            <artifactId>shardingsphere-infra-datasource-c3p0</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-datasource-hikari</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-parser-sql-engine</artifactId>
