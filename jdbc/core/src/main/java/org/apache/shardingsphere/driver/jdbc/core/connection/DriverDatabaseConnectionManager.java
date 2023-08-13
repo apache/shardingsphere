@@ -100,7 +100,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         DataSourcePoolProperties propsSample = propsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = persistService.getGlobalRuleService().loadUsers();
         Collection<InstanceMetaData> instances = contextManager.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, rule.getLabels());
-        return DataSourcePoolCreator.create(createDataSourcePoolPropertiesMap(instances, users, propsSample, actualDatabaseName));
+        return DataSourcePoolCreator.create(createDataSourcePoolPropertiesMap(instances, users, propsSample, actualDatabaseName), true);
     }
     
     private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final Collection<InstanceMetaData> instances, final Collection<ShardingSphereUser> users,

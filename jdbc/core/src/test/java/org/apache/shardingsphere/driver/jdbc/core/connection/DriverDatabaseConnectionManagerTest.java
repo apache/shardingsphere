@@ -55,6 +55,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -71,7 +72,6 @@ class DriverDatabaseConnectionManagerTest {
         databaseConnectionManager = new DriverDatabaseConnectionManager(DefaultDatabase.LOGIC_NAME, mockContextManager());
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private ContextManager mockContextManager() throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = mockDataSourceMap();
@@ -83,7 +83,7 @@ class DriverDatabaseConnectionManagerTest {
         when(result.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(
                 Collections.singletonList(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_version")));
         Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();
-        when(DataSourcePoolCreator.create((Map) any())).thenReturn(trafficDataSourceMap);
+        when(DataSourcePoolCreator.create(any(), eq(true))).thenReturn(trafficDataSourceMap);
         return result;
     }
     
