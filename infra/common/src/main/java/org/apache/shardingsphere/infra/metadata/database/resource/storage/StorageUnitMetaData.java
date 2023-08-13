@@ -34,36 +34,30 @@ public final class StorageUnitMetaData {
     
     private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
     
+    // TODO zhangliang: should refactor
+    private final Map<String, StorageUnitNodeMapper> unitNodeMappers;
+    
     private final Map<String, StorageUnit> storageUnits;
+    
+    // TODO zhangliang: should refactor
+    private final Map<String, DataSource> dataSources;
+    
+    // TODO zhangliang: should refactor
+    private final Map<String, DatabaseType> storageTypes;
     
     public StorageUnitMetaData(final String databaseName, final Map<StorageNode, DataSource> storageNodeDataSources,
                                final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageUnitNodeMapper> unitNodeMappers) {
         this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
+        this.unitNodeMappers = unitNodeMappers;
         storageUnits = new LinkedHashMap<>(unitNodeMappers.size(), 1F);
         for (Entry<String, StorageUnitNodeMapper> entry : unitNodeMappers.entrySet()) {
             storageUnits.put(entry.getKey(), new StorageUnit(databaseName, storageNodeDataSources, dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()));
         }
+        dataSources = createDataSources();
+        storageTypes = createStorageTypes();
     }
     
-    /**
-     * Get unit node mappers.
-     *
-     * @return unit node mappers
-     */
-    public Map<String, StorageUnitNodeMapper> getUnitNodeMappers() {
-        Map<String, StorageUnitNodeMapper> result = new LinkedHashMap<>(storageUnits.size(), 1F);
-        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getUnitNodeMapper());
-        }
-        return result;
-    }
-    
-    /**
-     * Get data sources.
-     *
-     * @return data sources
-     */
-    public Map<String, DataSource> getDataSources() {
+    private Map<String, DataSource> createDataSources() {
         Map<String, DataSource> result = new LinkedHashMap<>(storageUnits.size(), 1F);
         for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getDataSource());
@@ -71,12 +65,7 @@ public final class StorageUnitMetaData {
         return result;
     }
     
-    /**
-     * Get storage types.
-     *
-     * @return storage types
-     */
-    public Map<String, DatabaseType> getStorageTypes() {
+    private Map<String, DatabaseType> createStorageTypes() {
         Map<String, DatabaseType> result = new LinkedHashMap<>(storageUnits.size(), 1F);
         for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getStorageType());
