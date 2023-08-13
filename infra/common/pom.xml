@@ -80,17 +80,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-datasource-hikari</artifactId>
+            <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-datasource-dbcp</artifactId>
+            <artifactId>shardingsphere-infra-data-source-pool-dbcp</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-datasource-c3p0</artifactId>
+            <artifactId>shardingsphere-infra-data-source-pool-c3p0</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

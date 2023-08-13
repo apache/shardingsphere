@@ -23,7 +23,7 @@
         <artifactId>shardingsphere-infra</artifactId>
         <version>5.4.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-datasource</artifactId>
+    <artifactId>shardingsphere-infra-data-source-pool</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     

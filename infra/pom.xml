@@ -31,7 +31,7 @@
         <module>spi</module>
         <module>exception</module>
         <module>database</module>
-        <module>datasource</module>
+        <module>data-source-pool</module>
         <module>binder</module>
         <module>common</module>
         <module>context</module>
