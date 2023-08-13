@@ -41,6 +41,7 @@ import org.apache.shardingsphere.infra.datasource.storage.StorageUnitNodeMapper;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -70,17 +71,7 @@ public final class DataSourcePoolCreator {
                 appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProps, entry.getKey(), entry.getValue());
                 continue;
             }
-            DataSource dataSource;
-            try {
-                dataSource = create(entry.getKey(), entry.getValue(), cacheEnabled);
-                // CHECKSTYLE:OFF
-            } catch (final RuntimeException ex) {
-                // CHECKSTYLE:ON
-                if (!cacheEnabled) {
-                    storageNodes.values().stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
-                }
-                throw ex;
-            }
+            DataSource dataSource = createDataSource(entry.getKey(), entry.getValue(), cacheEnabled, storageNodes.values());
             storageNodes.put(storageNode, dataSource);
             appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProps, entry.getKey(), entry.getValue());
         }
@@ -167,18 +158,7 @@ public final class DataSourcePoolCreator {
     public static Map<String, DataSource> create(final Map<String, DataSourcePoolProperties> propsMap, final boolean cacheEnabled) {
         Map<String, DataSource> result = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            DataSource dataSource;
-            try {
-                dataSource = create(entry.getKey(), entry.getValue(), cacheEnabled);
-                // CHECKSTYLE:OFF
-            } catch (final RuntimeException ex) {
-                // CHECKSTYLE:ON
-                if (!cacheEnabled) {
-                    result.values().stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
-                }
-                throw ex;
-            }
-            result.put(entry.getKey(), dataSource);
+            result.put(entry.getKey(), createDataSource(entry.getKey(), entry.getValue(), cacheEnabled, result.values()));
         }
         return result;
     }
@@ -218,6 +198,19 @@ public final class DataSourcePoolCreator {
             GlobalDataSourceRegistry.getInstance().getCachedDataSources().put(dataSourceName, result);
         }
         return result;
+    }
+    
+    private static DataSource createDataSource(final String dataSourceName, final DataSourcePoolProperties props, final boolean cacheEnabled, final Collection<DataSource> storageNodes) {
+        try {
+            return create(dataSourceName, props, cacheEnabled);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            if (!cacheEnabled) {
+                storageNodes.stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
+            }
+            throw ex;
+        }
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
