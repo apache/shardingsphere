@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Storage utility class.
@@ -54,12 +55,20 @@ public final class StorageResourceUtils {
      * @return storage unit node mappers
      */
     public static Map<String, StorageUnitNodeMapper> getStorageUnitNodeMappers(final Map<String, DataSource> dataSources) {
-        Map<String, StorageUnitNodeMapper> result = new LinkedHashMap<>(dataSources.size(), 1F);
-        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            DataSourcePoolProperties dataSourcePoolProperties = DataSourcePoolPropertiesCreator.create(entry.getValue());
-            String url = dataSourcePoolProperties.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-            result.put(entry.getKey(), new StorageUnitNodeMapper(entry.getKey(), new StorageNode(entry.getKey()), url));
-        }
-        return result;
+        return dataSources.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> getStorageUnitNodeMapper(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
+    }
+    
+    /**
+     * Get storage unit node mapper from provided data source.
+     *
+     * @param dataSourceName data source name
+     * @param dataSource data source
+     * @return storage unit node mapper
+     */
+    public static StorageUnitNodeMapper getStorageUnitNodeMapper(final String dataSourceName, final DataSource dataSource) {
+        DataSourcePoolProperties props = DataSourcePoolPropertiesCreator.create(dataSource);
+        String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
+        return new StorageUnitNodeMapper(dataSourceName, new StorageNode(dataSourceName), url);
     }
 }
