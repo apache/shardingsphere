@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.hikari.metadata;
+package org.apache.shardingsphere.infra.datasource.pool.hikari.metadata;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesContentValidator;
@@ -37,13 +37,13 @@ public final class HikariDataSourcePoolPropertiesContentValidator implements Dat
     
     @Override
     public void validate(final DataSourcePoolProperties props) {
-        Map<String, Object> allLocalProperties = props.getAllLocalProperties();
-        validateConnectionTimeout(allLocalProperties);
-        validateIdleTimeout(allLocalProperties);
-        validateMaxLifetime(allLocalProperties);
-        validateMaximumPoolSize(allLocalProperties);
-        validateMinimumIdle(allLocalProperties);
-        validateKeepAliveTime(allLocalProperties);
+        Map<String, Object> allLocalProps = props.getAllLocalProperties();
+        validateConnectionTimeout(allLocalProps);
+        validateIdleTimeout(allLocalProps);
+        validateMaxLifetime(allLocalProps);
+        validateMaximumPoolSize(allLocalProps);
+        validateMinimumIdle(allLocalProps);
+        validateKeepAliveTime(allLocalProps);
     }
     
     private void validateConnectionTimeout(final Map<String, Object> allLocalProps) {

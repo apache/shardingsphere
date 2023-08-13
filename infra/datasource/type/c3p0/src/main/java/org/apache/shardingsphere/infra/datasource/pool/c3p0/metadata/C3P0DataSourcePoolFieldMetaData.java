@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.c3p0.metadata;
+package org.apache.shardingsphere.infra.datasource.pool.c3p0.metadata;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 

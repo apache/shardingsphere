@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.hikari.metadata;
+package org.apache.shardingsphere.infra.datasource.pool.hikari.metadata;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 

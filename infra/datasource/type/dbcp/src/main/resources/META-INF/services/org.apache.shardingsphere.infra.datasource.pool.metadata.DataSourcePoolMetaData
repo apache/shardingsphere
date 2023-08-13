@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.datasource.dbcp.metadata.DBCPDataSourcePoolMetaData
+org.apache.shardingsphere.infra.datasource.pool.dbcp.metadata.DBCPDataSourcePoolMetaData

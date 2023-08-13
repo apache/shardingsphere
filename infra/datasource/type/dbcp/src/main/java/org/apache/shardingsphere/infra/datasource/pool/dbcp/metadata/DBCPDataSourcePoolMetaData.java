@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.dbcp.metadata;
+package org.apache.shardingsphere.infra.datasource.pool.dbcp.metadata;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 

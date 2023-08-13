@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.hikari.creator;
+package org.apache.shardingsphere.infra.datasource.pool.c3p0.creator;
 
-import com.zaxxer.hikari.HikariDataSource;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -31,24 +30,25 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class HikariDataSourcePoolCreatorTest {
+class C3P0DataSourcePoolCreatorTest {
     
     @Test
     void assertCreateDataSource() {
-        HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.create(new DataSourcePoolProperties(HikariDataSource.class.getName(), createDataSourcePoolProperties()));
+        ComboPooledDataSource actual = (ComboPooledDataSource) DataSourcePoolCreator.create(new DataSourcePoolProperties(ComboPooledDataSource.class.getName(), createDataSourcePoolProperties()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
-        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getUser(), is("root"));
         assertThat(actual.getPassword(), is("root"));
-        assertThat(actual.getDataSourceProperties(), is(PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value"))));
+        assertThat(actual.getProperties(), is(PropertiesBuilder.build(new PropertiesBuilder.Property("foo", "foo_value"), new PropertiesBuilder.Property("bar", "bar_value"),
+                new PropertiesBuilder.Property("password", "root"), new PropertiesBuilder.Property("user", "root"))));
     }
     
     private Map<String, Object> createDataSourcePoolProperties() {
         Map<String, Object> result = new HashMap<>();
-        result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
+        result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("driverClassName", MockedDataSource.class.getName());
         result.put("username", "root");
         result.put("password", "root");
-        result.put("dataSourceProperties", PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value")));
+        result.put("properties", PropertiesBuilder.build(new PropertiesBuilder.Property("foo", "foo_value"), new PropertiesBuilder.Property("bar", "bar_value")));
         return result;
     }
 }

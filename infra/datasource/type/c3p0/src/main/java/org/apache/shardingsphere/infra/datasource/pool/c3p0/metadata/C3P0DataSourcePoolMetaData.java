@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.hikari.metadata;
+package org.apache.shardingsphere.infra.datasource.pool.c3p0.metadata;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 
@@ -25,15 +25,15 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Hikari data source pool meta data.
+ * C3P0 data source pool meta data.
  */
-public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaData {
+public final class C3P0DataSourcePoolMetaData implements DataSourcePoolMetaData {
     
     private static final Map<String, Object> DEFAULT_PROPS = new HashMap<>(6, 1F);
     
     private static final Map<String, Object> SKIPPED_PROPS = new HashMap<>(2, 1F);
     
-    private static final Map<String, String> PROP_SYNONYMS = new HashMap<>(6, 1F);
+    private static final Map<String, String> PROP_SYNONYMS = new HashMap<>(5, 1F);
     
     private static final Collection<String> TRANSIENT_FIELD_NAMES = new LinkedList<>();
     
@@ -45,32 +45,29 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     private static void buildDefaultProperties() {
-        DEFAULT_PROPS.put("connectionTimeout", 30 * 1000L);
-        DEFAULT_PROPS.put("idleTimeout", 60 * 1000L);
-        DEFAULT_PROPS.put("maxLifetime", 30 * 70 * 1000L);
-        DEFAULT_PROPS.put("maximumPoolSize", 50);
-        DEFAULT_PROPS.put("minimumIdle", 1);
+        DEFAULT_PROPS.put("checkoutTimeout", 20 * 1000L);
+        DEFAULT_PROPS.put("maxIdleTime", 60 * 1000L);
+        DEFAULT_PROPS.put("maxIdleTimeExcessConnections", 30 * 70 * 1000L);
+        DEFAULT_PROPS.put("maxPoolSize", 15);
+        DEFAULT_PROPS.put("minPoolSize", 3);
         DEFAULT_PROPS.put("readOnly", false);
-        DEFAULT_PROPS.put("keepaliveTime", 0);
     }
     
     private static void buildInvalidProperties() {
-        SKIPPED_PROPS.put("minimumIdle", -1);
-        SKIPPED_PROPS.put("maximumPoolSize", -1);
+        SKIPPED_PROPS.put("minPoolSize", -1);
+        SKIPPED_PROPS.put("maxPoolSize", -1);
     }
     
     private static void buildPropertySynonyms() {
+        PROP_SYNONYMS.put("username", "user");
         PROP_SYNONYMS.put("url", "jdbcUrl");
-        PROP_SYNONYMS.put("connectionTimeoutMilliseconds", "connectionTimeout");
-        PROP_SYNONYMS.put("idleTimeoutMilliseconds", "idleTimeout");
-        PROP_SYNONYMS.put("maxLifetimeMilliseconds", "maxLifetime");
-        PROP_SYNONYMS.put("maxPoolSize", "maximumPoolSize");
-        PROP_SYNONYMS.put("minPoolSize", "minimumIdle");
+        PROP_SYNONYMS.put("connectionTimeoutMilliseconds", "checkoutTimeout");
+        PROP_SYNONYMS.put("idleTimeoutMilliseconds", "maxIdleTime");
+        PROP_SYNONYMS.put("maxLifetimeMilliseconds", "maxIdleTimeExcessConnections");
     }
     
     private static void buildTransientFieldNames() {
         TRANSIENT_FIELD_NAMES.add("running");
-        TRANSIENT_FIELD_NAMES.add("poolName");
         TRANSIENT_FIELD_NAMES.add("closed");
     }
     
@@ -95,17 +92,12 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     @Override
-    public HikariDataSourcePoolFieldMetaData getFieldMetaData() {
-        return new HikariDataSourcePoolFieldMetaData();
+    public C3P0DataSourcePoolFieldMetaData getFieldMetaData() {
+        return new C3P0DataSourcePoolFieldMetaData();
     }
     
     @Override
     public String getType() {
-        return "com.zaxxer.hikari.HikariDataSource";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+        return "com.mchange.v2.c3p0.ComboPooledDataSource";
     }
 }
