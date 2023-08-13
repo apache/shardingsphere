@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourceP
 import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResourceUtils;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnitMetaData;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -87,7 +89,7 @@ public final class ResourceMetaData {
      */
     public Collection<String> getAllInstanceDataSourceNames() {
         Collection<String> result = new LinkedList<>();
-        for (Entry<String, ConnectionProperties> entry : storageUnitMetaData.getConnectionPropertiesMap().entrySet()) {
+        for (Entry<String, StorageUnit> entry : storageUnitMetaData.getStorageUnits().entrySet()) {
             if (!isExisted(entry.getKey(), result)) {
                 result.add(entry.getKey());
             }
@@ -96,8 +98,8 @@ public final class ResourceMetaData {
     }
     
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
-        return existedDataSourceNames.stream().anyMatch(each -> storageUnitMetaData.getConnectionPropertiesMap().get(dataSourceName)
-                .isInSameDatabaseInstance(storageUnitMetaData.getConnectionPropertiesMap().get(each)));
+        return existedDataSourceNames.stream().anyMatch(each -> storageUnitMetaData.getStorageUnits().get(dataSourceName).getConnectionProperties()
+                .isInSameDatabaseInstance(storageUnitMetaData.getStorageUnits().get(each).getConnectionProperties()));
     }
     
     /**
@@ -107,7 +109,7 @@ public final class ResourceMetaData {
      * @return connection properties
      */
     public ConnectionProperties getConnectionProperties(final String dataSourceName) {
-        return storageUnitMetaData.getConnectionPropertiesMap().get(dataSourceName);
+        return storageUnitMetaData.getStorageUnits().get(dataSourceName).getConnectionProperties();
     }
     
     /**
@@ -117,7 +119,7 @@ public final class ResourceMetaData {
      * @return storage type
      */
     public DatabaseType getStorageType(final String dataSourceName) {
-        return storageUnitMetaData.getStorageTypes().get(dataSourceName);
+        return storageUnitMetaData.getStorageUnits().get(dataSourceName).getStorageType();
     }
     
     /**
@@ -127,7 +129,7 @@ public final class ResourceMetaData {
      * @return not existed resource names
      */
     public Collection<String> getNotExistedDataSources(final Collection<String> resourceNames) {
-        return resourceNames.stream().filter(each -> !storageUnitMetaData.getDataSources().containsKey(each)).collect(Collectors.toSet());
+        return resourceNames.stream().filter(each -> !storageUnitMetaData.getStorageUnits().containsKey(each)).collect(Collectors.toSet());
     }
     
     /**
