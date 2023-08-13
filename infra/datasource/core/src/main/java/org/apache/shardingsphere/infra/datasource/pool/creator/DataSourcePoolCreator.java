@@ -21,23 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.GlobalDataSourceRegistry;
-import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
-import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataReflection;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.custom.CustomDataSourcePoolProperties;
-import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
-import org.apache.shardingsphere.infra.datasource.storage.StorageNodeProperties;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResourceWithProperties;
-import org.apache.shardingsphere.infra.datasource.storage.StorageUnitNodeMapper;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
@@ -55,86 +43,6 @@ import java.util.Properties;
 public final class DataSourcePoolCreator {
     
     /**
-     * Create storage resource.
-     *
-     * @param propsMap data source pool properties map
-     * @return created storage resource
-     */
-    public static StorageResource createStorageResource(final Map<String, DataSourcePoolProperties> propsMap) {
-        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
-        Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = new LinkedHashMap<>();
-        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            StorageNodeProperties storageNodeProps = getStorageNodeProperties(entry.getKey(), entry.getValue());
-            StorageNode storageNode = new StorageNode(storageNodeProps.getName());
-            if (!storageNodes.containsKey(storageNode)) {
-                storageNodes.put(storageNode, createDataSource(entry.getKey(), entry.getValue(), true, storageNodes.values()));
-            }
-            appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProps, entry.getKey(), entry.getValue());
-        }
-        return new StorageResource(storageNodes, storageUnitNodeMappers);
-    }
-    
-    /**
-     * Create storage resource without data source.
-     *
-     * @param propsMap data source pool properties map
-     * @return created storage resource
-     */
-    public static StorageResourceWithProperties createStorageResourceWithoutDataSource(final Map<String, DataSourcePoolProperties> propsMap) {
-        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
-        Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = new LinkedHashMap<>();
-        Map<String, DataSourcePoolProperties> newPropsMap = new LinkedHashMap<>();
-        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            StorageNodeProperties storageNodeProperties = getStorageNodeProperties(entry.getKey(), entry.getValue());
-            StorageNode storageNode = new StorageNode(storageNodeProperties.getName());
-            if (storageNodes.containsKey(storageNode)) {
-                appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProperties, entry.getKey(), entry.getValue());
-                continue;
-            }
-            storageNodes.put(storageNode, null);
-            appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProperties, entry.getKey(), entry.getValue());
-            newPropsMap.put(storageNodeProperties.getName(), entry.getValue());
-        }
-        return new StorageResourceWithProperties(storageNodes, storageUnitNodeMappers, newPropsMap);
-    }
-    
-    private static void appendStorageUnitNodeMapper(final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final StorageNodeProperties storageNodeProps,
-                                                    final String unitName, final DataSourcePoolProperties props) {
-        String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        storageUnitNodeMappers.put(unitName, getStorageUnitNodeMapper(storageNodeProps, unitName, url));
-    }
-    
-    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNodeProperties storageNodeProps, final String unitName, final String url) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(storageNodeProps.getDatabaseType()).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.isInstanceConnectionAvailable()
-                ? new StorageUnitNodeMapper(unitName, new StorageNode(storageNodeProps.getName()), storageNodeProps.getCatalog(), url)
-                : new StorageUnitNodeMapper(unitName, new StorageNode(storageNodeProps.getName()), url);
-    }
-    
-    private static StorageNodeProperties getStorageNodeProperties(final String dataSourceName, final DataSourcePoolProperties storageNodeProps) {
-        Map<String, Object> standardProperties = storageNodeProps.getConnectionPropertySynonyms().getStandardProperties();
-        String url = standardProperties.get("url").toString();
-        String username = standardProperties.get("username").toString();
-        DatabaseType databaseType = DatabaseTypeFactory.get(url);
-        return getStorageNodeProperties(dataSourceName, url, username, databaseType);
-    }
-    
-    private static StorageNodeProperties getStorageNodeProperties(final String dataSourceName, final String url, final String username, final DatabaseType databaseType) {
-        try {
-            JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-            String nodeName = dialectDatabaseMetaData.isInstanceConnectionAvailable() ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
-            return new StorageNodeProperties(nodeName, databaseType, jdbcUrl.getDatabase());
-        } catch (final UnrecognizedDatabaseURLException ex) {
-            return new StorageNodeProperties(dataSourceName, databaseType, null);
-        }
-    }
-    
-    private static String generateStorageNodeName(final String hostname, final int port, final String username) {
-        return String.format("%s_%s_%s", hostname, port, username);
-    }
-    
-    /**
      * Create data sources.
      *
      * @param propsMap data source pool properties map
@@ -144,7 +52,7 @@ public final class DataSourcePoolCreator {
     public static Map<String, DataSource> create(final Map<String, DataSourcePoolProperties> propsMap, final boolean cacheEnabled) {
         Map<String, DataSource> result = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            result.put(entry.getKey(), createDataSource(entry.getKey(), entry.getValue(), cacheEnabled, result.values()));
+            result.put(entry.getKey(), create(entry.getKey(), entry.getValue(), cacheEnabled, result.values()));
         }
         return result;
     }
@@ -156,7 +64,7 @@ public final class DataSourcePoolCreator {
      * @return created data source
      */
     public static DataSource create(final DataSourcePoolProperties props) {
-        DataSource result = createDataSource(props.getPoolClassName());
+        DataSource result = create(props.getPoolClassName());
         Optional<DataSourcePoolMetaData> poolMetaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, props.getPoolClassName());
         DataSourcePoolReflection dataSourcePoolReflection = new DataSourcePoolReflection(result);
         if (poolMetaData.isPresent()) {
@@ -186,7 +94,16 @@ public final class DataSourcePoolCreator {
         return result;
     }
     
-    private static DataSource createDataSource(final String dataSourceName, final DataSourcePoolProperties props, final boolean cacheEnabled, final Collection<DataSource> storageNodes) {
+    /**
+     * Create data source.
+     * 
+     * @param dataSourceName data source name
+     * @param props data source pool properties
+     * @param cacheEnabled cache enabled
+     * @param storageNodes storage nodes
+     * @return created data source
+     */
+    public static DataSource create(final String dataSourceName, final DataSourcePoolProperties props, final boolean cacheEnabled, final Collection<DataSource> storageNodes) {
         try {
             return create(dataSourceName, props, cacheEnabled);
             // CHECKSTYLE:OFF
@@ -200,7 +117,7 @@ public final class DataSourcePoolCreator {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static DataSource createDataSource(final String dataSourceClassName) {
+    private static DataSource create(final String dataSourceClassName) {
         return (DataSource) Class.forName(dataSourceClassName).getConstructor().newInstance();
     }
     

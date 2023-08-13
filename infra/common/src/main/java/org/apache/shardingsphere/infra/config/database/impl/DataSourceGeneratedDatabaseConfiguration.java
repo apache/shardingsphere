@@ -21,10 +21,10 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
+import org.apache.shardingsphere.infra.datasource.storage.StorageResourceCreator;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -49,7 +49,7 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
         ruleConfigurations = ruleConfigs;
         dataSourcePoolPropertiesMap = dataSourceConfigs.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        storageResource = DataSourcePoolCreator.createStorageResource(dataSourcePoolPropertiesMap);
+        storageResource = StorageResourceCreator.createStorageResource(dataSourcePoolPropertiesMap);
     }
     
     @Override
