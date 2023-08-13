@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.resource.storage;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.datasource.CatalogSwitchableDataSource;
+import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
