@@ -15,37 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.storage;
+package org.apache.shardingsphere.infra.metadata.database.resource.storage;
 
 import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
- * Storage node properties.
+ * Storage node.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StorageNodeProperties {
+public final class StorageNode {
     
     private final String name;
     
-    private final DatabaseType databaseType;
-    
-    private final String catalog;
-    
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof StorageNodeProperties) {
-            StorageNodeProperties storageNodeProperties = (StorageNodeProperties) obj;
-            return storageNodeProperties.name.equals(name);
-        }
-        return false;
+        return obj instanceof StorageNode && ((StorageNode) obj).name.equalsIgnoreCase(name);
     }
     
     @Override
     public int hashCode() {
         return Objects.hashCode(name.toUpperCase());
+    }
+    
+    @Override
+    public String toString() {
+        return name;
     }
 }

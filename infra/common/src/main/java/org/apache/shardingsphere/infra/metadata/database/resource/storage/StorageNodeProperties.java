@@ -15,46 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.storage;
+package org.apache.shardingsphere.infra.metadata.database.resource.storage;
 
 import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
- * Storage unit and node mapper.
+ * Storage node properties.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StorageUnitNodeMapper {
+public final class StorageNodeProperties {
     
     private final String name;
     
-    private final StorageNode storageNode;
+    private final DatabaseType databaseType;
     
     private final String catalog;
     
-    private final String url;
-    
-    public StorageUnitNodeMapper(final String name, final StorageNode storageNode, final String url) {
-        this(name, storageNode, null, url);
-    }
-    
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof StorageUnitNodeMapper) {
-            StorageUnitNodeMapper storageUnitNodeMapper = (StorageUnitNodeMapper) obj;
-            return storageUnitNodeMapper.name.equalsIgnoreCase(name) && storageUnitNodeMapper.storageNode.equals(storageNode) && isSameCatalog(storageUnitNodeMapper);
+        if (obj instanceof StorageNodeProperties) {
+            StorageNodeProperties storageNodeProperties = (StorageNodeProperties) obj;
+            return storageNodeProperties.name.equals(name);
         }
         return false;
     }
     
-    private boolean isSameCatalog(final StorageUnitNodeMapper storageUnitNodeMapper) {
-        return null == catalog ? null == storageUnitNodeMapper : catalog.equalsIgnoreCase(storageUnitNodeMapper.getCatalog());
-    }
-    
     @Override
     public int hashCode() {
-        return Objects.hashCode(name.toUpperCase(), storageNode.getName().toUpperCase(), null == catalog ? null : catalog.toUpperCase());
+        return Objects.hashCode(name.toUpperCase());
     }
 }

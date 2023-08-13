@@ -15,33 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.storage;
+package org.apache.shardingsphere.infra.metadata.database.resource.storage;
 
-import com.google.common.base.Objects;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
- * Storage node.
+ * Storage resource with data source properties.
  */
-@RequiredArgsConstructor
 @Getter
-public final class StorageNode {
+public final class StorageResourceWithProperties extends StorageResource {
     
-    private final String name;
+    private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
     
-    @Override
-    public boolean equals(final Object obj) {
-        return obj instanceof StorageNode && ((StorageNode) obj).name.equalsIgnoreCase(name);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(name.toUpperCase());
-    }
-    
-    @Override
-    public String toString() {
-        return name;
+    public StorageResourceWithProperties(final Map<StorageNode, DataSource> storageNodes,
+                                         final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap) {
+        super(storageNodes, storageUnitNodeMappers);
+        this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
     }
 }
