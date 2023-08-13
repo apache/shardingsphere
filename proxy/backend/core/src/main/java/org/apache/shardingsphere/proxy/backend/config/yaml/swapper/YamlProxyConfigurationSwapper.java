@@ -70,7 +70,7 @@ public final class YamlProxyConfigurationSwapper {
         Map<String, DataSourceConfiguration> dataSourceConfigs = swapDataSourceConfigurations(yamlDataSourceConfigs);
         Map<String, DataSourcePoolProperties> propsMap = dataSourceConfigs.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return DataSourcePoolCreator.create(propsMap);
+        return DataSourcePoolCreator.create(propsMap, true);
     }
     
     private Map<String, DatabaseConfiguration> swapDatabaseConfigurations(final Map<String, YamlProxyDatabaseConfiguration> databaseConfigurations) {

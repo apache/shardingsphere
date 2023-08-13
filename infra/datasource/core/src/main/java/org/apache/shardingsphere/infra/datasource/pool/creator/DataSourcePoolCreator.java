@@ -139,16 +139,6 @@ public final class DataSourcePoolCreator {
      * Create data sources.
      *
      * @param propsMap data source pool properties map
-     * @return created data sources
-     */
-    public static Map<String, DataSource> create(final Map<String, DataSourcePoolProperties> propsMap) {
-        return create(propsMap, true);
-    }
-    
-    /**
-     * Create data sources.
-     *
-     * @param propsMap data source pool properties map
      * @param cacheEnabled cache enabled
      * @return created data sources
      */

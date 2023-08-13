@@ -34,7 +34,7 @@ class DataSourcePoolCreatorTest {
     
     @Test
     void assertCreateMap() {
-        Map<String, DataSource> actual = DataSourcePoolCreator.create(Collections.singletonMap("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), createProperties())));
+        Map<String, DataSource> actual = DataSourcePoolCreator.create(Collections.singletonMap("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), createProperties())), true);
         assertThat(actual.size(), is(1));
         assertDataSource((MockedDataSource) actual.get("foo_ds"));
     }
