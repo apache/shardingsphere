@@ -67,6 +67,7 @@ public final class DataConsistencyCheckUtils {
     
     @SneakyThrows(SQLException.class)
     private static boolean isMatched(final EqualsBuilder equalsBuilder, final Object thisColumnValue, final Object thatColumnValue) {
+        equalsBuilder.reset();
         if (thisColumnValue instanceof SQLXML && thatColumnValue instanceof SQLXML) {
             return ((SQLXML) thisColumnValue).getString().equals(((SQLXML) thatColumnValue).getString());
         }

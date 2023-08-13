@@ -23,8 +23,10 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyContentCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCountCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult.YamlTableDataConsistencyContentCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult.YamlTableDataConsistencyCountCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResultSwapper;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
@@ -82,19 +84,17 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
     private TableDataConsistencyCheckResult checkSingleTableInventoryData(final Iterator<SingleTableInventoryCalculatedResult> sourceCalculatedResults,
                                                                           final Iterator<SingleTableInventoryCalculatedResult> targetCalculatedResults,
                                                                           final TableDataConsistencyCheckParameter param, final ThreadPoolExecutor executor) {
-        long sourceRecordsCount = 0;
-        long targetRecordsCount = 0;
-        boolean contentMatched = true;
+        YamlTableDataConsistencyCheckResult checkResult = new YamlTableDataConsistencyCheckResult(new YamlTableDataConsistencyCountCheckResult(), new YamlTableDataConsistencyContentCheckResult(true));
         while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
             if (null != param.getReadRateLimitAlgorithm()) {
                 param.getReadRateLimitAlgorithm().intercept(JobOperationType.SELECT, 1);
             }
             SingleTableInventoryCalculatedResult sourceCalculatedResult = waitFuture(executor.submit(sourceCalculatedResults::next));
             SingleTableInventoryCalculatedResult targetCalculatedResult = waitFuture(executor.submit(targetCalculatedResults::next));
-            sourceRecordsCount += sourceCalculatedResult.getRecordsCount();
-            targetRecordsCount += targetCalculatedResult.getRecordsCount();
-            contentMatched = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
-            if (!contentMatched) {
+            checkResult.getCountCheckResult().addRecordsCount(sourceCalculatedResult.getRecordsCount(), true);
+            checkResult.getCountCheckResult().addRecordsCount(targetCalculatedResult.getRecordsCount(), false);
+            if (!Objects.equals(sourceCalculatedResult, targetCalculatedResult)) {
+                checkResult.getContentCheckResult().setMatched(false);
                 log.info("content matched false, jobId={}, sourceTable={}, targetTable={}, uniqueKeys={}", param.getJobId(), param.getSourceTable(), param.getTargetTable(), param.getUniqueKeys());
                 break;
             }
@@ -108,12 +108,16 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
         }
         if (sourceCalculatedResults.hasNext()) {
             // TODO Refactor SingleTableInventoryCalculatedResult to represent inaccurate number
-            return new TableDataConsistencyCheckResult(new TableDataConsistencyCountCheckResult(sourceRecordsCount + 1, targetRecordsCount), new TableDataConsistencyContentCheckResult(false));
+            checkResult.getCountCheckResult().addRecordsCount(1, true);
+            checkResult.getContentCheckResult().setMatched(false);
+            return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
         }
         if (targetCalculatedResults.hasNext()) {
-            return new TableDataConsistencyCheckResult(new TableDataConsistencyCountCheckResult(sourceRecordsCount, targetRecordsCount + 1), new TableDataConsistencyContentCheckResult(false));
+            checkResult.getCountCheckResult().addRecordsCount(1, false);
+            checkResult.getContentCheckResult().setMatched(false);
+            return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
         }
-        return new TableDataConsistencyCheckResult(new TableDataConsistencyCountCheckResult(sourceRecordsCount, targetRecordsCount), new TableDataConsistencyContentCheckResult(contentMatched));
+        return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
     }
     
     // TODO use digest (crc32, murmurhash)
