@@ -19,10 +19,11 @@ package org.apache.shardingsphere.mode.manager.switcher;
 
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResourceWithProperties;
-import org.apache.shardingsphere.infra.datasource.storage.StorageUnitNodeMapper;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResourceCreator;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResourceWithProperties;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnitNodeMapper;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 
 import javax.sql.DataSource;
@@ -46,7 +47,7 @@ public final class NewResourceSwitchManager {
      */
     public SwitchingResource registerStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> propsMap) {
         resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().putAll(propsMap);
-        StorageResourceWithProperties toBeCreatedStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(propsMap);
+        StorageResourceWithProperties toBeCreatedStorageResource = StorageResourceCreator.createStorageResourceWithoutDataSource(propsMap);
         return new SwitchingResource(resourceMetaData, getRegisterNewStorageResource(resourceMetaData, toBeCreatedStorageResource),
                 new StorageResource(Collections.emptyMap(), Collections.emptyMap()));
     }
@@ -70,7 +71,7 @@ public final class NewResourceSwitchManager {
      */
     public SwitchingResource alterStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> props) {
         resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().putAll(props);
-        StorageResourceWithProperties toBeAlteredStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(props);
+        StorageResourceWithProperties toBeAlteredStorageResource = StorageResourceCreator.createStorageResourceWithoutDataSource(props);
         return new SwitchingResource(resourceMetaData, getAlterNewStorageResource(toBeAlteredStorageResource),
                 getStaleStorageResource(resourceMetaData, toBeAlteredStorageResource));
     }

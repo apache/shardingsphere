@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.switcher;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 
 import java.util.Objects;

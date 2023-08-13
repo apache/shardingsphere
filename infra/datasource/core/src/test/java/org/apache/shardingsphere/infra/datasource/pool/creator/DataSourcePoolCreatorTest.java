@@ -45,7 +45,7 @@ class DataSourcePoolCreatorTest {
     }
     
     private Map<String, Object> createProperties() {
-        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
         result.put("password", "root");

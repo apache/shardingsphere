@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.mode.manager.switcher;
 
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
-import org.apache.shardingsphere.infra.datasource.storage.StorageNode;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResourceWithProperties;
-import org.apache.shardingsphere.infra.datasource.storage.StorageUnitNodeMapper;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResourceCreator;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResourceWithProperties;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnitNodeMapper;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 
 import javax.sql.DataSource;
@@ -48,7 +49,7 @@ public final class ResourceSwitchManager {
      */
     public SwitchingResource create(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeChangedPropsMap) {
         resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().putAll(toBeChangedPropsMap);
-        StorageResourceWithProperties toBeChangedStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(toBeChangedPropsMap);
+        StorageResourceWithProperties toBeChangedStorageResource = StorageResourceCreator.createStorageResourceWithoutDataSource(toBeChangedPropsMap);
         return new SwitchingResource(resourceMetaData, createNewStorageResource(resourceMetaData, toBeChangedStorageResource), getStaleDataSources(resourceMetaData, toBeChangedStorageResource));
     }
     
@@ -61,7 +62,7 @@ public final class ResourceSwitchManager {
      */
     public SwitchingResource createByDropResource(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeDeletedPropsMap) {
         resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().keySet().removeIf(toBeDeletedPropsMap::containsKey);
-        StorageResourceWithProperties toToBeRemovedStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(toBeDeletedPropsMap);
+        StorageResourceWithProperties toToBeRemovedStorageResource = StorageResourceCreator.createStorageResourceWithoutDataSource(toBeDeletedPropsMap);
         return new SwitchingResource(resourceMetaData, new StorageResource(Collections.emptyMap(), Collections.emptyMap()),
                 getToBeRemovedStaleDataSources(resourceMetaData, toToBeRemovedStorageResource));
     }
@@ -76,7 +77,7 @@ public final class ResourceSwitchManager {
     public SwitchingResource createByAlterDataSourcePoolProperties(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeChangedPropsMap) {
         resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().keySet().removeIf(each -> !toBeChangedPropsMap.containsKey(each));
         resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().putAll(toBeChangedPropsMap);
-        StorageResourceWithProperties toBeChangedStorageResource = DataSourcePoolCreator.createStorageResourceWithoutDataSource(toBeChangedPropsMap);
+        StorageResourceWithProperties toBeChangedStorageResource = StorageResourceCreator.createStorageResourceWithoutDataSource(toBeChangedPropsMap);
         StorageResource staleStorageResource = getStaleDataSources(resourceMetaData, toBeChangedStorageResource);
         staleStorageResource.getStorageNodeDataSources()
                 .putAll(getToBeDeletedDataSources(resourceMetaData.getStorageNodeDataSources(), toBeChangedStorageResource.getStorageNodeDataSources().keySet()));
