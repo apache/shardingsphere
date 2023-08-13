@@ -63,6 +63,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterV
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyzeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssociateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AuditContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AuditTraditionalContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AuditUnifiedContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnOrVirtualDefinitionContext;
@@ -813,6 +815,16 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAudit(final AuditContext ctx) {
+        return null != ctx.auditTraditional() ? visit(ctx.auditTraditional()) : visit(ctx.auditUnified());
+    }
+    
+    @Override
+    public ASTNode visitAuditTraditional(final AuditTraditionalContext ctx) {
+        return new OracleAuditStatement();
+    }
+    
+    @Override
+    public ASTNode visitAuditUnified(final AuditUnifiedContext ctx) {
         return new OracleAuditStatement();
     }
     
