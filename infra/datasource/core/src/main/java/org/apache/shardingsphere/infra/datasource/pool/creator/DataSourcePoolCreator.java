@@ -67,12 +67,9 @@ public final class DataSourcePoolCreator {
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             StorageNodeProperties storageNodeProps = getStorageNodeProperties(entry.getKey(), entry.getValue());
             StorageNode storageNode = new StorageNode(storageNodeProps.getName());
-            if (storageNodes.containsKey(storageNode)) {
-                appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProps, entry.getKey(), entry.getValue());
-                continue;
+            if (!storageNodes.containsKey(storageNode)) {
+                storageNodes.put(storageNode, createDataSource(entry.getKey(), entry.getValue(), cacheEnabled, storageNodes.values()));
             }
-            DataSource dataSource = createDataSource(entry.getKey(), entry.getValue(), cacheEnabled, storageNodes.values());
-            storageNodes.put(storageNode, dataSource);
             appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProps, entry.getKey(), entry.getValue());
         }
         return new StorageResource(storageNodes, storageUnitNodeMappers);
