@@ -46,7 +46,10 @@ services:
 
 ## 前提条件
 
-1. 根据 https://www.graalvm.org/downloads/ 要求安装和配置 JDK 17 对应的 `GraalVM Community Edition` 或 `Oracle GraalVM`。或者使用 `SDKMAN!`。
+1. 根据 https://www.graalvm.org/downloads/ 要求安装和配置 JDK 17 对应的 `GraalVM Community Edition` 或 `Oracle GraalVM`
+   。或者使用 `SDKMAN!`
+   。如果你希望使用携带了 [GraalVM Free Terms and Conditions license](https://www.oracle.com/downloads/licenses/graal-free-license.html)
+   的 `Oracle GraalVM`，下面的命令应更改为 `sdk install java 17.0.8-graal`。
 
 ```shell
 sdk install java 17.0.8-graalce
