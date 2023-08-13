@@ -58,17 +58,16 @@ public final class DataSourcePoolCreator {
      * Create storage resource.
      *
      * @param propsMap data source pool properties map
-     * @param cacheEnabled cache enabled
      * @return created storage resource
      */
-    public static StorageResource createStorageResource(final Map<String, DataSourcePoolProperties> propsMap, final boolean cacheEnabled) {
+    public static StorageResource createStorageResource(final Map<String, DataSourcePoolProperties> propsMap) {
         Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             StorageNodeProperties storageNodeProps = getStorageNodeProperties(entry.getKey(), entry.getValue());
             StorageNode storageNode = new StorageNode(storageNodeProps.getName());
             if (!storageNodes.containsKey(storageNode)) {
-                storageNodes.put(storageNode, createDataSource(entry.getKey(), entry.getValue(), cacheEnabled, storageNodes.values()));
+                storageNodes.put(storageNode, createDataSource(entry.getKey(), entry.getValue(), true, storageNodes.values()));
             }
             appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProps, entry.getKey(), entry.getValue());
         }
