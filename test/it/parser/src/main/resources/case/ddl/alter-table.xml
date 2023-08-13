@@ -1339,4 +1339,29 @@
             </column-definition>
         </modify-column>
     </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_overflow_tablespace">
+        <table name="admin_iot3" start-index="12" stop-index="21" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_overflow">
+        <table name="countries_demo" start-index="12" stop-index="25" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_enable_novalidate_constraint">
+        <table name="dept" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_encrypt_no_salt">
+        <table name="mytable" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="VARCHAR2" start-index="25" stop-index="74">
+                <column name="online_acct_pw" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_enable_novalidate_primary_key_enable_novalidate_constraint">
+        <table name="mytable" start-index="12" stop-index="18" />
+    </alter-table>
 </sql-parser-test-cases>

@@ -80,7 +80,7 @@ objectSubTypeDef
     ;
 
 alterTable
-    : ALTER TABLE tableName memOptimizeClause alterDefinitionClause enableDisableClauses
+    : ALTER TABLE tableName memOptimizeClause alterDefinitionClause enableDisableClauses?
     ;
 
 alterIndex
@@ -295,7 +295,7 @@ identityOption
     ;
 
 encryptionSpecification
-    : (USING STRING_)? (IDENTIFIED BY STRING_)? STRING_? (NO? SALT)?
+    : (USING STRING_)? (IDENTIFIED BY STRING_)? (integrityAlgorithm? (NO? SALT)? | (NO? SALT)? integrityAlgorithm?)   
     ;
 
 inlineConstraint
@@ -427,7 +427,7 @@ alterTableProperties
     | parallelClause
     | rowMovementClause
     | logicalReplicationClause
-    | flashbackArchiveClause)+ | renameTableSpecification) alterIotClauses? alterXMLSchemaClause?
+    | flashbackArchiveClause)+ | renameTableSpecification)? alterIotClauses? alterXMLSchemaClause?
     | shrinkClause
     | READ ONLY
     | READ WRITE
@@ -673,11 +673,11 @@ memOptimizeWriteClause
     ;
 
 enableDisableClauses
-    : (enableDisableClause | enableDisableOthers)?
+    : (enableDisableClause | enableDisableOthers)+
     ;
 
 enableDisableClause
-    : (ENABLE | DISABLE) (VALIDATE |NO VALIDATE)? ((UNIQUE columnName (COMMA_ columnName)*) | PRIMARY KEY | constraintWithName) usingIndexClause? exceptionsClause? CASCADE? ((KEEP | DROP) INDEX)?
+    : (ENABLE | DISABLE) (VALIDATE | NOVALIDATE)? ((UNIQUE columnName (COMMA_ columnName)*) | PRIMARY KEY | constraintWithName) usingIndexClause? exceptionsClause? CASCADE? ((KEEP | DROP) INDEX)?
     ;
 
 enableDisableOthers
@@ -3376,7 +3376,7 @@ overflowClause
     ;
 
 addOverflowClause
-    : ADD OVERFLOW segmentAttributesClause? LP_ PARTITION segmentAttributesClause? (COMMA_ PARTITION segmentAttributesClause?)* RP_
+    : ADD OVERFLOW segmentAttributesClause? (LP_ PARTITION segmentAttributesClause? (COMMA_ PARTITION segmentAttributesClause?)* RP_)?
     ;
 
 scopedTableRefConstraint
