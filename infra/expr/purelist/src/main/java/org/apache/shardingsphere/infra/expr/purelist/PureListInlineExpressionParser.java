@@ -44,7 +44,7 @@ public final class PureListInlineExpressionParser implements InlineExpressionPar
     
     @Override
     public Closure<?> evaluateClosure(final String inlineExpression) {
-        throw new RuntimeException("Groovy classes cannot be used directly within GraalVM Native Image.");
+        throw new UnsupportedOperationException("Groovy classes cannot be used directly within GraalVM Native Image.");
     }
     
     private List<String> split(final String inlineExpression) {
