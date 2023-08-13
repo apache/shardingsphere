@@ -57,16 +57,6 @@ public final class DataSourcePoolCreator {
      * Create storage resource.
      *
      * @param propsMap data source pool properties map
-     * @return created storage resource
-     */
-    public static StorageResource createStorageResource(final Map<String, DataSourcePoolProperties> propsMap) {
-        return createStorageResource(propsMap, true);
-    }
-    
-    /**
-     * Create storage resource.
-     *
-     * @param propsMap data source pool properties map
      * @param cacheEnabled cache enabled
      * @return created storage resource
      */
