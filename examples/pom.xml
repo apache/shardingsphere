@@ -27,7 +27,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>example-core</module>
         <module>shardingsphere-proxy-example</module>
         <module>shardingsphere-parser-example</module>
         <module>shardingsphere-example-generator</module>
