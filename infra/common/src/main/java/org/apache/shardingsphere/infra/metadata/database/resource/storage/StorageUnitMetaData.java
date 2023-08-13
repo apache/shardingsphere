@@ -40,8 +40,8 @@ public final class StorageUnitMetaData {
                                final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageUnitNodeMapper> unitNodeMappers) {
         this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
         storageUnits = new LinkedHashMap<>(unitNodeMappers.size(), 1F);
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
-            storageUnits.put(entry.getKey(), new StorageUnit(databaseName, storageNodeDataSources, entry.getValue(), unitNodeMappers.get(entry.getKey())));
+        for (Entry<String, StorageUnitNodeMapper> entry : unitNodeMappers.entrySet()) {
+            storageUnits.put(entry.getKey(), new StorageUnit(databaseName, storageNodeDataSources, dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()));
         }
     }
     
