@@ -57,9 +57,9 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
     
     private static final String INDEX_META_DATA_SQL = "SELECT idx.name AS INDEX_NAME, obj.name AS TABLE_NAME, col.name AS COLUMN_NAME,"
             + " idx.is_unique AS IS_UNIQUE FROM sys.indexes idx"
-            + " JOIN sys.objects obj ON idx.object_id = obj.object_id"
-            + " JOIN sys.columns col ON obj.object_id = col.object_id"
-            + " WHERE a.index_id NOT IN (0, 255) AND c.name IN (%s)";
+            + " LEFT JOIN sys.objects obj ON idx.object_id = obj.object_id"
+            + " LEFT JOIN sys.columns col ON obj.object_id = col.object_id"
+            + " WHERE idx.index_id NOT IN (0, 255) AND obj.name IN (%s) ORDER BY idx.index_id";
     
     private static final int HIDDEN_COLUMN_START_MAJOR_VERSION = 15;
     
@@ -143,7 +143,6 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
                     indexMetaData.setUnique("1".equals(resultSet.getString("IS_UNIQUE")));
                     indexMap.put(indexName, indexMetaData);
                 }
-                tableToIndex.put(tableName, indexMap);
             }
         }
         Map<String, Collection<IndexMetaData>> result = new HashMap<>(tableToIndex.size(), 1);
