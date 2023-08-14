@@ -68,7 +68,7 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
         ShardingSpherePreconditions.checkState(!digitalCodes.isEmpty(),
                 () -> new MaskAlgorithmInitializationException(getType(), String.format("'%s' must be not empty", DIGITAL_CODES)));
         specialCodes = splitPropsToList(props.getProperty(SPECIAL_CODES, DEFAULT_SPECIAL_CODES));
-        ShardingSpherePreconditions.checkState(!SPECIAL_CODES.isEmpty(),
+        ShardingSpherePreconditions.checkState(!specialCodes.isEmpty(),
                 () -> new MaskAlgorithmInitializationException(getType(), String.format("'%s' must be not empty", SPECIAL_CODES)));
     }
     
