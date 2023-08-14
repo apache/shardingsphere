@@ -19,22 +19,23 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.GlobalDataSourceRegistry;
+import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
-import org.apache.shardingsphere.infra.database.core.GlobalDataSourceRegistry;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.exception.UnsupportedActualDataNodeStructureException;
-import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderMaterial;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Schema meta data utility class.
@@ -63,8 +64,17 @@ public final class SchemaMetaDataUtils {
                 addOneActualTableDataNode(material, dataSourceTableGroups, dataNodes, each);
             }
         }
-        return dataSourceTableGroups.entrySet().stream().map(entry -> new MetaDataLoaderMaterial(entry.getValue(),
-                getDataSource(material, entry.getKey()), material.getStorageTypes().get(entry.getKey()), material.getDefaultSchemaName())).collect(Collectors.toList());
+        Collection<MetaDataLoaderMaterial> result = new LinkedList<>();
+        for (Entry<String, Collection<String>> entry : dataSourceTableGroups.entrySet()) {
+            DatabaseType storageType = material.getStorageTypes().get(entry.getKey());
+            String defaultSchemaName = getDefaultSchemaNameByStorageType(storageType, material.getDefaultSchemaName());
+            result.add(new MetaDataLoaderMaterial(entry.getValue(), getDataSource(material, entry.getKey()), storageType, defaultSchemaName));
+        }
+        return result;
+    }
+    
+    private static String getDefaultSchemaNameByStorageType(final DatabaseType storageType, final String databaseName) {
+        return new DatabaseTypeRegistry(storageType).getDefaultSchemaName(databaseName);
     }
     
     private static DataSource getDataSource(final GenericSchemaBuilderMaterial material, final String dataSourceName) {
