@@ -1380,4 +1380,13 @@
     <alter-table sql-case-id="alter_table_modify_default_attributes_for_partition_tablespace">
         <table name="emp" start-index="12" stop-index="14" />
     </alter-table>
+    
+    <alter-table sql-case-id="alter_table_ref_with_rowid">
+        <table name="emp" start-index="12" stop-index="14" />
+        <add-column>
+            <column-definition start-index="21" stop-index="48">
+                <column name="column_value" />
+            </column-definition>
+        </add-column>
+    </alter-table>
 </sql-parser-test-cases>
