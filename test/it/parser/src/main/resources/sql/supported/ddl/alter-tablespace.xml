@@ -17,5 +17,45 @@
   -->
 
 <sql-cases>
-    <sql-case id="alter_tablespace_rename" value="ALTER TABLESPACE ts1 RENAME TO ts2" db-types="MySQL" />
+    <sql-case id="alter_tablespace_rename" value="ALTER TABLESPACE ts1 RENAME TO ts2" db-types="MySQL,Oracle" />
+    <sql-case id="alter_tablespace_read_only" value="ALTER TABLESPACE ts1 READ ONLY" db-types="Oracle" />
+    <sql-case id="alter_tablespace_read_write" value="ALTER TABLESPACE sales_1 READ WRITE" db-types="Oracle" />
+    <sql-case id="alter_tablespace_add_datafile" value="ALTER TABLESPACE ts1 ADD DATAFILE" db-types="Oracle" />
+    <sql-case id="alter_tablespace_add_datafile_autoextend_next_maxsize_unlimited" value="ALTER TABLESPACE undotbs_01
+        ADD DATAFILE '/u01/oracle/rbdb1/undo0102.dbf'
+        AUTOEXTEND ON NEXT 1M  MAXSIZE UNLIMITED" db-types="Oracle" />
+    <sql-case id="alter_tablespace_add_datafile_size_autoextend_next_maxsize" value="ALTER TABLESPACE tbs_03
+        ADD DATAFILE 'tbs_f04.dbf' SIZE 100K
+        AUTOEXTEND ON NEXT 10K MAXSIZE 100K" db-types="Oracle" />
+    <sql-case id="alter_tablespace_add_datafile_size_reuse" value="ALTER TABLESPACE stocks ADD DATAFILE 'stock4.dbf' SIZE 10M REUSE" db-types="Oracle" />
+    <sql-case id="alter_tablespace_add_tempfile_size_autoextend" value="ALTER TABLESPACE temp_demo
+        ADD TEMPFILE 'temp05.dbf' SIZE 5
+        AUTOEXTEND ON" db-types="Oracle" />
+    <sql-case id="alter_tablespace_shrink_tempfile" value="ALTER TABLESPACE ts1 SHRINK TEMPFILE '/u02/oracle/data/lmtemp02.dbf'" db-types="Oracle" />
+    <sql-case id="alter_tablespace_shrink_space_keep" value="ALTER TABLESPACE lmtemp1 SHRINK SPACE KEEP 20M" db-types="Oracle" />
+    <sql-case id="alter_tablespace_shrink_space" value="ALTER TABLESPACE temp_demo SHRINK SPACE" db-types="Oracle" />
+    <sql-case id="alter_tablespace_drop_tempfile" value="ALTER TABLESPACE ts1 DROP TEMPFILE '/u02/oracle/data/lmtemp02.dbf'" db-types="Oracle" />
+    <sql-case id="alter_tablespace_drop_datafile" value="ALTER TABLESPACE ts1 DROP DATAFILE '+DGROUP1/example_df3.f'" db-types="Oracle" />
+    <sql-case id="alter_tablespace_group_newname" value="ALTER TABLESPACE lmtemp2 TABLESPACE GROUP group2" db-types="Oracle" />
+    <sql-case id="alter_tablespace_group_empty" value="ALTER TABLESPACE lmtemp3 TABLESPACE GROUP ''" db-types="Oracle" />
+    <sql-case id="alter_tablespace_begin_backup" value="ALTER TABLESPACE tbs_01 BEGIN BACKUP" db-types="Oracle" />
+    <sql-case id="alter_tablespace_end_backup" value="ALTER TABLESPACE users END BACKUP" db-types="Oracle" />
+    <sql-case id="alter_tablespace_online" value="ALTER TABLESPACE tbs_02 ONLINE" db-types="Oracle" />
+    <sql-case id="alter_tablespace_offline" value="ALTER TABLESPACE tbs_4 OFFLINE" db-types="Oracle" />
+    <sql-case id="alter_tablespace_offline_normal" value="ALTER TABLESPACE users OFFLINE NORMAL" db-types="Oracle" />
+    <sql-case id="alter_tablespace_offline_immediate" value="ALTER TABLESPACE users OFFLINE IMMEDIATE" db-types="Oracle" />
+    <sql-case id="alter_tablespace_offline_temporary" value="ALTER TABLESPACE users ONLINE" db-types="Oracle" />
+    <sql-case id="alter_tablespace_flashback_off" value="ALTER TABLESPACE tbs_3 FLASHBACK OFF" db-types="Oracle" />
+    <sql-case id="alter_tablespace_flashback_on" value="ALTER TABLESPACE tbs_3 FLASHBACK ON" db-types="Oracle" />
+    <sql-case id="alter_tablespace_retention_guarantee" value="ALTER TABLESPACE undots1 RETENTION GUARANTEE" db-types="Oracle" />
+    <sql-case id="alter_tablespace_retention_noguarantee" value="ALTER TABLESPACE undots1 RETENTION NOGUARANTEE" db-types="Oracle" />
+    <sql-case id="alter_tablespace_rename_datafile" value="ALTER TABLESPACE tbs_02 RENAME DATAFILE 'diskb:tbs_f5.dbf' TO 'diska:tbs_f5.dbf'" db-types="Oracle" />
+    <sql-case id="alter_tablespace_rename_datafile_single" value="ALTER TABLESPACE users
+        RENAME DATAFILE '/u02/oracle/rbdb1/user1.dbf'
+        TO '/u02/oracle/rbdb1/users01.dbf'" db-types="Oracle" />
+    <sql-case id="alter_tablespace_rename_datafile_multiple" value="ALTER TABLESPACE users
+        RENAME DATAFILE '/u02/oracle/rbdb1/user1.dbf',
+                    '/u02/oracle/rbdb1/user2.dbf'
+                 TO '/u02/oracle/rbdb1/users01.dbf',
+                    '/u02/oracle/rbdb1/users02.dbf'" db-types="Oracle" />
 </sql-cases>

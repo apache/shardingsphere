@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableReferenceRuleStatement;
@@ -92,7 +92,7 @@ public final class DropShardingTableReferenceRuleStatementUpdater implements Rul
     }
     
     @Override
-    public String getType() {
-        return DropShardingTableReferenceRuleStatement.class.getName();
+    public Class<DropShardingTableReferenceRuleStatement> getType() {
+        return DropShardingTableReferenceRuleStatement.class;
     }
 }

@@ -80,7 +80,7 @@ public final class ShowDistVariablesExecutor implements ConnectionSessionRequire
     }
     
     @Override
-    public String getType() {
-        return ShowDistVariablesStatement.class.getName();
+    public Class<ShowDistVariablesStatement> getType() {
+        return ShowDistVariablesStatement.class;
     }
 }

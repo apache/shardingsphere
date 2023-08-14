@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.single.metadata;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.junit.jupiter.api.Test;
 
@@ -47,9 +47,9 @@ class SingleMetaDataReviseEngineTest {
         TableMetaData tableMetaData = new MetaDataReviseEngine(Collections.singleton(mock(SingleRule.class))).revise(
                 schemaMetaDataMap, mock(GenericSchemaBuilderMaterial.class)).get("sharding_db").getTables().iterator().next();
         Iterator<ColumnMetaData> columns = tableMetaData.getColumns().iterator();
-        assertThat(columns.next(), is(new ColumnMetaData("id", Types.INTEGER, true, false, false, true, false)));
-        assertThat(columns.next(), is(new ColumnMetaData("name", Types.VARCHAR, false, false, false, true, false)));
-        assertThat(columns.next(), is(new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false)));
+        assertThat(columns.next(), is(new ColumnMetaData("id", Types.INTEGER, true, false, false, true, false, true)));
+        assertThat(columns.next(), is(new ColumnMetaData("name", Types.VARCHAR, false, false, false, true, false, false)));
+        assertThat(columns.next(), is(new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false, false)));
         assertThat(tableMetaData.getIndexes().size(), is(2));
         Iterator<IndexMetaData> indexes = tableMetaData.getIndexes().iterator();
         assertThat(indexes.next(), is(new IndexMetaData("id")));
@@ -57,9 +57,9 @@ class SingleMetaDataReviseEngineTest {
     }
     
     private TableMetaData createTableMetaData() {
-        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, false, false, true, false),
-                new ColumnMetaData("name", Types.VARCHAR, false, false, false, true, false),
-                new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false));
+        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, false, false, true, false, true),
+                new ColumnMetaData("name", Types.VARCHAR, false, false, false, true, false, false),
+                new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false, false));
         Collection<IndexMetaData> indexMetaDataList = Arrays.asList(new IndexMetaData("id_" + TABLE_NAME), new IndexMetaData("idx_name_" + TABLE_NAME));
         return new TableMetaData(TABLE_NAME, columns, indexMetaDataList, Collections.emptyList());
     }

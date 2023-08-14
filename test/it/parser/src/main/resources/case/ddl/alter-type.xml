@@ -87,4 +87,11 @@
     <alter-type sql-case-id="alter_type_modify_element_type" />
     <alter-type sql-case-id="alter_type_not_instantiable" />
     <alter-type sql-case-id="alter_type_not_final" />
+    <alter-type sql-case-id="alter_type_not_final_invalidate" />
+    <alter-type sql-case-id="alter_type_not_final_cascade_not_data" />
+    <alter-type sql-case-id="alter_type_not_final_cascade_data" />
+    <alter-type sql-case-id="alter_type_not_final_cascade_convert_sub" />
+    <alter-type sql-case-id="alter_type_not_final_cascade_force_exception" />
+    <alter-type sql-case-id="alter_type_not_final_cascade_exception" />
+    <alter-type sql-case-id="alter_type_not_final_cascade_force_exception_schema" />
 </sql-parser-test-cases>

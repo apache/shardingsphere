@@ -100,7 +100,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     }
     
     @Override
-    public String getType() {
-        return CreateDefaultShadowAlgorithmStatement.class.getName();
+    public Class<CreateDefaultShadowAlgorithmStatement> getType() {
+        return CreateDefaultShadowAlgorithmStatement.class;
     }
 }

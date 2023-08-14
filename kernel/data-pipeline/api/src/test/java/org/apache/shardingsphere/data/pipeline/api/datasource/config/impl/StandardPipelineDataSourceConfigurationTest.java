@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api.datasource.config.impl;
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.junit.jupiter.api.Test;
 
@@ -76,10 +76,10 @@ class StandardPipelineDataSourceConfigurationTest {
     private void assertGetConfig(final StandardPipelineDataSourceConfiguration actual) {
         assertThat(actual.getDatabaseType().getType(), is("MySQL"));
         assertThat(actual.getType(), is(StandardPipelineDataSourceConfiguration.TYPE));
-        DataSourceProperties dataSourceProps = (DataSourceProperties) actual.getDataSourceConfiguration();
-        assertThat(dataSourceProps.getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
+        DataSourcePoolProperties props = (DataSourcePoolProperties) actual.getDataSourceConfiguration();
+        assertThat(props.getPoolClassName(), is("com.zaxxer.hikari.HikariDataSource"));
         assertGetJdbcConfig(actual.getJdbcConfig());
-        assertDataSourceProperties(dataSourceProps);
+        assertDataSourcePoolProperties(props);
     }
     
     private void assertGetJdbcConfig(final YamlJdbcConfiguration actual) {
@@ -88,8 +88,8 @@ class StandardPipelineDataSourceConfigurationTest {
         assertThat(actual.getPassword(), is(PASSWORD));
     }
     
-    private void assertDataSourceProperties(final DataSourceProperties dataSourceProps) {
-        Map<String, Object> actual = new YamlDataSourceConfigurationSwapper().swapToMap(dataSourceProps);
+    private void assertDataSourcePoolProperties(final DataSourcePoolProperties props) {
+        Map<String, Object> actual = new YamlDataSourceConfigurationSwapper().swapToMap(props);
         assertThat(actual.get("minPoolSize"), is("1"));
     }
 }

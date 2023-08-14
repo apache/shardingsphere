@@ -75,7 +75,7 @@ public final class DropDefaultShadowAlgorithmStatementUpdater implements RuleDef
     }
     
     @Override
-    public String getType() {
-        return DropDefaultShadowAlgorithmStatement.class.getName();
+    public Class<DropDefaultShadowAlgorithmStatement> getType() {
+        return DropDefaultShadowAlgorithmStatement.class;
     }
 }

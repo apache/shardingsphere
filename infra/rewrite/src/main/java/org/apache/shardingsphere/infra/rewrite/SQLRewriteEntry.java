@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.infra.rewrite.engine.GenericSQLRewriteEngine;
@@ -45,14 +45,14 @@ public final class SQLRewriteEntry {
     
     private final ShardingSphereDatabase database;
     
-    private final ShardingSphereRuleMetaData globalRuleMetaData;
+    private final RuleMetaData globalRuleMetaData;
     
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators;
     
-    public SQLRewriteEntry(final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
+    public SQLRewriteEntry(final ShardingSphereDatabase database, final RuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
         this.database = database;
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;

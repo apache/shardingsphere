@@ -43,7 +43,7 @@ public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> i
     @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() throws SQLException {
-        RALUpdater<T> updater = TypedSPILoader.getService(RALUpdater.class, sqlStatement.getClass().getName());
+        RALUpdater<T> updater = TypedSPILoader.getService(RALUpdater.class, sqlStatement.getClass());
         if (updater instanceof ConnectionSessionRequiredRALUpdater) {
             ((ConnectionSessionRequiredRALUpdater<T>) updater).executeUpdate(connectionSession, (T) sqlStatement);
         } else {

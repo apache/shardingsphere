@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.table;
 
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -116,69 +115,11 @@ class TablesContextTest {
         SimpleTableSegment tableSegment1 = createTableSegment("TABLE_1", "TBL_1");
         SimpleTableSegment tableSegment2 = createTableSegment("TABLE_2", "TBL_2");
         ShardingSphereTable table = new ShardingSphereTable("TABLE_1",
-                Collections.singletonList(new ShardingSphereColumn("COL", 0, false, false, true, true, false)), Collections.emptyList(), Collections.emptyList());
+                Collections.singletonList(new ShardingSphereColumn("COL", 0, false, false, true, true, false, false)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(table).collect(Collectors.toMap(ShardingSphereTable::getName, value -> value)), Collections.emptyMap());
         ColumnSegment columnSegment = createColumnSegment(null, "COL");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2),
                 TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
-        assertFalse(actual.isEmpty());
-        assertThat(actual.get("col"), is("TABLE_1"));
-    }
-    
-    @Test
-    void assertFindTableNameWhenColumnProjectionWhenSingleTable() {
-        SimpleTableSegment tableSegment = createTableSegment("table_1", "tbl_1");
-        ColumnProjection columnProjection = new ColumnProjection(null, "col", "cl", mock(DatabaseType.class));
-        Map<String, String> actual = new TablesContext(Collections.singletonList(tableSegment), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"))
-                .findTableNamesByColumnProjection(Collections.singletonList(columnProjection), mock(ShardingSphereSchema.class));
-        assertFalse(actual.isEmpty());
-        assertThat(actual.get("col"), is("table_1"));
-    }
-    
-    @Test
-    void assertFindTableNameWhenColumnProjectionOwnerPresent() {
-        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
-        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
-        ColumnProjection columnProjection = new ColumnProjection("table_1", "col", "cl", mock(DatabaseType.class));
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"))
-                .findTableNamesByColumnProjection(Collections.singletonList(columnProjection), mock(ShardingSphereSchema.class));
-        assertFalse(actual.isEmpty());
-        assertThat(actual.get("table_1.col"), is("table_1"));
-    }
-    
-    @Test
-    void assertFindTableNameWhenColumnProjectionOwnerAbsent() {
-        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
-        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
-        ColumnProjection columnProjection = new ColumnProjection(null, "col", "cl", mock(DatabaseType.class));
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"))
-                .findTableNamesByColumnProjection(Collections.singletonList(columnProjection), mock(ShardingSphereSchema.class));
-        assertTrue(actual.isEmpty());
-    }
-    
-    @Test
-    void assertFindTableNameWhenColumnProjectionOwnerAbsentAndSchemaMetaDataContainsColumn() {
-        SimpleTableSegment tableSegment1 = createTableSegment("table_1", "tbl_1");
-        SimpleTableSegment tableSegment2 = createTableSegment("table_2", "tbl_2");
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getAllColumnNames("table_1")).thenReturn(Collections.singletonList("col"));
-        ColumnProjection columnProjection = new ColumnProjection(null, "col", "cl", mock(DatabaseType.class));
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"))
-                .findTableNamesByColumnProjection(Collections.singletonList(columnProjection), schema);
-        assertFalse(actual.isEmpty());
-        assertThat(actual.get("col"), is("table_1"));
-    }
-    
-    @Test
-    void assertFindTableNameWhenColumnProjectionOwnerAbsentAndSchemaMetaDataContainsColumnInUpperCase() {
-        SimpleTableSegment tableSegment1 = createTableSegment("TABLE_1", "TBL_1");
-        SimpleTableSegment tableSegment2 = createTableSegment("TABLE_2", "TBL_2");
-        ShardingSphereTable table = new ShardingSphereTable("TABLE_1", Collections.singletonList(
-                new ShardingSphereColumn("COL", 0, false, false, true, true, false)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(table).collect(Collectors.toMap(ShardingSphereTable::getName, value -> value)), Collections.emptyMap());
-        ColumnProjection columnProjection = new ColumnProjection(null, "COL", "CL", mock(DatabaseType.class));
-        Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"))
-                .findTableNamesByColumnProjection(Collections.singletonList(columnProjection), schema);
         assertFalse(actual.isEmpty());
         assertThat(actual.get("col"), is("TABLE_1"));
     }

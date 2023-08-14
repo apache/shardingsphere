@@ -70,7 +70,7 @@
     <sql-case id="select_where_with_simple_expr_with_literals" value="SELECT * FROM t_order WHERE ? &lt; order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_column" value="SELECT * FROM t_order WHERE t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_function_call" value="SELECT * FROM t_order WHERE now() &lt; order_id" db-types="MySQL" />
-    <sql-case id="select_where_with_simple_expr_with_collate" value="SELECT * FROM t_order WHERE order_id collate 'utf8mb4_0900_ai_ci'" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_collate" value="SELECT * FROM t_order WHERE order_id collate utf8mb4_0900_ai_ci" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_variable" value="SELECT * FROM t_order WHERE @@max_connections &lt; order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_plus" value="SELECT * FROM t_order WHERE ? + t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_minus" value="SELECT * FROM t_order WHERE ? - t_order.order_id" db-types="MySQL" />
@@ -115,4 +115,11 @@
     <sql-case id="select_with_multiset_union_expression" value="SELECT customer_id, cust_address_ntab MULTISET UNION cust_address2_ntab multiset_union FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
     <sql-case id="select_collect_expression" value="SELECT CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t) &quot;Warehouses&quot; FROM warehouses;" db-types="Oracle" />
     <sql-case id="select_expr_dot_expr" value="SELECT DBURIType('/HR/DEPARTMENTS').getXML() FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_arrow_symbol_in_function" value="SELECT DECODE(DBMS_COMPRESSION.GET_COMPRESSION_TYPE(ownname => 'HR'), 'No Compression') compression_type FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_prediction_probability_function" value="SELECT PREDICTION_PROBABILITY(dt_sh_clas_sample, 1 USING *) cust_card_prob FROM mining_data_apply_v WHERE cust_id = 101488;" db-types="Oracle" />
+    <sql-case id="select_prediction_set_function" value="SELECT PREDICTION_SET(dt_sh_clas_sample COST MODEL USING *) pset FROM mining_data_apply_v WHERE cust_id = 100011" db-types="Oracle" />
+    <sql-case id="select_cursor_function" value="SELECT CURSOR(SELECT salary, commission_pct FROM employees e WHERE e.department_id = d.department_id) FROM departments d;" db-types="Oracle" />
+    <sql-case id="select_prediction_bounds_function" value="SELECT cust_id FROM mining_data_apply_v WHERE PREDICTION_BOUNDS(glmr_sh_regr_sample,0.98 USING *).LOWER = 24;" db-types="Oracle" />
+    <sql-case id="select_prediction_function" value="SELECT cust_gender FROM mining_data_apply_v WHERE PREDICTION (nb_sh_clas_sample COST MODEL AUTO USING cust_marital_status, aeducation, household_size) = 1;" db-types="Oracle" />
+    <sql-case id="select_prediction_details_function" value="SELECT PREDICTION_DETAILS(DT_SH_Clas_sample using *) FROM mining_data_apply_v WHERE occupation = 'TechSup'" db-types="Oracle" />
 </sql-cases>

@@ -59,7 +59,7 @@ public final class ShowShardingKeyGeneratorExecutor implements RQLExecutor<ShowS
     }
     
     @Override
-    public String getType() {
-        return ShowShardingKeyGeneratorsStatement.class.getName();
+    public Class<ShowShardingKeyGeneratorsStatement> getType() {
+        return ShowShardingKeyGeneratorsStatement.class;
     }
 }

@@ -80,7 +80,7 @@ objectSubTypeDef
     ;
 
 alterTable
-    : ALTER TABLE tableName memOptimizeClause alterDefinitionClause enableDisableClauses
+    : ALTER TABLE tableName memOptimizeClause alterDefinitionClause enableDisableClauses?
     ;
 
 alterIndex
@@ -97,7 +97,12 @@ alterTrigger
     ;    
 
 triggerCompileClause
-    : COMPILE DEBUG? (compilerParametersClause*)? (REUSE SETTINGS)?
+    : COMPILE (
+    (DEBUG compilerParametersClause* (REUSE SETTINGS)?)
+    | (compilerParametersClause+ (REUSE SETTINGS)?)
+    | (REUSE SETTINGS)
+    | (DEBUG REUSE SETTINGS)
+    )?
     ;
 
 compilerParametersClause
@@ -215,7 +220,21 @@ oidIndexClause
     ;
 
 createRelationalTableClause
-    : (LP_ relationalProperties RP_)? collationClause? commitClause? physicalProperties? tableProperties?
+    : (LP_ relationalProperties RP_)
+    | (LP_ relationalProperties RP_) collationClause
+    | (LP_ relationalProperties RP_) commitClause
+    | (LP_ relationalProperties RP_) physicalProperties
+    | (LP_ relationalProperties RP_) tableProperties
+    | (LP_ relationalProperties RP_) collationClause commitClause
+    | (LP_ relationalProperties RP_) collationClause physicalProperties
+    | (LP_ relationalProperties RP_) collationClause tableProperties
+    | (LP_ relationalProperties RP_) collationClause commitClause physicalProperties
+    | (LP_ relationalProperties RP_) collationClause commitClause tableProperties
+    | (LP_ relationalProperties RP_) collationClause commitClause physicalProperties tableProperties
+    | (LP_ relationalProperties RP_) commitClause physicalProperties
+    | (LP_ relationalProperties RP_) commitClause tableProperties
+    | (LP_ relationalProperties RP_) commitClause physicalProperties tableProperties
+    | (LP_ relationalProperties RP_) physicalProperties tableProperties
     ;
     
 createMemOptimizeClause
@@ -276,7 +295,7 @@ identityOption
     ;
 
 encryptionSpecification
-    : (USING STRING_)? (IDENTIFIED BY STRING_)? STRING_? (NO? SALT)?
+    : (USING STRING_)? (IDENTIFIED BY STRING_)? (integrityAlgorithm? (NO? SALT)? | (NO? SALT)? integrityAlgorithm?)   
     ;
 
 inlineConstraint
@@ -387,17 +406,46 @@ tableAlias
 alterDefinitionClause
     : (alterTableProperties
     | columnClauses
+    | moveTableClause
     | constraintClauses
     | alterTablePartitioning ((DEFERRED| IMMEDIATE) INVALIDATION)?
     | alterExternalTable)?
     ;
 
 alterTableProperties
-    : renameTableSpecification | REKEY encryptionSpecification
+    : ((physicalAttributesClause
+    | loggingClause
+    | tableCompression
+    | inmemoryTableClause
+    | ilmClause
+    | supplementalTableLogging
+    | allocateExtentClause
+    | deallocateUnusedClause
+    | (CACHE | NOCACHE)
+    | upgradeTableClause
+    | recordsPerBlockClause
+    | parallelClause
+    | rowMovementClause
+    | logicalReplicationClause
+    | flashbackArchiveClause)+ | renameTableSpecification)? alterIotClauses? alterXMLSchemaClause?
+    | shrinkClause
+    | READ ONLY
+    | READ WRITE
+    | REKEY encryptionSpecification
+    | DEFAULT COLLATION collationName
+    | NO? ROW ARCHIVAL
+    | ADD attributeClusteringClause
+    | MODIFY CLUSTERING clusteringWhen? zonemapClause?
+    | DROP CLUSTERING
     ;
 
 renameTableSpecification
     : RENAME TO identifier
+    ;
+
+supplementalTableLogging
+    : ADD SUPPLEMENTAL LOG (supplementalLogGrpClause | supplementalIdKeyClause) (COMMA_ SUPPLEMENTAL LOG (supplementalLogGrpClause | supplementalIdKeyClause))*
+    | DROP SUPPLEMENTAL LOG (supplementalIdKeyClause | GROUP logGroupName) (COMMA_ SUPPLEMENTAL LOG (supplementalIdKeyClause | GROUP logGroupName))*
     ;
 
 dropSynonym
@@ -476,6 +524,11 @@ renameColumnClause
     : RENAME COLUMN columnName TO columnName
     ;
 
+moveTableClause
+    : MOVE filterCondition? ONLINE? segmentAttributesClause? tableCompression? indexOrgTableClause? ((lobStorageClause | varrayColProperties)+)? parallelClause? allowDisallowClustering?
+    ( UPDATE INDEXES (LP_ indexName (segmentAttributesClause | updateIndexPartition) RP_ (COMMA_ indexName (segmentAttributesClause | updateIndexPartition))*)?)?
+    ;
+
 constraintClauses
     : addConstraintSpecification | modifyConstraintClause | renameConstraintClause | dropConstraintClause+
     ;
@@ -516,7 +569,9 @@ alterExternalTable
     ;
 
 objectProperties
-    : ((columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint)?)
+    : ((columnName | attributeName) (DEFAULT expr))
+    | ((columnName | attributeName) (inlineConstraint* | inlineRefConstraint))
+    | ((columnName | attributeName) (DEFAULT expr) (inlineConstraint* | inlineRefConstraint))
     | outOfLineConstraint
     | outOfLineRefConstraint
     | supplementalLoggingProps
@@ -618,11 +673,11 @@ memOptimizeWriteClause
     ;
 
 enableDisableClauses
-    : (enableDisableClause | enableDisableOthers)?
+    : (enableDisableClause | enableDisableOthers)+
     ;
 
 enableDisableClause
-    : (ENABLE | DISABLE) (VALIDATE |NO VALIDATE)? ((UNIQUE columnName (COMMA_ columnName)*) | PRIMARY KEY | constraintWithName) usingIndexClause? exceptionsClause? CASCADE? ((KEEP | DROP) INDEX)?
+    : (ENABLE | DISABLE) (VALIDATE | NOVALIDATE)? ((UNIQUE columnName (COMMA_ columnName)*) | PRIMARY KEY | constraintWithName) usingIndexClause? exceptionsClause? CASCADE? ((KEEP | DROP) INDEX)?
     ;
 
 enableDisableOthers
@@ -735,7 +790,9 @@ tableCompression
     ;
 
 inmemoryTableClause
-    : ((INMEMORY inmemoryAttributes?) | NO INMEMORY)? (inmemoryColumnClause)?
+    : ((INMEMORY inmemoryAttributes?) | NO INMEMORY)
+    | (inmemoryColumnClause)
+    | ((INMEMORY inmemoryAttributes?) | NO INMEMORY) (inmemoryColumnClause)
     ;
 
 inmemoryAttributes
@@ -896,7 +953,9 @@ tablePartitionDescription
     ;
 
 inmemoryClause
-    : INMEMORY inmemoryAttributes? | NO INMEMORY
+    : INMEMORY inmemoryAttributes
+    | INMEMORY
+    | NO INMEMORY
     ;
 
 varrayColProperties
@@ -1071,7 +1130,10 @@ referencePartitioning
     ;
 
 referencePartitionDesc
-    : PARTITION partitionName? tablePartitionDescription?
+    : PARTITION
+    | PARTITION partitionName
+    | PARTITION tablePartitionDescription
+    | PARTITION partitionName tablePartitionDescription
     ;
 
 constraint
@@ -1080,6 +1142,7 @@ constraint
 
 systemPartitioning
     : PARTITION BY SYSTEM (PARTITIONS NUMBER_ | referencePartitionDesc (COMMA_ referencePartitionDesc)*)?
+    | PARTITION BY SYSTEM
     ;
 
 consistentHashPartitions
@@ -1111,7 +1174,14 @@ listPartitionsetClause
     ;
 
 attributeClusteringClause
-    : CLUSTERING clusteringJoin? clusterClause clusteringWhen? zonemapClause?
+    : CLUSTERING clusterClause
+    | CLUSTERING clusteringJoin clusterClause
+    | CLUSTERING clusterClause clusteringWhen
+    | CLUSTERING clusteringJoin clusterClause clusteringWhen
+    | CLUSTERING clusterClause zonemapClause
+    | CLUSTERING clusteringJoin clusterClause zonemapClause
+    | CLUSTERING clusterClause clusteringWhen zonemapClause
+    | CLUSTERING clusteringJoin clusterClause clusteringWhen zonemapClause
     ;
 
 clusteringJoin
@@ -1146,6 +1216,10 @@ rowMovementClause
     : (ENABLE | DISABLE) ROW MOVEMENT
     ;
 
+logicalReplicationClause
+    : (ENABLE | DISABLE) LOGICAL REPLICATION
+    ;
+
 flashbackArchiveClause
     : FLASHBACK ARCHIVE flashbackArchiveName? | NO FLASHBACK ARCHIVE
     ;
@@ -1155,6 +1229,40 @@ alterPackage
     | packageCompileClause
     | (EDITIONABLE | NONEDITIONABLE)
     )
+    ;
+
+alterProfile
+    : ALTER PROFILE profileName LIMIT (resourceParameters | passwordParameters)+ (CONTAINER EQ_ (CURRENT | ALL))?
+    ;
+
+resourceParameters
+    : (SESSIONS_PER_USER
+    | CPU_PER_SESSION
+    | CPU_PER_CALL
+    | CONNECT_TIME
+    | IDLE_TIME
+    | LOGICAL_READS_PER_SESSION
+    | LOGICAL_READS_PER_CALL
+    | COMPOSITE_LIMIT
+    ) (INTEGER_ | UNLIMITED | DEFAULT)
+    | PRIVATE_SGA (sizeClause | UNLIMITED | DEFAULT)
+    ;
+
+passwordParameters
+    : (FAILED_LOGIN_ATTEMPTS
+    | PASSWORD_LIFE_TIME
+    | PASSWORD_REUSE_TIME
+    | PASSWORD_REUSE_MAX
+    | PASSWORD_LOCK_TIME
+    | PASSWORD_GRACE_TIME
+    | INACTIVE_ACCOUNT_TIME
+    ) (expr | UNLIMITED | DEFAULT)
+    | PASSWORD_VERIFY_FUNCTION (function | NULL | DEFAULT)
+    | PASSWORD_ROLLOVER_TIME (expr | DEFAULT)
+    ;
+
+alterRollbackSegment
+    : ALTER ROLLBACK SEGMENT rollbackSegmentName (ONLINE | OFFLINE | storageClause | SHRINK (TO sizeClause)?)
     ;
 
 packageCompileClause
@@ -1253,6 +1361,14 @@ allocateExtentClause
 
 partitionSpec
     : PARTITION partitionName? tablePartitionDescription?
+    ;
+
+upgradeTableClause
+    : UPGRADE (NOT? INCLUDING DATA)? columnProperties?
+    ;
+
+recordsPerBlockClause
+    : (MINIMIZE | NOMINIMIZE) RECORDS_PER_BLOCK
     ;
 
 partitionAttributes
@@ -1442,6 +1558,7 @@ alterSessionSetClauseOption
     | containerClause
     | rowArchivalVisibilityClause
     | defaultCollationClause
+    | eventsClause
     ;
 
 parameterClause
@@ -1462,6 +1579,10 @@ rowArchivalVisibilityClause
 
 defaultCollationClause
     : DEFAULT_COLLATION EQ_ (collationName | NONE)
+    ;
+
+eventsClause
+    : (EVENTS EQ_? STRING_)+
     ;
 
 alterDatabaseDictionary
@@ -1909,11 +2030,11 @@ flushClauseOption
     ;
 
 disconnectSessionClause
-    : DISCONNECT SESSION SQ_ INTEGER_ COMMA_ INTEGER_ SQ_ POST_TRANSACTION?
+    : DISCONNECT SESSION STRING_ POST_TRANSACTION?
     ;
 
 killSessionClause
-    : KILL SESSION SQ_ INTEGER_ COMMA_ INTEGER_ (COMMA_ AT_ INTEGER_)? SQ_
+    : KILL SESSION STRING_
     ;
 
 startRollingMigrationClause
@@ -1957,7 +2078,7 @@ disableAffinityClause
     ;
 
 alterSystemSetClause
-    : setParameterClause | useStoredOutlinesClause | globalTopicEnabledClause
+    : setParameterClause | useStoredOutlinesClause | globalTopicEnabledClause | dbRecoveryFileDestSizeClause | eventsClause
     ;
 
 alterSystemResetClause
@@ -2004,6 +2125,10 @@ globalTopicEnabledClause
     : GLOBAL_TOPIC_ENABLED EQ_ (TRUE | FALSE)
     ;
 
+dbRecoveryFileDestSizeClause
+    : DB_RECOVERY_FILE_DEST_SIZE EQ_ INTEGER_ capacityUnit?
+    ;
+
 alterSystemCommentClause
     : COMMENT EQ_ stringLiterals
     ;
@@ -2013,7 +2138,7 @@ containerCurrentAllClause
     ;
 
 scopeClause
-    : SCOPE EQ_ (MEMORY | SPFILE | BOTH) | SID EQ_ (SQ_ sessionId SQ_ | SQ_ ASTERISK_ SQ_)
+    : SCOPE EQ_ (MEMORY | SPFILE | BOTH) | SID EQ_ (sessionId | SQ_ ASTERISK_ SQ_)
     ;
 
 analyze
@@ -2028,7 +2153,7 @@ partitionExtensionClause
 
 validationClauses
     : VALIDATE REF UPDATE (SET DANGLING TO NULL)?
-    | VALIDATE STRUCTURE (CASCADE (FAST | COMPLETE (OFFLINE | ONLINE) intoClause?))?
+    | VALIDATE STRUCTURE (CASCADE (FAST | COMPLETE? (OFFLINE | ONLINE) intoClause?)?)?
     ;
 
 intoClause
@@ -2079,6 +2204,53 @@ disassociateStatistics
     ;
 
 audit
+    : auditTraditional | auditUnified
+    ;
+
+auditTraditional
+    : AUDIT (auditOperationClause (auditingByClause | IN SESSION CURRENT)? | auditSchemaObjectClause | NETWORK | DIRECT_PATH LOAD auditingByClause?) 
+    ( BY (SESSION | ACCESS))? (WHENEVER NOT? SUCCESSFUL)? (CONTAINER EQ_ (CURRENT | ALL))?
+    ;
+
+auditingByClause
+    : BY username (COMMA_ username)*
+    ;
+
+auditOperationClause
+    : (sqlStatementShortcut | ALL | ALL STATEMENTS) (COMMA_ sqlStatementShortcut | ALL | ALL STATEMENTS)*
+    | (systemPrivilege | ALL PRIVILEGES) (COMMA_ systemPrivilege | ALL PRIVILEGES) 
+    ;
+
+sqlStatementShortcut
+    : ALTER SYSTEM | CLUSTER | CREATE CLUSTER | ALTER CLUSTER | DROP CLUSTER | TRUNCATE CLUSTER | CONTEXT | CREATE CONTEXT | DROP CONTEXT 
+    | DATABASE LINK | CREATE DATABASE LINK | ALTER DATABASE LINK | DROP DATABASE LINK | DIMENSION | CREATE DIMENSION | ALTER DIMENSION | DROP DIMENSION 
+    | DIRECTORY | CREATE DIRECTORY | DROP DIRECTORY | INDEX | CREATE INDEX | ALTER INDEX | ANALYZE INDEX | DROP INDEX 
+    | MATERIALIZED VIEW | CREATE MATERIALIZED VIEW | ALTER MATERIALIZED VIEW | DROP MATERIALIZED VIEW | NOT EXISTS | OUTLINE | CREATE OUTLINE | ALTER OUTLINE | DROP OUTLINE 
+    | PLUGGABLE DATABASE | CREATE PLUGGABLE DATABASE | ALTER PLUGGABLE DATABASE | DROP PLUGGABLE DATABASE 
+    | PROCEDURE | CREATE FUNCTION | CREATE LIBRARY | CREATE PACKAGE | CREATE PACKAGE BODY | CREATE PROCEDURE | DROP FUNCTION | DROP LIBRARY | DROP PACKAGE | DROP PROCEDURE 
+    | PROFILE | CREATE PROFILE | ALTER PROFILE | DROP PROFILE | PUBLIC DATABASE LINK | CREATE PUBLIC DATABASE LINK | ALTER PUBLIC DATABASE LINK | DROP PUBLIC DATABASE LINK 
+    | PUBLIC SYNONYM | CREATE PUBLIC SYNONYM | DROP PUBLIC SYNONYM | ROLE | CREATE ROLE | ALTER ROLE | DROP ROLE | SET ROLE 
+    | ROLLBACK SEGMENT | CREATE ROLLBACK SEGMENT | ALTER ROLLBACK SEGMENT | DROP ROLLBACK SEGMENT | SEQUENCE | CREATE SEQUENCE | DROP SEQUENCE | SESSION | SYNONYM | CREATE SYNONYM | DROP SYNONYM 
+    | SYSTEM AUDIT | SYSTEM GRANT | TABLE | CREATE TABLE | DROP TABLE | TRUNCATE TABLE | TABLESPACE | CREATE TABLESPACE | ALTER TABLESPACE | DROP TABLESPACE 
+    | TRIGGER | CREATE TRIGGER | ALTER TRIGGER | DROP TRIGGER | ALTER TABLE | TYPE | CREATE TYPE | CREATE TYPE BODY | ALTER TYPE | DROP TYPE | DROP TYPE BODY 
+    | USER | CREATE USER | ALTER USER | DROP USER | VIEW | CREATE VIEW | DROP VIEW 
+    | ALTER SEQUENCE | COMMENT TABLE | DELETE TABLE | EXECUTE DIRECTORY | EXECUTE PROCEDURE | GRANT DIRECTORY | GRANT PROCEDURE | GRANT SEQUENCE | GRANT TABLE | GRANT TYPE 
+    | INSERT TABLE | LOCK TABLE | READ DIRECTORY | SELECT SEQUENCE | SELECT TABLE | UPDATE TABLE | WRITE DIRECTORY
+    ;
+
+auditSchemaObjectClause
+    : (sqlOperation (COMMA_ sqlOperation)* | ALL) auditingOnClause
+    ;
+
+auditingOnClause
+    : ON (DEFAULT | objectName | DIRECTORY directoryName | MINING MODEL modelName | SQL TRANSLATION PROFILE profileName)
+    ;
+
+sqlOperation
+    : ALTER | AUDIT | COMMENT | DELETE | FLASHBACK | GRANT | INDEX | INSERT | LOCK | RENAME | SELECT | UPDATE | EXECUTE | READ
+    ;
+
+auditUnified
     : AUDIT (auditPolicyClause | contextClause)
     ;
 
@@ -2307,24 +2479,6 @@ dropDirectory
 
 dropType
     : DROP TYPE typeName (FORCE|VALIDATE)?
-    ;
-
-createFunction
-    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
-    ;
-
-plsqlFunctionSource
-    : function (LP_ parameterDeclaration (COMMA_ parameterDeclaration)* RP_)? RETURN dataType
-    sharingClause? (invokerRightsClause
-    | accessibleByClause 
-    | defaultCollationoOptionClause
-    | deterministicClause
-    | parallelEnableClause
-    | resultCacheClause
-    | aggregateClause
-    | pipelinedClause
-    | sqlMacroClause)* 
-    (IS | AS) callSpec
     ;
 
 parameterDeclaration
@@ -2685,7 +2839,20 @@ alterAuditPolicy
     ;
 
 subAuditClause
-    : (privilegeAuditClause)? (actionAuditClause)? (roleAuditClause)? (ONLY TOPLEVEL)?
+    : privilegeAuditClause
+    | actionAuditClause
+    | roleAuditClause
+    | ONLY TOPLEVEL
+    | (privilegeAuditClause actionAuditClause)
+    | (privilegeAuditClause roleAuditClause)
+    | (privilegeAuditClause ONLY TOPLEVEL)
+    | (actionAuditClause roleAuditClause)
+    | (actionAuditClause ONLY TOPLEVEL)
+    | (actionAuditClause roleAuditClause ONLY TOPLEVEL)
+    | (privilegeAuditClause roleAuditClause ONLY TOPLEVEL)
+    | (privilegeAuditClause actionAuditClause ONLY TOPLEVEL)
+    | (privilegeAuditClause actionAuditClause roleAuditClause)
+    | (privilegeAuditClause actionAuditClause roleAuditClause ONLY TOPLEVEL)
     ;
 
 privilegeAuditClause
@@ -2879,8 +3046,7 @@ alterOperator
     ;
 
 addBindingClause
-    : ADD BINDING LP_ parameterType (COMMA_ parameterType)* RP_
-      RETURN LP_ returnType RP_ implementationClause? usingFunctionClause
+    : ADD BINDING LP_ parameterType (COMMA_ parameterType)* RP_ RETURN (LP_ returnType RP_ | NUMBER) implementationClause? usingFunctionClause
     ;
 
 implementationClause
@@ -3075,7 +3241,7 @@ usergroupClauses
     ;
 
 userClauses
-    : (ADD USER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
+    : (ADD USER username (COMMA_ username)*
     | DROP USER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)* (CASCADE)?
     | REPLACE USER SQ_ username SQ_ WITH SQ_ username SQ_ (COMMA_ SQ_ username SQ_ WITH SQ_ username SQ_)*)
     ;
@@ -3238,10 +3404,14 @@ modifylobParameters
     | deallocateUnusedClause
     ;
 
- alterIotClauses
+alterIotClauses
     : indexOrgTableClause
     | alterOverflowClause
     | COALESCE
+    ;
+
+alterXMLSchemaClause
+    : ALLOW (ANYSCHEMA | NONSCHEMA) | DISALLOW NONSCHEMA
     ;
 
 alterOverflowClause
@@ -3253,7 +3423,7 @@ overflowClause
     ;
 
 addOverflowClause
-    : ADD OVERFLOW segmentAttributesClause? LP_ PARTITION segmentAttributesClause? (COMMA_ PARTITION segmentAttributesClause?)* RP_
+    : ADD OVERFLOW segmentAttributesClause? (LP_ PARTITION segmentAttributesClause? (COMMA_ PARTITION segmentAttributesClause?)* RP_)?
     ;
 
 scopedTableRefConstraint
@@ -3667,7 +3837,7 @@ segmentManagementClause
     ;
 
 tablespaceGroupClause
-    : ON TABLESPACE GROUP tablespaceGroupName
+    : TABLESPACE GROUP tablespaceGroupName
     ;
 
 temporaryTablespaceClause
@@ -3699,6 +3869,72 @@ permanentTablespaceClause
     | segmentManagementClause
     | flashbackModeClause
     )
+    ;
+
+alterTablespace
+    : ALTER TABLESPACE tablespaceName
+    ( MINIMUM EXTENT sizeClause
+    | RESIZE sizeClause
+    | COALESCE
+    | SHRINK SPACE (KEEP sizeClause)?
+    | RENAME TO newTablespaceName
+    | (BEGIN|END) BACKUP
+    | datafileTempfileClauses
+    | tablespaceLoggingClauses
+    | tablespaceGroupClause
+    | tablespaceStateClauses
+    | autoextendClause
+    | flashbackModeClause
+    | tablespaceRetentionClause
+    | alterTablespaceEncryption
+    | lostWriteProtection
+    )
+    ;
+
+newTablespaceName
+    : identifier
+    ;
+
+datafileTempfileClauses
+    : ADD (datafileSpecification | tempfileSpecification)
+    | DROP (DATAFILE | TEMPFILE) (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
+    | SHRINK TEMPFILE (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
+    | RENAME DATAFILE fileSpecification (COMMA_ fileSpecification)* TO fileSpecification (COMMA_ fileSpecification)*
+    | (DATAFILE | TEMPFILE) (ONLINE|OFFLINE)
+    ;
+
+datafileSpecification
+    : DATAFILE
+      (COMMA_? datafileTempfileSpec)
+    ;
+
+tempfileSpecification
+    : TEMPFILE
+      (COMMA_? datafileTempfileSpec)
+    ;
+
+tablespaceLoggingClauses
+    : loggingClause
+    | NO? FORCE LOGGING
+    ;
+
+tablespaceStateClauses
+    : ONLINE
+    | OFFLINE (NORMAL | TEMPORARY | IMMEDIATE)?
+    | READ (ONLY | WRITE)
+    | PERMANENT
+    | TEMPORARY
+    ;
+
+tablespaceFileNameConvert
+    : FILE_NAME_CONVERT EQ_ LP_ CHAR_STRING COMMA_ CHAR_STRING (COMMA_ CHAR_STRING COMMA_ CHAR_STRING)* RP_ KEEP?
+    ;
+
+alterTablespaceEncryption
+    : ENCRYPTION ( OFFLINE (tablespaceEncryptionSpec? ENCRYPT | DECRYPT)
+                 | ONLINE (tablespaceEncryptionSpec? (ENCRYPT | REKEY) | DECRYPT) tablespaceFileNameConvert?
+                 | FINISH (ENCRYPT | REKEY | DECRYPT) tablespaceFileNameConvert?
+                 )
     ;
 
 dropFunction
@@ -3767,27 +4003,13 @@ alterCollectionClauses
     : MODIFY (LIMIT INTEGER_ | ELEMENT TYPE dataType)
     ;
 
+dependentHandlingClause
+    : INVALIDATE | CASCADE (NOT? INCLUDING TABLE DATA | CONVERT TO SUBSTITUTABLE)? (FORCE? exceptionsClause)?
+    ;
+
 alterType
     : ALTER TYPE typeName (compileTypeClause | replaceTypeClause | RESET
-    | (alterMethodSpec | alterAttributeDefinition | alterCollectionClauses | NOT (INSTANTIABLE | FINAL)))?
-    ;
-
-createCluster
-    : CREATE CLUSTER (schemaName DOT_)? clusterName
-    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
-    ;
-
-createCluster
-    : CREATE CLUSTER (schemaName DOT_)? clusterName
-    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
-    parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
-    ;
-
-createCluster
-    : CREATE CLUSTER (schemaName DOT_)? clusterName
-    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
-    (physicalAttributesClause | SET sizeClause)?
-    parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
+    | (alterMethodSpec | alterAttributeDefinition | alterCollectionClauses | NOT? (INSTANTIABLE | FINAL)) dependentHandlingClause?)
     ;
 
 createCluster

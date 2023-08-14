@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.transaction.core.fixture.ShardingSphereTransactionManagerFixture
-org.apache.shardingsphere.transaction.core.fixture.OtherShardingSphereTransactionManagerFixture

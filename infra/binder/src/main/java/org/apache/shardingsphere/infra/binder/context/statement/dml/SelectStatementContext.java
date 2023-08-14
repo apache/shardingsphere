@@ -374,6 +374,15 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         return result;
     }
     
+    /**
+     * Judge whether sql statement contains table subquery segment or not.
+     *
+     * @return whether sql statement contains table subquery segment or not
+     */
+    public boolean containsTableSubquery() {
+        return getSqlStatement().getFrom() instanceof SubqueryTableSegment;
+    }
+    
     @Override
     public void setUpParameters(final List<Object> params) {
         paginationContext = new PaginationContextEngine().createPaginationContext(getSqlStatement(), projectionsContext, params, whereSegments);

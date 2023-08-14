@@ -118,6 +118,7 @@ systemPrivilege
     | usersSystemPrivilege
     | viewsSystemPrivilege
     | miscellaneousSystemPrivilege
+    | ruleSystemPrivilege
     ;
 
 systemPrivilegeOperation
@@ -286,6 +287,14 @@ typesSystemPrivilege
 
 usersSystemPrivilege
     : systemPrivilegeOperation USER
+    ;
+
+ruleSystemPrivilege
+    : createOperation* TO username
+    ;
+
+createOperation
+    : systemPrivilegeOperation (RULE SET? | EVALUATION CONTEXT) COMMA_?
     ;
 
 viewsSystemPrivilege

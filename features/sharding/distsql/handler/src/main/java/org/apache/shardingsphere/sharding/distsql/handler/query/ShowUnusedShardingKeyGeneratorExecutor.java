@@ -80,7 +80,7 @@ public final class ShowUnusedShardingKeyGeneratorExecutor implements RQLExecutor
     }
     
     @Override
-    public String getType() {
-        return ShowUnusedShardingKeyGeneratorsStatement.class.getName();
+    public Class<ShowUnusedShardingKeyGeneratorsStatement> getType() {
+        return ShowUnusedShardingKeyGeneratorsStatement.class;
     }
 }

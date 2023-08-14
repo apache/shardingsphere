@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.executor.callback.impl;
 
 import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.PreparedStatement;
@@ -32,7 +32,7 @@ import java.sql.Statement;
  */
 public final class PreparedStatementExecuteQueryCallback extends ExecuteQueryCallback {
     
-    public PreparedStatementExecuteQueryCallback(final DatabaseType protocolType, final ShardingSphereResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
+    public PreparedStatementExecuteQueryCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final SQLStatement sqlStatement,
                                                  final boolean isExceptionThrown) {
         super(protocolType, resourceMetaData, sqlStatement, isExceptionThrown);
     }

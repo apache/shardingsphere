@@ -44,4 +44,7 @@ public interface RuleConfigurationDecorator<T extends RuleConfiguration> extends
      * @return decorated rule configuration
      */
     T decorate(String databaseName, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules, T ruleConfig);
+    
+    @Override
+    Class<T> getType();
 }

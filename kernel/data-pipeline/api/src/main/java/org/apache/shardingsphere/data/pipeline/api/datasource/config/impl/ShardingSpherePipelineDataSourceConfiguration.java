@@ -66,7 +66,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeFactory.get(getJdbcUrl(props));
         appendJdbcQueryProperties(databaseType);
-        adjustDataSourceProperties(rootConfig.getDataSources());
+        adjustDataSourcePoolProperties(rootConfig.getDataSources());
     }
     
     public ShardingSpherePipelineDataSourceConfiguration(final YamlRootConfiguration rootConfig) {
@@ -102,7 +102,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         });
     }
     
-    private void adjustDataSourceProperties(final Map<String, Map<String, Object>> dataSources) {
+    private void adjustDataSourcePoolProperties(final Map<String, Map<String, Object>> dataSources) {
         for (Map<String, Object> queryProps : dataSources.values()) {
             for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
                 queryProps.put(each, "1");

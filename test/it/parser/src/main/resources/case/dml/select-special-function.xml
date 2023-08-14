@@ -546,4 +546,25 @@
             <column-item name="xmlagg" order-direction="ASC" start-index="98" stop-index="103"/>
         </order-by>
     </select>
+
+    <select sql-case-id="select_set_function">
+        <projections start-index="7" stop-index="49">
+            <column-projection name="customer_id" start-index="7" stop-index="17" />
+            <expression-projection text="SET(cust_address_ntab)" alias="address" start-index="20" stop-index="49">
+                <expr>
+                    <function function-name="SET" start-index="20" stop-index="41" text="SET(cust_address_ntab)">
+                        <parameter>
+                            <column name="cust_address_ntab" start-index="24" stop-index="40" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="customers_demo" start-index="56" stop-index="69" />
+        </from>
+        <order-by>
+            <column-item name="customer_id" order-direction="ASC" start-index="80" stop-index="90" literal-start-index="80" literal-stop-index="90" />
+        </order-by>
+    </select>
 </sql-parser-test-cases>

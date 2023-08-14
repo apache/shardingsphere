@@ -39,7 +39,7 @@ public final class CompatibleEncryptRuleBuilder implements DatabaseRuleBuilder<C
     @Override
     public EncryptRule build(final CompatibleEncryptRuleConfiguration config, final String databaseName,
                              final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new EncryptRule(config);
+        return new EncryptRule(databaseName, config);
     }
     
     @Override

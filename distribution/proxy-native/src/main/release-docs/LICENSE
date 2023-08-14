@@ -218,10 +218,9 @@ The text of each license is the standard Apache 2.0 license.
     accessors-smart 2.4.7: https://www.minidev.net/, Apache 2.0
     aggdesigner-algorithm 6.0: Apache 2.0
     apiguardian-api 1.1.2: https://github.com/apiguardian-team/apiguardian, Apache 2.0
-    audience-annotations 0.5.0: https://github.com/apache/yetus, Apache 2.0
+    audience-annotations 0.12.0: https://github.com/apache/yetus, Apache 2.0
     avatica-core 1.22.0: https://calcite.apache.org/avatica, Apache 2.0
     avatica-metrics 1.22.0: https://calcite.apache.org/avatica, Apache 2.0
-    auto-service-annotations 1.0: https://github.com/google/auto/tree/master/service, Apache 2.0
     caffeine 2.9.3: https://github.com/ben-manes/caffeine, Apache 2.0
     calcite-core 1.32.0: https://calcite.apache.org, Apache 2.0
     calcite-linq4j 1.32.0: https://calcite.apache.org, Apache 2.0
@@ -229,26 +228,26 @@ The text of each license is the standard Apache 2.0 license.
     commons-collections4 4.4: https://github.com/apache/commons-collections, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
     commons-io 2.11.0: https://github.com/apache/commons-io, Apache 2.0
-    commons-lang 2.6: https://github.com/apache/commons-lang, Apache 2.0
+    commons-lang 2.4: https://github.com/apache/commons-lang, Apache 2.0
     commons-lang3 3.12.0: https://github.com/apache/commons-lang, Apache 2.0
     commons-logging 1.1.3: https://github.com/apache/commons-logging, Apache 2.0
-    curator-client 5.3.0:  https://github.com/apache/curator, Apache 2.0
-    curator-framework 5.3.0:  https://github.com/apache/curator, Apache 2.0
-    curator-recipes 5.3.0:  https://github.com/apache/curator, Apache 2.0
-    cosid-core 1.14.4: https://github.com/Ahoo-Wang/CosId, Apache 2.0
-    error_prone_annotations 2.3.4: https://github.com/google/error-prone, Apache 2.0
-    failsafe 2.4.1: https://github.com/jhalterman/failsafe, Apache 2.0
-    failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0 
+    curator-client 5.4.0:  https://github.com/apache/curator, Apache 2.0
+    curator-framework 5.4.0:  https://github.com/apache/curator, Apache 2.0
+    curator-recipes 5.4.0:  https://github.com/apache/curator, Apache 2.0
+    cosid-core 1.18.5: https://github.com/Ahoo-Wang/CosId, Apache 2.0
+    error_prone_annotations 2.11.0: https://github.com/google/error-prone, Apache 2.0
+    failsafe 2.4.4: https://github.com/jhalterman/failsafe, Apache 2.0
+    failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0
     freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
     groovy 4.0.10: https://groovy.apache.org/, Apache 2.0
-    grpc-api 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-context 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-core 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-grpclb 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-netty 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf-lite 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-stub 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-api 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-context 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-core 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-grpclb 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-netty 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf-lite 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-stub 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
     gson 2.9.1: https://github.com/google/gson, Apache 2.0
     guava 30.0-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 4.0.3: https://github.com/brettwooldridge/HikariCP, Apache 2.0
@@ -259,6 +258,7 @@ The text of each license is the standard Apache 2.0 license.
     jackson-core 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-databind 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-dataformat-yaml 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-datatype-jsr310 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
     jcl-over-slf4j 1.7.36: https://github.com/qos-ch/slf4j, Apache 2.0
     jetcd-api 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-common 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
@@ -266,9 +266,8 @@ The text of each license is the standard Apache 2.0 license.
     jetcd-grpc 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
     json-path 2.7.0: https://github.com/jayway/JsonPath, Apache 2.0
     json-smart 2.4.7: https://www.minidev.net/, Apache 2.0
-    json-simple 1.1.1: https://code.google.com/archive/p/json-simple/, Apache 2.0 
+    json-simple 1.1.1: https://code.google.com/archive/p/json-simple/, Apache 2.0
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
-    log4j 1.2.17: http://logging.apache.org/log4j/1.2/, Apache 2.0
     memory 0.9.0, Apache 2.0
     netty-buffer 4.1.90.Final: https://github.com/netty, Apache 2.0
     netty-codec 4.1.90.Final: https://github.com/netty, Apache 2.0
@@ -279,13 +278,20 @@ The text of each license is the standard Apache 2.0 license.
     netty-handler 4.1.90.Final: https://github.com/netty, Apache 2.0
     netty-handler-proxy 4.1.90.Final: https://github.com/netty, Apache 2.0
     netty-resolver 4.1.90.Final: https://github.com/netty, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.59.Final: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.59.Final-linux-aarch_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.59.Final-linux-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.59.Final-osx-aarch_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.59.Final-osx-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.59.Final-windows-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-classes 2.0.59.Final: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-transport 4.1.90.Final: https://github.com/netty, Apache 2.0
     netty-transport-classes-epoll 4.1.90.Final: https://github.com/netty, Apache 2.0
     netty-transport-native-epoll 4.1.90.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
     netty-transport-native-epoll 4.1.90.Final-linux-x86_64: https://github.com/netty, Apache 2.0
     netty-transport-native-unix-common 4.1.90.Final: https://github.com/netty, Apache 2.0
-    perfmark-api 0.23.0: https://github.com/perfmark/perfmark, Apache 2.0
-    proto-google-common-protos 2.0.1: https://github.com/googleapis/common-protos-java, Apache 2.0
+    perfmark-api 0.25.0: https://github.com/perfmark/perfmark, Apache 2.0
+    proto-google-common-protos 2.9.0: https://github.com/googleapis/common-protos-java, Apache 2.0
     proj4j 1.1.5: https://github.com/locationtech/proj4j, Apache 2.0
     quartz 2.3.2: https://github.com/quartz-scheduler/quartz, Apache 2.0
     sketches-core 0.9.0, Apache 2.0
@@ -307,7 +313,7 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     transactions-api 6.0.0: https://www.atomikos.com, Apache 2.0
     transactions-jdbc 6.0.0: https://www.atomikos.com, Apache 2.0
     transactions-jta 6.0.0: https://www.atomikos.com, Apache 2.0
-    
+
 ========================================================================
 BSD licenses
 ========================================================================
@@ -333,7 +339,11 @@ CDDL licenses
 The following components are provided under the CDDL License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
+    javax.activation-api 1.2.0: https://github.com/javaee/javax.annotation, CDDL
     jta 1.1: http://jta-spec.java.net, CDDL
+    jaxb-api 2.3.0: http://www.oracle.com, CDDL
+    jaxb-core 2.3.0: http://www.oracle.com, CDDL
+    jaxb-impl 2.3.0 http://www.oracle.com, CDDL
 
 ========================================================================
 EPL licenses
@@ -354,18 +364,11 @@ MIT licenses
 The following components are provided under the MIT License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    animal-sniffer-annotations 1.19: https://github.com/mojohaus/animal-sniffer, MIT
+    bcpkix-jdk15on 1.70: https://www.bouncycastle.org, MIT
     bcprov-jdk15on 1.70: https://www.bouncycastle.org, MIT
+    bctls-jdk15on 1.70: https://www.bouncycastle.org, MIT
+    bcutil-jdk15on 1.70: https://www.bouncycastle.org, MIT
     checker-qual 3.5.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
     jul-to-slf4j 1.7.36: https://www.slf4j.org, MIT
     slf4j-api 1.7.36: https://www.slf4j.org, MIT
     jnanoid 2.0.0: https://github.com/aventrix/jnanoid, MIT
-
-========================================================================
-UPL licenses
-========================================================================
-
-The following components are provided under the UPL License. See project link for details.
-The text of each license is also included at licenses/LICENSE-[project].txt.
-
-    truffle-api 22.3.1: http://www.graalvm.org/, UPL

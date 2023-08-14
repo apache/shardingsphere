@@ -51,7 +51,7 @@ public final class CountMaskRuleExecutor implements RQLExecutor<CountMaskRuleSta
     }
     
     @Override
-    public String getType() {
-        return CountMaskRuleStatement.class.getName();
+    public Class<CountMaskRuleStatement> getType() {
+        return CountMaskRuleStatement.class;
     }
 }

@@ -19,11 +19,9 @@ package org.apache.shardingsphere.mode.manager.switcher;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -32,7 +30,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public final class SwitchingResource {
     
-    private final ShardingSphereResourceMetaData resourceMetaData;
+    private final ResourceMetaData resourceMetaData;
     
     @Getter
     private final StorageResource newStorageResource;
@@ -40,13 +38,10 @@ public final class SwitchingResource {
     @Getter
     private final StorageResource staleStorageResource;
     
-    @Getter
-    private final Map<String, DataSourceProperties> dataSourcePropsMap;
-    
     /**
      * Close stale data sources.
      */
     public void closeStaleDataSources() {
-        staleStorageResource.getStorageNodes().values().stream().filter(Objects::nonNull).forEach(resourceMetaData::close);
+        staleStorageResource.getStorageNodeDataSources().values().stream().filter(Objects::nonNull).forEach(resourceMetaData::close);
     }
 }

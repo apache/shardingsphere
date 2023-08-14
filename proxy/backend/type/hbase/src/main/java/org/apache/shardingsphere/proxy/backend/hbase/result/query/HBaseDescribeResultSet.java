@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowCreateTa
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateTableStatement;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -94,7 +95,7 @@ public final class HBaseDescribeResultSet implements HBaseQueryResultSet {
      * @return type name
      */
     @Override
-    public String getType() {
-        return MySQLShowCreateTableStatement.class.getCanonicalName();
+    public Class<MySQLShowCreateTableStatement> getType() {
+        return MySQLShowCreateTableStatement.class;
     }
 }

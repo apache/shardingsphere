@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
-import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 
 /**
@@ -38,7 +38,7 @@ public final class YamlProxyDataSourceConfigurationSwapper {
     }
     
     private ConnectionConfiguration swapConnectionConfiguration(final YamlProxyDataSourceConfiguration yamlConfig) {
-        return new ConnectionConfiguration(yamlConfig.getUrl(), yamlConfig.getUsername(), yamlConfig.getPassword());
+        return new ConnectionConfiguration(yamlConfig.getDataSourceClassName(), yamlConfig.getUrl(), yamlConfig.getUsername(), yamlConfig.getPassword());
     }
     
     private PoolConfiguration swapPoolConfiguration(final YamlProxyDataSourceConfiguration yamlConfig) {

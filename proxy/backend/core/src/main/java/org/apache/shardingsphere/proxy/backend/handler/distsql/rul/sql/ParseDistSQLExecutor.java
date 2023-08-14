@@ -52,7 +52,7 @@ public final class ParseDistSQLExecutor implements ConnectionSessionRequiredRULE
     }
     
     @Override
-    public String getType() {
-        return ParseStatement.class.getName();
+    public Class<ParseStatement> getType() {
+        return ParseStatement.class;
     }
 }

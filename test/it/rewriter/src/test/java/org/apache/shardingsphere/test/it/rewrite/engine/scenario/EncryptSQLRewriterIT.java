@@ -66,27 +66,27 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
     protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
         Map<String, ShardingSphereTable> tables = new LinkedHashMap<>();
         tables.put("t_account", new ShardingSphereTable("t_account", Arrays.asList(
-                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false),
-                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false),
-                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_account_bak", new ShardingSphereTable("t_account_bak", Arrays.asList(
-                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false),
-                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false),
-                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_account_detail", new ShardingSphereTable("t_account_detail", Arrays.asList(
-                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false),
-                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false),
-                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("account_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("certificate_number", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
+                new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(
-                new ShardingSphereColumn("ORDER_ID", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("USER_ID", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("CONTENT", Types.VARCHAR, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("ORDER_ID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("USER_ID", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("CONTENT", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         ShardingSphereSchema result = new ShardingSphereSchema(tables, Collections.emptyMap());
         return Collections.singletonMap(schemaName, result);
     }

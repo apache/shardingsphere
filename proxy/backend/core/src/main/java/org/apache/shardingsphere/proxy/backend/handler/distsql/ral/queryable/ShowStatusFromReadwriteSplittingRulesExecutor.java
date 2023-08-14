@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -135,7 +135,7 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Conn
     }
     
     @Override
-    public String getType() {
-        return ShowStatusFromReadwriteSplittingRulesStatement.class.getName();
+    public Class<ShowStatusFromReadwriteSplittingRulesStatement> getType() {
+        return ShowStatusFromReadwriteSplittingRulesStatement.class;
     }
 }

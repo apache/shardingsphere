@@ -19,11 +19,12 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.projection
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
@@ -83,5 +84,37 @@ public final class ProjectionUtils {
             return functionExpression.replace(" ", "").toUpperCase();
         }
         return functionExpression;
+    }
+    
+    /**
+     * Get column name from expression.
+     * 
+     * @param expression expression
+     * @param databaseType database type
+     * @return column name
+     */
+    public static String getColumnNameFromExpression(final String expression, final DatabaseType databaseType) {
+        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
+            return "?column?";
+        }
+        if (databaseType instanceof OracleDatabaseType) {
+            return expression.replace(" ", "").toUpperCase();
+        }
+        return expression;
+    }
+    
+    /**
+     * Get column name from subquery segment.
+     * 
+     * @param subquerySegment subquery segment
+     * @param databaseType database type
+     * @return column name
+     */
+    public static String getColumnNameFromSubquery(final SubqueryProjectionSegment subquerySegment, final DatabaseType databaseType) {
+        // TODO support postgresql subquery projection
+        if (databaseType instanceof OracleDatabaseType) {
+            return subquerySegment.getText().replace(" ", "").toUpperCase();
+        }
+        return subquerySegment.getText();
     }
 }
