@@ -20,11 +20,11 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -55,6 +55,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -71,7 +72,6 @@ class DriverDatabaseConnectionManagerTest {
         databaseConnectionManager = new DriverDatabaseConnectionManager(DefaultDatabase.LOGIC_NAME, mockContextManager());
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private ContextManager mockContextManager() throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = mockDataSourceMap();
@@ -79,11 +79,11 @@ class DriverDatabaseConnectionManagerTest {
         MetaDataPersistService persistService = mockMetaDataPersistService();
         when(result.getMetaDataContexts().getPersistService()).thenReturn(persistService);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
-                new ShardingSphereRuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class, RETURNS_DEEP_STUBS))));
+                new RuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class, RETURNS_DEEP_STUBS))));
         when(result.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(
                 Collections.singletonList(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_version")));
         Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();
-        when(DataSourcePoolCreator.create((Map) any())).thenReturn(trafficDataSourceMap);
+        when(DataSourcePoolCreator.create(any(), eq(true))).thenReturn(trafficDataSourceMap);
         return result;
     }
     
@@ -99,7 +99,7 @@ class DriverDatabaseConnectionManagerTest {
     private MetaDataPersistService mockMetaDataPersistService() {
         MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
         when(result.getDataSourceUnitService().load(DefaultDatabase.LOGIC_NAME))
-                .thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new DataSourceProperties(HikariDataSource.class.getName(), createProperties())));
+                .thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new DataSourcePoolProperties(HikariDataSource.class.getName(), createProperties())));
         when(result.getGlobalRuleService().loadUsers()).thenReturn(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
         return result;
     }

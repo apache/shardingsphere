@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.algorithm.audit;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.audit.exception.SQLAuditException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
@@ -37,7 +37,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithm implements Shardi
     
     @Override
     public void check(final SQLStatementContext sqlStatementContext, final List<Object> params,
-                      final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+                      final Grantee grantee, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             ShardingRule rule = database.getRuleMetaData().getSingleRule(ShardingRule.class);
             if (sqlStatementContext.getTablesContext().getTableNames().stream().anyMatch(rule::isShardingTable)) {

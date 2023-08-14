@@ -30,12 +30,6 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>example-spring-mybatis</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        
-        <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
         </dependency>

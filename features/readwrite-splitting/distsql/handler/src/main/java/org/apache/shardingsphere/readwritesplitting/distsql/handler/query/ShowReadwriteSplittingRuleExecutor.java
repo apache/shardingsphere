@@ -106,7 +106,7 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
     }
     
     @Override
-    public String getType() {
-        return ShowReadwriteSplittingRulesStatement.class.getName();
+    public Class<ShowReadwriteSplittingRulesStatement> getType() {
+        return ShowReadwriteSplittingRulesStatement.class;
     }
 }

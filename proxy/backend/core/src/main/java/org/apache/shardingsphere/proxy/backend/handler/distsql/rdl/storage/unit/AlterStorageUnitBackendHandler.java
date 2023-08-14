@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
@@ -30,8 +30,8 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorage
 import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -56,21 +56,21 @@ public final class AlterStorageUnitBackendHandler extends StorageUnitDefinitionB
     
     private final DatabaseType databaseType;
     
-    private final DataSourcePropertiesValidateHandler validateHandler;
+    private final DataSourcePoolPropertiesValidateHandler validateHandler;
     
     public AlterStorageUnitBackendHandler(final AlterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
         databaseType = connectionSession.getProtocolType();
-        validateHandler = new DataSourcePropertiesValidateHandler();
+        validateHandler = new DataSourcePoolPropertiesValidateHandler();
     }
     
     @Override
     public ResponseHeader execute(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
-        Map<String, DataSourceProperties> dataSourcePropsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
-        validateHandler.validate(dataSourcePropsMap);
+        Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
+        validateHandler.validate(propsMap);
         try {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterStorageUnits(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().alterStorageUnits(databaseName, propsMap);
         } catch (final SQLException | ShardingSphereExternalException ex) {
             log.error("Alter storage unit failed", ex);
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
@@ -128,7 +128,7 @@ public final class AlterStorageUnitBackendHandler extends StorageUnitDefinitionB
             port = String.valueOf(segmentJdbcUrl.getPort());
             database = segmentJdbcUrl.getDatabase();
         }
-        String url = String.valueOf(DataSourcePropertiesCreator.create(dataSource).getConnectionPropertySynonyms().getStandardProperties().get("url"));
+        String url = String.valueOf(DataSourcePoolPropertiesCreator.create(dataSource).getConnectionPropertySynonyms().getStandardProperties().get("url"));
         JdbcUrl dataSourceJdbcUrl = new StandardJdbcUrlParser().parse(url);
         return Objects.equals(hostName, dataSourceJdbcUrl.getHostname()) && Objects.equals(port, String.valueOf(dataSourceJdbcUrl.getPort()))
                 && Objects.equals(database, dataSourceJdbcUrl.getDatabase());

@@ -1034,8 +1034,18 @@
                             <from start-index="59" stop-index="72">
                                 <simple-table name="people_demo2" alias="q" start-index="59" stop-index="72" />
                             </from>
-                            <projections start-index="45" stop-index="52">
-                                <expression-projection text="VALUE(q)" start-index="45" stop-index="52" />
+                            <projections start-index="45" stop-index="52" literal-start-index="45" literal-stop-index="52">
+                                <expression-projection text="VALUE(q)" start-index="45" stop-index="52" literal-start-index="45" literal-stop-index="52">
+                                    <literalText>VALUE(q)</literalText>
+                                    <expr>
+                                        <function function-name="VALUE" text="VALUE(q)" start-index="45" stop-index="52" literal-start-index="45" literal-stop-index="52">
+                                            <parameter>
+                                                <column name="q" start-index="51" stop-index="51" literal-start-index="51" literal-stop-index="51" />
+                                            </parameter>
+                                            <literalText>VALUE(q)</literalText>
+                                        </function>
+                                    </expr>
+                                </expression-projection>
                             </projections>
                             <where start-index="74" stop-index="112">
                                 <expr>
@@ -1169,6 +1179,96 @@
                     <right>
                         <literal-expression value="1" start-index="76" stop-index="76" />
                         <parameter-marker-expression parameter-index="1" start-index="69" stop-index="69" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+
+    <update sql-case-id="update_with_translate_function">
+        <table start-index="7" stop-index="19">
+            <simple-table name="translate_tab" start-index="7" stop-index="19" />
+        </table>
+        <set start-index="21" stop-index="70">
+            <assignment start-index="21" stop-index="70" >
+                <column name="char_col" start-index="25" stop-index="32" />
+                <assignment-value>
+                    <function function-name="TRANSLATE" text="TRANSLATE (nchar_col USING CHAR_CS)" start-index="36" stop-index="70">
+                        <parameter>
+                            <column name="nchar_col" start-index="47" stop-index="55" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="CHAR_CS" start-index="63" stop-index="69" />
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_with_dot_column_name">
+        <table start-index="7" stop-index="15">
+            <simple-table name="employees" start-index="7" stop-index="15" />
+        </table>
+        <set start-index="17" stop-index="40">
+            <assignment start-index="17" stop-index="40">
+                <column name="salary" start-index="21" stop-index="26" />
+            </assignment>
+        </set>
+        <where start-index="43" stop-index="76">
+            <expr>
+                <between-expression start-index="49" stop-index="76">
+                    <left>
+                        <column start-index="49" stop-index="59" name="employee_id" />
+                    </left>
+                    <between-expr>
+                        <literal-expression start-index="69" stop-index="69" value="1" />
+                    </between-expr>
+                    <and-expr>
+                        <literal-expression start-index="75" stop-index="76" value="10" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+    </update>
+    
+    <update sql-case-id="update_with_set_value_clause">
+        <table start-index="7" stop-index="9">
+            <simple-table name="ot1" start-index="7" stop-index="9" />
+        </table>
+        <set start-index="11" stop-index="35">
+            <assignment start-index="11" stop-index="35">
+                <column name="x" start-index="21" stop-index="25">
+                    <owner name="ot1" start-index="21" stop-index="23" />
+                </column>
+                <assignment-value>
+                    <function start-index="30" stop-index="35" function-name="t1" text="t1(20)">
+                        <parameter>
+                            <literal-expression value="20" start-index="33" stop-index="34" />
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="37" stop-index="63">
+            <expr>
+                <binary-operation-expression start-index="43" stop-index="63">
+                    <left>
+                        <function start-index="43" stop-index="54" function-name="VALUE" text="VALUE(ot1.x)">
+                            <parameter>
+                                <column start-index="49" stop-index="53" name="x">
+                                    <owner start-index="49" stop-index="51" name="ot1" />
+                                </column>
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <function start-index="58" stop-index="63" function-name="t1" text="t1(10)">
+                            <parameter>
+                                <literal-expression value="10" start-index="61" stop-index="62" />
+                            </parameter>
+                        </function>
                     </right>
                 </binary-operation-expression>
             </expr>

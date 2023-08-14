@@ -26,8 +26,8 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUn
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -94,7 +94,7 @@ class DistSQLBackendHandlerFactoryTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
         when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
-        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         return result;
     }
     
@@ -119,7 +119,7 @@ class DistSQLBackendHandlerFactoryTest {
     
     @Test
     void assertExecuteShardingTableRuleContext() throws SQLException {
-        when(ProxyContext.getInstance().getDatabase("foo_db").getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        when(ProxyContext.getInstance().getDatabase("foo_db").getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         assertThat(RDLBackendHandlerFactory.newInstance(mock(CreateShardingTableRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
@@ -211,8 +211,8 @@ class DistSQLBackendHandlerFactoryTest {
     private void mockShardingSphereRuleMetaData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getResourceMetaData()).thenReturn(mock(ShardingSphereResourceMetaData.class));
-        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(database.getResourceMetaData()).thenReturn(mock(ResourceMetaData.class));
+        RuleMetaData ruleMetaData = mock(RuleMetaData.class);
         ShadowRuleConfiguration ruleConfig = mockShadowRuleConfiguration();
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(ruleConfig));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);

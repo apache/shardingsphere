@@ -46,7 +46,7 @@ public final class ShowTransactionRuleExecutor implements MetaDataRequiredQuerya
     }
     
     @Override
-    public String getType() {
-        return ShowTransactionRuleStatement.class.getName();
+    public Class<ShowTransactionRuleStatement> getType() {
+        return ShowTransactionRuleStatement.class;
     }
 }

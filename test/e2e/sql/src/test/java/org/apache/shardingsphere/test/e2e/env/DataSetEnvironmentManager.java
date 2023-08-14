@@ -60,7 +60,7 @@ import java.util.concurrent.Future;
 public final class DataSetEnvironmentManager {
     
     // TODO ExecutorEngine.execute and callback
-    private static final ExecutorServiceManager EXECUTOR_SERVICE_MANAGER = ExecutorEngine.createExecutorEngineWithCPU().getExecutorServiceManager();
+    private static final ExecutorServiceManager EXECUTOR_SERVICE_MANAGER = ExecutorEngine.createExecutorEngineWithSize(Runtime.getRuntime().availableProcessors() * 2 - 1).getExecutorServiceManager();
     
     private static final String DATA_COLUMN_DELIMITER = ", ";
     

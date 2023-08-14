@@ -50,7 +50,7 @@ public final class PipelineMetaDataNodeWatcher {
     
     private PipelineMetaDataNodeWatcher(final PipelineContextKey contextKey) {
         listenerMap.putAll(ShardingSphereServiceLoader.getServiceInstances(PipelineMetaDataChangedEventHandler.class)
-                .stream().collect(Collectors.toMap(PipelineMetaDataChangedEventHandler::getKeyPattern, each -> each, (key, value) -> value)));
+                .stream().collect(Collectors.toMap(PipelineMetaDataChangedEventHandler::getKeyPattern, each -> each)));
         PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).watch(DataPipelineConstants.DATA_PIPELINE_ROOT, this::dispatchEvent);
     }
     

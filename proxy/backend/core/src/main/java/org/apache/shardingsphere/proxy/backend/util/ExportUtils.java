@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -83,20 +83,20 @@ public final class ExportUtils {
     }
     
     private static void appendDataSourceConfigurations(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
-        if (database.getResourceMetaData().getDataSourcePropsMap().isEmpty()) {
+        if (database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePoolPropertiesMap().isEmpty()) {
             return;
         }
         stringBuilder.append("dataSources:").append(System.lineSeparator());
-        for (Entry<String, DataSourceProperties> entry : database.getResourceMetaData().getDataSourcePropsMap().entrySet()) {
+        for (Entry<String, DataSourcePoolProperties> entry : database.getResourceMetaData().getStorageUnitMetaData().getDataSourcePoolPropertiesMap().entrySet()) {
             appendDataSourceConfiguration(entry.getKey(), entry.getValue(), stringBuilder);
         }
     }
     
-    private static void appendDataSourceConfiguration(final String name, final DataSourceProperties dataSourceProps, final StringBuilder stringBuilder) {
+    private static void appendDataSourceConfiguration(final String name, final DataSourcePoolProperties props, final StringBuilder stringBuilder) {
         stringBuilder.append("  ").append(name).append(':').append(System.lineSeparator());
-        dataSourceProps.getConnectionPropertySynonyms().getStandardProperties()
+        props.getConnectionPropertySynonyms().getStandardProperties()
                 .forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append(System.lineSeparator()));
-        for (Entry<String, Object> entry : dataSourceProps.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
+        for (Entry<String, Object> entry : props.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
             if (null != entry.getValue()) {
                 stringBuilder.append("    ").append(entry.getKey()).append(": ").append(entry.getValue()).append(System.lineSeparator());
             }
@@ -105,7 +105,7 @@ public final class ExportUtils {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static void appendRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs, final StringBuilder stringBuilder) {
-        if (ruleConfigs.isEmpty()) {
+        if (ruleConfigs.isEmpty() || ruleConfigs.stream().allMatch(each -> ((DatabaseRuleConfiguration) each).isEmpty())) {
             return;
         }
         stringBuilder.append("rules:").append(System.lineSeparator());

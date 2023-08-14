@@ -17,6 +17,26 @@
   -->
 
 <sql-parser-test-cases>
+    <alter-table sql-case-id="alter_table_move_tablespace_overflow_tablespace">
+        <table name="admin_docindex" start-index="12" stop-index="25" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_move_nocompress">
+        <table name="admin_iot5" start-index="12" stop-index="21" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_enable_row_movement">
+        <table name="AUD$" start-index="12" stop-index="22">
+            <owner start-index="12" stop-index="17" name="SYSTEM" />
+        </table>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_shrink_space_cascade">
+        <table name="AUD$" start-index="12" stop-index="22">
+            <owner start-index="12" stop-index="17" name="SYSTEM" />
+        </table>
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table">
         <table name="t_log" start-index="12" stop-index="16" />
         <add-column>
@@ -1265,5 +1285,83 @@
 
     <alter-table sql-case-id="alter_table_order_by">
         <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_supplemental_log_group1">
+        <table name="EMPLOYEES" start-index="12" stop-index="23">
+            <owner start-index="12" stop-index="13" name="HR" />
+        </table>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_supplemental_log_group2">
+        <table name="EMPLOYEES" start-index="12" stop-index="23">
+            <owner start-index="12" stop-index="13" name="HR" />
+        </table>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_supplemental_log_group3">
+        <table name="EMPLOYEES" start-index="12" stop-index="23">
+            <owner start-index="12" stop-index="13" name="HR" />
+        </table>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_supplemental_log_data1">
+        <table name="EMPLOYEES" start-index="12" stop-index="23">
+            <owner start-index="12" stop-index="13" name="HR" />
+        </table>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_supplemental_log_data2">
+        <table name="EMPLOYEES" start-index="12" stop-index="23">
+            <owner start-index="12" stop-index="13" name="HR" />
+        </table>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_supplemental_log_data3">
+        <table name="EMPLOYEES" start-index="12" stop-index="23">
+            <owner start-index="12" stop-index="13" name="HR" />
+        </table>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_move">
+        <table name="admin_docindex" start-index="12" stop-index="25" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_move_online">
+        <table name="admin_docindex" start-index="12" stop-index="25" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify">
+        <table name="customers" start-index="12" stop-index="20" />
+        <modify-column>
+            <column-definition start-index="30" stop-index="51">
+                <column start-index="30" stop-index="43" name="online_acct_pw" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_overflow_tablespace">
+        <table name="admin_iot3" start-index="12" stop-index="21" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_overflow">
+        <table name="countries_demo" start-index="12" stop-index="25" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_enable_novalidate_constraint">
+        <table name="dept" start-index="12" stop-index="15" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_encrypt_no_salt">
+        <table name="mytable" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="VARCHAR2" start-index="25" stop-index="74">
+                <column name="online_acct_pw" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_enable_novalidate_primary_key_enable_novalidate_constraint">
+        <table name="mytable" start-index="12" stop-index="18" />
     </alter-table>
 </sql-parser-test-cases>

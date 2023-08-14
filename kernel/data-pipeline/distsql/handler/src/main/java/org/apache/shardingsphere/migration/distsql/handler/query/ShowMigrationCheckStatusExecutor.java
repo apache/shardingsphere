@@ -60,7 +60,7 @@ public final class ShowMigrationCheckStatusExecutor implements QueryableRALExecu
     }
     
     @Override
-    public String getType() {
-        return ShowMigrationCheckStatusStatement.class.getName();
+    public Class<ShowMigrationCheckStatusStatement> getType() {
+        return ShowMigrationCheckStatusStatement.class;
     }
 }

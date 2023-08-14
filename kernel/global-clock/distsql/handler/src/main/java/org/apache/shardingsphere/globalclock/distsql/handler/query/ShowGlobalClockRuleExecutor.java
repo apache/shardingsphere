@@ -45,7 +45,7 @@ public final class ShowGlobalClockRuleExecutor implements MetaDataRequiredQuerya
     }
     
     @Override
-    public String getType() {
-        return ShowGlobalClockRuleStatement.class.getName();
+    public Class<ShowGlobalClockRuleStatement> getType() {
+        return ShowGlobalClockRuleStatement.class;
     }
 }

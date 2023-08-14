@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
 
 import java.io.File;
@@ -85,7 +85,7 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
     }
     
     @Override
-    public String getType() {
-        return ImportMetaDataStatement.class.getName();
+    public Class<ImportMetaDataStatement> getType() {
+        return ImportMetaDataStatement.class;
     }
 }

@@ -71,7 +71,7 @@ public final class MaskConvertRuleConfigurationProvider implements ConvertRuleCo
     }
     
     @Override
-    public String getType() {
-        return MaskRuleConfiguration.class.getName();
+    public Class<MaskRuleConfiguration> getType() {
+        return MaskRuleConfiguration.class;
     }
 }

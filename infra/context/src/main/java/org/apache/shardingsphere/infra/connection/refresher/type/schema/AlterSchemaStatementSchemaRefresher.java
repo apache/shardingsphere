@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.connection.refresher.type.schema;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
@@ -35,7 +36,7 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
     
     @Override
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) {
+                        final String schemaName, final DatabaseType databaseType, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) {
         Optional<String> renameSchemaName = AlterSchemaStatementHandler.getRenameSchema(sqlStatement).map(optional -> optional.getValue().toLowerCase());
         if (!renameSchemaName.isPresent()) {
             return;
@@ -45,7 +46,7 @@ public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefres
     }
     
     @Override
-    public String getType() {
-        return AlterSchemaStatement.class.getName();
+    public Class<AlterSchemaStatement> getType() {
+        return AlterSchemaStatement.class;
     }
 }

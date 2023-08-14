@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.database.h2.metadata.data.loader;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeLoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  */
 public final class H2MetaDataLoader implements DialectMetaDataLoader {
     
-    private static final String TABLE_META_DATA_NO_ORDER = "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, ORDINAL_POSITION, COALESCE(IS_VISIBLE, FALSE) IS_VISIBLE"
+    private static final String TABLE_META_DATA_NO_ORDER = "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, ORDINAL_POSITION, COALESCE(IS_VISIBLE, FALSE) IS_VISIBLE, IS_NULLABLE"
             + " FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?";
     
     private static final String ORDER_BY_ORDINAL_POSITION = " ORDER BY ORDINAL_POSITION";
@@ -108,7 +108,8 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
         boolean primaryKey = primaryKeys.contains(columnName);
         boolean generated = tableGenerated.getOrDefault(columnName, Boolean.FALSE);
         boolean isVisible = resultSet.getBoolean("IS_VISIBLE");
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, false, isVisible, false);
+        boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, false, isVisible, false, isNullable);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {

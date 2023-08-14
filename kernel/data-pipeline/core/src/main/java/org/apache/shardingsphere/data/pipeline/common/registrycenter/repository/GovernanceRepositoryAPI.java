@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
 
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Collection;
@@ -112,7 +112,7 @@ public interface GovernanceRepositoryAPI {
      * @param checkJobId check job id
      * @return check job result
      */
-    Map<String, DataConsistencyCheckResult> getCheckJobResult(String parentJobId, String checkJobId);
+    Map<String, TableDataConsistencyCheckResult> getCheckJobResult(String parentJobId, String checkJobId);
     
     /**
      * Persist check job result.
@@ -121,7 +121,7 @@ public interface GovernanceRepositoryAPI {
      * @param checkJobId check job id
      * @param checkResultMap check result map
      */
-    void persistCheckJobResult(String parentJobId, String checkJobId, Map<String, DataConsistencyCheckResult> checkResultMap);
+    void persistCheckJobResult(String parentJobId, String checkJobId, Map<String, TableDataConsistencyCheckResult> checkResultMap);
     
     /**
      * Delete check job result.

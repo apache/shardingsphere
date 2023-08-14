@@ -31,13 +31,13 @@ import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.ConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlConsistencyCheckJobItemProgressSwapper;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobCodeRegistry;
+import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.common.pojo.ConsistencyCheckJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.ConsistencyCheckJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.UncompletedConsistencyCheckJobExistsException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
@@ -128,7 +128,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
      * @param parentJobId parent job id
      * @return latest data consistency check result
      */
-    public Map<String, DataConsistencyCheckResult> getLatestDataConsistencyCheckResult(final String parentJobId) {
+    public Map<String, TableDataConsistencyCheckResult> getLatestDataConsistencyCheckResult(final String parentJobId) {
         GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(parentJobId));
         Optional<String> latestCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
         if (!latestCheckJobId.isPresent()) {
@@ -253,7 +253,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         List<ConsistencyCheckJobItemInfo> result = new LinkedList<>();
         ConsistencyCheckJobItemProgress jobItemProgress = progressOptional.get();
         if (!Strings.isNullOrEmpty(jobItemProgress.getIgnoredTableNames())) {
-            Map<String, DataConsistencyCheckResult> checkJobResult = governanceRepositoryAPI.getCheckJobResult(parentJobId, latestCheckJobId.get());
+            Map<String, TableDataConsistencyCheckResult> checkJobResult = governanceRepositoryAPI.getCheckJobResult(parentJobId, latestCheckJobId.get());
             result.addAll(buildIgnoredTableInfo(jobItemProgress.getIgnoredTableNames().split(","), checkJobResult));
         }
         if (Objects.equals(jobItemProgress.getIgnoredTableNames(), jobItemProgress.getTableNames())) {
@@ -263,7 +263,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         return result;
     }
     
-    private List<ConsistencyCheckJobItemInfo> buildIgnoredTableInfo(final String[] ignoredTables, final Map<String, DataConsistencyCheckResult> checkJobResult) {
+    private List<ConsistencyCheckJobItemInfo> buildIgnoredTableInfo(final String[] ignoredTables, final Map<String, TableDataConsistencyCheckResult> checkJobResult) {
         if (null == ignoredTables) {
             return Collections.emptyList();
         }
@@ -272,7 +272,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
             ConsistencyCheckJobItemInfo info = new ConsistencyCheckJobItemInfo();
             info.setTableNames(each);
             info.setCheckSuccess(null);
-            DataConsistencyCheckResult checkResult = checkJobResult.get(each);
+            TableDataConsistencyCheckResult checkResult = checkJobResult.get(each);
             if (null != checkResult && checkResult.isIgnored()) {
                 info.setErrorMessage(checkResult.getIgnoredType().getMessage());
             }
@@ -323,7 +323,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         result.setTableNames(Optional.ofNullable(tableNames).orElse(""));
         result.setCheckBeginTime(DATE_TIME_FORMATTER.format(checkBeginTime));
         result.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
-        Map<String, DataConsistencyCheckResult> checkJobResult = governanceRepositoryAPI.getCheckJobResult(parentJobId, checkJobId);
+        Map<String, TableDataConsistencyCheckResult> checkJobResult = governanceRepositoryAPI.getCheckJobResult(parentJobId, checkJobId);
         if (checkJobResult.isEmpty()) {
             result.setCheckSuccess(null);
         } else {

@@ -219,6 +219,10 @@ DIRECTORY
     : D I R E C T O R Y
     ;
 
+DIRECT_PATH
+    : D I R E C T UL_ P A T H
+    ;
+
 CREDENTIALS
     : C R E D E N T I A L S
     ;
@@ -4376,6 +4380,10 @@ ITERATION_NUMBER
     :I T E R A T I O N UL_ N U M B E R
     ;
 
+INACTIVE_ACCOUNT_TIME
+    : I N A C T I V E UL_ A C C O U N T UL_ T I M E
+    ;
+
 KERBEROS
     :K E R B E R O S
     ;
@@ -5410,6 +5418,10 @@ PASSWORD_REUSE_TIME
 
 PASSWORD_VERIFY_FUNCTION
     :P A S S W O R D UL_ V E R I F Y UL_ F U N C T I O N
+    ;
+
+PASSWORD_ROLLOVER_TIME
+    : P A S S W O R D UL_ R O L L O V E R UL_ T I M E
     ;
 
 PATH
@@ -7714,4 +7726,8 @@ CLUSTER_DISTANCE
 
 PERSISTABLE
     : P E R S I S T A B L E
+    ;
+
+DB_RECOVERY_FILE_DEST_SIZE
+    : D B UL_ R E C O V E R Y UL_ F I L E UL_ D E S T UL_ S I Z E
     ;

@@ -140,7 +140,7 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     }
     
     @Override
-    public String getType() {
-        return DropReadwriteSplittingRuleStatement.class.getName();
+    public Class<DropReadwriteSplittingRuleStatement> getType() {
+        return DropReadwriteSplittingRuleStatement.class;
     }
 }

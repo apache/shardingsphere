@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.binder.context.segment.table;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.subquery.SubqueryTableContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.subquery.engine.SubqueryTableContextEngine;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
@@ -138,26 +137,6 @@ public final class TablesContext {
         return result;
     }
     
-    /**
-     * Find expression table name map by column projection.
-     *
-     * @param columns column segment collection
-     * @param schema schema meta data
-     * @return expression table name map
-     */
-    public Map<String, String> findTableNamesByColumnProjection(final Collection<ColumnProjection> columns, final ShardingSphereSchema schema) {
-        if (1 == simpleTableSegments.size()) {
-            return findTableNameFromSingleTableByColumnProjection(columns);
-        }
-        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        Map<String, Collection<String>> ownerColumnNames = getOwnerColumnNamesByColumnProjection(columns);
-        result.putAll(findTableNameFromSQL(ownerColumnNames));
-        Collection<String> noOwnerColumnNames = getNoOwnerColumnNamesByColumnProjection(columns);
-        result.putAll(findTableNameFromMetaData(noOwnerColumnNames, schema));
-        result.putAll(findTableNameFromSubqueryByColumnProjection(columns, result));
-        return result;
-    }
-    
     private Map<String, String> findTableNameFromSubqueryByColumnSegment(final Collection<ColumnSegment> columns, final Map<String, String> ownerTableNames) {
         if (ownerTableNames.size() == columns.size() || subqueryTables.isEmpty()) {
             return Collections.emptyMap();
@@ -178,38 +157,10 @@ public final class TablesContext {
         return result;
     }
     
-    private Map<String, String> findTableNameFromSubqueryByColumnProjection(final Collection<ColumnProjection> columns, final Map<String, String> ownerTableNames) {
-        if (ownerTableNames.size() == columns.size() || subqueryTables.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        Map<String, String> result = new LinkedHashMap<>(columns.size(), 1F);
-        for (ColumnProjection each : columns) {
-            if (ownerTableNames.containsKey(each.getExpression())) {
-                continue;
-            }
-            Collection<SubqueryTableContext> subqueryTableContexts = each.getOwner().map(optional -> subqueryTables.get(each.getOwner().get().getValue())).orElseGet(Collections::emptyList);
-            for (SubqueryTableContext subqueryTableContext : subqueryTableContexts) {
-                if (subqueryTableContext.getColumnNames().contains(each.getName().getValue())) {
-                    result.put(each.getExpression(), subqueryTableContext.getTableName());
-                }
-            }
-        }
-        return result;
-    }
-    
     private Map<String, String> findTableNameFromSingleTableByColumnSegment(final Collection<ColumnSegment> columns) {
         String tableName = simpleTableSegments.iterator().next().getTableName().getIdentifier().getValue();
         Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (ColumnSegment each : columns) {
-            result.putIfAbsent(each.getExpression(), tableName);
-        }
-        return result;
-    }
-    
-    private Map<String, String> findTableNameFromSingleTableByColumnProjection(final Collection<ColumnProjection> columns) {
-        String tableName = simpleTableSegments.iterator().next().getTableName().getIdentifier().getValue();
-        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (ColumnProjection each : columns) {
             result.putIfAbsent(each.getExpression(), tableName);
         }
         return result;
@@ -222,16 +173,6 @@ public final class TablesContext {
                 continue;
             }
             result.computeIfAbsent(each.getOwner().get().getIdentifier().getValue(), unused -> new LinkedList<>()).add(each.getExpression());
-        }
-        return result;
-    }
-    
-    private Map<String, Collection<String>> getOwnerColumnNamesByColumnProjection(final Collection<ColumnProjection> columns) {
-        Map<String, Collection<String>> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (ColumnProjection each : columns) {
-            if (each.getOwner().isPresent()) {
-                result.computeIfAbsent(each.getOwner().get().getValue(), unused -> new LinkedList<>()).add(each.getExpression());
-            }
         }
         return result;
     }
@@ -275,16 +216,6 @@ public final class TablesContext {
         for (ColumnSegment each : columns) {
             if (!each.getOwner().isPresent()) {
                 result.add(each.getIdentifier().getValue());
-            }
-        }
-        return result;
-    }
-    
-    private Collection<String> getNoOwnerColumnNamesByColumnProjection(final Collection<ColumnProjection> columns) {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        for (ColumnProjection each : columns) {
-            if (!each.getOwner().isPresent()) {
-                result.add(each.getName().getValue());
             }
         }
         return result;

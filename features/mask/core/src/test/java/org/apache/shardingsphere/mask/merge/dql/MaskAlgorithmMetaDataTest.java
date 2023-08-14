@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -55,7 +56,10 @@ class MaskAlgorithmMetaDataTest {
     @Test
     void assertFindMaskAlgorithmByColumnIndex() {
         when(maskRule.findMaskAlgorithm("t_order", "order_id")).thenReturn(Optional.of(TypedSPILoader.getService(MaskAlgorithm.class, "MD5")));
-        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(new ColumnProjection(null, "order_id", null, mock(DatabaseType.class))));
+        ColumnProjection columnProjection = new ColumnProjection(null, "order_id", null, mock(DatabaseType.class));
+        columnProjection.setOriginalColumn(new IdentifierValue("order_id"));
+        columnProjection.setOriginalTable(new IdentifierValue("t_order"));
+        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(columnProjection));
         when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
         Optional<MaskAlgorithm> actual = new MaskAlgorithmMetaData(database, maskRule, selectStatementContext).findMaskAlgorithmByColumnIndex(1);
         assertTrue(actual.isPresent());

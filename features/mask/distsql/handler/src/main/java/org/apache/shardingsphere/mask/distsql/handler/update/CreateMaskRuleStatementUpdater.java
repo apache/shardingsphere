@@ -71,11 +71,6 @@ public final class CreateMaskRuleStatementUpdater implements RuleDefinitionCreat
     }
     
     @Override
-    public String getType() {
-        return CreateMaskRuleStatement.class.getName();
-    }
-    
-    @Override
     public MaskRuleConfiguration buildToBeCreatedRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final CreateMaskRuleStatement sqlStatement) {
         return MaskRuleStatementConverter.convert(sqlStatement.getRules());
     }
@@ -105,5 +100,10 @@ public final class CreateMaskRuleStatementUpdater implements RuleDefinitionCreat
         });
         toBeCreatedRuleConfig.getTables().removeIf(each -> toBeRemovedTables.contains(each.getName()));
         toBeCreatedRuleConfig.getMaskAlgorithms().keySet().removeIf(toBeRemovedAlgorithms::contains);
+    }
+    
+    @Override
+    public Class<CreateMaskRuleStatement> getType() {
+        return CreateMaskRuleStatement.class;
     }
 }

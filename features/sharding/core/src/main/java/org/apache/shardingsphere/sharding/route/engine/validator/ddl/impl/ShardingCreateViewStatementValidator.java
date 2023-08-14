@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.exception.metadata.EngagedViewException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedCreateViewException;
@@ -47,7 +47,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class ShardingCreateViewStatementValidator extends ShardingDDLStatementValidator {
     
-    private final ShardingSphereRuleMetaData globalRuleMetaData;
+    private final RuleMetaData globalRuleMetaData;
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,

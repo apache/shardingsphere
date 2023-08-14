@@ -32,8 +32,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValue;
@@ -86,7 +86,7 @@ public final class EncryptGeneratorFixtureBuilder {
                 new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd_cipher", "standard_encryptor"));
         pwdColumnConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("pwd_assist", "assisted_encryptor"));
         pwdColumnConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("pwd_like", "like_encryptor"));
-        return new EncryptRule(
+        return new EncryptRule("foo_db",
                 new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration("t_user", Collections.singletonList(pwdColumnConfig))), encryptors));
     }
     
@@ -103,8 +103,8 @@ public final class EncryptGeneratorFixtureBuilder {
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status", "pwd"));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereResourceMetaData.class),
-                mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ResourceMetaData.class),
+                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         return new InsertStatementContext(metaData, params, insertStatement, DefaultDatabase.LOGIC_NAME);
     }
     

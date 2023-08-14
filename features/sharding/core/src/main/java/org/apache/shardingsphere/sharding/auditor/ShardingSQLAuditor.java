@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditor;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
@@ -37,7 +37,7 @@ import java.util.List;
 public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
     
     @Override
-    public void audit(final SQLStatementContext sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData,
+    public void audit(final SQLStatementContext sqlStatementContext, final List<Object> params, final Grantee grantee, final RuleMetaData globalRuleMetaData,
                       final ShardingSphereDatabase database, final ShardingRule rule, final HintValueContext hintValueContext) {
         Collection<ShardingAuditStrategyConfiguration> auditStrategies = getShardingAuditStrategies(sqlStatementContext, rule);
         if (auditStrategies.isEmpty()) {

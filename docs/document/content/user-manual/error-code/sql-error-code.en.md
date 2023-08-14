@@ -19,6 +19,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
 | HY004     | 10003       | Invalid format for actual data node \`%s\`.                                    |
 | 42000     | 10004       | Unsupported SQL node conversion for SQL statement \`%s\`.                      |
+| HY000     | 10005       | Column '%s' in field list is ambiguous.                                        |
+| 42S02     | 10006       | Unknown column '%s' in 'field list'.                                           |
 | 42000     | 10010       | Rule does not exist.                                                           |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
@@ -268,7 +270,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt.                                          |
 | 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule.                                              |
 | HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s.                                     |
-| HY004     | 20781       | \`%s\` column's encryptor name \`%s\` does not match encrypt algorithm type \`%s\`.                |
+| HY004     | 20781       | \`%s\` column's encryptor name \`%s\` does not match encrypt algorithm type \`%s\ in database \`%s\`.|
 | 44000     | 20703       | Cipher column of \`%s\` can not be null in database \`%s\`.                                        |
 | 44000     | 20704       | Can not find (STANDARD\|ASSIST_QUERY\|LIKE_QUERY) encryptor in table \`%s\` and column \`%s\`.     |
 | 44000     | 20705       | Assisted query column of \`%s\` can not be null in database \`%s\`.                                |

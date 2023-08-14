@@ -20,13 +20,13 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
@@ -119,13 +119,13 @@ class ImportDatabaseConfigurationUpdaterTest {
         importDatabaseConfigUpdater = new ImportDatabaseConfigurationUpdater();
         YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
         Plugins.getMemberAccessor().set(importDatabaseConfigUpdater.getClass().getDeclaredField("databaseConfigImportExecutor"), importDatabaseConfigUpdater, databaseConfigImportExecutor);
-        Plugins.getMemberAccessor().set(databaseConfigImportExecutor.getClass().getDeclaredField("validateHandler"), databaseConfigImportExecutor, mock(DataSourcePropertiesValidateHandler.class));
+        Plugins.getMemberAccessor().set(databaseConfigImportExecutor.getClass().getDeclaredField("validateHandler"), databaseConfigImportExecutor, mock(DataSourcePoolPropertiesValidateHandler.class));
     }
     
     private ContextManager mockContextManager(final String databaseName) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
