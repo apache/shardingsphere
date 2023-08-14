@@ -3258,19 +3258,19 @@ arryDMLSubClause
     ;
 
 createMaterializedView
-    : CREATE MATERIALIZED VIEW materializedViewName
-      (OF typeName )?
-        ( LP_ (scopedTableRefConstraint | mvColumnAlias) (COMMA_ (scopedTableRefConstraint | mvColumnAlias))* RP_ )?
-        ( ON PREBUILT TABLE ( (WITH | WITHOUT) REDUCED PRECISION)?
-        | physicalProperties?  (CACHE | NOCACHE)? parallelClause? buildClause?
-        )
-        ( USING INDEX ( (physicalAttributesClause | TABLESPACE tablespaceName)+ )*
-        | USING NO INDEX
-        )?
-        createMvRefresh?
-        (FOR UPDATE)?
-        ( (DISABLE | ENABLE) QUERY REWRITE )?
-        AS selectSubquery
+    : CREATE MATERIALIZED VIEW materializedViewName (OF typeName )? materializedViewColumnClause? materializedViewPrebuiltClause materializedViewUsingClause? createMvRefresh? (FOR UPDATE)? ( (DISABLE | ENABLE) QUERY REWRITE )? AS selectSubquery
+    ;
+
+materializedViewColumnClause
+    : ( LP_ (scopedTableRefConstraint | mvColumnAlias) (COMMA_ (scopedTableRefConstraint | mvColumnAlias))* RP_ )
+    ;
+
+materializedViewPrebuiltClause
+    : ( ON PREBUILT TABLE ( (WITH | WITHOUT) REDUCED PRECISION)? | physicalProperties?  (CACHE | NOCACHE)? parallelClause? buildClause?)
+    ;
+
+materializedViewUsingClause
+    : ( USING INDEX ( (physicalAttributesClause | TABLESPACE tablespaceName)+ )* | USING NO INDEX)
     ;
 
 rowLimitingClause
@@ -3661,19 +3661,11 @@ mvColumnAlias
     ;
 
 createMvRefresh
-    : ( NEVER REFRESH
-      | REFRESH
-         ( (FAST | COMPLETE | FORCE)
-         | ON (DEMAND | COMMIT)
-         | (START WITH | NEXT)
-         | WITH (PRIMARY KEY | ROWID)
-         | USING
-             ( DEFAULT (MASTER | LOCAL)? ROLLBACK SEGMENT
-             | (MASTER | LOCAL)? ROLLBACK SEGMENT rb_segment=REGULAR_ID
-             )
-         | USING (ENFORCED | TRUSTED) CONSTRAINTS
-         )+
-      )
+    : ( NEVER REFRESH | REFRESH createMvRefreshOptions+)
+    ;
+
+createMvRefreshOptions
+    : ( (FAST | COMPLETE | FORCE) | ON (DEMAND | COMMIT) | (START WITH | NEXT) | WITH (PRIMARY KEY | ROWID) | USING ( DEFAULT (MASTER LOCAL)? ROLLBACK SEGMENT | (MASTER | LOCAL)? ROLLBACK SEGMENT rb_segment=REGULAR_ID ) | USING (ENFORCED | TRUSTED) CONSTRAINTS)
     ;
 
 quotedString
@@ -3687,26 +3679,11 @@ buildClause
     ;
 
 createMaterializedViewLog
-    : CREATE MATERIALIZED VIEW LOG ON tableName
-        ( ( physicalAttributesClause
-          | TABLESPACE tablespaceName
-          | loggingClause
-          | (CACHE | NOCACHE)
-          )+
-         )?
-        parallelClause?
-        ( WITH
-           ( COMMA_?
-             ( OBJECT ID
-             | PRIMARY KEY
-             | ROWID
-             | SEQUENCE
-             | COMMIT SCN
-             )
-           )*
-           (LP_ ( COMMA_? identifier )+ RP_ newViewValuesClause? )?
-           mvLogPurgeClause?
-        )*
+    : CREATE MATERIALIZED VIEW LOG ON tableName materializedViewLogAttribute? parallelClause? ( WITH ( COMMA_? ( OBJECT ID | PRIMARY KEY | ROWID | SEQUENCE | COMMIT SCN ) )* (LP_ ( COMMA_? identifier )+ RP_ newViewValuesClause? )? mvLogPurgeClause? )*
+    ;
+
+materializedViewLogAttribute
+    : ( ( physicalAttributesClause | TABLESPACE tablespaceName | loggingClause | (CACHE | NOCACHE))+ )
     ;
 
 newViewValuesClause
