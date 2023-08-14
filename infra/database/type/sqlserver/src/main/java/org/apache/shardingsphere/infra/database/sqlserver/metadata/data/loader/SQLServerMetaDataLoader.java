@@ -125,23 +125,25 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
         Map<String, Map<String, IndexMetaData>> tableToIndex = new HashMap<>();
-        try (Connection connection = dataSource.getConnection(); 
-             PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames)); 
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-            while (resultSet.next()) {
-                String indexName = resultSet.getString("INDEX_NAME");
-                String tableName = resultSet.getString("TABLE_NAME");
-                if (!tableToIndex.containsKey(tableName)) {
-                    tableToIndex.put(tableName, new HashMap<>());
-                }
-                Map<String, IndexMetaData> indexMap = tableToIndex.get(tableName);
-                if (indexMap.containsKey(indexName)) {
-                    indexMap.get(indexName).getColumns().add(resultSet.getString("COLUMN_NAME"));
-                } else {
-                    IndexMetaData indexMetaData = new IndexMetaData(indexName);
-                    indexMetaData.getColumns().add(resultSet.getString("COLUMN_NAME"));
-                    indexMetaData.setUnique("1".equals(resultSet.getString("IS_UNIQUE")));
-                    indexMap.put(indexName, indexMetaData);
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String indexName = resultSet.getString("INDEX_NAME");
+                    String tableName = resultSet.getString("TABLE_NAME");
+                    if (!tableToIndex.containsKey(tableName)) {
+                        tableToIndex.put(tableName, new HashMap<>());
+                    }
+                    Map<String, IndexMetaData> indexMap = tableToIndex.get(tableName);
+                    if (indexMap.containsKey(indexName)) {
+                        indexMap.get(indexName).getColumns().add(resultSet.getString("COLUMN_NAME"));
+                    } else {
+                        IndexMetaData indexMetaData = new IndexMetaData(indexName);
+                        indexMetaData.getColumns().add(resultSet.getString("COLUMN_NAME"));
+                        indexMetaData.setUnique("1".equals(resultSet.getString("IS_UNIQUE")));
+                        indexMap.put(indexName, indexMetaData);
+                    }
                 }
             }
         }
