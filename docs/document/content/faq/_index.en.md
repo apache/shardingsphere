@@ -7,6 +7,13 @@ chapter = true
 
 ## MODE
 
+### [MODE] What is the difference between standalone mode `Standalone` and `Compatible_Standalone`?
+
+Answer:
+
+The metadata structure was adjusted in version 5.4.0, `Standalone` represents the metadata structure of the new version,
+and `Compatible_Standalone` represents the metadata structure of versions before 5.4.0.
+
 ### [MODE] What is the difference between cluster mode `Cluster` and `Compatible_Cluster`?
 
 Answer:
