@@ -176,4 +176,8 @@
     <sql-case id="alter_table_enable_novalidate_constraint" value="ALTER TABLE dept ENABLE NOVALIDATE CONSTRAINT dname_ukey" db-types="Oracle" />
     <sql-case id="alter_table_add_encrypt_no_salt" value="ALTER TABLE mytable ADD (online_acct_pw VARCHAR2(8) ENCRYPT NO SALT 'NOMAC')" db-types="Oracle" />
     <sql-case id="alter_table_enable_novalidate_primary_key_enable_novalidate_constraint" value="ALTER TABLE mytable ENABLE NOVALIDATE PRIMARY KEY ENABLE NOVALIDATE CONSTRAINT emp_last_name_nn" db-types="Oracle" />
+    <sql-case id="alter_table_modify_partition_coalesce_subpartition" value="ALTER TABLE mytable MODIFY PARTITION us_locations COALESCE SUBPARTITION" db-types="Oracle" />
+    <sql-case id="alter_table_set_subpartition_template1" value="ALTER TABLE mytable SET SUBPARTITION TEMPLATE (SUBPARTITION e TABLESPACE ts1, SUBPARTITION f TABLESPACE ts2, SUBPARTITION g TABLESPACE ts3, SUBPARTITION h TABLESPACE ts4)" db-types="Oracle" />
+    <sql-case id="alter_table_set_subpartition_template2" value="ALTER TABLE emp_sub_template SET SUBPARTITION TEMPLATE()" db-types="Oracle" />
+    <sql-case id="alter_table_modify_default_attributes_for_partition_tablespace" value="ALTER TABLE emp MODIFY DEFAULT ATTRIBUTES FOR PARTITION p1 TABLESPACE ts1" db-types="Oracle" />
 </sql-cases>

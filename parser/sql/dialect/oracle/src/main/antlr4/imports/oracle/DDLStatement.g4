@@ -1274,11 +1274,22 @@ alterSynonym
     ;
 
 alterTablePartitioning
-    : modifyTablePartition
+    : modifyTableDefaultAttrs
+    | setSubpartitionTemplate
+    | modifyTablePartition
     | moveTablePartition
     | addTablePartition
     | coalesceTablePartition
     | dropTablePartition
+    ;
+
+modifyTableDefaultAttrs
+    : MODIFY DEFAULT ATTRIBUTES (FOR partitionExtendedName)? (DEFAULT DIRECTORY directoryName)? deferredSegmentCreation? readOnlyClause? indexingClause? segmentAttributesClause? alterOverflowClause?
+    ( ((LOB LP_ lobItem RP_ | VARRAY varrayType) LP_ lobParameters RP_)+)?
+    ;
+
+setSubpartitionTemplate
+    : SET SUBPARTITION TEMPLATE (LP_ (rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*)? RP_ | hashSubpartitionQuantity)
     ;
 
 modifyTablePartition
@@ -1329,7 +1340,7 @@ addListSubpartition
     ;
 
 coalesceTableSubpartition
-    : COALESCE SUBPARTITION subpartitionName updateIndexClauses? parallelClause? allowDisallowClustering?
+    : COALESCE SUBPARTITION subpartitionName? updateIndexClauses? parallelClause? allowDisallowClustering?
     ;
 
 allowDisallowClustering
