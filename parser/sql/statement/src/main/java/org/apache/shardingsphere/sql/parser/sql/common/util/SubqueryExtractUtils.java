@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSu
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -145,6 +146,9 @@ public final class SubqueryExtractUtils {
         if (expressionSegment instanceof BetweenExpression) {
             extractSubquerySegmentsFromWhere(result, ((BetweenExpression) expressionSegment).getBetweenExpr());
             extractSubquerySegmentsFromWhere(result, ((BetweenExpression) expressionSegment).getAndExpr());
+        }
+        if (expressionSegment instanceof NotExpression) {
+            extractSubquerySegmentsFromWhere(result, ((NotExpression) expressionSegment).getExpression());
         }
     }
 }
