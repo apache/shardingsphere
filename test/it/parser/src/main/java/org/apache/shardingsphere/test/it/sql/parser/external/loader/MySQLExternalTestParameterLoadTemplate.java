@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external.loader;
 
+import org.apache.shardingsphere.test.it.sql.parser.loader.TestParameterLoadTemplate;
 import org.apache.shardingsphere.test.it.sql.parser.loader.ExternalSQLParserTestParameter;
-import org.apache.shardingsphere.test.it.sql.parser.loader.AbstractTestParameterLoader;
-import org.apache.shardingsphere.test.it.sql.parser.loader.strategy.TestParameterLoadStrategy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,19 +27,15 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * External test parameter loader for MySQL.
+ * External test parameter load template for MySQL.
  */
-public final class MySQLExternalTestParameterLoader extends AbstractTestParameterLoader {
+public final class MySQLExternalTestParameterLoadTemplate implements TestParameterLoadTemplate {
     
     private static final int DELIMITER_COMMAND_LENGTH = "DELIMITER".length();
     
-    public MySQLExternalTestParameterLoader(final TestParameterLoadStrategy loadStrategy) {
-        super(loadStrategy);
-    }
-    
     @Override
-    public Collection<ExternalSQLParserTestParameter> createTestParameters(final String sqlCaseFileName, final List<String> sqlCaseFileContent,
-                                                                           final List<String> resultFileContent, final String databaseType, final String reportType) {
+    public Collection<ExternalSQLParserTestParameter> load(final String sqlCaseFileName, final List<String> sqlCaseFileContent,
+                                                           final List<String> resultFileContent, final String databaseType, final String reportType) {
         Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
         List<String> lines = new ArrayList<>();
         int sqlCaseIndex = 1;

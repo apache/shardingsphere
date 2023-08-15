@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.it.sql.parser.loader;
 
 import com.google.common.collect.Lists;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -43,15 +42,17 @@ import java.util.stream.Collectors;
 /**
  * Test parameter loader.
  */
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 @Slf4j
-public abstract class AbstractTestParameterLoader {
+public final class TestParameterLoader {
     
     private static final int DEFAULT_DOWNLOAD_THREADS = 4;
     
     private final ExecutorService executorService = Executors.newFixedThreadPool(DEFAULT_DOWNLOAD_THREADS);
     
     private final TestParameterLoadStrategy loadStrategy;
+    
+    private final TestParameterLoadTemplate loadTemplate;
     
     /**
      * Load test parameters.
@@ -63,7 +64,7 @@ public abstract class AbstractTestParameterLoader {
      * @return loaded test parameters
      */
     @SneakyThrows
-    public final Collection<ExternalSQLParserTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
+    public Collection<ExternalSQLParserTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
         Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
         Map<String, List<String>> sqlCaseFileContents = downloadAllBySummary(sqlCaseURI);
         Map<String, List<String>> resultFileContents = downloadAllBySummary(resultURI);
@@ -71,7 +72,7 @@ public abstract class AbstractTestParameterLoader {
             String fileName = each.getKey();
             List<String> sqlCaseFileContent = each.getValue();
             List<String> resultFileContent = resultFileContents.getOrDefault(fileName, Lists.newArrayList());
-            result.addAll(createTestParameters(fileName, sqlCaseFileContent, resultFileContent, databaseType, reportType));
+            result.addAll(loadTemplate.load(fileName, sqlCaseFileContent, resultFileContent, databaseType, reportType));
         }
         return result;
     }
@@ -84,19 +85,6 @@ public abstract class AbstractTestParameterLoader {
                 .collect(Collectors.toList()));
         return contents;
     }
-    
-    /**
-     * Create test parameters.
-     * 
-     * @param sqlCaseFileName SQL case file name
-     * @param sqlCaseFileContent SQL case file content
-     * @param resultFileContent result file content
-     * @param databaseType database type
-     * @param reportType report type
-     * @return test parameters
-     */
-    public abstract Collection<ExternalSQLParserTestParameter> createTestParameters(String sqlCaseFileName,
-                                                                                    List<String> sqlCaseFileContent, List<String> resultFileContent, String databaseType, String reportType);
     
     private List<String> loadContent(final URI uri) {
         try (
