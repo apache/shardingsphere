@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,9 +49,11 @@ public final class ResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource create(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeChangedPropsMap) {
-        resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().putAll(toBeChangedPropsMap);
+        Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new HashMap<>(resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap());
+        mergedDataSourcePoolPropertiesMap.putAll(toBeChangedPropsMap);
         StorageResourceWithProperties toBeChangedStorageResource = StorageResourceCreator.createStorageResourceWithoutDataSource(toBeChangedPropsMap);
-        return new SwitchingResource(resourceMetaData, createNewStorageResource(resourceMetaData, toBeChangedStorageResource), getStaleDataSources(resourceMetaData, toBeChangedStorageResource));
+        return new SwitchingResource(resourceMetaData, createNewStorageResource(resourceMetaData, toBeChangedStorageResource),
+                getStaleDataSources(resourceMetaData, toBeChangedStorageResource), mergedDataSourcePoolPropertiesMap);
     }
     
     /**
@@ -61,10 +64,11 @@ public final class ResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource createByDropResource(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeDeletedPropsMap) {
-        resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().keySet().removeIf(toBeDeletedPropsMap::containsKey);
+        Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new HashMap<>(resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap());
+        mergedDataSourcePoolPropertiesMap.keySet().removeIf(toBeDeletedPropsMap::containsKey);
         StorageResourceWithProperties toToBeRemovedStorageResource = StorageResourceCreator.createStorageResourceWithoutDataSource(toBeDeletedPropsMap);
         return new SwitchingResource(resourceMetaData, new StorageResource(Collections.emptyMap(), Collections.emptyMap()),
-                getToBeRemovedStaleDataSources(resourceMetaData, toToBeRemovedStorageResource));
+                getToBeRemovedStaleDataSources(resourceMetaData, toToBeRemovedStorageResource), mergedDataSourcePoolPropertiesMap);
     }
     
     /**
@@ -75,15 +79,16 @@ public final class ResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource createByAlterDataSourcePoolProperties(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeChangedPropsMap) {
-        resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().keySet().removeIf(each -> !toBeChangedPropsMap.containsKey(each));
-        resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().putAll(toBeChangedPropsMap);
+        Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new HashMap<>(resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap());
+        mergedDataSourcePoolPropertiesMap.keySet().removeIf(each -> !toBeChangedPropsMap.containsKey(each));
+        mergedDataSourcePoolPropertiesMap.putAll(toBeChangedPropsMap);
         StorageResourceWithProperties toBeChangedStorageResource = StorageResourceCreator.createStorageResourceWithoutDataSource(toBeChangedPropsMap);
         StorageResource staleStorageResource = getStaleDataSources(resourceMetaData, toBeChangedStorageResource);
         staleStorageResource.getStorageNodeDataSources()
                 .putAll(getToBeDeletedDataSources(resourceMetaData.getStorageNodeDataSources(), toBeChangedStorageResource.getStorageNodeDataSources().keySet()));
         staleStorageResource.getStorageUnitNodeMappers().putAll(
                 getToBeDeletedStorageUnitNodeMappers(resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers(), toBeChangedStorageResource.getStorageUnitNodeMappers().keySet()));
-        return new SwitchingResource(resourceMetaData, createNewStorageResource(resourceMetaData, toBeChangedStorageResource), staleStorageResource);
+        return new SwitchingResource(resourceMetaData, createNewStorageResource(resourceMetaData, toBeChangedStorageResource), staleStorageResource, mergedDataSourcePoolPropertiesMap);
     }
     
     private StorageResource createNewStorageResource(final ResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeChangedStorageResource) {

@@ -89,7 +89,7 @@ public final class ExportUtils {
         }
         stringBuilder.append("dataSources:").append(System.lineSeparator());
         for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().entrySet()) {
-            appendDataSourceConfiguration(entry.getKey(), entry.getValue().getDataSourcePoolPropertiesMap(), stringBuilder);
+            appendDataSourceConfiguration(entry.getKey(), entry.getValue().getDataSourcePoolProperties(), stringBuilder);
         }
     }
     

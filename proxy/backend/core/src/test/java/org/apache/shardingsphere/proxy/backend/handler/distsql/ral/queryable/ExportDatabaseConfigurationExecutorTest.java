@@ -85,7 +85,7 @@ class ExportDatabaseConfigurationExecutorTest {
         Map<String, StorageUnit> result = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             StorageUnit storageUnit = mock(StorageUnit.class);
-            when(storageUnit.getDataSourcePoolPropertiesMap()).thenReturn(entry.getValue());
+            when(storageUnit.getDataSourcePoolProperties()).thenReturn(entry.getValue());
             result.put(entry.getKey(), storageUnit);
         }
         return result;
