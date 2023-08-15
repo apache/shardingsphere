@@ -28,13 +28,13 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * External MySQL SQL parser test parameter loader.
+ * External test parameter loader for MySQL.
  */
-public final class ExternalMySQLTestParameterLoader extends AbstractTestParameterLoader<ExternalSQLParserTestParameter> {
+public final class MySQLExternalTestParameterLoader extends AbstractTestParameterLoader<ExternalSQLParserTestParameter> {
     
     private static final int DELIMITER_COMMAND_LENGTH = "DELIMITER".length();
     
-    public ExternalMySQLTestParameterLoader(final TestParameterLoadStrategy loadStrategy) {
+    public MySQLExternalTestParameterLoader(final TestParameterLoadStrategy loadStrategy) {
         super(loadStrategy);
     }
     
