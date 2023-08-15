@@ -36,7 +36,7 @@ class SwitchingResourceTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         StorageResource newStorageResource = new StorageResource(Collections.singletonMap(new StorageNode("new_ds"), new MockedDataSource()), Collections.emptyMap());
         StorageResource staleStorageResource = new StorageResource(Collections.singletonMap(new StorageNode("stale_ds"), staleDataSource), Collections.emptyMap());
-        new SwitchingResource(resourceMetaData, newStorageResource, staleStorageResource).closeStaleDataSources();
+        new SwitchingResource(resourceMetaData, newStorageResource, staleStorageResource, Collections.emptyMap()).closeStaleDataSources();
         verify(resourceMetaData).close(staleDataSource);
     }
 }

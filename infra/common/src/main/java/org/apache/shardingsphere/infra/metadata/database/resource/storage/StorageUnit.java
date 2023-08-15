@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @Getter
 public final class StorageUnit {
     
-    private final DataSourcePoolProperties dataSourcePoolPropertiesMap;
+    private final DataSourcePoolProperties dataSourcePoolProperties;
     
     private final StorageUnitNodeMapper unitNodeMapper;
     
@@ -53,8 +53,8 @@ public final class StorageUnit {
     private final ConnectionProperties connectionProperties;
     
     public StorageUnit(final String databaseName, final Map<StorageNode, DataSource> storageNodeDataSources,
-                       final DataSourcePoolProperties propsMap, final StorageUnitNodeMapper unitNodeMapper) {
-        this.dataSourcePoolPropertiesMap = propsMap;
+                       final DataSourcePoolProperties props, final StorageUnitNodeMapper unitNodeMapper) {
+        this.dataSourcePoolProperties = props;
         this.unitNodeMapper = unitNodeMapper;
         dataSource = getStorageUnitDataSource(storageNodeDataSources, unitNodeMapper);
         Map<StorageNode, DataSource> enabledStorageNodeDataSources = getEnabledStorageNodeDataSources(databaseName, storageNodeDataSources);
