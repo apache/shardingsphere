@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external.loader;
 
-import org.apache.shardingsphere.test.loader.ExternalSQLParserTestParameter;
-import org.apache.shardingsphere.test.loader.AbstractTestParameterLoader;
-import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
+import org.apache.shardingsphere.test.it.sql.parser.loader.ExternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.it.sql.parser.loader.AbstractTestParameterLoader;
+import org.apache.shardingsphere.test.it.sql.parser.loader.strategy.TestParameterLoadStrategy;
 
 import java.util.Collection;
 import java.util.LinkedList;

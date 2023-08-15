@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.loader;
+package org.apache.shardingsphere.test.it.sql.parser.loader.summary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * External SQL parser test parameter.
+ * Assertable file summary.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExternalSQLParserTestParameter {
+public final class AssertableFileSummary {
     
-    private final String sqlCaseId;
+    private final String fileName;
     
-    private final String databaseType;
+    private final String sqlCaseFileAccessURL;
     
-    private final String sql;
-    
-    private final String reportType;
+    private final String resultFileAccessURL;
 }

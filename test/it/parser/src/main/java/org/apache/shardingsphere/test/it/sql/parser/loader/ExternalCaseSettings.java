@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.loader;
+package org.apache.shardingsphere.test.it.sql.parser.loader;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
