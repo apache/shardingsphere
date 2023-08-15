@@ -22,12 +22,14 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.BinaryOperationExpressionBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ExistsSubqueryExpressionBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.InExpressionBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.impl.NotExpressionBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubqueryExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 
 /**
@@ -56,6 +58,9 @@ public final class ExpressionSegmentBinder {
         }
         if (segment instanceof InExpression) {
             return InExpressionBinder.bind((InExpression) segment, metaData, defaultDatabaseName);
+        }
+        if (segment instanceof NotExpression) {
+            return NotExpressionBinder.bind((NotExpression) segment, metaData, defaultDatabaseName);
         }
         // TODO support more ExpressionSegment bind
         return segment;
