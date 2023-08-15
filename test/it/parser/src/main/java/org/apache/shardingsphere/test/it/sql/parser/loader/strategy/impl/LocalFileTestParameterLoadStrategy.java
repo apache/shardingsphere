@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.loader.strategy.impl;
+package org.apache.shardingsphere.test.it.sql.parser.loader.strategy.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
-import org.apache.shardingsphere.test.loader.summary.FileSummary;
+import org.apache.shardingsphere.test.it.sql.parser.loader.strategy.TestParameterLoadStrategy;
+import org.apache.shardingsphere.test.it.sql.parser.loader.summary.FileSummary;
 
 import java.net.URI;
 import java.nio.file.Files;

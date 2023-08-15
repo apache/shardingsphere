@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.loader.summary;
+package org.apache.shardingsphere.test.it.sql.parser.loader.strategy;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.it.sql.parser.loader.summary.FileSummary;
+
+import java.net.URI;
+import java.util.Collection;
 
 /**
- * File summary.
+ * Test parameter load strategy.
  */
-@RequiredArgsConstructor
-@Getter
-public final class FileSummary {
+public interface TestParameterLoadStrategy {
     
-    private final String fileName;
-    
-    private final String accessURI;
+    /**
+     * Load SQL case file summaries.
+     * 
+     * @param uri URL to be loaded
+     * @return loaded SQL file summaries
+     */
+    Collection<FileSummary> loadSQLCaseFileSummaries(URI uri);
 }

@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.loader.strategy;
+package org.apache.shardingsphere.test.it.sql.parser.loader;
 
-import org.apache.shardingsphere.test.loader.summary.FileSummary;
-
-import java.net.URI;
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Test parameter load strategy.
+ * External SQL parser test parameter.
  */
-public interface TestParameterLoadStrategy {
+@RequiredArgsConstructor
+@Getter
+public final class ExternalSQLParserTestParameter {
     
-    /**
-     * Load SQL case file summaries.
-     * 
-     * @param uri URL to be loaded
-     * @return loaded SQL file summaries
-     */
-    Collection<FileSummary> loadSQLCaseFileSummaries(URI uri);
+    private final String sqlCaseId;
+    
+    private final String databaseType;
+    
+    private final String sql;
+    
+    private final String reportType;
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.env.env;
+package org.apache.shardingsphere.test.it.sql.parser.loader.strategy.impl;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -25,35 +25,35 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Test util environment.
+ * GitHub environment.
  */
 @Getter
-public final class TestUtilEnvironment {
+public final class GitHubEnvironment {
     
-    private static final String SQL_PARSER_EXTERNAL_IT_GITHUB_TOKEN = "test.util.github.token";
+    private static final String TOKEN_KEY = "it.github.token";
     
-    private static final TestUtilEnvironment INSTANCE = new TestUtilEnvironment();
+    private static final GitHubEnvironment INSTANCE = new GitHubEnvironment();
     
     private final String githubToken;
     
-    private TestUtilEnvironment() {
+    private GitHubEnvironment() {
         Properties props = loadProperties();
-        githubToken = props.getProperty(SQL_PARSER_EXTERNAL_IT_GITHUB_TOKEN);
+        githubToken = props.getProperty(TOKEN_KEY);
     }
     
     /**
-     * Get instance.
+     * Get GitHub environment instance.
      *
      * @return got instance
      */
-    public static TestUtilEnvironment getInstance() {
+    public static GitHubEnvironment getInstance() {
         return INSTANCE;
     }
     
     @SneakyThrows(IOException.class)
     private Properties loadProperties() {
         Properties result = new Properties();
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/test-util-env.properties")) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/github-env.properties")) {
             result.load(inputStream);
         }
         for (String each : System.getProperties().stringPropertyNames()) {
