@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Default external SQL parser test parameter loader.
  */
-public final class DefaultExternalTestParameterLoader extends AbstractTestParameterLoader<ExternalSQLParserTestParameter> {
+public final class DefaultExternalTestParameterLoader extends AbstractTestParameterLoader {
     
     public DefaultExternalTestParameterLoader(final TestParameterLoadStrategy loadStrategy) {
         super(loadStrategy);

@@ -30,7 +30,7 @@ import java.util.Objects;
 /**
  * External test parameter loader for MySQL.
  */
-public final class MySQLExternalTestParameterLoader extends AbstractTestParameterLoader<ExternalSQLParserTestParameter> {
+public final class MySQLExternalTestParameterLoader extends AbstractTestParameterLoader {
     
     private static final int DELIMITER_COMMAND_LENGTH = "DELIMITER".length();
     

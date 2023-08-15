@@ -42,12 +42,10 @@ import java.util.stream.Collectors;
 
 /**
  * Test parameter loader.
- * 
- * @param <T> type of test parameter
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
-public abstract class AbstractTestParameterLoader<T> {
+public abstract class AbstractTestParameterLoader {
     
     private static final int DEFAULT_DOWNLOAD_THREADS = 4;
     
@@ -65,8 +63,8 @@ public abstract class AbstractTestParameterLoader<T> {
      * @return loaded test parameters
      */
     @SneakyThrows
-    public Collection<T> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
-        Collection<T> result = new LinkedList<>();
+    public final Collection<ExternalSQLParserTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
+        Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
         Map<String, List<String>> sqlCaseFileContents = downloadAllBySummary(sqlCaseURI);
         Map<String, List<String>> resultFileContents = downloadAllBySummary(resultURI);
         for (Entry<String, List<String>> each : sqlCaseFileContents.entrySet()) {
@@ -97,7 +95,8 @@ public abstract class AbstractTestParameterLoader<T> {
      * @param reportType report type
      * @return test parameters
      */
-    public abstract Collection<T> createTestParameters(String sqlCaseFileName, List<String> sqlCaseFileContent, List<String> resultFileContent, String databaseType, String reportType);
+    public abstract Collection<ExternalSQLParserTestParameter> createTestParameters(String sqlCaseFileName,
+                                                                                    List<String> sqlCaseFileContent, List<String> resultFileContent, String databaseType, String reportType);
     
     private List<String> loadContent(final URI uri) {
         try (

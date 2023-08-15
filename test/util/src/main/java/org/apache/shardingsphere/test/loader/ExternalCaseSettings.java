@@ -61,5 +61,5 @@ public @interface ExternalCaseSettings {
      *
      * @return case loader
      */
-    Class<? extends AbstractTestParameterLoader<ExternalSQLParserTestParameter>> caseLoader();
+    Class<? extends AbstractTestParameterLoader> caseLoader();
 }
