@@ -17,49 +17,23 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.loader;
 
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.util.Collection;
+import java.util.List;
 
 /**
- * External SQL case test settings.
+ * Test parameter load template.
  */
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ExternalCaseSettings {
+public interface TestParameterLoadTemplate {
     
     /**
-     * Get to be tested database types.
+     * Load test parameters.
      * 
-     * @return to be tested database types
+     * @param sqlCaseFileName SQL case file name
+     * @param sqlCaseFileContent SQL case file content
+     * @param resultFileContent result file content
+     * @param databaseType database type
+     * @param reportType report type
+     * @return loaded test parameters
      */
-    String value();
-    
-    /**
-     * Get test case URL.
-     * 
-     * @return test case URL
-     */
-    String caseURL();
-    
-    /**
-     * Get test case result URL.
-     * 
-     * @return test case result URL
-     */
-    String resultURL();
-    
-    /**
-     * Report type.
-     * 
-     * @return get report type
-     */
-    String reportType() default "CSV";
-    
-    /**
-     * Get test parameter load template.
-     *
-     * @return test parameter load template
-     */
-    Class<? extends TestParameterLoadTemplate> template();
+    Collection<ExternalSQLParserTestParameter> load(String sqlCaseFileName, List<String> sqlCaseFileContent, List<String> resultFileContent, String databaseType, String reportType);
 }
