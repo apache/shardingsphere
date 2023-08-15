@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.it.sql.parser.external;
 
 import com.google.common.base.Preconditions;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -28,10 +27,11 @@ import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.test.it.sql.parser.external.env.SQLParserExternalITEnvironment;
 import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporter;
 import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporterCreator;
-import org.apache.shardingsphere.test.it.sql.parser.loader.TestParameterLoader;
-import org.apache.shardingsphere.test.it.sql.parser.loader.TestParameterLoadTemplate;
 import org.apache.shardingsphere.test.it.sql.parser.loader.ExternalCaseSettings;
 import org.apache.shardingsphere.test.it.sql.parser.loader.ExternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.it.sql.parser.loader.TestParameterLoadTemplate;
+import org.apache.shardingsphere.test.it.sql.parser.loader.TestParameterLoader;
+import org.apache.shardingsphere.test.it.sql.parser.loader.strategy.TestParameterLoadStrategy;
 import org.apache.shardingsphere.test.it.sql.parser.loader.strategy.impl.GitHubTestParameterLoadStrategy;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -76,17 +76,19 @@ public abstract class ExternalSQLParserIT {
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) throws ReflectiveOperationException {
             ExternalCaseSettings settings = extensionContext.getRequiredTestClass().getAnnotation(ExternalCaseSettings.class);
             Preconditions.checkNotNull(settings, "Annotation ExternalSQLParserITSettings is required.");
             return getTestParameters(settings).stream().map(each -> Arguments.of(each.getSqlCaseId(), each.getDatabaseType(), each.getSql(), each.getReportType()));
         }
         
-        @SneakyThrows
-        private Collection<ExternalSQLParserTestParameter> getTestParameters(final ExternalCaseSettings settings) {
+        private Collection<ExternalSQLParserTestParameter> getTestParameters(final ExternalCaseSettings settings) throws ReflectiveOperationException {
+            TestParameterLoadStrategy loadStrategy = new GitHubTestParameterLoadStrategy();
+            URI sqlCaseURI = URI.create(settings.caseURL());
+            URI resultURI = URI.create(settings.resultURL());
             TestParameterLoadTemplate loadTemplate = settings.template().getConstructor().newInstance();
-            TestParameterLoader loader = new TestParameterLoader(new GitHubTestParameterLoadStrategy(), loadTemplate);
-            return loader.load(URI.create(settings.caseURL()), URI.create(settings.resultURL()), settings.value(), settings.reportType());
+            TestParameterLoader loader = new TestParameterLoader(loadStrategy, loadTemplate);
+            return loader.load(sqlCaseURI, resultURI, settings.value(), settings.reportType());
         }
     }
 }
