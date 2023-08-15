@@ -153,7 +153,7 @@ public final class ConfigurationContextManager {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResource);
-            MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, false, null, ruleConfigs);
+            MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, false, new SwitchingResource(Collections.emptyMap()), ruleConfigs);
             alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.get().getMetaData().getDatabase(databaseName));
             metaDataContexts.set(reloadMetaDataContexts);
             metaDataContexts.get().getMetaData().getDatabase(databaseName).getSchemas().putAll(newShardingSphereSchemas(metaDataContexts.get().getMetaData().getDatabase(databaseName)));
@@ -343,7 +343,8 @@ public final class ConfigurationContextManager {
                 ? metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getConfigurations()
                 : ruleConfigs;
         StorageResource storageResource = getMergedStorageResource(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), switchingResource);
-        DatabaseConfiguration toBeCreatedDatabaseConfig = new DataSourceProvidedDatabaseConfiguration(storageResource, toBeCreatedRuleConfigs, switchingResource.getMergedDataSourcePoolPropertiesMap());
+        DatabaseConfiguration toBeCreatedDatabaseConfig =
+                new DataSourceProvidedDatabaseConfiguration(storageResource, toBeCreatedRuleConfigs, switchingResource.getMergedDataSourcePoolPropertiesMap());
         ShardingSphereDatabase changedDatabase = createChangedDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(), internalLoadMetaData,
                 metaDataContexts.get().getPersistService(), toBeCreatedDatabaseConfig, metaDataContexts.get().getMetaData().getProps(), instanceContext);
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(metaDataContexts.get().getMetaData().getDatabases());
