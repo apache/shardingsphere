@@ -17,6 +17,46 @@
   -->
 
 <sql-parser-test-cases>
+    <alter-table sql-case-id="alter_table_modify1">
+        <table name="employee" start-index="12" stop-index="19" />
+        <modify-column>
+            <column-definition start-index="29" stop-index="46">
+                <column name="first_name" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify2">
+        <table name="employee" start-index="12" stop-index="19" />
+        <modify-column>
+            <column-definition start-index="29" stop-index="51">
+                <column name="first_name" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify3">
+        <table name="employee" start-index="12" stop-index="19" />
+        <modify-column>
+            <column-definition start-index="29" stop-index="46">
+                <column name="first_name" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify4">
+        <table name="employee" start-index="12" stop-index="19" />
+        <modify-column>
+            <column-definition start-index="29" stop-index="54">
+                <column name="first_name" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_no_flashback_archive">
+        <table name="employee" start-index="12" stop-index="19" />
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_move_tablespace_overflow_tablespace">
         <table name="admin_docindex" start-index="12" stop-index="25" />
     </alter-table>
