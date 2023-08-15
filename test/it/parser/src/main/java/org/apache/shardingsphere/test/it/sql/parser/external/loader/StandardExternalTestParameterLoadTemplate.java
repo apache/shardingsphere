@@ -17,26 +17,21 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external.loader;
 
-import org.apache.shardingsphere.test.loader.ExternalSQLParserTestParameter;
-import org.apache.shardingsphere.test.loader.AbstractTestParameterLoader;
-import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
+import org.apache.shardingsphere.test.it.sql.parser.loader.TestParameterLoadTemplate;
+import org.apache.shardingsphere.test.it.sql.parser.loader.ExternalSQLParserTestParameter;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Default external SQL parser test parameter loader.
+ * Standard external test parameter load template.
  */
-public final class DefaultExternalTestParameterLoader extends AbstractTestParameterLoader<ExternalSQLParserTestParameter> {
-    
-    public DefaultExternalTestParameterLoader(final TestParameterLoadStrategy loadStrategy) {
-        super(loadStrategy);
-    }
+public final class StandardExternalTestParameterLoadTemplate implements TestParameterLoadTemplate {
     
     @Override
-    public Collection<ExternalSQLParserTestParameter> createTestParameters(final String sqlCaseFileName, final List<String> sqlCaseFileContent,
-                                                                           final List<String> resultFileContent, final String databaseType, final String reportType) {
+    public Collection<ExternalSQLParserTestParameter> load(final String sqlCaseFileName, final List<String> sqlCaseFileContent,
+                                                           final List<String> resultFileContent, final String databaseType, final String reportType) {
         Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
         String completedSQL = "";
         int sqlCaseEnum = 1;

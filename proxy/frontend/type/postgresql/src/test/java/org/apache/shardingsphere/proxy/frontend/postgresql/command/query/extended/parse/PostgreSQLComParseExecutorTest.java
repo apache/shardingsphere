@@ -135,6 +135,21 @@ class PostgreSQLComParseExecutorTest {
     }
     
     @Test
+    void assetExecuteWithQuestionOperator() throws ReflectiveOperationException {
+        final String rawSQL = "update t_test set enabled = $1 where name ?& $2";
+        final String expectedSQL = "update t_test set enabled = ? where name ??& ?";
+        final String statementId = "S_2";
+        when(parsePacket.getSQL()).thenReturn(rawSQL);
+        when(parsePacket.getStatementId()).thenReturn(statementId);
+        Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        executor.execute();
+        PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
+        assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
+    }
+    
+    @Test
     void assertExecuteWithDistSQL() {
         String sql = "SHOW DIST VARIABLE WHERE NAME = sql_show";
         String statementId = "";

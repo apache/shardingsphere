@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.loader;
+package org.apache.shardingsphere.test.it.sql.parser.loader;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -57,9 +57,9 @@ public @interface ExternalCaseSettings {
     String reportType() default "CSV";
     
     /**
-     * Get case loader.
+     * Get test parameter load template.
      *
-     * @return case loader
+     * @return test parameter load template
      */
-    Class<? extends AbstractTestParameterLoader<ExternalSQLParserTestParameter>> caseLoader();
+    Class<? extends TestParameterLoadTemplate> template();
 }

@@ -28,11 +28,11 @@ import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.test.it.sql.parser.external.env.SQLParserExternalITEnvironment;
 import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporter;
 import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporterCreator;
-import org.apache.shardingsphere.test.loader.AbstractTestParameterLoader;
-import org.apache.shardingsphere.test.loader.ExternalCaseSettings;
-import org.apache.shardingsphere.test.loader.ExternalSQLParserTestParameter;
-import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
-import org.apache.shardingsphere.test.loader.strategy.impl.GitHubTestParameterLoadStrategy;
+import org.apache.shardingsphere.test.it.sql.parser.loader.TestParameterLoader;
+import org.apache.shardingsphere.test.it.sql.parser.loader.TestParameterLoadTemplate;
+import org.apache.shardingsphere.test.it.sql.parser.loader.ExternalCaseSettings;
+import org.apache.shardingsphere.test.it.sql.parser.loader.ExternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.it.sql.parser.loader.strategy.impl.GitHubTestParameterLoadStrategy;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.parallel.Execution;
@@ -84,8 +84,8 @@ public abstract class ExternalSQLParserIT {
         
         @SneakyThrows
         private Collection<ExternalSQLParserTestParameter> getTestParameters(final ExternalCaseSettings settings) {
-            AbstractTestParameterLoader<ExternalSQLParserTestParameter> loader = settings.caseLoader().getConstructor(TestParameterLoadStrategy.class)
-                    .newInstance(new GitHubTestParameterLoadStrategy());
+            TestParameterLoadTemplate loadTemplate = settings.template().getConstructor().newInstance();
+            TestParameterLoader loader = new TestParameterLoader(new GitHubTestParameterLoadStrategy(), loadTemplate);
             return loader.load(URI.create(settings.caseURL()), URI.create(settings.resultURL()), settings.value(), settings.reportType());
         }
     }

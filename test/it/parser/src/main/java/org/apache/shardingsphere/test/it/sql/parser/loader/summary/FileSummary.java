@@ -15,16 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.it.mysql.external;
+package org.apache.shardingsphere.test.it.sql.parser.loader.summary;
 
-import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.MySQLExternalTestParameterLoadTemplate;
-import org.apache.shardingsphere.test.it.sql.parser.loader.ExternalCaseSettings;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@ExternalCaseSettings(value = "MySQL", caseURL = ExternalMySQLParserIT.CASE_URL, resultURL = ExternalMySQLParserIT.RESULT_URL, template = MySQLExternalTestParameterLoadTemplate.class)
-class ExternalMySQLParserIT extends ExternalSQLParserIT {
+/**
+ * File summary.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class FileSummary {
     
-    static final String CASE_URL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t";
+    private final String fileName;
     
-    static final String RESULT_URL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r";
+    private final String accessURI;
 }
