@@ -94,6 +94,7 @@
         <zookeeper.version>3.8.1</zookeeper.version>
         <curator.version>5.4.0</curator.version>
         <jetcd.version>0.7.5</jetcd.version>
+        <grpc.version>1.51.0</grpc.version>
         <apollo-client.version>1.9.0</apollo-client.version>
         
         <elasticjob.version>3.0.3</elasticjob.version>
@@ -404,7 +405,16 @@
                         <groupId>io.netty</groupId>
                         <artifactId>netty-transport-native-unix-common</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>io.grpc</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-all</artifactId>
+                <version>${grpc.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.ctrip.framework.apollo</groupId>
