@@ -29,8 +29,8 @@ import java.util.Map;
  * Data consistency check job item progress.
  */
 // TODO move package
-@Getter
 @RequiredArgsConstructor
+@Getter
 @ToString
 public final class ConsistencyCheckJobItemProgress implements PipelineJobItemProgress {
     
