@@ -31,7 +31,7 @@ public final class RoundRobinTrafficLoadBalanceAlgorithm implements TrafficLoadB
     private final AtomicInteger count = new AtomicInteger(0);
     
     @Override
-    public InstanceMetaData getInstanceId(final String name, final List<InstanceMetaData> instances) {
+    public InstanceMetaData getInstanceMetaData(final String name, final List<InstanceMetaData> instances) {
         return instances.get(Math.abs(count.getAndIncrement()) % instances.size());
     }
     

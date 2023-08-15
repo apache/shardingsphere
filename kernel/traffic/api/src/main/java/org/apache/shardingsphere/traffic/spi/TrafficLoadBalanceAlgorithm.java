@@ -28,11 +28,11 @@ import java.util.List;
 public interface TrafficLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
     
     /**
-     * Get instance definition.
+     * Get instance meta data.
      * 
      * @param name traffic strategy name
-     * @param instances instance collection
-     * @return instance definition
+     * @param instances instances
+     * @return got meta data
      */
-    InstanceMetaData getInstanceId(String name, List<InstanceMetaData> instances);
+    InstanceMetaData getInstanceMetaData(String name, List<InstanceMetaData> instances);
 }
