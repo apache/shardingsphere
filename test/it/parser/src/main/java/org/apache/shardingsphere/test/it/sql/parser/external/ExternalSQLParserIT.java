@@ -84,7 +84,7 @@ public abstract class ExternalSQLParserIT {
         
         @SneakyThrows
         private Collection<ExternalSQLParserTestParameter> getTestParameters(final ExternalCaseSettings settings) {
-            TestParameterLoadTemplate loadTemplate = settings.template().getConstructor(TestParameterLoadTemplate.class).newInstance();
+            TestParameterLoadTemplate loadTemplate = settings.template().getConstructor().newInstance();
             TestParameterLoader loader = new TestParameterLoader(new GitHubTestParameterLoadStrategy(), loadTemplate);
             return loader.load(URI.create(settings.caseURL()), URI.create(settings.resultURL()), settings.value(), settings.reportType());
         }
