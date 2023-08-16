@@ -100,18 +100,18 @@ public final class AgentPluginClassLoader extends ClassLoader {
     
     private static byte[] toByteArray(final InputStream inStream) throws IOException {
         int buffSize = 2048;
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
         try {
             byte[] buffer = new byte[buffSize];
             int len = -1;
             while ((len = inStream.read(buffer)) != -1) {
-                outStream.write(buffer, 0, len);
+                result.write(buffer, 0, len);
             }
         } finally {
-            outStream.close();
+            result.close();
             inStream.close();
         }
-        return outStream.toByteArray();
+        return result.toByteArray();
     }
     
     @Override
