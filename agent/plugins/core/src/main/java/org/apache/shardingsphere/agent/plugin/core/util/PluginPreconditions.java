@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * plugin preconditions.
+ * Plugin preconditions.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PluginPreconditions {
