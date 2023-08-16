@@ -47,7 +47,7 @@ public final class AbsolutePathURLProvider implements ShardingSphereURLProvider 
     public byte[] getContent(final String url, final String urlPrefix) {
         String configuredFile = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
         String file = configuredFile.substring(PATH_TYPE.length());
-        Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere driver URL.");
+        Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere URL.");
         try (
                 InputStream stream = Files.newInputStream(new File(file).toPath());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
