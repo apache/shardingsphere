@@ -33,6 +33,7 @@ import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Error packet factory for PostgreSQL.
@@ -47,8 +48,9 @@ public final class PostgreSQLErrorPacketFactory {
      * @return created instance
      */
     public static PostgreSQLErrorResponsePacket newInstance(final Exception cause) {
-        if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
-            return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
+        Optional<ServerErrorMessage> serverErrorMessage = findServerErrorMessage(cause);
+        if (serverErrorMessage.isPresent()) {
+            return createErrorResponsePacket(serverErrorMessage.get());
         }
         if (cause instanceof SQLException || cause instanceof ShardingSphereSQLException || cause instanceof SQLDialectException) {
             return createErrorResponsePacket(SQLExceptionTransformEngine.toSQLException(cause, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));
@@ -57,8 +59,8 @@ public final class PostgreSQLErrorPacketFactory {
         return createErrorResponsePacketForUnknownException(cause);
     }
     
-    private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final PostgreSQLException.ServerErrorMessage serverErrorMessage) {
-        return PostgreSQLErrorResponsePacket.newBuilder(serverErrorMessage.getSeverity(), serverErrorMessage.getSqlState(), serverErrorMessage.getMessage()).build();
+    private static Optional<ServerErrorMessage> findServerErrorMessage(final Exception cause) {
+        return cause instanceof PSQLException ? Optional.ofNullable(((PSQLException) cause).getServerErrorMessage()) : Optional.empty();
     }
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
@@ -79,6 +81,10 @@ public final class PostgreSQLErrorPacketFactory {
         String sqlState = Strings.isNullOrEmpty(cause.getSQLState()) ? PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue() : cause.getSQLState();
         String message = Strings.isNullOrEmpty(cause.getMessage()) ? cause.toString() : cause.getMessage();
         return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, sqlState, message).build();
+    }
+    
+    private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final PostgreSQLException.ServerErrorMessage serverErrorMessage) {
+        return PostgreSQLErrorResponsePacket.newBuilder(serverErrorMessage.getSeverity(), serverErrorMessage.getSqlState(), serverErrorMessage.getMessage()).build();
     }
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacketForUnknownException(final Exception cause) {
