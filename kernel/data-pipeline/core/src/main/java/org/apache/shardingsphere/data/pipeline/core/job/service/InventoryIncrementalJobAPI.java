@@ -19,14 +19,15 @@ package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -38,6 +39,9 @@ import java.util.Optional;
  * Inventory incremental job API.
  */
 public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
+    
+    @Override
+    InventoryIncrementalProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     /**
      * Alter process configuration.
@@ -98,15 +102,15 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
     
     /**
-     * Do data consistency check.
+     * Build pipeline data consistency checker.
      *
      * @param pipelineJobConfig job configuration
-     * @param tableChecker table data consistency checker
+     * @param processContext process context
      * @param progressContext consistency check job item progress context
-     * @return each logic table check result
+     * @return all logic tables check result
      */
-    Map<String, TableDataConsistencyCheckResult> dataConsistencyCheck(PipelineJobConfiguration pipelineJobConfig, TableDataConsistencyChecker tableChecker,
-                                                                      ConsistencyCheckJobItemProgressContext progressContext);
+    PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(PipelineJobConfiguration pipelineJobConfig, InventoryIncrementalProcessContext processContext,
+                                                                       ConsistencyCheckJobItemProgressContext progressContext);
     
     /**
      * Aggregate data consistency check results.

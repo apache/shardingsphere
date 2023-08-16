@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConf
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
@@ -41,8 +40,6 @@ import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJ
 import org.apache.shardingsphere.data.pipeline.common.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.common.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.common.task.progress.InventoryTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
@@ -78,9 +75,6 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     private final YamlInventoryIncrementalJobItemProgressSwapper jobItemProgressSwapper = new YamlInventoryIncrementalJobItemProgressSwapper();
     
     private final YamlJobOffsetInfoSwapper jobOffsetInfoSwapper = new YamlJobOffsetInfoSwapper();
-    
-    @Override
-    public abstract InventoryIncrementalProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     @Override
     public void alterProcessConfiguration(final PipelineContextKey contextKey, final PipelineProcessConfiguration processConfig) {
@@ -217,19 +211,6 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     private Collection<DatabaseType> getSupportedDatabaseTypes(final Collection<DatabaseType> supportedDatabaseTypes) {
         return supportedDatabaseTypes.isEmpty() ? ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class) : supportedDatabaseTypes;
     }
-    
-    @Override
-    public Map<String, TableDataConsistencyCheckResult> dataConsistencyCheck(final PipelineJobConfiguration jobConfig, final TableDataConsistencyChecker tableChecker,
-                                                                             final ConsistencyCheckJobItemProgressContext progressContext) {
-        String jobId = jobConfig.getJobId();
-        PipelineDataConsistencyChecker dataConsistencyChecker = buildPipelineDataConsistencyChecker(jobConfig, buildPipelineProcessContext(jobConfig), progressContext);
-        Map<String, TableDataConsistencyCheckResult> result = dataConsistencyChecker.check(tableChecker);
-        log.info("job {} with check algorithm '{}' data consistency checker result {}", jobId, tableChecker.getType(), result);
-        return result;
-    }
-    
-    protected abstract PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(PipelineJobConfiguration pipelineJobConfig, InventoryIncrementalProcessContext processContext,
-                                                                                          ConsistencyCheckJobItemProgressContext progressContext);
     
     @Override
     public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, TableDataConsistencyCheckResult> checkResults) {
