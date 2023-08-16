@@ -52,7 +52,7 @@ public final class AlterViewStatementAssert {
         assertView(assertContext, actual, expected);
         assertViewDefinition(assertContext, actual, expected);
         assertSelect(assertContext, actual, expected);
-        assertConstraintDefinitions(assertContext, actual, expected);
+        assertConstraintDefinition(assertContext, actual, expected);
     }
     
     private static void assertView(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {
@@ -78,7 +78,7 @@ public final class AlterViewStatementAssert {
         }
     }
     
-    private static void assertConstraintDefinitions(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {
+    private static void assertConstraintDefinition(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {
         Optional<ConstraintDefinitionSegment> constraintDefinition = AlterViewStatementHandler.getConstraintDefinition(actual);
         if (null == expected.getConstraintDefinition()) {
             assertFalse(constraintDefinition.isPresent(), "actual constraint definition should not exist");
