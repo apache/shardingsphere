@@ -55,8 +55,11 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
     
     private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_SQL_NO_ORDER + " WHERE obj.name IN (%s)" + ORDER_BY_COLUMN_ID;
     
-    private static final String INDEX_META_DATA_SQL = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
-            + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN (%s)";
+    private static final String INDEX_META_DATA_SQL = "SELECT idx.name AS INDEX_NAME, obj.name AS TABLE_NAME, col.name AS COLUMN_NAME,"
+            + " idx.is_unique AS IS_UNIQUE FROM sys.indexes idx"
+            + " LEFT JOIN sys.objects obj ON idx.object_id = obj.object_id"
+            + " LEFT JOIN sys.columns col ON obj.object_id = col.object_id"
+            + " WHERE idx.index_id NOT IN (0, 255) AND obj.name IN (%s) ORDER BY idx.index_id";
     
     private static final int HIDDEN_COLUMN_START_MAJOR_VERSION = 15;
     
@@ -121,7 +124,7 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
-        Map<String, Collection<IndexMetaData>> result = new HashMap<>();
+        Map<String, Map<String, IndexMetaData>> tableToIndex = new HashMap<>();
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
@@ -129,12 +132,24 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
                 while (resultSet.next()) {
                     String indexName = resultSet.getString("INDEX_NAME");
                     String tableName = resultSet.getString("TABLE_NAME");
-                    if (!result.containsKey(tableName)) {
-                        result.put(tableName, new LinkedList<>());
+                    if (!tableToIndex.containsKey(tableName)) {
+                        tableToIndex.put(tableName, new HashMap<>());
                     }
-                    result.get(tableName).add(new IndexMetaData(indexName));
+                    Map<String, IndexMetaData> indexMap = tableToIndex.get(tableName);
+                    if (indexMap.containsKey(indexName)) {
+                        indexMap.get(indexName).getColumns().add(resultSet.getString("COLUMN_NAME"));
+                    } else {
+                        IndexMetaData indexMetaData = new IndexMetaData(indexName);
+                        indexMetaData.getColumns().add(resultSet.getString("COLUMN_NAME"));
+                        indexMetaData.setUnique("1".equals(resultSet.getString("IS_UNIQUE")));
+                        indexMap.put(indexName, indexMetaData);
+                    }
                 }
             }
+        }
+        Map<String, Collection<IndexMetaData>> result = new HashMap<>(tableToIndex.size(), 1);
+        for (Entry<String, Map<String, IndexMetaData>> each : tableToIndex.entrySet()) {
+            result.put(each.getKey(), each.getValue().values());
         }
         return result;
     }
