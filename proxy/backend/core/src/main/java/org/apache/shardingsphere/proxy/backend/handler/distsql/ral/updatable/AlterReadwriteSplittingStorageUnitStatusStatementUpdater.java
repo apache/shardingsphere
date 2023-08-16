@@ -148,7 +148,6 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdater impl
         checkResourceExists(contextManager, databaseName, toBeDisabledStorageUnit);
         checkIsDisabled(replicaResources, disabledStorageUnits, toBeDisabledStorageUnit);
         checkIsReplicaResource(replicaResources, toBeDisabledStorageUnit);
-        checkIsLastResource(replicaResources, toBeDisabledStorageUnit);
     }
     
     private void checkIsDisabled(final Map<String, String> replicaResources, final Collection<String> disabledStorageUnits, final String toBeDisabledStorageUnit) {
@@ -160,15 +159,6 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdater impl
     private void checkIsReplicaResource(final Map<String, String> replicaStorageUnits, final String toBeDisabledStorageUnit) {
         ShardingSpherePreconditions.checkState(replicaStorageUnits.containsKey(toBeDisabledStorageUnit),
                 () -> new UnsupportedSQLOperationException(String.format("`%s` is not used as a read storage unit by any read-write separation rules,cannot be disabled", toBeDisabledStorageUnit)));
-    }
-    
-    private void checkIsLastResource(final Map<String, String> replicaStorageUnits, final String toBeDisabledStorageUnit) {
-        Collection<String> onlyOneResourceRules = getOnlyOneResourceRules(replicaStorageUnits);
-        Collection<String> toBeDisabledResourceRuleNames = Splitter.on(",").trimResults().splitToList(replicaStorageUnits.get(toBeDisabledStorageUnit));
-        onlyOneResourceRules = onlyOneResourceRules.stream().filter(toBeDisabledResourceRuleNames::contains).collect(Collectors.toSet());
-        Collection<String> finalOnlyOneResourceRules = onlyOneResourceRules;
-        ShardingSpherePreconditions.checkState(onlyOneResourceRules.isEmpty(),
-                () -> new UnsupportedSQLOperationException(String.format("`%s` is the last read storage unit in `%s`, cannot be disabled", toBeDisabledStorageUnit, finalOnlyOneResourceRules)));
     }
     
     private Collection<String> getGroupNames(final String toBeDisableStorageUnit, final Map<String, String> replicaStorageUnits,
