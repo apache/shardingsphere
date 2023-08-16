@@ -114,10 +114,6 @@
                         <configuration>
                             <relocations>
                                 <relocation>
-                                    <pattern>com.google.common</pattern>
-                                    <shadedPattern>${shade.package}.com.google.common</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>net.bytebuddy</pattern>
                                     <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
                                 </relocation>
@@ -128,14 +124,6 @@
                                 <relocation>
                                     <pattern>io.prometheus.client</pattern>
                                     <shadedPattern>${shade.package}.io.prometheus.client</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.checkerframework</pattern>
-                                    <shadedPattern>${shade.package}.org.checkerframework</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.google.errorprone.annotations</pattern>
-                                    <shadedPattern>${shade.package}.com.google.errorprone.annotations</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
