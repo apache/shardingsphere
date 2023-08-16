@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -45,8 +44,8 @@ class ColumnValueReaderEngineTest {
             connection.createStatement().executeUpdate("INSERT INTO t_order(order_id, user_id, status, c_year) VALUES (1, 2,'ok', null)");
             ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM t_order");
             resultSet.next();
-            assertThat(((Long) Objects.requireNonNull(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 1))).intValue(), is(1));
-            assertThat(((Long) Objects.requireNonNull(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 2))).intValue(), is(2));
+            assertThat(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 1), is(1));
+            assertThat(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 2), is(2));
             assertThat(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 3), is("ok"));
             assertNull(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 4));
         }

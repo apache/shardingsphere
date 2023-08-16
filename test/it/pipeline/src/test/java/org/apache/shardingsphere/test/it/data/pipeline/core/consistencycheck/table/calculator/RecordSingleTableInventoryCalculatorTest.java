@@ -92,7 +92,7 @@ class RecordSingleTableInventoryCalculatorTest {
         assertTrue(calculateResult.isPresent());
         SingleTableInventoryCalculatedResult actual = calculateResult.get();
         assertTrue(actual.getMaxUniqueKeyValue().isPresent());
-        assertThat(actual.getMaxUniqueKeyValue().get(), is(5L));
+        assertThat(actual.getMaxUniqueKeyValue().get(), is(5));
     }
     
     @Test
@@ -103,7 +103,7 @@ class RecordSingleTableInventoryCalculatorTest {
         assertTrue(calculateResult.isPresent());
         SingleTableInventoryCalculatedResult actual = calculateResult.get();
         assertTrue(actual.getMaxUniqueKeyValue().isPresent());
-        assertThat(actual.getMaxUniqueKeyValue().get(), is(10L));
+        assertThat(actual.getMaxUniqueKeyValue().get(), is(10));
     }
     
     private SingleTableInventoryCalculateParameter generateParameter(final PipelineDataSourceWrapper dataSource, final Object dataCheckPosition) {

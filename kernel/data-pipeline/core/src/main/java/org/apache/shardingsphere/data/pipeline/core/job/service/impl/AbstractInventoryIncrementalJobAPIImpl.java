@@ -118,7 +118,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
                 continue;
             }
             int inventoryFinishedPercentage = 0;
-            if (JobStatus.EXECUTE_INCREMENTAL_TASK == jobItemProgress.getStatus()) {
+            if (JobStatus.EXECUTE_INCREMENTAL_TASK == jobItemProgress.getStatus() || JobStatus.FINISHED == jobItemProgress.getStatus()) {
                 inventoryFinishedPercentage = 100;
             } else if (0 != jobItemProgress.getProcessedRecordsCount() && 0 != jobItemProgress.getInventoryRecordsCount()) {
                 inventoryFinishedPercentage = (int) Math.min(100, jobItemProgress.getProcessedRecordsCount() * 100 / jobItemProgress.getInventoryRecordsCount());
