@@ -20,12 +20,10 @@ package org.apache.shardingsphere.authority.provider.simple;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.registry.AllPermittedAuthorityRegistry;
 import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * All permitted authority registry provider.
@@ -33,7 +31,7 @@ import java.util.Map;
 public final class AllPermittedAuthorityRegistryProvider implements AuthorityRegistryProvider {
     
     @Override
-    public AuthorityRegistry build(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
+    public AuthorityRegistry build(final Collection<ShardingSphereUser> users) {
         return new AllPermittedAuthorityRegistry();
     }
     
