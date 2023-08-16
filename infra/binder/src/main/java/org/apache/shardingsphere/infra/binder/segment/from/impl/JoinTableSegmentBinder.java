@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sub
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -64,8 +66,8 @@ public final class JoinTableSegmentBinder {
         result.setNatural(segment.isNatural());
         result.setJoinType(segment.getJoinType());
         result.setRight(TableSegmentBinder.bind(segment.getRight(), metaData, defaultDatabaseName, databaseType, tableBinderContexts));
-        result.setCondition(segment.getCondition());
-        // TODO bind condition and using column in join table segment
+        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), metaData, defaultDatabaseName, tableBinderContexts, Collections.emptyMap()));
+        // TODO bind using column in join table segment
         result.setUsing(segment.getUsing());
         result.getJoinTableProjectionSegments().addAll(getJoinTableProjectionSegments(result, databaseType, tableBinderContexts));
         return result;

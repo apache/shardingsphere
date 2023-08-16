@@ -66,7 +66,7 @@ public final class ProjectionsSegmentBinder {
             return ShorthandProjectionSegmentBinder.bind((ShorthandProjectionSegment) projectionSegment, boundedTableSegment, tableBinderContexts);
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
-            return SubqueryProjectionSegmentBinder.bind((SubqueryProjectionSegment) projectionSegment, metaData, defaultDatabaseName);
+            return SubqueryProjectionSegmentBinder.bind((SubqueryProjectionSegment) projectionSegment, metaData, defaultDatabaseName, tableBinderContexts);
         }
         // TODO support more ProjectionSegment bind
         return projectionSegment;

@@ -50,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType
 import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
@@ -101,6 +102,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private final Collection<ColumnSegment> columnSegments = new LinkedList<>();
     
+    private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
+    
     private final boolean containsEnhancedTable;
     
     private SubqueryType subqueryType;
@@ -113,6 +116,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         super(sqlStatement);
         extractWhereSegments(whereSegments, sqlStatement);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
+        ExpressionExtractUtils.extractJoinConditions(joinConditions, whereSegments);
         subqueryContexts = createSubqueryContexts(metaData, params, defaultDatabaseName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts, getDatabaseType());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
@@ -354,6 +358,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     @Override
     public Collection<ColumnSegment> getColumnSegments() {
         return columnSegments;
+    }
+    
+    @Override
+    public Collection<BinaryOperationExpression> getJoinConditions() {
+        return joinConditions;
     }
     
     private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SelectStatement selectStatement) {
