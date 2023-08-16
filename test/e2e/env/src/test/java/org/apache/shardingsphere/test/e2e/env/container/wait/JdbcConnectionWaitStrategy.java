@@ -37,7 +37,7 @@ public final class JdbcConnectionWaitStrategy extends AbstractWaitStrategy {
     
     @Override
     protected void waitUntilReady() {
-        Awaitility.await().atMost(startupTimeout.getSeconds(), TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(this::mockRateLimiter);
+        Awaitility.await().ignoreException(RuntimeException.class).atMost(startupTimeout.getSeconds(), TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(this::mockRateLimiter);
     }
     
     private boolean mockRateLimiter() {
