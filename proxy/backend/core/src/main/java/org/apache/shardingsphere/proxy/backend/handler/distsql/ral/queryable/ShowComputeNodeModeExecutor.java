@@ -43,7 +43,7 @@ public final class ShowComputeNodeModeExecutor implements InstanceContextRequire
         PersistRepositoryConfiguration repositoryConfig = instanceContext.getModeConfiguration().getRepository();
         String modeType = instanceContext.getModeConfiguration().getType();
         String repositoryType = null == repositoryConfig ? "" : repositoryConfig.getType();
-        String props = null == repositoryConfig || null == repositoryConfig.getProps() ? "" : new Gson().toJson(repositoryConfig.getProps());
+        String props = null == repositoryConfig || null == repositoryConfig.getProps() || repositoryConfig.getProps().isEmpty() ? "" : new Gson().toJson(repositoryConfig.getProps());
         return Collections.singleton(new LocalDataQueryResultRow(modeType, repositoryType, props));
     }
     

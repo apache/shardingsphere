@@ -131,8 +131,9 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      * Commit pipeline job.
      *
      * @param jobId job ID
+     * @throws SQLException sql exception
      */
-    void commit(String jobId);
+    void commit(String jobId) throws SQLException;
     
     /**
      * Rollback pipeline job.
