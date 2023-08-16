@@ -135,7 +135,7 @@ class PostgreSQLComParseExecutorTest {
     }
     
     @Test
-    void assetExecuteWithQuestionOperator() throws ReflectiveOperationException {
+    void assertExecuteWithQuestionOperator() throws ReflectiveOperationException {
         final String rawSQL = "update t_test set enabled = $1 where name ?& $2";
         final String expectedSQL = "update t_test set enabled = ? where name ??& ?";
         final String statementId = "S_2";
