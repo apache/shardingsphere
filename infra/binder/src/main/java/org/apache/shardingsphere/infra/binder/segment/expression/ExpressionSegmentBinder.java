@@ -59,7 +59,7 @@ public final class ExpressionSegmentBinder {
             return BinaryOperationExpressionBinder.bind((BinaryOperationExpression) segment, metaData, defaultDatabaseName, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof ExistsSubqueryExpression) {
-            return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, metaData, defaultDatabaseName);
+            return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, metaData, defaultDatabaseName, tableBinderContexts);
         }
         if (segment instanceof SubqueryExpressionSegment) {
             return SubqueryExpressionSegmentBinder.bind((SubqueryExpressionSegment) segment, metaData, defaultDatabaseName);

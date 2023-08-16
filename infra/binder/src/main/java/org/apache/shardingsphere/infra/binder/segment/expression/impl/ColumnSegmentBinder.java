@@ -39,7 +39,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColumnSegmentBinder {
     
-    private static final Collection<String> EXCLUDE_BIND_COLUMNS = new LinkedHashSet<>(Arrays.asList("ROWNUM", "ROW_NUMBER"));
+    private static final Collection<String> EXCLUDE_BIND_COLUMNS = new LinkedHashSet<>(Arrays.asList("ROWNUM", "ROW_NUMBER", "ROWNUM_"));
     
     /**
      * Bind column segment with metadata.
