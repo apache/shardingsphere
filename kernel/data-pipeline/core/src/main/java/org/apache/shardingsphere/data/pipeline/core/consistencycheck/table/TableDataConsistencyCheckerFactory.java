@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
-import java.util.Map;
 import java.util.Properties;
 
 /**
- * Pipeline data consistency checker.
+ * Table data consistency checker factory.
  */
-public interface PipelineDataConsistencyChecker extends PipelineCancellable {
+@NoArgsConstructor(access = AccessLevel.NONE)
+public final class TableDataConsistencyCheckerFactory {
     
     /**
-     * Data consistency check.
+     * Build table data consistency checker.
      *
-     * @param algorithmType algorithm type of {@link org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker}
-     * @param algorithmProps algorithm properties of {@link org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker}
-     * @return check results. key is logic table name, value is check result.
+     * @param algorithmType algorithm type
+     * @param algorithmProps algorithm properties
+     * @return table data consistency checker
      */
-    Map<String, TableDataConsistencyCheckResult> check(String algorithmType, Properties algorithmProps);
+    public static TableDataConsistencyChecker newInstance(final String algorithmType, final Properties algorithmProps) {
+        return TypedSPILoader.getService(TableDataConsistencyChecker.class, null == algorithmType ? "DATA_MATCH" : algorithmType, algorithmProps);
+    }
 }
