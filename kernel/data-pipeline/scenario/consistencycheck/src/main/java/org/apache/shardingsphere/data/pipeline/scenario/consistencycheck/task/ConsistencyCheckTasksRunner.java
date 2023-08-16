@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckerFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
@@ -96,7 +97,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             JobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
             InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, jobType.getType());
             PipelineJobConfiguration parentJobConfig = jobAPI.getJobConfiguration(parentJobId);
-            TableDataConsistencyChecker tableChecker = jobAPI.buildTableDataConsistencyChecker(checkJobConfig.getAlgorithmTypeName(), checkJobConfig.getAlgorithmProps());
+            TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(checkJobConfig.getAlgorithmTypeName(), checkJobConfig.getAlgorithmProps());
             ConsistencyCheckTasksRunner.this.tableDataConsistencyChecker.set(tableChecker);
             Map<String, TableDataConsistencyCheckResult> dataConsistencyCheckResult;
             try {

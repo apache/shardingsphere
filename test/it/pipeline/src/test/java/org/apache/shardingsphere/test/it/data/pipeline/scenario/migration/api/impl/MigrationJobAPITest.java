@@ -33,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.Tabl
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckerFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
@@ -79,7 +80,6 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -173,18 +173,12 @@ class MigrationJobAPITest {
     }
     
     @Test
-    void assertBuildTableDataConsistencyCheckerWithNullType() {
-        TableDataConsistencyChecker actual = jobAPI.buildTableDataConsistencyChecker(null, null);
-        assertInstanceOf(TableDataConsistencyChecker.class, actual);
-    }
-    
-    @Test
     void assertDataConsistencyCheck() {
         MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
         initTableData(jobConfig);
         Optional<String> jobId = jobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
-        TableDataConsistencyChecker actual = jobAPI.buildTableDataConsistencyChecker("FIXTURE", null);
+        TableDataConsistencyChecker actual = TableDataConsistencyCheckerFactory.newInstance("FIXTURE", null);
         Map<String, TableDataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobConfig, actual, new ConsistencyCheckJobItemProgressContext(jobId.get(), 0));
         assertThat(checkResultMap.size(), is(1));
         String checkKey = "ds_0.t_order";
