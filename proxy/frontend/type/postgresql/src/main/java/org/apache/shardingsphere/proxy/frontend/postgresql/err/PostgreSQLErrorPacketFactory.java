@@ -35,10 +35,10 @@ import org.postgresql.util.ServerErrorMessage;
 import java.sql.SQLException;
 
 /**
- * ERR packet factory for PostgreSQL.
+ * Error packet factory for PostgreSQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLErrPacketFactory {
+public final class PostgreSQLErrorPacketFactory {
     
     /**
      * Create new instance of PostgreSQL ERR packet.

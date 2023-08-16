@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings("unchecked")
-class PostgreSQLErrPacketFactoryTest {
+class PostgreSQLErrorPacketFactoryTest {
     
     @Test
     void assertPSQLExceptionWithServerErrorMessageNotNull() throws ReflectiveOperationException {
@@ -42,7 +42,7 @@ class PostgreSQLErrPacketFactoryTest {
         when(serverErrorMessage.getSQLState()).thenReturn("sqlState");
         when(serverErrorMessage.getMessage()).thenReturn("message");
         when(serverErrorMessage.getPosition()).thenReturn(1);
-        PostgreSQLErrorResponsePacket actual = PostgreSQLErrPacketFactory.newInstance(new PSQLException(serverErrorMessage));
+        PostgreSQLErrorResponsePacket actual = PostgreSQLErrorPacketFactory.newInstance(new PSQLException(serverErrorMessage));
         Map<Character, String> fields = (Map<Character, String>) Plugins.getMemberAccessor().get(PostgreSQLErrorResponsePacket.class.getDeclaredField("fields"), actual);
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY), is(PostgreSQLMessageSeverityLevel.FATAL));
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE), is("sqlState"));
@@ -52,7 +52,7 @@ class PostgreSQLErrPacketFactoryTest {
     
     @Test
     void assertPSQLExceptionWithServerErrorMessageIsNull() throws ReflectiveOperationException {
-        PostgreSQLErrorResponsePacket actual = PostgreSQLErrPacketFactory.newInstance(new PSQLException("psqlEx", PSQLState.UNEXPECTED_ERROR, new Exception("test")));
+        PostgreSQLErrorResponsePacket actual = PostgreSQLErrorPacketFactory.newInstance(new PSQLException("psqlEx", PSQLState.UNEXPECTED_ERROR, new Exception("test")));
         Map<Character, String> fields = (Map<Character, String>) Plugins.getMemberAccessor().get(PostgreSQLErrorResponsePacket.class.getDeclaredField("fields"), actual);
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE), is(PSQLState.UNEXPECTED_ERROR.getState()));
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE), is("psqlEx"));
@@ -60,7 +60,7 @@ class PostgreSQLErrPacketFactoryTest {
     
     @Test
     void assertRuntimeException() throws ReflectiveOperationException {
-        PostgreSQLErrorResponsePacket actual = PostgreSQLErrPacketFactory.newInstance(new RuntimeException("test"));
+        PostgreSQLErrorResponsePacket actual = PostgreSQLErrorPacketFactory.newInstance(new RuntimeException("test"));
         Map<Character, String> fields = (Map<Character, String>) Plugins.getMemberAccessor().get(PostgreSQLErrorResponsePacket.class.getDeclaredField("fields"), actual);
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE), is("test"));
     }
