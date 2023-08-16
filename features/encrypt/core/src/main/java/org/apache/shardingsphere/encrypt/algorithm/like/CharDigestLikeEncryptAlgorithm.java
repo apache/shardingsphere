@@ -26,7 +26,11 @@ import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
