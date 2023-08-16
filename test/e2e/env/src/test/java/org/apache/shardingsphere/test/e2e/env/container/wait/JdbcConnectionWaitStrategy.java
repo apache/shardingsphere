@@ -37,17 +37,13 @@ public final class JdbcConnectionWaitStrategy extends AbstractWaitStrategy {
     
     @Override
     protected void waitUntilReady() {
-        Awaitility.await().ignoreException(RuntimeException.class).atMost(startupTimeout.getSeconds(), TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(this::checkConnection);
+        Awaitility.await().ignoreExceptions().atMost(startupTimeout.getSeconds(), TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(this::checkConnection);
     }
     
-    private boolean checkConnection() {
+    private boolean checkConnection() throws Exception {
         try (Connection ignored = connectionSupplier.call()) {
             log.info("Container ready.");
             return true;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            throw new RuntimeException("Not Ready yet.", ex);
         }
     }
 }
