@@ -54,7 +54,6 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.util.Collection;
@@ -65,7 +64,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.IntStream;
 
 /**
@@ -218,11 +216,6 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     
     private Collection<DatabaseType> getSupportedDatabaseTypes(final Collection<DatabaseType> supportedDatabaseTypes) {
         return supportedDatabaseTypes.isEmpty() ? ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class) : supportedDatabaseTypes;
-    }
-    
-    @Override
-    public TableDataConsistencyChecker buildTableDataConsistencyChecker(final String algorithmType, final Properties algorithmProps) {
-        return TypedSPILoader.getService(TableDataConsistencyChecker.class, null == algorithmType ? "DATA_MATCH" : algorithmType, algorithmProps);
     }
     
     @Override

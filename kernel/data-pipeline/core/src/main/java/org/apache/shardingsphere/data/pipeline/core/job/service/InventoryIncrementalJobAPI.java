@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Inventory incremental job API.
@@ -97,15 +96,6 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      * @return data consistency check algorithms
      */
     Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
-    
-    /**
-     * Build data consistency checker.
-     *
-     * @param algorithmType algorithm type
-     * @param algorithmProps algorithm properties
-     * @return calculate algorithm
-     */
-    TableDataConsistencyChecker buildTableDataConsistencyChecker(String algorithmType, Properties algorithmProps);
     
     /**
      * Do data consistency check.
