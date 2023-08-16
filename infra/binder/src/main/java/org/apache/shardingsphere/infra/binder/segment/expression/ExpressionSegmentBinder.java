@@ -20,17 +20,22 @@ package org.apache.shardingsphere.infra.binder.segment.expression;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.BinaryOperationExpressionBinder;
+import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ExistsSubqueryExpressionBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.InExpressionBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.NotExpressionBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubqueryExpressionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
+
+import java.util.Map;
 
 /**
  * Expression segment binder.
@@ -44,11 +49,14 @@ public final class ExpressionSegmentBinder {
      * @param segment expression segment
      * @param metaData metaData
      * @param defaultDatabaseName default database name
+     * @param tableBinderContexts table binder contexts
+     * @param outerTableBinderContexts outer table binder contexts
      * @return bounded expression segment
      */
-    public static ExpressionSegment bind(final ExpressionSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+    public static ExpressionSegment bind(final ExpressionSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                         final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (segment instanceof BinaryOperationExpression) {
-            return BinaryOperationExpressionBinder.bind((BinaryOperationExpression) segment, metaData, defaultDatabaseName);
+            return BinaryOperationExpressionBinder.bind((BinaryOperationExpression) segment, metaData, defaultDatabaseName, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof ExistsSubqueryExpression) {
             return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, metaData, defaultDatabaseName);
@@ -57,10 +65,13 @@ public final class ExpressionSegmentBinder {
             return SubqueryExpressionSegmentBinder.bind((SubqueryExpressionSegment) segment, metaData, defaultDatabaseName);
         }
         if (segment instanceof InExpression) {
-            return InExpressionBinder.bind((InExpression) segment, metaData, defaultDatabaseName);
+            return InExpressionBinder.bind((InExpression) segment, metaData, defaultDatabaseName, tableBinderContexts);
         }
         if (segment instanceof NotExpression) {
-            return NotExpressionBinder.bind((NotExpression) segment, metaData, defaultDatabaseName);
+            return NotExpressionBinder.bind((NotExpression) segment, metaData, defaultDatabaseName, tableBinderContexts);
+        }
+        if (segment instanceof ColumnSegment) {
+            return ColumnSegmentBinder.bind((ColumnSegment) segment, tableBinderContexts, outerTableBinderContexts);
         }
         // TODO support more ExpressionSegment bind
         return segment;

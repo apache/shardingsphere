@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 
+import java.util.Collections;
+
 /**
  * Subquery expression segment binder.
  */
@@ -38,7 +40,7 @@ public final class SubqueryExpressionSegmentBinder {
      * @return bounded subquery expression segment
      */
     public static SubqueryExpressionSegment bind(final SubqueryExpressionSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), metaData, defaultDatabaseName);
+        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), metaData, defaultDatabaseName, Collections.emptyMap());
         return new SubqueryExpressionSegment(boundedSubquery);
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.LogicalOperator;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -118,6 +120,21 @@ public final class ExpressionExtractUtils {
             }
             if (each instanceof InExpression) {
                 extractParameterMarkerExpressions(result, ((InExpression) each).getExpressionList());
+            }
+        }
+    }
+    
+    /**
+     * Extract join conditions.
+     * 
+     * @param joinConditions join conditions
+     * @param whereSegments where segments
+     */
+    public static void extractJoinConditions(final Collection<BinaryOperationExpression> joinConditions, final Collection<WhereSegment> whereSegments) {
+        for (WhereSegment each : whereSegments) {
+            if (each.getExpr() instanceof BinaryOperationExpression && ((BinaryOperationExpression) each.getExpr()).getLeft() instanceof ColumnSegment
+                    && ((BinaryOperationExpression) each.getExpr()).getRight() instanceof ColumnSegment) {
+                joinConditions.add((BinaryOperationExpression) each.getExpr());
             }
         }
     }

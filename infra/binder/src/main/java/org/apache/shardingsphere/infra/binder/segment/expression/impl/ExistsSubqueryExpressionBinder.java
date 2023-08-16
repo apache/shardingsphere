@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 
+import java.util.Collections;
+
 /**
  * Exists subquery expression binder.
  */
@@ -38,7 +40,7 @@ public final class ExistsSubqueryExpressionBinder {
      * @return bounded exists subquery expression segment
      */
     public static ExistsSubqueryExpression bind(final ExistsSubqueryExpression segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), metaData, defaultDatabaseName);
+        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), metaData, defaultDatabaseName, Collections.emptyMap());
         ExistsSubqueryExpression result = new ExistsSubqueryExpression(segment.getStartIndex(), segment.getStopIndex(), boundedSubquery);
         result.setNot(segment.isNot());
         return result;

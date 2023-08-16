@@ -29,12 +29,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -140,5 +142,15 @@ class ExpressionExtractUtilsTest {
         List<ExpressionSegment> inExpressions = Collections.singletonList(new InExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("order_id")), listExpression, false));
         List<ParameterMarkerExpressionSegment> actual = ExpressionExtractUtils.getParameterMarkerExpressions(inExpressions);
         assertThat(actual.size(), is(2));
+    }
+    
+    @Test
+    void assertExtractJoinConditions() {
+        Collection<BinaryOperationExpression> actual = new LinkedList<>();
+        BinaryOperationExpression binaryExpression =
+                new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("order_id")), new ColumnSegment(0, 0, new IdentifierValue("order_id")), "=", "");
+        ExpressionExtractUtils.extractJoinConditions(actual, Collections.singleton(new WhereSegment(0, 0, binaryExpression)));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(binaryExpression));
     }
 }

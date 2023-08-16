@@ -49,7 +49,7 @@ class SQLRouteTest {
                             "SELECT a.user_id, a.status from t_order a join t_order_item b on a.order_id = b.order_id join t_product c on b.product_id = c.product_id where a.user_id = ?",
                             Collections.singletonList(1)),
                     Arguments.of("complexTableWithBroadcastTable",
-                            "SELECT user_id, status from t_order a join t_user b on a.user_id = b.user_id join t_product c on a.product_id = c.product_id where a.user_id = ? and b.user_id =?",
+                            "SELECT a.user_id, status from t_order a join t_user b on a.user_id = b.user_id join t_product c on a.product_id = c.product_id where a.user_id = ? and b.user_id =?",
                             Arrays.asList(1, 1)),
                     Arguments.of("insertTable", "INSERT INTO t_order (order_id, user_id) VALUES (?, ?)", Arrays.asList(1, 1)));
         }

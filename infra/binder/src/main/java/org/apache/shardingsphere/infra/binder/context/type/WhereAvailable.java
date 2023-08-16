@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.type;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
 import java.util.Collection;
@@ -40,4 +41,11 @@ public interface WhereAvailable {
      * @return column segments
      */
     Collection<ColumnSegment> getColumnSegments();
+    
+    /**
+     * Get join condition segments.
+     *
+     * @return join condition segments
+     */
+    Collection<BinaryOperationExpression> getJoinConditions();
 }

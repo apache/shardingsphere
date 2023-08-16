@@ -19,10 +19,13 @@ package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+
+import java.util.Map;
 
 /**
  * Subquery segment binder.
@@ -36,10 +39,12 @@ public final class SubquerySegmentBinder {
      * @param segment subquery segment
      * @param metaData metaData
      * @param defaultDatabaseName default database name
+     * @param outerTableBinderContexts outer table binder contexts
      * @return bounded subquery segment
      */
-    public static SubquerySegment bind(final SubquerySegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        SelectStatement boundedSelectStatement = new SelectStatementBinder().bind(segment.getSelect(), metaData, defaultDatabaseName);
+    public static SubquerySegment bind(final SubquerySegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                       final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        SelectStatement boundedSelectStatement = new SelectStatementBinder().bindCorrelateSubquery(segment.getSelect(), metaData, defaultDatabaseName, outerTableBinderContexts);
         SubquerySegment result = new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundedSelectStatement);
         result.setSubqueryType(segment.getSubqueryType());
         return result;

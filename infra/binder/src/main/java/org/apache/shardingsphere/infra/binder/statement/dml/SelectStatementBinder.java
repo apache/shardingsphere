@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -40,13 +41,19 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     @SneakyThrows
     @Override
     public SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap());
+    }
+    
+    @SneakyThrows
+    private SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                 final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         SelectStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
         TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getFrom(), metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), tableBinderContexts);
         result.setFrom(boundedTableSegment);
         result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), metaData, defaultDatabaseName, boundedTableSegment, tableBinderContexts));
         // TODO support other segment bind in select statement
-        sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, metaData, defaultDatabaseName)));
+        sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, metaData, defaultDatabaseName, tableBinderContexts, outerTableBinderContexts)));
         sqlStatement.getGroupBy().ifPresent(result::setGroupBy);
         sqlStatement.getHaving().ifPresent(result::setHaving);
         sqlStatement.getOrderBy().ifPresent(result::setOrderBy);
@@ -59,5 +66,20 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;
+    }
+    
+    /**
+     * Bind correlate subquery select statement.
+     * 
+     * @param sqlStatement subquery select statement
+     * @param metaData meta data
+     * @param defaultDatabaseName default database name
+     * @param outerTableBinderContexts outer select statement table binder contexts
+     * @return bounded correlate subquery select statement
+     */
+    @SneakyThrows
+    public SelectStatement bindCorrelateSubquery(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                                 final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        return bind(sqlStatement, metaData, defaultDatabaseName, outerTableBinderContexts);
     }
 }

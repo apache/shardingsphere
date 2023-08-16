@@ -46,22 +46,36 @@ public final class ColumnSegmentBinder {
      *
      * @param segment table segment
      * @param tableBinderContexts table binder contexts
+     * @param outerTableBinderContexts outer table binder contexts
      * @return bounded column segment
      */
-    public static ColumnSegment bind(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static ColumnSegment bind(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts,
+                                     final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (EXCLUDE_BIND_COLUMNS.contains(segment.getIdentifier().getValue().toUpperCase())) {
             return segment;
         }
         ColumnSegment result = new ColumnSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
         segment.getOwner().ifPresent(result::setOwner);
         Collection<TableSegmentBinderContext> tableBinderContextValues =
-                segment.getOwner().isPresent() ? Collections.singleton(tableBinderContexts.get(segment.getOwner().get().getIdentifier().getValue())) : tableBinderContexts.values();
+                segment.getOwner().isPresent() ? getTableBinderContextByOwner(segment.getOwner().get().getIdentifier().getValue(), tableBinderContexts, outerTableBinderContexts)
+                        : tableBinderContexts.values();
         ColumnSegment inputColumnSegment = findInputColumnSegment(segment.getIdentifier().getValue(), tableBinderContextValues);
         result.setOriginalDatabase(inputColumnSegment.getOriginalDatabase());
         result.setOriginalSchema(inputColumnSegment.getOriginalSchema());
         result.setOriginalTable(null == segment.getOriginalTable() ? inputColumnSegment.getOriginalTable() : segment.getOriginalTable());
         result.setOriginalColumn(null == segment.getOriginalColumn() ? segment.getIdentifier() : segment.getOriginalColumn());
         return result;
+    }
+    
+    private static Collection<TableSegmentBinderContext> getTableBinderContextByOwner(final String owner, final Map<String, TableSegmentBinderContext> tableBinderContexts,
+                                                                                      final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        if (tableBinderContexts.containsKey(owner)) {
+            return Collections.singleton(tableBinderContexts.get(owner));
+        }
+        if (outerTableBinderContexts.containsKey(owner)) {
+            return Collections.singleton(outerTableBinderContexts.get(owner));
+        }
+        return Collections.emptyList();
     }
     
     private static ColumnSegment findInputColumnSegment(final String columnName, final Collection<TableSegmentBinderContext> tableBinderContexts) {
@@ -73,6 +87,7 @@ public final class ColumnSegmentBinder {
                 result = ((ColumnProjectionSegment) projectionSegment).getColumn();
             }
         }
+        // TODO optimize exception message according to different segment
         ShardingSpherePreconditions.checkNotNull(result, () -> new UnknownColumnException(columnName));
         return result;
     }
