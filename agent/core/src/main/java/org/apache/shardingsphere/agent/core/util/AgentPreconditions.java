@@ -47,7 +47,7 @@ public final class AgentPreconditions {
      * @throws NullPointerException null pointer exception
      */
     public static void checkNotNull(final Object reference, final String errorMessage) {
-        if (reference == null) {
+        if (null == reference) {
             throw new NullPointerException(errorMessage);
         }
     }
