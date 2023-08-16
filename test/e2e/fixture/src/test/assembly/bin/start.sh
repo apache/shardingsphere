@@ -27,7 +27,6 @@ if [ ! -d ${LOGS_DIR} ]; then
     mkdir ${LOGS_DIR}
 fi
 
-STDOUT_FILE=${LOGS_DIR}/stdout.log
 EXT_LIB=${DEPLOY_DIR}/ext-lib
 
 CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
@@ -70,6 +69,4 @@ fi
 
 echo "The classpath is ${CLASS_PATH}"
 
-nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
-sleep 1
-echo "Please check the STDOUT file: $STDOUT_FILE"
+exec java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS}
