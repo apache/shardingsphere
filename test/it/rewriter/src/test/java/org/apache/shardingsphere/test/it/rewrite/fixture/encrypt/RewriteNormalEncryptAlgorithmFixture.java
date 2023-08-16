@@ -20,6 +20,9 @@ package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
+import java.util.Collections;
+import java.util.Map;
+
 public final class RewriteNormalEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
     
     @Override
@@ -28,6 +31,11 @@ public final class RewriteNormalEncryptAlgorithmFixture implements StandardEncry
             return null;
         }
         return "encrypt_" + plainValue;
+    }
+    
+    @Override
+    public Map<String, Object> getProps() {
+        return Collections.emptyMap();
     }
     
     @Override
