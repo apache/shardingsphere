@@ -30,8 +30,8 @@ public interface PipelineDataConsistencyChecker extends PipelineCancellable {
     /**
      * Data consistency check.
      *
-     * @param algorithmType algorithm type
-     * @param algorithmProps algorithm properties
+     * @param algorithmType algorithm type of {@link org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker}
+     * @param algorithmProps algorithm properties of {@link org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker}
      * @return check results. key is logic table name, value is check result.
      */
     Map<String, TableDataConsistencyCheckResult> check(String algorithmType, Properties algorithmProps);
