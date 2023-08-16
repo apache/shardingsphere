@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.env.container.wait;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.sql.Connection;
 import java.util.concurrent.Callable;
@@ -37,7 +37,7 @@ public final class JdbcConnectionWaitStrategy extends AbstractWaitStrategy {
     
     @Override
     protected void waitUntilReady() {
-        Unreliables.retryUntilSuccess((int) startupTimeout.getSeconds(), TimeUnit.SECONDS, this::mockRateLimiter);
+        Awaitility.await().atMost(startupTimeout.getSeconds(), TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(this::mockRateLimiter);
     }
     
     private boolean mockRateLimiter() {
