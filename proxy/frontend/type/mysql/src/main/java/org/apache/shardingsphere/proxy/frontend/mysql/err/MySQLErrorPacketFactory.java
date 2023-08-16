@@ -35,7 +35,7 @@ import java.sql.SQLException;
 public final class MySQLErrorPacketFactory {
     
     /**
-     * Create new instance of MySQL ERR packet.
+     * Create new instance of MySQL error packet.
      *
      * @param cause cause
      * @return created instance

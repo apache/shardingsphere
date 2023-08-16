@@ -41,12 +41,11 @@ import java.sql.SQLException;
 public final class PostgreSQLErrorPacketFactory {
     
     /**
-     * Create new instance of PostgreSQL ERR packet.
+     * Create new instance of PostgreSQL error packet.
      * 
      * @param cause cause
      * @return created instance
      */
-    @SuppressWarnings("ConstantConditions")
     public static PostgreSQLErrorResponsePacket newInstance(final Exception cause) {
         if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
             return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
@@ -59,8 +58,7 @@ public final class PostgreSQLErrorPacketFactory {
     }
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final PostgreSQLException.ServerErrorMessage serverErrorMessage) {
-        return PostgreSQLErrorResponsePacket.newBuilder(serverErrorMessage.getSeverity(), serverErrorMessage.getSqlState(), serverErrorMessage.getMessage())
-                .build();
+        return PostgreSQLErrorResponsePacket.newBuilder(serverErrorMessage.getSeverity(), serverErrorMessage.getSqlState(), serverErrorMessage.getMessage()).build();
     }
     
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
@@ -71,7 +69,6 @@ public final class PostgreSQLErrorPacketFactory {
                 .constraintName(serverErrorMessage.getConstraint()).file(serverErrorMessage.getFile()).line(serverErrorMessage.getLine()).routine(serverErrorMessage.getRoutine()).build();
     }
     
-    @SuppressWarnings("ConstantConditions")
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
         if (cause instanceof PostgreSQLException && null != ((PostgreSQLException) cause).getServerErrorMessage()) {
             return createErrorResponsePacket(((PostgreSQLException) cause).getServerErrorMessage());
