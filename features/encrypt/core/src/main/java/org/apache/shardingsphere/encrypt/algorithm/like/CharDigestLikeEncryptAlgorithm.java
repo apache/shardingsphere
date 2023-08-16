@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.algorithm.like;
 
 import com.google.common.base.Strings;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
@@ -25,10 +26,7 @@ import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -53,6 +51,9 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     private static final int MAX_NUMERIC_LETTER_CHAR = 255;
     
+    @Getter
+    private Map<String, Object> props;
+    
     private int delta;
     
     private int mask;
@@ -67,6 +68,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
         mask = createMask(props);
         start = createStart(props);
         charIndexes = createCharIndexes(props);
+        this.props = createProps();
     }
     
     private int createDelta(final Properties props) {
@@ -121,6 +123,15 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
             }
         }
         return result.toString();
+    }
+    
+    private Map<String, Object> createProps() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("delta", delta);
+        result.put("mask", mask);
+        result.put("charIndexes", charIndexes);
+        result.put("start", start);
+        return result;
     }
     
     @Override

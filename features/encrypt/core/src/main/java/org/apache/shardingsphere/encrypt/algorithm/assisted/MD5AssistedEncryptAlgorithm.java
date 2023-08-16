@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.assisted;
 
+import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -30,11 +33,15 @@ public final class MD5AssistedEncryptAlgorithm implements AssistedEncryptAlgorit
     
     private static final String SALT_KEY = "salt";
     
+    @Getter
+    private Map<String, Object> props;
+    
     private String salt;
     
     @Override
     public void init(final Properties props) {
         this.salt = props.getProperty(SALT_KEY, "");
+        this.props = Collections.singletonMap("salt", salt);
     }
     
     @Override

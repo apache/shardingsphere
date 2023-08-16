@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.sm.algorithm;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
@@ -31,10 +32,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.Security;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * SM4 encrypt algorithm.
@@ -61,6 +59,9 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     private static final Set<String> PADDINGS = new HashSet<>(Arrays.asList("PKCS5Padding", "PKCS7Padding"));
     
+    @Getter
+    private Map<String, Object> props;
+    
     private byte[] sm4Key;
     
     private byte[] sm4Iv;
@@ -74,6 +75,7 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
         sm4ModePadding = "SM4/" + sm4Mode + "/" + sm4Padding;
         sm4Key = createSm4Key(props);
         sm4Iv = createSm4Iv(props, sm4Mode);
+        this.props = createProps();
     }
     
     private String createSm4Mode(final Properties props) {
@@ -106,6 +108,14 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
         ShardingSpherePreconditions.checkState(props.containsKey(SM4_PADDING), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null", SM4_PADDING)));
         String result = String.valueOf(props.getProperty(SM4_PADDING)).toUpperCase().replace("PADDING", "Padding");
         ShardingSpherePreconditions.checkState(PADDINGS.contains(result), () -> new EncryptAlgorithmInitializationException("SM4", "Padding must be either PKCS5Padding or PKCS7Padding"));
+        return result;
+    }
+    
+    private Map<String, Object> createProps() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("sm4Key", ByteUtils.toHexString(sm4Key));
+        result.put("sm4Iv", ByteUtils.toHexString(sm4Iv));
+        result.put("sm4ModePadding", sm4ModePadding);
         return result;
     }
     
