@@ -80,7 +80,7 @@ identifier
     ;
 
 unreservedWord
-    : unreservedWord1 | unreservedWord2 | unreservedWord3
+    : unreservedWord1 | unreservedWord2 | unreservedWord3 | capacityUnit
     ;
 
 unreservedWord1
@@ -114,7 +114,7 @@ unreservedWord1
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
     | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | MINUTE | ANY 
-    | LENGTH | SINGLE_C | capacityUnit | TIME_UNIT | TARGET | PUBLIC | ID | STATE | PRIORITY
+    | LENGTH | SINGLE_C | TIME_UNIT | TARGET | PUBLIC | ID | STATE | PRIORITY
     | CONSTRAINT | PRIMARY | FOREIGN | KEY | POSITION | PRECISION | FUNCTION | PROCEDURE | SPECIFICATION | CASE
     | WHEN | CAST | TRIM | SUBSTRING | FULL | INNER | OUTER | LEFT | RIGHT | CROSS
     | USING | FALSE | SAVEPOINT | BODY | CHARACTER | ARRAY | TIME | TIMEOUT | TIMESTAMP | LOCALTIME
