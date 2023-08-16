@@ -22,15 +22,17 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.infra.exception.postgresql.vendor.PostgreSQLVendorError;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.opengauss.util.PSQLException;
+import org.opengauss.util.ServerErrorMessage;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Error packet factory for openGauss.
@@ -45,8 +47,9 @@ public final class OpenGaussErrorPacketFactory {
      * @return created instance
      */
     public static OpenGaussErrorResponsePacket newInstance(final Exception cause) {
-        if (existsServerErrorMessage(cause)) {
-            return new OpenGaussErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
+        Optional<ServerErrorMessage> serverErrorMessage = findServerErrorMessage(cause);
+        if (serverErrorMessage.isPresent()) {
+            return new OpenGaussErrorResponsePacket(serverErrorMessage.get());
         }
         if (cause instanceof SQLException || cause instanceof ShardingSphereSQLException || cause instanceof SQLDialectException) {
             return createErrorResponsePacket(SQLExceptionTransformEngine.toSQLException(cause, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));
@@ -55,8 +58,8 @@ public final class OpenGaussErrorPacketFactory {
         return createErrorResponsePacketForUnknownException(cause);
     }
     
-    private static boolean existsServerErrorMessage(final Exception cause) {
-        return cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage();
+    private static Optional<ServerErrorMessage> findServerErrorMessage(final Exception cause) {
+        return cause instanceof PSQLException ? Optional.ofNullable(((PSQLException) cause).getServerErrorMessage()) : Optional.empty();
     }
     
     private static OpenGaussErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
