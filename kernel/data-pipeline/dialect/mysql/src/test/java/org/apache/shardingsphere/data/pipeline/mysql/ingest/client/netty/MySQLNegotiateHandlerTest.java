@@ -40,10 +40,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.sql.SQLException;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -101,7 +103,8 @@ class MySQLNegotiateHandlerTest {
     
     @Test
     void assertChannelReadErrorPacket() {
-        MySQLErrPacket errorPacket = new MySQLErrPacket(MySQLVendorError.ER_NO_DB_ERROR);
+        MySQLErrPacket errorPacket = new MySQLErrPacket(
+                new SQLException(MySQLVendorError.ER_NO_DB_ERROR.getReason(), MySQLVendorError.ER_NO_DB_ERROR.getSqlState().getValue(), MySQLVendorError.ER_NO_DB_ERROR.getVendorCode()));
         assertThrows(RuntimeException.class, () -> mysqlNegotiateHandler.channelRead(channelHandlerContext, errorPacket));
     }
 }
