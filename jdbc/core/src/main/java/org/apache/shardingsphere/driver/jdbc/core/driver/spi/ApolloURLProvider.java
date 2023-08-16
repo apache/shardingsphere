@@ -22,14 +22,14 @@ import com.ctrip.framework.apollo.ConfigService;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereDriverURLProvider;
+import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLProvider;
 
 import java.nio.charset.StandardCharsets;
 
 /**
- * Apollo driver URL provider.
+ * Apollo URL provider.
  */
-public final class ApolloDriverURLProvider implements ShardingSphereDriverURLProvider {
+public final class ApolloURLProvider implements ShardingSphereURLProvider {
     
     private static final String APOLLO_TYPE = "apollo:";
     
