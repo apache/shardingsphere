@@ -49,11 +49,11 @@ public final class ResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource create(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeChangedPropsMap) {
-        Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new HashMap<>(resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap());
-        mergedDataSourcePoolPropertiesMap.putAll(toBeChangedPropsMap);
+        Map<String, DataSourcePoolProperties> mergedPropsMap = new HashMap<>(resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap());
+        mergedPropsMap.putAll(toBeChangedPropsMap);
         StorageResourceWithProperties toBeChangedStorageResource = StorageResourceCreator.createStorageResourceWithoutDataSource(toBeChangedPropsMap);
         return new SwitchingResource(resourceMetaData, createNewStorageResource(resourceMetaData, toBeChangedStorageResource),
-                getStaleDataSources(resourceMetaData, toBeChangedStorageResource), mergedDataSourcePoolPropertiesMap);
+                getStaleDataSources(resourceMetaData, toBeChangedStorageResource), mergedPropsMap);
     }
     
     /**

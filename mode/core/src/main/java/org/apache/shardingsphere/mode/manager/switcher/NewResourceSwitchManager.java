@@ -47,12 +47,11 @@ public final class NewResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource registerStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> propsMap) {
-        Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new HashMap<>(resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap());
-        mergedDataSourcePoolPropertiesMap.putAll(propsMap);
-        resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap().putAll(propsMap);
+        Map<String, DataSourcePoolProperties> mergedPropsMap = new HashMap<>(resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap());
+        mergedPropsMap.putAll(propsMap);
         StorageResourceWithProperties toBeCreatedStorageResource = StorageResourceCreator.createStorageResourceWithoutDataSource(propsMap);
         return new SwitchingResource(resourceMetaData, getRegisterNewStorageResource(resourceMetaData, toBeCreatedStorageResource),
-                new StorageResource(Collections.emptyMap(), Collections.emptyMap()), mergedDataSourcePoolPropertiesMap);
+                new StorageResource(Collections.emptyMap(), Collections.emptyMap()), mergedPropsMap);
     }
     
     private StorageResource getRegisterNewStorageResource(final ResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeCreatedStorageResource) {
