@@ -29,10 +29,10 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import java.sql.SQLException;
 
 /**
- * ERR packet factory for MySQL.
+ * Error packet factory for MySQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLErrPacketFactory {
+public final class MySQLErrorPacketFactory {
     
     /**
      * Create new instance of MySQL ERR packet.

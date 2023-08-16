@@ -29,11 +29,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MySQLErrPacketFactoryTest {
+class MySQLErrorPacketFactoryTest {
     
     @Test
     void assertNewInstanceWithSQLExceptionForNullSQLState() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new SQLException(""));
+        MySQLErrPacket actual = MySQLErrorPacketFactory.newInstance(new SQLException(""));
         assertThat(actual.getErrorCode(), is(1815));
         assertThat(actual.getSqlState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertThat(actual.getErrorMessage(), startsWith("Internal error"));
@@ -41,7 +41,7 @@ class MySQLErrPacketFactoryTest {
     
     @Test
     void assertNewInstanceWithSQLException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new SQLException("No reason", "XXX", 30000, new RuntimeException("")));
+        MySQLErrPacket actual = MySQLErrorPacketFactory.newInstance(new SQLException("No reason", "XXX", 30000, new RuntimeException("")));
         assertThat(actual.getErrorCode(), is(30000));
         assertThat(actual.getSqlState(), is("XXX"));
         assertThat(actual.getErrorMessage(), is("No reason"));
@@ -49,7 +49,7 @@ class MySQLErrPacketFactoryTest {
     
     @Test
     void assertNewInstanceWithShardingSphereSQLException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new CircuitBreakException());
+        MySQLErrPacket actual = MySQLErrorPacketFactory.newInstance(new CircuitBreakException());
         assertThat(actual.getErrorCode(), is(13010));
         assertThat(actual.getSqlState(), is(XOpenSQLState.GENERAL_WARNING.getValue()));
         assertThat(actual.getErrorMessage(), is("Circuit break open, the request has been ignored."));
@@ -57,7 +57,7 @@ class MySQLErrPacketFactoryTest {
     
     @Test
     void assertNewInstanceWithSQLDialectException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnknownDatabaseException("foo_db"));
+        MySQLErrPacket actual = MySQLErrorPacketFactory.newInstance(new UnknownDatabaseException("foo_db"));
         assertThat(actual.getErrorCode(), is(1049));
         assertThat(actual.getSqlState(), is(XOpenSQLState.SYNTAX_ERROR.getValue()));
         assertThat(actual.getErrorMessage(), is("Unknown database 'foo_db'"));
@@ -65,7 +65,7 @@ class MySQLErrPacketFactoryTest {
     
     @Test
     void assertNewInstanceWithUnknownException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new RuntimeException("No reason"));
+        MySQLErrPacket actual = MySQLErrorPacketFactory.newInstance(new RuntimeException("No reason"));
         assertThat(actual.getErrorCode(), is(30000));
         assertThat(actual.getSqlState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertThat(actual.getErrorMessage(), is("Unknown exception: No reason"));
