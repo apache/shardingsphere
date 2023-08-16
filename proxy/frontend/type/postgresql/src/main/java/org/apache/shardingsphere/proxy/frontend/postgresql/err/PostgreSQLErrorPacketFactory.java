@@ -41,7 +41,7 @@ import java.sql.SQLException;
 public final class PostgreSQLErrorPacketFactory {
     
     /**
-     * Create new instance of PostgreSQL ERR packet.
+     * Create new instance of PostgreSQL error packet.
      * 
      * @param cause cause
      * @return created instance
