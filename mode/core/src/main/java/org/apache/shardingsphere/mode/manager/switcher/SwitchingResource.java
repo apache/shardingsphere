@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.switcher;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -30,17 +31,16 @@ import java.util.Objects;
  * Switching resource.
  */
 @RequiredArgsConstructor
+@Getter
 public final class SwitchingResource {
     
+    @Getter(AccessLevel.NONE)
     private final ResourceMetaData resourceMetaData;
     
-    @Getter
     private final StorageResource newStorageResource;
     
-    @Getter
     private final StorageResource staleStorageResource;
     
-    @Getter
     private final Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap;
     
     /**

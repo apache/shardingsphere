@@ -25,14 +25,13 @@ import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Storage unit meta data.
  */
 @Getter
 public final class StorageUnitMetaData {
-    
-    private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
     
     // TODO zhangliang: should refactor
     private final Map<String, StorageUnitNodeMapper> unitNodeMappers;
@@ -47,7 +46,6 @@ public final class StorageUnitMetaData {
     
     public StorageUnitMetaData(final String databaseName, final Map<StorageNode, DataSource> storageNodeDataSources,
                                final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageUnitNodeMapper> unitNodeMappers) {
-        this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
         this.unitNodeMappers = unitNodeMappers;
         storageUnits = new LinkedHashMap<>(unitNodeMappers.size(), 1F);
         for (Entry<String, StorageUnitNodeMapper> entry : unitNodeMappers.entrySet()) {
@@ -55,6 +53,16 @@ public final class StorageUnitMetaData {
         }
         dataSources = createDataSources();
         storageTypes = createStorageTypes();
+    }
+    
+    /**
+     * Get data source pool properties map.
+     * 
+     * @return data source pool properties map
+     */
+    public Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap() {
+        return storageUnits.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, DataSource> createDataSources() {
