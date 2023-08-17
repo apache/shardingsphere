@@ -40,6 +40,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLErrorPacketFactory {
     
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     /**
      * Create new instance of PostgreSQL error packet.
      * 
@@ -48,11 +50,8 @@ public final class PostgreSQLErrorPacketFactory {
      */
     public static PostgreSQLErrorResponsePacket newInstance(final Exception cause) {
         Optional<ServerErrorMessage> serverErrorMessage = findServerErrorMessage(cause);
-        if (serverErrorMessage.isPresent()) {
-            return createErrorResponsePacket(serverErrorMessage.get());
-        }
-        SQLException sqlException = SQLExceptionTransformEngine.toSQLException(cause, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        return createErrorResponsePacket(sqlException);
+        return serverErrorMessage.map(PostgreSQLErrorPacketFactory::createErrorResponsePacket)
+                .orElseGet(() -> createErrorResponsePacket(SQLExceptionTransformEngine.toSQLException(cause, DATABASE_TYPE)));
     }
     
     private static Optional<ServerErrorMessage> findServerErrorMessage(final Exception cause) {

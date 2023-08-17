@@ -39,6 +39,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OpenGaussErrorPacketFactory {
     
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     /**
      * Create new instance of openGauss error packet.
      *
@@ -47,11 +49,7 @@ public final class OpenGaussErrorPacketFactory {
      */
     public static OpenGaussErrorResponsePacket newInstance(final Exception cause) {
         Optional<ServerErrorMessage> serverErrorMessage = findServerErrorMessage(cause);
-        if (serverErrorMessage.isPresent()) {
-            return new OpenGaussErrorResponsePacket(serverErrorMessage.get());
-        }
-        SQLException sqlException = SQLExceptionTransformEngine.toSQLException(cause, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        return createErrorResponsePacket(sqlException);
+        return serverErrorMessage.map(OpenGaussErrorResponsePacket::new).orElseGet(() -> createErrorResponsePacket(SQLExceptionTransformEngine.toSQLException(cause, DATABASE_TYPE)));
     }
     
     private static Optional<ServerErrorMessage> findServerErrorMessage(final Exception cause) {
