@@ -89,7 +89,7 @@ class UnregisterStorageUnitBackendHandlerTest {
     @BeforeEach
     void setUp() {
         resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        when(resourceMetaData.getStorageUnitMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         contextManager = mockContextManager();
@@ -109,7 +109,7 @@ class UnregisterStorageUnitBackendHandlerTest {
     
     @Test
     void assertExecute() throws SQLException {
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        when(resourceMetaData.getStorageUnitMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false);
@@ -119,7 +119,7 @@ class UnregisterStorageUnitBackendHandlerTest {
     
     @Test
     void assertStorageUnitNameNotExistedExecute() {
-        when(ProxyContext.getInstance().getDatabase("foo_db").getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
+        when(ProxyContext.getInstance().getDatabase("foo_db").getResourceMetaData().getStorageUnitMetaData().getDataSources()).thenReturn(Collections.emptyMap());
         assertThrows(MissingRequiredStorageUnitsException.class,
                 () -> handler.execute("foo_db", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false)));
     }
@@ -129,7 +129,7 @@ class UnregisterStorageUnitBackendHandlerTest {
         when(ruleMetaData.findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        when(resourceMetaData.getStorageUnitMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         assertThrows(StorageUnitInUsedException.class,
@@ -143,7 +143,7 @@ class UnregisterStorageUnitBackendHandlerTest {
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(singleRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        when(resourceMetaData.getStorageUnitMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         assertThrows(StorageUnitInUsedException.class,
@@ -157,7 +157,7 @@ class UnregisterStorageUnitBackendHandlerTest {
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(singleRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        when(resourceMetaData.getStorageUnitMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), true);

@@ -57,7 +57,7 @@ public final class ShardingSphereTableDataCollectorUtils {
             return Collections.emptyList();
         }
         Collection<ShardingSphereRowData> result = new LinkedList<>();
-        for (DataSource each : shardingSphereDatabase.getResourceMetaData().getDataSources().values()) {
+        for (DataSource each : shardingSphereDatabase.getResourceMetaData().getStorageUnitMetaData().getDataSources().values()) {
             try (
                     Connection connection = each.getConnection();
                     Statement statement = connection.createStatement();

@@ -130,7 +130,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     private void checkDatabase(final String databaseName) {
         ShardingSpherePreconditions.checkNotNull(databaseName, () -> new UnsupportedSQLOperationException("Property `databaseName` in imported config is required"));
         if (ProxyContext.getInstance().databaseExists(databaseName)) {
-            ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources().isEmpty(),
+            ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getStorageUnits().isEmpty(),
                     () -> new UnsupportedSQLOperationException(String.format("Database `%s` exists and is not empty，overwrite is not supported", databaseName)));
         }
     }
@@ -158,7 +158,8 @@ public final class YamlDatabaseConfigurationImportExecutor {
         } catch (final SQLException ex) {
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
-        Map<String, DataSource> dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources();
+        Map<String, DataSource> dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()
+                .getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getDataSources();
         propsMap.forEach((key, value) -> dataSource.put(key, DataSourcePoolCreator.create(value)));
     }
     
@@ -246,7 +247,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
         shardingRuleConfigImportChecker.check(database, shardingRuleConfig);
         allRuleConfigs.add(shardingRuleConfig);
-        database.getRuleMetaData().getRules().add(new ShardingRule(shardingRuleConfig, database.getResourceMetaData().getDataSources().keySet(), instanceContext));
+        database.getRuleMetaData().getRules().add(new ShardingRule(shardingRuleConfig, database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().keySet(), instanceContext));
     }
     
     private void addReadwriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig,
@@ -278,12 +279,13 @@ public final class YamlDatabaseConfigurationImportExecutor {
     
     private void addBroadcastRuleConfiguration(final BroadcastRuleConfiguration broadcastRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
         allRuleConfigs.add(broadcastRuleConfig);
-        database.getRuleMetaData().getRules().add(new BroadcastRule(broadcastRuleConfig, database.getName(), database.getResourceMetaData().getDataSources()));
+        database.getRuleMetaData().getRules().add(new BroadcastRule(broadcastRuleConfig, database.getName(), database.getResourceMetaData().getStorageUnitMetaData().getDataSources()));
     }
     
     private void addSingleRuleConfiguration(final SingleRuleConfiguration broadcastRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
         allRuleConfigs.add(broadcastRuleConfig);
-        database.getRuleMetaData().getRules().add(new SingleRule(broadcastRuleConfig, database.getName(), database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules()));
+        database.getRuleMetaData().getRules().add(
+                new SingleRule(broadcastRuleConfig, database.getName(), database.getResourceMetaData().getStorageUnitMetaData().getDataSources(), database.getRuleMetaData().getRules()));
     }
     
     private void dropDatabase(final String databaseName) {

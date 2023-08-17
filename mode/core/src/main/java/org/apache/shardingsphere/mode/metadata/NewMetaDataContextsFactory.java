@@ -148,7 +148,7 @@ public final class NewMetaDataContextsFactory {
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
             String databaseName = entry.getKey();
             metadataContexts.getPersistService().persistConfigurations(entry.getKey(), entry.getValue(),
-                    metadataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources(),
+                    metadataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getDataSources(),
                     metadataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
         }
     }

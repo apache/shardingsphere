@@ -161,7 +161,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         @Override
         protected void processMetaData(final String databaseName, final Consumer<ResultSet> callback) throws SQLException {
             ResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
-            Optional<Entry<String, DataSource>> dataSourceEntry = resourceMetaData.getDataSources().entrySet().stream().findFirst();
+            Optional<Entry<String, DataSource>> dataSourceEntry = resourceMetaData.getStorageUnitMetaData().getDataSources().entrySet().stream().findFirst();
             if (!dataSourceEntry.isPresent()) {
                 return;
             }

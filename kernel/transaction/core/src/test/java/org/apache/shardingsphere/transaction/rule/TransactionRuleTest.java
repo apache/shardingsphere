@@ -37,6 +37,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,16 +62,14 @@ class TransactionRuleTest {
         assertThat(actual.getDatabases().size(), is(2));
         assertTrue(actual.getDatabases().containsKey(SHARDING_DB_1));
         ResourceMetaData resourceMetaData1 = actual.getDatabases().get(SHARDING_DB_1).getResourceMetaData();
-        assertThat(resourceMetaData1.getDataSources().size(), is(2));
-        assertTrue(resourceMetaData1.getDataSources().containsKey("ds_0"));
-        assertTrue(resourceMetaData1.getDataSources().containsKey("ds_1"));
-        assertThat(resourceMetaData1.getStorageTypes().size(), is(2));
+        assertThat(resourceMetaData1.getStorageUnitMetaData().getDataSources().size(), is(2));
+        assertTrue(resourceMetaData1.getStorageUnitMetaData().getDataSources().containsKey("ds_0"));
+        assertTrue(resourceMetaData1.getStorageUnitMetaData().getDataSources().containsKey("ds_1"));
         assertTrue(actual.getDatabases().containsKey(SHARDING_DB_2));
         ResourceMetaData resourceMetaData2 = actual.getDatabases().get(SHARDING_DB_2).getResourceMetaData();
-        assertThat(resourceMetaData2.getDataSources().size(), is(2));
-        assertTrue(resourceMetaData2.getDataSources().containsKey("ds_0"));
-        assertTrue(resourceMetaData2.getDataSources().containsKey("ds_1"));
-        assertThat(resourceMetaData2.getStorageTypes().size(), is(2));
+        assertThat(resourceMetaData2.getStorageUnitMetaData().getDataSources().size(), is(2));
+        assertTrue(resourceMetaData2.getStorageUnitMetaData().getDataSources().containsKey("ds_0"));
+        assertTrue(resourceMetaData2.getStorageUnitMetaData().getDataSources().containsKey("ds_1"));
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
@@ -99,11 +98,11 @@ class TransactionRuleTest {
     }
     
     private ResourceMetaData createResourceMetaData() {
-        ResourceMetaData result = mock(ResourceMetaData.class);
+        ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
-        when(result.getDataSources()).thenReturn(dataSourceMap);
+        when(result.getStorageUnitMetaData().getDataSources()).thenReturn(dataSourceMap);
         Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
         databaseTypes.put("ds_0", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         databaseTypes.put("ds_1", TypedSPILoader.getService(DatabaseType.class, "openGauss"));
@@ -120,11 +119,11 @@ class TransactionRuleTest {
     }
     
     private ResourceMetaData createAddResourceMetaData() {
-        ResourceMetaData result = mock(ResourceMetaData.class);
+        ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
-        when(result.getDataSources()).thenReturn(dataSourceMap);
+        when(result.getStorageUnitMetaData().getDataSources()).thenReturn(dataSourceMap);
         Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
         databaseTypes.put("ds_0", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         databaseTypes.put("ds_1", TypedSPILoader.getService(DatabaseType.class, "openGauss"));
