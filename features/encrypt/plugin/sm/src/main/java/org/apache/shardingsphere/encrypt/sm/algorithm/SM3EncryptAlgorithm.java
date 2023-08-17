@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.sm.algorithm;
 
+import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
@@ -32,6 +33,7 @@ import java.util.Properties;
 /**
  * SM3 encrypt algorithm.
  */
+@EqualsAndHashCode
 public final class SM3EncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
     
     static {
