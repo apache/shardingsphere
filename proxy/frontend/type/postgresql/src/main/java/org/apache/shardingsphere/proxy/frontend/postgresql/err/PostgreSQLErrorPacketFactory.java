@@ -52,7 +52,6 @@ public final class PostgreSQLErrorPacketFactory {
             return createErrorResponsePacket(serverErrorMessage.get());
         }
         SQLException sqlException = SQLExceptionTransformEngine.toSQLException(cause, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        // TODO consider how to process frontend connection limit scenario
         return createErrorResponsePacket(sqlException);
     }
     
