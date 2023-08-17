@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.err;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
+import org.apache.shardingsphere.infra.exception.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+
+import java.sql.SQLException;
 
 /**
  * Error packet factory for MySQL.
@@ -37,6 +41,11 @@ public final class MySQLErrorPacketFactory {
      * @return created instance
      */
     public static MySQLErrPacket newInstance(final Exception cause) {
-        return new MySQLErrPacket(SQLExceptionTransformEngine.toSQLException(cause, TypedSPILoader.getService(DatabaseType.class, "MySQL")));
+        SQLException sqlException = SQLExceptionTransformEngine.toSQLException(cause, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        return null == sqlException.getSQLState() ? new MySQLErrPacket(MySQLVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException)) : new MySQLErrPacket(sqlException);
+    }
+    
+    private static String getErrorMessage(final SQLException cause) {
+        return null == cause.getNextException() || !Strings.isNullOrEmpty(cause.getMessage()) ? cause.getMessage() : cause.getNextException().getMessage();
     }
 }

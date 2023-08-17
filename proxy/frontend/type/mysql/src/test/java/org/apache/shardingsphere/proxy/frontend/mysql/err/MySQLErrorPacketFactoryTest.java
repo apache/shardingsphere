@@ -21,13 +21,23 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class MySQLErrorPacketFactoryTest {
     
     @Test
-    void assertNewInstance() {
+    void assertNewInstanceWithoutSQLState() {
+        MySQLErrPacket actual = MySQLErrorPacketFactory.newInstance(new SQLException("No reason"));
+        assertThat(actual.getErrorCode(), is(1815));
+        assertThat(actual.getSqlState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
+        assertThat(actual.getErrorMessage(), is("Internal error: No reason"));
+    }
+    
+    @Test
+    void assertNewInstanceWithSQLState() {
         MySQLErrPacket actual = MySQLErrorPacketFactory.newInstance(new RuntimeException("No reason"));
         assertThat(actual.getErrorCode(), is(30000));
         assertThat(actual.getSqlState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
