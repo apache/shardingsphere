@@ -342,8 +342,8 @@ public final class ConfigurationContextManager {
         Collection<RuleConfiguration> toBeCreatedRuleConfigs = null == ruleConfigs
                 ? metaDataContexts.get().getMetaData().getDatabase(databaseName).getRuleMetaData().getConfigurations()
                 : ruleConfigs;
-        DatabaseConfiguration toBeCreatedDatabaseConfig = getDatabaseConfiguration(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(),
-                switchingResource, toBeCreatedRuleConfigs);
+        DatabaseConfiguration toBeCreatedDatabaseConfig = getDatabaseConfiguration(
+                metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData(), switchingResource, toBeCreatedRuleConfigs);
         ShardingSphereDatabase changedDatabase = createChangedDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(), internalLoadMetaData,
                 metaDataContexts.get().getPersistService(), toBeCreatedDatabaseConfig, metaDataContexts.get().getMetaData().getProps(), instanceContext);
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(metaDataContexts.get().getMetaData().getDatabases());
@@ -355,10 +355,10 @@ public final class ConfigurationContextManager {
     private DatabaseConfiguration getDatabaseConfiguration(final ResourceMetaData resourceMetaData, final SwitchingResource switchingResource,
                                                            final Collection<RuleConfiguration> toBeCreatedRuleConfigs) {
         StorageResource storageResource = getMergedStorageResource(resourceMetaData, switchingResource);
-        Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap = null == switchingResource
+        Map<String, DataSourcePoolProperties> propsMap = null == switchingResource
                 ? resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap()
                 : switchingResource.getMergedDataSourcePoolPropertiesMap();
-        return new DataSourceProvidedDatabaseConfiguration(storageResource, toBeCreatedRuleConfigs, dataSourcePoolPropertiesMap);
+        return new DataSourceProvidedDatabaseConfiguration(storageResource, toBeCreatedRuleConfigs, propsMap);
     }
     
     private StorageResource getMergedStorageResource(final ResourceMetaData currentResourceMetaData, final SwitchingResource switchingResource) {
