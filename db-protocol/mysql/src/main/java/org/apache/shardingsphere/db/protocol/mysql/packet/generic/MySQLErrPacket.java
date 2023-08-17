@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.generic;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.infra.exception.mysql.vendor.MySQLVendorError;
+import org.apache.shardingsphere.infra.exception.core.external.sql.vendor.VendorError;
 
 import java.sql.SQLException;
 
@@ -48,16 +47,15 @@ public final class MySQLErrPacket extends MySQLPacket {
     private final String errorMessage;
     
     public MySQLErrPacket(final SQLException exception) {
-        if (null == exception.getSQLState()) {
-            errorCode = MySQLVendorError.ER_INTERNAL_ERROR.getVendorCode();
-            sqlState = MySQLVendorError.ER_INTERNAL_ERROR.getSqlState().getValue();
-            errorMessage = String.format(MySQLVendorError.ER_INTERNAL_ERROR.getReason(),
-                    null == exception.getNextException() || !Strings.isNullOrEmpty(exception.getMessage()) ? exception.getMessage() : exception.getNextException().getMessage());
-        } else {
-            errorCode = exception.getErrorCode();
-            sqlState = exception.getSQLState();
-            errorMessage = exception.getMessage();
-        }
+        errorCode = exception.getErrorCode();
+        sqlState = exception.getSQLState();
+        errorMessage = exception.getMessage();
+    }
+    
+    public MySQLErrPacket(final VendorError vendorError, final Object... errorMessageArgs) {
+        errorCode = vendorError.getVendorCode();
+        sqlState = vendorError.getSqlState().getValue();
+        errorMessage = String.format(vendorError.getReason(), errorMessageArgs);
     }
     
     public MySQLErrPacket(final MySQLPacketPayload payload) {

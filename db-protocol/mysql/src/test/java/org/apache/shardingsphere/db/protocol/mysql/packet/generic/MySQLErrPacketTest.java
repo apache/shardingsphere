@@ -39,16 +39,16 @@ class MySQLErrPacketTest {
     private MySQLPacketPayload payload;
     
     @Test
-    void assertNewErrPacketWithServerErrorCode() {
-        MySQLErrPacket actual = new MySQLErrPacket(new SQLException("test", "FOO_STATE", 1));
+    void assertNewErrPacketWithSQLException() {
+        MySQLErrPacket actual = new MySQLErrPacket(new SQLException("No reason", "FOO_STATE", 1));
         assertThat(actual.getErrorCode(), is(1));
         assertThat(actual.getSqlState(), is("FOO_STATE"));
-        assertThat(actual.getErrorMessage(), is("test"));
+        assertThat(actual.getErrorMessage(), is("No reason"));
     }
     
     @Test
-    void assertNewErrPacketWithInternalServerError() {
-        MySQLErrPacket actual = new MySQLErrPacket(new SQLException("No reason"));
+    void assertNewErrPacketWithVendorError() {
+        MySQLErrPacket actual = new MySQLErrPacket(MySQLVendorError.ER_INTERNAL_ERROR, "No reason");
         assertThat(actual.getErrorCode(), is(1815));
         assertThat(actual.getSqlState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertThat(actual.getErrorMessage(), is("Internal error: No reason"));
