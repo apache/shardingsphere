@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.sm.algorithm;
 
-import lombok.Getter;
+import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
@@ -28,13 +28,12 @@ import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 /**
  * SM3 encrypt algorithm.
  */
+@EqualsAndHashCode
 public final class SM3EncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
     
     static {
@@ -45,15 +44,11 @@ public final class SM3EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     private static final int SALT_LENGTH = 8;
     
-    @Getter
-    private Map<String, Object> props;
-    
     private byte[] sm3Salt;
     
     @Override
     public void init(final Properties props) {
         sm3Salt = createSm3Salt(props);
-        this.props = Collections.singletonMap("sm3Salt", new String(sm3Salt, StandardCharsets.UTF_8));
     }
     
     private byte[] createSm3Salt(final Properties props) {

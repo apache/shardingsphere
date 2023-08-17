@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.standard;
 
-import lombok.Getter;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
@@ -25,13 +25,12 @@ import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmIni
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 /**
  * RC4 encrypt algorithm.
  */
+@EqualsAndHashCode
 public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
     
     private static final String RC4_KEY = "rc4-key-value";
@@ -39,9 +38,6 @@ public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     private static final int KEY_MIN_LENGTH = 5;
     
     private static final int SBOX_LENGTH = 256;
-    
-    @Getter
-    private Map<String, Object> props;
     
     private byte[] key;
     
@@ -54,7 +50,6 @@ public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
         byte[] result = props.getProperty(RC4_KEY, "").getBytes(StandardCharsets.UTF_8);
         ShardingSpherePreconditions.checkState(KEY_MIN_LENGTH <= result.length && SBOX_LENGTH > result.length,
                 () -> new EncryptAlgorithmInitializationException(getType(), "Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1)));
-        this.props = Collections.singletonMap("key", new String(result, StandardCharsets.UTF_8));
         return result;
     }
     

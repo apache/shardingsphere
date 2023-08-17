@@ -121,7 +121,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             if (!leftColumnEncryptor.getType().equals(rightColumnEncryptor.getType())) {
                 return false;
             }
-            return leftColumnEncryptor.getProps().equals(rightColumnEncryptor.getProps());
+            return leftColumnEncryptor.equals(rightColumnEncryptor);
         }
         return null == leftColumnEncryptor && null == rightColumnEncryptor;
     }

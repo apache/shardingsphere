@@ -20,19 +20,11 @@ package org.apache.shardingsphere.test.e2e.driver.fixture.encrypt;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
-import java.util.Collections;
-import java.util.Map;
-
 public final class JDBCEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "encryptValue";
-    }
-    
-    @Override
-    public Map<String, Object> getProps() {
-        return Collections.emptyMap();
     }
     
     @Override

@@ -20,9 +20,6 @@ package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 
-import java.util.Collections;
-import java.util.Map;
-
 public final class RewriteQueryAssistedEncryptAlgorithmFixture implements AssistedEncryptAlgorithm<Object, String> {
     
     @Override
@@ -31,11 +28,6 @@ public final class RewriteQueryAssistedEncryptAlgorithmFixture implements Assist
             return null;
         }
         return "assisted_query_" + plainValue;
-    }
-    
-    @Override
-    public Map<String, Object> getProps() {
-        return Collections.emptyMap();
     }
     
     @Override
