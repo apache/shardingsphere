@@ -23,9 +23,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
-import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.infra.exception.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.opengauss.util.PSQLException;
@@ -51,11 +50,9 @@ public final class OpenGaussErrorPacketFactory {
         if (serverErrorMessage.isPresent()) {
             return new OpenGaussErrorResponsePacket(serverErrorMessage.get());
         }
-        if (cause instanceof SQLException || cause instanceof ShardingSphereSQLException || cause instanceof SQLDialectException) {
-            return createErrorResponsePacket(SQLExceptionTransformEngine.toSQLException(cause, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));
-        }
-        // TODO OpenGauss need consider FrontendConnectionLimitException
-        return createErrorResponsePacketForUnknownException(cause);
+        SQLException sqlException = SQLExceptionTransformEngine.toSQLException(cause, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        // TODO consider how to process frontend connection limit scenario
+        return createErrorResponsePacket(sqlException);
     }
     
     private static Optional<ServerErrorMessage> findServerErrorMessage(final Exception cause) {
@@ -63,15 +60,10 @@ public final class OpenGaussErrorPacketFactory {
     }
     
     private static OpenGaussErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
-        // TODO consider what severity to use
-        String sqlState = Strings.isNullOrEmpty(cause.getSQLState()) ? PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue() : cause.getSQLState();
+        String sqlState = Strings.isNullOrEmpty(cause.getSQLState()) || XOpenSQLState.GENERAL_ERROR.getValue().equals(cause.getSQLState())
+                ? PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue()
+                : cause.getSQLState();
         String message = Strings.isNullOrEmpty(cause.getMessage()) ? cause.toString() : cause.getMessage();
         return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.ERROR, sqlState, message);
-    }
-    
-    private static OpenGaussErrorResponsePacket createErrorResponsePacketForUnknownException(final Exception cause) {
-        // TODO add FIELD_TYPE_CODE for common error and consider what severity to use
-        String message = Strings.isNullOrEmpty(cause.getLocalizedMessage()) ? cause.toString() : cause.getLocalizedMessage();
-        return new OpenGaussErrorResponsePacket(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue(), message);
     }
 }
