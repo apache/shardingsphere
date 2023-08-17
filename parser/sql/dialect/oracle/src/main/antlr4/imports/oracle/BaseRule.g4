@@ -76,7 +76,7 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord | STRING_
+    : IDENTIFIER_ | unreservedWord | DOUBLE_QUOTED_TEXT
     ;
 
 unreservedWord
@@ -588,7 +588,7 @@ roleName
     ;
 
 username
-    : identifier
+    : identifier | STRING_
     ;
 
 password
@@ -1005,7 +1005,7 @@ hashSubpartitionQuantity
     ;
 
 odciParameters
-    : identifier
+    : STRING_
     ;
 
 databaseName
@@ -1017,7 +1017,7 @@ locationName
     ;
 
 fileName
-    : STRING_
+    : identifier | STRING_
     ;
 
 asmFileName
@@ -1129,7 +1129,7 @@ logminerSessionName
     ;
 
 tablespaceGroupName
-    : identifier
+    : identifier | STRING_
     ;
 
 copyName
@@ -1788,7 +1788,7 @@ searchString
     ;
 
 attributeValue
-    : identifier
+    : STRING_
     ;
 
 joinGroupName
