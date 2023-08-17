@@ -37,8 +37,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Properties;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * AES encrypt algorithm.
@@ -48,9 +46,6 @@ public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     private static final String AES_KEY = "aes-key-value";
     
     private static final String DIGEST_ALGORITHM_NAME = "digest-algorithm-name";
-    
-    @Getter
-    private Map<String, Object> props;
     
     private byte[] secretKey;
     
@@ -64,15 +59,7 @@ public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm<Objec
         ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(aesKey),
                 () -> new EncryptAlgorithmInitializationException(getType(), String.format("%s can not be null or empty", AES_KEY)));
         String digestAlgorithm = props.getProperty(DIGEST_ALGORITHM_NAME, MessageDigestAlgorithms.SHA_1);
-        this.props = createProps(aesKey, digestAlgorithm);
         return Arrays.copyOf(DigestUtils.getDigest(digestAlgorithm.toUpperCase()).digest(aesKey.getBytes(StandardCharsets.UTF_8)), 16);
-    }
-    
-    private Map<String, Object> createProps(final String aesKey, final String digestAlgorithm) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("aesKey", aesKey);
-        result.put("digestAlgorithm", digestAlgorithm);
-        return result;
     }
     
     @SneakyThrows(GeneralSecurityException.class)

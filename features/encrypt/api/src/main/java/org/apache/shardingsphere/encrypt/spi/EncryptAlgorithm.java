@@ -20,8 +20,6 @@ package org.apache.shardingsphere.encrypt.spi;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 
-import java.util.Map;
-
 /**
  * Encrypt algorithm.
  *
@@ -38,12 +36,4 @@ public interface EncryptAlgorithm<I, O> extends ShardingSphereAlgorithm {
      * @return cipher value
      */
     O encrypt(I plainValue, EncryptContext encryptContext);
-    
-    // TODO Consider move to ShardingSphereAlgorithm.
-    /**
-     * Get properties.
-     *
-     * @return properties.
-     */
-    Map<String, Object> getProps();
 }

@@ -20,19 +20,11 @@ package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
-import java.util.Collections;
-import java.util.Map;
-
 public final class RewriteQueryLikeEncryptAlgorithmFixture implements LikeEncryptAlgorithm<Object, String> {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return null == plainValue ? null : "like_query_" + plainValue;
-    }
-    
-    @Override
-    public Map<String, Object> getProps() {
-        return Collections.emptyMap();
     }
     
     @Override
