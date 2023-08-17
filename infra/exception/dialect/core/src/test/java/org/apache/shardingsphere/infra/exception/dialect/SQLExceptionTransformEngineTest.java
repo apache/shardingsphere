@@ -36,7 +36,8 @@ public class SQLExceptionTransformEngineTest {
     void assertSQLExceptionTransformEngineConvertException() {
         assertThat(SQLException.class, is(SQLExceptionTransformEngine.toSQLException(new SQLException(), null).getClass()));
         assertThat(SQLException.class, is(SQLExceptionTransformEngine.toSQLException(new SQLHintDataSourceNotExistsException("only for test"), null).getClass()));
-        assertThat(SQLException.class, is(SQLExceptionTransformEngine.toSQLException(new DatabaseProtocolExceptionExceptionFixture("only for test"), new MySQLDatabaseType()).getClass()));
+        assertThat(SQLException.class,
+                is(SQLExceptionTransformEngine.toSQLException(new DatabaseProtocolExceptionExceptionFixture("only for test"), TypedSPILoader.getService(DatabaseType.class, "MySQL")).getClass()));
         assertThat(SQLException.class, is(SQLExceptionTransformEngine.toSQLException(new DatabaseCreateExistsException("test"), TypedSPILoader.getService(DatabaseType.class, "MySQL")).getClass()));
         assertThat(SQLException.class, is(SQLExceptionTransformEngine.toSQLException(new RuntimeException("only for test"), null).getClass()));
     }
