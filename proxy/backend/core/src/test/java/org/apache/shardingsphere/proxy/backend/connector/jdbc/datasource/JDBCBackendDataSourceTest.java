@@ -99,7 +99,7 @@ class JDBCBackendDataSourceTest {
         storageTypes.put("ds_0", databaseType);
         storageTypes.put("ds_1", databaseType);
         when(database.getResourceMetaData().getStorageTypes()).thenReturn(storageTypes);
-        when(database.getResourceMetaData().getDataSources()).thenReturn(mockDataSources(2));
+        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSources()).thenReturn(mockDataSources(2));
         return Collections.singletonMap("schema", database);
     }
     

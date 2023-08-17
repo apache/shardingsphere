@@ -60,8 +60,8 @@ public final class GlobalClockRule implements GlobalRule {
     }
     
     private Collection<DataSource> getDataSources(final Map<String, ShardingSphereDatabase> databases) {
-        return databases.values().stream().filter(each -> !each.getResourceMetaData().getDataSources().isEmpty())
-                .flatMap(each -> each.getResourceMetaData().getDataSources().values().stream()).collect(Collectors.toList());
+        return databases.values().stream().filter(each -> !each.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().isEmpty())
+                .flatMap(each -> each.getResourceMetaData().getStorageUnitMetaData().getDataSources().values().stream()).collect(Collectors.toList());
     }
     
     /**

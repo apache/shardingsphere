@@ -65,15 +65,6 @@ public final class ResourceMetaData {
     }
     
     /**
-     * Get data sources.
-     *
-     * @return data sources
-     */
-    public Map<String, DataSource> getDataSources() {
-        return storageUnitMetaData.getDataSources();
-    }
-    
-    /**
      * Get storage types.
      *
      * @return storage types
