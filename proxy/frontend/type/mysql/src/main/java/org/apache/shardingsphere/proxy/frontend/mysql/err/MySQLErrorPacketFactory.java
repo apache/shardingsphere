@@ -34,6 +34,8 @@ import java.sql.SQLException;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLErrorPacketFactory {
     
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     /**
      * Create new instance of MySQL error packet.
      *
@@ -41,7 +43,7 @@ public final class MySQLErrorPacketFactory {
      * @return created instance
      */
     public static MySQLErrPacket newInstance(final Exception cause) {
-        SQLException sqlException = SQLExceptionTransformEngine.toSQLException(cause, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        SQLException sqlException = SQLExceptionTransformEngine.toSQLException(cause, DATABASE_TYPE);
         return null == sqlException.getSQLState() ? new MySQLErrPacket(MySQLVendorError.ER_INTERNAL_ERROR, getErrorMessage(sqlException)) : new MySQLErrPacket(sqlException);
     }
     
