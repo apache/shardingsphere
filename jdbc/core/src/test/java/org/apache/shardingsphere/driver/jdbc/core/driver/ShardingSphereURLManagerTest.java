@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver;
 import com.ctrip.framework.apollo.ConfigFile;
 import com.ctrip.framework.apollo.ConfigService;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
-import org.apache.shardingsphere.driver.jdbc.exception.syntax.DriverURLProviderNotFoundException;
+import org.apache.shardingsphere.driver.jdbc.exception.syntax.URLProviderNotFoundException;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ConfigService.class)
-class ShardingSphereDriverURLManagerTest {
+class ShardingSphereURLManagerTest {
     
     private final int fooDriverConfigLength = 999;
     
@@ -47,19 +47,19 @@ class ShardingSphereDriverURLManagerTest {
     
     @Test
     void assertNewConstructorWithEmptyURL() {
-        assertThrows(DriverURLProviderNotFoundException.class, () -> ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:", urlPrefix));
+        assertThrows(URLProviderNotFoundException.class, () -> ShardingSphereURLManager.getContent("jdbc:shardingsphere:", urlPrefix));
     }
     
     @Test
     void assertToClasspathConfigurationFile() {
-        byte[] actual = ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", urlPrefix);
+        byte[] actual = ShardingSphereURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml", urlPrefix);
         assertThat(actual.length, is(fooDriverConfigLength));
     }
     
     @Test
     void assertToAbsolutePathConfigurationFile() {
         String absolutePath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
-        byte[] actual = ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absolutePath, urlPrefix);
+        byte[] actual = ShardingSphereURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absolutePath, urlPrefix);
         assertThat(actual.length, is(fooDriverConfigLength));
     }
     
@@ -69,7 +69,7 @@ class ShardingSphereDriverURLManagerTest {
         when(configFile.getContent()).thenReturn("config content");
         when(ConfigService.getConfigFile(anyString(), any(ConfigFileFormat.class))).thenReturn(configFile);
         String url = "jdbc:shardingsphere:apollo:namespace";
-        byte[] content = ShardingSphereDriverURLManager.getContent(url, urlPrefix);
+        byte[] content = ShardingSphereURLManager.getContent(url, urlPrefix);
         assertThat("config content".getBytes(StandardCharsets.UTF_8), is(content));
     }
 }

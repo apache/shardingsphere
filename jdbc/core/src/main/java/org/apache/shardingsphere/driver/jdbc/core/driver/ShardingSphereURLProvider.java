@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
 /**
- * ShardingSphere driver URL provider.
+ * ShardingSphere URL provider.
  */
-public interface ShardingSphereDriverURLProvider {
+public interface ShardingSphereURLProvider {
     
     /**
      * Check if the url is suitable for this provider.

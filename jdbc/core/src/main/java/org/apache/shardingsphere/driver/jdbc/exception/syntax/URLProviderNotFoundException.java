@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Driver URL provider not found exception.
+ * URL provider not found exception.
  */
-public final class DriverURLProviderNotFoundException extends SyntaxSQLException {
+public final class URLProviderNotFoundException extends SyntaxSQLException {
     
     private static final long serialVersionUID = 1017115393560838384L;
     
-    public DriverURLProviderNotFoundException(final String url) {
-        super(XOpenSQLState.NOT_FOUND, 12, "Can not find driver url provider for `%s`.", url);
+    public URLProviderNotFoundException(final String url) {
+        super(XOpenSQLState.NOT_FOUND, 12, "Can not find url provider for `%s`.", url);
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.spi;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereDriverURLProvider;
+import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLProvider;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,9 +31,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 /**
- * Absolute path driver URL provider.
+ * Absolute path URL provider.
  */
-public final class AbsolutePathDriverURLProvider implements ShardingSphereDriverURLProvider {
+public final class AbsolutePathURLProvider implements ShardingSphereURLProvider {
     
     private static final String PATH_TYPE = "absolutepath:";
     
@@ -47,7 +47,7 @@ public final class AbsolutePathDriverURLProvider implements ShardingSphereDriver
     public byte[] getContent(final String url, final String urlPrefix) {
         String configuredFile = url.substring(urlPrefix.length(), url.contains("?") ? url.indexOf('?') : url.length());
         String file = configuredFile.substring(PATH_TYPE.length());
-        Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere driver URL.");
+        Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere URL.");
         try (
                 InputStream stream = Files.newInputStream(new File(file).toPath());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
