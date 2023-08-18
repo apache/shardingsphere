@@ -71,11 +71,11 @@ public final class ColumnSegmentBinder {
     private static Collection<TableSegmentBinderContext> getTableSegmentBinderContexts(final ColumnSegment segment, final SQLStatementBinderContext statementBinderContext,
                                                                                        final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                                                                        final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        if (!statementBinderContext.getJoinTableProjectionSegments().isEmpty()) {
-            return Collections.singleton(new TableSegmentBinderContext(statementBinderContext.getJoinTableProjectionSegments()));
-        }
         if (segment.getOwner().isPresent()) {
             return getTableBinderContextByOwner(segment.getOwner().get().getIdentifier().getValue(), tableBinderContexts, outerTableBinderContexts);
+        }
+        if (!statementBinderContext.getJoinTableProjectionSegments().isEmpty()) {
+            return Collections.singleton(new TableSegmentBinderContext(statementBinderContext.getJoinTableProjectionSegments()));
         }
         return tableBinderContexts.values();
     }
