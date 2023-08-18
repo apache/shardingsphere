@@ -64,7 +64,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     @Override
     public Closure<?> evaluateClosure(final String inlineExpression) {
-        throw new RuntimeException("GraalVM Truffle's Espresso implementation cannot return an instance of `groovy.lang.Closure` to the Host JVM.");
+        throw new UnsupportedOperationException("GraalVM Truffle's Espresso implementation cannot return an instance of `groovy.lang.Closure` to the Host JVM.");
     }
     
     private Context createContext() {

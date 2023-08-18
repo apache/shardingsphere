@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.assisted;
 
+import lombok.EqualsAndHashCode;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
@@ -26,6 +27,7 @@ import java.util.Properties;
 /**
  * MD5 assisted encrypt algorithm.
  */
+@EqualsAndHashCode
 public final class MD5AssistedEncryptAlgorithm implements AssistedEncryptAlgorithm<Object, String> {
     
     private static final String SALT_KEY = "salt";

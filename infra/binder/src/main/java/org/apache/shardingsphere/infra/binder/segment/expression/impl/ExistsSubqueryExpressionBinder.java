@@ -19,9 +19,12 @@ package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+
+import java.util.Map;
 
 /**
  * Exists subquery expression binder.
@@ -35,10 +38,12 @@ public final class ExistsSubqueryExpressionBinder {
      * @param segment exists subquery expression segment
      * @param metaData metaData
      * @param defaultDatabaseName default database name
+     * @param tableBinderContexts table binder contexts
      * @return bounded exists subquery expression segment
      */
-    public static ExistsSubqueryExpression bind(final ExistsSubqueryExpression segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), metaData, defaultDatabaseName);
+    public static ExistsSubqueryExpression bind(final ExistsSubqueryExpression segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                                final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), metaData, defaultDatabaseName, tableBinderContexts);
         ExistsSubqueryExpression result = new ExistsSubqueryExpression(segment.getStartIndex(), segment.getStopIndex(), boundedSubquery);
         result.setNot(segment.isNot());
         return result;

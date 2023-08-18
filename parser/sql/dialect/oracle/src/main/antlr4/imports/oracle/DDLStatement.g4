@@ -261,6 +261,7 @@ relationalProperty
 
 columnDefinition
     : columnName dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
+    | REF LP_ columnName RP_ WITH ROWID
     ;
 
 visibleClause
@@ -307,21 +308,7 @@ referencesClause
     ;
 
 constraintState
-    : notDeferrable 
-    | initiallyClause 
-    | RELY | NORELY 
-    | usingIndexClause 
-    | ENABLE | DISABLE 
-    | VALIDATE | NOVALIDATE 
-    | exceptionsClause
-    ;
-
-notDeferrable
-    : NOT? DEFERRABLE
-    ;
-
-initiallyClause
-    : INITIALLY (IMMEDIATE | DEFERRED)
+    : (NOT? DEFERRABLE (INITIALLY (DEFERRED | IMMEDIATE))? | INITIALLY (DEFERRED | IMMEDIATE) (NOT? DEFERRABLE)?)? (RELY | NORELY)? usingIndexClause? (ENABLE | DISABLE)? (VALIDATE | NOVALIDATE)? exceptionsClause?
     ;
 
 exceptionsClause
@@ -538,7 +525,7 @@ addConstraintSpecification
     ;
 
 modifyConstraintClause
-    : MODIFY constraintOption constraintState+ CASCADE?
+    : MODIFY constraintOption constraintState CASCADE?
     ;
 
 constraintWithName
@@ -1274,11 +1261,22 @@ alterSynonym
     ;
 
 alterTablePartitioning
-    : modifyTablePartition
+    : modifyTableDefaultAttrs
+    | setSubpartitionTemplate
+    | modifyTablePartition
     | moveTablePartition
     | addTablePartition
     | coalesceTablePartition
     | dropTablePartition
+    ;
+
+modifyTableDefaultAttrs
+    : MODIFY DEFAULT ATTRIBUTES (FOR partitionExtendedName)? (DEFAULT DIRECTORY directoryName)? deferredSegmentCreation? readOnlyClause? indexingClause? segmentAttributesClause? alterOverflowClause?
+    ( ((LOB LP_ lobItem RP_ | VARRAY varrayType) LP_ lobParameters RP_)+)?
+    ;
+
+setSubpartitionTemplate
+    : SET SUBPARTITION TEMPLATE (LP_ (rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*)? RP_ | hashSubpartitionQuantity)
     ;
 
 modifyTablePartition
@@ -1329,7 +1327,7 @@ addListSubpartition
     ;
 
 coalesceTableSubpartition
-    : COALESCE SUBPARTITION subpartitionName updateIndexClauses? parallelClause? allowDisallowClustering?
+    : COALESCE SUBPARTITION subpartitionName? updateIndexClauses? parallelClause? allowDisallowClustering?
     ;
 
 allowDisallowClustering
@@ -1342,7 +1340,7 @@ alterMappingTableClauses
 
 alterView
     : ALTER VIEW viewName (
-    | ADD outOfLineConstraint
+    | ADD LP_? outOfLineConstraint RP_?
     | MODIFY CONSTRAINT constraintName (RELY | NORELY) 
     | DROP (CONSTRAINT constraintName | PRIMARY KEY | UNIQUE columnNames) 
     | COMPILE 

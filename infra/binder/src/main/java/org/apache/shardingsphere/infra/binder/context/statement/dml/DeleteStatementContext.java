@@ -24,10 +24,12 @@ import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,11 +48,14 @@ public final class DeleteStatementContext extends CommonSQLStatementContext impl
     
     private final Collection<ColumnSegment> columnSegments = new LinkedList<>();
     
+    private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
+    
     public DeleteStatementContext(final DeleteStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         getSqlStatement().getWhere().ifPresent(whereSegments::add);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
+        ExpressionExtractUtils.extractJoinConditions(joinConditions, whereSegments);
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
@@ -97,5 +102,10 @@ public final class DeleteStatementContext extends CommonSQLStatementContext impl
     @Override
     public Collection<ColumnSegment> getColumnSegments() {
         return columnSegments;
+    }
+    
+    @Override
+    public Collection<BinaryOperationExpression> getJoinConditions() {
+        return joinConditions;
     }
 }

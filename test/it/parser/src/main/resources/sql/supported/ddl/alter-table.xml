@@ -17,6 +17,11 @@
   -->
 
 <sql-cases>
+    <sql-case id="alter_table_modify1" value="ALTER TABLE employee MODIFY (first_name DECRYPT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify2" value="ALTER TABLE employee MODIFY (first_name ENCRYPT SALT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify3" value="ALTER TABLE employee MODIFY (first_name ENCRYPT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify4" value="ALTER TABLE employee MODIFY (first_name ENCRYPT NO SALT)" db-types="Oracle" />
+    <sql-case id="alter_table_no_flashback_archive" value="ALTER TABLE employee NO FLASHBACK ARCHIVE" db-types="Oracle" />
     <sql-case id="alter_table_move_tablespace_overflow_tablespace" value="ALTER TABLE admin_docindex MOVE TABLESPACE admin_tbs2 OVERFLOW TABLESPACE admin_tbs3" db-types="Oracle" />
     <sql-case id="alter_table_move_nocompress" value="ALTER TABLE admin_iot5 MOVE NOCOMPRESS" db-types="Oracle" />
     <sql-case id="alter_table_enable_row_movement" value="ALTER TABLE SYSTEM.AUD$ ENABLE ROW MOVEMENT" db-types="Oracle" />
@@ -176,4 +181,9 @@
     <sql-case id="alter_table_enable_novalidate_constraint" value="ALTER TABLE dept ENABLE NOVALIDATE CONSTRAINT dname_ukey" db-types="Oracle" />
     <sql-case id="alter_table_add_encrypt_no_salt" value="ALTER TABLE mytable ADD (online_acct_pw VARCHAR2(8) ENCRYPT NO SALT 'NOMAC')" db-types="Oracle" />
     <sql-case id="alter_table_enable_novalidate_primary_key_enable_novalidate_constraint" value="ALTER TABLE mytable ENABLE NOVALIDATE PRIMARY KEY ENABLE NOVALIDATE CONSTRAINT emp_last_name_nn" db-types="Oracle" />
+    <sql-case id="alter_table_modify_partition_coalesce_subpartition" value="ALTER TABLE mytable MODIFY PARTITION us_locations COALESCE SUBPARTITION" db-types="Oracle" />
+    <sql-case id="alter_table_set_subpartition_template1" value="ALTER TABLE mytable SET SUBPARTITION TEMPLATE (SUBPARTITION e TABLESPACE ts1, SUBPARTITION f TABLESPACE ts2, SUBPARTITION g TABLESPACE ts3, SUBPARTITION h TABLESPACE ts4)" db-types="Oracle" />
+    <sql-case id="alter_table_set_subpartition_template2" value="ALTER TABLE emp_sub_template SET SUBPARTITION TEMPLATE()" db-types="Oracle" />
+    <sql-case id="alter_table_modify_default_attributes_for_partition_tablespace" value="ALTER TABLE emp MODIFY DEFAULT ATTRIBUTES FOR PARTITION p1 TABLESPACE ts1" db-types="Oracle" />
+    <sql-case id="alter_table_ref_with_rowid" value="ALTER TABLE emp ADD (REF(column_value) WITH ROWID)" db-types="Oracle" />
 </sql-cases>

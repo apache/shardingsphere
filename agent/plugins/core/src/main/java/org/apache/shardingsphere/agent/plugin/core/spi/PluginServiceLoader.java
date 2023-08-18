@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.core.spi;
 
-import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.agent.plugin.core.util.PluginPreconditions;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -42,8 +42,8 @@ public final class PluginServiceLoader<T> {
     }
     
     private void validate(final Class<T> service) {
-        Preconditions.checkNotNull(service, "SPI class is null.");
-        Preconditions.checkArgument(service.isInterface(), "SPI class `%s` is not interface.", service);
+        PluginPreconditions.checkNotNull(service, "SPI class is null.");
+        PluginPreconditions.checkArgument(service.isInterface(), String.format("SPI class `%s` is not interface.", service));
     }
     
     private Collection<T> load(final Class<T> service) {

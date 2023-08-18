@@ -76,11 +76,11 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord | STRING_
+    : IDENTIFIER_ | unreservedWord | DOUBLE_QUOTED_TEXT
     ;
 
 unreservedWord
-    : unreservedWord1 | unreservedWord2 | unreservedWord3
+    : unreservedWord1 | unreservedWord2 | unreservedWord3 | capacityUnit
     ;
 
 unreservedWord1
@@ -114,7 +114,7 @@ unreservedWord1
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
     | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | MINUTE | ANY 
-    | LENGTH | SINGLE_C | capacityUnit | TIME_UNIT | TARGET | PUBLIC | ID | STATE | PRIORITY
+    | LENGTH | SINGLE_C | TIME_UNIT | TARGET | PUBLIC | ID | STATE | PRIORITY
     | CONSTRAINT | PRIMARY | FOREIGN | KEY | POSITION | PRECISION | FUNCTION | PROCEDURE | SPECIFICATION | CASE
     | WHEN | CAST | TRIM | SUBSTRING | FULL | INNER | OUTER | LEFT | RIGHT | CROSS
     | USING | FALSE | SAVEPOINT | BODY | CHARACTER | ARRAY | TIME | TIMEOUT | TIMESTAMP | LOCALTIME
@@ -588,7 +588,7 @@ roleName
     ;
 
 username
-    : identifier
+    : identifier | STRING_
     ;
 
 password
@@ -667,8 +667,8 @@ booleanPrimary
     | PRIOR predicate
     | CONNECT_BY_ROOT predicate
     | booleanPrimary SAFE_EQ_ predicate
-    | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
+    | booleanPrimary comparisonOperator predicate
     | predicate
     ;
 
@@ -1005,7 +1005,7 @@ hashSubpartitionQuantity
     ;
 
 odciParameters
-    : identifier
+    : STRING_
     ;
 
 databaseName
@@ -1017,7 +1017,7 @@ locationName
     ;
 
 fileName
-    : STRING_
+    : identifier | STRING_
     ;
 
 asmFileName
@@ -1129,7 +1129,7 @@ logminerSessionName
     ;
 
 tablespaceGroupName
-    : identifier
+    : identifier | STRING_
     ;
 
 copyName
@@ -1788,7 +1788,7 @@ searchString
     ;
 
 attributeValue
-    : identifier
+    : STRING_
     ;
 
 joinGroupName

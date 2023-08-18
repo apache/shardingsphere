@@ -17,6 +17,46 @@
   -->
 
 <sql-parser-test-cases>
+    <alter-table sql-case-id="alter_table_modify1">
+        <table name="employee" start-index="12" stop-index="19" />
+        <modify-column>
+            <column-definition start-index="29" stop-index="46">
+                <column name="first_name" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify2">
+        <table name="employee" start-index="12" stop-index="19" />
+        <modify-column>
+            <column-definition start-index="29" stop-index="51">
+                <column name="first_name" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify3">
+        <table name="employee" start-index="12" stop-index="19" />
+        <modify-column>
+            <column-definition start-index="29" stop-index="46">
+                <column name="first_name" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify4">
+        <table name="employee" start-index="12" stop-index="19" />
+        <modify-column>
+            <column-definition start-index="29" stop-index="54">
+                <column name="first_name" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_no_flashback_archive">
+        <table name="employee" start-index="12" stop-index="19" />
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_move_tablespace_overflow_tablespace">
         <table name="admin_docindex" start-index="12" stop-index="25" />
     </alter-table>
@@ -1363,5 +1403,30 @@
     
     <alter-table sql-case-id="alter_table_enable_novalidate_primary_key_enable_novalidate_constraint">
         <table name="mytable" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_partition_coalesce_subpartition">
+        <table name="mytable" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_set_subpartition_template1">
+        <table name="mytable" start-index="12" stop-index="18" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_set_subpartition_template2">
+        <table name="emp_sub_template" start-index="12" stop-index="27" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_default_attributes_for_partition_tablespace">
+        <table name="emp" start-index="12" stop-index="14" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_ref_with_rowid">
+        <table name="emp" start-index="12" stop-index="14" />
+        <add-column>
+            <column-definition start-index="21" stop-index="48">
+                <column name="column_value" />
+            </column-definition>
+        </add-column>
     </alter-table>
 </sql-parser-test-cases>

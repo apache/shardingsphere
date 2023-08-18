@@ -89,10 +89,6 @@
                             </transformers>
                             <relocations>
                                 <relocation>
-                                    <pattern>com.google</pattern>
-                                    <shadedPattern>${shade.package}.com.google</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>net.bytebuddy</pattern>
                                     <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
                                 </relocation>
@@ -107,10 +103,6 @@
                                 <relocation>
                                     <pattern>ch.qos.logback</pattern>
                                     <shadedPattern>${shade.package}.ch.qos.logback</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.apache.commons.logging</pattern>
-                                    <shadedPattern>${shade.package}.org.apache.commons.logging</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

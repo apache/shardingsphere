@@ -385,7 +385,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
+        DataTypeSegment dataType = null != ctx.dataType() ? (DataTypeSegment) visit(ctx.dataType()) : null;
         boolean isPrimaryKey = ctx.inlineConstraint().stream().anyMatch(each -> null != each.primaryKey());
         boolean isNotNull = ctx.inlineConstraint().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, isNotNull);
@@ -605,6 +605,18 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         OracleAlterViewStatement result = new OracleAlterViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        result.setConstraintDefinitionSegment((ConstraintDefinitionSegment) getAlterViewConstraintDefinition(ctx));
+        return result;
+    }
+    
+    private ASTNode getAlterViewConstraintDefinition(final AlterViewContext ctx) {
+        ConstraintDefinitionSegment result = null;
+        if (null != ctx.outOfLineConstraint()) {
+            result = (ConstraintDefinitionSegment) visit(ctx.outOfLineConstraint());
+        } else if (null != ctx.constraintName()) {
+            result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+            result.setConstraintName((ConstraintSegment) visit(ctx.constraintName()));
+        }
         return result;
     }
     

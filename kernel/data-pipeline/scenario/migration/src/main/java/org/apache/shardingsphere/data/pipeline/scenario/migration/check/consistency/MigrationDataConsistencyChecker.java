@@ -39,20 +39,25 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDat
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckerFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineDatabaseTypeException;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Data consistency checker for migration job.
@@ -66,6 +71,8 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     
     private final ConsistencyCheckJobItemProgressContext progressContext;
     
+    private final AtomicReference<TableDataConsistencyChecker> currentTableChecker = new AtomicReference<>();
+    
     public MigrationDataConsistencyChecker(final MigrationJobConfiguration jobConfig, final InventoryIncrementalProcessContext processContext,
                                            final ConsistencyCheckJobItemProgressContext progressContext) {
         this.jobConfig = jobConfig;
@@ -74,9 +81,10 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     }
     
     @Override
-    public Map<String, TableDataConsistencyCheckResult> check(final TableDataConsistencyChecker tableChecker) {
-        verifyPipelineDatabaseType(tableChecker, jobConfig.getSources().values().iterator().next());
-        verifyPipelineDatabaseType(tableChecker, jobConfig.getTarget());
+    public Map<String, TableDataConsistencyCheckResult> check(final String algorithmType, final Properties algorithmProps) {
+        Collection<DatabaseType> supportedDatabaseTypes = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps).getSupportedDatabaseTypes();
+        verifyPipelineDatabaseType(supportedDatabaseTypes, jobConfig.getSources().values().iterator().next());
+        verifyPipelineDatabaseType(supportedDatabaseTypes, jobConfig.getTarget());
         List<String> sourceTableNames = new LinkedList<>();
         jobConfig.getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes()
                 .forEach(dataNode -> sourceTableNames.add(DataNodeUtils.formatWithSchema(dataNode)))));
@@ -87,7 +95,11 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         try (PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager()) {
             AtomicBoolean checkFailed = new AtomicBoolean(false);
             for (JobDataNodeLine each : jobConfig.getJobShardingDataNodes()) {
-                each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> check(tableChecker, result, dataSourceManager, checkFailed, each, entry, dataNode)));
+                each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> {
+                    TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps);
+                    currentTableChecker.set(tableChecker);
+                    check(tableChecker, result, dataSourceManager, checkFailed, each, entry, dataNode);
+                }));
             }
         }
         return result;
@@ -123,13 +135,30 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         return tableChecker.checkSingleTableInventoryData(param);
     }
     
-    private void verifyPipelineDatabaseType(final TableDataConsistencyChecker tableChecker, final PipelineDataSourceConfiguration dataSourceConfig) {
-        ShardingSpherePreconditions.checkState(tableChecker.getSupportedDatabaseTypes().contains(dataSourceConfig.getDatabaseType()),
+    private void verifyPipelineDatabaseType(final Collection<DatabaseType> supportedDatabaseTypes, final PipelineDataSourceConfiguration dataSourceConfig) {
+        ShardingSpherePreconditions.checkState(supportedDatabaseTypes.contains(dataSourceConfig.getDatabaseType()),
                 () -> new UnsupportedPipelineDatabaseTypeException(dataSourceConfig.getDatabaseType()));
     }
     
     private long getRecordsCount() {
         Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = new MigrationJobAPI().getJobProgress(jobConfig);
         return jobProgress.values().stream().filter(Objects::nonNull).mapToLong(InventoryIncrementalJobItemProgress::getProcessedRecordsCount).sum();
+    }
+    
+    @Override
+    public void cancel() {
+        TableDataConsistencyChecker tableChecker = currentTableChecker.get();
+        if (null != tableChecker) {
+            tableChecker.cancel();
+        }
+    }
+    
+    @Override
+    public boolean isCanceling() {
+        TableDataConsistencyChecker tableChecker = currentTableChecker.get();
+        if (null != tableChecker) {
+            return tableChecker.isCanceling();
+        }
+        return false;
     }
 }

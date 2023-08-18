@@ -94,6 +94,7 @@
         <zookeeper.version>3.8.1</zookeeper.version>
         <curator.version>5.4.0</curator.version>
         <jetcd.version>0.7.5</jetcd.version>
+        <grpc.version>1.51.0</grpc.version>
         <apollo-client.version>1.9.0</apollo-client.version>
         
         <elasticjob.version>3.0.3</elasticjob.version>
@@ -113,7 +114,6 @@
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
         <commons-dbcp2.version>2.9.0</commons-dbcp2.version>
-        <druid.version>1.2.18</druid.version>
         <c3p0.version>0.9.5.5</c3p0.version>
         
         <junit.version>5.9.2</junit.version>
@@ -404,7 +404,16 @@
                         <groupId>io.netty</groupId>
                         <artifactId>netty-transport-native-unix-common</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>io.grpc</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-all</artifactId>
+                <version>${grpc.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.ctrip.framework.apollo</groupId>
@@ -528,12 +537,6 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-dbcp2</artifactId>
                 <version>${commons-dbcp2.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid</artifactId>
-                <version>${druid.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

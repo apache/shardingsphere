@@ -19,14 +19,16 @@ package org.apache.shardingsphere.infra.exception.dialect;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.DatabaseProtocolSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.ServerSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.infra.exception.dialect.mapper.SQLDialectExceptionMapper;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.DatabaseProtocolSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -59,6 +61,9 @@ public final class SQLExceptionTransformEngine {
             if (dialectExceptionMapper.isPresent()) {
                 return dialectExceptionMapper.get().convert((SQLDialectException) cause);
             }
+        }
+        if (cause instanceof ShardingSphereServerException) {
+            return new ServerSQLException(cause).toSQLException();
         }
         return new UnknownSQLException(cause).toSQLException();
     }

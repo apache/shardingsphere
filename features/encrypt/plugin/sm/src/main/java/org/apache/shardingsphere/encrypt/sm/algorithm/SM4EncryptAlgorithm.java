@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.sm.algorithm;
 
+import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
@@ -39,6 +40,7 @@ import java.util.Set;
 /**
  * SM4 encrypt algorithm.
  */
+@EqualsAndHashCode
 public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
     
     static {

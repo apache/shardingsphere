@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -31,12 +32,13 @@ import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -74,10 +76,13 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<ColumnSegment> columnSegments = Collections.emptyList();
         Collection<WhereSegment> whereSegments = Collections.emptyList();
+        Collection<BinaryOperationExpression> joinConditions = Collections.emptyList();
         if (sqlStatementContext instanceof WhereAvailable) {
             columnSegments = ((WhereAvailable) sqlStatementContext).getColumnSegments();
             whereSegments = ((WhereAvailable) sqlStatementContext).getWhereSegments();
+            joinConditions = ((WhereAvailable) sqlStatementContext).getJoinConditions();
         }
+        ShardingSpherePreconditions.checkState(isAllJoinConditionsUseSameEncryptor(joinConditions), () -> new UnsupportedSQLOperationException("Can not use different encryptor in join condition"));
         String defaultSchema = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName);
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> schemas.get(defaultSchema));
         Map<String, String> columnExpressionTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(columnSegments, schema);
@@ -95,6 +100,44 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             }
         }
         return result;
+    }
+    
+    private boolean isAllJoinConditionsUseSameEncryptor(final Collection<BinaryOperationExpression> joinConditions) {
+        for (BinaryOperationExpression each : joinConditions) {
+            if (!(each.getLeft() instanceof ColumnSegment) || !(each.getRight() instanceof ColumnSegment)) {
+                continue;
+            }
+            EncryptAlgorithm<?, ?> leftColumnEncryptor = getColumnEncryptor((ColumnSegment) each.getLeft());
+            EncryptAlgorithm<?, ?> rightColumnEncryptor = getColumnEncryptor((ColumnSegment) each.getRight());
+            if (!isSameEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isSameEncryptor(final EncryptAlgorithm<?, ?> leftColumnEncryptor, final EncryptAlgorithm<?, ?> rightColumnEncryptor) {
+        if (null != leftColumnEncryptor && null != rightColumnEncryptor) {
+            if (!leftColumnEncryptor.getType().equals(rightColumnEncryptor.getType())) {
+                return false;
+            }
+            return leftColumnEncryptor.equals(rightColumnEncryptor);
+        }
+        return null == leftColumnEncryptor && null == rightColumnEncryptor;
+    }
+    
+    private EncryptAlgorithm<?, ?> getColumnEncryptor(final ColumnSegment columnSegment) {
+        String tableName = columnSegment.getOriginalTable().getValue();
+        String columnName = columnSegment.getOriginalColumn().getValue();
+        if (!encryptRule.findEncryptTable(tableName).isPresent() || !encryptRule.getEncryptTable(tableName).isEncryptColumn(columnName)) {
+            return null;
+        }
+        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
+        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
+        if (encryptColumn.getAssistedQuery().isPresent()) {
+            return encryptColumn.getAssistedQuery().get().getEncryptor();
+        }
+        return encryptColumn.getCipher().getEncryptor();
     }
     
     private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final EncryptColumn encryptColumn, final ColumnSegment columnSegment, final Collection<WhereSegment> whereSegments) {
