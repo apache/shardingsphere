@@ -22,6 +22,7 @@ import org.apache.calcite.sql.SqlExplain;
 import org.apache.calcite.sql.SqlExplainLevel;
 import org.apache.calcite.sql.SqlExplainFormat;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -41,14 +42,16 @@ public final class ExplainStatementConverter implements SQLStatementConverter<Ex
     }
     
     private SqlNode convertSQLStatement(final ExplainStatement deleteStatement) {
-        return deleteStatement.getStatement().map(each -> {
-            if (each instanceof SelectStatement) {
-                return new SelectStatementConverter().convert((SelectStatement) each);
-            } else if (each instanceof DeleteStatement) {
-                return new DeleteStatementConverter().convert((DeleteStatement) each);
-            }
-            // TODO other statement converter.
-            return null;
-        }).orElseThrow(IllegalStateException::new);
+        return deleteStatement.getStatement().map(this::getSQLStatement).orElseThrow(IllegalStateException::new);
+    }
+    
+    private SqlNode getSQLStatement(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            return new SelectStatementConverter().convert((SelectStatement) sqlStatement);
+        } else if (sqlStatement instanceof DeleteStatement) {
+            return new DeleteStatementConverter().convert((DeleteStatement) sqlStatement);
+        }
+        // TODO other statement converter.
+        return null;
     }
 }
