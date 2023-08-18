@@ -60,7 +60,7 @@ public final class StorageUnitUtils {
             }
             inUsedStorageUnits.forEach(storageUnit -> {
                 Collection<String> rules = result.getOrDefault(storageUnit, new LinkedHashSet<>());
-                rules.add(each.getType());
+                rules.add(each.getClass().getSimpleName());
                 result.put(storageUnit, rules);
             });
         }
@@ -74,7 +74,7 @@ public final class StorageUnitUtils {
             }
             inUsedStorageUnits.forEach(storageUnit -> {
                 Collection<String> rules = result.getOrDefault(storageUnit, new LinkedHashSet<>());
-                rules.add(each.getType());
+                rules.add(each.getClass().getSimpleName());
                 result.put(storageUnit, rules);
             });
         }
