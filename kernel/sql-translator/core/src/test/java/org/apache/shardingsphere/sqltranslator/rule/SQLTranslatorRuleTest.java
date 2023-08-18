@@ -75,9 +75,4 @@ class SQLTranslatorRuleTest {
         SQLTranslatorRuleConfiguration expected = new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false);
         assertThat(new SQLTranslatorRule(expected).getConfiguration(), is(expected));
     }
-    
-    @Test
-    void assertGetType() {
-        assertThat(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).getType(), is(SQLTranslatorRule.class.getSimpleName()));
-    }
 }

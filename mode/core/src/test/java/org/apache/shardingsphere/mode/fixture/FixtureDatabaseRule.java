@@ -31,9 +31,4 @@ public final class FixtureDatabaseRule implements DatabaseRule {
     public RuleConfiguration getConfiguration() {
         return mock(RuleConfiguration.class);
     }
-    
-    @Override
-    public String getType() {
-        return FixtureDatabaseRule.class.getSimpleName();
-    }
 }

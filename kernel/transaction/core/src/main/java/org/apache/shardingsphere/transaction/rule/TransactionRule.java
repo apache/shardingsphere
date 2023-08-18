@@ -141,9 +141,4 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
             log.error("Close transaction engine failed", ex);
         }
     }
-    
-    @Override
-    public String getType() {
-        return TransactionRule.class.getSimpleName();
-    }
 }

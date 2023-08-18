@@ -793,9 +793,4 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     public boolean isShardingCacheEnabled() {
         return null != shardingCache;
     }
-    
-    @Override
-    public String getType() {
-        return ShardingRule.class.getSimpleName();
-    }
 }
