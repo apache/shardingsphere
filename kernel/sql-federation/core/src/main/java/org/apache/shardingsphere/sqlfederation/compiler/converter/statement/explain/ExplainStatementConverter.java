@@ -42,10 +42,10 @@ public final class ExplainStatementConverter implements SQLStatementConverter<Ex
     }
     
     private SqlNode convertSQLStatement(final ExplainStatement deleteStatement) {
-        return deleteStatement.getStatement().map(this::getSQLStatement).orElseThrow(IllegalStateException::new);
+        return deleteStatement.getStatement().map(this::convertSqlNode).orElseThrow(IllegalStateException::new);
     }
     
-    private SqlNode getSQLStatement(final SQLStatement sqlStatement) {
+    private SqlNode convertSqlNode(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return new SelectStatementConverter().convert((SelectStatement) sqlStatement);
         } else if (sqlStatement instanceof DeleteStatement) {
