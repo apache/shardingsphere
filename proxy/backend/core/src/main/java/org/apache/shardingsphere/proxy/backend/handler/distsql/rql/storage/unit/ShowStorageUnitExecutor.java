@@ -96,7 +96,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().size(), 1F);
         Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
-        Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
+        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits();
         Optional<Integer> usageCount = sqlStatement.getUsageCount();
         if (usageCount.isPresent()) {
             Map<String, Collection<String>> inUsedStorageUnits = StorageUnitUtils.getInUsedStorageUnits(
@@ -104,12 +104,12 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
             for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().entrySet()) {
                 Integer currentUsageCount = inUsedStorageUnits.containsKey(entry.getKey()) ? inUsedStorageUnits.get(entry.getKey()).size() : 0;
                 if (usageCount.get().equals(currentUsageCount)) {
-                    result.put(entry.getKey(), getDataSourcePoolProperties(propsMap, entry.getKey(), storageTypes.get(entry.getKey()), entry.getValue().getDataSource()));
+                    result.put(entry.getKey(), getDataSourcePoolProperties(propsMap, entry.getKey(), storageUnits.get(entry.getKey()).getStorageType(), entry.getValue().getDataSource()));
                 }
             }
         } else {
             for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().entrySet()) {
-                result.put(entry.getKey(), getDataSourcePoolProperties(propsMap, entry.getKey(), storageTypes.get(entry.getKey()), entry.getValue().getDataSource()));
+                result.put(entry.getKey(), getDataSourcePoolProperties(propsMap, entry.getKey(), storageUnits.get(entry.getKey()).getStorageType(), entry.getValue().getDataSource()));
             }
         }
         return result;
