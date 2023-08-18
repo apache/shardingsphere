@@ -44,11 +44,6 @@ class SQLParserRuleTest {
     }
     
     @Test
-    void assertGetType() {
-        assertThat(sqlParserRule.getType(), is(SQLParserRule.class.getSimpleName()));
-    }
-    
-    @Test
     void assertFields() {
         assertTrue(sqlParserRule.isSqlCommentParseEnabled());
         assertTrue(sqlParserRule.getConfiguration().isSqlCommentParseEnabled());

@@ -95,11 +95,6 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
     }
     
     @Override
-    public String getType() {
-        return BroadcastRule.class.getSimpleName();
-    }
-    
-    @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
         return tableDataNodes;
     }

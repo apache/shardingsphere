@@ -72,9 +72,4 @@ public final class GlobalClockRule implements GlobalRule {
     public String getGlobalClockProviderType() {
         return String.join(".", configuration.getType(), configuration.getProvider());
     }
-    
-    @Override
-    public String getType() {
-        return GlobalClockRule.class.getSimpleName();
-    }
 }

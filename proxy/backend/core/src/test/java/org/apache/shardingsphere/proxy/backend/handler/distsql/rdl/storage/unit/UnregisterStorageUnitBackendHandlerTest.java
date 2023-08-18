@@ -130,7 +130,6 @@ class UnregisterStorageUnitBackendHandlerTest {
     @Test
     void assertStorageUnitNameInUseExecute() {
         when(ruleMetaData.findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(shadowRule));
-        when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         StorageUnit storageUnit = mock(StorageUnit.class);
         when(storageUnit.getDataSource()).thenReturn(dataSource);
@@ -144,7 +143,6 @@ class UnregisterStorageUnitBackendHandlerTest {
     @Test
     void assertStorageUnitNameInUseWithoutIgnoreSingleTables() {
         when(ruleMetaData.findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(singleRule));
-        when(singleRule.getType()).thenReturn("SingleRule");
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(singleRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
@@ -160,7 +158,6 @@ class UnregisterStorageUnitBackendHandlerTest {
     @Test
     void assertStorageUnitNameInUseIgnoreSingleTables() throws SQLException {
         when(ruleMetaData.findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(singleRule));
-        when(singleRule.getType()).thenReturn("SingleRule");
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(singleRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
@@ -184,7 +181,6 @@ class UnregisterStorageUnitBackendHandlerTest {
     @Test
     void assertStorageUnitNameInUseWithIfExists() {
         when(ruleMetaData.findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(shadowRule));
-        when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true);
