@@ -25,13 +25,13 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNode;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNodes;
 import org.apache.shardingsphere.proxy.backend.util.ExportUtils;
 
-import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,15 +87,15 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
     
     private Map<String, Collection<ExportedStorageNode>> generateDatabaseExportStorageNodesData(final ShardingSphereDatabase database) {
         Map<String, ExportedStorageNode> storageNodes = new LinkedHashMap<>();
-        for (Entry<String, DataSource> entry : database.getResourceMetaData().getStorageUnitMetaData().getDataSources().entrySet()) {
+        for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().entrySet()) {
             ConnectionProperties connectionProps = database.getResourceMetaData().getConnectionProperties(entry.getKey());
             String databaseInstanceIp = getDatabaseInstanceIp(connectionProps);
             if (storageNodes.containsKey(databaseInstanceIp)) {
                 continue;
             }
-            Map<String, Object> standardProperties = DataSourcePoolPropertiesCreator.create(entry.getValue()).getConnectionPropertySynonyms().getStandardProperties();
+            Map<String, Object> standardProps = DataSourcePoolPropertiesCreator.create(entry.getValue().getDataSource()).getConnectionPropertySynonyms().getStandardProperties();
             ExportedStorageNode exportedStorageNode = new ExportedStorageNode(connectionProps.getHostname(), String.valueOf(connectionProps.getPort()),
-                    String.valueOf(standardProperties.get("username")), String.valueOf(standardProperties.get("password")), connectionProps.getCatalog());
+                    String.valueOf(standardProps.get("username")), String.valueOf(standardProps.get("password")), connectionProps.getCatalog());
             storageNodes.put(databaseInstanceIp, exportedStorageNode);
         }
         return Collections.singletonMap(database.getName(), storageNodes.values());
