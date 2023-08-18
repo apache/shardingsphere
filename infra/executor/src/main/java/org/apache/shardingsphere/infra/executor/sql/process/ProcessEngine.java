@@ -67,6 +67,7 @@ public final class ProcessEngine {
     public void executeSQL(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
             String processId = executionGroupContext.getReportContext().getProcessId();
+            // TODO remove heldByConnection when jdbc connection support generate processId and call connect and disconnect  
             boolean heldByConnection = null != ProcessRegistry.getInstance().get(processId) && ProcessRegistry.getInstance().get(processId).isHeldByConnection();
             ProcessIdContext.set(processId);
             ProcessRegistry.getInstance().add(new Process(queryContext.getSql(), executionGroupContext, heldByConnection));
