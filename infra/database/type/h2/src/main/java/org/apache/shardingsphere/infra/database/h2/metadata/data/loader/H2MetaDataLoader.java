@@ -50,10 +50,10 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
     private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_NO_ORDER + ORDER_BY_ORDINAL_POSITION;
     
     private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_NO_ORDER + " AND UPPER(TABLE_NAME) IN (%s)" + ORDER_BY_ORDINAL_POSITION;
-    
-    private static final String INDEX_META_DATA_SQL = "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES"
+
+    private static final String INDEX_META_DATA_SQL = "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES"
             + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN (%s)";
-    
+
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?"
             + " AND INDEX_TYPE_NAME = 'PRIMARY KEY'";
     
@@ -126,10 +126,14 @@ public final class H2MetaDataLoader implements DialectMetaDataLoader {
                 while (resultSet.next()) {
                     String indexName = resultSet.getString("INDEX_NAME");
                     String tableName = resultSet.getString("TABLE_NAME");
+                    boolean uniqueIndex = "UNIQUE INDEX".equals(resultSet.getString("INDEX_TYPE_NAME"));
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
-                    result.get(tableName).add(new IndexMetaData(indexName));
+                    IndexMetaData indexMetaData = new IndexMetaData(indexName);
+                    indexMetaData.setUnique(uniqueIndex);
+                    result.get(tableName).add(indexMetaData);
+
                 }
             }
         }

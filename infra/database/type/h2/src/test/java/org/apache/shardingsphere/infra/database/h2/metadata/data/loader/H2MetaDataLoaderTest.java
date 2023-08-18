@@ -55,7 +55,7 @@ class H2MetaDataLoaderTest {
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL')")
+                "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL')")
                 .executeQuery()).thenReturn(indexResultSet);
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
@@ -78,7 +78,7 @@ class H2MetaDataLoaderTest {
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL')")
+                "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL')")
                 .executeQuery()).thenReturn(indexResultSet);
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
@@ -142,6 +142,7 @@ class H2MetaDataLoaderTest {
         when(result.next()).thenReturn(true, false);
         when(result.getString("INDEX_NAME")).thenReturn("id");
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
+        when(result.getString("INDEX_TYPE_NAME")).thenReturn("UNIQUE INDEX");
         return result;
     }
     
@@ -160,6 +161,8 @@ class H2MetaDataLoaderTest {
         assertThat(columnsIterator.next(), is(new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true)));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
-        assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
+        IndexMetaData indexMetaData = new IndexMetaData("id");
+        indexMetaData.setUnique(true);
+        assertThat(indexesIterator.next(), is(indexMetaData));
     }
 }
