@@ -83,9 +83,4 @@ public final class MaskRule implements DatabaseRule, TableContainedRule {
     public TableNamesMapper getEnhancedTableMapper() {
         return new TableNamesMapper();
     }
-    
-    @Override
-    public String getType() {
-        return MaskRule.class.getSimpleName();
-    }
 }

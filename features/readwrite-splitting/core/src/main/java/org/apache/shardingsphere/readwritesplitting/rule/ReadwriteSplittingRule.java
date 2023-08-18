@@ -205,9 +205,4 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         }
         return result;
     }
-    
-    @Override
-    public String getType() {
-        return ReadwriteSplittingRule.class.getSimpleName();
-    }
 }
