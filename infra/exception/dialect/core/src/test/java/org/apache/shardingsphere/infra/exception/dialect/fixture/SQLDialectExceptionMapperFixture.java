@@ -26,11 +26,11 @@ public final class SQLDialectExceptionMapperFixture implements SQLDialectExcepti
     
     @Override
     public SQLException convert(final SQLDialectException sqlDialectException) {
-        return new SQLException("only for test");
+        return new SQLException("Dialect exception");
     }
     
     @Override
     public String getDatabaseType() {
-        return "MySQL";
+        return "FIXTURE";
     }
 }
