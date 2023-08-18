@@ -60,6 +60,8 @@ class SQLNodeConverterEngineIT {
     
     private static final String DELETE_STATEMENT_PREFIX = "DELETE";
     
+    private static final String EXPLAIN_STATEMENT_PREFIX = "EXPLAIN";
+    
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertConvert(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
@@ -83,7 +85,7 @@ class SQLNodeConverterEngineIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return getTestParameters("MySQL", "PostgreSQL", "openGauss").stream();
+            return getTestParameters("MySQL", "PostgreSQL", "openGauss", "Oracle").stream();
         }
         
         private Collection<Arguments> getTestParameters(final String... databaseTypes) {
@@ -101,7 +103,9 @@ class SQLNodeConverterEngineIT {
         }
         
         private boolean isSupportedSQLCase(final InternalSQLParserTestParameter testParam) {
-            return testParam.getSqlCaseId().toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) || testParam.getSqlCaseId().toUpperCase().startsWith(DELETE_STATEMENT_PREFIX);
+            return testParam.getSqlCaseId().toUpperCase().startsWith(SELECT_STATEMENT_PREFIX)
+                    || testParam.getSqlCaseId().toUpperCase().startsWith(DELETE_STATEMENT_PREFIX)
+                    || testParam.getSqlCaseId().toUpperCase().startsWith(EXPLAIN_STATEMENT_PREFIX);
         }
     }
 }
