@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.expression.impl.InExpressi
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.NotExpressionBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubqueryExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
@@ -47,31 +47,30 @@ public final class ExpressionSegmentBinder {
      * Bind expression segment with metadata.
      *
      * @param segment expression segment
-     * @param metaData metaData
-     * @param defaultDatabaseName default database name
+     * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bounded expression segment
      */
-    public static ExpressionSegment bind(final ExpressionSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+    public static ExpressionSegment bind(final ExpressionSegment segment, final SQLStatementBinderContext statementBinderContext,
                                          final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (segment instanceof BinaryOperationExpression) {
-            return BinaryOperationExpressionBinder.bind((BinaryOperationExpression) segment, metaData, defaultDatabaseName, tableBinderContexts, outerTableBinderContexts);
+            return BinaryOperationExpressionBinder.bind((BinaryOperationExpression) segment, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof ExistsSubqueryExpression) {
-            return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, metaData, defaultDatabaseName, tableBinderContexts);
+            return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, statementBinderContext, tableBinderContexts);
         }
         if (segment instanceof SubqueryExpressionSegment) {
-            return SubqueryExpressionSegmentBinder.bind((SubqueryExpressionSegment) segment, metaData, defaultDatabaseName);
+            return SubqueryExpressionSegmentBinder.bind((SubqueryExpressionSegment) segment, statementBinderContext, tableBinderContexts);
         }
         if (segment instanceof InExpression) {
-            return InExpressionBinder.bind((InExpression) segment, metaData, defaultDatabaseName, tableBinderContexts);
+            return InExpressionBinder.bind((InExpression) segment, statementBinderContext, tableBinderContexts);
         }
         if (segment instanceof NotExpression) {
-            return NotExpressionBinder.bind((NotExpression) segment, metaData, defaultDatabaseName, tableBinderContexts);
+            return NotExpressionBinder.bind((NotExpression) segment, statementBinderContext, tableBinderContexts);
         }
         if (segment instanceof ColumnSegment) {
-            return ColumnSegmentBinder.bind((ColumnSegment) segment, tableBinderContexts, outerTableBinderContexts);
+            return ColumnSegmentBinder.bind((ColumnSegment) segment, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         }
         // TODO support more ExpressionSegment bind
         return segment;

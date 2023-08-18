@@ -22,10 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -50,26 +50,24 @@ public final class JoinTableSegmentBinder {
      * Bind join table segment with metadata.
      *
      * @param segment join table segment
-     * @param metaData meta data
-     * @param defaultDatabaseName default database name
-     * @param databaseType database type
+     * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
      * @return bounded join table segment
      */
-    public static JoinTableSegment bind(final JoinTableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                                        final DatabaseType databaseType, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static JoinTableSegment bind(final JoinTableSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         JoinTableSegment result = new JoinTableSegment();
         result.setStartIndex(segment.getStartIndex());
         result.setStopIndex(segment.getStopIndex());
         segment.getAliasSegment().ifPresent(result::setAlias);
-        result.setLeft(TableSegmentBinder.bind(segment.getLeft(), metaData, defaultDatabaseName, databaseType, tableBinderContexts));
+        result.setLeft(TableSegmentBinder.bind(segment.getLeft(), statementBinderContext, tableBinderContexts));
         result.setNatural(segment.isNatural());
         result.setJoinType(segment.getJoinType());
-        result.setRight(TableSegmentBinder.bind(segment.getRight(), metaData, defaultDatabaseName, databaseType, tableBinderContexts));
-        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), metaData, defaultDatabaseName, tableBinderContexts, Collections.emptyMap()));
+        result.setRight(TableSegmentBinder.bind(segment.getRight(), statementBinderContext, tableBinderContexts));
+        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), statementBinderContext, tableBinderContexts, Collections.emptyMap()));
         // TODO bind using column in join table segment
         result.setUsing(segment.getUsing());
-        result.getJoinTableProjectionSegments().addAll(getJoinTableProjectionSegments(result, databaseType, tableBinderContexts));
+        result.getJoinTableProjectionSegments().addAll(getJoinTableProjectionSegments(result, statementBinderContext.getDatabaseType(), tableBinderContexts));
+        statementBinderContext.getJoinTableProjectionSegments().addAll(result.getJoinTableProjectionSegments());
         return result;
     }
     

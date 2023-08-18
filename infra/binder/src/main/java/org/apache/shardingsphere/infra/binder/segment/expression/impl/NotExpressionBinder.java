@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 
@@ -38,14 +38,13 @@ public final class NotExpressionBinder {
      * Bind not expression segment with metadata.
      *
      * @param segment not expression
-     * @param metaData metaData
-     * @param defaultDatabaseName default database name
+     * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
      * @return bounded not expression
      */
-    public static NotExpression bind(final NotExpression segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+    public static NotExpression bind(final NotExpression segment, final SQLStatementBinderContext statementBinderContext,
                                      final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ExpressionSegment boundedExpression = ExpressionSegmentBinder.bind(segment.getExpression(), metaData, defaultDatabaseName, tableBinderContexts, Collections.emptyMap());
+        ExpressionSegment boundedExpression = ExpressionSegmentBinder.bind(segment.getExpression(), statementBinderContext, tableBinderContexts, Collections.emptyMap());
         return new NotExpression(segment.getStartIndex(), segment.getStopIndex(), boundedExpression, segment.getNotSign());
     }
 }
