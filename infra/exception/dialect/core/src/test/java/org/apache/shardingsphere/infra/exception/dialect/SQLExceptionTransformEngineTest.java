@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.infra.exception.dialect;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
-import org.apache.shardingsphere.infra.exception.dialect.fixture.DatabaseProtocolExceptionExceptionFixture;
-import org.apache.shardingsphere.infra.hint.SQLHintDataSourceNotExistsException;
+import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -28,17 +29,50 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SQLExceptionTransformEngineTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
-    void assertSQLExceptionTransformEngineConvertException() {
-        assertThat(SQLException.class, is(SQLExceptionTransformEngine.toSQLException(new SQLException(), null).getClass()));
-        assertThat(SQLException.class, is(SQLExceptionTransformEngine.toSQLException(new SQLHintDataSourceNotExistsException("only for test"), null).getClass()));
-        assertThat(SQLException.class,
-                is(SQLExceptionTransformEngine.toSQLException(new DatabaseProtocolExceptionExceptionFixture("only for test"), TypedSPILoader.getService(DatabaseType.class, "MySQL")).getClass()));
-        assertThat(SQLException.class,
-                is(SQLExceptionTransformEngine.toSQLException(new DatabaseCreateExistsException("only for test"), TypedSPILoader.getService(DatabaseType.class, "MySQL")).getClass()));
-        assertThat(SQLException.class, is(SQLExceptionTransformEngine.toSQLException(new RuntimeException("only for test"), null).getClass()));
+    void assertToSQLExceptionWithSQLException() {
+        SQLException cause = new SQLException();
+        assertThat(SQLExceptionTransformEngine.toSQLException(cause, databaseType), is(cause));
+    }
+    
+    @Test
+    void assertToSQLExceptionWithShardingSphereSQLException() {
+        ShardingSphereSQLException cause = mock(ShardingSphereSQLException.class);
+        SQLException expected = new SQLException();
+        when(cause.toSQLException()).thenReturn(expected);
+        assertThat(SQLExceptionTransformEngine.toSQLException(cause, databaseType), is(expected));
+    }
+    
+    @Test
+    void assertToSQLExceptionWithDatabaseProtocolException() {
+        DatabaseProtocolException cause = mock(DatabaseProtocolException.class);
+        when(cause.getMessage()).thenReturn("No reason");
+        assertThat(SQLExceptionTransformEngine.toSQLException(cause, databaseType).getMessage(), is("Database protocol exception: No reason"));
+    }
+    
+    @Test
+    void assertToSQLExceptionWithSQLDialectException() {
+        SQLDialectException cause = mock(SQLDialectException.class);
+        assertThat(SQLExceptionTransformEngine.toSQLException(cause, databaseType).getMessage(), is("Dialect exception"));
+    }
+    
+    @Test
+    void assertToSQLExceptionWithShardingSphereServerException() {
+        ShardingSphereServerException cause = mock(ShardingSphereServerException.class);
+        when(cause.getMessage()).thenReturn("No reason");
+        assertThat(SQLExceptionTransformEngine.toSQLException(cause, databaseType).getMessage(), is("No reason"));
+    }
+    
+    @Test
+    void assertToSQLExceptionWithOtherException() {
+        Exception cause = new Exception("No reason");
+        assertThat(SQLExceptionTransformEngine.toSQLException(cause, databaseType).getMessage(), is("Unknown exception: No reason"));
     }
 }
