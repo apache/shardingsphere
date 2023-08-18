@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.exception.dialect;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.fixture.DatabaseProtocolExceptionExceptionFixture;
 import org.apache.shardingsphere.infra.hint.SQLHintDataSourceNotExistsException;

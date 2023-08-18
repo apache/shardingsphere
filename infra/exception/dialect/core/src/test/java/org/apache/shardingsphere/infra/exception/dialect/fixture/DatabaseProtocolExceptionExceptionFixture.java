@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.exception.dialect.exception.protocol.Data
 
 public final class DatabaseProtocolExceptionExceptionFixture extends DatabaseProtocolException {
     
-    public DatabaseProtocolExceptionExceptionFixture(String reason) {
+    public DatabaseProtocolExceptionExceptionFixture(final String reason) {
         super(reason);
     }
 }

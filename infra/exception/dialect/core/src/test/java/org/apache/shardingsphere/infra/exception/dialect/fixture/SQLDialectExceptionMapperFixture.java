@@ -25,9 +25,10 @@ import java.sql.SQLException;
 public final class SQLDialectExceptionMapperFixture implements SQLDialectExceptionMapper {
     
     @Override
-    public SQLException convert(SQLDialectException sqlDialectException) {
+    public SQLException convert(final SQLDialectException sqlDialectException) {
         return new SQLException("only for test");
     }
+    
     @Override
     public String getDatabaseType() {
         return "MySQL";
