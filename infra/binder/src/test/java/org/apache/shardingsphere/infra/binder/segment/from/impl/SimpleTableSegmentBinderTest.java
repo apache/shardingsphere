@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -52,7 +53,7 @@ class SimpleTableSegmentBinderTest {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_order")));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
+        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType), tableBinderContexts);
         assertThat(actual.getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertTrue(tableBinderContexts.containsKey("t_order"));
@@ -86,7 +87,7 @@ class SimpleTableSegmentBinderTest {
         simpleTableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("sharding_db")));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
+        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType), tableBinderContexts);
         assertThat(actual.getTableName().getOriginalDatabase().getValue(), is("sharding_db"));
         assertThat(actual.getTableName().getOriginalSchema().getValue(), is("sharding_db"));
     }
@@ -96,7 +97,7 @@ class SimpleTableSegmentBinderTest {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_order")));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
+        SimpleTableSegment actual = SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType), tableBinderContexts);
         assertThat(actual.getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
     }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.from;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 
@@ -27,6 +28,7 @@ import java.util.Map;
 /**
  * Table segment binder context.
  */
+@RequiredArgsConstructor
 public final class TableSegmentBinderContext {
     
     private final Map<String, ProjectionSegment> columnLabelProjectionSegments;
