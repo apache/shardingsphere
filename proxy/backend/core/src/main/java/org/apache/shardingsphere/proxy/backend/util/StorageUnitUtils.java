@@ -47,12 +47,13 @@ public final class StorageUnitUtils {
      */
     public static Map<String, Collection<String>> getInUsedStorageUnits(final RuleMetaData ruleMetaData, final int initialCapacity) {
         Map<String, Collection<String>> result = new LinkedHashMap<>(initialCapacity, 1F);
-        getFromDataSourceContainedRules(result, ruleMetaData.findRules(DataSourceContainedRule.class));
-        getFromDataNodeContainedRules(result, ruleMetaData.findRules(DataNodeContainedRule.class));
+        result.putAll(getFromDataSourceContainedRules(ruleMetaData.findRules(DataSourceContainedRule.class)));
+        result.putAll(getFromDataNodeContainedRules(ruleMetaData.findRules(DataNodeContainedRule.class)));
         return result;
     }
     
-    private static void getFromDataSourceContainedRules(final Map<String, Collection<String>> result, final Collection<DataSourceContainedRule> dataSourceContainedRules) {
+    private static Map<String, Collection<String>> getFromDataSourceContainedRules(final Collection<DataSourceContainedRule> dataSourceContainedRules) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
         for (DataSourceContainedRule each : dataSourceContainedRules) {
             Collection<String> inUsedStorageUnits = getInUsedStorageUnitNames(each);
             if (inUsedStorageUnits.isEmpty()) {
@@ -64,9 +65,11 @@ public final class StorageUnitUtils {
                 result.put(storageUnit, rules);
             });
         }
+        return result;
     }
     
-    private static void getFromDataNodeContainedRules(final Map<String, Collection<String>> result, final Collection<DataNodeContainedRule> dataNodeContainedRules) {
+    private static Map<String, Collection<String>> getFromDataNodeContainedRules(final Collection<DataNodeContainedRule> dataNodeContainedRules) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
         for (DataNodeContainedRule each : dataNodeContainedRules) {
             Collection<String> inUsedStorageUnits = getInUsedStorageUnitNames(each);
             if (inUsedStorageUnits.isEmpty()) {
@@ -78,6 +81,7 @@ public final class StorageUnitUtils {
                 result.put(storageUnit, rules);
             });
         }
+        return result;
     }
     
     private static Collection<String> getInUsedStorageUnitNames(final DataSourceContainedRule rule) {
