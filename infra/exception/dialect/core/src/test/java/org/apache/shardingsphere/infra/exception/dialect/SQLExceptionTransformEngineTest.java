@@ -59,8 +59,7 @@ public class SQLExceptionTransformEngineTest {
     
     @Test
     void assertToSQLExceptionWithSQLDialectException() {
-        SQLDialectException cause = mock(SQLDialectException.class);
-        assertThat(SQLExceptionTransformEngine.toSQLException(cause, databaseType).getMessage(), is("Dialect exception"));
+        assertThat(SQLExceptionTransformEngine.toSQLException(mock(SQLDialectException.class), databaseType).getMessage(), is("Dialect exception"));
     }
     
     @Test
@@ -72,7 +71,6 @@ public class SQLExceptionTransformEngineTest {
     
     @Test
     void assertToSQLExceptionWithOtherException() {
-        Exception cause = new Exception("No reason");
-        assertThat(SQLExceptionTransformEngine.toSQLException(cause, databaseType).getMessage(), is("Unknown exception: No reason"));
+        assertThat(SQLExceptionTransformEngine.toSQLException(new Exception("No reason"), databaseType).getMessage(), is("Unknown exception: No reason"));
     }
 }
