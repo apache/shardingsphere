@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -109,7 +110,9 @@ class UnregisterStorageUnitBackendHandlerTest {
     
     @Test
     void assertExecute() throws SQLException {
-        when(resourceMetaData.getStorageUnitMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(dataSource);
+        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false);
@@ -129,7 +132,9 @@ class UnregisterStorageUnitBackendHandlerTest {
         when(ruleMetaData.findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
-        when(resourceMetaData.getStorageUnitMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(dataSource);
+        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         assertThrows(StorageUnitInUsedException.class,
@@ -143,7 +148,9 @@ class UnregisterStorageUnitBackendHandlerTest {
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(singleRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
-        when(resourceMetaData.getStorageUnitMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(dataSource);
+        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         assertThrows(StorageUnitInUsedException.class,
@@ -157,7 +164,9 @@ class UnregisterStorageUnitBackendHandlerTest {
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(singleRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
-        when(resourceMetaData.getStorageUnitMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(dataSource);
+        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), true);

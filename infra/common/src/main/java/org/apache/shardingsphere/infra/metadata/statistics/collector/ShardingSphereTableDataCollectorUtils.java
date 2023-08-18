@@ -19,12 +19,12 @@ package org.apache.shardingsphere.infra.metadata.statistics.collector;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -57,9 +57,9 @@ public final class ShardingSphereTableDataCollectorUtils {
             return Collections.emptyList();
         }
         Collection<ShardingSphereRowData> result = new LinkedList<>();
-        for (DataSource each : shardingSphereDatabase.getResourceMetaData().getStorageUnitMetaData().getDataSources().values()) {
+        for (StorageUnit each : shardingSphereDatabase.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().values()) {
             try (
-                    Connection connection = each.getConnection();
+                    Connection connection = each.getDataSource().getConnection();
                     Statement statement = connection.createStatement();
                     ResultSet resultSet = statement.executeQuery(sql)) {
                 result.addAll(getRows(resultSet, table, selectedColumnNames));
