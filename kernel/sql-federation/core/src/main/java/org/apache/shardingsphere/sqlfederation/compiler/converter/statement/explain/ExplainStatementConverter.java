@@ -36,13 +36,13 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.sele
 public final class ExplainStatementConverter implements SQLStatementConverter<ExplainStatement, SqlNode> {
     
     @Override
-    public SqlNode convert(final ExplainStatement deleteStatement) {
-        return new SqlExplain(SqlParserPos.ZERO, convertSQLStatement(deleteStatement), SqlExplainLevel.ALL_ATTRIBUTES.symbol(SqlParserPos.ZERO),
+    public SqlNode convert(final ExplainStatement explainStatement) {
+        return new SqlExplain(SqlParserPos.ZERO, convertSQLStatement(explainStatement), SqlExplainLevel.ALL_ATTRIBUTES.symbol(SqlParserPos.ZERO),
                 SqlExplain.Depth.TYPE.symbol(SqlParserPos.ZERO), SqlExplainFormat.TEXT.symbol(SqlParserPos.ZERO), 0);
     }
     
-    private SqlNode convertSQLStatement(final ExplainStatement deleteStatement) {
-        return deleteStatement.getStatement().map(this::convertSqlNode).orElseThrow(IllegalStateException::new);
+    private SqlNode convertSQLStatement(final ExplainStatement explainStatement) {
+        return explainStatement.getStatement().map(this::convertSqlNode).orElseThrow(IllegalStateException::new);
     }
     
     private SqlNode convertSqlNode(final SQLStatement sqlStatement) {
