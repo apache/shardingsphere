@@ -21,6 +21,11 @@
     <sql-case id="alter_table_modify2" value="ALTER TABLE employee MODIFY (first_name ENCRYPT SALT)" db-types="Oracle" />
     <sql-case id="alter_table_modify3" value="ALTER TABLE employee MODIFY (first_name ENCRYPT)" db-types="Oracle" />
     <sql-case id="alter_table_modify4" value="ALTER TABLE employee MODIFY (first_name ENCRYPT NO SALT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify5" value="ALTER TABLE employee MODIFY (first_name ENCRYPT 'NOMAC')" db-types="Oracle" />
+    <sql-case id="alter_table_modify6" value="ALTER TABLE employees MODIFY (emp_ssn ENCRYPT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify7" value="ALTER TABLE locations MODIFY PRIMARY KEY DISABLE CASCADE" db-types="Oracle" />
+    <sql-case id="alter_table_modify8" value="ALTER TABLE employees MODIFY (salary ENCRYPT USING 'AES256' 'NOMAC')" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint" value="ALTER TABLE employees ADD (CONSTRAINT emp_emp_id_pk PRIMARY KEY (employee_id), CONSTRAINT emp_dept_fk FOREIGN KEY (department_id) REFERENCES departments, CONSTRAINT emp_job_fk FOREIGN KEY (job_id) REFERENCES jobs (job_id), CONSTRAINT emp_manager_fk FOREIGN KEY (manager_id) REFERENCES employees)" db-types="Oracle" />
     <sql-case id="alter_table_no_flashback_archive" value="ALTER TABLE employee NO FLASHBACK ARCHIVE" db-types="Oracle" />
     <sql-case id="alter_table_move_tablespace_overflow_tablespace" value="ALTER TABLE admin_docindex MOVE TABLESPACE admin_tbs2 OVERFLOW TABLESPACE admin_tbs3" db-types="Oracle" />
     <sql-case id="alter_table_move_nocompress" value="ALTER TABLE admin_iot5 MOVE NOCOMPRESS" db-types="Oracle" />
