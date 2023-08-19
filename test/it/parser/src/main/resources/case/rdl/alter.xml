@@ -197,7 +197,7 @@
             <load-balancer algorithm-name="random" />
         </rule>
     </alter-readwrite-splitting-rule>
-    
+
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule">
         <rule name="t_encrypt">
             <column name="user_id">
