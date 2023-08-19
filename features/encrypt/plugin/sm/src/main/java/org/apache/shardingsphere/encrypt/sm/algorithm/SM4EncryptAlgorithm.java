@@ -19,12 +19,12 @@ package org.apache.shardingsphere.encrypt.sm.algorithm;
 
 import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -87,7 +87,7 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     private byte[] createSm4Key(final Properties props) {
         ShardingSpherePreconditions.checkState(props.containsKey(SM4_KEY), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null", SM4_KEY)));
-        byte[] result = ByteUtils.fromHexString(String.valueOf(props.getProperty(SM4_KEY)));
+        byte[] result = fromHexString(String.valueOf(props.getProperty(SM4_KEY)));
         ShardingSpherePreconditions.checkState(KEY_LENGTH == result.length,
                 () -> new EncryptAlgorithmInitializationException("SM4", "Key length must be " + KEY_LENGTH + " bytes long"));
         return result;
@@ -99,7 +99,7 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
         }
         ShardingSpherePreconditions.checkState(props.containsKey(SM4_IV), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null", SM4_IV)));
         String sm4IvValue = String.valueOf(props.getProperty(SM4_IV));
-        byte[] result = ByteUtils.fromHexString(sm4IvValue);
+        byte[] result = fromHexString(sm4IvValue);
         ShardingSpherePreconditions.checkState(IV_LENGTH == result.length, () -> new EncryptAlgorithmInitializationException("SM4", "Iv length must be " + IV_LENGTH + " bytes long"));
         return result;
     }
@@ -122,7 +122,7 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     @Override
     public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return null == cipherValue ? null : new String(decrypt(ByteUtils.fromHexString(cipherValue)), StandardCharsets.UTF_8);
+        return null == cipherValue ? null : new String(decrypt(fromHexString(cipherValue)), StandardCharsets.UTF_8);
     }
     
     private byte[] decrypt(final byte[] cipherValue) {
@@ -144,5 +144,13 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     @Override
     public String getType() {
         return "SM4";
+    }
+    static byte[] fromHexString(String s){
+        try {
+            return Hex.decodeHex(s);
+        } catch (Exception e) {
+            throw new EncryptAlgorithmInitializationException("SM", e.getMessage());
+        }
+        
     }
 }
