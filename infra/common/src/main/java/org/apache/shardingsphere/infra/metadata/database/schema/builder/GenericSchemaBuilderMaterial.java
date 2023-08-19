@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
@@ -45,4 +46,9 @@ public final class GenericSchemaBuilderMaterial {
     private final ConfigurationProperties props;
     
     private final String defaultSchemaName;
+    
+    public GenericSchemaBuilderMaterial(final DatabaseType protocolType, final StorageUnitMetaData storageUnitMetaData,
+                                        final Collection<ShardingSphereRule> rules, final ConfigurationProperties props, final String defaultSchemaName) {
+        this(protocolType, storageUnitMetaData.getStorageTypes(), storageUnitMetaData.getDataSources(), rules, props, defaultSchemaName);
+    }
 }
