@@ -39,6 +39,7 @@ import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -60,7 +61,7 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class UnregisterStorageUnitBackendHandlerTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @Mock
@@ -68,9 +69,6 @@ class UnregisterStorageUnitBackendHandlerTest {
     
     @Mock
     private DataSource dataSource;
-    
-    @Mock
-    private RuleMetaData ruleMetaData;
     
     @Mock
     private ShadowRule shadowRule;
@@ -89,7 +87,6 @@ class UnregisterStorageUnitBackendHandlerTest {
     void setUp() {
         resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(resourceMetaData.getStorageUnitMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
