@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
@@ -119,9 +120,9 @@ public abstract class SQLRewriterIT {
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         mockDataSource(databaseConfig.getDataSources());
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
-        Map<String, DatabaseType> storageTypes = createStorageTypes(databaseConfig, databaseType);
+        Map<String, StorageUnit> storageUnits = createStorageUnits(databaseConfig, databaseType);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(resourceMetaData.getStorageTypes()).thenReturn(storageTypes);
+        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
         String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(DefaultDatabase.LOGIC_NAME);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType()),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
@@ -169,10 +170,12 @@ public abstract class SQLRewriterIT {
         return result;
     }
     
-    private Map<String, DatabaseType> createStorageTypes(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1F);
+    private Map<String, StorageUnit> createStorageUnits(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
+        Map<String, StorageUnit> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1F);
         for (Entry<String, DataSource> entry : databaseConfig.getDataSources().entrySet()) {
-            result.put(entry.getKey(), databaseType);
+            StorageUnit storageUnit = mock(StorageUnit.class);
+            when(storageUnit.getStorageType()).thenReturn(databaseType);
+            result.put(entry.getKey(), storageUnit);
         }
         return result;
     }
