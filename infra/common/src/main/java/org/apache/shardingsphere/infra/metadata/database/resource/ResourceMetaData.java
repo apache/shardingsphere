@@ -65,15 +65,6 @@ public final class ResourceMetaData {
     }
     
     /**
-     * Get storage types.
-     *
-     * @return storage types
-     */
-    public Map<String, DatabaseType> getStorageTypes() {
-        return storageUnitMetaData.getStorageTypes();
-    }
-    
-    /**
      * Get all instance data source names.
      *
      * @return instance data source names
