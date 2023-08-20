@@ -114,8 +114,6 @@ class ConfigurationChangedSubscriberTest {
         when(database.getName()).thenReturn("db");
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(resourceMetaData.getStorageNodeDataSources()).thenReturn(Collections.emptyMap());
-        when(resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers()).thenReturn(Collections.emptyMap());
         when(database.getSchemas()).thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema()));
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(database.getSchema("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));
