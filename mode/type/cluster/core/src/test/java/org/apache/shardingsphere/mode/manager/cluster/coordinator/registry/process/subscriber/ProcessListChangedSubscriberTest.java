@@ -97,7 +97,6 @@ class ProcessListChangedSubscriberTest {
     }
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
-        when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", TypedSPILoader.getService(DatabaseType.class, "MySQL")));
         when(database.getSchemas()).thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema()));
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         when(database.getSchema("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));

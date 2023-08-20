@@ -135,7 +135,6 @@ class MySQLComQueryPacketExecutorTest {
     private MetaDataContexts mockMetaDataContexts() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", databaseType));
         when(result.getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(databaseType);
         RuleMetaData globalRuleMetaData = new RuleMetaData(
                 Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
