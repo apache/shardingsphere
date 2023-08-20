@@ -113,7 +113,7 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return null == plainValue ? null : ByteUtils.toHexString(encrypt(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8)));
+        return null == plainValue ? null : Hex.encodeHexString(encrypt(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8)));
     }
     
     private byte[] encrypt(final byte[] plainValue) {
