@@ -505,7 +505,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         HintValueContext hintValueContext = sqlParserRule.isSqlCommentParseEnabled() ? new HintValueContext() : SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
     }
-     
+    
     private DatabaseType getDatabaseType() {
         DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType();
         return protocolType.getTrunkDatabaseType().orElse(protocolType);
