@@ -54,10 +54,10 @@ public final class SchemaMetaDataUtils {
     public static Collection<MetaDataLoaderMaterial> getMetaDataLoaderMaterials(final Collection<String> tableNames,
                                                                                 final GenericSchemaBuilderMaterial material, final boolean checkMetaDataEnable) {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
-        Collection<DatabaseType> notSupportThreeTierStructureStorageTypes = getNotSupportThreeTierStructureStorageTypes(material.getStorageTypes().values());
+        Collection<DatabaseType> unsupportedThreeTierStorageStructureDatabaseTypes = getUnsupportedThreeTierStorageStructureDatabaseTypes(material.getStorageTypes().values());
         DataNodes dataNodes = new DataNodes(material.getRules());
         for (String each : tableNames) {
-            checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(notSupportThreeTierStructureStorageTypes, dataNodes, each);
+            checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(unsupportedThreeTierStorageStructureDatabaseTypes, dataNodes, each);
             if (checkMetaDataEnable) {
                 addAllActualTableDataNode(material, dataSourceTableGroups, dataNodes, each);
             } else {
@@ -93,10 +93,10 @@ public final class SchemaMetaDataUtils {
         }
     }
     
-    private static Collection<DatabaseType> getNotSupportThreeTierStructureStorageTypes(final Collection<DatabaseType> storageTypes) {
+    private static Collection<DatabaseType> getUnsupportedThreeTierStorageStructureDatabaseTypes(final Collection<DatabaseType> storageTypes) {
         Collection<DatabaseType> result = new LinkedList<>();
         for (DatabaseType each : storageTypes) {
-            if (!"MySQL".equals(each.getType())) {
+            if (!new DatabaseTypeRegistry(each).getDialectDatabaseMetaData().isSupportThreeTierStorageStructure()) {
                 result.add(each);
             }
         }
