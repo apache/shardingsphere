@@ -23,6 +23,7 @@ import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -94,6 +95,9 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
             }
             return;
         }
+        if (sqlStatementContext instanceof IndexAvailable && !routeContext.getRouteUnits().isEmpty()) {
+            putAllBroadcastTables(routeContext, broadcastRule, sqlStatementContext);
+        }
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         boolean functionStatement = sqlStatement instanceof CreateFunctionStatement || sqlStatement instanceof AlterFunctionStatement || sqlStatement instanceof DropFunctionStatement;
         boolean procedureStatement = sqlStatement instanceof CreateProcedureStatement || sqlStatement instanceof AlterProcedureStatement || sqlStatement instanceof DropProcedureStatement;
@@ -112,6 +116,15 @@ public final class BroadcastSQLRouter implements SQLRouter<BroadcastRule> {
                 : sqlStatementContext.getTablesContext().getTableNames();
         if (broadcastRule.isAllBroadcastTables(tableNames)) {
             routeToAllDatabaseInstance(routeContext, database, broadcastRule);
+        }
+    }
+    
+    private static void putAllBroadcastTables(final RouteContext routeContext, final BroadcastRule broadcastRule, final SQLStatementContext sqlStatementContext) {
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        for (String each : broadcastRule.getBroadcastRuleTableNames(tableNames)) {
+            for (RouteUnit routeUnit : routeContext.getRouteUnits()) {
+                routeUnit.getTableMappers().add(new RouteMapper(each, each));
+            }
         }
     }
     
