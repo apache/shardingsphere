@@ -565,8 +565,12 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitModifyConstraintClause(final ModifyConstraintClauseContext ctx) {
-        return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                (ConstraintSegment) visit(ctx.constraintOption().constraintWithName().constraintName()));
+        if (null != ctx.constraintOption().constraintWithName()) {
+            return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                    (ConstraintSegment) visit(ctx.constraintOption().constraintWithName().constraintName()));
+        } else {
+            return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null);
+        }
     }
     
     @Override

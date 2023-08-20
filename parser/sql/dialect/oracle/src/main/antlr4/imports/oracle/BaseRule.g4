@@ -628,7 +628,7 @@ dataTypeLength
     ;
 
 primaryKey
-    : PRIMARY? KEY
+    : PRIMARY KEY
     ;
 
 exprs
