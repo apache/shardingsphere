@@ -51,4 +51,13 @@ public final class GenericSchemaBuilderMaterial {
                                         final Collection<ShardingSphereRule> rules, final ConfigurationProperties props, final String defaultSchemaName) {
         this(protocolType, storageUnitMetaData.getStorageTypes(), storageUnitMetaData.getDataSources(), rules, props, defaultSchemaName);
     }
+    
+    /**
+     * Judge whether same protocol and storage database types.
+     * 
+     * @return is same or not
+     */
+    public boolean isSameProtocolAndStorageTypes() {
+        return storageTypes.values().stream().allMatch(protocolType::equals);
+    }
 }
