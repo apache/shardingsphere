@@ -80,7 +80,7 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         SingleRouteEngineFactory.newInstance(singleTables, sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.route(routeContext, rule));
     }
     
-    private RouteContext createSingleDataSourceRouteContext(final SingleRule rule, final ShardingSphereDatabase database, QueryContext queryContext) {
+    private RouteContext createSingleDataSourceRouteContext(final SingleRule rule, final ShardingSphereDatabase database, final QueryContext queryContext) {
         String logicDataSource = rule.getDataSourceNames().iterator().next();
         String actualDataSource = database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().keySet().iterator().next();
         RouteContext result = new RouteContext();
