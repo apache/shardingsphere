@@ -100,7 +100,6 @@ class ContextManagerTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        when(result.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", TypedSPILoader.getService(DatabaseType.class, "FIXTURE")));
         MutableDataNodeRule mutableDataNodeRule = mock(MutableDataNodeRule.class, RETURNS_DEEP_STUBS);
         when(mutableDataNodeRule.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(mock(DataNode.class)));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mutableDataNodeRule)));
@@ -222,7 +221,6 @@ class ContextManagerTest {
         when(resourceMetaData.getStorageNodeDataSources()).thenReturn(StorageResourceUtils.getStorageNodeDataSources(dataSources));
         StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
         when(resourceMetaData.getStorageUnitMetaData()).thenReturn(storageUnitMetaData);
-        when(storageUnitMetaData.getUnitNodeMappers()).thenReturn(StorageResourceUtils.getStorageUnitNodeMappers(dataSources));
         when(storageUnitMetaData.getStorageUnits()).thenReturn(Collections.emptyMap());
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
                 TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), resourceMetaData, mock(RuleMetaData.class), Collections.emptyMap());
@@ -298,7 +296,7 @@ class ContextManagerTest {
     void assertReloadTable() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnitMetaData().getDataSources())
                 .thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds",
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnitMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds",
                 TypedSPILoader.getService(DatabaseType.class, "MySQL")));
         DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);

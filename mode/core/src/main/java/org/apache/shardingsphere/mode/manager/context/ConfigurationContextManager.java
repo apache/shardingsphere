@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurati
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnitNodeMapper;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -274,7 +275,7 @@ public final class ConfigurationContextManager {
      */
     public Map<String, ShardingSphereDatabase> renewDatabase(final ShardingSphereDatabase database, final SwitchingResource resource) {
         Map<StorageNode, DataSource> newStorageNodes = getNewStorageNodes(database.getResourceMetaData().getStorageNodeDataSources(), resource);
-        Map<String, StorageUnitNodeMapper> newStorageUnitNodeMappers = getNewStorageUnitNodeMappers(database.getResourceMetaData().getStorageUnitMetaData().getUnitNodeMappers(), resource);
+        Map<String, StorageUnitNodeMapper> newStorageUnitNodeMappers = getNewStorageUnitNodeMappers(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits(), resource);
         StorageResource newStorageResource = new StorageResource(newStorageNodes, newStorageUnitNodeMappers);
         Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
@@ -292,11 +293,11 @@ public final class ConfigurationContextManager {
         return result;
     }
     
-    private Map<String, StorageUnitNodeMapper> getNewStorageUnitNodeMappers(final Map<String, StorageUnitNodeMapper> currentStorageUnitNodeMappers, final SwitchingResource resource) {
-        Map<String, StorageUnitNodeMapper> result = new LinkedHashMap<>(currentStorageUnitNodeMappers.size(), 1F);
-        for (Entry<String, StorageUnitNodeMapper> entry : currentStorageUnitNodeMappers.entrySet()) {
+    private Map<String, StorageUnitNodeMapper> getNewStorageUnitNodeMappers(final Map<String, StorageUnit> currentStorageUnits, final SwitchingResource resource) {
+        Map<String, StorageUnitNodeMapper> result = new LinkedHashMap<>(currentStorageUnits.size(), 1F);
+        for (Entry<String, StorageUnit> entry : currentStorageUnits.entrySet()) {
             if (!resource.getStaleStorageResource().getStorageUnitNodeMappers().containsKey(entry.getKey())) {
-                result.put(entry.getKey(), entry.getValue());
+                result.put(entry.getKey(), entry.getValue().getUnitNodeMapper());
             }
         }
         return result;

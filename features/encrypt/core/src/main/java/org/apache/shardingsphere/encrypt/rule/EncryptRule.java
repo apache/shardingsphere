@@ -172,9 +172,4 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     public TableNamesMapper getEnhancedTableMapper() {
         return getLogicTableMapper();
     }
-    
-    @Override
-    public String getType() {
-        return EncryptRule.class.getSimpleName();
-    }
 }

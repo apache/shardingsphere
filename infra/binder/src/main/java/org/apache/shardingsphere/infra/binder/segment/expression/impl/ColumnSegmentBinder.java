@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.exception.AmbiguousColumnException;
 import org.apache.shardingsphere.infra.exception.UnknownColumnException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -32,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Column segment binder.
@@ -45,26 +47,37 @@ public final class ColumnSegmentBinder {
      * Bind column segment with metadata.
      *
      * @param segment table segment
+     * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bounded column segment
      */
-    public static ColumnSegment bind(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts,
-                                     final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+    public static ColumnSegment bind(final ColumnSegment segment, final SQLStatementBinderContext statementBinderContext,
+                                     final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (EXCLUDE_BIND_COLUMNS.contains(segment.getIdentifier().getValue().toUpperCase())) {
             return segment;
         }
         ColumnSegment result = new ColumnSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
         segment.getOwner().ifPresent(result::setOwner);
-        Collection<TableSegmentBinderContext> tableBinderContextValues =
-                segment.getOwner().isPresent() ? getTableBinderContextByOwner(segment.getOwner().get().getIdentifier().getValue(), tableBinderContexts, outerTableBinderContexts)
-                        : tableBinderContexts.values();
-        ColumnSegment inputColumnSegment = findInputColumnSegment(segment.getIdentifier().getValue(), tableBinderContextValues);
-        result.setOriginalDatabase(inputColumnSegment.getOriginalDatabase());
-        result.setOriginalSchema(inputColumnSegment.getOriginalSchema());
-        result.setOriginalTable(null == segment.getOriginalTable() ? inputColumnSegment.getOriginalTable() : segment.getOriginalTable());
+        Collection<TableSegmentBinderContext> tableBinderContextValues = getTableSegmentBinderContexts(segment, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
+        Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment.getIdentifier().getValue(), tableBinderContextValues);
+        inputColumnSegment.ifPresent(optional -> result.setOriginalDatabase(optional.getOriginalDatabase()));
+        inputColumnSegment.ifPresent(optional -> result.setOriginalSchema(optional.getOriginalSchema()));
+        result.setOriginalTable(null == segment.getOriginalTable() ? inputColumnSegment.map(ColumnSegment::getOriginalTable).orElse(null) : segment.getOriginalTable());
         result.setOriginalColumn(null == segment.getOriginalColumn() ? segment.getIdentifier() : segment.getOriginalColumn());
         return result;
+    }
+    
+    private static Collection<TableSegmentBinderContext> getTableSegmentBinderContexts(final ColumnSegment segment, final SQLStatementBinderContext statementBinderContext,
+                                                                                       final Map<String, TableSegmentBinderContext> tableBinderContexts,
+                                                                                       final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        if (segment.getOwner().isPresent()) {
+            return getTableBinderContextByOwner(segment.getOwner().get().getIdentifier().getValue(), tableBinderContexts, outerTableBinderContexts);
+        }
+        if (!statementBinderContext.getJoinTableProjectionSegments().isEmpty()) {
+            return Collections.singleton(new TableSegmentBinderContext(statementBinderContext.getJoinTableProjectionSegments()));
+        }
+        return tableBinderContexts.values();
     }
     
     private static Collection<TableSegmentBinderContext> getTableBinderContextByOwner(final String owner, final Map<String, TableSegmentBinderContext> tableBinderContexts,
@@ -78,17 +91,18 @@ public final class ColumnSegmentBinder {
         return Collections.emptyList();
     }
     
-    private static ColumnSegment findInputColumnSegment(final String columnName, final Collection<TableSegmentBinderContext> tableBinderContexts) {
+    private static Optional<ColumnSegment> findInputColumnSegment(final String columnName, final Collection<TableSegmentBinderContext> tableBinderContexts) {
+        ProjectionSegment projectionSegment = null;
         ColumnSegment result = null;
         for (TableSegmentBinderContext each : tableBinderContexts) {
-            ProjectionSegment projectionSegment = each.getProjectionSegmentByColumnLabel(columnName);
+            projectionSegment = each.getProjectionSegmentByColumnLabel(columnName);
             if (projectionSegment instanceof ColumnProjectionSegment) {
                 ShardingSpherePreconditions.checkState(null == result, () -> new AmbiguousColumnException(columnName));
                 result = ((ColumnProjectionSegment) projectionSegment).getColumn();
             }
         }
         // TODO optimize exception message according to different segment
-        ShardingSpherePreconditions.checkNotNull(result, () -> new UnknownColumnException(columnName));
-        return result;
+        ShardingSpherePreconditions.checkState(null != projectionSegment, () -> new UnknownColumnException(columnName));
+        return Optional.ofNullable(result);
     }
 }

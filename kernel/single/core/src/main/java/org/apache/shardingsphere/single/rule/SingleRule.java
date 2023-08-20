@@ -309,9 +309,4 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     public Map<String, Object> getExportData() {
         return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableNamesMapper.getTableNames());
     }
-    
-    @Override
-    public String getType() {
-        return SingleRule.class.getSimpleName();
-    }
 }

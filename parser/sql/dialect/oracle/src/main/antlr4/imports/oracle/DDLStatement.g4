@@ -521,7 +521,7 @@ constraintClauses
     ;
 
 addConstraintSpecification
-    : ADD (outOfLineConstraint+ | outOfLineRefConstraint)
+    : ADD (LP_? outOfLineConstraint (COMMA_ outOfLineConstraint)* RP_? | outOfLineRefConstraint)
     ;
 
 modifyConstraintClause

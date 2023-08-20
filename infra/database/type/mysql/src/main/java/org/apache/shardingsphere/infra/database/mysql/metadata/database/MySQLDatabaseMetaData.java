@@ -88,6 +88,11 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
+    public boolean isSupportThreeTierStorageStructure() {
+        return true;
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "MySQL";
     }

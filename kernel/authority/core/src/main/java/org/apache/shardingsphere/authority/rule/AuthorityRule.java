@@ -76,9 +76,4 @@ public final class AuthorityRule implements GlobalRule {
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
         return authorityRegistry.findPrivileges(grantee);
     }
-    
-    @Override
-    public String getType() {
-        return AuthorityRule.class.getSimpleName();
-    }
 }

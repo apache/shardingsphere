@@ -49,9 +49,4 @@ public final class TimestampServiceRule implements GlobalRule {
     public Timestamp getTimestamp() {
         return timestampService.getTimestamp();
     }
-    
-    @Override
-    public String getType() {
-        return TimestampServiceRule.class.getSimpleName();
-    }
 }

@@ -189,9 +189,4 @@ public final class TrafficRule implements GlobalRule {
         }
         return result;
     }
-    
-    @Override
-    public String getType() {
-        return TrafficRule.class.getSimpleName();
-    }
 }

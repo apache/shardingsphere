@@ -49,10 +49,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -95,11 +95,9 @@ class JDBCBackendDataSourceTest {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getProtocolType()).thenReturn(databaseType);
-        Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(2, 1F);
-        storageTypes.put("ds_0", databaseType);
-        storageTypes.put("ds_1", databaseType);
-        when(database.getResourceMetaData().getStorageTypes()).thenReturn(storageTypes);
-        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSources()).thenReturn(mockDataSources(2));
+        for (Entry<String, DataSource> entry : mockDataSources(2).entrySet()) {
+            when(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().get(entry.getKey()).getDataSource()).thenReturn(entry.getValue());
+        }
         return Collections.singletonMap("schema", database);
     }
     

@@ -591,4 +591,56 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_join_with_quote" parameters="1">
+        <projections start-index="7" stop-index="18">
+            <shorthand-projection start-index="7" stop-index="11">
+                <owner name="u" start-index="7" stop-index="9" start-delimiter="&quot;" end-delimiter="&quot;" />
+            </shorthand-projection>
+            <shorthand-projection start-index="14" stop-index="18">
+                <owner name="o" start-index="14" stop-index="16" start-delimiter="&quot;" end-delimiter="&quot;" />
+            </shorthand-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="t_user" alias="u" start-index="25" stop-index="34" />
+                </left>
+                <right>
+                    <simple-table name="t_order" alias="o" start-index="47" stop-index="57" />
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="62" stop-index="86">
+                        <left>
+                            <column name="user_id" start-index="62" stop-index="72">
+                                <owner name="u" start-index="62" stop-index="64" start-delimiter="&quot;" end-delimiter="&quot;" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="user_id" start-index="76" stop-index="86">
+                                <owner name="o" start-index="76" stop-index="78" start-delimiter="&quot;" end-delimiter="&quot;" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <where start-index="88" stop-index="108">
+            <expr>
+                <binary-operation-expression start-index="94" stop-index="108">
+                    <left>
+                        <column name="user_id" start-index="94" stop-index="104">
+                            <owner name="u" start-index="94" stop-index="96" start-delimiter="&quot;" end-delimiter="&quot;" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="108" stop-index="108" />
+                        <parameter-marker-expression parameter-index="0" start-index="108" stop-index="108" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

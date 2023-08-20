@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -43,7 +43,7 @@ public final class ProcessEngine {
      */
     public String connect(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
-        Process process = new Process(executionGroupContext);
+        Process process = new Process(executionGroupContext, true);
         ProcessRegistry.getInstance().add(process);
         return executionGroupContext.getReportContext().getProcessId();
     }
@@ -66,9 +66,11 @@ public final class ProcessEngine {
      */
     public void executeSQL(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
-            ProcessIdContext.set(executionGroupContext.getReportContext().getProcessId());
-            Process process = new Process(queryContext.getSql(), executionGroupContext);
-            ProcessRegistry.getInstance().add(process);
+            String processId = executionGroupContext.getReportContext().getProcessId();
+            // TODO remove heldByConnection when jdbc connection support generate processId and call connect and disconnect
+            boolean heldByConnection = null != ProcessRegistry.getInstance().get(processId) && ProcessRegistry.getInstance().get(processId).isHeldByConnection();
+            ProcessIdContext.set(processId);
+            ProcessRegistry.getInstance().add(new Process(queryContext.getSql(), executionGroupContext, heldByConnection));
         }
     }
     
@@ -95,7 +97,11 @@ public final class ProcessEngine {
         }
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
                 Collections.emptyList(), new ExecutionGroupReportContext(ProcessIdContext.get(), process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
-        ProcessRegistry.getInstance().add(new Process(executionGroupContext));
+        if (process.isHeldByConnection()) {
+            ProcessRegistry.getInstance().add(new Process(executionGroupContext, true));
+        } else {
+            ProcessRegistry.getInstance().remove(ProcessIdContext.get());
+        }
         ProcessIdContext.remove();
     }
     

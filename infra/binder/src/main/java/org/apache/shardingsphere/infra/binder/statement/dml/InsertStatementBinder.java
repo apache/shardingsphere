@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.statement.dml;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubquerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
@@ -37,7 +38,8 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         InsertStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.setTable(sqlStatement.getTable());
         sqlStatement.getInsertColumns().ifPresent(result::setInsertColumns);
-        sqlStatement.getInsertSelect().ifPresent(optional -> result.setInsertSelect(SubquerySegmentBinder.bind(optional, metaData, defaultDatabaseName, Collections.emptyMap())));
+        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType());
+        sqlStatement.getInsertSelect().ifPresent(optional -> result.setInsertSelect(SubquerySegmentBinder.bind(optional, statementBinderContext, Collections.emptyMap())));
         result.getValues().addAll(sqlStatement.getValues());
         InsertStatementHandler.getOnDuplicateKeyColumnsSegment(sqlStatement).ifPresent(optional -> InsertStatementHandler.setOnDuplicateKeyColumnsSegment(result, optional));
         InsertStatementHandler.getSetAssignmentSegment(sqlStatement).ifPresent(optional -> InsertStatementHandler.setSetAssignmentSegment(result, optional));

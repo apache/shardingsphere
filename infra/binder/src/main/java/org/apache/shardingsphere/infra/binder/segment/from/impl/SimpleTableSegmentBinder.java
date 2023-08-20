@@ -20,12 +20,12 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -65,20 +65,17 @@ public final class SimpleTableSegmentBinder {
      * Bind simple table segment with metadata.
      *
      * @param segment simple table segment
-     * @param metaData metaData
-     * @param defaultDatabaseName default database name
-     * @param databaseType database type
+     * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
      * @return bounded simple table segment
      */
-    public static SimpleTableSegment bind(final SimpleTableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                                          final DatabaseType databaseType, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        IdentifierValue originalDatabase = getDatabaseName(segment, defaultDatabaseName, databaseType);
-        IdentifierValue originalSchema = getSchemaName(segment, defaultDatabaseName, databaseType);
+    public static SimpleTableSegment bind(final SimpleTableSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        IdentifierValue originalDatabase = getDatabaseName(segment, statementBinderContext);
+        IdentifierValue originalSchema = getSchemaName(segment, statementBinderContext);
         // TODO check database and schema
-        ShardingSphereSchema schema = metaData.getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
+        ShardingSphereSchema schema = statementBinderContext.getMetaData().getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
         tableBinderContexts.put(segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue()),
-                createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema, databaseType));
+                createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema, statementBinderContext.getDatabaseType()));
         TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), segment.getTableName().getIdentifier());
         tableNameSegment.setOriginalDatabase(originalDatabase);
         tableNameSegment.setOriginalSchema(originalSchema);
@@ -88,22 +85,23 @@ public final class SimpleTableSegmentBinder {
         return result;
     }
     
-    private static IdentifierValue getDatabaseName(final SimpleTableSegment tableSegment, final String defaultDatabaseName, final DatabaseType databaseType) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+    private static IdentifierValue getDatabaseName(final SimpleTableSegment tableSegment, final SQLStatementBinderContext statementBinderContext) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(statementBinderContext.getDatabaseType()).getDialectDatabaseMetaData();
         Optional<OwnerSegment> owner = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? tableSegment.getOwner().flatMap(OwnerSegment::getOwner) : tableSegment.getOwner();
-        return new IdentifierValue(owner.map(optional -> optional.getIdentifier().getValue()).orElse(defaultDatabaseName));
+        return new IdentifierValue(owner.map(optional -> optional.getIdentifier().getValue()).orElse(statementBinderContext.getDefaultDatabaseName()));
     }
     
-    private static IdentifierValue getSchemaName(final SimpleTableSegment segment, final String defaultDatabaseName, final DatabaseType databaseType) {
+    private static IdentifierValue getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext statementBinderContext) {
         if (segment.getOwner().isPresent()) {
             return segment.getOwner().get().getIdentifier();
         }
         // TODO getSchemaName according to search path
+        DatabaseType databaseType = statementBinderContext.getDatabaseType();
         if ((databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType)
                 && SYSTEM_CATALOG_TABLES.contains(segment.getTableName().getIdentifier().getValue().toLowerCase())) {
             return new IdentifierValue(PG_CATALOG);
         }
-        return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(defaultDatabaseName));
+        return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(statementBinderContext.getDefaultDatabaseName()));
     }
     
     private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema,

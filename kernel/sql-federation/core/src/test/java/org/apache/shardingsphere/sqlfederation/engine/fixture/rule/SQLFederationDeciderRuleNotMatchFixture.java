@@ -30,9 +30,4 @@ public final class SQLFederationDeciderRuleNotMatchFixture implements ShardingSp
     public RuleConfiguration getConfiguration() {
         return new SQLFederationRuleConfiguration(false, mock(CacheOption.class));
     }
-    
-    @Override
-    public String getType() {
-        return SQLFederationDeciderRuleNotMatchFixture.class.getSimpleName();
-    }
 }

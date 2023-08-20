@@ -240,7 +240,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connection.getDatabaseConnectionManager(), statementManager, statementOption,
                 metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageTypes());
+                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData());
     }
     
     @Override
@@ -500,11 +500,15 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private QueryContext createQueryContext(final String originSQL) {
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         String sql = sqlParserRule.isSqlCommentParseEnabled() ? originSQL : SQLHintUtils.removeHint(originSQL);
-        DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType();
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(protocolType.getTrunkDatabaseType().orElse(protocolType)).parse(sql, false);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(getDatabaseType()).parse(sql, false);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), databaseName).bind(sqlStatement, Collections.emptyList());
         HintValueContext hintValueContext = sqlParserRule.isSqlCommentParseEnabled() ? new HintValueContext() : SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
+    }
+    
+    private DatabaseType getDatabaseType() {
+        DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType();
+        return protocolType.getTrunkDatabaseType().orElse(protocolType);
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) throws SQLException {

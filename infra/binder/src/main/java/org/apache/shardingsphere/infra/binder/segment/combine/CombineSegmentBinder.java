@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.combine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
@@ -34,11 +35,12 @@ public final class CombineSegmentBinder {
      * Bind combine segment with metadata.
      *
      * @param segment table segment
-     * @param metaData meta data
-     * @param defaultDatabaseName default database name
+     * @param statementBinderContext statement binder context
      * @return bounded combine segment
      */
-    public static CombineSegment bind(final CombineSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+    public static CombineSegment bind(final CombineSegment segment, final SQLStatementBinderContext statementBinderContext) {
+        ShardingSphereMetaData metaData = statementBinderContext.getMetaData();
+        String defaultDatabaseName = statementBinderContext.getDefaultDatabaseName();
         SelectStatement boundedLeftSelect = new SelectStatementBinder().bind(segment.getLeft(), metaData, defaultDatabaseName);
         SelectStatement boundedRightSelect = new SelectStatementBinder().bind(segment.getRight(), metaData, defaultDatabaseName);
         return new CombineSegment(segment.getStartIndex(), segment.getStopIndex(), boundedLeftSelect, segment.getCombineType(), boundedRightSelect);

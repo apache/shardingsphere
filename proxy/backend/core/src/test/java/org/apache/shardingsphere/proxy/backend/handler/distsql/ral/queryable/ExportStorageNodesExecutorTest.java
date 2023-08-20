@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -50,8 +51,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
-import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -72,6 +74,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 @StaticMockSettings(ProxyContext.class)
 class ExportStorageNodesExecutorTest {
     
@@ -125,7 +128,8 @@ class ExportStorageNodesExecutorTest {
     @Test
     void assertExecute() {
         when(database.getName()).thenReturn("normal_db");
-        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSources()).thenReturn(createDataSourceMap());
+        Map<String, StorageUnit> storageUnits = createStorageUnits();
+        when(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -138,7 +142,8 @@ class ExportStorageNodesExecutorTest {
     @Test
     void assertExecuteWithDatabaseName() {
         when(database.getName()).thenReturn("normal_db");
-        when(database.getResourceMetaData().getStorageUnitMetaData().getDataSources()).thenReturn(createDataSourceMap());
+        Map<String, StorageUnit> storageUnits = createStorageUnits();
+        when(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -158,20 +163,22 @@ class ExportStorageNodesExecutorTest {
         return result;
     }
     
-    private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
-        result.put("ds_0", createDataSource("demo_ds_0"));
-        result.put("ds_1", createDataSource("demo_ds_1"));
+    private Map<String, StorageUnit> createStorageUnits() {
+        Map<String, StorageUnit> result = new LinkedHashMap<>(2, 1F);
+        result.put("ds_0", createStorageUnit("demo_ds_0"));
+        result.put("ds_1", createStorageUnit("demo_ds_1"));
         return result;
     }
     
-    private DataSource createDataSource(final String name) {
-        MockedDataSource result = new MockedDataSource();
-        result.setUrl(String.format("jdbc:mock://127.0.0.1/%s", name));
-        result.setUsername("root");
-        result.setPassword("test");
-        result.setMaxPoolSize(50);
-        result.setMinPoolSize(1);
+    private StorageUnit createStorageUnit(final String name) {
+        MockedDataSource dataSource = new MockedDataSource();
+        dataSource.setUrl(String.format("jdbc:mock://127.0.0.1/%s", name));
+        dataSource.setUsername("root");
+        dataSource.setPassword("test");
+        dataSource.setMaxPoolSize(50);
+        dataSource.setMinPoolSize(1);
+        StorageUnit result = mock(StorageUnit.class);
+        when(result.getDataSource()).thenReturn(dataSource);
         return result;
     }
     

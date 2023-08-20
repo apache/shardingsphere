@@ -100,7 +100,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connectionSession.getDatabaseConnectionManager(),
                 connectionSession.getStatementManager(), new StatementOption(false),
                 metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageTypes());
+                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData());
     }
     
     private JDBCExecutorCallback<ExecuteResult> createOpenGaussSystemCatalogAdminQueryCallback(final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
