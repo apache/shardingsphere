@@ -195,8 +195,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         this.sql = sqlParserRule.isSqlCommentParseEnabled() ? sql : SQLHintUtils.removeHint(sql);
         statements = new ArrayList<>();
         parameterSets = new ArrayList<>();
-        DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
-        SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(protocolType.getTrunkDatabaseType().orElse(protocolType));
+        DatabaseType databaseType = getDatabaseType(connection);
+        SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(databaseType);
         sqlStatement = sqlParserEngine.parse(this.sql, true);
         sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), connection.getDatabaseName()).bind(sqlStatement, Collections.emptyList());
         databaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getDatabaseName());
@@ -210,6 +210,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
         statementManager = new StatementManager();
+    }
+    
+    private DatabaseType getDatabaseType(final ShardingSphereConnection connection) {
+        DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
+        return protocolType.getTrunkDatabaseType().orElse(protocolType);
     }
     
     private boolean isStatementsCacheable(final RuleMetaData databaseRuleMetaData) {
