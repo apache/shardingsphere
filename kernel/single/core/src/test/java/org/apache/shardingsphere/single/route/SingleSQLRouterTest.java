@@ -58,7 +58,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -78,7 +78,7 @@ class SingleSQLRouterTest {
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("foo_ds"));
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is("foo_ds"));
-        assertTrue(routeUnit.getTableMappers().isEmpty());
+        assertFalse(routeUnit.getTableMappers().isEmpty());
     }
     
     private ShardingSphereDatabase mockSingleDatabase() {
@@ -99,7 +99,7 @@ class SingleSQLRouterTest {
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("readwrite_ds"));
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is("write_ds"));
-        assertTrue(routeUnit.getTableMappers().isEmpty());
+        assertFalse(routeUnit.getTableMappers().isEmpty());
     }
     
     private ShardingSphereDatabase mockReadwriteSplittingDatabase() {
