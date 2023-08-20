@@ -195,8 +195,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         this.sql = sqlParserRule.isSqlCommentParseEnabled() ? sql : SQLHintUtils.removeHint(sql);
         statements = new ArrayList<>();
         parameterSets = new ArrayList<>();
-        DatabaseType databaseType = getDatabaseType(connection);
-        SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(databaseType);
+        SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(getDatabaseType(connection));
         sqlStatement = sqlParserEngine.parse(this.sql, true);
         sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), connection.getDatabaseName()).bind(sqlStatement, Collections.emptyList());
         databaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getDatabaseName());
