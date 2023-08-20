@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.transaction.rule;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
@@ -103,10 +101,6 @@ class TransactionRuleTest {
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         when(result.getStorageUnitMetaData().getDataSources()).thenReturn(dataSourceMap);
-        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
-        databaseTypes.put("ds_0", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        databaseTypes.put("ds_1", TypedSPILoader.getService(DatabaseType.class, "openGauss"));
-        when(result.getStorageTypes()).thenReturn(databaseTypes);
         return result;
     }
     
@@ -124,10 +118,6 @@ class TransactionRuleTest {
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         when(result.getStorageUnitMetaData().getDataSources()).thenReturn(dataSourceMap);
-        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
-        databaseTypes.put("ds_0", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        databaseTypes.put("ds_1", TypedSPILoader.getService(DatabaseType.class, "openGauss"));
-        when(result.getStorageTypes()).thenReturn(databaseTypes);
         return result;
     }
     
