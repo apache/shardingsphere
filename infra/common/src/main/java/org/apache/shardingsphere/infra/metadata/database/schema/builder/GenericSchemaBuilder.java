@@ -77,19 +77,10 @@ public final class GenericSchemaBuilder {
      */
     public static Map<String, ShardingSphereSchema> build(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
         Map<String, SchemaMetaData> result = loadSchemas(tableNames, material);
-        if (!isProtocolTypeSameWithStorageType(material)) {
+        if (!material.isSameProtocolAndStorageTypes()) {
             result = translate(result, material);
         }
         return revise(result, material);
-    }
-    
-    private static boolean isProtocolTypeSameWithStorageType(final GenericSchemaBuilderMaterial material) {
-        for (DatabaseType each : material.getStorageTypes().values()) {
-            if (!material.getProtocolType().equals(each)) {
-                return false;
-            }
-        }
-        return true;
     }
     
     private static Collection<String> getAllTableNames(final Collection<ShardingSphereRule> rules) {
