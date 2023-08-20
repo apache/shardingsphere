@@ -115,9 +115,18 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
     /**
      * Is instance connection available.
      *
-     * @return true or false
+     * @return available or not
      */
     default boolean isInstanceConnectionAvailable() {
+        return false;
+    }
+    
+    /**
+     * Is support three tier storage structure.
+     * 
+     * @return support or not
+     */
+    default boolean isSupportThreeTierStorageStructure() {
         return false;
     }
 }
