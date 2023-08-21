@@ -83,6 +83,8 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
         } finally {
             QuietlyCloser.close(sourceParam.getCalculationContext());
             QuietlyCloser.close(targetParam.getCalculationContext());
+            calculators.remove(sourceCalculator);
+            calculators.remove(targetCalculator);
         }
     }
     

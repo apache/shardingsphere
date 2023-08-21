@@ -89,31 +89,32 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         try (PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager()) {
             AtomicBoolean checkFailed = new AtomicBoolean(false);
             for (JobDataNodeLine each : jobConfig.getJobShardingDataNodes()) {
-                each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> {
-                    TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps);
-                    currentTableChecker.set(tableChecker);
-                    check(tableChecker, result, dataSourceManager, checkFailed, each, entry, dataNode);
-                }));
+                checkTableInventoryData(each, algorithmType, algorithmProps, result, dataSourceManager, checkFailed);
             }
         }
         return result;
     }
     
-    private void check(final TableDataConsistencyChecker tableChecker, final Map<String, TableDataConsistencyCheckResult> checkResults, final PipelineDataSourceManager dataSourceManager,
-                       final AtomicBoolean checkFailed, final JobDataNodeLine jobDataNodeLine, final JobDataNodeEntry entry, final DataNode dataNode) {
-        if (checkFailed.get()) {
-            return;
-        }
-        TableDataConsistencyCheckResult checkResult = checkSingleTable(entry.getLogicTableName(), dataNode, tableChecker, dataSourceManager);
-        checkResults.put(DataNodeUtils.formatWithSchema(dataNode), checkResult);
-        if (!checkResult.isMatched()) {
-            log.info("Unmatched on table '{}', ignore left tables", JsonUtils.toJsonString(jobDataNodeLine));
-            checkFailed.set(true);
+    private void checkTableInventoryData(final JobDataNodeLine jobDataNodeLine, final String algorithmType, final Properties algorithmProps,
+                                         final Map<String, TableDataConsistencyCheckResult> checkResults, final PipelineDataSourceManager dataSourceManager, final AtomicBoolean checkFailed) {
+        for (JobDataNodeEntry entry : jobDataNodeLine.getEntries()) {
+            for (DataNode each : entry.getDataNodes()) {
+                TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps);
+                currentTableChecker.set(tableChecker);
+                TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(entry.getLogicTableName(), each, tableChecker, dataSourceManager);
+                checkResults.put(DataNodeUtils.formatWithSchema(each), checkResult);
+                currentTableChecker.set(null);
+                if (!checkResult.isMatched()) {
+                    log.info("Unmatched on table '{}', ignore left tables", JsonUtils.toJsonString(jobDataNodeLine));
+                    checkFailed.set(true);
+                    return;
+                }
+            }
         }
     }
     
-    private TableDataConsistencyCheckResult checkSingleTable(final String targetTableName, final DataNode dataNode,
-                                                             final TableDataConsistencyChecker tableChecker, final PipelineDataSourceManager dataSourceManager) {
+    private TableDataConsistencyCheckResult checkSingleTableInventoryData(final String targetTableName, final DataNode dataNode,
+                                                                          final TableDataConsistencyChecker tableChecker, final PipelineDataSourceManager dataSourceManager) {
         SchemaTableName sourceTable = new SchemaTableName(dataNode.getSchemaName(), dataNode.getTableName());
         SchemaTableName targetTable = new SchemaTableName(dataNode.getSchemaName(), targetTableName);
         PipelineDataSourceWrapper sourceDataSource = dataSourceManager.getDataSource(jobConfig.getSources().get(dataNode.getDataSourceName()));
