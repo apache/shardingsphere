@@ -54,6 +54,9 @@
         column2 VARCHAR(10),
         column3 VARCHAR(10)
     )" db-types="MySQL,Oracle,SQLServer" />
+    <sql-case id="create_table_with_cache" value="CREATE TABLE foo (a NUMBER, b VARCHAR2(20)) RESULT_CACHE (MODE FORCE)" db-types="Oracle" />
+    <sql-case id="create_table_parallel_compress" value="CREATE TABLE admin_emp_dept PARALLEL COMPRESS AS SELECT * FROM employees WHERE department_id = 10" db-types="Oracle" />
+    <sql-case id="create_table_from_other_table" value="CREATE TABLE employees_temp AS SELECT * FROM EMPLOYEES" db-types="Oracle" />
     <sql-case id="create_table_with_back_quota" value="CREATE TABLE `t_order` (`order_id` INT, `user_id` INT, `status` VARCHAR(10), `column1` VARCHAR(10), `column2` VARCHAR(10), `column3` VARCHAR(10)) ENGINE=INNODB" db-types="MySQL" />
     <sql-case id="create_temporary_table" value="CREATE TEMPORARY TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
     <sql-case id="create_table_with_column_not_null" value="CREATE TABLE t_order (order_id INT NOT NULL, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer" />

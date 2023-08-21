@@ -1536,6 +1536,22 @@
             <column name="column3" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_cache">
+        <table name="foo" start-index="13" stop-index="15" />
+        <column-definition type="NUMBER" start-index="18" stop-index="25">
+            <column name="a" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="28" stop-index="41">
+            <column name="b" />
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_from_other_table">
+        <table name="employees_temp" start-index="13" stop-index="26" />
+    </create-table>
+    <create-table sql-case-id="create_table_parallel_compress">
+        <table name="admin_emp_dept" start-index="13" stop-index="26" />
+    </create-table>
     
     <create-table sql-case-id="create_table_with_inline_constraints_sqlserver">
         <table name="t_order" start-index="13" stop-index="19" />

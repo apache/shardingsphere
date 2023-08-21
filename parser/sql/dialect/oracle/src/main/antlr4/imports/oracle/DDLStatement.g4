@@ -178,7 +178,11 @@ createSharingClause
     ;
 
 createDefinitionClause
-    : createRelationalTableClause | createObjectTableClause | createXMLTypeTableClause
+    : createRelationalTableClause | createObjectTableClause | createXMLTypeTableClause | selectTableClause
+    ;
+
+selectTableClause
+    : (PARALLEL COMPRESS)? AS SELECT ASTERISK_ FROM tableName
     ;
 
 createXMLTypeTableClause
