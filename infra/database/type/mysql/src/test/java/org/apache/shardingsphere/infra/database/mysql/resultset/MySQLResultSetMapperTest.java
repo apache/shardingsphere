@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -36,8 +35,8 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -50,29 +49,29 @@ class MySQLResultSetMapperTest {
     
     @Test
     void assertGetSmallintValue() throws SQLException {
-        when(resultSet.getInt(Mockito.anyInt())).thenReturn(0);
-        assertThat(dialectResultSetMapper.getSmallintValue(resultSet, Mockito.anyInt()), is(0));
+        when(resultSet.getInt(1)).thenReturn(0);
+        assertThat(dialectResultSetMapper.getSmallintValue(resultSet, 1), is(0));
     }
     
     @Test
-    void assertGetDateValue() throws SQLException {
-        when(resultSet.getMetaData().getColumnTypeName(0)).thenReturn("YEAR");
+    void assertGetDateValueWithYearDataTypeAndNotNullValue() throws SQLException {
+        when(resultSet.getMetaData().getColumnTypeName(1)).thenReturn("YEAR");
         Object expectedObject = new Object();
-        when(resultSet.getObject(Mockito.anyInt())).thenReturn(expectedObject);
-        assertThat(dialectResultSetMapper.getDateValue(resultSet, 0), is(expectedObject));
+        when(resultSet.getObject(1)).thenReturn(expectedObject);
+        assertThat(dialectResultSetMapper.getDateValue(resultSet, 1), is(expectedObject));
     }
     
     @Test
-    void assertGetDateValueNoIsYearDataType() throws SQLException {
-        when(resultSet.getMetaData().getColumnTypeName(0)).thenReturn("test");
-        Date expectedDate = mock(Date.class);
-        when(resultSet.getDate(Mockito.anyInt())).thenReturn(expectedDate);
-        assertThat(dialectResultSetMapper.getDateValue(resultSet, 0), is(expectedDate));
+    void assertGetDateValueWithYearDataTypeAndNullValue() throws SQLException {
+        when(resultSet.getMetaData().getColumnTypeName(1)).thenReturn("YEAR");
+        when(resultSet.wasNull()).thenReturn(true);
+        assertNull(dialectResultSetMapper.getDateValue(resultSet, 1));
     }
     
     @Test
-    void assertGetDatabaseType() {
-        assertThat(dialectResultSetMapper.getDatabaseType(), is("MySQL"));
+    void assertGetDateValueWithNotYearDataType() throws SQLException {
+        when(resultSet.getMetaData().getColumnTypeName(1)).thenReturn("DATE");
+        when(resultSet.getDate(1)).thenReturn(new Date(0L));
+        assertThat(dialectResultSetMapper.getDateValue(resultSet, 1), is(new Date(0L)));
     }
-    
 }
