@@ -62,6 +62,8 @@ class SQLNodeConverterEngineIT {
     
     private static final String EXPLAIN_STATEMENT_PREFIX = "EXPLAIN";
     
+    private static final String UPDATE_STATEMENT_PREFIX = "UPDATE";
+    
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertConvert(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
@@ -105,7 +107,8 @@ class SQLNodeConverterEngineIT {
         private boolean isSupportedSQLCase(final InternalSQLParserTestParameter testParam) {
             return testParam.getSqlCaseId().toUpperCase().startsWith(SELECT_STATEMENT_PREFIX)
                     || testParam.getSqlCaseId().toUpperCase().startsWith(DELETE_STATEMENT_PREFIX)
-                    || testParam.getSqlCaseId().toUpperCase().startsWith(EXPLAIN_STATEMENT_PREFIX);
+                    || testParam.getSqlCaseId().toUpperCase().startsWith(EXPLAIN_STATEMENT_PREFIX)
+                    || testParam.getSqlCaseId().toUpperCase().startsWith(UPDATE_STATEMENT_PREFIX);
         }
     }
 }
