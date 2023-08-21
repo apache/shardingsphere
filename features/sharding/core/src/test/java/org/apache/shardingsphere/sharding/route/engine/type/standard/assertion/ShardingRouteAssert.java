@@ -53,7 +53,6 @@ import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Sharding route assert.
@@ -78,10 +77,7 @@ public final class ShardingRouteAssert {
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType,
                 new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
         RuleMetaData ruleMetaData = new RuleMetaData(Arrays.asList(shardingRule, singleRule, timestampServiceRule));
-        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(resourceMetaData.getStorageUnitMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", databaseType));
-        ShardingSphereDatabase database = new ShardingSphereDatabase(
-                DefaultDatabase.LOGIC_NAME, databaseType, resourceMetaData, ruleMetaData, schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, schemas);
         SQLStatementContext sqlStatementContext =
                 new SQLBindEngine(createShardingSphereMetaData(database), DefaultDatabase.LOGIC_NAME).bind(sqlStatementParserEngine.parse(sql, false), params);
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, params);
