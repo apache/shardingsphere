@@ -35,8 +35,10 @@ import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFact
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -50,6 +52,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @RequiredArgsConstructor
 public abstract class MatchingTableDataConsistencyChecker implements TableDataConsistencyChecker {
+    
+    private final Set<SingleTableInventoryCalculator> calculators = new HashSet<>();
     
     @Override
     public TableDataConsistencyCheckResult checkSingleTableInventoryData(final TableDataConsistencyCheckParameter param) {
@@ -68,9 +72,12 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
                 param.getColumnNames(), param.getUniqueKeys(), param.getProgressContext().getSourceTableCheckPositions().get(param.getSourceTable().getTableName().getOriginal()));
         SingleTableInventoryCalculateParameter targetParam = new SingleTableInventoryCalculateParameter(param.getTargetDataSource(), param.getTargetTable(),
                 param.getColumnNames(), param.getUniqueKeys(), param.getProgressContext().getTargetTableCheckPositions().get(param.getTargetTable().getTableName().getOriginal()));
-        SingleTableInventoryCalculator calculator = getSingleTableInventoryCalculator();
-        Iterator<SingleTableInventoryCalculatedResult> sourceCalculatedResults = waitFuture(executor.submit(() -> calculator.calculate(sourceParam))).iterator();
-        Iterator<SingleTableInventoryCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> calculator.calculate(targetParam))).iterator();
+        SingleTableInventoryCalculator sourceCalculator = buildSingleTableInventoryCalculator();
+        calculators.add(sourceCalculator);
+        SingleTableInventoryCalculator targetCalculator = buildSingleTableInventoryCalculator();
+        calculators.add(targetCalculator);
+        Iterator<SingleTableInventoryCalculatedResult> sourceCalculatedResults = waitFuture(executor.submit(() -> sourceCalculator.calculate(sourceParam))).iterator();
+        Iterator<SingleTableInventoryCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> targetCalculator.calculate(targetParam))).iterator();
         try {
             return checkSingleTableInventoryData(sourceCalculatedResults, targetCalculatedResults, param, executor);
         } finally {
@@ -137,15 +144,17 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
         }
     }
     
-    protected abstract SingleTableInventoryCalculator getSingleTableInventoryCalculator();
+    protected abstract SingleTableInventoryCalculator buildSingleTableInventoryCalculator();
     
     @Override
     public void cancel() {
-        getSingleTableInventoryCalculator().cancel();
+        for (SingleTableInventoryCalculator each : calculators) {
+            each.cancel();
+        }
     }
     
     @Override
     public boolean isCanceling() {
-        return getSingleTableInventoryCalculator().isCanceling();
+        return calculators.stream().anyMatch(SingleTableInventoryCalculator::isCanceling);
     }
 }

@@ -33,11 +33,9 @@ import java.util.LinkedList;
 @SPIDescription("Match CRC32 of records.")
 public final class CRC32MatchTableDataConsistencyChecker extends MatchingTableDataConsistencyChecker {
     
-    private final SingleTableInventoryCalculator calculator = new CRC32SingleTableInventoryCalculator();
-    
     @Override
-    protected SingleTableInventoryCalculator getSingleTableInventoryCalculator() {
-        return calculator;
+    protected SingleTableInventoryCalculator buildSingleTableInventoryCalculator() {
+        return new CRC32SingleTableInventoryCalculator();
     }
     
     @Override

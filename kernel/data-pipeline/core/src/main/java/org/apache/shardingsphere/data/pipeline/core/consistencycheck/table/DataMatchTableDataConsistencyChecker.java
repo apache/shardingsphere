@@ -38,11 +38,11 @@ public final class DataMatchTableDataConsistencyChecker extends MatchingTableDat
     
     private static final int DEFAULT_CHUNK_SIZE = 1000;
     
-    private SingleTableInventoryCalculator calculator;
+    private int chunkSize;
     
     @Override
     public void init(final Properties props) {
-        calculator = new RecordSingleTableInventoryCalculator(getChunkSize(props));
+        chunkSize = getChunkSize(props);
     }
     
     private int getChunkSize(final Properties props) {
@@ -61,8 +61,8 @@ public final class DataMatchTableDataConsistencyChecker extends MatchingTableDat
     }
     
     @Override
-    protected SingleTableInventoryCalculator getSingleTableInventoryCalculator() {
-        return calculator;
+    protected SingleTableInventoryCalculator buildSingleTableInventoryCalculator() {
+        return new RecordSingleTableInventoryCalculator(chunkSize);
     }
     
     @Override
