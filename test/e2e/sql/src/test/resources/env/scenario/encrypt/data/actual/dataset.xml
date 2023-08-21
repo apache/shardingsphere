@@ -38,8 +38,8 @@
         <column name="user_name_like" type="varchar" />
         <column name="password_cipher" type="varchar" />
         <column name="email_cipher" type="varchar" />
-        <column name="telephone_cipher" type="varchar" />
-        <column name="telephone_like" type="varchar" />
+        <column name="user_telephone_cipher" type="varchar" />
+        <column name="user_telephone_like" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
     <metadata data-nodes="encrypt.t_user_item">
@@ -59,8 +59,8 @@
         <column name="merchant_name" type="varchar" />
         <column name="business_code_cipher" type="varchar" />
         <column name="business_code_like" type="varchar" />
-        <column name="telephone_cipher" type="varchar" />
-        <column name="telephone_like" type="varchar" />
+        <column name="merchant_telephone_cipher" type="varchar" />
+        <column name="merchant_telephone_like" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
     <row data-node="encrypt.t_order" values="1000, 10, init, null, test, 2017-08-08" />

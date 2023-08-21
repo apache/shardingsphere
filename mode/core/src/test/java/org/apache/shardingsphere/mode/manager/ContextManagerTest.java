@@ -24,12 +24,12 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResourceUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResourceUtils;
 import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnitNodeMapper;
@@ -104,6 +104,7 @@ class ContextManagerTest {
         when(mutableDataNodeRule.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(mock(DataNode.class)));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mutableDataNodeRule)));
         when(result.getSchemas()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", new ShardingSphereSchema())));
+        when(result.getResourceMetaData().getStorageUnitMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", TypedSPILoader.getService(DatabaseType.class, "FIXTURE")));
         return result;
     }
     
