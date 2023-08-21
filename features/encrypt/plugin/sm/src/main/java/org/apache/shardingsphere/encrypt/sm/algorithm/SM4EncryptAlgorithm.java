@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.sm.algorithm;
 
 import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
@@ -145,12 +146,12 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     public String getType() {
         return "SM4";
     }
-    static byte[] fromHexString(String s){
+
+    static byte[] fromHexString(final String s) {
         try {
             return Hex.decodeHex(s);
-        } catch (Exception e) {
+        } catch (DecoderException e) {
             throw new EncryptAlgorithmInitializationException("SM", e.getMessage());
         }
-        
     }
 }
