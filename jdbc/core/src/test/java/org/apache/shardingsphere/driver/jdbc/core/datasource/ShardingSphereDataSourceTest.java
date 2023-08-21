@@ -138,17 +138,6 @@ class ShardingSphereDataSourceTest {
         }
     }
     
-    @Test
-    void assertCloseWithDataSourceNames() throws SQLException {
-        try (HikariDataSource dataSource = createHikariDataSource()) {
-            ShardingSphereDataSource actual = createShardingSphereDataSource(dataSource);
-            actual.close(Collections.singleton("ds"));
-            Map<StorageNode, DataSource> dataSourceMap = getContextManager(actual).getMetaDataContexts().getMetaData()
-                    .getDatabase(DefaultDatabase.LOGIC_NAME).getResourceMetaData().getStorageNodeDataSources();
-            assertTrue(((HikariDataSource) dataSourceMap.get(new StorageNode("ds"))).isClosed());
-        }
-    }
-    
     @SneakyThrows(ReflectiveOperationException.class)
     private ContextManager getContextManager(final ShardingSphereDataSource dataSource) {
         return (ContextManager) Plugins.getMemberAccessor().get(ShardingSphereDataSource.class.getDeclaredField("contextManager"), dataSource);

@@ -98,17 +98,11 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         return getConnection();
     }
     
-    /**
-     * Close data sources.
-     *
-     * @param dataSourceNames data source names to be closed
-     * @throws SQLException SQL exception
-     */
-    // TODO Replace public to private?
-    public void close(final Collection<String> dataSourceNames) throws SQLException {
-        Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(databaseName);
-        for (String each : dataSourceNames) {
-            close(dataSourceMap.get(each));
+    @Override
+    public void close() throws SQLException {
+        contextManagerDestroyedCallback(databaseName);
+        for (DataSource each : contextManager.getDataSourceMap(databaseName).values()) {
+            close(each);
         }
         contextManager.close();
     }
@@ -123,12 +117,6 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
                 throw new SQLException(ex);
             }
         }
-    }
-    
-    @Override
-    public void close() throws SQLException {
-        contextManagerDestroyedCallback(databaseName);
-        close(contextManager.getDataSourceMap(databaseName).keySet());
     }
     
     private void contextManagerDestroyedCallback(final String databaseName) {
