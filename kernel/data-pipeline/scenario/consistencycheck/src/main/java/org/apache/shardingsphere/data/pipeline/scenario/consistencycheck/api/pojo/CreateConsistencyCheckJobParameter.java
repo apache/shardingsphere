@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.po
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.util.Properties;
 
@@ -34,4 +35,8 @@ public final class CreateConsistencyCheckJobParameter {
     private final String algorithmTypeName;
     
     private final Properties algorithmProps;
+    
+    private final DatabaseType sourceDatabaseType;
+    
+    private final DatabaseType targetDatabaseType;
 }

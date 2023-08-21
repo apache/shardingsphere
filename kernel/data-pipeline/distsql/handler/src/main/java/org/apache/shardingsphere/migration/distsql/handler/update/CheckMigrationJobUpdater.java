@@ -19,6 +19,8 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.pojo.CreateConsistencyCheckJobParameter;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
@@ -31,14 +33,18 @@ import java.util.Properties;
  */
 public final class CheckMigrationJobUpdater implements RALUpdater<CheckMigrationStatement> {
     
-    private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI();
+    private final ConsistencyCheckJobAPI checkJobAPI = new ConsistencyCheckJobAPI();
+    
+    private final MigrationJobAPI migrationJobAPI = new MigrationJobAPI();
     
     @Override
     public void executeUpdate(final String databaseName, final CheckMigrationStatement sqlStatement) throws SQLException {
         AlgorithmSegment typeStrategy = sqlStatement.getTypeStrategy();
         String algorithmTypeName = null == typeStrategy ? null : typeStrategy.getName();
         Properties algorithmProps = null == typeStrategy ? null : typeStrategy.getProps();
-        jobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(sqlStatement.getJobId(), algorithmTypeName, algorithmProps));
+        String jobId = sqlStatement.getJobId();
+        MigrationJobConfiguration jobConfig = migrationJobAPI.getJobConfiguration(jobId);
+        checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(jobId, algorithmTypeName, algorithmProps, jobConfig.getSourceDatabaseType(), jobConfig.getTargetDatabaseType()));
     }
     
     @Override
