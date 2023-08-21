@@ -35,7 +35,7 @@ public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm, Pi
      * @param param check parameter
      * @return check result
      */
-    TableDataConsistencyCheckResult checkSingleTableInventoryData(TableDataConsistencyCheckParameter param);
+    TableDataConsistencyCheckResult checkSingleTableInventoryData(TableInventoryCheckParameter param);
     
     /**
      * Get supported database types.

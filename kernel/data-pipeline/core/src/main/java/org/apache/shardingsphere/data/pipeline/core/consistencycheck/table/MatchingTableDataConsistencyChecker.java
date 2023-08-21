@@ -56,7 +56,7 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
     private final Set<SingleTableInventoryCalculator> calculators = new HashSet<>();
     
     @Override
-    public TableDataConsistencyCheckResult checkSingleTableInventoryData(final TableDataConsistencyCheckParameter param) {
+    public TableDataConsistencyCheckResult checkSingleTableInventoryData(final TableInventoryCheckParameter param) {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(param.getJobId()) + "-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         try {
@@ -67,7 +67,7 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
         }
     }
     
-    private TableDataConsistencyCheckResult checkSingleTableInventoryData(final TableDataConsistencyCheckParameter param, final ThreadPoolExecutor executor) {
+    private TableDataConsistencyCheckResult checkSingleTableInventoryData(final TableInventoryCheckParameter param, final ThreadPoolExecutor executor) {
         SingleTableInventoryCalculateParameter sourceParam = new SingleTableInventoryCalculateParameter(param.getSourceDataSource(), param.getSourceTable(),
                 param.getColumnNames(), param.getUniqueKeys(), param.getProgressContext().getSourceTableCheckPositions().get(param.getSourceTable().getTableName().getOriginal()));
         SingleTableInventoryCalculateParameter targetParam = new SingleTableInventoryCalculateParameter(param.getTargetDataSource(), param.getTargetTable(),
@@ -90,7 +90,7 @@ public abstract class MatchingTableDataConsistencyChecker implements TableDataCo
     
     private TableDataConsistencyCheckResult checkSingleTableInventoryData(final Iterator<SingleTableInventoryCalculatedResult> sourceCalculatedResults,
                                                                           final Iterator<SingleTableInventoryCalculatedResult> targetCalculatedResults,
-                                                                          final TableDataConsistencyCheckParameter param, final ThreadPoolExecutor executor) {
+                                                                          final TableInventoryCheckParameter param, final ThreadPoolExecutor executor) {
         YamlTableDataConsistencyCheckResult checkResult = new YamlTableDataConsistencyCheckResult(new YamlTableDataConsistencyCountCheckResult(), new YamlTableDataConsistencyContentCheckResult(true));
         while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
             if (null != param.getReadRateLimitAlgorithm()) {
