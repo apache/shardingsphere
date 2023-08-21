@@ -74,10 +74,6 @@ public final class StorageUnitMetaData {
     }
     
     private Map<String, DatabaseType> createStorageTypes() {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(storageUnits.size(), 1F);
-        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getStorageType());
-        }
-        return result;
+        return storageUnits.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageType(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }

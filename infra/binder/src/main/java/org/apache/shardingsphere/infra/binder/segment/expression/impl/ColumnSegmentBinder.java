@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -61,10 +63,14 @@ public final class ColumnSegmentBinder {
         segment.getOwner().ifPresent(result::setOwner);
         Collection<TableSegmentBinderContext> tableBinderContextValues = getTableSegmentBinderContexts(segment, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment.getIdentifier().getValue(), tableBinderContextValues);
-        inputColumnSegment.ifPresent(optional -> result.setOriginalDatabase(optional.getOriginalDatabase()));
-        inputColumnSegment.ifPresent(optional -> result.setOriginalSchema(optional.getOriginalSchema()));
-        result.setOriginalTable(null == segment.getOriginalTable() ? inputColumnSegment.map(ColumnSegment::getOriginalTable).orElse(null) : segment.getOriginalTable());
-        result.setOriginalColumn(null == segment.getOriginalColumn() ? segment.getIdentifier() : segment.getOriginalColumn());
+        IdentifierValue originalDatabase = inputColumnSegment.map(optional -> optional.getColumnBoundedInfo().getOriginalDatabase()).orElse(null);
+        IdentifierValue originalSchema = inputColumnSegment.map(optional -> optional.getColumnBoundedInfo().getOriginalSchema()).orElse(null);
+        IdentifierValue originalTable = null == segment.getColumnBoundedInfo().getOriginalTable() ? inputColumnSegment.map(optional -> optional.getColumnBoundedInfo().getOriginalTable()).orElse(null)
+                : segment.getColumnBoundedInfo().getOriginalTable();
+        IdentifierValue originalColumn =
+                null == segment.getColumnBoundedInfo().getOriginalColumn() ? inputColumnSegment.map(optional -> optional.getColumnBoundedInfo().getOriginalColumn()).orElse(null)
+                        : segment.getColumnBoundedInfo().getOriginalColumn();
+        result.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(originalDatabase, originalSchema, originalTable, originalColumn));
         return result;
     }
     

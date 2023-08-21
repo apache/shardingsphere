@@ -26,7 +26,10 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere schema builder material.
@@ -49,6 +52,17 @@ public final class GenericSchemaBuilderMaterial {
     
     public GenericSchemaBuilderMaterial(final DatabaseType protocolType, final StorageUnitMetaData storageUnitMetaData,
                                         final Collection<ShardingSphereRule> rules, final ConfigurationProperties props, final String defaultSchemaName) {
-        this(protocolType, storageUnitMetaData.getStorageTypes(), storageUnitMetaData.getDataSources(), rules, props, defaultSchemaName);
+        this(protocolType, storageUnitMetaData.getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageType(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+                storageUnitMetaData.getDataSources(), rules, props, defaultSchemaName);
+    }
+    
+    /**
+     * Judge whether same protocol and storage database types.
+     * 
+     * @return is same or not
+     */
+    public boolean isSameProtocolAndStorageTypes() {
+        return storageTypes.values().stream().allMatch(protocolType::equals);
     }
 }

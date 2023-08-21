@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -83,10 +84,9 @@ public final class SubqueryTableSegmentBinder {
         if (!Strings.isNullOrEmpty(subqueryTableName.getValue())) {
             newColumnSegment.setOwner(new OwnerSegment(0, 0, subqueryTableName));
         }
-        newColumnSegment.setOriginalColumn(originalColumn.getColumn().getOriginalColumn());
-        newColumnSegment.setOriginalTable(originalColumn.getColumn().getOriginalTable());
-        newColumnSegment.setOriginalSchema(originalColumn.getColumn().getOriginalSchema());
-        newColumnSegment.setOriginalDatabase(originalColumn.getColumn().getOriginalDatabase());
+        newColumnSegment.setColumnBoundedInfo(
+                new ColumnSegmentBoundedInfo(originalColumn.getColumn().getColumnBoundedInfo().getOriginalDatabase(), originalColumn.getColumn().getColumnBoundedInfo().getOriginalSchema(),
+                        originalColumn.getColumn().getColumnBoundedInfo().getOriginalTable(), originalColumn.getColumn().getColumnBoundedInfo().getOriginalColumn()));
         ColumnProjectionSegment result = new ColumnProjectionSegment(newColumnSegment);
         result.setVisible(originalColumn.isVisible());
         return result;
