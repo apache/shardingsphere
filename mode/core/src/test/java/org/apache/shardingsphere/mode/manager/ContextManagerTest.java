@@ -285,6 +285,8 @@ class ContextManagerTest {
     @Test
     void assertReloadSchema() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getName()).thenReturn("foo_db");
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData()
+                .getStorageUnitMetaData().getStorageUnits().get("foo_ds").getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);
         when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);

@@ -181,7 +181,8 @@ public final class ContextManager implements AutoCloseable {
     private ShardingSphereSchema loadSchema(final String databaseName, final String schemaName, final String dataSourceName) throws SQLException {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         database.reloadRules(MutableDataNodeRule.class);
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(), database.getResourceMetaData().getStorageUnitMetaData().getStorageTypes(),
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
+                Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().get(dataSourceName).getStorageType()),
                 Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().get(dataSourceName).getDataSource()),
                 database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
         ShardingSphereSchema result = GenericSchemaBuilder.build(material).get(schemaName);

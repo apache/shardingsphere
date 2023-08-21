@@ -37,8 +37,7 @@ public final class MySQLResultSetMapper implements DialectResultSetMapper {
     @Override
     public Object getDateValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
         if (isYearDataType(resultSet.getMetaData().getColumnTypeName(columnIndex))) {
-            Object result = resultSet.getObject(columnIndex);
-            return resultSet.wasNull() ? null : result;
+            return resultSet.wasNull() ? null : resultSet.getObject(columnIndex);
         }
         return resultSet.getDate(columnIndex);
     }
