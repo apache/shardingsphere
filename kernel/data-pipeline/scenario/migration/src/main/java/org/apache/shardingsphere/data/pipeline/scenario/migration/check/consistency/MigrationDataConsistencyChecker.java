@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
@@ -41,15 +40,13 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.Table
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckerFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
-import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineDatabaseTypeException;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,9 +79,6 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     
     @Override
     public Map<String, TableDataConsistencyCheckResult> check(final String algorithmType, final Properties algorithmProps) {
-        Collection<DatabaseType> supportedDatabaseTypes = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps).getSupportedDatabaseTypes();
-        verifyPipelineDatabaseType(supportedDatabaseTypes, jobConfig.getSources().values().iterator().next());
-        verifyPipelineDatabaseType(supportedDatabaseTypes, jobConfig.getTarget());
         List<String> sourceTableNames = new LinkedList<>();
         jobConfig.getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes()
                 .forEach(dataNode -> sourceTableNames.add(DataNodeUtils.formatWithSchema(dataNode)))));
@@ -113,7 +107,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         TableDataConsistencyCheckResult checkResult = checkSingleTable(entry.getLogicTableName(), dataNode, tableChecker, dataSourceManager);
         checkResults.put(DataNodeUtils.formatWithSchema(dataNode), checkResult);
         if (!checkResult.isMatched()) {
-            log.info("unmatched on table '{}', ignore left tables", jobDataNodeLine);
+            log.info("Unmatched on table '{}', ignore left tables", JsonUtils.toJsonString(jobDataNodeLine));
             checkFailed.set(true);
         }
     }
@@ -133,11 +127,6 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         TableDataConsistencyCheckParameter param = new TableDataConsistencyCheckParameter(
                 jobConfig.getJobId(), sourceDataSource, targetDataSource, sourceTable, targetTable, columnNames, uniqueKeys, readRateLimitAlgorithm, progressContext);
         return tableChecker.checkSingleTableInventoryData(param);
-    }
-    
-    private void verifyPipelineDatabaseType(final Collection<DatabaseType> supportedDatabaseTypes, final PipelineDataSourceConfiguration dataSourceConfig) {
-        ShardingSpherePreconditions.checkState(supportedDatabaseTypes.contains(dataSourceConfig.getDatabaseType()),
-                () -> new UnsupportedPipelineDatabaseTypeException(dataSourceConfig.getDatabaseType()));
     }
     
     private long getRecordsCount() {
