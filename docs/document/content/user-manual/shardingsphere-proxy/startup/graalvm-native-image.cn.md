@@ -9,9 +9,9 @@ weight = 2
 
 ## 注意事项
 
-- ShardingSphere Proxy 尚未准备好与 GraalVM Native Image 集成。
-  Proxy 的 Native Image 产物在 https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-proxy-native 存在每夜构建。
-  假设存在包含`server.yaml` 的 `conf` 文件夹为 `./custom/conf`，你可通过如下的 `docker-compose.yml` 文件进行测试。
+- ShardingSphere Proxy 尚未准备好与 GraalVM Native Image 集成。 Proxy 的 Native Image 产物在
+  https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-proxy-native 存在每夜构建。假设存在包
+  含`server.yaml` 的 `conf` 文件夹为 `./custom/conf`，你可通过如下的 `docker-compose.yml` 文件进行测试。
 
 ```yaml
 version: "3.8"
@@ -43,6 +43,9 @@ services:
 
 - 本节假定处于 Linux（amd64，aarch64）， MacOS（amd64）或 Windows（amd64）环境。
   如果你位于 MacOS（aarch64/M1） 环境，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/2666 。
+
+- `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd` 受
+  https://github.com/micronaut-projects/micronaut-gcp/issues/532 影响，不可使用。
 
 ## 前提条件
 
@@ -148,16 +151,14 @@ services:
 
 # 可观察性
 
-- 针对 GraalVM Native Image 形态的 ShardingSphere
-  Proxy，其提供的可观察性的能力与 https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/
-  并不一致。
+- 针对 GraalVM Native Image 形态的 ShardingSphere Proxy，其提供的可观察性的能力与
+  https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/ 并不一致。
 
-- 你可以使用 https://www.graalvm.org/latest/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image
-  的内部行为，并根据其要求使用 VSCode 完成调试工作。
-  如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native
-  Image，你可以关注 https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
-  及其后继。如果你使用的不是 Linux，则无法对 GraalVM Native Image 进行
-  Debug，请关注尚未关闭的 https://github.com/oracle/graal/issues/5648 。
+- 你可以使用 https://www.graalvm.org/latest/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image 的内部行为，
+  并根据其要求使用 VSCode 完成调试工作。如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native Image，你可以关注
+  https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
+  及其后继。如果你使用的不是 Linux，则无法对 GraalVM Native Image 进行 Debug，请关注尚未关闭的
+  https://github.com/oracle/graal/issues/5648 。
 
 - 对于使用 `ShardingSphere Agent` 等 APM Java Agent 的情形， GraalVM 的 `native-image` 组件尚未完全支持在构建 Native
   Image 时使用 javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065。
