@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -177,11 +178,11 @@ public final class EncryptGeneratorFixtureBuilder {
      */
     public static SQLStatementContext createSelectStatementContext() {
         ColumnSegment leftColumn = new ColumnSegment(0, 0, new IdentifierValue("user_name"));
-        leftColumn.setOriginalColumn(new IdentifierValue("user_name"));
-        leftColumn.setOriginalTable(new IdentifierValue("t_user"));
+        leftColumn.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue("t_user"),
+                new IdentifierValue("user_name")));
         ColumnSegment rightColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
-        rightColumn.setOriginalColumn(new IdentifierValue("user_id"));
-        rightColumn.setOriginalTable(new IdentifierValue("t_user"));
+        rightColumn.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue("t_user"),
+                new IdentifierValue("user_id")));
         SelectStatementContext result = mock(SelectStatementContext.class);
         when(result.getJoinConditions()).thenReturn(Collections.singleton(new BinaryOperationExpression(0, 0, leftColumn, rightColumn, "=", "")));
         return result;

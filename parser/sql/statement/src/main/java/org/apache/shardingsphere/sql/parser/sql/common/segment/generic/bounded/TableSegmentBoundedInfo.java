@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.TableSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
- * Table name segment.
+ * Table name bounded info.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class TableNameSegment implements SQLSegment {
+public final class TableSegmentBoundedInfo {
     
-    private final int startIndex;
+    private final IdentifierValue originalDatabase;
     
-    private final int stopIndex;
-    
-    private final IdentifierValue identifier;
-    
-    private TableSegmentBoundedInfo tableBoundedInfo;
+    private final IdentifierValue originalSchema;
 }

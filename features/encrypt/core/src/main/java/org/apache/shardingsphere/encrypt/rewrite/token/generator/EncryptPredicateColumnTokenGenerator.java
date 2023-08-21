@@ -127,8 +127,8 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     }
     
     private EncryptAlgorithm<?, ?> getColumnEncryptor(final ColumnSegment columnSegment) {
-        String tableName = columnSegment.getOriginalTable().getValue();
-        String columnName = columnSegment.getOriginalColumn().getValue();
+        String tableName = columnSegment.getColumnBoundedInfo().getOriginalTable().getValue();
+        String columnName = columnSegment.getColumnBoundedInfo().getOriginalColumn().getValue();
         if (!encryptRule.findEncryptTable(tableName).isPresent() || !encryptRule.getEncryptTable(tableName).isEncryptColumn(columnName)) {
             return null;
         }

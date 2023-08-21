@@ -33,6 +33,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.TableSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -77,8 +79,7 @@ public final class SimpleTableSegmentBinder {
         tableBinderContexts.put(segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue()),
                 createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema, statementBinderContext.getDatabaseType()));
         TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), segment.getTableName().getIdentifier());
-        tableNameSegment.setOriginalDatabase(originalDatabase);
-        tableNameSegment.setOriginalSchema(originalSchema);
+        tableNameSegment.setTableBoundedInfo(new TableSegmentBoundedInfo(originalDatabase, originalSchema));
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
         segment.getOwner().ifPresent(result::setOwner);
         segment.getAliasSegment().ifPresent(result::setAlias);
@@ -113,10 +114,8 @@ public final class SimpleTableSegmentBinder {
         for (ShardingSphereColumn each : columnNames) {
             ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each.getName(), dialectDatabaseMetaData.getQuoteCharacter()));
             columnSegment.setOwner(new OwnerSegment(0, 0, segment.getAlias().orElse(segment.getTableName().getIdentifier())));
-            columnSegment.setOriginalDatabase(originalDatabase);
-            columnSegment.setOriginalSchema(originalSchema);
-            columnSegment.setOriginalTable(segment.getTableName().getIdentifier());
-            columnSegment.setOriginalColumn(new IdentifierValue(each.getName(), dialectDatabaseMetaData.getQuoteCharacter()));
+            columnSegment.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(originalDatabase, originalSchema, segment.getTableName().getIdentifier(),
+                    new IdentifierValue(each.getName(), dialectDatabaseMetaData.getQuoteCharacter())));
             ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment);
             columnProjectionSegment.setVisible(each.isVisible());
             projectionSegments.add(columnProjectionSegment);
