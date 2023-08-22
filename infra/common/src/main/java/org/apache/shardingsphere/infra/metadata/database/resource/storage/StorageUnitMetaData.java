@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.database.resource.storage;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 
 import javax.sql.DataSource;
@@ -41,9 +40,6 @@ public final class StorageUnitMetaData {
     // TODO zhangliang: should refactor
     private final Map<String, DataSource> dataSources;
     
-    // TODO zhangliang: should refactor
-    private final Map<String, DatabaseType> storageTypes;
-    
     public StorageUnitMetaData(final String databaseName, final Map<StorageNode, DataSource> storageNodeDataSources,
                                final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageUnitNodeMapper> unitNodeMappers) {
         this.unitNodeMappers = unitNodeMappers;
@@ -52,7 +48,6 @@ public final class StorageUnitMetaData {
             storageUnits.put(entry.getKey(), new StorageUnit(databaseName, storageNodeDataSources, dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()));
         }
         dataSources = createDataSources();
-        storageTypes = createStorageTypes();
     }
     
     /**
@@ -69,14 +64,6 @@ public final class StorageUnitMetaData {
         Map<String, DataSource> result = new LinkedHashMap<>(storageUnits.size(), 1F);
         for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getDataSource());
-        }
-        return result;
-    }
-    
-    private Map<String, DatabaseType> createStorageTypes() {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(storageUnits.size(), 1F);
-        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getStorageType());
         }
         return result;
     }
