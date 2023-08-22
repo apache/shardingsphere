@@ -59,7 +59,7 @@ public final class JDBCMetaDataInfoExporter implements MetricsExporter {
             ShardingSphereDataSource dataSource = (ShardingSphereDataSource) entry.getValue();
             String databaseName = AgentReflectionUtils.getFieldValue(dataSource, "databaseName");
             ContextManager contextManager = AgentReflectionUtils.getFieldValue(dataSource, "contextManager");
-            result.addMetric(Arrays.asList(databaseName, "storage_unit_count"), contextManager.getDataSourceMap(databaseName).size());
+            result.addMetric(Arrays.asList(databaseName, "storage_unit_count"), contextManager.getStorageUnits(databaseName).size());
         }
         return Optional.of(result);
     }
