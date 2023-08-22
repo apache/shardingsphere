@@ -146,7 +146,7 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     public String getType() {
         return "SM4";
     }
-
+    
     static byte[] fromHexString(final String s) {
         try {
             return Hex.decodeHex(s);
