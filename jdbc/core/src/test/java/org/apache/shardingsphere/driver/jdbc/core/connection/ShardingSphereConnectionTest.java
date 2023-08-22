@@ -56,7 +56,7 @@ class ShardingSphereConnectionTest {
     void assertIsHoldTransaction() throws SQLException {
         try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager())) {
             connection.setAutoCommit(false);
-            assertTrue(connection.isHoldTransaction());    
+            assertTrue(connection.isHoldTransaction());
         }
     }
     
@@ -192,7 +192,7 @@ class ShardingSphereConnectionTest {
             Connection physicalConnection = connection.getDatabaseConnectionManager().getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
             connection.setReadOnly(true);
             assertTrue(connection.isReadOnly());
-            verify(physicalConnection).setReadOnly(true);    
+            verify(physicalConnection).setReadOnly(true);
         }
     }
     
@@ -233,7 +233,7 @@ class ShardingSphereConnectionTest {
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getDataSource().getConnection()).thenReturn(physicalConnection);
         try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(storageUnit))) {
-            assertThat(connection.prepareCall(""), is(expected));    
+            assertThat(connection.prepareCall(""), is(expected));
         }
     }
     
