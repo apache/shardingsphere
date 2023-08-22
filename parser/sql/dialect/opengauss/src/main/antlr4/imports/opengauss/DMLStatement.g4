@@ -108,10 +108,7 @@ selectWithParens
     ;
 
 selectNoParens
-    : selectClauseN
-    | selectClauseN sortClause
-    | selectClauseN sortClause? forLockingClause selectLimit?
-    | selectClauseN sortClause? selectLimit forLockingClause?
+    : selectClauseN sortClause? (forLockingClause selectLimit? | selectLimit forLockingClause?)?
     | withClause selectClauseN
     | withClause selectClauseN sortClause
     | withClause selectClauseN sortClause? forLockingClause selectLimit?
