@@ -78,7 +78,7 @@ public final class ShorthandProjectionSegmentBinder {
             String tableAliasOrName = boundedTableSegment.getAliasName().orElseGet(() -> ((SimpleTableSegment) boundedTableSegment).getTableName().getIdentifier().getValue());
             expandVisibleColumn(getProjectionSegmentsByTableAliasOrName(tableBinderContexts, tableAliasOrName), segment);
         } else if (boundedTableSegment instanceof JoinTableSegment) {
-            expandVisibleColumn(((JoinTableSegment) boundedTableSegment).getJoinTableProjectionSegments(), segment);
+            expandVisibleColumn(((JoinTableSegment) boundedTableSegment).getDerivedJoinTableProjectionSegments(), segment);
         } else if (boundedTableSegment instanceof SubqueryTableSegment) {
             expandVisibleColumn(getProjectionSegmentsByTableAliasOrName(tableBinderContexts, boundedTableSegment.getAliasName().orElse("")), segment);
         }

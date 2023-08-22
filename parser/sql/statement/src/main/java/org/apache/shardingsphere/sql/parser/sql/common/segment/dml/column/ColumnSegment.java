@@ -48,6 +48,8 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     
     private ColumnSegmentBoundedInfo columnBoundedInfo;
     
+    private ColumnSegmentBoundedInfo otherUsingColumnBoundedInfo;
+    
     public ColumnSegment(final int startIndex, final int stopIndex, final IdentifierValue identifier) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
