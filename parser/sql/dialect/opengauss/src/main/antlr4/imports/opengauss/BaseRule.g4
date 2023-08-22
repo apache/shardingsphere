@@ -438,6 +438,7 @@ unreservedWord
     | YES
     | ZONE
     | JSON
+    | POSITION
     ;
 
 typeFuncNameKeyword
@@ -491,6 +492,10 @@ owner
     ;
 
 name
+    : identifier
+    ;
+
+modelName
     : identifier
     ;
 
@@ -1073,6 +1078,7 @@ functionExprCommonSubexpr
     | XMLPI LP_ NAME identifier COMMA_ aExpr RP_
     | XMLROOT LP_ aExpr COMMA_ xmlRootVersion xmlRootStandalone? RP_
     | XMLSERIALIZE LP_ documentOrContent aExpr AS simpleTypeName RP_
+    | PREDICT BY modelName LP_ FEATURES name (COMMA_ name)* RP_
     ;
 
 typeName

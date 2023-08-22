@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -15,16 +16,18 @@
   ~ limitations under the License.
   -->
 
-<dataset>
-    <metadata>
-        <column name="rule_name" />
-        <column name="count" />
-    </metadata>
-    <row values="single_table| 1" />
-    <row values="sharding_table| 3" />
-    <row values="sharding_binding_table| 1" />
-    <row values="sharding_broadcast_table| 2" />
-    <row values="readwrite_splitting| 1" />
-    <row values="encrypt| 0" />
-    <row values="shadow| 0" />
-</dataset>
+<configuration>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.apache.shardingsphere" level="warn" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    
+    <root>
+        <level value="error" />
+        <appender-ref ref="console" />
+    </root>
+</configuration> 

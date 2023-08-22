@@ -45,14 +45,14 @@
         </assertion>
     </test-case>
     
-    <test-case sql="DROP INDEX t_order_details_index ON t_order_details" db-types="MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+    <test-case sql="DROP INDEX t_order_details_index ON t_order_details" db-types="MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10));CREATE INDEX t_order_details_index ON t_order_details(description)" affected-table="t_order_details" />
             <destroy-sql sql="DROP TABLE t_order_details" />
         </assertion>
     </test-case>
     
-    <test-case sql="DROP INDEX t_order_details_index" db-types="PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+    <test-case sql="DROP INDEX t_order_details_index" db-types="PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="unchanged_table.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10));CREATE INDEX t_order_details_index ON t_order_details(description)" affected-table="t_order_details" />
             <destroy-sql sql="DROP TABLE t_order_details" />

@@ -95,7 +95,7 @@ class ShorthandProjectionSegmentBinderTest {
     void assertBindWithoutOwnerForJoinTableSegment() {
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
         JoinTableSegment boundedTableSegment = new JoinTableSegment();
-        boundedTableSegment.getJoinTableProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        boundedTableSegment.getDerivedJoinTableProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(shorthandProjectionSegment, boundedTableSegment, Collections.emptyMap());
         assertThat(actual.getActualProjectionSegments().size(), is(1));
         ProjectionSegment visibleColumn = actual.getActualProjectionSegments().iterator().next();
