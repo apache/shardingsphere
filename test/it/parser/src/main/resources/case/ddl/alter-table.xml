@@ -84,6 +84,15 @@
         </modify-column>
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_modify9">
+        <table name="sales" start-index="12" stop-index="16" />
+        <modify-column>
+            <column-definition type="time_view_fk" start-index="25" stop-index="52">
+                <column name="CONSTRAINT" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_add_constraint">
         <table name="employees" start-index="12" stop-index="20" />
         <add-constraint constraint-name="emp_emp_id_pk" start-index="27" stop-index="76">
@@ -1476,5 +1485,12 @@
                 <column name="column_value" />
             </column-definition>
         </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_constraint_foreign_key_references_disable_novalidate">
+        <table name="sales" start-index="12" stop-index="16" />
+        <add-constraint constraint-name="time_view_fk" start-index="23" stop-index="116">
+            <referenced-table start-index="80" stop-index="88" name="time_view" />
+        </add-constraint>
     </alter-table>
 </sql-parser-test-cases>

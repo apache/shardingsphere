@@ -109,6 +109,16 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
+     * Get storage units.
+     *
+     * @param databaseName database name
+     * @return storage units
+     */
+    public Map<String, StorageUnit> getStorageUnits(final String databaseName) {
+        return metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getStorageUnits();
+    }
+    
+    /**
      * Reload database meta data from governance center.
      * 
      * @param databaseName to be reloaded database name

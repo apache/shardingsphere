@@ -53,7 +53,9 @@ public final class JoinTableSegment implements TableSegment {
     
     private List<ColumnSegment> using = Collections.emptyList();
     
-    private Collection<ProjectionSegment> joinTableProjectionSegments = new LinkedList<>();
+    private List<ColumnSegment> derivedUsing = Collections.emptyList();
+    
+    private Collection<ProjectionSegment> derivedJoinTableProjectionSegments = new LinkedList<>();
     
     @Override
     public Optional<String> getAliasName() {
