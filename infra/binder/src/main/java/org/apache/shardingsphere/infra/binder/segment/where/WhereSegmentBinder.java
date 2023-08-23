@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.where;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.enums.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
@@ -44,6 +45,6 @@ public final class WhereSegmentBinder {
     public static WhereSegment bind(final WhereSegment segment, final SQLStatementBinderContext statementBinderContext,
                                     final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         return new WhereSegment(segment.getStartIndex(), segment.getStopIndex(),
-                ExpressionSegmentBinder.bind(segment.getExpr(), statementBinderContext, tableBinderContexts, outerTableBinderContexts));
+                ExpressionSegmentBinder.bind(segment.getExpr(), SegmentType.PREDICATE, statementBinderContext, tableBinderContexts, outerTableBinderContexts));
     }
 }

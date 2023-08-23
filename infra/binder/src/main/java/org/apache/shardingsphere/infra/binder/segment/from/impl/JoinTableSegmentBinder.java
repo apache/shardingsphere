@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.enums.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
@@ -66,13 +69,15 @@ public final class JoinTableSegmentBinder {
         result.setNatural(segment.isNatural());
         result.setJoinType(segment.getJoinType());
         result.setRight(TableSegmentBinder.bind(segment.getRight(), statementBinderContext, tableBinderContexts));
-        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), statementBinderContext, tableBinderContexts, Collections.emptyMap()));
+        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN, statementBinderContext, tableBinderContexts, Collections.emptyMap()));
         result.setUsing(bindUsingColumns(segment.getUsing(), tableBinderContexts));
+        result.getUsing().forEach(each -> statementBinderContext.getUsingColumnNames().add(each.getIdentifier().getValue().toLowerCase()));
         Map<String, ProjectionSegment> usingColumnsByNaturalJoin = Collections.emptyMap();
         if (result.isNatural()) {
             usingColumnsByNaturalJoin = getUsingColumnsByNaturalJoin(result, tableBinderContexts);
             Collection<ColumnSegment> derivedUsingColumns = getDerivedUsingColumns(usingColumnsByNaturalJoin);
             result.setDerivedUsing(bindUsingColumns(derivedUsingColumns, tableBinderContexts));
+            result.getDerivedUsing().forEach(each -> statementBinderContext.getUsingColumnNames().add(each.getIdentifier().getValue().toLowerCase()));
         }
         result.getDerivedJoinTableProjectionSegments().addAll(getDerivedJoinTableProjectionSegments(result, statementBinderContext.getDatabaseType(), usingColumnsByNaturalJoin, tableBinderContexts));
         statementBinderContext.getJoinTableProjectionSegments().addAll(result.getDerivedJoinTableProjectionSegments());
@@ -106,7 +111,7 @@ public final class JoinTableSegmentBinder {
             return projectionSegments;
         }
         Collection<ProjectionSegment> result = new LinkedList<>();
-        Map<String, ProjectionSegment> originalUsingColumns = segment.getUsing().isEmpty() ? usingColumnsByNaturalJoin : getUsingColumns(projectionSegments, segment.getUsing());
+        Map<String, ProjectionSegment> originalUsingColumns = segment.getUsing().isEmpty() ? usingColumnsByNaturalJoin : getUsingColumns(projectionSegments, segment.getUsing(), segment.getJoinType());
         Collection<ProjectionSegment> orderedUsingColumns =
                 databaseType instanceof MySQLDatabaseType ? getJoinUsingColumnsByProjectionOrder(projectionSegments, originalUsingColumns) : originalUsingColumns.values();
         result.addAll(orderedUsingColumns);
@@ -160,14 +165,16 @@ public final class JoinTableSegmentBinder {
         return result;
     }
     
-    private static Map<String, ProjectionSegment> getUsingColumns(final Collection<ProjectionSegment> projectionSegments, final Collection<ColumnSegment> usingColumns) {
-        Map<String, ProjectionSegment> columnLabelProjectionSegments = new LinkedHashMap<>(projectionSegments.size(), 1F);
-        projectionSegments.forEach(each -> columnLabelProjectionSegments.putIfAbsent(each.getColumnLabel().toLowerCase(), each));
+    private static Map<String, ProjectionSegment> getUsingColumns(final Collection<ProjectionSegment> projectionSegments, final Collection<ColumnSegment> usingColumns, final String joinType) {
+        Multimap<String, ProjectionSegment> columnLabelProjectionSegments = LinkedHashMultimap.create();
+        projectionSegments.forEach(each -> columnLabelProjectionSegments.put(each.getColumnLabel().toLowerCase(), each));
         Map<String, ProjectionSegment> result = new LinkedHashMap<>();
         for (ColumnSegment each : usingColumns) {
-            ProjectionSegment projectionSegment = columnLabelProjectionSegments.get(each.getIdentifier().getValue().toLowerCase());
-            if (null != projectionSegment) {
-                result.put(projectionSegment.getColumnLabel().toLowerCase(), projectionSegment);
+            LinkedList<ProjectionSegment> groupProjectionSegments = new LinkedList<>(columnLabelProjectionSegments.get(each.getIdentifier().getValue().toLowerCase()));
+            if (!groupProjectionSegments.isEmpty()) {
+                ProjectionSegment targetProjectionSegment =
+                        JoinType.RIGHT.name().equalsIgnoreCase(joinType) ? groupProjectionSegments.descendingIterator().next() : groupProjectionSegments.iterator().next();
+                result.put(targetProjectionSegment.getColumnLabel().toLowerCase(), targetProjectionSegment);
             }
         }
         return result;

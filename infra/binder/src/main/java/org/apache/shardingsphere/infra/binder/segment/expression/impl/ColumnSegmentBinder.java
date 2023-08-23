@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.enums.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.exception.AmbiguousColumnException;
@@ -51,34 +52,42 @@ public final class ColumnSegmentBinder {
      * Bind column segment with metadata.
      *
      * @param segment table segment
+     * @param parentSegmentType parent segment type
      * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return bounded column segment
      */
-    public static ColumnSegment bind(final ColumnSegment segment, final SQLStatementBinderContext statementBinderContext,
+    public static ColumnSegment bind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext,
                                      final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (EXCLUDE_BIND_COLUMNS.contains(segment.getIdentifier().getValue().toUpperCase())) {
             return segment;
         }
         ColumnSegment result = new ColumnSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
         segment.getOwner().ifPresent(result::setOwner);
-        Collection<TableSegmentBinderContext> tableBinderContextValues = getTableSegmentBinderContexts(segment, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
+        Collection<TableSegmentBinderContext> tableBinderContextValues =
+                getTableSegmentBinderContexts(segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment.getIdentifier().getValue(), tableBinderContextValues);
         result.setColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, inputColumnSegment.orElse(null)));
         return result;
     }
     
-    private static Collection<TableSegmentBinderContext> getTableSegmentBinderContexts(final ColumnSegment segment, final SQLStatementBinderContext statementBinderContext,
+    private static Collection<TableSegmentBinderContext> getTableSegmentBinderContexts(final ColumnSegment segment, final SegmentType parentSegmentType,
+                                                                                       final SQLStatementBinderContext statementBinderContext,
                                                                                        final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                                                                        final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (segment.getOwner().isPresent()) {
             return getTableBinderContextByOwner(segment.getOwner().get().getIdentifier().getValue(), tableBinderContexts, outerTableBinderContexts);
         }
-        if (!statementBinderContext.getJoinTableProjectionSegments().isEmpty()) {
+        if (!statementBinderContext.getJoinTableProjectionSegments().isEmpty() && isNeedUseJoinTableProjectionBind(segment, parentSegmentType, statementBinderContext)) {
             return Collections.singleton(new TableSegmentBinderContext(statementBinderContext.getJoinTableProjectionSegments()));
         }
         return tableBinderContexts.values();
+    }
+    
+    private static boolean isNeedUseJoinTableProjectionBind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext) {
+        return SegmentType.PROJECTION == parentSegmentType
+                || SegmentType.PREDICATE == parentSegmentType && statementBinderContext.getUsingColumnNames().contains(segment.getIdentifier().getValue().toLowerCase());
     }
     
     private static Collection<TableSegmentBinderContext> getTableBinderContextByOwner(final String owner, final Map<String, TableSegmentBinderContext> tableBinderContexts,

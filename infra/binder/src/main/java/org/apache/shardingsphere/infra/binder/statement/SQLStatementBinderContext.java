@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -38,6 +39,8 @@ public final class SQLStatementBinderContext {
     private final String defaultDatabaseName;
     
     private final DatabaseType databaseType;
+    
+    private final Collection<String> usingColumnNames = new HashSet<>();
     
     private final Collection<ProjectionSegment> joinTableProjectionSegments = new LinkedList<>();
 }

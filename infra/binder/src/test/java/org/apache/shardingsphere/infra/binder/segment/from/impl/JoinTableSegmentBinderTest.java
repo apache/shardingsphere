@@ -188,9 +188,9 @@ class JoinTableSegmentBinderTest {
         assertThat(actual.size(), is(5));
         assertTrue(actual.get(0) instanceof ColumnProjectionSegment);
         assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("status"));
-        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
         assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("order_id"));
-        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
         assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("user_id"));
         assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(((ColumnProjectionSegment) actual.get(3)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("item_id"));

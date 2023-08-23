@@ -44,7 +44,8 @@ class SQLRouteTest {
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(
                     Arguments.of("noTableUnicastRandomDataSource", "SELECT 1, 1 + 2", Collections.singletonList(1)),
-                    Arguments.of("withBroadcastTable", "SELECT user_id, status from t_order_item a join t_product b on a.product_id = b.product_id where user_id = ?", Collections.singletonList(1)),
+                    Arguments.of("withBroadcastTable", "SELECT a.user_id, status from t_order_item a join t_product b on a.product_id = b.product_id where a.user_id = ?",
+                            Collections.singletonList(1)),
                     Arguments.of("allBindingWithBroadcastTable",
                             "SELECT a.user_id, a.status from t_order a join t_order_item b on a.order_id = b.order_id join t_product c on b.product_id = c.product_id where a.user_id = ?",
                             Collections.singletonList(1)),
