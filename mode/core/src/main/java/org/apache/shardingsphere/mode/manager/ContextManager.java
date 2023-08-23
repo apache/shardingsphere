@@ -45,7 +45,6 @@ import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
@@ -97,16 +96,6 @@ public final class ContextManager implements AutoCloseable {
      */
     public synchronized void renewMetaDataContexts(final MetaDataContexts metaDataContexts) {
         this.metaDataContexts.set(metaDataContexts);
-    }
-    
-    /**
-     * Get data source map.
-     * 
-     * @param databaseName database name
-     * @return data source map
-     */
-    public Map<String, DataSource> getDataSourceMap(final String databaseName) {
-        return metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getDataSources();
     }
     
     /**
