@@ -21,10 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerUpdateStatement;
 
 import java.util.Optional;
 
@@ -58,5 +61,54 @@ public final class UpdateStatementHandler implements SQLStatementHandler {
             return ((MySQLUpdateStatement) updateStatement).getLimit();
         }
         return Optional.empty();
+    }
+    
+    /**
+     * Get with segment.
+     *
+     * @param updateStatement update statement
+     * @return with segment
+     */
+    public static Optional<WithSegment> getWithSegment(final UpdateStatement updateStatement) {
+        if (updateStatement instanceof SQLServerStatement) {
+            return ((SQLServerUpdateStatement) updateStatement).getWithSegment();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Set order by segment.
+     * 
+     * @param updateStatement update statement
+     * @param orderBySegment order by segment
+     */
+    public static void setOrderBySegment(final UpdateStatement updateStatement, final OrderBySegment orderBySegment) {
+        if (updateStatement instanceof MySQLStatement) {
+            ((MySQLUpdateStatement) updateStatement).setOrderBy(orderBySegment);
+        }
+    }
+    
+    /**
+     * Set limit segment.
+     *
+     * @param updateStatement update statement
+     * @param limitSegment limit segment
+     */
+    public static void setLimitSegment(final UpdateStatement updateStatement, final LimitSegment limitSegment) {
+        if (updateStatement instanceof MySQLStatement) {
+            ((MySQLUpdateStatement) updateStatement).setLimit(limitSegment);
+        }
+    }
+    
+    /**
+     * Set with segment.
+     *
+     * @param updateStatement update statement
+     * @param withSegment with segment
+     */
+    public static void setWithSegment(final UpdateStatement updateStatement, final WithSegment withSegment) {
+        if (updateStatement instanceof SQLServerStatement) {
+            ((SQLServerUpdateStatement) updateStatement).setWithSegment(withSegment);
+        }
     }
 }

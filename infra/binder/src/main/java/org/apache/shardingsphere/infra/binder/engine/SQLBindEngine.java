@@ -20,8 +20,10 @@ package org.apache.shardingsphere.infra.binder.engine;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementBinder;
+import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
+import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementBinder;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -29,8 +31,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 
 import java.util.List;
@@ -87,6 +91,12 @@ public final class SQLBindEngine {
         }
         if (statement instanceof InsertStatement) {
             return new InsertStatementBinder().bind((InsertStatement) statement, metaData, defaultDatabaseName);
+        }
+        if (statement instanceof UpdateStatement) {
+            return new UpdateStatementBinder().bind((UpdateStatement) statement, metaData, defaultDatabaseName);
+        }
+        if (statement instanceof DeleteStatement) {
+            return new DeleteStatementBinder().bind((DeleteStatement) statement, metaData, defaultDatabaseName);
         }
         return statement;
     }
