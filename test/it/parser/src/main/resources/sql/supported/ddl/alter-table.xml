@@ -17,6 +17,10 @@
   -->
 
 <sql-cases>
+    <sql-case id="alter_table_modify_lob_shrink_space" value="ALTER TABLE employees MODIFY LOB (perf_review) (SHRINK SPACE)" db-types="Oracle" />
+    <sql-case id="alter_table_set_unused" value="ALTER TABLE hr.admin_emp SET UNUSED (hiredate, mgr)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_cache" value="ALTER TABLE employees MODIFY LOB (resume) (CACHE)" db-types="Oracle" />
+    <sql-case id="alter_table_move_storage_tablespace" value="ALTER TABLE hr.admin_emp MOVE STORAGE (INITIAL 20K NEXT 40K MINEXTENTS 2 MAXEXTENTS 20 PCTINCREASE 0) TABLESPACE hr_tbs" db-types="Oracle" />
     <sql-case id="alter_table_modify1" value="ALTER TABLE employee MODIFY (first_name DECRYPT)" db-types="Oracle" />
     <sql-case id="alter_table_modify2" value="ALTER TABLE employee MODIFY (first_name ENCRYPT SALT)" db-types="Oracle" />
     <sql-case id="alter_table_modify3" value="ALTER TABLE employee MODIFY (first_name ENCRYPT)" db-types="Oracle" />
@@ -29,7 +33,8 @@
     <sql-case id="alter_table_no_flashback_archive" value="ALTER TABLE employee NO FLASHBACK ARCHIVE" db-types="Oracle" />
     <sql-case id="alter_table_move_tablespace_overflow_tablespace" value="ALTER TABLE admin_docindex MOVE TABLESPACE admin_tbs2 OVERFLOW TABLESPACE admin_tbs3" db-types="Oracle" />
     <sql-case id="alter_table_move_nocompress" value="ALTER TABLE admin_iot5 MOVE NOCOMPRESS" db-types="Oracle" />
-    <sql-case id="alter_table_enable_row_movement" value="ALTER TABLE SYSTEM.AUD$ ENABLE ROW MOVEMENT" db-types="Oracle" />
+    <sql-case id="alter_table_enable_row_movement1" value="ALTER TABLE SYSTEM.AUD$ ENABLE ROW MOVEMENT" db-types="Oracle" />
+    <sql-case id="alter_table_enable_row_movement2" value="ALTER TABLE employees_test ENABLE ROW MOVEMENT" db-types="Oracle" />
     <sql-case id="alter_table_shrink_space_cascade" value="ALTER TABLE SYSTEM.AUD$ SHRINK SPACE CASCADE" db-types="Oracle" />
     <sql-case id="alter_table" value="ALTER TABLE t_log ADD name varchar(10)" db-types="MySQL, PostgreSQL,openGauss" />
     <sql-case id="alter_table_oracle" value="ALTER TABLE t_log ADD (name varchar(10))" db-types="Oracle" />
