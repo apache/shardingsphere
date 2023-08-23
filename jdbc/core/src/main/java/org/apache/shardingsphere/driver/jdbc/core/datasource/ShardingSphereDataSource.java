@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -101,8 +102,8 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     @Override
     public void close() throws SQLException {
         contextManagerDestroyedCallback(databaseName);
-        for (DataSource each : contextManager.getDataSourceMap(databaseName).values()) {
-            close(each);
+        for (StorageUnit each : contextManager.getStorageUnits(databaseName).values()) {
+            close(each.getDataSource());
         }
         contextManager.close();
     }
@@ -132,14 +133,14 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     @Override
     public int getLoginTimeout() throws SQLException {
-        Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(databaseName);
-        return dataSourceMap.isEmpty() ? 0 : dataSourceMap.values().iterator().next().getLoginTimeout();
+        Map<String, StorageUnit> storageUnits = contextManager.getStorageUnits(databaseName);
+        return storageUnits.isEmpty() ? 0 : storageUnits.values().iterator().next().getDataSource().getLoginTimeout();
     }
     
     @Override
     public void setLoginTimeout(final int seconds) throws SQLException {
-        for (DataSource each : contextManager.getDataSourceMap(databaseName).values()) {
-            each.setLoginTimeout(seconds);
+        for (StorageUnit each : contextManager.getStorageUnits(databaseName).values()) {
+            each.getDataSource().setLoginTimeout(seconds);
         }
     }
 }

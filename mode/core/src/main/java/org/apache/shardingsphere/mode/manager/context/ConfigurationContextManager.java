@@ -64,8 +64,8 @@ import java.util.stream.Collectors;
 /**
  * Configuration context manager.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class ConfigurationContextManager {
     
     private final AtomicReference<MetaDataContexts> metaDataContexts;

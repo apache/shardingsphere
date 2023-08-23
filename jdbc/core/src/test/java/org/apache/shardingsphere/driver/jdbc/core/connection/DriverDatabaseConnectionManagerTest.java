@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -74,8 +75,8 @@ class DriverDatabaseConnectionManagerTest {
     
     private ContextManager mockContextManager() throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        Map<String, DataSource> dataSourceMap = mockDataSourceMap();
-        when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
+        Map<String, StorageUnit> storageUnits = mockStorageUnits();
+        when(result.getStorageUnits(DefaultDatabase.LOGIC_NAME)).thenReturn(storageUnits);
         MetaDataPersistService persistService = mockMetaDataPersistService();
         when(result.getMetaDataContexts().getPersistService()).thenReturn(persistService);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
@@ -87,12 +88,16 @@ class DriverDatabaseConnectionManagerTest {
         return result;
     }
     
-    private Map<String, DataSource> mockDataSourceMap() throws SQLException {
-        Map<String, DataSource> result = new HashMap<>(2, 1F);
-        result.put("ds", new MockedDataSource());
+    private Map<String, StorageUnit> mockStorageUnits() throws SQLException {
+        Map<String, StorageUnit> result = new HashMap<>(2, 1F);
+        StorageUnit validStorageUnit = mock(StorageUnit.class);
+        when(validStorageUnit.getDataSource()).thenReturn(new MockedDataSource());
+        result.put("ds", validStorageUnit);
+        StorageUnit invalidStorageUnit = mock(StorageUnit.class);
         DataSource invalidDataSource = mock(DataSource.class);
         when(invalidDataSource.getConnection()).thenThrow(new SQLException());
-        result.put("invalid_ds", invalidDataSource);
+        when(invalidStorageUnit.getDataSource()).thenReturn(invalidDataSource);
+        result.put("invalid_ds", invalidStorageUnit);
         return result;
     }
     

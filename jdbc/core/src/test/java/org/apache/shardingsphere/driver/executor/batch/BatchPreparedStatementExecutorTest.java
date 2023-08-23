@@ -50,16 +50,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -97,7 +94,6 @@ class BatchPreparedStatementExecutorTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = mockMetaDataContexts();
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(result.getDataSourceMap("foo_db")).thenReturn(mockDataSourceMap());
         return result;
     }
     
@@ -117,14 +113,6 @@ class BatchPreparedStatementExecutorTest {
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
         when(result.isNeedAccumulate(any())).thenReturn(true);
-        return result;
-    }
-    
-    private Map<String, DataSource> mockDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        result.put("ds_0", dataSource);
-        result.put("ds_1", dataSource);
         return result;
     }
     
