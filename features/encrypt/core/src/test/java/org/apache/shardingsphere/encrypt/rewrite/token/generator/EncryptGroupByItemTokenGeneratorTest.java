@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -42,14 +41,15 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class EncryptOrderByItemTokenGeneratorTest {
+class EncryptGroupByItemTokenGeneratorTest {
     
-    private final EncryptOrderByItemTokenGenerator generator = new EncryptOrderByItemTokenGenerator();
+    private final EncryptGroupByItemTokenGenerator generator = new EncryptGroupByItemTokenGenerator();
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
@@ -73,7 +73,7 @@ class EncryptOrderByItemTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokens() {
-        assertThrows(UnsupportedEncryptSQLException.class, () -> generator.generateSQLTokens(buildSelectStatementContext()));
+        assertThat(generator.generateSQLTokens(buildSelectStatementContext()).size(), is(1));
     }
     
     private SelectStatementContext buildSelectStatementContext() {
@@ -85,8 +85,7 @@ class EncryptOrderByItemTokenGeneratorTest {
         when(result.getDatabaseType()).thenReturn(databaseType);
         ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.FIRST);
         OrderByItem orderByItem = new OrderByItem(columnOrderByItemSegment);
-        when(result.getOrderByContext().getItems()).thenReturn(Collections.singleton(orderByItem));
-        when(result.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
+        when(result.getGroupByContext().getItems()).thenReturn(Collections.singleton(orderByItem));
         when(result.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
         when(result.getTablesContext()).thenReturn(new TablesContext(Collections.singleton(simpleTableSegment), databaseType));
         return result;
