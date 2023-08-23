@@ -126,18 +126,17 @@
         <output sql="SELECT * FROM t_account_0 o, t_account_detail_0 i WHERE o.account_id=i.account_id AND o.account_id = 100" />
     </rewrite-assertion>
     
-    <!-- FIXME support mysql join on column binder -->
-    <!--<rewrite-assertion id="select_binding_table_without_sharding_value_for_parameters">
-        <input sql="SELECT * FROM t_account JOIN t_account_detail ON account_id WHERE t_account.amount = ?" parameters="1000" />
-        <output sql="SELECT * FROM t_account_0 JOIN t_account_detail_0 ON account_id WHERE t_account_0.amount = ?" parameters="1000" />
-        <output sql="SELECT * FROM t_account_1 JOIN t_account_detail_1 ON account_id WHERE t_account_1.amount = ?" parameters="1000" />
+    <rewrite-assertion id="select_binding_table_without_sharding_value_for_parameters">
+        <input sql="SELECT * FROM t_account JOIN t_account_detail ON t_account.account_id WHERE t_account.amount = ?" parameters="1000" />
+        <output sql="SELECT * FROM t_account_0 JOIN t_account_detail_0 ON t_account_0.account_id WHERE t_account_0.amount = ?" parameters="1000" />
+        <output sql="SELECT * FROM t_account_1 JOIN t_account_detail_1 ON t_account_1.account_id WHERE t_account_1.amount = ?" parameters="1000" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_binding_table_without_sharding_value_for_literals">
-        <input sql="SELECT * FROM t_account JOIN t_account_detail ON account_id WHERE t_account.amount = 1000" />
-        <output sql="SELECT * FROM t_account_0 JOIN t_account_detail_0 ON account_id WHERE t_account_0.amount = 1000" />
-        <output sql="SELECT * FROM t_account_1 JOIN t_account_detail_1 ON account_id WHERE t_account_1.amount = 1000" />
-    </rewrite-assertion>-->
+        <input sql="SELECT * FROM t_account JOIN t_account_detail ON t_account.account_id WHERE t_account.amount = 1000" />
+        <output sql="SELECT * FROM t_account_0 JOIN t_account_detail_0 ON t_account_0.account_id WHERE t_account_0.amount = 1000" />
+        <output sql="SELECT * FROM t_account_1 JOIN t_account_detail_1 ON t_account_1.account_id WHERE t_account_1.amount = 1000" />
+    </rewrite-assertion>
     
     <rewrite-assertion id="select_avg_with_single_route">
         <input sql="SELECT AVG(amount) FROM t_account WHERE account_id = ?" parameters="100" />
@@ -187,18 +186,17 @@
         <output sql="SELECT * FROM t_account_1 ORDER BY amount" />
     </rewrite-assertion>
     
-    <!-- FIXME support mysql join on column binder -->
-    <!--<rewrite-assertion id="select_account_by_without_qualified_shorthand_contains_order_by_projection_with_multiple_route">
-        <input sql="SELECT o.* FROM t_account o JOIN t_account_detail i ON account_id ORDER BY o.amount" />
-        <output sql="SELECT o.* FROM t_account_0 o JOIN t_account_detail_0 i ON account_id ORDER BY o.amount" />
-        <output sql="SELECT o.* FROM t_account_1 o JOIN t_account_detail_1 i ON account_id ORDER BY o.amount" />
+    <rewrite-assertion id="select_account_by_without_qualified_shorthand_contains_order_by_projection_with_multiple_route">
+        <input sql="SELECT o.* FROM t_account o JOIN t_account_detail i ON o.account_id ORDER BY o.amount" />
+        <output sql="SELECT o.* FROM t_account_0 o JOIN t_account_detail_0 i ON o.account_id ORDER BY o.amount" />
+        <output sql="SELECT o.* FROM t_account_1 o JOIN t_account_detail_1 i ON o.account_id ORDER BY o.amount" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_account_by_without_qualified_shorthand_not_contains_order_by_projection_with_multiple_route">
-        <input sql="SELECT o.* FROM t_account o JOIN t_account_detail i ON account_id ORDER BY i.amount" />
-        <output sql="SELECT o.* , i.amount AS ORDER_BY_DERIVED_0 FROM t_account_0 o JOIN t_account_detail_0 i ON account_id ORDER BY i.amount" />
-        <output sql="SELECT o.* , i.amount AS ORDER_BY_DERIVED_0 FROM t_account_1 o JOIN t_account_detail_1 i ON account_id ORDER BY i.amount" />
-    </rewrite-assertion>-->
+        <input sql="SELECT o.* FROM t_account o JOIN t_account_detail i ON o.account_id ORDER BY i.amount" />
+        <output sql="SELECT o.* , i.amount AS ORDER_BY_DERIVED_0 FROM t_account_0 o JOIN t_account_detail_0 i ON o.account_id ORDER BY i.amount" />
+        <output sql="SELECT o.* , i.amount AS ORDER_BY_DERIVED_0 FROM t_account_1 o JOIN t_account_detail_1 i ON o.account_id ORDER BY i.amount" />
+    </rewrite-assertion>
     
     <rewrite-assertion id="select_group_by_with_single_route">
         <input sql="SELECT account_id FROM t_account WHERE account_id = ? GROUP BY amount" parameters="100" />
@@ -223,18 +221,17 @@
         <output sql="SELECT * FROM t_account_1 GROUP BY amount ORDER BY amount ASC " />
     </rewrite-assertion>
     
-    <!-- FIXME support mysql join on column binder -->
-    <!--<rewrite-assertion id="select_group_by_without_qualified_shorthand_contains_group_by_projection_with_multiple_route">
-        <input sql="SELECT o.* FROM t_account o JOIN t_account_detail i ON account_id GROUP BY o.amount" />
-        <output sql="SELECT o.* FROM t_account_0 o JOIN t_account_detail_0 i ON account_id GROUP BY o.amount ORDER BY o.amount ASC " />
-        <output sql="SELECT o.* FROM t_account_1 o JOIN t_account_detail_1 i ON account_id GROUP BY o.amount ORDER BY o.amount ASC " />
+    <rewrite-assertion id="select_group_by_without_qualified_shorthand_contains_group_by_projection_with_multiple_route">
+        <input sql="SELECT o.* FROM t_account o JOIN t_account_detail i ON o.account_id GROUP BY o.amount" />
+        <output sql="SELECT o.* FROM t_account_0 o JOIN t_account_detail_0 i ON o.account_id GROUP BY o.amount ORDER BY o.amount ASC " />
+        <output sql="SELECT o.* FROM t_account_1 o JOIN t_account_detail_1 i ON o.account_id GROUP BY o.amount ORDER BY o.amount ASC " />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_group_by_without_qualified_shorthand_not_contains_group_by_projection_with_multiple_route">
-        <input sql="SELECT o.* FROM t_account o JOIN t_account_detail i ON account_id GROUP BY i.amount" />
-        <output sql="SELECT o.* , i.amount AS GROUP_BY_DERIVED_0 FROM t_account_0 o JOIN t_account_detail_0 i ON account_id GROUP BY i.amount ORDER BY i.amount ASC " />
-        <output sql="SELECT o.* , i.amount AS GROUP_BY_DERIVED_0 FROM t_account_1 o JOIN t_account_detail_1 i ON account_id GROUP BY i.amount ORDER BY i.amount ASC " />
-    </rewrite-assertion>-->
+        <input sql="SELECT o.* FROM t_account o JOIN t_account_detail i ON o.account_id GROUP BY i.amount" />
+        <output sql="SELECT o.* , i.amount AS GROUP_BY_DERIVED_0 FROM t_account_0 o JOIN t_account_detail_0 i ON o.account_id GROUP BY i.amount ORDER BY i.amount ASC " />
+        <output sql="SELECT o.* , i.amount AS GROUP_BY_DERIVED_0 FROM t_account_1 o JOIN t_account_detail_1 i ON o.account_id GROUP BY i.amount ORDER BY i.amount ASC " />
+    </rewrite-assertion>
     
     <rewrite-assertion id="select_group_by_and_order_by_with_different_item_with_multiple_route">
         <input sql="SELECT status FROM t_account GROUP BY amount ORDER BY account_id" />
