@@ -1311,11 +1311,6 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
     }
     
-    @Override
-    public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new PostgreSQLExecuteStatement();
-    }
-    
     /**
      * Get original text.
      *
