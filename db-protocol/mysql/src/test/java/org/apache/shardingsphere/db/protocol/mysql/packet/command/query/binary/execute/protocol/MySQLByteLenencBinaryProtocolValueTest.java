@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class MySQLByteLenencBinaryProtocolValueTest {
-
+    
     @Test
     void assertRead() {
         byte[] input = {0x0d, 0x0a, 0x33, 0x18, 0x01, 0x4a, 0x08, 0x0a, (byte) 0x9a, 0x01, 0x18, 0x01, 0x4a, 0x6f};
