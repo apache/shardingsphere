@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.enums.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
@@ -37,17 +38,18 @@ public final class FunctionExpressionSegmentBinder {
      * Bind function expression with metadata.
      *
      * @param segment function expression segment
+     * @param parentSegmentType parent segment type
      * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
      * @return function segment
      */
-    public static FunctionSegment bind(final FunctionSegment segment, final SQLStatementBinderContext statementBinderContext,
+    public static FunctionSegment bind(final FunctionSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext,
                                        final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         FunctionSegment result = new FunctionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getFunctionName(), segment.getText());
         result.setOwner(segment.getOwner());
         for (ExpressionSegment each : segment.getParameters()) {
-            result.getParameters().add(ExpressionSegmentBinder.bind(each, statementBinderContext, tableBinderContexts, outerTableBinderContexts));
+            result.getParameters().add(ExpressionSegmentBinder.bind(each, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts));
         }
         return result;
     }

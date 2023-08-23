@@ -77,7 +77,7 @@ public final class ExpressionSegmentBinder {
             return ColumnSegmentBinder.bind((ColumnSegment) segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof FunctionSegment) {
-            return FunctionExpressionSegmentBinder.bind((FunctionSegment) segment, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
+            return FunctionExpressionSegmentBinder.bind((FunctionSegment) segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         }
         // TODO support more ExpressionSegment bind
         return segment;
