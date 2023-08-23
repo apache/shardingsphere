@@ -93,6 +93,24 @@
         </modify-column>
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_modify10">
+        <table name="locations_demo" start-index="12" stop-index="25" />
+        <modify-column>
+            <column-definition start-index="35" stop-index="75">
+                <column name="country_id" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify11">
+        <table name="product_information" start-index="12" stop-index="30" />
+        <modify-column>
+            <column-definition start-index="40" stop-index="61">
+                <column name="min_price" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_add_constraint">
         <table name="employees" start-index="12" stop-index="20" />
         <add-constraint constraint-name="emp_emp_id_pk" start-index="27" stop-index="76">
@@ -1492,5 +1510,26 @@
         <add-constraint constraint-name="time_view_fk" start-index="23" stop-index="116">
             <referenced-table start-index="80" stop-index="88" name="time_view" />
         </add-constraint>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_lob_nocache">
+        <table name="employees" start-index="12" stop-index="20" />
+        <modify-column>
+            <column-definition start-index="29" stop-index="31">
+                <column name="LOB" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_move_tablespace1">
+        <table name="people_tab" start-index="12" stop-index="21" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_move_tablespace2">
+        <table name="people_column_nt" start-index="12" stop-index="27" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_subpartition_rebuild_unusable_local_indexes">
+        <table name="emp" start-index="12" stop-index="14" />
     </alter-table>
 </sql-parser-test-cases>

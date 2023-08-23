@@ -26,6 +26,8 @@
     <sql-case id="alter_table_modify7" value="ALTER TABLE locations MODIFY PRIMARY KEY DISABLE CASCADE" db-types="Oracle" />
     <sql-case id="alter_table_modify8" value="ALTER TABLE employees MODIFY (salary ENCRYPT USING 'AES256' 'NOMAC')" db-types="Oracle" />
     <sql-case id="alter_table_modify9" value="ALTER TABLE sales MODIFY CONSTRAINT time_view_fk RELY" db-types="Oracle" />
+    <sql-case id="alter_table_modify10" value="ALTER TABLE locations_demo MODIFY (country_id CONSTRAINT country_nn NOT NULL)" db-types="Oracle" />
+    <sql-case id="alter_table_modify11" value="ALTER TABLE product_information MODIFY (min_price DEFAULT NULL)" db-types="Oracle" />
     <sql-case id="alter_table_add_constraint" value="ALTER TABLE employees ADD (CONSTRAINT emp_emp_id_pk PRIMARY KEY (employee_id), CONSTRAINT emp_dept_fk FOREIGN KEY (department_id) REFERENCES departments, CONSTRAINT emp_job_fk FOREIGN KEY (job_id) REFERENCES jobs (job_id), CONSTRAINT emp_manager_fk FOREIGN KEY (manager_id) REFERENCES employees)" db-types="Oracle" />
     <sql-case id="alter_table_no_flashback_archive" value="ALTER TABLE employee NO FLASHBACK ARCHIVE" db-types="Oracle" />
     <sql-case id="alter_table_move_tablespace_overflow_tablespace" value="ALTER TABLE admin_docindex MOVE TABLESPACE admin_tbs2 OVERFLOW TABLESPACE admin_tbs3" db-types="Oracle" />
@@ -193,4 +195,8 @@
     <sql-case id="alter_table_modify_default_attributes_for_partition_tablespace" value="ALTER TABLE emp MODIFY DEFAULT ATTRIBUTES FOR PARTITION p1 TABLESPACE ts1" db-types="Oracle" />
     <sql-case id="alter_table_ref_with_rowid" value="ALTER TABLE emp ADD (REF(column_value) WITH ROWID)" db-types="Oracle" />
     <sql-case id="alter_table_add_constraint_foreign_key_references_disable_novalidate" value="ALTER TABLE sales ADD (CONSTRAINT time_view_fk FOREIGN KEY (time_id) REFERENCES time_view(time_id) DISABLE NOVALIDATE)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_nocache" value="ALTER TABLE employees MODIFY LOB (resume) (NOCACHE)" db-types="Oracle" />
+    <sql-case id="alter_table_move_tablespace1" value="ALTER TABLE people_tab MOVE TABLESPACE system" db-types="Oracle" />
+    <sql-case id="alter_table_move_tablespace2" value="ALTER TABLE people_column_nt MOVE TABLESPACE example" db-types="Oracle" />
+    <sql-case id="alter_table_modify_subpartition_rebuild_unusable_local_indexes" value="ALTER TABLE emp MODIFY SUBPARTITION p3_s1 REBUILD UNUSABLE LOCAL INDEXES" db-types="Oracle" />
 </sql-cases>
