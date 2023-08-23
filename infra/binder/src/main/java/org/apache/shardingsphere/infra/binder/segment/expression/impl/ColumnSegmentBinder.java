@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.enums.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
@@ -48,6 +49,11 @@ public final class ColumnSegmentBinder {
     
     private static final Collection<String> EXCLUDE_BIND_COLUMNS = new LinkedHashSet<>(Arrays.asList("ROWNUM", "ROW_NUMBER", "ROWNUM_"));
     
+    private static final Map<SegmentType, String> SEGMENT_TYPE_MESSAGES = Maps.of(SegmentType.PROJECTION, "field list", SegmentType.JOIN_ON, "on clause", SegmentType.JOIN_USING, "from clause",
+            SegmentType.PREDICATE, "where clause", SegmentType.ORDER_BY, "order clause", SegmentType.GROUP_BY, "group statement");
+    
+    private static final String UNKNOWN_SEGMENT_TYPE_MESSAGE = "unknown clause";
+    
     /**
      * Bind column segment with metadata.
      *
@@ -67,7 +73,7 @@ public final class ColumnSegmentBinder {
         segment.getOwner().ifPresent(result::setOwner);
         Collection<TableSegmentBinderContext> tableBinderContextValues =
                 getTableSegmentBinderContexts(segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
-        Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment.getIdentifier().getValue(), tableBinderContextValues);
+        Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment, parentSegmentType, tableBinderContextValues);
         result.setColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, inputColumnSegment.orElse(null)));
         return result;
     }
@@ -101,18 +107,19 @@ public final class ColumnSegmentBinder {
         return Collections.emptyList();
     }
     
-    private static Optional<ColumnSegment> findInputColumnSegment(final String columnName, final Collection<TableSegmentBinderContext> tableBinderContexts) {
+    private static Optional<ColumnSegment> findInputColumnSegment(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts) {
         ProjectionSegment projectionSegment = null;
         ColumnSegment result = null;
         for (TableSegmentBinderContext each : tableBinderContexts) {
-            projectionSegment = each.getProjectionSegmentByColumnLabel(columnName);
+            projectionSegment = each.getProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
             if (projectionSegment instanceof ColumnProjectionSegment) {
-                ShardingSpherePreconditions.checkState(null == result, () -> new AmbiguousColumnException(columnName));
+                ShardingSpherePreconditions.checkState(null == result,
+                        () -> new AmbiguousColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
                 result = ((ColumnProjectionSegment) projectionSegment).getColumn();
             }
         }
-        // TODO optimize exception message according to different segment
-        ShardingSpherePreconditions.checkState(null != projectionSegment, () -> new UnknownColumnException(columnName));
+        ShardingSpherePreconditions.checkState(null != projectionSegment,
+                () -> new UnknownColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         return Optional.ofNullable(result);
     }
     
@@ -132,19 +139,20 @@ public final class ColumnSegmentBinder {
      * Bind using column segment with metadata.
      *
      * @param segment using column segment
+     * @param parentSegmentType parent segment type
      * @param tableBinderContexts table binder contexts
      * @return bounded using column segment
      */
-    public static ColumnSegment bindUsingColumn(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static ColumnSegment bindUsingColumn(final ColumnSegment segment, final SegmentType parentSegmentType, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         ColumnSegment result = new ColumnSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
         segment.getOwner().ifPresent(result::setOwner);
         Collection<TableSegmentBinderContext> tableBinderContextValues = tableBinderContexts.values();
         Collection<ColumnSegment> usingInputColumnSegments = findUsingInputColumnSegments(segment.getIdentifier().getValue(), tableBinderContextValues);
-        if (usingInputColumnSegments.size() >= 2) {
-            Iterator<ColumnSegment> iterator = usingInputColumnSegments.iterator();
-            result.setColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, iterator.next()));
-            result.setOtherUsingColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, iterator.next()));
-        }
+        ShardingSpherePreconditions.checkState(usingInputColumnSegments.size() >= 2,
+                () -> new UnknownColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
+        Iterator<ColumnSegment> iterator = usingInputColumnSegments.iterator();
+        result.setColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, iterator.next()));
+        result.setOtherUsingColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, iterator.next()));
         return result;
     }
     

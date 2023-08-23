@@ -69,7 +69,7 @@ public final class JoinTableSegmentBinder {
         result.setNatural(segment.isNatural());
         result.setJoinType(segment.getJoinType());
         result.setRight(TableSegmentBinder.bind(segment.getRight(), statementBinderContext, tableBinderContexts));
-        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN, statementBinderContext, tableBinderContexts, Collections.emptyMap()));
+        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN_ON, statementBinderContext, tableBinderContexts, Collections.emptyMap()));
         result.setUsing(bindUsingColumns(segment.getUsing(), tableBinderContexts));
         result.getUsing().forEach(each -> statementBinderContext.getUsingColumnNames().add(each.getIdentifier().getValue().toLowerCase()));
         Map<String, ProjectionSegment> usingColumnsByNaturalJoin = Collections.emptyMap();
@@ -98,7 +98,7 @@ public final class JoinTableSegmentBinder {
     private static List<ColumnSegment> bindUsingColumns(final Collection<ColumnSegment> usingColumns, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         List<ColumnSegment> result = new LinkedList<>();
         for (ColumnSegment each : usingColumns) {
-            result.add(ColumnSegmentBinder.bindUsingColumn(each, tableBinderContexts));
+            result.add(ColumnSegmentBinder.bindUsingColumn(each, SegmentType.JOIN_USING, tableBinderContexts));
         }
         return result;
     }
