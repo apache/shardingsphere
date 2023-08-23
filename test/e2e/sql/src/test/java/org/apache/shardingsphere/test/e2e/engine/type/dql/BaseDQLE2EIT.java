@@ -35,6 +35,8 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -191,6 +193,9 @@ public abstract class BaseDQLE2EIT {
                 Object expectedValue = expectedResultSet.getObject(i + 1);
                 if (actualValue instanceof Double || actualValue instanceof Float || actualValue instanceof BigDecimal) {
                     assertThat(Math.floor(Double.parseDouble(actualValue.toString())), is(Math.floor(Double.parseDouble(expectedValue.toString()))));
+                } else if (actualValue instanceof Timestamp && expectedValue instanceof LocalDateTime) {
+                    // TODO Since mysql 8.0.23, for the DATETIME type, the mysql driver returns the LocalDateTime type, but the proxy returns the Timestamp type.
+                    assertThat(((Timestamp) actualValue).toLocalDateTime(), is(expectedValue));
                 } else {
                     assertThat(String.valueOf(actualValue), is(String.valueOf(expectedValue)));
                 }

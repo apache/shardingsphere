@@ -102,4 +102,8 @@
     <test-case sql="UPDATE t_data_type_money SET val = val + ?::money WHERE id = ?" db-types="PostgreSQL,openGauss" scenario-types="passthrough">
         <assertion parameters="-12345.6789:String, 1002:int" expected-data-file="update_money_subtract_value.xml"/>
     </test-case>
+
+    <test-case sql="UPDATE t_data_type_date SET creation_date = ?, update_date = ? where id = ?" db-types="MySQL" scenario-types="passthrough">
+        <assertion parameters="2018-08-08:Date, 2018-08-08:datetime, 1:int" expected-data-file="update_date_values.xml"/>
+    </test-case>
 </integration-test-cases>

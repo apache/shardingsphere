@@ -46,6 +46,8 @@ public final class SQLValue {
     
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    
     private final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
     
     public SQLValue(final String value, final String type, final int index) {
@@ -84,8 +86,12 @@ public final class SQLValue {
             case "boolean":
                 return Boolean.parseBoolean(value);
             case "Date":
-            case "datetime":
                 return Date.valueOf(LocalDate.parse(value, dateFormatter));
+            case "datetime":
+                if (10 == value.length()) {
+                    return Date.valueOf(LocalDate.parse(value, dateFormatter));
+                }
+                return Date.valueOf(LocalDate.parse(value, dateTimeFormatter));
             case "time":
                 return Time.valueOf(LocalTime.parse(value, timeFormatter));
             case "timestamp":
