@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.projection.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.enums.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
@@ -44,7 +45,7 @@ public final class ColumnProjectionSegmentBinder {
      */
     public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment, final SQLStatementBinderContext statementBinderContext,
                                                final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ColumnSegment boundedColumn = ColumnSegmentBinder.bind(segment.getColumn(), statementBinderContext, tableBinderContexts, Collections.emptyMap());
+        ColumnSegment boundedColumn = ColumnSegmentBinder.bind(segment.getColumn(), SegmentType.PROJECTION, statementBinderContext, tableBinderContexts, Collections.emptyMap());
         ColumnProjectionSegment result = new ColumnProjectionSegment(boundedColumn);
         segment.getAliasSegment().ifPresent(result::setAlias);
         result.setVisible(segment.isVisible());
