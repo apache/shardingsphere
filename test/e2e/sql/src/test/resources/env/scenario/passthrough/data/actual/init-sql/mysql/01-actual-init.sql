@@ -27,3 +27,4 @@ CREATE TABLE passthrough.t_data_type_floating_point (id INT PRIMARY KEY, col_flo
 CREATE TABLE passthrough.t_with_generated_id (id INT AUTO_INCREMENT PRIMARY KEY, val VARCHAR(100) NOT NULL);
 CREATE TABLE passthrough.t_data_type_money (id INT PRIMARY KEY, val NUMERIC(16, 2));
 CREATE TABLE passthrough.t_data_type_bytea (id INT PRIMARY KEY, val BLOB NOT NULL);
+CREATE TABLE passthrough.t_data_type_date (id INT PRIMARY KEY, creation_date DATE NOT NULL, update_date DATETIME NOT NULL);
