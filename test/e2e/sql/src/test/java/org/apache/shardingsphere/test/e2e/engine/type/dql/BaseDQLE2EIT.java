@@ -195,7 +195,7 @@ public abstract class BaseDQLE2EIT {
                     assertThat(Math.floor(Double.parseDouble(actualValue.toString())), is(Math.floor(Double.parseDouble(expectedValue.toString()))));
                 } else if (actualValue instanceof Timestamp && expectedValue instanceof LocalDateTime) {
                     // TODO Since mysql 8.0.23, for the DATETIME type, the mysql driver returns the LocalDateTime type, but the proxy returns the Timestamp type.
-                    assertThat(((Timestamp)actualValue).toLocalDateTime(), is(expectedValue));
+                    assertThat(((Timestamp) actualValue).toLocalDateTime(), is(expectedValue));
                 } else {
                     assertThat(String.valueOf(actualValue), is(String.valueOf(expectedValue)));
                 }

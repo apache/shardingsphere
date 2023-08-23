@@ -45,7 +45,7 @@ public final class SQLValue {
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-
+    
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     private final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
@@ -88,6 +88,9 @@ public final class SQLValue {
             case "Date":
                 return Date.valueOf(LocalDate.parse(value, dateFormatter));
             case "datetime":
+                if (10 == value.length()) {
+                    return Date.valueOf(LocalDate.parse(value, dateFormatter));
+                }
                 return Date.valueOf(LocalDate.parse(value, dateTimeFormatter));
             case "time":
                 return Time.valueOf(LocalTime.parse(value, timeFormatter));
