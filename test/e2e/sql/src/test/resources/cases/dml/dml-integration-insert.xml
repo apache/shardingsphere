@@ -211,6 +211,10 @@
         <assertion parameters="1:int, some values:bytes" expected-data-file="insert_bytea_values.xml"/>
     </test-case>
     
+    <test-case sql="INSERT INTO t_data_type_date (id, creation_date, update_date) VALUES (?, ?, ?)" db-types="MySQL" scenario-types="passthrough">
+        <assertion parameters="2:int, 2017-08-08:Date, 2017-08-08:datetime" expected-data-file="insert_date_values.xml"/>
+    </test-case>
+    
     <test-case sql="/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=encrypt_ds_0 */INSERT INTO t_order_0 values (1, 1, 'ok', 1, 'mark', '2021-01-01')" db-types="MySQL,PostgreSQL" scenario-types="sharding_and_encrypt">
         <assertion expected-data-file="insert_into_t_order_0.xml" />
     </test-case>
