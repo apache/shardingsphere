@@ -49,6 +49,8 @@ public final class DataRecord extends Record {
     
     private final List<Object> oldUniqueKeyValues = new ArrayList<>();
     
+    private String actualTableName;
+    
     private Long csn;
     
     public DataRecord(final String type, final String tableName, final IngestPosition position, final int columnCount) {
