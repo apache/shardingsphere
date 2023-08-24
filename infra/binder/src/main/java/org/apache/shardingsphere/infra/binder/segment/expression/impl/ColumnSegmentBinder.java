@@ -108,17 +108,20 @@ public final class ColumnSegmentBinder {
     }
     
     private static Optional<ColumnSegment> findInputColumnSegment(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts) {
-        ProjectionSegment projectionSegment = null;
         ColumnSegment result = null;
+        boolean isFindInputColumn = false;
         for (TableSegmentBinderContext each : tableBinderContexts) {
-            projectionSegment = each.getProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
+            ProjectionSegment projectionSegment = each.getProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
             if (projectionSegment instanceof ColumnProjectionSegment) {
                 ShardingSpherePreconditions.checkState(null == result,
                         () -> new AmbiguousColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
                 result = ((ColumnProjectionSegment) projectionSegment).getColumn();
             }
+            if (!isFindInputColumn && null != projectionSegment) {
+                isFindInputColumn = true;
+            }
         }
-        ShardingSpherePreconditions.checkState(null != projectionSegment,
+        ShardingSpherePreconditions.checkState(isFindInputColumn,
                 () -> new UnknownColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         return Optional.ofNullable(result);
     }
