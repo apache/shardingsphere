@@ -123,4 +123,5 @@
     <sql-case id="select_prediction_function" value="SELECT cust_gender FROM mining_data_apply_v WHERE PREDICTION (nb_sh_clas_sample COST MODEL AUTO USING cust_marital_status, aeducation, household_size) = 1;" db-types="Oracle" />
     <sql-case id="select_prediction_details_function" value="SELECT PREDICTION_DETAILS(DT_SH_Clas_sample using *) FROM mining_data_apply_v WHERE occupation = 'TechSup'" db-types="Oracle" />
     <sql-case id="select_predict_by_function" value="SELECT PREDICT BY point_kmeans (FEATURES position) as pos FROM (select * from kmeans_2d limit 10);" db-types="openGauss" />
+    <sql-case id="select_inet_function" value="SELECT inet '192.168.1.5' = inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
 </sql-cases>

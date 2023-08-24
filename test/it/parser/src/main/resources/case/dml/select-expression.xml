@@ -2937,4 +2937,20 @@
             </subquery-table>
         </from>
     </select>
+    
+    <select sql-case-id="select_inet_function">
+        <projections start-index="7" stop-index="55">
+            <expression-projection start-index="7" stop-index="55" alias="RESULT" text="inet '192.168.1.5' = inet '192.168.1.5'">
+                <binary-operation-expression start-index="7" stop-index="47">
+                    <left>
+                        <function function-name="inet" start-index="7" stop-index="27" text="inet '192.168.1.5'" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <function function-name="inet" start-index="30" stop-index="47" text="inet '192.168.1.5'" />
+                    </right>
+                </binary-operation-expression>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

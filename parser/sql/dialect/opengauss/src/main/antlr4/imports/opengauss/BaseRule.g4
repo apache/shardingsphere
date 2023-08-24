@@ -439,6 +439,7 @@ unreservedWord
     | ZONE
     | JSON
     | POSITION
+    | INET
     ;
 
 typeFuncNameKeyword
