@@ -719,7 +719,7 @@ hint
     ;
 
 intoClause
-    : INTO (tableName | viewName) alias?
+    : INTO (tableName | viewName | subquery) alias?
     ;
 
 usingClause
