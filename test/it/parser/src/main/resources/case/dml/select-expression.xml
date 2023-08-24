@@ -2953,4 +2953,20 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_inet_function_with_inet_operator">
+        <projections start-index="7" stop-index="57">
+            <expression-projection start-index="7" stop-index="57" alias="RESULT" text="inet '192.168.1.5' &lt;&lt;= inet '192.168.1.5'">
+                <binary-operation-expression start-index="7" stop-index="49">
+                    <left>
+                        <function function-name="inet" start-index="7" stop-index="27" text="inet '192.168.1.5'" />
+                    </left>
+                    <operator>&lt;&lt;=</operator>
+                    <right>
+                        <function function-name="inet" start-index="32" stop-index="49" text="inet '192.168.1.5'" />
+                    </right>
+                </binary-operation-expression>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

@@ -540,6 +540,10 @@ comparisonOperator
     : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
     ;
 
+inetOperator
+    : SIGNED_LEFT_SHIFT_ | SIGNED_LEFT_SHIFT_E_ | SIGNED_RIGHT_SHIFT_ | SIGNED_RIGHT_SHIFT_E_
+    ;
+
 patternMatchingOperator
     : LIKE
     | TILDE_TILDE_
@@ -580,6 +584,7 @@ aExpr
     | qualOp aExpr
     | aExpr qualOp
     | aExpr comparisonOperator aExpr
+    | aExpr inetOperator aExpr
     | NOT aExpr
     | aExpr patternMatchingOperator aExpr ESCAPE aExpr
     | aExpr patternMatchingOperator aExpr
