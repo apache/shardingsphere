@@ -46,13 +46,14 @@ import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorit
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Set;
 
 /**
  * Data consistency checker for migration job.
@@ -66,7 +67,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     
     private final ConsistencyCheckJobItemProgressContext progressContext;
     
-    private final AtomicReference<TableDataConsistencyChecker> currentTableChecker = new AtomicReference<>();
+    private final Set<TableDataConsistencyChecker> tableCheckers = new HashSet<>();
     
     public MigrationDataConsistencyChecker(final MigrationJobConfiguration jobConfig, final InventoryIncrementalProcessContext processContext,
                                            final ConsistencyCheckJobItemProgressContext progressContext) {
@@ -92,15 +93,20 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         return result;
     }
     
+    private long getRecordsCount() {
+        Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = new MigrationJobAPI().getJobProgress(jobConfig);
+        return jobProgress.values().stream().filter(Objects::nonNull).mapToLong(InventoryIncrementalJobItemProgress::getProcessedRecordsCount).sum();
+    }
+    
     private void checkTableInventoryData(final JobDataNodeLine jobDataNodeLine, final String algorithmType, final Properties algorithmProps,
                                          final Map<String, TableDataConsistencyCheckResult> checkResults, final PipelineDataSourceManager dataSourceManager) {
         for (JobDataNodeEntry entry : jobDataNodeLine.getEntries()) {
             for (DataNode each : entry.getDataNodes()) {
                 TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps);
-                currentTableChecker.set(tableChecker);
+                tableCheckers.add(tableChecker);
                 TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(entry.getLogicTableName(), each, tableChecker, dataSourceManager);
                 checkResults.put(DataNodeUtils.formatWithSchema(each), checkResult);
-                currentTableChecker.set(null);
+                tableCheckers.remove(null);
                 if (!checkResult.isMatched() && tableChecker.isBreakOnInventoryCheckNotMatched()) {
                     log.info("Unmatched on table '{}', ignore left tables", DataNodeUtils.formatWithSchema(each));
                     return;
@@ -126,25 +132,15 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         return tableChecker.checkSingleTableInventoryData(param);
     }
     
-    private long getRecordsCount() {
-        Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = new MigrationJobAPI().getJobProgress(jobConfig);
-        return jobProgress.values().stream().filter(Objects::nonNull).mapToLong(InventoryIncrementalJobItemProgress::getProcessedRecordsCount).sum();
-    }
-    
     @Override
     public void cancel() {
-        TableDataConsistencyChecker tableChecker = currentTableChecker.get();
-        if (null != tableChecker) {
-            tableChecker.cancel();
+        for (TableDataConsistencyChecker each : tableCheckers) {
+            each.cancel();
         }
     }
     
     @Override
     public boolean isCanceling() {
-        TableDataConsistencyChecker tableChecker = currentTableChecker.get();
-        if (null != tableChecker) {
-            return tableChecker.isCanceling();
-        }
-        return false;
+        return tableCheckers.stream().anyMatch(TableDataConsistencyChecker::isCanceling);
     }
 }
