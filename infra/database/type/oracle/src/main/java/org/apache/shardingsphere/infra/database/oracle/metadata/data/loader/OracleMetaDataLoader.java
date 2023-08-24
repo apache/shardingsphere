@@ -65,6 +65,8 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     
     private static final String PRIMARY_KEY_META_DATA_SQL_IN_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND A.TABLE_NAME IN (%s)";
     
+    private static final String INDEX_COLUMN_META_DATA_SQL = "SELECT COLUMN_NAME FROM ALL_IND_COLUMNS WHERE INDEX_OWNER = ? AND TABLE_NAME = ? AND INDEX_NAME = ?";
+    
     private static final int COLLATION_START_MAJOR_VERSION = 12;
     
     private static final int COLLATION_START_MINOR_VERSION = 2;
@@ -168,6 +170,7 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
                     }
                     IndexMetaData indexMetaData = new IndexMetaData(indexName);
                     indexMetaData.setUnique(isUnique);
+                    indexMetaData.getColumns().addAll(loadIndexColumnNames(connection, tableName, indexName));
                     result.get(tableName).add(indexMetaData);
                 }
             }
@@ -175,7 +178,22 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
         return result;
     }
     
+    private List<String> loadIndexColumnNames(final Connection connection, final String tableName, final String indexName) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INDEX_COLUMN_META_DATA_SQL)) {
+            preparedStatement.setString(1, connection.getSchema());
+            preparedStatement.setString(2, tableName);
+            preparedStatement.setString(3, indexName);
+            List<String> result = new LinkedList<>();
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                result.add(resultSet.getString("COLUMN_NAME"));
+            }
+            return result;
+        }
+    }
+    
     private String getIndexMetaDataSQL(final Collection<String> tableNames) {
+        // TODO The table name needs to be in uppercase, otherwise the index cannot be found.
         return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
