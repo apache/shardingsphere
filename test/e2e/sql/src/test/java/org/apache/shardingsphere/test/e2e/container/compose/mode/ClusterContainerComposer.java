@@ -56,7 +56,7 @@ public final class ClusterContainerComposer implements ContainerComposer {
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"));
         // TODO add more version of databases
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "",
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "mysql:8.0.19",
                 StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType(), scenario)));
         AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(
                 scenario, testParam.getDatabaseType(), AdapterContainerUtils.getAdapterContainerImage());
