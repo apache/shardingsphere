@@ -225,4 +225,72 @@
             </where>
         </delete>
     </merge>
+    <merge sql-case-id="merge_update_and_insert_table">
+        <target>
+            <simple-table alias="D" name="bonuses" start-index="11" stop-index="19" literal-start-index="11" literal-stop-index="19" />
+        </target>
+        <source>
+            <subquery-table alias="S">
+                <subquery>
+                    <select>
+                        <projections start-index="38" stop-index="71" literal-start-index="38" literal-stop-index="71">
+                            <column-projection name="employee_id" start-index="38" stop-index="48" literal-start-index="38" literal-stop-index="48" />
+                            <column-projection name="salary" start-index="51" stop-index="56" literal-start-index="51" literal-stop-index="56" />
+                            <column-projection name="department_id" start-index="59" stop-index="71" literal-start-index="59" literal-stop-index="71" />
+                        </projections>
+                        <from>
+                            <simple-table name="employees" start-index="78" stop-index="89" literal-start-index="78" literal-stop-index="89">
+                                <owner name="hr" start-index="78" stop-index="79" literal-start-index="78" literal-stop-index="79" />
+                            </simple-table>
+                        </from>
+                        <where start-index="94" stop-index="117" literal-start-index="94" literal-stop-index="117">
+                            <expr>
+                                <binary-operation-expression start-index="100" stop-index="117" literal-start-index="100" literal-stop-index="117">
+                                    <left>
+                                        <column name="department_id" start-index="100" stop-index="112" literal-start-index="100" literal-stop-index="112" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="80" start-index="116" stop-index="117" literal-start-index="116" literal-stop-index="117" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </source>
+        <expr>
+            <binary-operation-expression start-index="129" stop-index="157" literal-start-index="129" literal-stop-index="157">
+                <left>
+                    <column name="employee_id" start-index="129" stop-index="141" literal-start-index="129" literal-stop-index="141">
+                        <owner name="D" start-index="129" stop-index="129" literal-start-index="129" literal-stop-index="129" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="employee_id" start-index="145" stop-index="157" literal-start-index="145" literal-stop-index="157">
+                        <owner name="S" start-index="145" stop-index="145" literal-start-index="145" literal-stop-index="145" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <insert>
+            <where start-index="365" stop-index="388" literal-start-index="365" literal-stop-index="388">
+                <expr>
+                    <binary-operation-expression start-index="372" stop-index="387" literal-start-index="372" literal-stop-index="387">
+                        <left>
+                            <column name="salary" start-index="372" stop-index="379" literal-start-index="372" literal-stop-index="379">
+                                <owner name="S" start-index="372" stop-index="372" literal-start-index="372" literal-stop-index="372" />
+                            </column>
+                        </left>
+                        <operator>&lt;=</operator>
+                        <right>
+                            <literal-expression value="8000" start-index="384" stop-index="387" literal-start-index="384" literal-stop-index="387" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </insert>
+    </merge>
 </sql-parser-test-cases>
