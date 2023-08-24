@@ -1135,7 +1135,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
         OracleMergeStatement result = new OracleMergeStatement();
-        result.setTarget((SimpleTableSegment) visit(ctx.intoClause()));
+        result.setTarget((TableSegment) visit(ctx.intoClause()));
         result.setSource((TableSegment) visit(ctx.usingClause()));
         result.setExpr((ExpressionSegment) visit(ctx.usingClause().expr()));
         if (null != ctx.mergeUpdateClause()) {
@@ -1194,7 +1194,16 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             }
             return result;
         }
-        SimpleTableSegment result = (SimpleTableSegment) visit(ctx.viewName());
+        if (null != ctx.viewName()) {
+            SimpleTableSegment result = (SimpleTableSegment) visit(ctx.viewName());
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
+        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.subquery());
+        SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery);
+        SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
         if (null != ctx.alias()) {
             result.setAlias((AliasSegment) visit(ctx.alias()));
         }
