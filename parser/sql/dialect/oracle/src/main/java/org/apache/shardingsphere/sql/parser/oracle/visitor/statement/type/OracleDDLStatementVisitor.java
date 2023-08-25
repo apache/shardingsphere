@@ -96,6 +96,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DisassociateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropClusterContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropColumnClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropConstraintClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropContextContext;
@@ -527,6 +528,22 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             columnDefinition = (ColumnDefinitionSegment) visit(each);
         }
         return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
+    }
+    
+    @Override
+    public ASTNode visitDropColumnClause(final DropColumnClauseContext ctx) {
+        if (null != ctx.dropColumnSpecification()) {
+            return visit(ctx.dropColumnSpecification());
+        }
+        Collection<ColumnSegment> columns = new LinkedList<>();
+        if (null != ctx.columnOrColumnList().columnName()) {
+            columns.add((ColumnSegment) visit(ctx.columnOrColumnList().columnName()));
+        } else {
+            for (ColumnNameContext each : ctx.columnOrColumnList().columnNames().columnName()) {
+                columns.add((ColumnSegment) visit(each));
+            }
+        }
+        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columns);
     }
     
     @Override

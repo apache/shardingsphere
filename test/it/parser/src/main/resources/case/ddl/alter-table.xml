@@ -17,6 +17,38 @@
   -->
 
 <sql-parser-test-cases>
+    <alter-table sql-case-id="alter_table_modify_lob_shrink_space">
+        <table name="employees" start-index="12" stop-index="20" />
+        <modify-column>
+            <column-definition start-index="29" stop-index="31">
+                <column name="LOB" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_set_unused">
+        <table name="admin_emp" start-index="12" stop-index="23">
+            <owner start-index="12" stop-index="13" name="hr" />
+        </table>
+        <drop-column name="hiredate" start-index="37" stop-index="44" />
+        <drop-column name="mgr" start-index="47" stop-index="49" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_lob_cache">
+        <table name="employees" start-index="12" stop-index="20" />
+        <modify-column>
+            <column-definition start-index="29" stop-index="31">
+                <column name="LOB" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_move_storage_tablespace">
+        <table name="admin_emp" start-index="12" stop-index="23">
+            <owner start-index="12" stop-index="13" name="hr" />
+        </table>
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_modify1">
         <table name="employee" start-index="12" stop-index="19" />
         <modify-column>
@@ -122,10 +154,14 @@
         <table name="admin_iot5" start-index="12" stop-index="21" />
     </alter-table>
     
-    <alter-table sql-case-id="alter_table_enable_row_movement">
+    <alter-table sql-case-id="alter_table_enable_row_movement1">
         <table name="AUD$" start-index="12" stop-index="22">
             <owner start-index="12" stop-index="17" name="SYSTEM" />
         </table>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_enable_row_movement2">
+        <table name="employees_test" start-index="12" stop-index="25" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_shrink_space_cascade">
