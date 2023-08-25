@@ -27,8 +27,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Implicit commit transaction integration test.
@@ -63,9 +62,7 @@ public final class ImplicitCommitTransactionTestCase extends BaseTransactionTest
     private void assertBroadcastTableImplicitCommit() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'Nanjing')");
-            executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'Nanjing')");
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Duplicate entry '1' for key 'PRIMARY'"));
+            assertThrows(SQLException.class, () -> executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'Nanjing')"));
         }
         try (Connection connection = getDataSource().getConnection()) {
             assertTableRowCount(connection, T_ADDRESS, 1);
@@ -75,9 +72,7 @@ public final class ImplicitCommitTransactionTestCase extends BaseTransactionTest
     private void assertShardingTableImplicitCommit() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES (1, 1, 1), (2, 2, 2)");
-            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES (1, 1, 1), (2, 2, 2)");
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Duplicate entry '1' for key 'PRIMARY'"));
+            assertThrows(SQLException.class, () -> executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES (1, 1, 1), (2, 2, 2)"));
         }
         try (Connection connection = getDataSource().getConnection()) {
             assertAccountRowCount(connection, 2);
