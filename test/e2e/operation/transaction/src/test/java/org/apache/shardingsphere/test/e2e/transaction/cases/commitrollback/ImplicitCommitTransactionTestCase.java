@@ -59,7 +59,7 @@ public final class ImplicitCommitTransactionTestCase extends BaseTransactionTest
         assertBroadcastTableImplicitCommit();
         assertShardingTableImplicitCommit();
     }
-
+    
     private void assertBroadcastTableImplicitCommit() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'Nanjing')");
@@ -83,7 +83,7 @@ public final class ImplicitCommitTransactionTestCase extends BaseTransactionTest
             assertAccountRowCount(connection, 2);
         }
     }
-
+    
     private void init() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             executeWithLog(connection, "DELETE F0ROM t_address");
