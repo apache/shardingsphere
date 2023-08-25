@@ -1264,6 +1264,7 @@ alterTablePartitioning
     : modifyTableDefaultAttrs
     | setSubpartitionTemplate
     | modifyTablePartition
+    | modifyTableSubpartition
     | moveTablePartition
     | addTablePartition
     | coalesceTablePartition
@@ -1302,6 +1303,16 @@ modifyListPartition
     | (ADD | DROP) VALUES LP_ listValues RP_
     | (addRangeSubpartition | addHashSubpartition | addListSubpartition)
     | coalesceTableSubpartition | REBUILD? UNUSABLE LOCAL INDEXES | readOnlyClause | indexingClause)
+    ;
+
+modifyTableSubpartition
+    : MODIFY subpartitionExtendedName (allocateExtentClause
+    | deallocateUnusedClause | shrinkClause | ((LOB lobItem | VARRAY varrayType) LP_ modifylobParameters RP_)+ | REBUILD? UNUSABLE LOCAL INDEXES 
+    | (ADD | DROP) VALUES LP_ listValues RP_ | readOnlyClause | indexingClause)
+    ;
+
+subpartitionExtendedName
+    : SUBPARTITION (subpartitionName | FOR LP_ subpartitionKeyValue (COMMA_ subpartitionKeyValue)* RP_)
     ;
 
 partitionExtendedName
