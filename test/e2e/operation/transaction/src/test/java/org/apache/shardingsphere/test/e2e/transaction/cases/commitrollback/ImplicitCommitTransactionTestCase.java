@@ -86,7 +86,7 @@ public final class ImplicitCommitTransactionTestCase extends BaseTransactionTest
     
     private void init() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
-            executeWithLog(connection, "DELETE F0ROM t_address");
+            executeWithLog(connection, "DELETE FROM t_address");
             assertTableRowCount(connection, T_ADDRESS, 0);
         }
     }
