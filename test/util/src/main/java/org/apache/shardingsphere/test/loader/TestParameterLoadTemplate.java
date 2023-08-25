@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.loader;
+package org.apache.shardingsphere.test.loader;
 
 import java.util.Collection;
 import java.util.List;
@@ -35,5 +35,5 @@ public interface TestParameterLoadTemplate {
      * @param reportType report type
      * @return loaded test parameters
      */
-    Collection<ExternalSQLParserTestParameter> load(String sqlCaseFileName, List<String> sqlCaseFileContent, List<String> resultFileContent, String databaseType, String reportType);
+    Collection<ExternalSQLTestParameter> load(String sqlCaseFileName, List<String> sqlCaseFileContent, List<String> resultFileContent, String databaseType, String reportType);
 }

@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.loader;
+package org.apache.shardingsphere.test.loader;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.it.sql.parser.loader.strategy.TestParameterLoadStrategy;
-import org.apache.shardingsphere.test.it.sql.parser.loader.summary.FileSummary;
+import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
+import org.apache.shardingsphere.test.loader.summary.FileSummary;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -64,8 +64,8 @@ public final class TestParameterLoader {
      * @return loaded test parameters
      */
     @SneakyThrows
-    public Collection<ExternalSQLParserTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
-        Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
+    public Collection<ExternalSQLTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
+        Collection<ExternalSQLTestParameter> result = new LinkedList<>();
         Map<String, List<String>> sqlCaseFileContents = downloadAllBySummary(sqlCaseURI);
         Map<String, List<String>> resultFileContents = downloadAllBySummary(resultURI);
         for (Entry<String, List<String>> each : sqlCaseFileContents.entrySet()) {

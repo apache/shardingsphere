@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.loader.strategy.impl;
+package org.apache.shardingsphere.test.loader.strategy.impl;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
