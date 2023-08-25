@@ -66,17 +66,9 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
                 connection.close();
             }
         }
-        Thread queryThread = new Thread(() -> {
-            try (Connection connection2 = getDataSource().getConnection()) {
-                assertAccountRowCount(connection2, 0);
-            } catch (final SQLException ignored) {
-            }
-        });
-        queryThread.start();
-        try {
-            queryThread.join();
-        } catch (final InterruptedException ignored) {
-            Thread.currentThread().interrupt();
+        try (Connection connection2 = getDataSource().getConnection()) {
+            assertAccountRowCount(connection2, 0);
+        } catch (final SQLException ignored) {
         }
     }
 }
