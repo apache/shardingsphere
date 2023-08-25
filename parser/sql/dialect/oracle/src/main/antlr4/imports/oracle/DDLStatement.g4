@@ -923,7 +923,7 @@ rangePartitions
     ;
 
 rangeValuesClause
-    : VALUES LESS THAN LP_? (numberLiterals | MAXVALUE) (COMMA_ (numberLiterals | MAXVALUE))* RP_?
+    : VALUES LESS THAN LP_? (literals | MAXVALUE | toDateFunction) (COMMA_ (literals | MAXVALUE | toDateFunction))* RP_?
     ;
 
 tablePartitionDescription
