@@ -20,6 +20,7 @@
     <alter-type sql-case-id="alter_type_owner" />
     <alter-type sql-case-id="alter_type_rename" />
     <alter-type sql-case-id="alter_type_set_schema" />
+    <alter-type sql-case-id="alter_type_set_storage" />
     <alter-type sql-case-id="alter_type_add_attribute" />
     <alter-type sql-case-id="alter_type_add_value" />
     <alter-type sql-case-id="alter_type_rename_value" />
