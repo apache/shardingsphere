@@ -1407,12 +1407,10 @@ coalesceTablePartition
     ;
 
 addTablePartition
-    : ADD ((PARTITION partitionName? addRangePartitionClause (COMMA_ PARTITION partitionName? addRangePartitionClause)*)
-        |  (PARTITION partitionName? addListPartitionClause (COMMA_ PARTITION partitionName? addListPartitionClause)*)
-        |  (PARTITION partitionName? addSystemPartitionClause (COMMA_ PARTITION partitionName? addSystemPartitionClause)*)
-        (BEFORE (partitionName | NUMBER_))?
-        |  (PARTITION partitionName? addHashPartitionClause)
-        ) dependentTablesClause?
+    : ADD (PARTITION partitionName? addRangePartitionClause (COMMA_ PARTITION partitionName? addRangePartitionClause)* 
+    | PARTITION partitionName? addListPartitionClause (COMMA_ PARTITION partitionName? addListPartitionClause)* 
+    | PARTITION partitionName? addSystemPartitionClause (COMMA_ PARTITION partitionName? addSystemPartitionClause)* (BEFORE? (partitionName | NUMBER_)?) 
+    | PARTITION partitionName? addHashPartitionClause) dependentTablesClause?
     ;
 
 addRangePartitionClause
