@@ -34,4 +34,6 @@ public final class AdaptorContainerConfiguration {
     private final Map<String, String> mountedResources;
     
     private final String adapterContainerImage;
+    
+    private final String containerCommand;
 }
