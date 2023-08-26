@@ -50,7 +50,7 @@ public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     
     private boolean isRef;
     
-    public void setRef(boolean ref) {
+    public void setRef(final boolean ref) {
         isRef = ref;
     }
 }
