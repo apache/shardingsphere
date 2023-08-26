@@ -775,7 +775,11 @@ leadLagInfo
 
 specialFunction
     : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
-    | setFunction | translateFunction | cursorFunction
+    | setFunction | translateFunction | cursorFunction | toDateFunction
+    ;
+
+toDateFunction
+    : TO_DATE LP_ char=STRING_ (DEFAULT returnValue=STRING_ ON CONVERSION ERROR)? (COMMA_ fmt=STRING_ (COMMA_ STRING_)?)? RP_
     ;
 
 cursorFunction

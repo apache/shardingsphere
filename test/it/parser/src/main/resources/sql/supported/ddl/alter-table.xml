@@ -32,6 +32,7 @@
     <sql-case id="alter_table_modify9" value="ALTER TABLE sales MODIFY CONSTRAINT time_view_fk RELY" db-types="Oracle" />
     <sql-case id="alter_table_modify10" value="ALTER TABLE locations_demo MODIFY (country_id CONSTRAINT country_nn NOT NULL)" db-types="Oracle" />
     <sql-case id="alter_table_modify11" value="ALTER TABLE product_information MODIFY (min_price DEFAULT NULL)" db-types="Oracle" />
+    <sql-case id="alter_table_modify12" value="ALTER TABLE product_information MODIFY (min_price DEFAULT 10)" db-types="Oracle" />
     <sql-case id="alter_table_add_constraint" value="ALTER TABLE employees ADD (CONSTRAINT emp_emp_id_pk PRIMARY KEY (employee_id), CONSTRAINT emp_dept_fk FOREIGN KEY (department_id) REFERENCES departments, CONSTRAINT emp_job_fk FOREIGN KEY (job_id) REFERENCES jobs (job_id), CONSTRAINT emp_manager_fk FOREIGN KEY (manager_id) REFERENCES employees)" db-types="Oracle" />
     <sql-case id="alter_table_no_flashback_archive" value="ALTER TABLE employee NO FLASHBACK ARCHIVE" db-types="Oracle" />
     <sql-case id="alter_table_move_tablespace_overflow_tablespace" value="ALTER TABLE admin_docindex MOVE TABLESPACE admin_tbs2 OVERFLOW TABLESPACE admin_tbs3" db-types="Oracle" />
@@ -204,4 +205,8 @@
     <sql-case id="alter_table_move_tablespace1" value="ALTER TABLE people_tab MOVE TABLESPACE system" db-types="Oracle" />
     <sql-case id="alter_table_move_tablespace2" value="ALTER TABLE people_column_nt MOVE TABLESPACE example" db-types="Oracle" />
     <sql-case id="alter_table_modify_subpartition_rebuild_unusable_local_indexes" value="ALTER TABLE emp MODIFY SUBPARTITION p3_s1 REBUILD UNUSABLE LOCAL INDEXES" db-types="Oracle" />
+    <sql-case id="alter_table_modify_subpartition_add_values" value="ALTER TABLE quarterly_regional_sales MODIFY SUBPARTITION q1_1999_southeast ADD VALUES ('KS')" db-types="Oracle" />
+    <sql-case id="alter_table_add_partition_values_less_than1" value="ALTER TABLE quarterly_regional_sales ADD PARTITION q1_2000 VALUES LESS THAN (TO_DATE('1-APR-2000','DD-MON-YYYY')) STORAGE (INITIAL 20K NEXT 20K) TABLESPACE ts3 NOLOGGING(SUBPARTITION q1_2000_northwest VALUES ('OR', 'WA'), SUBPARTITION q1_2000_southwest VALUES ('AZ', 'UT', 'NM'), SUBPARTITION q1_2000_northeast VALUES ('NY', 'VM', 'NJ'), SUBPARTITION q1_2000_southeast VALUES ('FL', 'GA'), SUBPARTITION q1_2000_northcentral VALUES ('SD', 'WI'), SUBPARTITION q1_2000_southcentral VALUES ('OK', 'TX'))" db-types="Oracle" />
+    <sql-case id="alter_table_add_partition_values_less_than2" value="ALTER TABLE sales ADD PARTITION jan99 VALUES LESS THAN ('01-FEB-1999') TABLESPACE tsx" db-types="Oracle" />
+    <sql-case id="alter_table_modify_subpartition_drop_values" value="ALTER TABLE quarterly_regional_sales MODIFY SUBPARTITION q1_1999_southeast DROP VALUES ('KS')" db-types="Oracle" />
 </sql-cases>

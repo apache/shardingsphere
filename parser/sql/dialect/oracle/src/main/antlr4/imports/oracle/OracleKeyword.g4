@@ -59,6 +59,10 @@ CHECK
     : C H E C K
     ;
 
+CONVERSION
+    : C O N V E R S I O N
+    ;
+
 GENERATED
     : G E N E R A T E D
     ;
