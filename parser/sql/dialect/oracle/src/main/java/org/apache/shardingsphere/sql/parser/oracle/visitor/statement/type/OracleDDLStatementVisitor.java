@@ -390,6 +390,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         boolean isPrimaryKey = ctx.inlineConstraint().stream().anyMatch(each -> null != each.primaryKey());
         boolean isNotNull = ctx.inlineConstraint().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, isNotNull);
+        if (null != ctx.REF() && null != ctx.dataType()) {
+            // Indicate that this column is a REF
+            result.setRef(true);
+        }
         for (InlineConstraintContext each : ctx.inlineConstraint()) {
             if (null != each.referencesClause()) {
                 result.getReferencedTables().add((SimpleTableSegment) visit(each.referencesClause().tableName()));

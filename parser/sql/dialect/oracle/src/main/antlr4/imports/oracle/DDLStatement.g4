@@ -260,7 +260,7 @@ relationalProperty
     ;
 
 columnDefinition
-    : columnName dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
+    : columnName REF? dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
     | REF LP_ columnName RP_ WITH ROWID
     ;
 

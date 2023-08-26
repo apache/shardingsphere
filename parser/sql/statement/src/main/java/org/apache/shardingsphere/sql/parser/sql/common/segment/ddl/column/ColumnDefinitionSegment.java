@@ -47,4 +47,10 @@ public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     private final boolean notNull;
     
     private final Collection<SimpleTableSegment> referencedTables = new LinkedList<>();
+    
+    private boolean isRef;
+    
+    public void setRef(boolean ref) {
+        isRef = ref;
+    }
 }
