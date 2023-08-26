@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl;
 
-import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
@@ -491,7 +490,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
             props.add(getStandardProperty(standardProps, "minPoolSize"));
             props.add(getStandardProperty(standardProps, "readOnly"));
             Map<String, Object> otherProps = value.getCustomProperties().getProperties();
-            props.add(otherProps.isEmpty() ? "" : new Gson().toJson(otherProps));
+            props.add(otherProps.isEmpty() ? "" : JsonUtils.toJsonString(otherProps));
             result.add(props);
         }
         return result;
