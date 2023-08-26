@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordSingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
@@ -38,31 +40,33 @@ public final class DataMatchTableDataConsistencyChecker extends MatchingTableDat
     
     private static final int DEFAULT_CHUNK_SIZE = 1000;
     
-    private SingleTableInventoryCalculator calculator;
+    private int chunkSize;
     
     @Override
     public void init(final Properties props) {
-        calculator = new RecordSingleTableInventoryCalculator(getChunkSize(props));
+        chunkSize = getChunkSize(props);
     }
     
     private int getChunkSize(final Properties props) {
-        int result;
-        try {
-            result = Integer.parseInt(props.getProperty(CHUNK_SIZE_KEY, Integer.toString(DEFAULT_CHUNK_SIZE)));
-        } catch (final NumberFormatException ignore) {
-            log.warn("'chunk-size' is not a valid number, use default value {}", DEFAULT_CHUNK_SIZE);
+        String chunkSizeText = props.getProperty(CHUNK_SIZE_KEY);
+        if (Strings.isNullOrEmpty(chunkSizeText)) {
             return DEFAULT_CHUNK_SIZE;
         }
+        int result;
+        try {
+            result = Integer.parseInt(chunkSizeText);
+        } catch (final NumberFormatException ignore) {
+            throw new PipelineInvalidParameterException("'chunk-size' is not a valid number: `" + chunkSizeText + "`");
+        }
         if (result <= 0) {
-            log.warn("Invalid 'chunk-size': {}, use default value {}", result, DEFAULT_CHUNK_SIZE);
-            return DEFAULT_CHUNK_SIZE;
+            throw new PipelineInvalidParameterException("Invalid 'chunk-size': " + result);
         }
         return result;
     }
     
     @Override
-    protected SingleTableInventoryCalculator getSingleTableInventoryCalculator() {
-        return calculator;
+    protected SingleTableInventoryCalculator buildSingleTableInventoryCalculator() {
+        return new RecordSingleTableInventoryCalculator(chunkSize);
     }
     
     @Override

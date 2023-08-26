@@ -237,6 +237,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         String tableName = dumperConfig.getLogicTableName(rowsEvent.getTableName()).getOriginal();
         IngestPosition position = new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId());
         DataRecord result = new DataRecord(type, tableName, position, columnCount);
+        result.setActualTableName(rowsEvent.getTableName());
         result.setCommitTime(rowsEvent.getTimestamp() * 1000);
         return result;
     }

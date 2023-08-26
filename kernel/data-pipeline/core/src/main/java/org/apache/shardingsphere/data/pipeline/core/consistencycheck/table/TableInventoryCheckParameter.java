@@ -28,11 +28,11 @@ import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorit
 import java.util.List;
 
 /**
- * Table data consistency check parameter.
+ * Table inventory check parameter.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableDataConsistencyCheckParameter {
+public final class TableInventoryCheckParameter {
     
     private final String jobId;
     
