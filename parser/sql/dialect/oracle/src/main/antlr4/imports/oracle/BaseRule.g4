@@ -1937,7 +1937,9 @@ datetimeExpr
     ;
 
 xmlFunction
-    : xmlAggFunction
+    : xmlElementFunction
+    | xmlCdataFunction
+    | xmlAggFunction
     | xmlColattvalFunction
     | xmlExistsFunction
     | xmlForestFunction
@@ -1953,6 +1955,22 @@ xmlFunction
         | SYS_DBURIGEN | UPDATEXML | XMLCONCAT | XMLDIFF | XMLEXISTS | XMLISVALID | XMLPATCH | XMLSEQUENCE | XMLTRANSFORM) exprList
     | specifiedFunctionName = (DEPTH | PATH) LP_ correlationInteger RP_
     | specifiedFunctionName = XMLCOMMENT LP_ stringLiterals RP_
+    ;
+
+xmlElementFunction
+    : XMLELEMENT LP_ identifier (COMMA_ xmlAttributes)? (COMMA_ exprWithAlias)* RP_
+    ;
+
+exprWithAlias
+    : expr (AS alias)?
+    ;
+
+xmlAttributes
+    : XMLATTRIBUTES LP_ exprWithAlias (COMMA_ exprWithAlias)* RP_
+    ;
+
+xmlCdataFunction
+    : XMLCDATA LP_ stringLiterals RP_
     ;
 
 xmlAggFunction
