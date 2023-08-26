@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.util.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -69,7 +70,20 @@ public final class JsonUtils {
      * @return target Object data
      */
     @SneakyThrows(JsonProcessingException.class)
-    public static <T> T readValue(final String value, final Class<T> clazz) {
+    public static <T> T fromJsonString(final String value, final Class<T> clazz) {
         return MAPPER.readValue(value, clazz);
+    }
+    
+    /**
+     * Deserialize to Object from json string.
+     *
+     * @param value json string
+     * @param typeReference type reference
+     * @param <T> the type of return Object data
+     * @return target Object data
+     */
+    @SneakyThrows(JsonProcessingException.class)
+    public static <T> T fromJsonString(final String value, final TypeReference<T> typeReference) {
+        return MAPPER.readValue(value, typeReference);
     }
 }
