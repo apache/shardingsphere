@@ -70,7 +70,7 @@ public final class ShardingRouteAssert {
     public static RouteContext assertRoute(final String sql, final List<Object> params) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         ShardingRule shardingRule = ShardingRoutingEngineFixtureBuilder.createAllShardingRule();
-        SingleRule singleRule = ShardingRoutingEngineFixtureBuilder.createSingleRule(Collections.singletonList(shardingRule));
+        SingleRule singleRule = ShardingRoutingEngineFixtureBuilder.createSingleRule(Collections.singleton(shardingRule));
         TimestampServiceRule timestampServiceRule = ShardingRoutingEngineFixtureBuilder.createTimeServiceRule();
         Map<String, ShardingSphereSchema> schemas = buildSchemas();
         ConfigurationProperties props = new ConfigurationProperties(new Properties());

@@ -70,7 +70,7 @@ class CountShardingRuleExecutorTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("db_1");
-        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singletonList(mockShardingRule()));
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(mockShardingRule()));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;
     }

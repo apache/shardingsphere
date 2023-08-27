@@ -65,7 +65,7 @@ public final class RefreshTableMetaDataUpdater implements ConnectionSessionRequi
         if (sqlStatement.getStorageUnitName().isPresent()) {
             String storageUnitName = sqlStatement.getStorageUnitName().get();
             ShardingSpherePreconditions.checkState(
-                    storageUnits.containsKey(storageUnitName), () -> new MissingRequiredStorageUnitsException(databaseName, Collections.singletonList(storageUnitName)));
+                    storageUnits.containsKey(storageUnitName), () -> new MissingRequiredStorageUnitsException(databaseName, Collections.singleton(storageUnitName)));
         }
     }
     

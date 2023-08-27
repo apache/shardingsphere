@@ -46,7 +46,7 @@ class YamlMaskRuleConfigurationSwapperTest {
     }
     
     private MaskRuleConfiguration createMaskRuleConfiguration() {
-        Collection<MaskTableRuleConfiguration> tables = Collections.singletonList(new MaskTableRuleConfiguration("tbl", Collections.emptyList()));
+        Collection<MaskTableRuleConfiguration> tables = Collections.singleton(new MaskTableRuleConfiguration("tbl", Collections.emptyList()));
         Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("myMaskAlgorithm", new AlgorithmConfiguration("MD5", new Properties()));
         return new MaskRuleConfiguration(tables, encryptors);
     }

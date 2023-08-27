@@ -121,14 +121,14 @@ class ExpressionExtractUtilsTest {
         functionSegment.getParameters().add(param1);
         functionSegment.getParameters().add(param2);
         functionSegment.getParameters().add(param3);
-        List<ParameterMarkerExpressionSegment> result = ExpressionExtractUtils.getParameterMarkerExpressions(Collections.singletonList(functionSegment));
+        List<ParameterMarkerExpressionSegment> result = ExpressionExtractUtils.getParameterMarkerExpressions(Collections.singleton(functionSegment));
         assertThat(result.size(), is(1));
     }
     
     @Test
     void assertGetParameterMarkerExpressionsFromTypeCastExpression() {
         ParameterMarkerExpressionSegment expected = new ParameterMarkerExpressionSegment(0, 0, 1, ParameterMarkerType.DOLLAR);
-        List<ExpressionSegment> input = Collections.singletonList(new TypeCastExpression(0, 0, "$2::varchar", expected, "varchar"));
+        Collection<ExpressionSegment> input = Collections.singleton(new TypeCastExpression(0, 0, "$2::varchar", expected, "varchar"));
         List<ParameterMarkerExpressionSegment> actual = ExpressionExtractUtils.getParameterMarkerExpressions(input);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));
@@ -139,7 +139,7 @@ class ExpressionExtractUtilsTest {
         ListExpression listExpression = new ListExpression(0, 0);
         listExpression.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 1, ParameterMarkerType.QUESTION));
         listExpression.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 2, ParameterMarkerType.QUESTION));
-        List<ExpressionSegment> inExpressions = Collections.singletonList(new InExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("order_id")), listExpression, false));
+        Collection<ExpressionSegment> inExpressions = Collections.singleton(new InExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("order_id")), listExpression, false));
         List<ParameterMarkerExpressionSegment> actual = ExpressionExtractUtils.getParameterMarkerExpressions(inExpressions);
         assertThat(actual.size(), is(2));
     }

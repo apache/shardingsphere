@@ -39,7 +39,7 @@ class EncryptPredicateEqualRightValueTokenTest {
     
     @Test
     void assertToStringWithPlaceholderWithoutTableOwnerWithEqual() {
-        EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, Collections.emptyMap(), Collections.singletonList(0));
+        EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, Collections.emptyMap(), Collections.singleton(0));
         assertThat(actual.toString(), is("?"));
     }
 }
