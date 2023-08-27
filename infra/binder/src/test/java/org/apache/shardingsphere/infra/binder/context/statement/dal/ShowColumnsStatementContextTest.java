@@ -40,16 +40,16 @@ class ShowColumnsStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        MySQLShowColumnsStatement mySQLShowColumnsStatement = mock(MySQLShowColumnsStatement.class);
+        MySQLShowColumnsStatement showColumnsStatement = mock(MySQLShowColumnsStatement.class);
         String tableName = "tbl_1";
         String databaseName = "sharding_db";
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
         FromSchemaSegment fromSchema = new FromSchemaSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue(databaseName)));
-        when(mySQLShowColumnsStatement.getTable()).thenReturn(table);
-        when(mySQLShowColumnsStatement.getFromSchema()).thenReturn(Optional.of(fromSchema));
-        ShowColumnsStatementContext actual = new ShowColumnsStatementContext(mySQLShowColumnsStatement);
+        when(showColumnsStatement.getTable()).thenReturn(table);
+        when(showColumnsStatement.getFromSchema()).thenReturn(Optional.of(fromSchema));
+        ShowColumnsStatementContext actual = new ShowColumnsStatementContext(showColumnsStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
-        assertThat(actual.getSqlStatement(), is(mySQLShowColumnsStatement));
+        assertThat(actual.getSqlStatement(), is(showColumnsStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList(tableName)));
         assertThat(actual.getRemoveSegments(), is(Collections.singletonList(fromSchema)));
     }
