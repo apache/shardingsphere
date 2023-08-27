@@ -48,7 +48,7 @@ import java.util.Optional;
  */
 public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine {
     
-    private final PostgreSQLCommandExecuteEngine postgreSQLCommandExecuteEngine = new PostgreSQLCommandExecuteEngine();
+    private final PostgreSQLCommandExecuteEngine postgresqlCommandExecuteEngine = new PostgreSQLCommandExecuteEngine();
     
     @Override
     public CommandPacketType getCommandPacketType(final PacketPayload payload) {
@@ -75,12 +75,12 @@ public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine
     
     @Override
     public Optional<DatabasePacket> getOtherPacket(final ConnectionSession connectionSession) {
-        return postgreSQLCommandExecuteEngine.getOtherPacket(connectionSession);
+        return postgresqlCommandExecuteEngine.getOtherPacket(connectionSession);
     }
     
     @Override
     public void writeQueryData(final ChannelHandlerContext context,
                                final ProxyDatabaseConnectionManager databaseConnectionManager, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
-        postgreSQLCommandExecuteEngine.writeQueryData(context, databaseConnectionManager, queryCommandExecutor, headerPackagesCount);
+        postgresqlCommandExecuteEngine.writeQueryData(context, databaseConnectionManager, queryCommandExecutor, headerPackagesCount);
     }
 }

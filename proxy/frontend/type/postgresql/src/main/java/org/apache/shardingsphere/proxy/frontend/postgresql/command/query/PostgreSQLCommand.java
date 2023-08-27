@@ -167,8 +167,8 @@ public enum PostgreSQLCommand {
         return result.map(CachedResult::new).orElse(CachedResult.EMPTY);
     }
     
-    private static boolean matches(final Class<? extends SQLStatement> sqlStatementClass, final PostgreSQLCommand postgreSQLCommand) {
-        return postgreSQLCommand.sqlStatementClasses.stream().anyMatch(each -> each.isAssignableFrom(sqlStatementClass));
+    private static boolean matches(final Class<? extends SQLStatement> sqlStatementClass, final PostgreSQLCommand command) {
+        return command.sqlStatementClasses.stream().anyMatch(each -> each.isAssignableFrom(sqlStatementClass));
     }
     
     @RequiredArgsConstructor
