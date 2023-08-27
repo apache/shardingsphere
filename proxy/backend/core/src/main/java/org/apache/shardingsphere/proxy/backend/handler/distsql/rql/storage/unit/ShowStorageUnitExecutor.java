@@ -117,8 +117,8 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         DataSourcePoolProperties result = getDataSourcePoolProperties(dataSource);
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         if (dialectDatabaseMetaData.isInstanceConnectionAvailable() && propsMap.containsKey(storageUnitName)) {
-            DataSourcePoolProperties unitDataSourcePoolProperties = propsMap.get(storageUnitName);
-            for (Entry<String, Object> entry : unitDataSourcePoolProperties.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
+            DataSourcePoolProperties unitDataSourcePoolProps = propsMap.get(storageUnitName);
+            for (Entry<String, Object> entry : unitDataSourcePoolProps.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
                 if (null != entry.getValue()) {
                     result.getPoolPropertySynonyms().getStandardProperties().put(entry.getKey(), entry.getValue());
                 }

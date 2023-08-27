@@ -104,9 +104,9 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
             return;
         }
         String jdbcUrl = jdbcConfig.getUrl();
-        Properties queryProperties = new StandardJdbcUrlParser().parseQueryProperties(jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?") + 1) : "");
-        extension.get().extendQueryProperties(queryProperties);
-        String url = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, queryProperties);
+        Properties queryProps = new StandardJdbcUrlParser().parseQueryProperties(jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?") + 1) : "");
+        extension.get().extendQueryProperties(queryProps);
+        String url = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, queryProps);
         jdbcConfig.setUrl(url);
         yamlConfig.put("url", url);
     }
