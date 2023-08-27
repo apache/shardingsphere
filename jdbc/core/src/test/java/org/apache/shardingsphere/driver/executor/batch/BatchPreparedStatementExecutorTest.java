@@ -125,7 +125,7 @@ class BatchPreparedStatementExecutorTest {
     void assertNoPreparedStatement() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[]{0, 0});
-        setExecutionGroups(Collections.singletonList(preparedStatement));
+        setExecutionGroups(Collections.singleton(preparedStatement));
         assertThat(executor.executeBatch(sqlStatementContext), is(new int[]{0, 0}));
     }
     
@@ -133,7 +133,7 @@ class BatchPreparedStatementExecutorTest {
     void assertExecuteBatchForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[]{10, 20});
-        setExecutionGroups(Collections.singletonList(preparedStatement));
+        setExecutionGroups(Collections.singleton(preparedStatement));
         assertThat(executor.executeBatch(sqlStatementContext), is(new int[]{10, 20}));
         verify(preparedStatement).executeBatch();
     }
@@ -155,7 +155,7 @@ class BatchPreparedStatementExecutorTest {
         PreparedStatement preparedStatement = getPreparedStatement();
         SQLException ex = new SQLException("");
         when(preparedStatement.executeBatch()).thenThrow(ex);
-        setExecutionGroups(Collections.singletonList(preparedStatement));
+        setExecutionGroups(Collections.singleton(preparedStatement));
         assertThrows(SQLException.class, () -> executor.executeBatch(sqlStatementContext));
         verify(preparedStatement).executeBatch();
     }
@@ -176,7 +176,7 @@ class BatchPreparedStatementExecutorTest {
         return result;
     }
     
-    private void setExecutionGroups(final List<PreparedStatement> preparedStatements) {
+    private void setExecutionGroups(final Collection<PreparedStatement> preparedStatements) {
         Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = new LinkedList<>();
         List<JDBCExecutionUnit> executionUnits = new LinkedList<>();
         executionGroups.add(new ExecutionGroup<>(executionUnits));

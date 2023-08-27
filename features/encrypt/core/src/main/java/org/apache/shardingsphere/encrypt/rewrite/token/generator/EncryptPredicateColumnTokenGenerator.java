@@ -142,6 +142,6 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     }
     
     private Collection<Projection> createColumnProjections(final String columnName, final QuoteCharacter quoteCharacter) {
-        return Collections.singletonList(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null, databaseType));
+        return Collections.singleton(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null, databaseType));
     }
 }

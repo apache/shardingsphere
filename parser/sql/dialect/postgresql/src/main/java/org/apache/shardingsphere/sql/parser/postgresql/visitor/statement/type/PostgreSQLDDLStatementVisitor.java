@@ -541,7 +541,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         ColumnDefinitionContext columnDefinition = ctx.columnDefinition();
         if (null != columnDefinition) {
             AddColumnDefinitionSegment addColumnDefinition = new AddColumnDefinitionSegment(
-                    ctx.columnDefinition().getStart().getStartIndex(), columnDefinition.getStop().getStopIndex(), Collections.singletonList((ColumnDefinitionSegment) visit(columnDefinition)));
+                    ctx.columnDefinition().getStart().getStartIndex(), columnDefinition.getStop().getStopIndex(), Collections.singleton((ColumnDefinitionSegment) visit(columnDefinition)));
             result.getValue().add(addColumnDefinition);
         }
         return result;
@@ -601,7 +601,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitDropColumnSpecification(final DropColumnSpecificationContext ctx) {
-        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singletonList((ColumnSegment) visit(ctx.columnName())));
+        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), Collections.singleton((ColumnSegment) visit(ctx.columnName())));
     }
     
     @Override

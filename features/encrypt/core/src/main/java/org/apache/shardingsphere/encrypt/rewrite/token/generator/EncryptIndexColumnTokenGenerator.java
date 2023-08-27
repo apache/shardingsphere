@@ -89,6 +89,6 @@ public final class EncryptIndexColumnTokenGenerator implements CollectionSQLToke
     }
     
     private Collection<Projection> getColumnProjections(final String columnName, final QuoteCharacter quoteCharacter) {
-        return Collections.singletonList(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null, databaseType));
+        return Collections.singleton(new ColumnProjection(null, new IdentifierValue(columnName, quoteCharacter), null, databaseType));
     }
 }
