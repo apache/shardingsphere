@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateIndexStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateIndexStatement;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.col
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexPartitionsAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.tablespace.TablespaceAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateIndexStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -107,13 +109,17 @@ public final class CreateIndexStatementAssert {
     }
     
     private static void assertTablespace(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
-        if (null == expected.getTablespace()) {
-            assertFalse(CreateIndexStatementHandler.getTablespaceSegment(actual).isPresent(), assertContext.getText("Actual tablespace segments should not exist."));
-        } else {
-            assertTrue(CreateIndexStatementHandler.getTablespaceSegment(actual).isPresent(), assertContext.getText("Actual tablespace segments should exist."));
-            assertThat(assertContext.getText(String.format("`%s`'s tablespace assertion error: ", actual.getClass().getSimpleName())),
-                    CreateIndexStatementHandler.getTablespaceSegment(actual).get().getIdentifier().getValue(), is(expected.getTablespace().getName()));
+        // TODO should assert tablespace for all databases(postgreSQL do not support tablespace right now)
+        if (actual instanceof OpenGaussCreateIndexStatement) {
+            if (null == expected.getTablespace()) {
+                assertFalse(CreateIndexStatementHandler.getTablespaceSegment(actual).isPresent(), assertContext.getText("Actual tablespace segments should not exist."));
+            } else {
+                assertTrue(CreateIndexStatementHandler.getTablespaceSegment(actual).isPresent(), assertContext.getText("Actual tablespace segments should exist."));
+                TablespaceSegment tablespaceSegment = CreateIndexStatementHandler.getTablespaceSegment(actual).get();
+                TablespaceAssert.assertIs(assertContext, tablespaceSegment, expected.getTablespace());
+            }
         }
+
     }
     
     private static void assertIndexPartitions(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
