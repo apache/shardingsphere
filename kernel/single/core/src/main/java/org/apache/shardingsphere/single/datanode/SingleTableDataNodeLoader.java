@@ -127,7 +127,7 @@ public final class SingleTableDataNodeLoader {
     
     private static Collection<DataNode> loadSpecifiedDataNode(final Collection<DataNode> dataNodes, final Collection<String> featureRequiredSingleTables,
                                                               final Map<String, Map<String, Collection<String>>> configuredTableMap) {
-        for (final DataNode each : dataNodes) {
+        for (DataNode each : dataNodes) {
             if (featureRequiredSingleTables.contains(each.getTableName())) {
                 return getSingleDataNodeCollection(each);
             }
