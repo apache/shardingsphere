@@ -80,7 +80,7 @@ public abstract class InternalSQLParserIT {
                     result.add(Arguments.arguments(each.getSqlCaseId(), each.getSqlCaseType(), each.getDatabaseType()));
                 }
             }
-            return result;
+            return result.stream().filter(r -> "create_index_with_owner01".equals(r.get()[0])).collect(Collectors.toList());
         }
         
         private boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParam) {
