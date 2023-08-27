@@ -139,6 +139,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexE
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InlineConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyCollectionRetrievalContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColPropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyConstraintClauseContext;
@@ -160,6 +161,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinit
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyCollectionRetrievalSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -451,6 +453,8 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     result.getModifyConstraintDefinitions().add((ModifyConstraintDefinitionSegment) each);
                 } else if (each instanceof DropConstraintDefinitionSegment) {
                     result.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) each);
+                } else if (each instanceof ModifyCollectionRetrievalSegment) {
+                    result.setModifyCollectionRetrieval((ModifyCollectionRetrievalSegment) each);
                 }
             }
         }
@@ -487,6 +491,9 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     result.getValue().add((DropColumnDefinitionSegment) visit(each.dropColumnClause()));
                 }
             }
+            if (null != ctx.columnClauses().modifyCollectionRetrieval()) {
+                result.getValue().add((ModifyCollectionRetrievalSegment) visit(ctx.columnClauses().modifyCollectionRetrieval()));
+            }
         }
         if (null != ctx.constraintClauses()) {
             // TODO Support rename constraint
@@ -504,6 +511,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             }
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitModifyCollectionRetrieval(final ModifyCollectionRetrievalContext ctx) {
+        return new ModifyCollectionRetrievalSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override

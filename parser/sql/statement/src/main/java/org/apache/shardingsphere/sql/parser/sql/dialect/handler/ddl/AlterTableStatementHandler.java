@@ -15,31 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyCollectionRetrievalSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTableStatement;
 
 import java.util.Optional;
 
 /**
- * Oracle alter table statement.
+ * Alter table statement handler for different dialect SQL statements.
  */
-@Getter
-@Setter
-public final class OracleAlterTableStatement extends AlterTableStatement implements OracleStatement {
-    
-    private ModifyCollectionRetrievalSegment modifyCollectionRetrieval;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AlterTableStatementHandler implements SQLStatementHandler {
     
     /**
      * Get modify collection retrieval segment.
-     * 
-     * @return modify collection retrieval
+     *
+     * @param alterTableStatement alter table statement
+     * @return modify collection retrieval segment
      */
-    public Optional<ModifyCollectionRetrievalSegment> getModifyCollectionRetrieval() {
-        return Optional.ofNullable(modifyCollectionRetrieval);
+    public static Optional<ModifyCollectionRetrievalSegment> getModifyCollectionRetrievalSegment(final AlterTableStatement alterTableStatement) {
+        if (alterTableStatement instanceof OracleAlterTableStatement) {
+            return ((OracleAlterTableStatement) alterTableStatement).getModifyCollectionRetrieval();
+        }
+        return Optional.empty();
     }
 }
