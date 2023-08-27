@@ -54,10 +54,11 @@
         WITH (FILLFACTOR = 80, PAD_INDEX = ON, DROP_EXISTING = ON);" db-types="SQLServer" />
     <sql-case id="create_index_with_global" value="CREATE INDEX ds_customer_address_p1_index3 ON tpcds.customer_address_p1(CA_ADDRESS_ID) GLOBAL;" db-types="openGauss" />
     <sql-case id="create_index_with_owner01" value="CREATE INDEX tpcds.ds_customer_address_p1_index3 ON customer_address_p1(CA_ADDRESS_ID);" db-types="openGauss" />
-<!--    <sql-case id="create_index_with_local_partition_and_tablespace" value=" CREATE INDEX ds_customer_address_p1_index2 ON tpcds.customer_address_p1(CA_ADDRESS_SK) LOCAL-->
-<!--    PARTITION CA_ADDRESS_SK_index1,-->
-<!--    PARTITION CA_ADDRESS_SK_index2 TABLESPACE example3,-->
-<!--    PARTITION CA_ADDRESS_SK_index3 TABLESPACE example4-->
-<!--    )-->
-<!--    TABLESPACE example2;" db-types="openGauss" />-->
+    <sql-case id="create_index_with_local_partition_and_tablespace" value="
+    CREATE INDEX ds_customer_address_p1_index2 ON customer_address_p1(CA_ADDRESS_SK) LOCAL
+    (PARTITION CA_ADDRESS_SK_index1,
+    PARTITION CA_ADDRESS_SK_index2 TABLESPACE tablespace1,
+    PARTITION CA_ADDRESS_SK_index3 TABLESPACE tablespace2
+    )
+    TABLESPACE tablespace3;" db-types="openGauss" />
 </sql-cases>

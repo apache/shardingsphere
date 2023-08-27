@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.algorithm.ExpectedAlgorithmClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedIndex;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedIndexPartitions;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.lock.ExpectedLockTypeClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.S
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.tablespace.ExpectedTablespace;
 
 /**
  * Create index statement test case.
@@ -48,6 +50,12 @@ public final class CreateIndexStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "lock-option")
     private ExpectedLockTypeClause lockOption;
+    
+    @XmlElement(name = "index-partitions")
+    private ExpectedIndexPartitions indexPartitions;
+    
+    @XmlElement(name = "tablespace")
+    private ExpectedTablespace tablespace;
     
     @XmlElement(name = "column")
     private final List<ExpectedColumn> columns = new LinkedList<>();

@@ -26,6 +26,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AexprConstContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AliasClauseContext;
@@ -119,6 +120,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
@@ -200,6 +202,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionTypeEnum;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionsSegment;
 
 /**
  * Statement visitor for openGauss.
@@ -1409,5 +1414,42 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     @Override
     public ASTNode visitSignedIconst(final SignedIconstContext ctx) {
         return new NumberLiteralValue(ctx.getText());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitCreateIndexPartitionClause(final OpenGaussStatementParser.CreateIndexPartitionClauseContext ctx) {
+        IndexPartitionTypeEnum indexPartitionType = null;
+        if (ctx.LOCAL() != null || ctx.GLOBAL() != null) {
+            indexPartitionType = ctx.LOCAL() != null ? IndexPartitionTypeEnum.LOCAL : IndexPartitionTypeEnum.GLOBAL;
+        }
+        IndexPartitionsSegment result = new IndexPartitionsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexPartitionType);
+        if (null != ctx.indexPartitionElemList()) {
+            result.getIndexPartitionSegment().addAll(((CollectionValue<IndexPartitionSegment>) visit(ctx.indexPartitionElemList())).getValue());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitIndexPartitionElemList(final OpenGaussStatementParser.IndexPartitionElemListContext ctx) {
+        CollectionValue<IndexPartitionSegment> result = new CollectionValue<>();
+        for (OpenGaussStatementParser.IndexPartitionElemContext each : ctx.indexPartitionElem()) {
+            result.getValue().add((IndexPartitionSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitIndexPartitionElem(final OpenGaussStatementParser.IndexPartitionElemContext ctx) {
+        IndexPartitionSegment result = new IndexPartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.indexPartitionName()));
+        if (null != ctx.tableSpace()) {
+            result.setTablespace((TablespaceSegment) visit(ctx.tableSpace()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitTableSpace(final OpenGaussStatementParser.TableSpaceContext ctx) {
+        return new TablespaceSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
     }
 }
