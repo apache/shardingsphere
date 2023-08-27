@@ -328,14 +328,13 @@ class MigrationJobAPITest {
     
     @Test
     void assertGetJobItemInfosAtBegin() {
-        Optional<String> optional = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
-        assertTrue(optional.isPresent());
-        String jobId = optional.get();
+        Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
+        assertTrue(jobId.isPresent());
         YamlInventoryIncrementalJobItemProgress yamlJobItemProgress = new YamlInventoryIncrementalJobItemProgress();
         yamlJobItemProgress.setStatus(JobStatus.RUNNING.name());
         yamlJobItemProgress.setSourceDatabaseType("MySQL");
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
-        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(jobId.get(), 0, YamlEngine.marshal(yamlJobItemProgress));
+        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId.get());
         assertThat(jobItemInfos.size(), is(1));
         InventoryIncrementalJobItemInfo jobItemInfo = jobItemInfos.get(0);
         assertThat(jobItemInfo.getJobItemProgress().getStatus(), is(JobStatus.RUNNING));
@@ -344,16 +343,15 @@ class MigrationJobAPITest {
     
     @Test
     void assertGetJobItemInfosAtIncrementTask() {
-        Optional<String> optional = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
-        assertTrue(optional.isPresent());
+        Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
+        assertTrue(jobId.isPresent());
         YamlInventoryIncrementalJobItemProgress yamlJobItemProgress = new YamlInventoryIncrementalJobItemProgress();
         yamlJobItemProgress.setSourceDatabaseType("MySQL");
         yamlJobItemProgress.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK.name());
         yamlJobItemProgress.setProcessedRecordsCount(100);
         yamlJobItemProgress.setInventoryRecordsCount(50);
-        String jobId = optional.get();
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
-        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(jobId.get(), 0, YamlEngine.marshal(yamlJobItemProgress));
+        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId.get());
         InventoryIncrementalJobItemInfo jobItemInfo = jobItemInfos.get(0);
         assertThat(jobItemInfo.getJobItemProgress().getStatus(), is(JobStatus.EXECUTE_INCREMENTAL_TASK));
         assertThat(jobItemInfo.getInventoryFinishedPercentage(), is(100));
