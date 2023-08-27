@@ -80,11 +80,11 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         return result;
     }
     
-    private Map<String, Object> getCustomProps(final Map<String, Object> customProperties, final Properties queryProperties) {
-        Map<String, Object> result = new LinkedHashMap<>(customProperties.size() + 1, 1F);
-        result.putAll(customProperties);
-        if (!queryProperties.isEmpty()) {
-            result.put("queryProperties", queryProperties);
+    private Map<String, Object> getCustomProps(final Map<String, Object> customProps, final Properties queryProps) {
+        Map<String, Object> result = new LinkedHashMap<>(customProps.size() + 1, 1F);
+        result.putAll(customProps);
+        if (!queryProps.isEmpty()) {
+            result.put("queryProperties", queryProps);
         }
         return result;
     }

@@ -65,9 +65,9 @@ public final class LoggingUtils {
      */
     public static void syncLoggingConfig(final LoggingRuleConfiguration loggingRuleConfig, final ConfigurationProperties props) {
         LoggingUtils.getSQLLogger(loggingRuleConfig).ifPresent(option -> {
-            Properties loggerProperties = option.getProps();
-            syncPropsToLoggingRule(loggerProperties, props);
-            syncLoggingRuleToProps(loggerProperties, props);
+            Properties loggerProps = option.getProps();
+            syncPropsToLoggingRule(loggerProps, props);
+            syncLoggingRuleToProps(loggerProps, props);
         });
     }
     
