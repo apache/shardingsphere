@@ -216,6 +216,7 @@
             <simple-table name="t_order" start-index="25" stop-index="31" />
         </table>
         <column start-index="34" stop-index="37" name="code" />
+        <tablespace name="indexspace" start-index="40" stop-index="60" />
     </create-index>
 
     <create-index sql-case-id="create_index_using_gist">
