@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -87,7 +88,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
     @Test
     void assertCheckWeightLoadBalanceInvalidDataSourceName() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
-        List<ReadwriteSplittingDataSourceRuleConfiguration> configs = Collections.singletonList(createDataSourceRuleConfig("write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")));
+        Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs = Collections.singleton(createDataSourceRuleConfig("write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")));
         when(config.getDataSources()).thenReturn(configs);
         AlgorithmConfiguration algorithm = new AlgorithmConfiguration("WEIGHT", PropertiesBuilder.build(new Property("read_ds_2", "1"), new Property("read_ds_1", "2")));
         when(config.getLoadBalancers()).thenReturn(Collections.singletonMap("weight_ds", algorithm));

@@ -60,7 +60,7 @@ class MaskAlgorithmMetaDataTest {
         columnProjection.setOriginalColumn(new IdentifierValue("order_id"));
         columnProjection.setOriginalTable(new IdentifierValue("t_order"));
         when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(columnProjection));
-        when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_order"));
         Optional<MaskAlgorithm> actual = new MaskAlgorithmMetaData(database, maskRule, selectStatementContext).findMaskAlgorithmByColumnIndex(1);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getType(), is("MD5"));
