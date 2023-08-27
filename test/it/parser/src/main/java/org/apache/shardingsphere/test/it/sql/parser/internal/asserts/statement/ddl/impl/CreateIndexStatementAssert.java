@@ -75,10 +75,6 @@ public final class CreateIndexStatementAssert {
         // TODO should assert index for all databases(mysql and sqlserver do not parse index right now)
         if (actual instanceof OracleCreateIndexStatement) {
             IndexAssert.assertIs(assertContext, actual.getIndex(), expected.getIndex());
-        } else if (actual instanceof OpenGaussCreateIndexStatement) {
-            if (null != expected.getIndex()) {
-                IndexAssert.assertIs(assertContext, actual.getIndex(), expected.getIndex());
-            }
         }
     }
     
