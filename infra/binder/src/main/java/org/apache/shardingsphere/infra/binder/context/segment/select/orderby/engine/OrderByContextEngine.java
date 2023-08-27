@@ -48,7 +48,7 @@ public final class OrderByContextEngine {
     public OrderByContext createOrderBy(final SelectStatement selectStatement, final GroupByContext groupByContext) {
         if (!selectStatement.getOrderBy().isPresent() || selectStatement.getOrderBy().get().getOrderByItems().isEmpty()) {
             OrderByContext orderByItems = createOrderByContextForDistinctRowWithoutGroupBy(selectStatement, groupByContext);
-            return null != orderByItems ? orderByItems : new OrderByContext(groupByContext.getItems(), !groupByContext.getItems().isEmpty());
+            return null == orderByItems ? new OrderByContext(groupByContext.getItems(), !groupByContext.getItems().isEmpty()) : orderByItems;
         }
         List<OrderByItem> orderByItems = new LinkedList<>();
         for (OrderByItemSegment each : selectStatement.getOrderBy().get().getOrderByItems()) {

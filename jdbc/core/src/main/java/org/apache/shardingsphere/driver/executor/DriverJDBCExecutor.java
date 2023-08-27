@@ -115,7 +115,7 @@ public final class DriverJDBCExecutor {
     private int accumulate(final List<Integer> updateResults) {
         int result = 0;
         for (Integer each : updateResults) {
-            result += null != each ? each : 0;
+            result += null == each ? 0 : each;
         }
         return result;
     }
