@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
@@ -32,6 +33,8 @@ public final class OracleInsertStatement extends InsertStatement implements Orac
     
     private InsertMultiTableElementSegment insertMultiTableElementSegment;
     
+    private WhereSegment where;
+    
     /**
      * Get insert multi table element segment.
      *
@@ -39,5 +42,14 @@ public final class OracleInsertStatement extends InsertStatement implements Orac
      */
     public Optional<InsertMultiTableElementSegment> getInsertMultiTableElementSegment() {
         return Optional.ofNullable(insertMultiTableElementSegment);
+    }
+    
+    /**
+     * Get where segment.
+     *
+     * @return where segment
+     */
+    public Optional<WhereSegment> getWhere() {
+        return Optional.ofNullable(where);
     }
 }

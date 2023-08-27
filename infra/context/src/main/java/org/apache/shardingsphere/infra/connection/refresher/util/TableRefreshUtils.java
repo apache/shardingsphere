@@ -95,11 +95,11 @@ public final class TableRefreshUtils {
         if (!singleRule.isPresent()) {
             return false;
         }
-        RuleConfiguration ruleConfiguration = singleRule.get().getConfiguration();
-        if (!(ruleConfiguration instanceof SingleRuleConfiguration)) {
+        RuleConfiguration ruleConfig = singleRule.get().getConfiguration();
+        if (!(ruleConfig instanceof SingleRuleConfiguration)) {
             return false;
         }
-        Collection<String> tablesConfig = ((SingleRuleConfiguration) ruleConfiguration).getTables();
+        Collection<String> tablesConfig = ((SingleRuleConfiguration) ruleConfig).getTables();
         if (tablesConfig.contains(SingleTableConstants.ALL_TABLES) || tablesConfig.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return false;
         }

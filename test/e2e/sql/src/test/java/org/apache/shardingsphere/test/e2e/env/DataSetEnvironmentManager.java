@@ -98,7 +98,7 @@ public final class DataSetEnvironmentManager {
             fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
         }
         final List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
-        for (final Future<Void> future : futures) {
+        for (Future<Void> future : futures) {
             future.get();
         }
     }
@@ -146,8 +146,8 @@ public final class DataSetEnvironmentManager {
         for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
             deleteTasks.add(new DeleteTask(dataSourceMap.get(entry.getKey()), entry.getValue()));
         }
-        final List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(deleteTasks);
-        for (final Future<Void> future : futures) {
+        List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(deleteTasks);
+        for (Future<Void> future : futures) {
             future.get();
         }
     }

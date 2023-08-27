@@ -19,10 +19,12 @@ package org.apache.shardingsphere.infra.binder.segment.from;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.segment.from.impl.DeleteMultiTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.impl.JoinTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.impl.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.impl.SubqueryTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
@@ -53,6 +55,9 @@ public final class TableSegmentBinder {
         }
         if (segment instanceof SubqueryTableSegment) {
             return SubqueryTableSegmentBinder.bind((SubqueryTableSegment) segment, statementBinderContext, tableBinderContexts);
+        }
+        if (segment instanceof DeleteMultiTableSegment) {
+            return DeleteMultiTableSegmentBinder.bind((DeleteMultiTableSegment) segment, statementBinderContext, tableBinderContexts);
         }
         return segment;
     }

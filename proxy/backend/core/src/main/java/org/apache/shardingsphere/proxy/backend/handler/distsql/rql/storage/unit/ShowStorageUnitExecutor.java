@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.storage.unit;
 
-import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.proxy.backend.util.StorageUnitUtils;
 
 import javax.sql.DataSource;
@@ -41,24 +41,13 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
  * Show storage unit executor.
  */
 public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUnitsStatement> {
-    
-    private static final String CONNECTION_TIMEOUT_MILLISECONDS = "connectionTimeoutMilliseconds";
-    
-    private static final String IDLE_TIMEOUT_MILLISECONDS = "idleTimeoutMilliseconds";
-    
-    private static final String MAX_LIFETIME_MILLISECONDS = "maxLifetimeMilliseconds";
-    
-    private static final String MAX_POOL_SIZE = "maxPoolSize";
-    
-    private static final String MIN_POOL_SIZE = "minPoolSize";
-    
-    private static final String READ_ONLY = "readOnly";
     
     @Override
     public Collection<String> getColumnNames() {
@@ -72,22 +61,30 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (Entry<String, DataSourcePoolProperties> entry : getDataSourcePoolPropertiesMap(database, sqlStatement).entrySet()) {
             String key = entry.getKey();
-            DataSourcePoolProperties props = entry.getValue();
             ConnectionProperties connectionProps = resourceMetaData.getConnectionProperties(key);
-            Map<String, Object> standardProps = props.getPoolPropertySynonyms().getStandardProperties();
-            Map<String, Object> otherProps = props.getCustomProperties().getProperties();
+            Map<String, Object> poolProps = entry.getValue().getPoolPropertySynonyms().getStandardProperties();
+            Map<String, Object> customProps = getCustomProps(entry.getValue().getCustomProperties().getProperties(), connectionProps.getQueryProperties());
             result.add(new LocalDataQueryResultRow(key,
                     resourceMetaData.getStorageType(key).getType(),
                     connectionProps.getHostname(),
                     connectionProps.getPort(),
                     connectionProps.getCatalog(),
-                    getStandardProperty(standardProps, CONNECTION_TIMEOUT_MILLISECONDS),
-                    getStandardProperty(standardProps, IDLE_TIMEOUT_MILLISECONDS),
-                    getStandardProperty(standardProps, MAX_LIFETIME_MILLISECONDS),
-                    getStandardProperty(standardProps, MAX_POOL_SIZE),
-                    getStandardProperty(standardProps, MIN_POOL_SIZE),
-                    getStandardProperty(standardProps, READ_ONLY),
-                    otherProps.isEmpty() ? "" : new Gson().toJson(otherProps)));
+                    getStandardProperty(poolProps, "connectionTimeoutMilliseconds"),
+                    getStandardProperty(poolProps, "idleTimeoutMilliseconds"),
+                    getStandardProperty(poolProps, "maxLifetimeMilliseconds"),
+                    getStandardProperty(poolProps, "maxPoolSize"),
+                    getStandardProperty(poolProps, "minPoolSize"),
+                    getStandardProperty(poolProps, "readOnly"),
+                    customProps.isEmpty() ? "" : JsonUtils.toJsonString(customProps)));
+        }
+        return result;
+    }
+    
+    private Map<String, Object> getCustomProps(final Map<String, Object> customProps, final Properties queryProps) {
+        Map<String, Object> result = new LinkedHashMap<>(customProps.size() + 1, 1F);
+        result.putAll(customProps);
+        if (!queryProps.isEmpty()) {
+            result.put("queryProperties", queryProps);
         }
         return result;
     }
@@ -108,7 +105,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
                 }
             }
         } else {
-            for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().entrySet()) {
+            for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
                 result.put(entry.getKey(), getDataSourcePoolProperties(propsMap, entry.getKey(), storageUnits.get(entry.getKey()).getStorageType(), entry.getValue().getDataSource()));
             }
         }
@@ -120,8 +117,8 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         DataSourcePoolProperties result = getDataSourcePoolProperties(dataSource);
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         if (dialectDatabaseMetaData.isInstanceConnectionAvailable() && propsMap.containsKey(storageUnitName)) {
-            DataSourcePoolProperties unitDataSourcePoolProperties = propsMap.get(storageUnitName);
-            for (Entry<String, Object> entry : unitDataSourcePoolProperties.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
+            DataSourcePoolProperties unitDataSourcePoolProps = propsMap.get(storageUnitName);
+            for (Entry<String, Object> entry : unitDataSourcePoolProps.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
                 if (null != entry.getValue()) {
                     result.getPoolPropertySynonyms().getStandardProperties().put(entry.getKey(), entry.getValue());
                 }

@@ -42,12 +42,14 @@ public final class DistSQLFeatureExample {
             DistSQLExecutor featureExecutor = selectFeature().getExecutor();
             featureExecutor.init(statement);
             featureExecutor.execute();
-        } catch (Exception e) {
-            log.error(e.getMessage());
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error(ex.getMessage());
         }
     }
     
-    private static FeatureType selectFeature(){
+    private static FeatureType selectFeature() {
 //        return FeatureType.RESOURCE;
 //        return FeatureType.SHADOW;
 //        return FeatureType.ENCRYPT;

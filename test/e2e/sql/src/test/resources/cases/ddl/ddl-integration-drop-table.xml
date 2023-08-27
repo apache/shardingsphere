@@ -17,7 +17,7 @@
   -->
 
 <integration-test-cases>
-    <test-case sql="DROP TABLE t_order_details" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+    <test-case sql="DROP TABLE t_order_details" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="drop_table.xml">
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
         </assertion>

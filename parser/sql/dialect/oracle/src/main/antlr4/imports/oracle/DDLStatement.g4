@@ -927,7 +927,7 @@ rangePartitions
     ;
 
 rangeValuesClause
-    : VALUES LESS THAN LP_? (numberLiterals | MAXVALUE) (COMMA_ (numberLiterals | MAXVALUE))* RP_?
+    : VALUES LESS THAN LP_? (literals | MAXVALUE | toDateFunction) (COMMA_ (literals | MAXVALUE | toDateFunction))* RP_?
     ;
 
 tablePartitionDescription
@@ -1268,6 +1268,7 @@ alterTablePartitioning
     : modifyTableDefaultAttrs
     | setSubpartitionTemplate
     | modifyTablePartition
+    | modifyTableSubpartition
     | moveTablePartition
     | addTablePartition
     | coalesceTablePartition
@@ -1306,6 +1307,16 @@ modifyListPartition
     | (ADD | DROP) VALUES LP_ listValues RP_
     | (addRangeSubpartition | addHashSubpartition | addListSubpartition)
     | coalesceTableSubpartition | REBUILD? UNUSABLE LOCAL INDEXES | readOnlyClause | indexingClause)
+    ;
+
+modifyTableSubpartition
+    : MODIFY subpartitionExtendedName (allocateExtentClause
+    | deallocateUnusedClause | shrinkClause | ((LOB lobItem | VARRAY varrayType) LP_ modifylobParameters RP_)+ | REBUILD? UNUSABLE LOCAL INDEXES 
+    | (ADD | DROP) VALUES LP_ listValues RP_ | readOnlyClause | indexingClause)
+    ;
+
+subpartitionExtendedName
+    : SUBPARTITION (subpartitionName | FOR LP_ subpartitionKeyValue (COMMA_ subpartitionKeyValue)* RP_)
     ;
 
 partitionExtendedName
@@ -1400,12 +1411,10 @@ coalesceTablePartition
     ;
 
 addTablePartition
-    : ADD ((PARTITION partitionName? addRangePartitionClause (COMMA_ PARTITION partitionName? addRangePartitionClause)*)
-        |  (PARTITION partitionName? addListPartitionClause (COMMA_ PARTITION partitionName? addListPartitionClause)*)
-        |  (PARTITION partitionName? addSystemPartitionClause (COMMA_ PARTITION partitionName? addSystemPartitionClause)*)
-        (BEFORE (partitionName | NUMBER_))?
-        |  (PARTITION partitionName? addHashPartitionClause)
-        ) dependentTablesClause?
+    : ADD (PARTITION partitionName? addRangePartitionClause (COMMA_ PARTITION partitionName? addRangePartitionClause)* 
+    | PARTITION partitionName? addListPartitionClause (COMMA_ PARTITION partitionName? addListPartitionClause)* 
+    | PARTITION partitionName? addSystemPartitionClause (COMMA_ PARTITION partitionName? addSystemPartitionClause)* (BEFORE? (partitionName | NUMBER_)?) 
+    | PARTITION partitionName? addHashPartitionClause) dependentTablesClause?
     ;
 
 addRangePartitionClause

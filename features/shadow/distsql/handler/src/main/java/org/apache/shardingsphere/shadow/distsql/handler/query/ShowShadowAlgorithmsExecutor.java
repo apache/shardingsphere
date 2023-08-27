@@ -63,7 +63,7 @@ public final class ShowShadowAlgorithmsExecutor implements RQLExecutor<ShowShado
     }
     
     private String convertToString(final Properties props) {
-        return null != props ? PropertiesConverter.convert(props) : "";
+        return null == props ? "" : PropertiesConverter.convert(props);
     }
     
     @Override

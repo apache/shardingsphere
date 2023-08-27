@@ -2914,4 +2914,59 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_predict_by_function">
+        <projections start-index="7" stop-index="56">
+            <expression-projection start-index="7" stop-index="56" text="PREDICT BY point_kmeans (FEATURES position)" alias="pos" />
+        </projections>
+        <from>
+            <subquery-table>
+                <subquery>
+                    <select>
+                        <projections start-index="71" stop-index="71">
+                            <shorthand-projection start-index="71" stop-index="71" />
+                        </projections>
+                        <from>
+                            <simple-table name="kmeans_2d" start-index="78" stop-index="86" />
+                        </from>
+                        <limit start-index="88" stop-index="95">
+                            <row-count start-index="94" stop-index="95" value="10" />
+                        </limit>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="select_inet_function">
+        <projections start-index="7" stop-index="55">
+            <expression-projection start-index="7" stop-index="55" alias="RESULT" text="inet '192.168.1.5' = inet '192.168.1.5'">
+                <binary-operation-expression start-index="7" stop-index="47">
+                    <left>
+                        <function function-name="inet" start-index="7" stop-index="27" text="inet '192.168.1.5'" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <function function-name="inet" start-index="30" stop-index="47" text="inet '192.168.1.5'" />
+                    </right>
+                </binary-operation-expression>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_inet_function_with_inet_operator">
+        <projections start-index="7" stop-index="57">
+            <expression-projection start-index="7" stop-index="57" alias="RESULT" text="inet '192.168.1.5' &lt;&lt;= inet '192.168.1.5'">
+                <binary-operation-expression start-index="7" stop-index="49">
+                    <left>
+                        <function function-name="inet" start-index="7" stop-index="27" text="inet '192.168.1.5'" />
+                    </left>
+                    <operator>&lt;&lt;=</operator>
+                    <right>
+                        <function function-name="inet" start-index="32" stop-index="49" text="inet '192.168.1.5'" />
+                    </right>
+                </binary-operation-expression>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

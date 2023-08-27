@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external.loader;
 
-import org.apache.shardingsphere.test.it.sql.parser.loader.TestParameterLoadTemplate;
-import org.apache.shardingsphere.test.it.sql.parser.loader.ExternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.loader.TestParameterLoadTemplate;
+import org.apache.shardingsphere.test.loader.ExternalSQLTestParameter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,9 +34,9 @@ public final class MySQLExternalTestParameterLoadTemplate implements TestParamet
     private static final int DELIMITER_COMMAND_LENGTH = "DELIMITER".length();
     
     @Override
-    public Collection<ExternalSQLParserTestParameter> load(final String sqlCaseFileName, final List<String> sqlCaseFileContent,
-                                                           final List<String> resultFileContent, final String databaseType, final String reportType) {
-        Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
+    public Collection<ExternalSQLTestParameter> load(final String sqlCaseFileName, final List<String> sqlCaseFileContent,
+                                                     final List<String> resultFileContent, final String databaseType, final String reportType) {
+        Collection<ExternalSQLTestParameter> result = new LinkedList<>();
         List<String> lines = new ArrayList<>();
         int sqlCaseIndex = 1;
         String delimiter = ";";
@@ -55,7 +55,7 @@ public final class MySQLExternalTestParameterLoadTemplate implements TestParamet
                     String sqlCaseId = sqlCaseFileName + sqlCaseIndex++;
                     String sql = String.join("\n", lines);
                     sql = sql.substring(0, sql.length() - delimiter.length());
-                    result.add(new ExternalSQLParserTestParameter(sqlCaseId, databaseType, sql, reportType));
+                    result.add(new ExternalSQLTestParameter(sqlCaseId, databaseType, sql, reportType));
                 }
                 lines.clear();
             }

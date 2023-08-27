@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConne
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
@@ -54,6 +55,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 
@@ -81,9 +83,12 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     private final ConnectionContext connectionContext;
     
     public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
-        dataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
+        for (Entry<String, StorageUnit> entry : contextManager.getStorageUnits(databaseName).entrySet()) {
+            DataSource dataSource = entry.getValue().getDataSource();
+            dataSourceMap.put(entry.getKey(), dataSource);
+            physicalDataSourceMap.put(entry.getKey(), dataSource);
+        }
         dataSourceMap.putAll(getTrafficDataSourceMap(databaseName, contextManager));
-        physicalDataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
         connectionTransaction = createConnectionTransaction(databaseName, contextManager);
         connectionContext = new ConnectionContext(cachedConnections::keySet);
     }

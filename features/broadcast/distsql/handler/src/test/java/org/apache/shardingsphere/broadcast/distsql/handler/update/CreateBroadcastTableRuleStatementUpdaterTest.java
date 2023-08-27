@@ -38,10 +38,10 @@ class CreateBroadcastTableRuleStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithDuplicateBroadcastRule() {
-        BroadcastRuleConfiguration currentConfiguration = mock(BroadcastRuleConfiguration.class);
-        when(currentConfiguration.getTables()).thenReturn(Collections.singleton("t_address"));
+        BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
+        when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
         CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(mock(ShardingSphereDatabase.class), statement, currentConfiguration));
+        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(mock(ShardingSphereDatabase.class), statement, currentConfig));
     }
     
     @Test

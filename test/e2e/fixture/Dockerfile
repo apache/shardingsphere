@@ -30,4 +30,4 @@ COPY --from=prepare /opt/shardingsphere-proxy /opt/shardingsphere-proxy
 EXPOSE 3307
 EXPOSE 3308
 
-CMD /opt/shardingsphere-proxy/bin/start.sh
+ENTRYPOINT ["/opt/shardingsphere-proxy/bin/start.sh"]

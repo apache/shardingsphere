@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
+import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -41,8 +42,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -73,7 +73,7 @@ class EncryptOrderByItemTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokens() {
-        assertThat(generator.generateSQLTokens(buildSelectStatementContext()).size(), is(1));
+        assertThrows(UnsupportedEncryptSQLException.class, () -> generator.generateSQLTokens(buildSelectStatementContext()));
     }
     
     private SelectStatementContext buildSelectStatementContext() {

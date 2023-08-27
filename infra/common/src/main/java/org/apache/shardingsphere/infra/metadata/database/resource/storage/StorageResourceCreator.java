@@ -98,9 +98,9 @@ public final class StorageResourceCreator {
     }
     
     private static StorageNodeProperties getStorageNodeProperties(final String dataSourceName, final DataSourcePoolProperties storageNodeProps) {
-        Map<String, Object> standardProperties = storageNodeProps.getConnectionPropertySynonyms().getStandardProperties();
-        String url = standardProperties.get("url").toString();
-        String username = standardProperties.get("username").toString();
+        Map<String, Object> standardProps = storageNodeProps.getConnectionPropertySynonyms().getStandardProperties();
+        String url = standardProps.get("url").toString();
+        String username = standardProps.get("username").toString();
         DatabaseType databaseType = DatabaseTypeFactory.get(url);
         return getStorageNodeProperties(dataSourceName, url, username, databaseType);
     }

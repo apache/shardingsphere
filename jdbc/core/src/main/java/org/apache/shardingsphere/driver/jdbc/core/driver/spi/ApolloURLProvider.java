@@ -21,7 +21,7 @@ import com.ctrip.framework.apollo.ConfigFile;
 import com.ctrip.framework.apollo.ConfigService;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import com.google.common.base.Preconditions;
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLProvider;
 
 import java.nio.charset.StandardCharsets;
@@ -35,7 +35,7 @@ public final class ApolloURLProvider implements ShardingSphereURLProvider {
     
     @Override
     public boolean accept(final String url) {
-        return StringUtils.isNotBlank(url) && url.contains(APOLLO_TYPE);
+        return !Strings.isNullOrEmpty(url) && url.contains(APOLLO_TYPE);
     }
     
     @Override

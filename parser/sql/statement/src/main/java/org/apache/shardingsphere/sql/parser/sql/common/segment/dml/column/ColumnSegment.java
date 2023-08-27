@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.List;
@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 /**
  * Column segment.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
@@ -47,13 +46,16 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     
     private OwnerSegment owner;
     
-    private IdentifierValue originalDatabase;
+    private ColumnSegmentBoundedInfo columnBoundedInfo;
     
-    private IdentifierValue originalSchema;
+    private ColumnSegmentBoundedInfo otherUsingColumnBoundedInfo;
     
-    private IdentifierValue originalTable;
-    
-    private IdentifierValue originalColumn;
+    public ColumnSegment(final int startIndex, final int stopIndex, final IdentifierValue identifier) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.identifier = identifier;
+        columnBoundedInfo = new ColumnSegmentBoundedInfo(identifier);
+    }
     
     /**
      * Get qualified name with quote characters.

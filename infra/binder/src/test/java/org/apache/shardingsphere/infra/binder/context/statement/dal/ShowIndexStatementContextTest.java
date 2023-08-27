@@ -37,12 +37,12 @@ class ShowIndexStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        MySQLShowIndexStatement mySQLShowIndexStatement = mock(MySQLShowIndexStatement.class);
+        MySQLShowIndexStatement showIndexStatement = mock(MySQLShowIndexStatement.class);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
-        when(mySQLShowIndexStatement.getTable()).thenReturn(table);
-        ShowIndexStatementContext actual = new ShowIndexStatementContext(mySQLShowIndexStatement);
+        when(showIndexStatement.getTable()).thenReturn(table);
+        ShowIndexStatementContext actual = new ShowIndexStatementContext(showIndexStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
-        assertThat(actual.getSqlStatement(), is(mySQLShowIndexStatement));
+        assertThat(actual.getSqlStatement(), is(showIndexStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("tbl_1")));
     }
 }

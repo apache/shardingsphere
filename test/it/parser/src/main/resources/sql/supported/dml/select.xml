@@ -206,4 +206,5 @@
     <sql-case id="select_with_more_xml_functions" value="SELECT XMLCOMMENT('OrderAnalysisComp imported, reconfigured, disassembled'), XMLCONCAT(XMLELEMENT('First', e.first_name), XMLELEMENT('Last', e.last_name)) AS 'Result', XMLPATCH(XMLTYPE('xml')), XMLDIFF(XMLTYPE('xml'),XMLTYPE('xml2')), XMLELEMENT('Emp', XMLATTRIBUTES(e.employee_id, e.last_name)), XMLSEQUENCE(EXTRACT(warehouse_spec, '/Warehouse/*')) FROM DUAL" db-types="Oracle" />
     <sql-case id="select_with_nested_object" value="SELECT o.item.line_item_id, o.item.quantity FROM short_orders o;" db-types="Oracle" />
     <sql-case id="select_with_collection_table" value="SELECT VALUE(p) FROM warehouses w, TABLE(XMLSEQUENCE(EXTRACT(warehouse_spec, '/Warehouse/*'))) p;" db-types="Oracle" />
+    <sql-case id="select_with_group_by_and_having" value="select cfg_name from bmsql_config group by cfg_name having cfg_name='1';" db-types="openGauss" />
 </sql-cases>

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.loader;
 
+import org.apache.shardingsphere.test.loader.TestParameterLoadTemplate;
+
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

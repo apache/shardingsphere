@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external.loader;
 
-import org.apache.shardingsphere.test.it.sql.parser.loader.TestParameterLoadTemplate;
-import org.apache.shardingsphere.test.it.sql.parser.loader.ExternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.loader.TestParameterLoadTemplate;
+import org.apache.shardingsphere.test.loader.ExternalSQLTestParameter;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,9 +30,9 @@ import java.util.List;
 public final class StandardExternalTestParameterLoadTemplate implements TestParameterLoadTemplate {
     
     @Override
-    public Collection<ExternalSQLParserTestParameter> load(final String sqlCaseFileName, final List<String> sqlCaseFileContent,
-                                                           final List<String> resultFileContent, final String databaseType, final String reportType) {
-        Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
+    public Collection<ExternalSQLTestParameter> load(final String sqlCaseFileName, final List<String> sqlCaseFileContent,
+                                                     final List<String> resultFileContent, final String databaseType, final String reportType) {
+        Collection<ExternalSQLTestParameter> result = new LinkedList<>();
         String completedSQL = "";
         int sqlCaseEnum = 1;
         int statementLines = 0;
@@ -46,7 +46,7 @@ public final class StandardExternalTestParameterLoadTemplate implements TestPara
                 resultIndex = searchInResultContent(resultIndex, resultFileContent, completedSQL, statementLines);
                 if (resultIndex >= resultFileContent.size() || !resultFileContent.get(resultIndex).contains("ERROR")) {
                     String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
-                    result.add(new ExternalSQLParserTestParameter(sqlCaseId, databaseType, completedSQL, reportType));
+                    result.add(new ExternalSQLTestParameter(sqlCaseId, databaseType, completedSQL, reportType));
                     sqlCaseEnum++;
                 }
                 completedSQL = "";

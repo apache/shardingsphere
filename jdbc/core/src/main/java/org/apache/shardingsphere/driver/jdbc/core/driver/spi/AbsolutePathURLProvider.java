@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver.spi;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLProvider;
 
 import java.io.BufferedReader;
@@ -39,7 +39,7 @@ public final class AbsolutePathURLProvider implements ShardingSphereURLProvider 
     
     @Override
     public boolean accept(final String url) {
-        return StringUtils.isNotBlank(url) && url.contains(PATH_TYPE);
+        return !Strings.isNullOrEmpty(url) && url.contains(PATH_TYPE);
     }
     
     @Override

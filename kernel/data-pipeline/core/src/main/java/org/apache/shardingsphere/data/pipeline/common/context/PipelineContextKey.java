@@ -70,7 +70,7 @@ public final class PipelineContextKey {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (null == o || getClass() != o.getClass()) {
             return false;
         }
         final PipelineContextKey that = (PipelineContextKey) o;

@@ -143,7 +143,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         if (defaultKeyGenerateAlgorithm instanceof InstanceContextAware && -1 == instanceContext.getWorkerId()) {
             ((InstanceContextAware) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
         }
-        shardingCache = null != ruleConfig.getShardingCache() ? new ShardingCache(ruleConfig.getShardingCache(), this) : null;
+        shardingCache = null == ruleConfig.getShardingCache() ? null : new ShardingCache(ruleConfig.getShardingCache(), this);
         logicalTableMapper = createLogicalTableMapper();
         actualTableMapper = createActualTableMapper();
     }
@@ -627,7 +627,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     private KeyGenerateAlgorithm getKeyGenerateAlgorithm(final String logicTableName) {
         Optional<TableRule> tableRule = findTableRule(logicTableName);
         ShardingSpherePreconditions.checkState(tableRule.isPresent(), () -> new GenerateKeyStrategyNotFoundException(logicTableName));
-        return null != tableRule.get().getKeyGeneratorName() ? keyGenerators.get(tableRule.get().getKeyGeneratorName()) : defaultKeyGenerateAlgorithm;
+        return null == tableRule.get().getKeyGeneratorName() ? defaultKeyGenerateAlgorithm : keyGenerators.get(tableRule.get().getKeyGeneratorName());
     }
     
     /**

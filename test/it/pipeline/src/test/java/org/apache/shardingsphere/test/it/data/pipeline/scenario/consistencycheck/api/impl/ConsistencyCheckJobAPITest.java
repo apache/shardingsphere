@@ -30,6 +30,8 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.poj
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,6 +51,8 @@ class ConsistencyCheckJobAPITest {
     
     private final ConsistencyCheckJobAPI checkJobAPI = new ConsistencyCheckJobAPI();
     
+    private final YamlMigrationJobConfigurationSwapper jobConfigSwapper = new YamlMigrationJobConfigurationSwapper();
+    
     @BeforeAll
     public static void beforeClass() {
         PipelineContextUtils.mockModeConfigAndContextManager();
@@ -56,21 +60,25 @@ class ConsistencyCheckJobAPITest {
     
     @Test
     void assertCreateJobConfig() {
-        String parentJobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
-        String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null));
-        ConsistencyCheckJobConfiguration jobConfig = checkJobAPI.getJobConfiguration(checkJobId);
+        MigrationJobConfiguration parentJobConfig = jobConfigSwapper.swapToObject(JobConfigurationBuilder.createYamlMigrationJobConfiguration());
+        String parentJobId = parentJobConfig.getJobId();
+        String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
+                parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
+        ConsistencyCheckJobConfiguration checkJobConfig = checkJobAPI.getJobConfiguration(checkJobId);
         int expectedSequence = ConsistencyCheckSequence.MIN_SEQUENCE;
         String expectCheckJobId = checkJobAPI.marshalJobId(new ConsistencyCheckJobId(PipelineJobIdUtils.parseContextKey(parentJobId), parentJobId, expectedSequence));
-        assertThat(jobConfig.getJobId(), is(expectCheckJobId));
-        assertNull(jobConfig.getAlgorithmTypeName());
+        assertThat(checkJobConfig.getJobId(), is(expectCheckJobId));
+        assertNull(checkJobConfig.getAlgorithmTypeName());
         int sequence = ConsistencyCheckJobId.parseSequence(expectCheckJobId);
         assertThat(sequence, is(expectedSequence));
     }
     
     @Test
     void assertGetLatestDataConsistencyCheckResult() {
-        String parentJobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
-        String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null));
+        MigrationJobConfiguration parentJobConfig = jobConfigSwapper.swapToObject(JobConfigurationBuilder.createYamlMigrationJobConfiguration());
+        String parentJobId = parentJobConfig.getJobId();
+        String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
+                parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
         GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey());
         governanceRepositoryAPI.persistLatestCheckJobId(parentJobId, checkJobId);
         Map<String, TableDataConsistencyCheckResult> expectedCheckResult = Collections.singletonMap("t_order", new TableDataConsistencyCheckResult(new TableDataConsistencyCountCheckResult(1, 1),
@@ -83,11 +91,13 @@ class ConsistencyCheckJobAPITest {
     
     @Test
     void assertDropByParentJobId() {
-        String parentJobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
+        MigrationJobConfiguration parentJobConfig = jobConfigSwapper.swapToObject(JobConfigurationBuilder.createYamlMigrationJobConfiguration());
+        String parentJobId = parentJobConfig.getJobId();
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey());
         int expectedSequence = 1;
         for (int i = 0; i < 3; i++) {
-            String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null));
+            String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
+                    parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
             ConsistencyCheckJobItemContext checkJobItemContext = new ConsistencyCheckJobItemContext(
                     new ConsistencyCheckJobConfiguration(checkJobId, parentJobId, null, null), 0, JobStatus.FINISHED, null);
             checkJobAPI.persistJobItemProgress(checkJobItemContext);

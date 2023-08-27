@@ -6800,4 +6800,29 @@
             </join-table>
         </from>
     </select>
+    
+    <select sql-case-id="select_with_group_by_and_having">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="cfg_name" start-index="7" stop-index="14" />
+        </projections>
+        <from>
+            <simple-table name="bmsql_config" start-index="21" stop-index="32" />
+        </from>
+        <group-by>
+            <column-item start-index="43" stop-index="50" name="cfg_name" />
+        </group-by>
+        <having start-index="52" stop-index="70">
+            <expr>
+                <binary-operation-expression start-index="59" stop-index="70">
+                    <left>
+                        <column name="cfg_name" start-index="59" stop-index="66" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression start-index="68" stop-index="70" value="1" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
+    </select>
 </sql-parser-test-cases>

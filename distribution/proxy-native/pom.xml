@@ -107,6 +107,7 @@
                             <verbose>true</verbose>
                             <buildArgs>
                                 <arg>--report-unsupported-elements-at-runtime</arg>
+                                <arg>-J-Xmx7g</arg>
                             </buildArgs>
                             <metadataRepository>
                                 <enabled>true</enabled>

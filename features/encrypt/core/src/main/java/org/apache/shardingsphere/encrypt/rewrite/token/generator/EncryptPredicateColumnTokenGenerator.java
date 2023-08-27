@@ -21,10 +21,10 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
+import org.apache.shardingsphere.encrypt.rewrite.token.util.EncryptTokenGeneratorUtils;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -82,15 +82,15 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             whereSegments = ((WhereAvailable) sqlStatementContext).getWhereSegments();
             joinConditions = ((WhereAvailable) sqlStatementContext).getJoinConditions();
         }
-        ShardingSpherePreconditions.checkState(isAllJoinConditionsUseSameEncryptor(joinConditions), () -> new UnsupportedSQLOperationException("Can not use different encryptor in join condition"));
+        ShardingSpherePreconditions.checkState(EncryptTokenGeneratorUtils.isAllJoinConditionsUseSameEncryptor(joinConditions, encryptRule),
+                () -> new UnsupportedSQLOperationException("Can not use different encryptor in join condition"));
         String defaultSchema = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName);
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> schemas.get(defaultSchema));
         Map<String, String> columnExpressionTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(columnSegments, schema);
         return generateSQLTokens(columnSegments, columnExpressionTableNames, whereSegments);
     }
     
-    private Collection<SQLToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments,
-                                                   final Map<String, String> columnExpressionTableNames, final Collection<WhereSegment> whereSegments) {
+    private Collection<SQLToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnExpressionTableNames, final Collection<WhereSegment> whereSegments) {
         Collection<SQLToken> result = new LinkedHashSet<>();
         for (ColumnSegment each : columnSegments) {
             String tableName = Optional.ofNullable(columnExpressionTableNames.get(each.getExpression())).orElse("");
@@ -100,44 +100,6 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             }
         }
         return result;
-    }
-    
-    private boolean isAllJoinConditionsUseSameEncryptor(final Collection<BinaryOperationExpression> joinConditions) {
-        for (BinaryOperationExpression each : joinConditions) {
-            if (!(each.getLeft() instanceof ColumnSegment) || !(each.getRight() instanceof ColumnSegment)) {
-                continue;
-            }
-            EncryptAlgorithm<?, ?> leftColumnEncryptor = getColumnEncryptor((ColumnSegment) each.getLeft());
-            EncryptAlgorithm<?, ?> rightColumnEncryptor = getColumnEncryptor((ColumnSegment) each.getRight());
-            if (!isSameEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private boolean isSameEncryptor(final EncryptAlgorithm<?, ?> leftColumnEncryptor, final EncryptAlgorithm<?, ?> rightColumnEncryptor) {
-        if (null != leftColumnEncryptor && null != rightColumnEncryptor) {
-            if (!leftColumnEncryptor.getType().equals(rightColumnEncryptor.getType())) {
-                return false;
-            }
-            return leftColumnEncryptor.equals(rightColumnEncryptor);
-        }
-        return null == leftColumnEncryptor && null == rightColumnEncryptor;
-    }
-    
-    private EncryptAlgorithm<?, ?> getColumnEncryptor(final ColumnSegment columnSegment) {
-        String tableName = columnSegment.getOriginalTable().getValue();
-        String columnName = columnSegment.getOriginalColumn().getValue();
-        if (!encryptRule.findEncryptTable(tableName).isPresent() || !encryptRule.getEncryptTable(tableName).isEncryptColumn(columnName)) {
-            return null;
-        }
-        EncryptTable encryptTable = encryptRule.getEncryptTable(tableName);
-        EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
-        if (encryptColumn.getAssistedQuery().isPresent()) {
-            return encryptColumn.getAssistedQuery().get().getEncryptor();
-        }
-        return encryptColumn.getCipher().getEncryptor();
     }
     
     private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final EncryptColumn encryptColumn, final ColumnSegment columnSegment, final Collection<WhereSegment> whereSegments) {

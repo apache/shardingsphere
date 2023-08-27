@@ -113,7 +113,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         MySQLHandshakeResponse41Packet handshakeResponsePacket;
         try {
             handshakeResponsePacket = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
-        } catch (IndexOutOfBoundsException ex) {
+        } catch (final IndexOutOfBoundsException ex) {
             if (log.isWarnEnabled()) {
                 log.warn("Received bad handshake from client {}: \n{}", context.channel(), ByteBufUtil.prettyHexDump(payload.getByteBuf().resetReaderIndex()));
             }
