@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Optional;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateIndexStatement;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CreateIndexStatementHandlerTest {
     
@@ -43,18 +44,18 @@ class CreateIndexStatementHandlerTest {
     
     @Test
     void assertGeneratedIndexStartIndexForPostgreSQL() {
-        PostgreSQLCreateIndexStatement postgreSQLCreateIndexStatement = new PostgreSQLCreateIndexStatement(true);
-        postgreSQLCreateIndexStatement.setGeneratedIndexStartIndex(2);
-        Optional<Integer> actual = CreateIndexStatementHandler.getGeneratedIndexStartIndex(postgreSQLCreateIndexStatement);
+        PostgreSQLCreateIndexStatement createIndexStatement = new PostgreSQLCreateIndexStatement(true);
+        createIndexStatement.setGeneratedIndexStartIndex(2);
+        Optional<Integer> actual = CreateIndexStatementHandler.getGeneratedIndexStartIndex(createIndexStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(2));
     }
     
     @Test
     void assertGeneratedIndexStartIndexForOpenGauss() {
-        OpenGaussCreateIndexStatement openGaussCreateIndexStatement = new OpenGaussCreateIndexStatement(true);
-        openGaussCreateIndexStatement.setGeneratedIndexStartIndex(2);
-        Optional<Integer> actual = CreateIndexStatementHandler.getGeneratedIndexStartIndex(openGaussCreateIndexStatement);
+        OpenGaussCreateIndexStatement createIndexStatement = new OpenGaussCreateIndexStatement(true);
+        createIndexStatement.setGeneratedIndexStartIndex(2);
+        Optional<Integer> actual = CreateIndexStatementHandler.getGeneratedIndexStartIndex(createIndexStatement);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(2));
     }

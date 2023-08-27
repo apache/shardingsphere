@@ -78,7 +78,7 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
     }
     
     private void importDatabase(final ExportedMetaData exportedMetaData) {
-        for (final String each : exportedMetaData.getDatabases().values()) {
+        for (String each : exportedMetaData.getDatabases().values()) {
             YamlProxyDatabaseConfiguration yamlDatabaseConfig = YamlEngine.unmarshal(each, YamlProxyDatabaseConfiguration.class);
             databaseConfigImportExecutor.importDatabaseConfiguration(yamlDatabaseConfig);
         }

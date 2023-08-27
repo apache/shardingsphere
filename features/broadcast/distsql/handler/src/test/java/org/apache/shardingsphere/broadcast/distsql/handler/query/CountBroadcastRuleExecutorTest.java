@@ -68,9 +68,9 @@ class CountBroadcastRuleExecutorTest {
     
     private BroadcastRule mockBroadcastRule() {
         BroadcastRule result = mock(BroadcastRule.class);
-        BroadcastRuleConfiguration configuration = mock(BroadcastRuleConfiguration.class);
-        when(configuration.getTables()).thenReturn(Collections.singleton("t_address"));
-        when(result.getConfiguration()).thenReturn(configuration);
+        BroadcastRuleConfiguration config = mock(BroadcastRuleConfiguration.class);
+        when(config.getTables()).thenReturn(Collections.singleton("t_address"));
+        when(result.getConfiguration()).thenReturn(config);
         return result;
     }
 }

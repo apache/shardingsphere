@@ -257,12 +257,12 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         Optional<String> latestCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
         String checkJobId = latestCheckJobId.get();
-        Optional<ConsistencyCheckJobItemProgress> progressOptional = getJobItemProgress(checkJobId, 0);
-        if (!progressOptional.isPresent()) {
+        Optional<ConsistencyCheckJobItemProgress> progress = getJobItemProgress(checkJobId, 0);
+        if (!progress.isPresent()) {
             return Collections.emptyList();
         }
         List<ConsistencyCheckJobItemInfo> result = new LinkedList<>();
-        ConsistencyCheckJobItemProgress jobItemProgress = progressOptional.get();
+        ConsistencyCheckJobItemProgress jobItemProgress = progress.get();
         if (!Strings.isNullOrEmpty(jobItemProgress.getIgnoredTableNames())) {
             Map<String, TableDataConsistencyCheckResult> checkJobResult = governanceRepositoryAPI.getCheckJobResult(parentJobId, latestCheckJobId.get());
             result.addAll(buildIgnoredTableInfo(jobItemProgress.getIgnoredTableNames().split(","), checkJobResult));
@@ -297,12 +297,12 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         Optional<String> latestCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
         String checkJobId = latestCheckJobId.get();
-        Optional<ConsistencyCheckJobItemProgress> progressOptional = getJobItemProgress(checkJobId, 0);
+        Optional<ConsistencyCheckJobItemProgress> progress = getJobItemProgress(checkJobId, 0);
         ConsistencyCheckJobItemInfo result = new ConsistencyCheckJobItemInfo();
-        if (!progressOptional.isPresent()) {
+        if (!progress.isPresent()) {
             return result;
         }
-        ConsistencyCheckJobItemProgress jobItemProgress = progressOptional.get();
+        ConsistencyCheckJobItemProgress jobItemProgress = progress.get();
         if (null == jobItemProgress.getRecordsCount() || null == jobItemProgress.getCheckedRecordsCount()) {
             result.setFinishedPercentage(0);
             result.setCheckSuccess(null);

@@ -45,9 +45,9 @@ public final class NewYamlBroadcastRuleConfigurationSwapper implements NewYamlRu
         if (data.getTables().isEmpty()) {
             return Collections.emptyList();
         }
-        YamlBroadcastRuleConfiguration yamlBroadcastRuleConfiguration = new YamlBroadcastRuleConfiguration();
-        yamlBroadcastRuleConfiguration.getTables().addAll(data.getTables());
-        return Collections.singleton(new YamlDataNode(BroadcastRuleNodePathProvider.TABLES, YamlEngine.marshal(yamlBroadcastRuleConfiguration)));
+        YamlBroadcastRuleConfiguration yamlBroadcastRuleConfig = new YamlBroadcastRuleConfiguration();
+        yamlBroadcastRuleConfig.getTables().addAll(data.getTables());
+        return Collections.singleton(new YamlDataNode(BroadcastRuleNodePathProvider.TABLES, YamlEngine.marshal(yamlBroadcastRuleConfig)));
     }
     
     @Override
@@ -55,8 +55,8 @@ public final class NewYamlBroadcastRuleConfigurationSwapper implements NewYamlRu
         List<YamlDataNode> validDataNodes = dataNodes.stream().filter(each -> broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())).collect(Collectors.toList());
         for (YamlDataNode each : validDataNodes) {
             if (broadcastRuleNodePath.getRoot().isValidatedPath(each.getKey())) {
-                YamlBroadcastRuleConfiguration yamlBroadcastRuleConfiguration = YamlEngine.unmarshal(each.getValue(), YamlBroadcastRuleConfiguration.class);
-                return Optional.of(new BroadcastRuleConfiguration(yamlBroadcastRuleConfiguration.getTables()));
+                YamlBroadcastRuleConfiguration yamlBroadcastRuleConfig = YamlEngine.unmarshal(each.getValue(), YamlBroadcastRuleConfiguration.class);
+                return Optional.of(new BroadcastRuleConfiguration(yamlBroadcastRuleConfig.getTables()));
             }
         }
         return Optional.empty();

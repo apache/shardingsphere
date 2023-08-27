@@ -80,11 +80,11 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         return result;
     }
     
-    private Map<String, Object> getCustomProps(final Map<String, Object> customProperties, final Properties queryProperties) {
-        Map<String, Object> result = new LinkedHashMap<>(customProperties.size() + 1, 1F);
-        result.putAll(customProperties);
-        if (!queryProperties.isEmpty()) {
-            result.put("queryProperties", queryProperties);
+    private Map<String, Object> getCustomProps(final Map<String, Object> customProps, final Properties queryProps) {
+        Map<String, Object> result = new LinkedHashMap<>(customProps.size() + 1, 1F);
+        result.putAll(customProps);
+        if (!queryProps.isEmpty()) {
+            result.put("queryProperties", queryProps);
         }
         return result;
     }
@@ -117,8 +117,8 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         DataSourcePoolProperties result = getDataSourcePoolProperties(dataSource);
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         if (dialectDatabaseMetaData.isInstanceConnectionAvailable() && propsMap.containsKey(storageUnitName)) {
-            DataSourcePoolProperties unitDataSourcePoolProperties = propsMap.get(storageUnitName);
-            for (Entry<String, Object> entry : unitDataSourcePoolProperties.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
+            DataSourcePoolProperties unitDataSourcePoolProps = propsMap.get(storageUnitName);
+            for (Entry<String, Object> entry : unitDataSourcePoolProps.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
                 if (null != entry.getValue()) {
                     result.getPoolPropertySynonyms().getStandardProperties().put(entry.getKey(), entry.getValue());
                 }

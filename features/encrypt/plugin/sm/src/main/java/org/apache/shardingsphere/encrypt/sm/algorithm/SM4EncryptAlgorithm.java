@@ -150,8 +150,8 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     static byte[] fromHexString(final String s) {
         try {
             return Hex.decodeHex(s);
-        } catch (DecoderException e) {
-            throw new EncryptAlgorithmInitializationException("SM", e.getMessage());
+        } catch (final DecoderException ex) {
+            throw new EncryptAlgorithmInitializationException("SM", ex.getMessage());
         }
     }
 }

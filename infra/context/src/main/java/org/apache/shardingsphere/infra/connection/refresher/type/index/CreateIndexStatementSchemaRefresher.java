@@ -39,8 +39,9 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
     @Override
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                         final String schemaName, final DatabaseType databaseType, final CreateIndexStatement sqlStatement, final ConfigurationProperties props) {
-        String indexName = null != sqlStatement.getIndex() ? sqlStatement.getIndex().getIndexName().getIdentifier().getValue()
-                : IndexMetaDataUtils.getGeneratedLogicIndexName(sqlStatement.getColumns());
+        String indexName = null == sqlStatement.getIndex()
+                ? IndexMetaDataUtils.getGeneratedLogicIndexName(sqlStatement.getColumns())
+                : sqlStatement.getIndex().getIndexName().getIdentifier().getValue();
         if (Strings.isNullOrEmpty(indexName)) {
             return;
         }

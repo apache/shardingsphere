@@ -72,10 +72,10 @@ class OrderByTokenGeneratorTest {
     void assertGenerateSQLToken() {
         WindowSegment windowSegment = mock(WindowSegment.class);
         when(windowSegment.getStopIndex()).thenReturn(2);
-        MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
-        when(mySQLSelectStatement.getWindow()).thenReturn(Optional.of(windowSegment));
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        when(selectStatement.getWindow()).thenReturn(Optional.of(windowSegment));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getSqlStatement()).thenReturn(mySQLSelectStatement);
+        when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
         Collection<OrderByItem> orderByItems = getOrderByItems();
         when(selectStatementContext.getOrderByContext().getItems()).thenReturn(orderByItems);
         OrderByTokenGenerator generator = new OrderByTokenGenerator();

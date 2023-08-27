@@ -69,16 +69,16 @@ public final class CloseStatementContext extends CommonSQLStatementContext imple
     
     @Override
     public Collection<WhereSegment> getWhereSegments() {
-        return null != cursorStatementContext ? cursorStatementContext.getWhereSegments() : Collections.emptyList();
+        return null == cursorStatementContext ? Collections.emptyList() : cursorStatementContext.getWhereSegments();
     }
     
     @Override
     public Collection<ColumnSegment> getColumnSegments() {
-        return null != cursorStatementContext ? cursorStatementContext.getColumnSegments() : Collections.emptyList();
+        return null == cursorStatementContext ? Collections.emptyList() : cursorStatementContext.getColumnSegments();
     }
     
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
-        return null != cursorStatementContext ? cursorStatementContext.getJoinConditions() : Collections.emptyList();
+        return null == cursorStatementContext ? Collections.emptyList() : cursorStatementContext.getJoinConditions();
     }
 }

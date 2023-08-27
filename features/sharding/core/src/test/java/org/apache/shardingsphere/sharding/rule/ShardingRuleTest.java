@@ -759,7 +759,7 @@ class ShardingRuleTest {
     private void assertGetDataNodes(final Collection<DataNode> dataNodes, final String tableNamePrefix) {
         int dataSourceNameSuffix = 0;
         int tableNameSuffix = 0;
-        for (final DataNode each : dataNodes) {
+        for (DataNode each : dataNodes) {
             assertThat(each.getDataSourceName(), is("ds_" + dataSourceNameSuffix));
             assertThat(each.getTableName(), is(tableNamePrefix + tableNameSuffix));
             if (++tableNameSuffix == (dataNodes.size() / 2)) {

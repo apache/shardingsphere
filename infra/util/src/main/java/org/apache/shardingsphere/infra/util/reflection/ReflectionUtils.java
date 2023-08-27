@@ -160,7 +160,7 @@ public final class ReflectionUtils {
     private static Optional<Method> findMethod(final Class<?> clazz, final String methodName, final Class<?>... parameterTypes) {
         try {
             return Optional.of(clazz.getMethod(methodName, parameterTypes));
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException ex) {
             Class<?> superclass = clazz.getSuperclass();
             if (null != superclass && Object.class != superclass) {
                 return findMethod(superclass, methodName, parameterTypes);

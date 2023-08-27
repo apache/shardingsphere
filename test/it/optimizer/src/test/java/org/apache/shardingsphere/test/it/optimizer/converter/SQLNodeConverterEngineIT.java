@@ -70,7 +70,7 @@ class SQLNodeConverterEngineIT {
         String expected;
         try {
             expected = SQL_NODE_CONVERTER_TEST_CASES.get(sqlCaseId, sqlCaseType, databaseType).getExpectedSQL();
-        } catch (IllegalStateException ex) {
+        } catch (final IllegalStateException ex) {
             log.warn(ex.getMessage());
             return;
         }

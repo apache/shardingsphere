@@ -330,7 +330,7 @@ public final class ExpressionAssert {
         while (expectedIterator.hasNext()) {
             ExpressionAssert.assertExpression(assertContext, actualIterator.next(), expectedIterator.next());
         }
-        if (expected.getOwner() != null) {
+        if (null != expected.getOwner()) {
             OwnerAssert.assertIs(assertContext, actual.getOwner(), expected.getOwner());
         }
     }

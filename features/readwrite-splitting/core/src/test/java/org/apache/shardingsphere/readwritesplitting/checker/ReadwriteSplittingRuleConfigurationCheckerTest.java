@@ -65,9 +65,9 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
     @Test
     void assertCheckWhenConfigInvalidWriteDataSource() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
-        List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig(
+        List<ReadwriteSplittingDataSourceRuleConfiguration> configs = Arrays.asList(createDataSourceRuleConfig(
                 "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")), createDataSourceRuleConfig("write_ds_2", Arrays.asList("read_ds_0", "read_ds_1")));
-        when(config.getDataSources()).thenReturn(configurations);
+        when(config.getDataSources()).thenReturn(configs);
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         assertThrows(DataSourceNameExistedException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
     }
@@ -76,9 +76,9 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
     @Test
     void assertCheckWhenConfigInvalidReadDataSource() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
-        List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig(
+        List<ReadwriteSplittingDataSourceRuleConfiguration> configs = Arrays.asList(createDataSourceRuleConfig(
                 "write_ds_0", Arrays.asList("read_ds_0", "read_ds_0")), createDataSourceRuleConfig("write_ds_1", Arrays.asList("read_ds_0", "read_ds_0")));
-        when(config.getDataSources()).thenReturn(configurations);
+        when(config.getDataSources()).thenReturn(configs);
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         assertThrows(DuplicateDataSourceException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
     }
