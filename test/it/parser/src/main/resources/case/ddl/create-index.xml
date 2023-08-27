@@ -253,4 +253,14 @@
         </table>
         <column start-index="60" stop-index="67" name="order_id" />
     </create-index>
+
+    <create-index sql-case-id="create_index_with_global">
+        <table start-index="46" stop-index="70">
+            <simple-table name="customer_address_p1" start-index="46" stop-index="70">
+                <owner name="tpcds" start-index="46" stop-index="50" />
+            </simple-table>
+        </table>
+        <column start-index="72" stop-index="84" name="CA_ADDRESS_ID" />
+        <index name="ds_customer_address_p1_index3" start-index="13" stop-index="41" />
+    </create-index>
 </sql-parser-test-cases>
