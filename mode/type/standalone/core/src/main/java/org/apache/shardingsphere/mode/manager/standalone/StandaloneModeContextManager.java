@@ -139,7 +139,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     private void removeSchemaMetaData(final ShardingSphereDatabase database, final String schemaName) {
         ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(schemaName).getTables(), database.getSchema(schemaName).getViews());
         database.removeSchema(schemaName);
-        removeDataNode(database.getRuleMetaData().findRules(MutableDataNodeRule.class), Collections.singletonList(schemaName), schema.getAllTableNames());
+        removeDataNode(database.getRuleMetaData().findRules(MutableDataNodeRule.class), Collections.singleton(schemaName), schema.getAllTableNames());
     }
     
     private void removeDataNode(final Collection<MutableDataNodeRule> rules, final Collection<String> schemaNames, final Collection<String> tobeRemovedTables) {

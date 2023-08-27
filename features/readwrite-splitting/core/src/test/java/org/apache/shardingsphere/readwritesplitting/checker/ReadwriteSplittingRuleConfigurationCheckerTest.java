@@ -111,7 +111,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
         when(dataSourceConfig.getName()).thenReturn("readwrite_ds");
         when(dataSourceConfig.getWriteDataSourceName()).thenReturn("otherDatasourceName");
         when(dataSourceConfig.getReadDataSourceNames()).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
-        when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceConfig));
+        when(result.getDataSources()).thenReturn(Collections.singleton(dataSourceConfig));
         return result;
     }
     

@@ -46,7 +46,7 @@ class DropShardingKeyGeneratorStatementUpdaterTest {
     
     @Test
     void assertExecuteWithNotExistWithIfExists() {
-        DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(true, Collections.singletonList("uuid_key_generator"));
+        DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(true, Collections.singleton("uuid_key_generator"));
         new DropShardingKeyGeneratorStatementUpdater().checkSQLStatement(mock(ShardingSphereDatabase.class), sqlStatement, new ShardingRuleConfiguration());
     }
     
