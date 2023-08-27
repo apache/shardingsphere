@@ -23,7 +23,6 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.PreservedMetadataKeys;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.common.utils.CollectionUtils;
-import com.alibaba.nacos.common.utils.StringUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
@@ -97,7 +96,7 @@ public final class NacosRepository implements ClusterPersistRepository {
             serviceController = new ServiceController();
             for (ServiceMetaData each : serviceController.getAllServices()) {
                 Integer port = client.getAllInstances(each.getServiceName(), false).stream()
-                        .filter(instance -> StringUtils.equals(instance.getIp(), ip)).map(Instance::getPort).max(Comparator.naturalOrder()).orElse(Integer.MIN_VALUE);
+                        .filter(instance -> ip.equals(instance.getIp())).map(Instance::getPort).max(Comparator.naturalOrder()).orElse(Integer.MIN_VALUE);
                 each.setIp(ip);
                 each.setPort(new AtomicInteger(port));
             }
@@ -292,7 +291,7 @@ public final class NacosRepository implements ClusterPersistRepository {
                 Collection<Instance> instances = findExistedInstance(each.isEphemeral()).stream()
                         .filter(instance -> {
                             String fullPath = NacosMetaDataUtils.getKey(instance);
-                            return fullPath.startsWith(key + PATH_SEPARATOR) || StringUtils.equals(fullPath, key);
+                            return fullPath.startsWith(key + PATH_SEPARATOR) || key.equals(fullPath);
                         })
                         .sorted(Comparator.comparing(NacosMetaDataUtils::getKey).reversed()).collect(Collectors.toList());
                 Collection<KeyValue> keyValues = new LinkedList<>();
@@ -339,7 +338,7 @@ public final class NacosRepository implements ClusterPersistRepository {
             keyValues.removeIf(keyValue -> {
                 Collection<Instance> instances = instanceMap.get(keyValue.getKey());
                 String value = keyValue.getValue();
-                return CollectionUtils.isNotEmpty(instances) ? instances.stream().anyMatch(instance -> StringUtils.equals(NacosMetaDataUtils.getValue(instance), value)) : null == value;
+                return CollectionUtils.isNotEmpty(instances) ? instances.stream().anyMatch(instance -> Objects.equals(NacosMetaDataUtils.getValue(instance), value)) : null == value;
             });
         }
         return keyValues.isEmpty();
