@@ -716,9 +716,7 @@ commitClause
     ;
 
 physicalProperties
-    : deferredSegmentCreation? segmentAttributesClause? tableCompression? inmemoryTableClause? ilmClause?
-    | deferredSegmentCreation? (organizationClause?|externalPartitionClause?)
-    | clusterClause
+    : (deferredSegmentCreation? segmentAttributesClause tableCompression? inmemoryTableClause? ilmClause? | deferredSegmentCreation? (organizationClause | externalPartitionClause) | clusterClause)
     ;
 
 deferredSegmentCreation
@@ -950,10 +948,8 @@ varrayColProperties
     ;
 
 nestedTableColProperties
-    : NESTED TABLE 
-    (nestedItem | COLUMN_VALUE) substitutableColumnClause? (LOCAL | GLOBAL)? STORE AS storageTable 
-    LP_ (LP_ objectProperties RP_ | physicalProperties | columnProperties) RP_ 
-    (RETURN AS? (LOCATOR | VALUE))?
+    : NESTED TABLE (nestedItem | COLUMN_VALUE) substitutableColumnClause? (LOCAL | GLOBAL)? STORE AS storageTable
+    ( LP_ (LP_ objectProperties RP_ | physicalProperties | columnProperties)+ RP_)? (RETURN AS? (LOCATOR | VALUE))?
     ;
 
 lobStorageClause
