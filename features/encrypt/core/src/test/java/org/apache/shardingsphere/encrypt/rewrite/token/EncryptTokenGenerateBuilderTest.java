@@ -85,7 +85,7 @@ class EncryptTokenGenerateBuilderTest {
     private Field findField(final Class<?> clazz, final String fieldName, final Class<?> fieldType) {
         Class<?> searchClass = clazz;
         while (null != searchClass && !Object.class.equals(searchClass)) {
-            for (final Field each : searchClass.getDeclaredFields()) {
+            for (Field each : searchClass.getDeclaredFields()) {
                 if (fieldName.equals(each.getName()) && fieldType.equals(each.getType())) {
                     return each;
                 }
