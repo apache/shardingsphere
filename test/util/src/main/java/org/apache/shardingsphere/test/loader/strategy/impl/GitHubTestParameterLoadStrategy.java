@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.loader.strategy.impl;
 
+import com.google.common.base.Strings;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
 import org.apache.shardingsphere.test.loader.summary.FileSummary;
 
@@ -82,7 +82,7 @@ public final class GitHubTestParameterLoadStrategy implements TestParameterLoadS
     private String loadContent(final URI casesURI) {
         try {
             URLConnection urlConnection = casesURI.toURL().openConnection();
-            if (StringUtils.isNotBlank(GitHubEnvironment.getInstance().getGithubToken())) {
+            if (!Strings.isNullOrEmpty(GitHubEnvironment.getInstance().getGithubToken())) {
                 urlConnection.setRequestProperty("Authorization", "Bearer " + GitHubEnvironment.getInstance().getGithubToken());
             }
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
