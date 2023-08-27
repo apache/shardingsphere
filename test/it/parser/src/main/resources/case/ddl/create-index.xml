@@ -263,4 +263,14 @@
         <column start-index="72" stop-index="84" name="CA_ADDRESS_ID" />
         <index name="ds_customer_address_p1_index3" start-index="13" stop-index="41" />
     </create-index>
+
+    <create-index sql-case-id="create_index_with_owner01">
+        <table>
+            <simple-table name="customer_address_p1" start-index="52" stop-index="70" />
+        </table>
+        <column name="CA_ADDRESS_ID" start-index="72" stop-index="84"/>
+        <index name="ds_customer_address_p1_index3" start-index="13" stop-index="47">
+            <owner name="tpcds" start-index="13" stop-index="17" />
+        </index>
+    </create-index>
 </sql-parser-test-cases>

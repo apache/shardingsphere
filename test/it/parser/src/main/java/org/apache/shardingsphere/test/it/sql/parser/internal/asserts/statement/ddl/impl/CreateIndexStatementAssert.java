@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateIndexStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
@@ -68,6 +69,8 @@ public final class CreateIndexStatementAssert {
     private static void assertIndex(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
         // TODO should assert index for all databases(mysql and sqlserver do not parse index right now)
         if (actual instanceof OracleCreateIndexStatement) {
+            IndexAssert.assertIs(assertContext, actual.getIndex(), expected.getIndex());
+        } else if (actual instanceof OpenGaussCreateIndexStatement) {
             IndexAssert.assertIs(assertContext, actual.getIndex(), expected.getIndex());
         }
     }
