@@ -513,6 +513,10 @@ collationName
     ;
 
 indexName
+    : (schemaName DOT_)? identifier
+    ;
+
+indexPartitionName
     : identifier
     ;
 

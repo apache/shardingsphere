@@ -89,7 +89,7 @@ accessMethod
 
 createIndex
     : CREATE createIndexSpecification INDEX concurrentlyClause (ifNotExists? indexName)? ON onlyClause tableName
-      accessMethodClause? LP_ indexParams RP_ include? (WITH reloptions)? tableSpace? whereClause?
+      accessMethodClause? LP_ indexParams RP_ include? createIndexPartitionClause? (WITH reloptions)? tableSpace? whereClause?
     ;
 
 include
@@ -314,6 +314,19 @@ partStrategy
 
 createIndexSpecification
     : UNIQUE?
+    ;
+
+createIndexPartitionClause
+    : LOCAL (LP_ indexPartitionElemList RP_)?
+    | GLOBAL
+    ;
+
+indexPartitionElemList
+    : indexPartitionElem (COMMA_ indexPartitionElem)*
+    ;
+
+indexPartitionElem
+    : PARTITION indexPartitionName tableSpace?
     ;
 
 concurrentlyClause
