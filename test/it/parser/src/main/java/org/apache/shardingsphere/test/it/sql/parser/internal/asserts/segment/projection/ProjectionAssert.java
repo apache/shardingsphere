@@ -161,9 +161,8 @@ public final class ProjectionAssert {
         String expectedText = SQLCaseType.LITERAL == assertContext.getCaseType() && null != expected.getLiteralText()
                 ? expected.getLiteralText()
                 : expected.getText();
-        assertThat(assertContext.getText("Expression projection text assertion error: "),
-                actual.getText(), is(expectedText));
-        if (expected.getExpr() != null) {
+        assertThat(assertContext.getText("Expression projection text assertion error: "), actual.getText(), is(expectedText));
+        if (null != expected.getExpr()) {
             ExpressionAssert.assertExpression(assertContext, actual.getExpr(), expected.getExpr());
         }
     }

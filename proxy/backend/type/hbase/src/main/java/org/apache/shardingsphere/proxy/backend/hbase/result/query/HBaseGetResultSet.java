@@ -188,7 +188,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
     
     @Override
     public boolean next() {
-        return resultNum < maxLimitResultSize && (rows.hasNext() || compensateResult != null);
+        return resultNum < maxLimitResultSize && (rows.hasNext() || null != compensateResult);
     }
     
     @Override

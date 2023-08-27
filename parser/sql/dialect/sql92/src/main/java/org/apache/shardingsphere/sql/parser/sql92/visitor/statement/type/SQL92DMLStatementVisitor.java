@@ -340,7 +340,7 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
         if (projection instanceof BinaryOperationExpression) {
             BinaryOperationExpression binaryExpression = (BinaryOperationExpression) projection;
             int startIndex = binaryExpression.getStartIndex();
-            int stopIndex = null != alias ? alias.getStopIndex() : binaryExpression.getStopIndex();
+            int stopIndex = null == alias ? binaryExpression.getStopIndex() : alias.getStopIndex();
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, binaryExpression.getText(), binaryExpression);
             result.setAlias(alias);
             return result;

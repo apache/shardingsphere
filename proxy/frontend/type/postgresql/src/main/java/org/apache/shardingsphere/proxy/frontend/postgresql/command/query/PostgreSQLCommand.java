@@ -159,7 +159,7 @@ public enum PostgreSQLCommand {
      */
     private static Optional<PostgreSQLCommand> getPostgreSQLCommand(final Class<? extends SQLStatement> sqlStatementClass) {
         CachedResult result = COMPUTED_STATEMENTS.get(sqlStatementClass);
-        return null != result ? result.get() : COMPUTED_STATEMENTS.computeIfAbsent(sqlStatementClass, PostgreSQLCommand::compute).get();
+        return null == result ? COMPUTED_STATEMENTS.computeIfAbsent(sqlStatementClass, PostgreSQLCommand::compute).get() : result.get();
     }
     
     private static CachedResult compute(final Class<? extends SQLStatement> target) {
