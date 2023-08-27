@@ -46,10 +46,10 @@ public final class NewUpdatableGlobalRuleRALBackendHandler implements DistSQLBac
         GlobalRuleRALUpdater globalRuleUpdater = TypedSPILoader.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass());
         Class<? extends RuleConfiguration> ruleConfigClass = globalRuleUpdater.getRuleConfigurationClass();
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        Collection<RuleConfiguration> ruleConfigurations = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
-        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigurations, ruleConfigClass);
+        Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
+        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, ruleConfigClass);
         globalRuleUpdater.checkSQLStatement(currentRuleConfig, sqlStatement);
-        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigurations, sqlStatement, globalRuleUpdater, currentRuleConfig));
+        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, globalRuleUpdater, currentRuleConfig));
         return new UpdateResponseHeader(sqlStatement);
     }
     
