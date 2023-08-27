@@ -157,6 +157,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.Direct
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
@@ -253,6 +254,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionsSegment;
 
 /**
  * DDL statement visitor for openGauss.
@@ -523,6 +525,12 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
             result.setGeneratedIndexStartIndex(ctx.ON().getSymbol().getStartIndex() - 1);
         } else {
             result.setIndex((IndexSegment) visit(ctx.indexName()));
+        }
+        if (null != ctx.createIndexPartitionClause()) {
+            result.setIndexPartitionsSegment((IndexPartitionsSegment) visit(ctx.createIndexPartitionClause()));
+        }
+        if (null != ctx.tableSpace()) {
+            result.setTablespace((TablespaceSegment) visit(ctx.tableSpace()));
         }
         return result;
     }

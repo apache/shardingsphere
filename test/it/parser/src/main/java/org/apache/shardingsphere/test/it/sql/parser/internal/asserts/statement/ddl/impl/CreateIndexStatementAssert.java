@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl;
 
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateIndexStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexPartitionsAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateIndexStatementTestCase;
 
@@ -55,6 +58,8 @@ public final class CreateIndexStatementAssert {
         assertColumns(assertContext, actual, expected);
         assertLockTable(assertContext, actual, expected);
         assertAlgorithm(assertContext, actual, expected);
+        assertTablespace(assertContext, actual, expected);
+        assertIndexPartitions(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
@@ -71,7 +76,9 @@ public final class CreateIndexStatementAssert {
         if (actual instanceof OracleCreateIndexStatement) {
             IndexAssert.assertIs(assertContext, actual.getIndex(), expected.getIndex());
         } else if (actual instanceof OpenGaussCreateIndexStatement) {
-            IndexAssert.assertIs(assertContext, actual.getIndex(), expected.getIndex());
+            if (null != expected.getIndex()) {
+                IndexAssert.assertIs(assertContext, actual.getIndex(), expected.getIndex());
+            }
         }
     }
     
@@ -102,4 +109,28 @@ public final class CreateIndexStatementAssert {
                     CreateIndexStatementHandler.getAlgorithmTypeSegment(actual).get().getAlgorithmOption().name(), is(expected.getAlgorithmOption().getType()));
         }
     }
+    
+    private static void assertTablespace(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
+        if (null == expected.getTablespace()) {
+            assertFalse(CreateIndexStatementHandler.getTablespaceSegment(actual).isPresent(), assertContext.getText("Actual tablespace segments should not exist."));
+        } else {
+            assertTrue(CreateIndexStatementHandler.getTablespaceSegment(actual).isPresent(), assertContext.getText("Actual tablespace segments should exist."));
+            assertThat(assertContext.getText(String.format("`%s`'s tablespace assertion error: ", actual.getClass().getSimpleName())),
+                    CreateIndexStatementHandler.getTablespaceSegment(actual).get().getIdentifier().getValue(), is(expected.getTablespace().getName()));
+        }
+    }
+    
+    private static void assertIndexPartitions(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
+        if (actual instanceof OpenGaussCreateIndexStatement) {
+            OpenGaussCreateIndexStatement actualOpenGauss = (OpenGaussCreateIndexStatement) actual;
+            if (null == expected.getIndexPartitions()) {
+                assertFalse(CreateIndexStatementHandler.getIndexPartitionsSegment(actualOpenGauss).isPresent(), assertContext.getText("Actual index partitions segments should not exist."));
+            } else {
+                Optional<IndexPartitionsSegment> optional = CreateIndexStatementHandler.getIndexPartitionsSegment(actualOpenGauss);
+                assertTrue(optional.isPresent(), assertContext.getText("Actual index partitions segments should exist."));
+                IndexPartitionsAssert.assertIs(assertContext, optional.get(), expected.getIndexPartitions());
+            }
+        }
+    }
+    
 }

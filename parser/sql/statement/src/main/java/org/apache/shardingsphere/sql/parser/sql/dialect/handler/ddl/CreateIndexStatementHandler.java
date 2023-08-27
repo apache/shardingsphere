@@ -21,11 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateIndexStatement;
 
@@ -94,4 +96,31 @@ public final class CreateIndexStatementHandler implements SQLStatementHandler {
         }
         return Optional.empty();
     }
+    
+    /**
+     * Get index partitions segment.
+     *
+     * @param createIndexStatement create index statement
+     * @return index partitions segment
+     */
+    public static Optional<IndexPartitionsSegment> getIndexPartitionsSegment(final CreateIndexStatement createIndexStatement) {
+        if (createIndexStatement instanceof OpenGaussCreateIndexStatement) {
+            return ((OpenGaussCreateIndexStatement) createIndexStatement).getIndexPartitionsSegment();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get tablespace segment.
+     *
+     * @param createIndexStatement create index statement
+     * @return tablespace segment
+     */
+    public static Optional<TablespaceSegment> getTablespaceSegment(final CreateIndexStatement createIndexStatement) {
+        if (createIndexStatement instanceof OpenGaussCreateIndexStatement) {
+            return ((OpenGaussCreateIndexStatement) createIndexStatement).getTablespace();
+        }
+        return Optional.empty();
+    }
+    
 }

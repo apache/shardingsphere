@@ -20,10 +20,12 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionsSegment;
 
 /**
  * OpenGauss create index statement.
@@ -37,6 +39,10 @@ public final class OpenGaussCreateIndexStatement extends CreateIndexStatement im
     
     private Integer generatedIndexStartIndex;
     
+    private IndexPartitionsSegment indexPartitionsSegment;
+    
+    private TablespaceSegment tablespace;
+    
     /**
      * Get generated index start index.
      *
@@ -44,5 +50,22 @@ public final class OpenGaussCreateIndexStatement extends CreateIndexStatement im
      */
     public Optional<Integer> getGeneratedIndexStartIndex() {
         return Optional.ofNullable(generatedIndexStartIndex);
+    }
+    
+    /**
+     * Get index partitions segment.
+     *
+     * @return index partitions segment
+     */
+    public Optional<IndexPartitionsSegment> getIndexPartitionsSegment() {
+        return Optional.ofNullable(indexPartitionsSegment);
+    }
+    
+    /**
+     * Get tablespace.
+     * @return tablespace
+     */
+    public Optional<TablespaceSegment> getTablespace() {
+        return Optional.ofNullable(tablespace);
     }
 }
