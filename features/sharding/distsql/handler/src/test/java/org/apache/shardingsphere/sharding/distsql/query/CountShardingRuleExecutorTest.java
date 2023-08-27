@@ -79,12 +79,12 @@ class CountShardingRuleExecutorTest {
         Map<String, TableRule> tableRules = new LinkedHashMap<>();
         tableRules.put("t_order_item", mock(TableRule.class));
         tableRules.put("t_order", mock(TableRule.class));
-        ShardingRuleConfiguration ruleConfiguration = new ShardingRuleConfiguration();
-        ShardingTableReferenceRuleConfiguration shardingTableReferenceRuleConfiguration = new ShardingTableReferenceRuleConfiguration("refRule", "ref");
-        ruleConfiguration.getBindingTableGroups().add(shardingTableReferenceRuleConfiguration);
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ShardingTableReferenceRuleConfiguration shardingTableReferenceRuleConfig = new ShardingTableReferenceRuleConfiguration("refRule", "ref");
+        ruleConfig.getBindingTableGroups().add(shardingTableReferenceRuleConfig);
         ShardingRule result = mock(ShardingRule.class);
         when(result.getTableRules()).thenReturn(tableRules);
-        when(result.getConfiguration()).thenReturn(ruleConfiguration);
+        when(result.getConfiguration()).thenReturn(ruleConfig);
         return result;
     }
 }

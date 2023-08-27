@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEngine {
     
     @Getter(AccessLevel.NONE)
-    private final PostgreSQLFrontendEngine postgreSQLFrontendEngine = new PostgreSQLFrontendEngine();
+    private final PostgreSQLFrontendEngine postgresqlFrontendEngine = new PostgreSQLFrontendEngine();
     
     private final OpenGaussAuthenticationEngine authenticationEngine = new OpenGaussAuthenticationEngine();
     
@@ -44,7 +44,7 @@ public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEn
     
     @Override
     public void release(final ConnectionSession connectionSession) {
-        postgreSQLFrontendEngine.release(connectionSession);
+        postgresqlFrontendEngine.release(connectionSession);
     }
     
     @Override

@@ -96,9 +96,9 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         rootConfig.getDataSources().forEach((key, value) -> {
             String jdbcUrlKey = value.containsKey("url") ? "url" : "jdbcUrl";
             String jdbcUrl = value.get(jdbcUrlKey).toString();
-            Properties queryProperties = standardJdbcUrlParser.parseQueryProperties(jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?") + 1) : "");
-            extension.get().extendQueryProperties(queryProperties);
-            value.replace(jdbcUrlKey, new JdbcUrlAppender().appendQueryProperties(jdbcUrl, queryProperties));
+            Properties queryProps = standardJdbcUrlParser.parseQueryProperties(jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?") + 1) : "");
+            extension.get().extendQueryProperties(queryProps);
+            value.replace(jdbcUrlKey, new JdbcUrlAppender().appendQueryProperties(jdbcUrl, queryProps));
         });
     }
     

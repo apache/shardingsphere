@@ -58,10 +58,10 @@ class AlterViewStatementContextTest {
     
     @Test
     void assertPostgreSQLNewInstance() {
-        PostgreSQLAlterViewStatement postgreSQLAlterViewStatement = mock(PostgreSQLAlterViewStatement.class);
-        when(postgreSQLAlterViewStatement.getView()).thenReturn(view);
-        when(postgreSQLAlterViewStatement.getRenameView()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("view")))));
-        assertNewInstance(postgreSQLAlterViewStatement);
+        PostgreSQLAlterViewStatement alterViewStatement = mock(PostgreSQLAlterViewStatement.class);
+        when(alterViewStatement.getView()).thenReturn(view);
+        when(alterViewStatement.getRenameView()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("view")))));
+        assertNewInstance(alterViewStatement);
     }
     
     private void assertNewInstance(final AlterViewStatement alterViewStatement) {
