@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.example.proxy.distsql.feature.sharding;
 
-import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.example.proxy.distsql.feature.AbstractFeatureExecutor;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -63,7 +63,7 @@ public final class ShardingExecutor extends AbstractFeatureExecutor {
     }
     
     @Override
-    public void execute() throws SQLException, InterruptedException {
+    public void execute() throws SQLException {
         executeUseSchema();
         executeShowRule();
         executeAddRule();
@@ -84,13 +84,13 @@ public final class ShardingExecutor extends AbstractFeatureExecutor {
     private void executeShowRule() throws SQLException {
         log.info("show rule...");
         ResultSet resultSet = statement.executeQuery(SHOW_RULE);
-        log.info(new Gson().toJson(getResultData(resultSet)));
+        log.info(JsonUtils.toJsonString(getResultData(resultSet)));
     }
     
     private void executeShowAlgorithm() throws SQLException {
         log.info("show algorithm...");
         ResultSet resultSet = statement.executeQuery(SHOW_ALGORITHM);
-        log.info(new Gson().toJson(getResultData(resultSet)));
+        log.info(JsonUtils.toJsonString(getResultData(resultSet)));
     }
     
     private void executeAddRule() throws SQLException {
@@ -116,7 +116,7 @@ public final class ShardingExecutor extends AbstractFeatureExecutor {
     private void executeShowKeyGenerators() throws SQLException {
         log.info("show sharding key generators...");
         ResultSet resultSet = statement.executeQuery(SHOW_KEY_GENERATORS);
-        log.info(new Gson().toJson(getResultData(resultSet)));
+        log.info(JsonUtils.toJsonString(getResultData(resultSet)));
     }
     
     private void executeDropKeyGenerator() throws SQLException {

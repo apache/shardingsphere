@@ -81,6 +81,10 @@ public enum SQLVisitorRule {
     
     ALTER_OPERATOR("AlterOperator", SQLStatementType.DDL),
     
+    ALTER_PROFILE("AlterProfile", SQLStatementType.DDL),
+    
+    ALTER_ROLLBACK_SEGMENT("AlterRollbackSegment", SQLStatementType.DDL),
+    
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),
@@ -520,6 +524,8 @@ public enum SQLVisitorRule {
     CREATE_CONVERSION("CreateConversion", SQLStatementType.DDL),
     
     CREATE_CAST("CreateCast", SQLStatementType.DDL),
+    
+    CREATE_CLUSTER("CreateCluster", SQLStatementType.DDL),
     
     CREATE_TYPE("CreateType", SQLStatementType.DDL),
     

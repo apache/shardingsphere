@@ -95,7 +95,7 @@ public final class ShowShardingTableRulesUsedAlgorithmExecutor implements RQLExe
     }
     
     @Override
-    public String getType() {
-        return ShowShardingTableRulesUsedAlgorithmStatement.class.getName();
+    public Class<ShowShardingTableRulesUsedAlgorithmStatement> getType() {
+        return ShowShardingTableRulesUsedAlgorithmStatement.class;
     }
 }

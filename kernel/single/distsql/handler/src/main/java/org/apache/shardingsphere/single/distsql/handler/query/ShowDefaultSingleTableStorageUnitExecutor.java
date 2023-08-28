@@ -46,7 +46,7 @@ public final class ShowDefaultSingleTableStorageUnitExecutor implements RQLExecu
     }
     
     @Override
-    public String getType() {
-        return ShowDefaultSingleTableStorageUnitStatement.class.getName();
+    public Class<ShowDefaultSingleTableStorageUnitStatement> getType() {
+        return ShowDefaultSingleTableStorageUnitStatement.class;
     }
 }

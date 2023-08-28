@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeModeStatement;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,12 +43,12 @@ public final class ShowComputeNodeModeExecutor implements InstanceContextRequire
         PersistRepositoryConfiguration repositoryConfig = instanceContext.getModeConfiguration().getRepository();
         String modeType = instanceContext.getModeConfiguration().getType();
         String repositoryType = null == repositoryConfig ? "" : repositoryConfig.getType();
-        String props = null == repositoryConfig || null == repositoryConfig.getProps() ? "" : new Gson().toJson(repositoryConfig.getProps());
+        String props = null == repositoryConfig || null == repositoryConfig.getProps() || repositoryConfig.getProps().isEmpty() ? "" : JsonUtils.toJsonString(repositoryConfig.getProps());
         return Collections.singleton(new LocalDataQueryResultRow(modeType, repositoryType, props));
     }
     
     @Override
-    public String getType() {
-        return ShowComputeNodeModeStatement.class.getName();
+    public Class<ShowComputeNodeModeStatement> getType() {
+        return ShowComputeNodeModeStatement.class;
     }
 }

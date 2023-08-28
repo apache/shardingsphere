@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.props;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
+import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
 /**
  * Typed property key of HBase.

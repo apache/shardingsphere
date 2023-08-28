@@ -107,4 +107,10 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "colum-with-join-operator-segment")
     private ExpectedColumnWithJoinOperatorSegment columnWithJoinOperatorSegment;
+    
+    @XmlElement(name = "interval-expression")
+    private ExpectedIntervalExpression intervalExpression;
+    
+    @XmlElement(name = "multiset-expression")
+    private ExpectedMultisetExpression multisetExpression;
 }

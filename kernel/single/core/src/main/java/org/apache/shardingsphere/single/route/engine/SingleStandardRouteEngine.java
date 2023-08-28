@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.single.route.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.single.exception.SingleTableNotFoundException;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -85,12 +85,12 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
     private void routeDDLStatement(final RouteContext routeContext, final SingleRule rule) {
         if (sqlStatement instanceof CreateTableStatement) {
             QualifiedTable table = singleTables.iterator().next();
-            Optional<DataNode> dataNodeOptional = rule.findTableDataNode(table.getSchemaName(), table.getTableName());
+            Optional<DataNode> dataNode = rule.findTableDataNode(table.getSchemaName(), table.getTableName());
             boolean containsIfNotExists = CreateTableStatementHandler.ifNotExists((CreateTableStatement) sqlStatement);
-            if (dataNodeOptional.isPresent() && containsIfNotExists) {
-                String dataSourceName = dataNodeOptional.map(DataNode::getDataSourceName).orElse(null);
+            if (dataNode.isPresent() && containsIfNotExists) {
+                String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElse(null);
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
-            } else if (dataNodeOptional.isPresent()) {
+            } else if (dataNode.isPresent()) {
                 throw new TableExistsException(table.getTableName());
             } else {
                 String dataSourceName = rule.assignNewDataSourceName();
@@ -105,9 +105,7 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
         for (QualifiedTable each : logicTables) {
             String tableName = each.getTableName();
             Optional<DataNode> dataNode = singleRule.findTableDataNode(each.getSchemaName(), tableName);
-            if (!dataNode.isPresent()) {
-                throw new SingleTableNotFoundException(tableName);
-            }
+            ShardingSpherePreconditions.checkState(dataNode.isPresent(), () -> new SingleTableNotFoundException(tableName));
             String dataSource = dataNode.get().getDataSourceName();
             routeContext.putRouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(tableName, tableName)));
         }

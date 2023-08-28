@@ -60,15 +60,14 @@ public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolVa
     
     @Override
     public void write(final MySQLPacketPayload payload, final Object value) {
-        Timestamp timestamp = new Timestamp(((Date) value).getTime());
-        LocalDateTime dateTime = timestamp.toLocalDateTime();
+        LocalDateTime dateTime = value instanceof LocalDateTime ? (LocalDateTime) value : new Timestamp(((Date) value).getTime()).toLocalDateTime();
         int year = dateTime.getYear();
         int month = dateTime.getMonthValue();
         int dayOfMonth = dateTime.getDayOfMonth();
         int hours = dateTime.getHour();
         int minutes = dateTime.getMinute();
         int seconds = dateTime.getSecond();
-        int nanos = timestamp.getNanos();
+        int nanos = dateTime.getNano();
         boolean isTimeAbsent = 0 == hours && 0 == minutes && 0 == seconds;
         boolean isNanosAbsent = 0 == nanos;
         if (isTimeAbsent && isNanosAbsent) {

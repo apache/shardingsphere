@@ -23,8 +23,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
-import org.apache.shardingsphere.infra.database.core.datasource.JdbcUrlAppender;
-import org.apache.shardingsphere.infra.database.core.datasource.StandardJdbcUrlParser;
+import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrlAppender;
+import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
@@ -66,7 +66,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeFactory.get(getJdbcUrl(props));
         appendJdbcQueryProperties(databaseType);
-        adjustDataSourceProperties(rootConfig.getDataSources());
+        adjustDataSourcePoolProperties(rootConfig.getDataSources());
     }
     
     public ShardingSpherePipelineDataSourceConfiguration(final YamlRootConfiguration rootConfig) {
@@ -96,13 +96,13 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         rootConfig.getDataSources().forEach((key, value) -> {
             String jdbcUrlKey = value.containsKey("url") ? "url" : "jdbcUrl";
             String jdbcUrl = value.get(jdbcUrlKey).toString();
-            Properties queryProperties = standardJdbcUrlParser.parseQueryProperties(jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?") + 1) : "");
-            extension.get().extendQueryProperties(queryProperties);
-            value.replace(jdbcUrlKey, new JdbcUrlAppender().appendQueryProperties(jdbcUrl, queryProperties));
+            Properties queryProps = standardJdbcUrlParser.parseQueryProperties(jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?") + 1) : "");
+            extension.get().extendQueryProperties(queryProps);
+            value.replace(jdbcUrlKey, new JdbcUrlAppender().appendQueryProperties(jdbcUrl, queryProps));
         });
     }
     
-    private void adjustDataSourceProperties(final Map<String, Map<String, Object>> dataSources) {
+    private void adjustDataSourcePoolProperties(final Map<String, Map<String, Object>> dataSources) {
         for (Map<String, Object> queryProps : dataSources.values()) {
             for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
                 queryProps.put(each, "1");

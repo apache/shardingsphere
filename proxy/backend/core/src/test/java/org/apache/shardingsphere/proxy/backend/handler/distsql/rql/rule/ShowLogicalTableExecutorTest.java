@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,13 +45,15 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ShowLogicalTableExecutorTest {
     
+    private final RQLExecutor<ShowLogicalTablesStatement> executor = new ShowLogicalTableExecutor();
+    
     @Mock
     private ShardingSphereDatabase database;
     
     @BeforeEach
     void before() {
         when(database.getName()).thenReturn("foo_db");
-        when(database.getProtocolType()).thenReturn(mock(DatabaseType.class));
+        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema("foo_db")).thenReturn(schema);
         when(schema.getAllTableNames()).thenReturn(Arrays.asList("t_order", "t_order_item"));
@@ -58,7 +61,6 @@ class ShowLogicalTableExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<ShowLogicalTablesStatement> executor = new ShowLogicalTableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowLogicalTablesStatement.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
@@ -70,7 +72,6 @@ class ShowLogicalTableExecutorTest {
     
     @Test
     void assertRowDataWithLike() {
-        RQLExecutor<ShowLogicalTablesStatement> executor = new ShowLogicalTableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, new ShowLogicalTablesStatement("t_order_%", null));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
@@ -79,7 +80,6 @@ class ShowLogicalTableExecutorTest {
     
     @Test
     void assertGetColumnNames() {
-        RQLExecutor<ShowLogicalTablesStatement> executor = new ShowLogicalTableExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(1));
         Iterator<String> iterator = columns.iterator();

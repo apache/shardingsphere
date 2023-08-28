@@ -18,15 +18,13 @@
 package org.apache.shardingsphere.proxy.backend.response.header.query;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.sql.SQLException;
 
@@ -69,15 +67,5 @@ public final class QueryHeaderBuilderEngine {
                 () -> new IllegalArgumentException(String.format("Column index `%d` is out of range.", columnIndex)));
         Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
         return DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, databaseType).build(queryResultMetaData, database, projection.getColumnName(), projection.getColumnLabel(), columnIndex);
-    }
-    
-    private String getColumnLabel(final ProjectionsContext projectionsContext, final int columnIndex) {
-        Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
-        return DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : projection.getColumnLabel();
-    }
-    
-    private String getColumnName(final ProjectionsContext projectionsContext, final int columnIndex) {
-        Projection projection = projectionsContext.getExpandProjections().get(columnIndex - 1);
-        return projection instanceof ColumnProjection ? ((ColumnProjection) projection).getName().getValue() : projection.getColumnName();
     }
 }

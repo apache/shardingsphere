@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sqltranslator.rule;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.exception.syntax.UnsupportedTranslatedDatabaseException;
 import org.junit.jupiter.api.Test;
@@ -74,10 +74,5 @@ class SQLTranslatorRuleTest {
     void assertGetConfiguration() {
         SQLTranslatorRuleConfiguration expected = new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false);
         assertThat(new SQLTranslatorRule(expected).getConfiguration(), is(expected));
-    }
-    
-    @Test
-    void assertGetType() {
-        assertThat(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).getType(), is(SQLTranslatorRule.class.getSimpleName()));
     }
 }

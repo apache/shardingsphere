@@ -88,3 +88,5 @@ GEOMETRIC_ABOVE_:               '>^';
 GEOMETRIC_INTERSECT_:           '?#';
 GEOMETRIC_PERPENDICULAR_:       '?-|';
 GEOMETRIC_SAME_AS_:             '~=';
+SIGNED_LEFT_SHIFT_E_:           '<<=';
+SIGNED_RIGHT_SHIFT_E_:          '>>=';

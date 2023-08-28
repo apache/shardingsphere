@@ -29,10 +29,9 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlInve
 import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyContentCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCountCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyContentCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
@@ -43,12 +42,12 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.Migrati
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEntry;
@@ -79,7 +78,6 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -105,7 +103,7 @@ class MigrationJobAPITest {
         props.put("jdbcUrl", jdbcUrl);
         props.put("username", "root");
         props.put("password", "root");
-        jobAPI.addMigrationSourceResources(PipelineContextUtils.getContextKey(), Collections.singletonMap("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props)));
+        jobAPI.addMigrationSourceResources(PipelineContextUtils.getContextKey(), Collections.singletonMap("ds_0", new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props)));
     }
     
     @AfterAll
@@ -173,19 +171,13 @@ class MigrationJobAPITest {
     }
     
     @Test
-    void assertBuildNullDataConsistencyCalculateAlgorithm() {
-        DataConsistencyCalculateAlgorithm actual = jobAPI.buildDataConsistencyCalculateAlgorithm(null, null);
-        assertInstanceOf(DataConsistencyCalculateAlgorithm.class, actual);
-    }
-    
-    @Test
     void assertDataConsistencyCheck() {
         MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
         initTableData(jobConfig);
         Optional<String> jobId = jobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
-        DataConsistencyCalculateAlgorithm calculateAlgorithm = jobAPI.buildDataConsistencyCalculateAlgorithm("FIXTURE", null);
-        Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobConfig, calculateAlgorithm, new ConsistencyCheckJobItemProgressContext(jobId.get(), 0));
+        Map<String, TableDataConsistencyCheckResult> checkResultMap = jobAPI.buildPipelineDataConsistencyChecker(
+                jobConfig, jobAPI.buildPipelineProcessContext(jobConfig), new ConsistencyCheckJobItemProgressContext(jobId.get(), 0)).check("FIXTURE", null);
         assertThat(checkResultMap.size(), is(1));
         String checkKey = "ds_0.t_order";
         assertTrue(checkResultMap.get(checkKey).getCountCheckResult().isMatched());
@@ -200,33 +192,33 @@ class MigrationJobAPITest {
     
     @Test
     void assertAggregateDifferentCountDataConsistencyCheckResults() {
-        DataConsistencyCountCheckResult equalCountCheckResult = new DataConsistencyCountCheckResult(100, 100);
-        DataConsistencyCountCheckResult notEqualCountCheckResult = new DataConsistencyCountCheckResult(100, 95);
-        DataConsistencyContentCheckResult equalContentCheckResult = new DataConsistencyContentCheckResult(false);
-        Map<String, DataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1F);
-        checkResults.put("foo_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
-        checkResults.put("bar_tbl", new DataConsistencyCheckResult(notEqualCountCheckResult, equalContentCheckResult));
+        TableDataConsistencyCountCheckResult equalCountCheckResult = new TableDataConsistencyCountCheckResult(100, 100);
+        TableDataConsistencyCountCheckResult notEqualCountCheckResult = new TableDataConsistencyCountCheckResult(100, 95);
+        TableDataConsistencyContentCheckResult equalContentCheckResult = new TableDataConsistencyContentCheckResult(false);
+        Map<String, TableDataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1F);
+        checkResults.put("foo_tbl", new TableDataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
+        checkResults.put("bar_tbl", new TableDataConsistencyCheckResult(notEqualCountCheckResult, equalContentCheckResult));
         assertFalse(jobAPI.aggregateDataConsistencyCheckResults("foo_job", checkResults));
     }
     
     @Test
     void assertAggregateDifferentContentDataConsistencyCheckResults() {
-        DataConsistencyCountCheckResult equalCountCheckResult = new DataConsistencyCountCheckResult(100, 100);
-        DataConsistencyContentCheckResult equalContentCheckResult = new DataConsistencyContentCheckResult(true);
-        DataConsistencyContentCheckResult notEqualContentCheckResult = new DataConsistencyContentCheckResult(false);
-        Map<String, DataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1F);
-        checkResults.put("foo_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
-        checkResults.put("bar_tbl", new DataConsistencyCheckResult(equalCountCheckResult, notEqualContentCheckResult));
+        TableDataConsistencyCountCheckResult equalCountCheckResult = new TableDataConsistencyCountCheckResult(100, 100);
+        TableDataConsistencyContentCheckResult equalContentCheckResult = new TableDataConsistencyContentCheckResult(true);
+        TableDataConsistencyContentCheckResult notEqualContentCheckResult = new TableDataConsistencyContentCheckResult(false);
+        Map<String, TableDataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1F);
+        checkResults.put("foo_tbl", new TableDataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
+        checkResults.put("bar_tbl", new TableDataConsistencyCheckResult(equalCountCheckResult, notEqualContentCheckResult));
         assertFalse(jobAPI.aggregateDataConsistencyCheckResults("foo_job", checkResults));
     }
     
     @Test
     void assertAggregateSameDataConsistencyCheckResults() {
-        DataConsistencyCountCheckResult equalCountCheckResult = new DataConsistencyCountCheckResult(100, 100);
-        DataConsistencyContentCheckResult equalContentCheckResult = new DataConsistencyContentCheckResult(true);
-        Map<String, DataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1F);
-        checkResults.put("foo_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
-        checkResults.put("bar_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
+        TableDataConsistencyCountCheckResult equalCountCheckResult = new TableDataConsistencyCountCheckResult(100, 100);
+        TableDataConsistencyContentCheckResult equalContentCheckResult = new TableDataConsistencyContentCheckResult(true);
+        Map<String, TableDataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1F);
+        checkResults.put("foo_tbl", new TableDataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
+        checkResults.put("bar_tbl", new TableDataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
         assertTrue(jobAPI.aggregateDataConsistencyCheckResults("foo_job", checkResults));
     }
     
@@ -279,7 +271,7 @@ class MigrationJobAPITest {
     @Test
     void assertAddMigrationSourceResources() {
         PipelineDataSourcePersistService persistService = new PipelineDataSourcePersistService();
-        Map<String, DataSourceProperties> actual = persistService.load(PipelineContextUtils.getContextKey(), new MigrationJobType());
+        Map<String, DataSourcePoolProperties> actual = persistService.load(PipelineContextUtils.getContextKey(), new MigrationJobType());
         assertTrue(actual.containsKey("ds_0"));
     }
     
@@ -315,10 +307,10 @@ class MigrationJobAPITest {
     }
     
     private void initIntPrimaryEnvironment() throws SQLException {
-        Map<String, DataSourceProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(PipelineContextUtils.getContextKey(), new MigrationJobType());
-        DataSourceProperties dataSourceProps = metaDataDataSource.get("ds_0");
+        Map<String, DataSourcePoolProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(PipelineContextUtils.getContextKey(), new MigrationJobType());
+        DataSourcePoolProperties props = metaDataDataSource.get("ds_0");
         try (
-                PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(dataSourceProps), databaseType);
+                PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(props), databaseType);
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -336,14 +328,13 @@ class MigrationJobAPITest {
     
     @Test
     void assertGetJobItemInfosAtBegin() {
-        Optional<String> optional = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
-        assertTrue(optional.isPresent());
-        String jobId = optional.get();
+        Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
+        assertTrue(jobId.isPresent());
         YamlInventoryIncrementalJobItemProgress yamlJobItemProgress = new YamlInventoryIncrementalJobItemProgress();
         yamlJobItemProgress.setStatus(JobStatus.RUNNING.name());
         yamlJobItemProgress.setSourceDatabaseType("MySQL");
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
-        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(jobId.get(), 0, YamlEngine.marshal(yamlJobItemProgress));
+        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId.get());
         assertThat(jobItemInfos.size(), is(1));
         InventoryIncrementalJobItemInfo jobItemInfo = jobItemInfos.get(0);
         assertThat(jobItemInfo.getJobItemProgress().getStatus(), is(JobStatus.RUNNING));
@@ -352,16 +343,15 @@ class MigrationJobAPITest {
     
     @Test
     void assertGetJobItemInfosAtIncrementTask() {
-        Optional<String> optional = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
-        assertTrue(optional.isPresent());
+        Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
+        assertTrue(jobId.isPresent());
         YamlInventoryIncrementalJobItemProgress yamlJobItemProgress = new YamlInventoryIncrementalJobItemProgress();
         yamlJobItemProgress.setSourceDatabaseType("MySQL");
         yamlJobItemProgress.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK.name());
         yamlJobItemProgress.setProcessedRecordsCount(100);
         yamlJobItemProgress.setInventoryRecordsCount(50);
-        String jobId = optional.get();
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
-        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(jobId.get(), 0, YamlEngine.marshal(yamlJobItemProgress));
+        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId.get());
         InventoryIncrementalJobItemInfo jobItemInfo = jobItemInfos.get(0);
         assertThat(jobItemInfo.getJobItemProgress().getStatus(), is(JobStatus.EXECUTE_INCREMENTAL_TASK));
         assertThat(jobItemInfo.getInventoryFinishedPercentage(), is(100));

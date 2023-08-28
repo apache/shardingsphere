@@ -42,4 +42,9 @@ public final class XmlTableFunctionSegment implements ComplexExpressionSegment, 
     private final XmlTableOptionsSegment xmlTableOption;
     
     private final String text;
+    
+    @Override
+    public String getColumnLabel() {
+        return text;
+    }
 }

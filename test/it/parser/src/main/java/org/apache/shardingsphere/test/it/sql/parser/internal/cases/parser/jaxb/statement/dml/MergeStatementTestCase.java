@@ -44,6 +44,6 @@ public final class MergeStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "update")
     private UpdateStatementTestCase updateClause;
     
-    @XmlElement(name = "delete")
-    private DeleteStatementTestCase deleteClause;
+    @XmlElement(name = "insert")
+    private InsertStatementTestCase insertClause;
 }

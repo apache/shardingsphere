@@ -59,10 +59,10 @@ class DropBroadcastTableRuleStatementUpdaterTest {
     
     @Test
     void assertUpdateCurrentRuleConfiguration() {
-        BroadcastRuleConfiguration configuration = new BroadcastRuleConfiguration(new LinkedList<>());
-        configuration.getTables().add("t_address");
+        BroadcastRuleConfiguration config = new BroadcastRuleConfiguration(new LinkedList<>());
+        config.getTables().add("t_address");
         DropBroadcastTableRuleStatement statement = new DropBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertTrue(updater.updateCurrentRuleConfiguration(statement, configuration));
-        assertTrue(configuration.getTables().isEmpty());
+        assertTrue(updater.updateCurrentRuleConfiguration(statement, config));
+        assertTrue(config.getTables().isEmpty());
     }
 }

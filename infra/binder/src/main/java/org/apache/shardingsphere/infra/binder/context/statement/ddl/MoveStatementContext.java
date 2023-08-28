@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.MoveStatement;
 
@@ -68,11 +69,16 @@ public final class MoveStatementContext extends CommonSQLStatementContext implem
     
     @Override
     public Collection<WhereSegment> getWhereSegments() {
-        return null != cursorStatementContext ? cursorStatementContext.getWhereSegments() : Collections.emptyList();
+        return null == cursorStatementContext ? Collections.emptyList() : cursorStatementContext.getWhereSegments();
     }
     
     @Override
     public Collection<ColumnSegment> getColumnSegments() {
-        return null != cursorStatementContext ? cursorStatementContext.getColumnSegments() : Collections.emptyList();
+        return null == cursorStatementContext ? Collections.emptyList() : cursorStatementContext.getColumnSegments();
+    }
+    
+    @Override
+    public Collection<BinaryOperationExpression> getJoinConditions() {
+        return null == cursorStatementContext ? Collections.emptyList() : cursorStatementContext.getJoinConditions();
     }
 }

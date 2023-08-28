@@ -61,9 +61,4 @@ public final class SQLParserRule implements GlobalRule {
                 ? new ShardingSphereSQLParserEngine(databaseType, sqlStatementCache, parseTreeCache, sqlCommentParseEnabled)
                 : new SimpleSQLParserEngine();
     }
-    
-    @Override
-    public String getType() {
-        return SQLParserRule.class.getSimpleName();
-    }
 }

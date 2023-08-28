@@ -23,9 +23,10 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -89,11 +90,12 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     }
     
     private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase("readwrite_db", mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS),
-                new ShardingSphereRuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.emptyMap());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("readwrite_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
+                mock(ResourceMetaData.class, RETURNS_DEEP_STUBS),
+                new RuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.emptyMap());
         Map<String, ShardingSphereDatabase> databaseMap = new LinkedHashMap<>();
         databaseMap.put("readwrite_db", database);
-        return new ShardingSphereMetaData(databaseMap, mock(ShardingSphereResourceMetaData.class),
-                new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        return new ShardingSphereMetaData(databaseMap, mock(ResourceMetaData.class),
+                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
 }

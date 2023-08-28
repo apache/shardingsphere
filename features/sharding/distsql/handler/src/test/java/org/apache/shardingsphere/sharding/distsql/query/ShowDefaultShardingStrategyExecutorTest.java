@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
@@ -52,7 +52,7 @@ class ShowDefaultShardingStrategyExecutorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingRule rule1 = mock(ShardingRule.class);
         when(rule1.getConfiguration()).thenReturn(createRuleConfiguration1());
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule1)));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule1)));
         RQLExecutor<ShowDefaultShardingStrategyStatement> executor = new ShowDefaultShardingStrategyExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowDefaultShardingStrategyStatement.class));
         assertThat(actual.size(), is(2));
@@ -73,7 +73,7 @@ class ShowDefaultShardingStrategyExecutorTest {
         assertThat(row.getCell(6), is("{algorithm-expression=ds_${user_id % 2}}"));
         ShardingRule rule2 = mock(ShardingRule.class);
         when(rule2.getConfiguration()).thenReturn(createRuleConfiguration2());
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule2)));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule2)));
         executor = new ShowDefaultShardingStrategyExecutor();
         actual = executor.getRows(database, mock(ShowDefaultShardingStrategyStatement.class));
         assertThat(actual.size(), is(2));

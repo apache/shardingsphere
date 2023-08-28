@@ -19,20 +19,20 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.handler.ral.constant.DistSQLScriptConstants;
 import org.apache.shardingsphere.distsql.handler.ral.query.ConvertRuleConfigurationProvider;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
+import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.custom.CustomDataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
@@ -81,9 +81,9 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         StringBuilder result = new StringBuilder();
         appendResourceDistSQL(yamlConfig, result);
         for (RuleConfiguration each : swapToRuleConfigs(yamlConfig).values()) {
-            String type = each.getClass().getName();
+            Class<? extends RuleConfiguration> type = each.getClass();
             if (each instanceof CompatibleEncryptRuleConfiguration) {
-                type = ((CompatibleEncryptRuleConfiguration) each).convertToEncryptRuleConfiguration().getClass().getName();
+                type = ((CompatibleEncryptRuleConfiguration) each).convertToEncryptRuleConfiguration().getClass();
             }
             ConvertRuleConfigurationProvider convertRuleConfigProvider = TypedSPILoader.getService(ConvertRuleConfigurationProvider.class, type);
             result.append(convertRuleConfigProvider.convert(each));
@@ -120,8 +120,9 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         Iterator<Entry<String, YamlProxyDataSourceConfiguration>> iterator = dataSources.entrySet().iterator();
         while (iterator.hasNext()) {
             Entry<String, YamlProxyDataSourceConfiguration> entry = iterator.next();
-            DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(entry.getValue()));
-            appendResource(entry.getKey(), dataSourceProps, stringBuilder);
+            DataSourceConfiguration dataSourceConfig = dataSourceConfigSwapper.swap(entry.getValue());
+            DataSourcePoolProperties props = DataSourcePoolPropertiesCreator.create(dataSourceConfig);
+            appendResource(entry.getKey(), props, stringBuilder);
             if (iterator.hasNext()) {
                 stringBuilder.append(DistSQLScriptConstants.COMMA);
             }
@@ -129,12 +130,12 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
     }
     
-    private void appendResource(final String resourceName, final DataSourceProperties dataSourceProps, final StringBuilder stringBuilder) {
-        Map<String, Object> connectionProps = dataSourceProps.getConnectionPropertySynonyms().getStandardProperties();
+    private void appendResource(final String resourceName, final DataSourcePoolProperties dataSourcePoolProps, final StringBuilder stringBuilder) {
+        Map<String, Object> connectionProps = dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties();
         String url = (String) connectionProps.get(DistSQLScriptConstants.KEY_URL);
         String username = (String) connectionProps.get(DistSQLScriptConstants.KEY_USERNAME);
         String password = (String) connectionProps.get(DistSQLScriptConstants.KEY_PASSWORD);
-        String props = getResourceProperties(dataSourceProps.getPoolPropertySynonyms(), dataSourceProps.getCustomDataSourceProperties());
+        String props = getResourceProperties(dataSourcePoolProps.getPoolPropertySynonyms(), dataSourcePoolProps.getCustomProperties());
         if (Strings.isNullOrEmpty(password)) {
             stringBuilder.append(String.format(DistSQLScriptConstants.RESOURCE_DEFINITION_WITHOUT_PASSWORD, resourceName, url, username, props));
         } else {
@@ -142,12 +143,12 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         }
     }
     
-    private String getResourceProperties(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourceProperties customDataSourceProps) {
+    private String getResourceProperties(final PoolPropertySynonyms poolPropertySynonyms, final CustomDataSourcePoolProperties customDataSourcePoolProps) {
         StringBuilder result = new StringBuilder();
         appendProperties(poolPropertySynonyms.getStandardProperties(), result);
-        if (!customDataSourceProps.getProperties().isEmpty()) {
+        if (!customDataSourcePoolProps.getProperties().isEmpty()) {
             result.append(DistSQLScriptConstants.COMMA);
-            appendProperties(customDataSourceProps.getProperties(), result);
+            appendProperties(customDataSourcePoolProps.getProperties(), result);
         }
         return result.toString();
     }
@@ -167,7 +168,7 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
     }
     
     @Override
-    public String getType() {
-        return ConvertYamlConfigurationStatement.class.getName();
+    public Class<ConvertYamlConfigurationStatement> getType() {
+        return ConvertYamlConfigurationStatement.class;
     }
 }

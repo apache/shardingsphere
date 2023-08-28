@@ -1,14 +1,17 @@
 {
   "rules": [
     {"includeClasses": "**"},
+    {"excludeClasses": "com.atomikos.jdbc.**"},
+    {"excludeClasses": "com.mchange.v2.c3p0.**"},
+    {"excludeClasses": "com.mysql.jdbc.**"},
+    {"excludeClasses": "com.zaxxer.hikari.**"},
+    {"excludeClasses": "org.apache.commons.dbcp2.**"},
     {"excludeClasses": "org.junit.platform.launcher.**"},
     {"excludeClasses": "org.mariadb.jdbc.**"},
-    {"excludeClasses": "com.mysql.jdbc.**"},
-    {"excludeClasses": "org.apache.commons.dbcp2.**"},
-    {"excludeClasses": "org.apache.shardingsphere.test.fixture.jdbc.**"},
-    {"excludeClasses": "org.apache.shardingsphere.data.pipeline.core.sqlbuilder.H2PipelineSQLBuilder"}
+    {"excludeClasses": "org.apache.shardingsphere.sharding.UndefinedClass"}
   ],
   "regexRules": [
-    {"excludeClasses": ".*Fixture*.*"}
+    {"excludeClasses": ".*Fixture*.*"},
+    {"excludeClasses": ".*Mocked*.*"}
   ]
 }

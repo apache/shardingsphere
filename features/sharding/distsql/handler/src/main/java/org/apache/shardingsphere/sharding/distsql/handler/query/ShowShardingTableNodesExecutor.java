@@ -70,7 +70,7 @@ public final class ShowShardingTableNodesExecutor implements RQLExecutor<ShowSha
     }
     
     @Override
-    public String getType() {
-        return ShowShardingTableNodesStatement.class.getName();
+    public Class<ShowShardingTableNodesStatement> getType() {
+        return ShowShardingTableNodesStatement.class;
     }
 }

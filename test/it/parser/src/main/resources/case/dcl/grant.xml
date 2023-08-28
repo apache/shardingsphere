@@ -104,6 +104,7 @@
     
     <grant sql-case-id="grant_program" />
     <grant sql-case-id="grant_roles_to_programs" />
+    <grant sql-case-id="grant_create_rule_to_user" />
     
     <grant sql-case-id="grant_all_on_table_to_roles">
         <table name="t_order" start-index="30" stop-index="36" />

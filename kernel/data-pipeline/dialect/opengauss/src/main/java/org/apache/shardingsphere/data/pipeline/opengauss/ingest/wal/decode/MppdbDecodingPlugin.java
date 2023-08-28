@@ -96,7 +96,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private AbstractRowEvent readTableEvent(final String mppData) {
         MppTableData mppTableData;
-        mppTableData = JsonUtils.readValue(mppData, MppTableData.class);
+        mppTableData = JsonUtils.fromJsonString(mppData, MppTableData.class);
         AbstractRowEvent result;
         String rowEventType = mppTableData.getOpType();
         switch (rowEventType) {
@@ -113,7 +113,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
                 throw new IngestException("Unknown rowEventType: " + rowEventType);
         }
         String[] tableMetaData = mppTableData.getTableName().split("\\.");
-        result.setDatabaseName(tableMetaData[0]);
+        result.setSchemaName(tableMetaData[0]);
         result.setTableName(tableMetaData[1]);
         return result;
     }

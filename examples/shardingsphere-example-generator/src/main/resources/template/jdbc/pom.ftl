@@ -71,17 +71,6 @@
             <artifactId>jboss-logging</artifactId>
             <version>3.2.1.Final</version>
         </dependency>
-    <#elseif transaction=="xa-bitronix">
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
-            <version>${r'${project.version}'}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.btm</groupId>
-            <artifactId>btm</artifactId>
-            <version>2.1.3</version>
-        </dependency>
     <#elseif transaction=="base-seata">
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
