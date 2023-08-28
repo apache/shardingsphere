@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -198,7 +199,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
             return;
         }
         for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
-            containerComposer.cleanUpDatabase(each);
+            String databaseName = databaseType instanceof OracleDatabaseType ? each.toUpperCase() : each;
+            containerComposer.cleanUpDatabase(databaseName);
         }
     }
     
@@ -226,11 +228,12 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public void registerStorageUnit(final String storageUnitName) throws SQLException {
+        String username = getDatabaseType() instanceof OracleDatabaseType ? storageUnitName : getUsername();
         String registerStorageUnitTemplate = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
-                .replace("${user}", getUsername())
+                .replace("${user}", username)
                 .replace("${password}", getPassword())
                 .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, true));
-        proxyExecuteWithLog(registerStorageUnitTemplate, 1);
+        proxyExecuteWithLog(registerStorageUnitTemplate, 0);
         Awaitility.await().ignoreExceptions().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
     }
     
@@ -370,8 +373,11 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     public void proxyExecuteWithLog(final String sql, final int sleepSeconds) throws SQLException {
         log.info("proxy execute :{}", sql);
+        List<String> sqlList = Splitter.on(";").trimResults().omitEmptyStrings().splitToList(sql);
         try (Connection connection = proxyDataSource.getConnection()) {
-            connection.createStatement().execute(sql);
+            for (String each : sqlList) {
+                connection.createStatement().execute(each);
+            }
         }
         Awaitility.await().pollDelay(Math.max(sleepSeconds, 0L), TimeUnit.SECONDS).until(() -> true);
     }
