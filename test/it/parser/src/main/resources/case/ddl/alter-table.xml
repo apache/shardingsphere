@@ -1593,4 +1593,20 @@
     <alter-table sql-case-id="alter_table_modify_subpartition_drop_values">
         <table name="quarterly_regional_sales" start-index="12" stop-index="35" />
     </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_nested_table_return_as_value">
+        <table name="print_media" start-index="12" stop-index="22" />
+        <modify-collection-retrieval>
+            <table name="ad_textdocs_ntab" start-index="44" stop-index="59" />
+        </modify-collection-retrieval>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_nested_owner_table_return_as_value">
+        <table name="print_media" start-index="12" stop-index="22" />
+        <modify-collection-retrieval>
+            <table name="ad_textdocs_ntab" start-index="44" stop-index="67">
+                <owner start-index="44" stop-index="50" name="mytable" />
+            </table>
+        </modify-collection-retrieval>
+    </alter-table>
 </sql-parser-test-cases>

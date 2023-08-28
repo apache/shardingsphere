@@ -440,7 +440,7 @@ dropSynonym
     ;
 
 columnClauses
-    : operateColumnClause+ | renameColumnClause
+    : operateColumnClause+ | renameColumnClause | modifyCollectionRetrieval
     ;
 
 operateColumnClause
@@ -509,6 +509,10 @@ checkpointNumber
 
 renameColumnClause
     : RENAME COLUMN columnName TO columnName
+    ;
+
+modifyCollectionRetrieval
+    : MODIFY NESTED TABLE tableName RETURN AS (LOCATOR | VALUE)
     ;
 
 moveTableClause
