@@ -41,7 +41,11 @@
             <column-projection name="order_id" start-index="7" stop-index="14" />
             <expression-projection text="ROW_NUMBER() OVER()" start-index="17" stop-index="35">
                 <expr>
-                    <function function-name="ROW_NUMBER" start-index="17" stop-index="35" text="ROW_NUMBER() OVER()" />
+                    <function function-name="OVER" start-index="17" stop-index="35" text="ROW_NUMBER() OVER()" >
+                        <parameter>
+                            <function function-name="ROW_NUMBER" start-index="17" stop-index="26" text="ROW_NUMBER()" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
