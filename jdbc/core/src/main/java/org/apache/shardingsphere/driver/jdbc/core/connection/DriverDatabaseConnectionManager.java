@@ -313,13 +313,9 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @return random physical data source name
      */
     public String getRandomPhysicalDataSourceName() {
-        return getRandomPhysicalDatabaseAndDataSourceName().split("\\.")[1];
-    }
-    
-    private String getRandomPhysicalDatabaseAndDataSourceName() {
         Collection<String> cachedPhysicalDataSourceNames = Sets.intersection(physicalDataSourceMap.keySet(), cachedConnections.keySet());
-        Collection<String> datasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? physicalDataSourceMap.keySet() : cachedPhysicalDataSourceNames;
-        return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
+        Collection<String> databaseAndDatasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? physicalDataSourceMap.keySet() : cachedPhysicalDataSourceNames;
+        return new ArrayList<>(databaseAndDatasourceNames).get(random.nextInt(databaseAndDatasourceNames.size())).split("\\.")[1];
     }
     
     /**
@@ -329,7 +325,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public Connection getRandomConnection() throws SQLException {
-        return getConnections(getRandomPhysicalDatabaseAndDataSourceName(), 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        return getConnections(getRandomPhysicalDataSourceName(), 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
     @Override
@@ -364,11 +360,11 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         }
         return result;
     }
-
+    
     private String getKey(final String databaseName, final String dataSourceName) {
         return databaseName.toLowerCase() + "." + dataSourceName;
     }
-
+    
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     private List<Connection> createConnections(final String databaseName, final String dataSourceName, final DataSource dataSource, final int connectionSize,
                                                final ConnectionMode connectionMode) throws SQLException {
