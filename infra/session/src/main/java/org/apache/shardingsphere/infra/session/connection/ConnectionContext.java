@@ -43,6 +43,8 @@ public final class ConnectionContext implements AutoCloseable {
     @Getter(AccessLevel.NONE)
     private final UsedDataSourceProvider usedDataSourceProvider;
     
+    private String databaseName;
+    
     @Setter
     private String trafficInstanceId;
     
@@ -80,6 +82,26 @@ public final class ConnectionContext implements AutoCloseable {
      */
     public void clearTransactionConnectionContext() {
         transactionContext.close();
+    }
+    
+    /**
+     * Set current database name.
+     *
+     * @param databaseName database name
+     */
+    public void setCurrentDatabase(final String databaseName) {
+        if (null != databaseName && !databaseName.equals(this.databaseName)) {
+            this.databaseName = databaseName;
+        }
+    }
+    
+    /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    public Optional<String> getDatabaseName() {
+        return Optional.ofNullable(databaseName);
     }
     
     @Override
