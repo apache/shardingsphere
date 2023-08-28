@@ -69,6 +69,7 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
             setCommand(config.getContainerCommand());
         }
         withExposedPorts(3307, 33071, 3308);
+        addEnv("TZ", "UTC");
         mountConfigurationFiles();
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType,
                 getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)));
