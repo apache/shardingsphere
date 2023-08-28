@@ -37,10 +37,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
 /**
- * SQL statement util.
+ * SQL statement utils.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLStatementUtil {
+public final class SQLStatementUtils {
     
     /**
      * Get SQL type.
