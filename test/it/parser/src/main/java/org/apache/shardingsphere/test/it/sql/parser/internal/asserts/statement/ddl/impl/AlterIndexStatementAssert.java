@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexS
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.MovePartitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.RenamePartitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterIndexStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
@@ -62,6 +63,7 @@ public final class AlterIndexStatementAssert {
         assertTable(assertContext, actual, expected);
         assertIndex(assertContext, actual, expected);
         assertMovePartition(assertContext, actual, expected);
+        assertRenamePartition(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final AlterIndexStatement actual, final AlterIndexStatementTestCase expected) {
@@ -114,6 +116,21 @@ public final class AlterIndexStatementAssert {
         } else {
             assertNotNull(actual, assertContext.getText("Actual tablespace segments should exist."));
             TablespaceAssert.assertIs(assertContext, actual, expected);
+        }
+    }
+
+    private static void assertRenamePartition(final SQLCaseAssertContext assertContext, final AlterIndexStatement actual, final AlterIndexStatementTestCase expected) {
+        if (actual instanceof OpenGaussAlterIndexStatement) {
+            OpenGaussAlterIndexStatement ogActual = (OpenGaussAlterIndexStatement) actual;
+            if (null == expected.getRenamePartition()) {
+                assertFalse(ogActual.getRenamePartition().isPresent(), assertContext.getText("Actual rename partition should not exist."));
+            } else {
+                assertTrue(ogActual.getRenamePartition().isPresent(), assertContext.getText("Actual rename partition should exist."));
+                RenamePartitionSegment renamePartition = ogActual.getRenamePartition().get();
+                assertPartition(assertContext, renamePartition.getOldPartition(), expected.getRenamePartition().getOldPartition());
+                assertPartition(assertContext, renamePartition.getNewPartition(), expected.getRenamePartition().getNewPartition());
+                SQLSegmentAssert.assertIs(assertContext, renamePartition, expected.getRenamePartition());
+            }
         }
     }
 }

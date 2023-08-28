@@ -42,7 +42,7 @@ public final class AlterIndexStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "move-partition")
     private ExpectedMovePartition movePartition;
-
+    
     @XmlElement(name = "rename-partition")
     private ExpectedRenamePartition renamePartition;
 }
