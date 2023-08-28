@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Optional;
 
 public final class WindowFunctionConverter extends FunctionConverter {
-
+    
     @Override
     public Optional<SqlNode> convert(final FunctionSegment segment) {
         SqlIdentifier functionName = new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO);
@@ -39,14 +39,15 @@ public final class WindowFunctionConverter extends FunctionConverter {
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.BINARY, functions, SqlNameMatchers.withCaseSensitive(false));
         return Optional.of(new SqlBasicCall(functions.iterator().next(), getWindowFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
     }
-
+    
     private List<SqlNode> getWindowFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {
         List<SqlNode> result = new LinkedList<>();
-        for (ExpressionSegment each: sqlSegments) {
+        for (ExpressionSegment each : sqlSegments) {
             new ExpressionConverter().convert(each).ifPresent(result::add);
         }
         if (1 == result.size()) {
-            result.add(new SqlWindow(SqlParserPos.ZERO, null, null, new SqlNodeList(SqlParserPos.ZERO), new SqlNodeList(SqlParserPos.ZERO), SqlLiteral.createBoolean(false, SqlParserPos.ZERO), null, null, null));
+            result.add(new SqlWindow(SqlParserPos.ZERO, null, null, new SqlNodeList(SqlParserPos.ZERO), new SqlNodeList(SqlParserPos.ZERO), SqlLiteral.createBoolean(false, SqlParserPos.ZERO), null,
+                    null, null));
         }
         return result;
     }
