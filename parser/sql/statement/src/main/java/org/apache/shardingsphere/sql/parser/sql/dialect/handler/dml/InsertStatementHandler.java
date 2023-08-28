@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
@@ -215,6 +216,31 @@ public final class InsertStatementHandler implements SQLStatementHandler {
         }
         if (insertStatement instanceof OpenGaussInsertStatement) {
             ((OpenGaussInsertStatement) insertStatement).setReturningSegment(returningSegment);
+        }
+    }
+    
+    /**
+     * Get where segment.
+     *
+     * @param insertStatement insert statement
+     * @return where segment
+     */
+    public static Optional<WhereSegment> getWhereSegment(final InsertStatement insertStatement) {
+        if (insertStatement instanceof OracleInsertStatement) {
+            return ((OracleInsertStatement) insertStatement).getWhere();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Set where segment.
+     * 
+     * @param insertStatement insert statement
+     * @param whereSegment where segment
+     */
+    public static void setWhereSegment(final InsertStatement insertStatement, final WhereSegment whereSegment) {
+        if (insertStatement instanceof OracleInsertStatement) {
+            ((OracleInsertStatement) insertStatement).setWhere(whereSegment);
         }
     }
 }
