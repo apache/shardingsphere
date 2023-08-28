@@ -91,12 +91,16 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
         for (Entry<String, StorageUnit> entry : contextManager.getStorageUnits(databaseName).entrySet()) {
             DataSource dataSource = entry.getValue().getDataSource();
-            dataSourceMap.put(entry.getKey(), dataSource);
-            physicalDataSourceMap.put(entry.getKey(), dataSource);
+            String cacheKey = getKey(databaseName, entry.getKey());
+            dataSourceMap.put(cacheKey, dataSource);
+            physicalDataSourceMap.put(cacheKey, dataSource);
         }
-        trafficDataSourceMap.putAll(getTrafficDataSourceMap(databaseName, contextManager));
-        dataSourceMap.putAll(trafficDataSourceMap);
-        connectionTransaction = createConnectionTransaction(databaseName, contextManager);
+        for (Entry<String, DataSource> entry : getTrafficDataSourceMap(databaseName, contextManager).entrySet()) {
+            String cacheKey = getKey(databaseName, entry.getKey());
+            dataSourceMap.put(cacheKey, entry.getValue());
+            trafficDataSourceMap.put(cacheKey, entry.getValue());
+        }
+        connectionTransaction = createConnectionTransaction(contextManager);
         connectionContext = new ConnectionContext(cachedConnections::keySet);
         connectionContext.setCurrentDatabase(databaseName);
         this.contextManager = contextManager;
@@ -144,7 +148,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceMetaData.getIp(), instanceMetaData.getPort(), schema, jdbcUrlSuffix);
     }
     
-    private ConnectionTransaction createConnectionTransaction(final String databaseName, final ContextManager contextManager) {
+    private ConnectionTransaction createConnectionTransaction(final ContextManager contextManager) {
         TransactionRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         return new ConnectionTransaction(rule);
     }
@@ -309,6 +313,10 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @return random physical data source name
      */
     public String getRandomPhysicalDataSourceName() {
+        return getRandomPhysicalDatabaseAndDataSourceName().split("\\.")[1];
+    }
+    
+    private String getRandomPhysicalDatabaseAndDataSourceName() {
         Collection<String> cachedPhysicalDataSourceNames = Sets.intersection(physicalDataSourceMap.keySet(), cachedConnections.keySet());
         Collection<String> datasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? physicalDataSourceMap.keySet() : cachedPhysicalDataSourceNames;
         return new ArrayList<>(datasourceNames).get(random.nextInt(datasourceNames.size()));
@@ -321,17 +329,18 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public Connection getRandomConnection() throws SQLException {
-        return getConnections(getRandomPhysicalDataSourceName(), 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        return getConnections(getRandomPhysicalDatabaseAndDataSourceName(), 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionOffset, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         String currentDatabaseName = connectionContext.getDatabaseName().orElse(databaseName);
-        DataSource dataSource = databaseName.equals(currentDatabaseName) ? dataSourceMap.get(dataSourceName) : contextManager.getStorageUnits(currentDatabaseName).get(dataSourceName).getDataSource();
+        String cacheKey = getKey(currentDatabaseName, dataSourceName);
+        DataSource dataSource = databaseName.equals(currentDatabaseName) ? dataSourceMap.get(cacheKey) : contextManager.getStorageUnits(currentDatabaseName).get(dataSourceName).getDataSource();
         Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (cachedConnections) {
-            connections = cachedConnections.get(currentDatabaseName.toLowerCase() + "." + dataSourceName);
+            connections = cachedConnections.get(cacheKey);
         }
         List<Connection> result;
         int maxConnectionSize = connectionOffset + connectionSize;
@@ -341,7 +350,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
             Collection<Connection> newConnections = createConnections(currentDatabaseName, dataSourceName, dataSource, maxConnectionSize, connectionMode);
             result = new ArrayList<>(newConnections).subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(currentDatabaseName.toLowerCase() + "." + dataSourceName, newConnections);
+                cachedConnections.putAll(cacheKey, newConnections);
             }
         } else {
             List<Connection> allConnections = new ArrayList<>(maxConnectionSize);
@@ -350,12 +359,16 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
             allConnections.addAll(newConnections);
             result = allConnections.subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(currentDatabaseName.toLowerCase() + "." + dataSourceName, newConnections);
+                cachedConnections.putAll(cacheKey, newConnections);
             }
         }
         return result;
     }
-    
+
+    private String getKey(final String databaseName, final String dataSourceName) {
+        return databaseName.toLowerCase() + "." + dataSourceName;
+    }
+
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     private List<Connection> createConnections(final String databaseName, final String dataSourceName, final DataSource dataSource, final int connectionSize,
                                                final ConnectionMode connectionMode) throws SQLException {
@@ -393,12 +406,12 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource,
                                         final TransactionConnectionContext transactionConnectionContext) throws SQLException {
         Optional<Connection> connectionInTransaction =
-                isRawJdbcDataSource(dataSourceName) ? connectionTransaction.getConnection(databaseName, dataSourceName, transactionConnectionContext) : Optional.empty();
+                isRawJdbcDataSource(databaseName, dataSourceName) ? connectionTransaction.getConnection(databaseName, dataSourceName, transactionConnectionContext) : Optional.empty();
         return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
     }
     
-    private boolean isRawJdbcDataSource(final String dataSourceName) {
-        return !trafficDataSourceMap.containsKey(dataSourceName);
+    private boolean isRawJdbcDataSource(final String databaseName, final String dataSourceName) {
+        return !trafficDataSourceMap.containsKey(getKey(databaseName, dataSourceName));
     }
     
     @Override
