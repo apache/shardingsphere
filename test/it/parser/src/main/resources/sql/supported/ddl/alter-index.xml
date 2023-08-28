@@ -54,4 +54,5 @@
     <sql-case id="alter_index_alter_column" value="ALTER INDEX t_order_idx ALTER COLUMN 3 SET STATISTICS 1000" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_index_with_schema" value="ALTER INDEX public.t_order_idx ALTER COLUMN 3 SET STATISTICS 1000" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_index_move_partition" value="ALTER INDEX tpcds.ds_customer_address_p1_index2 MOVE PARTITION CA_ADDRESS_SK_index2 TABLESPACE tablespace1;" db-types="openGauss" />
+    <sql-case id="alter_index_rename_partition02" value="ALTER INDEX tpcds.ds_customer_address_p1_index2 RENAME PARTITION CA_ADDRESS_SK_index1 TO CA_ADDRESS_SK_index4;" db-types="openGauss" />
 </sql-cases>

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 
 import java.util.Optional;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.MovePartitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.RenamePartitionSegment;
 
 /**
  * OpenGauss alter index statement.
@@ -34,6 +35,8 @@ public final class OpenGaussAlterIndexStatement extends AlterIndexStatement impl
     private IndexSegment renameIndex;
     
     private MovePartitionSegment movePartition;
+
+    private RenamePartitionSegment renamePartition;
     
     /**
      * Get rename index segment.
@@ -46,9 +49,19 @@ public final class OpenGaussAlterIndexStatement extends AlterIndexStatement impl
     
     /**
      * Get move partition segment.
+     *
      * @return move partition segment
      */
     public Optional<MovePartitionSegment> getMovePartition() {
         return Optional.ofNullable(movePartition);
+    }
+
+    /**
+     * Get rename partition segment.
+     *
+     * @return rename partition segment
+     */
+    public Optional<RenamePartitionSegment> getRenamePartition() {
+        return Optional.ofNullable(renamePartition);
     }
 }

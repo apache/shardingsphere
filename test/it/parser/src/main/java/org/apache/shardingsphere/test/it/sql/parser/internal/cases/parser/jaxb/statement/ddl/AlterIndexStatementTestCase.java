@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedIndex;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedMovePartition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedRenamePartition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
@@ -41,4 +42,7 @@ public final class AlterIndexStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "move-partition")
     private ExpectedMovePartition movePartition;
+
+    @XmlElement(name = "rename-partition")
+    private ExpectedRenamePartition renamePartition;
 }
