@@ -361,7 +361,7 @@ partitionCmd
 
 alterIndexDefinitionClause
     : renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace | alterTableCmds | indexPartitionCmd
-    | alterIndexMovePartition
+    | alterIndexMovePartition | alterIndexRenamePartition
     ;
 
 indexPartitionCmd
@@ -382,6 +382,10 @@ alterIndexSetTableSpace
 
 alterIndexMovePartition
     : MOVE PARTITION indexPartitionName TABLESPACE name
+    ;
+
+alterIndexRenamePartition
+    : RENAME PARTITION indexPartitionName TO indexPartitionName
     ;
 
 tableNamesClause

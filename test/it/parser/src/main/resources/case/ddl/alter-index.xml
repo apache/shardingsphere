@@ -154,4 +154,13 @@
             <tablespace name="tablespace1" start-index="95" stop-index="105" />
         </move-partition>
     </alter-index>
+    <alter-index sql-case-id="alter_index_rename_partition02">
+        <index name="ds_customer_address_p1_index2" start-index="12" stop-index="46" >
+            <owner name="tpcds" start-index="12" stop-index="16" />
+        </index>
+        <rename-partition start-index="48" stop-index="108">
+            <old-partition name="CA_ADDRESS_SK_index1" start-index="65" stop-index="84" />
+            <new-partition name="CA_ADDRESS_SK_index4" start-index="89" stop-index="108" />
+        </rename-partition>
+    </alter-index>
 </sql-parser-test-cases>
