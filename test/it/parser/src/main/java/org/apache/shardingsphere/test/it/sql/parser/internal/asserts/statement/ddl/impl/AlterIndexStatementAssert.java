@@ -118,7 +118,7 @@ public final class AlterIndexStatementAssert {
             TablespaceAssert.assertIs(assertContext, actual, expected);
         }
     }
-
+    
     private static void assertRenamePartition(final SQLCaseAssertContext assertContext, final AlterIndexStatement actual, final AlterIndexStatementTestCase expected) {
         if (actual instanceof OpenGaussAlterIndexStatement) {
             OpenGaussAlterIndexStatement ogActual = (OpenGaussAlterIndexStatement) actual;

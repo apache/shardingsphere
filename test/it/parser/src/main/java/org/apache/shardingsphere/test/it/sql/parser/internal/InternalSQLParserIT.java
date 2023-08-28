@@ -80,8 +80,7 @@ public abstract class InternalSQLParserIT {
                     result.add(Arguments.arguments(each.getSqlCaseId(), each.getSqlCaseType(), each.getDatabaseType()));
                 }
             }
-//            return result;
-            return result.stream().filter(e -> "alter_index_rename_partition02".equals(e.get()[0])).collect(Collectors.toList());
+            return result;
         }
         
         private boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParam) {
