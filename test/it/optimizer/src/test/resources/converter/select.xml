@@ -19,4 +19,5 @@
 <sql-node-converter-test-cases>
     <test-cases sql-case-id="select_with_database_name_and_schema_name_in_table" expected-sql="SELECT &quot;order_id&quot; FROM &quot;sharding_db&quot;.&quot;public&quot;.&quot;t_order&quot; WHERE &quot;user_id&quot; = ? AND &quot;order_id&quot; = ?" db-types="PostgreSQL,openGauss" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="select_with_database_name_and_schema_name_in_table" expected-sql="SELECT &quot;order_id&quot; FROM &quot;sharding_db&quot;.&quot;public&quot;.&quot;t_order&quot; WHERE &quot;user_id&quot; = 1 AND &quot;order_id&quot; = 1" db-types="PostgreSQL,openGauss" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_with_spatial_function" expected-sql="SELECT * FROM `t_order` WHERE `ST_DISTANCE_SPHERE`(`POINT`(113.358772, 23.1273723), `POINT`(`user_id`, `order_id`)) &lt;&gt; 0" db-types="MySQL" />
 </sql-node-converter-test-cases>
