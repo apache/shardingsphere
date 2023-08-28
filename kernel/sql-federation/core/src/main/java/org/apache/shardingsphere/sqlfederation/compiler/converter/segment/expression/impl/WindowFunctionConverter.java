@@ -30,7 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class WindowFunctionConverter extends FunctionConverter {
+public final class WindowFunctionConverter extends FunctionConverter {
 
     @Override
     public Optional<SqlNode> convert(final FunctionSegment segment) {
