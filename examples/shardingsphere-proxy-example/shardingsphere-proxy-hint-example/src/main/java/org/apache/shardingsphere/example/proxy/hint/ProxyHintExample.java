@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.example.proxy.hint;
 
-import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.proxy.hint.factory.YamlDataSourceFactory;
+import org.apache.shardingsphere.example.proxy.hint.service.OrderService;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -33,10 +32,10 @@ public final class ProxyHintExample {
     
     public static void main(final String[] args) throws SQLException, IOException {
         DataSource dataSource = getDataSource();
-        ExampleService exampleService = getExampleService(dataSource);
-        exampleService.initEnvironment();
+        OrderService orderService = new OrderService(dataSource);
+        orderService.initEnvironment();
         processWithHintValue(dataSource);
-        exampleService.cleanEnvironment();
+        orderService.cleanEnvironment();
     }
     
     private static DataSource getDataSource() throws IOException {
@@ -45,10 +44,6 @@ public final class ProxyHintExample {
     
     private static File getFile(final String configFile) {
         return new File(ProxyHintExample.class.getResource(configFile).getFile());
-    }
-    
-    private static ExampleService getExampleService(final DataSource dataSource) {
-        return new OrderServiceImpl(dataSource);
     }
     
     private static void processWithHintValue(final DataSource dataSource) throws SQLException {

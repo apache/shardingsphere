@@ -79,7 +79,7 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     @Override
     public ASTNode visitEncryptRuleDefinition(final EncryptRuleDefinitionContext ctx) {
         return new EncryptRuleSegment(getIdentifierValue(ctx.tableName()),
-                ctx.encryptColumnDefinition().stream().map(each -> (EncryptColumnSegment) visit(each)).collect(Collectors.toList()));
+                ctx.encryptTableRuleDefinition().encryptColumnDefinition().stream().map(each -> (EncryptColumnSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override

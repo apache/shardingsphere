@@ -49,7 +49,7 @@ public final class ShowMigrationListExecutor implements QueryableRALExecutor<Sho
     }
     
     @Override
-    public String getType() {
-        return ShowMigrationListStatement.class.getName();
+    public Class<ShowMigrationListStatement> getType() {
+        return ShowMigrationListStatement.class;
     }
 }

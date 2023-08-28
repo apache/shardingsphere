@@ -19,9 +19,11 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.constant.EncryptColumnDataType;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptColumnAlterException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
+import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptColumnToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -33,7 +35,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQL
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
@@ -104,13 +106,13 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     private Collection<SQLToken> getAddColumnTokens(final EncryptColumn encryptColumn,
                                                     final AddColumnDefinitionSegment addColumnDefinitionSegment, final ColumnDefinitionSegment columnDefinitionSegment) {
         Collection<SQLToken> result = new LinkedList<>();
-        result.add(new RemoveToken(columnDefinitionSegment.getStartIndex(), columnDefinitionSegment.getColumnName().getStopIndex()));
-        result.add(new EncryptAlterTableToken(columnDefinitionSegment.getColumnName().getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(),
-                encryptColumn.getCipher().getName(), null));
-        encryptColumn.getAssistedQuery().map(optional -> new EncryptAlterTableToken(
-                addColumnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(), optional.getName(), ", ADD COLUMN")).ifPresent(result::add);
-        encryptColumn.getLikeQuery().map(optional -> new EncryptAlterTableToken(
-                addColumnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getColumnName().getStopIndex(), optional.getName(), ", ADD COLUMN")).ifPresent(result::add);
+        result.add(new RemoveToken(columnDefinitionSegment.getStartIndex(), columnDefinitionSegment.getStopIndex()));
+        result.add(new EncryptColumnToken(columnDefinitionSegment.getStopIndex() + 1, columnDefinitionSegment.getStopIndex(),
+                encryptColumn.getCipher().getName(), EncryptColumnDataType.DEFAULT_DATA_TYPE));
+        encryptColumn.getAssistedQuery().map(optional -> new EncryptColumnToken(addColumnDefinitionSegment.getStopIndex() + 1,
+                addColumnDefinitionSegment.getStopIndex(), ", ADD COLUMN " + optional.getName(), EncryptColumnDataType.DEFAULT_DATA_TYPE)).ifPresent(result::add);
+        encryptColumn.getLikeQuery().map(optional -> new EncryptColumnToken(addColumnDefinitionSegment.getStopIndex() + 1,
+                addColumnDefinitionSegment.getStopIndex(), ", ADD COLUMN " + optional.getName(), EncryptColumnDataType.DEFAULT_DATA_TYPE)).ifPresent(result::add);
         return result;
     }
     
@@ -204,13 +206,15 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     
     private Collection<SQLToken> getColumnTokens(final EncryptColumn previousEncryptColumn, final EncryptColumn encryptColumn, final ChangeColumnDefinitionSegment segment) {
         Collection<SQLToken> result = new LinkedList<>();
-        result.add(new RemoveToken(segment.getColumnDefinition().getColumnName().getStartIndex(), segment.getColumnDefinition().getColumnName().getStopIndex()));
-        result.add(new EncryptAlterTableToken(segment.getColumnDefinition().getColumnName().getStopIndex() + 1, segment.getColumnDefinition().getColumnName().getStopIndex(),
-                encryptColumn.getCipher().getName(), null));
-        previousEncryptColumn.getAssistedQuery().map(optional -> new EncryptAlterTableToken(segment.getStopIndex() + 1, segment.getColumnDefinition().getColumnName().getStopIndex(),
-                encryptColumn.getAssistedQuery().map(AssistedQueryColumnItem::getName).orElse(""), ", CHANGE COLUMN " + optional.getName())).ifPresent(result::add);
-        previousEncryptColumn.getLikeQuery().map(optional -> new EncryptAlterTableToken(segment.getStopIndex() + 1, segment.getColumnDefinition().getColumnName().getStopIndex(),
-                encryptColumn.getLikeQuery().map(LikeQueryColumnItem::getName).orElse(""), ", CHANGE COLUMN " + optional.getName())).ifPresent(result::add);
+        result.add(new RemoveToken(segment.getColumnDefinition().getColumnName().getStartIndex(), segment.getColumnDefinition().getStopIndex()));
+        result.add(new EncryptColumnToken(segment.getColumnDefinition().getStopIndex() + 1, segment.getColumnDefinition().getStopIndex(),
+                encryptColumn.getCipher().getName(), EncryptColumnDataType.DEFAULT_DATA_TYPE));
+        previousEncryptColumn.getAssistedQuery().map(optional -> new EncryptColumnToken(segment.getStopIndex() + 1, segment.getStopIndex(),
+                ", CHANGE COLUMN " + optional.getName() + " " + encryptColumn.getAssistedQuery().map(AssistedQueryColumnItem::getName).orElse(""),
+                EncryptColumnDataType.DEFAULT_DATA_TYPE)).ifPresent(result::add);
+        previousEncryptColumn.getLikeQuery().map(optional -> new EncryptColumnToken(segment.getStopIndex() + 1, segment.getStopIndex(),
+                ", CHANGE COLUMN " + optional.getName() + " " + encryptColumn.getLikeQuery().map(LikeQueryColumnItem::getName).orElse(""),
+                EncryptColumnDataType.DEFAULT_DATA_TYPE)).ifPresent(result::add);
         return result;
     }
     

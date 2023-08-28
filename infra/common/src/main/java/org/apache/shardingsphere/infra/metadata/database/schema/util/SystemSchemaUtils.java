@@ -19,9 +19,11 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.system.SystemDatabase;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -52,7 +54,8 @@ public final class SystemSchemaUtils {
      * @return whether SQL statement contains system schema or not
      */
     public static boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames, final ShardingSphereDatabase database) {
-        if (database.isComplete() && !databaseType.getDefaultSchema().isPresent()) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        if (database.isComplete() && !dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
             return false;
         }
         SystemDatabase systemDatabase = new SystemDatabase(databaseType);
@@ -61,7 +64,7 @@ public final class SystemSchemaUtils {
                 return true;
             }
         }
-        return !databaseType.getDefaultSchema().isPresent() && systemDatabase.getSystemSchemas().contains(database.getName());
+        return !dialectDatabaseMetaData.getDefaultSchema().isPresent() && systemDatabase.getSystemSchemas().contains(database.getName());
     }
     
     /**

@@ -54,7 +54,7 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
         if (!segment.getUsing().isEmpty()) {
             return JoinConditionType.USING.symbol(SqlParserPos.ZERO);
         }
-        return null != segment.getCondition() ? JoinConditionType.ON.symbol(SqlParserPos.ZERO) : JoinConditionType.NONE.symbol(SqlParserPos.ZERO);
+        return null == segment.getCondition() ? JoinConditionType.NONE.symbol(SqlParserPos.ZERO) : JoinConditionType.ON.symbol(SqlParserPos.ZERO);
     }
     
     private Optional<SqlNode> convertJoinCondition(final JoinTableSegment segment) {

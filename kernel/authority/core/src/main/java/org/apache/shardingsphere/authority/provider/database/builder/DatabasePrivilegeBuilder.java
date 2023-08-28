@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProvider;
+import org.apache.shardingsphere.authority.provider.database.DatabasePermittedAuthorityRegistryProvider;
 import org.apache.shardingsphere.authority.provider.database.model.privilege.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -49,7 +49,7 @@ public final class DatabasePrivilegeBuilder {
      * @return privileges
      */
     public static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final Collection<ShardingSphereUser> users, final Properties props) {
-        String mappingProp = props.getProperty(DatabasePermittedPrivilegesProvider.PROP_USER_DATABASE_MAPPINGS, "");
+        String mappingProp = props.getProperty(DatabasePermittedAuthorityRegistryProvider.PROP_USER_DATABASE_MAPPINGS, "");
         checkDatabases(mappingProp);
         return buildPrivileges(users, mappingProp);
     }

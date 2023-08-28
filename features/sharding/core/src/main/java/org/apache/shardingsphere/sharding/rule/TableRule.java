@@ -24,7 +24,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtils;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -114,7 +114,7 @@ public final class TableRule {
         tableShardingStrategyConfig = tableRuleConfig.getTableShardingStrategy();
         auditStrategyConfig = tableRuleConfig.getAuditStrategy();
         KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
-        generateKeyColumn = null != keyGeneratorConfig && !Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? keyGeneratorConfig.getColumn() : defaultGenerateKeyColumn;
+        generateKeyColumn = null == keyGeneratorConfig || Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? defaultGenerateKeyColumn : keyGeneratorConfig.getColumn();
         keyGeneratorName = null == keyGeneratorConfig ? null : keyGeneratorConfig.getKeyGeneratorName();
         dataSourceDataNode = actualDataNodes.isEmpty() ? null : createDataSourceDataNode(actualDataNodes);
         tableDataNode = actualDataNodes.isEmpty() ? null : createTableDataNode(actualDataNodes);
@@ -132,7 +132,7 @@ public final class TableRule {
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
         KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
-        generateKeyColumn = null != keyGeneratorConfig && !Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? keyGeneratorConfig.getColumn() : defaultGenerateKeyColumn;
+        generateKeyColumn = null == keyGeneratorConfig || Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? defaultGenerateKeyColumn : keyGeneratorConfig.getColumn();
         keyGeneratorName = null == keyGeneratorConfig ? null : keyGeneratorConfig.getKeyGeneratorName();
         dataSourceDataNode = actualDataNodes.isEmpty() ? null : createDataSourceDataNode(actualDataNodes);
         tableDataNode = actualDataNodes.isEmpty() ? null : createTableDataNode(actualDataNodes);

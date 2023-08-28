@@ -68,8 +68,8 @@ class ShadowRuleTest {
     
     private Map<String, ShadowTableConfiguration> createTables() {
         Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        result.put("t_user", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), createShadowAlgorithmNames("t_user")));
-        result.put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-1"), createShadowAlgorithmNames("t_order")));
+        result.put("t_user", new ShadowTableConfiguration(Collections.singleton("shadow-data-source-0"), createShadowAlgorithmNames("t_user")));
+        result.put("t_order", new ShadowTableConfiguration(Collections.singleton("shadow-data-source-1"), createShadowAlgorithmNames("t_order")));
         return result;
     }
     

@@ -129,7 +129,6 @@
     <sql-case id="unsupported_select_case_for_opengauss_120" value="select nullif(+,-) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_121" value="select nullif(!,~) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_127" value="select row_to_json(row(interval '3' day)) from sys_dummy;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_128" value="select row_to_json(row(inet('10.183.187.233'))) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_129" value="select row_to_json(row(B'101')) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_130" value="select row_to_json(row('The Fat Rats'::tsvector)) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_132" value="select array_prepend(@,array[1,2]) as result;" db-types="openGauss" />

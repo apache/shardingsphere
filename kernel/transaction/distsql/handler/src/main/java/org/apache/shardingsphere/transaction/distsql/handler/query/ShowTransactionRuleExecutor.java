@@ -20,7 +20,7 @@ package org.apache.shardingsphere.transaction.distsql.handler.query;
 import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
+import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.queryable.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
@@ -46,7 +46,7 @@ public final class ShowTransactionRuleExecutor implements MetaDataRequiredQuerya
     }
     
     @Override
-    public String getType() {
-        return ShowTransactionRuleStatement.class.getName();
+    public Class<ShowTransactionRuleStatement> getType() {
+        return ShowTransactionRuleStatement.class;
     }
 }

@@ -56,8 +56,12 @@ alterOptRoleElem
     | identifier
     ;
 
+dropBehavior
+    : CASCADE | RESTRICT
+    ;
+
 dropUser
-    : DROP USER ifExists? roleList
+    : DROP USER ifExists? nameList dropBehavior?
     ;
 
 alterUser

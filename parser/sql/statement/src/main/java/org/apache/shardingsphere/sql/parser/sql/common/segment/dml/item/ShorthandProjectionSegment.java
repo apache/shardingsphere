@@ -26,6 +26,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvai
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -44,6 +46,13 @@ public final class ShorthandProjectionSegment implements ProjectionSegment, Owne
     
     private AliasSegment alias;
     
+    private Collection<ProjectionSegment> actualProjectionSegments = new LinkedList<>();
+    
+    @Override
+    public String getColumnLabel() {
+        return getAliasName().orElse("*");
+    }
+    
     @Override
     public Optional<OwnerSegment> getOwner() {
         return Optional.ofNullable(owner);
@@ -57,5 +66,14 @@ public final class ShorthandProjectionSegment implements ProjectionSegment, Owne
     @Override
     public Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
+    }
+    
+    /**
+     * Get alias segment.
+     * 
+     * @return alias segment
+     */
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
     }
 }

@@ -20,14 +20,14 @@ package org.apache.shardingsphere.data.pipeline.core.listener;
 import org.apache.shardingsphere.data.pipeline.core.listener.ShardingSphereStatisticsScheduleCollector.ShardingSphereDataCollectorRunnable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
 
@@ -82,8 +82,8 @@ class ShardingSphereDataCollectorTest {
         when(schema.containsTable("test_table")).thenReturn(true);
         when(table.getName()).thenReturn("test_table");
         Collection<ShardingSphereColumn> columns = new LinkedList<>();
-        columns.add(new ShardingSphereColumn("column1", Types.INTEGER, false, false, false, true, false));
-        columns.add(new ShardingSphereColumn("column2", Types.INTEGER, false, false, false, true, false));
+        columns.add(new ShardingSphereColumn("column1", Types.INTEGER, false, false, false, true, false, false));
+        columns.add(new ShardingSphereColumn("column2", Types.INTEGER, false, false, false, true, false, false));
         when(table.getColumnValues()).thenReturn(columns);
         return result;
     }

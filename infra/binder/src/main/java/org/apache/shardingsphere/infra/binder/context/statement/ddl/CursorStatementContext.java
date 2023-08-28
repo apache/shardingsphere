@@ -29,11 +29,9 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 
 import java.util.Collection;
@@ -51,6 +49,8 @@ public final class CursorStatementContext extends CommonSQLStatementContext impl
     
     private final Collection<ColumnSegment> columnSegments = new LinkedList<>();
     
+    private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
+    
     private final TablesContext tablesContext;
     
     private final SelectStatementContext selectStatementContext;
@@ -59,21 +59,16 @@ public final class CursorStatementContext extends CommonSQLStatementContext impl
                                   final OpenGaussCursorStatement sqlStatement, final String defaultDatabaseName) {
         super(sqlStatement);
         tablesContext = new TablesContext(getSimpleTableSegments(), getDatabaseType());
-        extractWhereSegments(whereSegments, sqlStatement.getSelect());
-        ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
         selectStatementContext = new SelectStatementContext(metaData, params, sqlStatement.getSelect(), defaultDatabaseName);
+        whereSegments.addAll(selectStatementContext.getWhereSegments());
+        columnSegments.addAll(selectStatementContext.getColumnSegments());
+        joinConditions.addAll(selectStatementContext.getJoinConditions());
     }
     
     private Collection<SimpleTableSegment> getSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
         tableExtractor.extractTablesFromSelect(getSqlStatement().getSelect());
         return tableExtractor.getRewriteTables();
-    }
-    
-    private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SelectStatement select) {
-        select.getWhere().ifPresent(whereSegments::add);
-        whereSegments.addAll(WhereExtractUtils.getSubqueryWhereSegments(select));
-        whereSegments.addAll(WhereExtractUtils.getJoinWhereSegments(select));
     }
     
     @Override
@@ -99,5 +94,10 @@ public final class CursorStatementContext extends CommonSQLStatementContext impl
     @Override
     public Collection<ColumnSegment> getColumnSegments() {
         return columnSegments;
+    }
+    
+    @Override
+    public Collection<BinaryOperationExpression> getJoinConditions() {
+        return joinConditions;
     }
 }

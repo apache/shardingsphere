@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -64,7 +63,7 @@ class ParseDistSQLExecutorTest {
     
     @BeforeEach
     void setUp() {
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(sqlParserRule)));
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(sqlParserRule)));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
     
@@ -78,7 +77,7 @@ class ParseDistSQLExecutorTest {
         handler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
         assertThat(new LinkedList<>(handler.getRowData().getData()).getFirst(), is("MySQLSelectStatement"));
-        assertThat(JsonParser.parseString(new LinkedList<>(handler.getRowData().getData()).getLast().toString()), is(JsonParser.parseString(new Gson().toJson(statement))));
+        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonUtils.toJsonString(statement)));
     }
     
     @Test
@@ -90,7 +89,7 @@ class ParseDistSQLExecutorTest {
         handler.execute();
         handler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).parse(sql, false);
-        assertThat(JsonParser.parseString(new LinkedList<>(handler.getRowData().getData()).getLast().toString()), is(JsonParser.parseString(new Gson().toJson(statement))));
+        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonUtils.toJsonString(statement)));
     }
     
     @Test

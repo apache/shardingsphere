@@ -51,7 +51,7 @@ public final class CountEncryptRuleExecutor implements RQLExecutor<CountEncryptR
     }
     
     @Override
-    public String getType() {
-        return CountEncryptRuleStatement.class.getName();
+    public Class<CountEncryptRuleStatement> getType() {
+        return CountEncryptRuleStatement.class;
     }
 }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -42,10 +42,10 @@ public final class DataSourceSegmentsConverter {
      * @param dataSourceSegments data source segments
      * @return data source properties map
      */
-    public static Map<String, DataSourceProperties> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> dataSourceSegments) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(dataSourceSegments.size(), 1F);
+    public static Map<String, DataSourcePoolProperties> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> dataSourceSegments) {
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(dataSourceSegments.size(), 1F);
         for (DataSourceSegment each : dataSourceSegments) {
-            result.put(each.getName(), new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", createProperties(databaseType, each)));
+            result.put(each.getName(), new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", createProperties(databaseType, each)));
         }
         return result;
     }

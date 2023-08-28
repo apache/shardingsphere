@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder
 import java.util.UUID;
 
 /**
- * JDBC instance definition builder.
+ * JDBC instance meta data builder.
  */
 public final class JDBCInstanceMetaDataBuilder implements InstanceMetaDataBuilder {
     

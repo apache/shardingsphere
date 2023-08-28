@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.version;
 import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -71,16 +71,15 @@ class ShardingSphereProxyVersionTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn("foo_db");
         when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        ShardingSphereResourceMetaData resourceMetaData = mockResourceMetaData(databaseProductName, databaseProductVersion);
+        ResourceMetaData resourceMetaData = mockResourceMetaData(databaseProductName, databaseProductVersion);
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         return result;
     }
     
-    private ShardingSphereResourceMetaData mockResourceMetaData(final String databaseProductName, final String databaseProductVersion) throws SQLException {
-        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        when(result.getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", TypedSPILoader.getService(DatabaseType.class, databaseProductName)));
+    private ResourceMetaData mockResourceMetaData(final String databaseProductName, final String databaseProductVersion) throws SQLException {
+        ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         DataSource dataSource = createDataSource(databaseProductName, databaseProductVersion);
-        when(result.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        when(result.getStorageUnitMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         return result;
     }
     

@@ -38,10 +38,10 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandsha
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.dialect.mysql.exception.AccessDeniedException;
-import org.apache.shardingsphere.dialect.mysql.exception.DatabaseAccessDeniedException;
-import org.apache.shardingsphere.dialect.mysql.exception.HandshakeException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.AccessDeniedException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.DatabaseAccessDeniedException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -113,7 +113,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         MySQLHandshakeResponse41Packet handshakeResponsePacket;
         try {
             handshakeResponsePacket = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
-        } catch (IndexOutOfBoundsException ex) {
+        } catch (final IndexOutOfBoundsException ex) {
             if (log.isWarnEnabled()) {
                 log.warn("Received bad handshake from client {}: \n{}", context.channel(), ByteBufUtil.prettyHexDump(payload.getByteBuf().resetReaderIndex()));
             }

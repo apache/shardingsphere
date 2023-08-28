@@ -19,7 +19,7 @@ package org.apache.shardingsphere.timeservice.core.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.timeservice.api.config.TimestampServiceRuleConfiguration;
 import org.apache.shardingsphere.timeservice.spi.TimestampService;
 
@@ -48,10 +48,5 @@ public final class TimestampServiceRule implements GlobalRule {
      */
     public Timestamp getTimestamp() {
         return timestampService.getTimestamp();
-    }
-    
-    @Override
-    public String getType() {
-        return TimestampServiceRule.class.getSimpleName();
     }
 }

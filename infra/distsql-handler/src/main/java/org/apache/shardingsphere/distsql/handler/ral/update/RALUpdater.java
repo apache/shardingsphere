@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.distsql.handler.ral.update;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -40,4 +40,7 @@ public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
      */
     default void executeUpdate(String databaseName, T sqlStatement) throws SQLException {
     }
+    
+    @Override
+    Class<T> getType();
 }

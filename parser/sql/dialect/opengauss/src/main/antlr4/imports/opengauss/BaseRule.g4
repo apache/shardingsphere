@@ -143,6 +143,7 @@ unreservedWord
     | BEFORE
     | BEGIN
     | BY
+    | BYTEA
     | BOX
     | CACHE
     | CALL
@@ -437,6 +438,8 @@ unreservedWord
     | YES
     | ZONE
     | JSON
+    | POSITION
+    | INET
     ;
 
 typeFuncNameKeyword
@@ -493,6 +496,10 @@ name
     : identifier
     ;
 
+modelName
+    : identifier
+    ;
+
 tableNames
     : LP_? tableName (COMMA_ tableName)* RP_?
     ;
@@ -531,6 +538,10 @@ orOperator
 
 comparisonOperator
     : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
+    ;
+
+inetOperator
+    : SIGNED_LEFT_SHIFT_ | SIGNED_LEFT_SHIFT_E_ | SIGNED_RIGHT_SHIFT_ | SIGNED_RIGHT_SHIFT_E_
     ;
 
 patternMatchingOperator
@@ -573,6 +584,7 @@ aExpr
     | qualOp aExpr
     | aExpr qualOp
     | aExpr comparisonOperator aExpr
+    | aExpr inetOperator aExpr
     | NOT aExpr
     | aExpr patternMatchingOperator aExpr ESCAPE aExpr
     | aExpr patternMatchingOperator aExpr
@@ -1072,6 +1084,7 @@ functionExprCommonSubexpr
     | XMLPI LP_ NAME identifier COMMA_ aExpr RP_
     | XMLROOT LP_ aExpr COMMA_ xmlRootVersion xmlRootStandalone? RP_
     | XMLSERIALIZE LP_ documentOrContent aExpr AS simpleTypeName RP_
+    | PREDICT BY modelName LP_ FEATURES name (COMMA_ name)* RP_
     ;
 
 typeName

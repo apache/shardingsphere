@@ -42,6 +42,11 @@ public final class SubqueryProjectionSegment implements ProjectionSegment, Alias
     private AliasSegment alias;
     
     @Override
+    public String getColumnLabel() {
+        return getAliasName().orElse(text);
+    }
+    
+    @Override
     public Optional<String> getAliasName() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
@@ -49,6 +54,15 @@ public final class SubqueryProjectionSegment implements ProjectionSegment, Alias
     @Override
     public Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
+    }
+    
+    /**
+     * Get alias segment.
+     * 
+     * @return alias segment
+     */
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
     }
     
     @Override

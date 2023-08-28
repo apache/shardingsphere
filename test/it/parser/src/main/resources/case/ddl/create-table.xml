@@ -2005,4 +2005,20 @@
             <primary-key-column name="order_id" start-index="163" stop-index="170" />
         </constraint-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_negative_data_type">
+        <table name="T" start-index="13" stop-index="13" literal-start-index="13" literal-stop-index="13" />
+        <column-definition type="NUMBER" start-index="15" stop-index="25">
+            <column name="COL1" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="28" stop-index="41">
+            <column name="COL2" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="44" stop-index="59">
+            <column name="COL3" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="62" stop-index="78">
+            <column name="COL4" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

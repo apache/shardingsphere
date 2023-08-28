@@ -24,9 +24,9 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.util.ProjectionUtils;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
@@ -37,7 +37,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"originalOwner", "originalName"})
+@EqualsAndHashCode(exclude = {"originalTable", "originalColumn"})
 @ToString
 public final class ColumnProjection implements Projection {
     
@@ -49,9 +49,9 @@ public final class ColumnProjection implements Projection {
     
     private final DatabaseType databaseType;
     
-    private IdentifierValue originalOwner;
+    private IdentifierValue originalTable;
     
-    private IdentifierValue originalName;
+    private IdentifierValue originalColumn;
     
     public ColumnProjection(final String owner, final String name, final String alias, final DatabaseType databaseType) {
         this(null == owner ? null : new IdentifierValue(owner, QuoteCharacter.NONE), new IdentifierValue(name, QuoteCharacter.NONE),
@@ -88,20 +88,23 @@ public final class ColumnProjection implements Projection {
     }
     
     /**
-     * Get original owner.
+     * Get original table.
      *
-     * @return original owner
+     * @return original table
      */
-    public IdentifierValue getOriginalOwner() {
-        return null == originalOwner ? owner : originalOwner;
+    public IdentifierValue getOriginalTable() {
+        if (null == originalTable) {
+            return null == owner ? new IdentifierValue("") : owner;
+        }
+        return originalTable;
     }
     
     /**
-     * Get original name.
+     * Get original column.
      * 
-     * @return original name
+     * @return original column
      */
-    public IdentifierValue getOriginalName() {
-        return null == originalName ? name : originalName;
+    public IdentifierValue getOriginalColumn() {
+        return null == originalColumn ? name : originalColumn;
     }
 }

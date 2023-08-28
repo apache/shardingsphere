@@ -48,7 +48,7 @@ ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https
 
 更多信息请参考：[https://shardingsphere.apache.org/document/current/cn/overview/](https://shardingsphere.apache.org/document/current/cn/overview/)
 
-### 参与贡献🚀🧑‍💻
+### 参与贡献🚀🧑💻
 
 <hr>
 

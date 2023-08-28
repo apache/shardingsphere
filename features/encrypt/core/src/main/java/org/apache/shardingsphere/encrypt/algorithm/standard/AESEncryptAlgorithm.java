@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.encrypt.algorithm.standard;
 
 import com.google.common.base.Strings;
+import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -40,6 +41,7 @@ import java.util.Properties;
 /**
  * AES encrypt algorithm.
  */
+@EqualsAndHashCode
 public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
     
     private static final String AES_KEY = "aes-key-value";

@@ -219,11 +219,11 @@ The text of each license is the standard Apache 2.0 license.
     aggdesigner-algorithm 6.0: Apache 2.0
     apiguardian-api 1.1.2: https://github.com/apiguardian-team/apiguardian, Apache 2.0
     audience-annotations 0.12.0: https://github.com/apache/yetus, Apache 2.0
-    avatica-core 1.22.0: https://calcite.apache.org/avatica, Apache 2.0
-    avatica-metrics 1.22.0: https://calcite.apache.org/avatica, Apache 2.0
+    avatica-core 1.23.0: https://calcite.apache.org/avatica, Apache 2.0
+    avatica-metrics 1.23.0: https://calcite.apache.org/avatica, Apache 2.0
     caffeine 2.9.3: https://github.com/ben-manes/caffeine, Apache 2.0
-    calcite-core 1.32.0: https://calcite.apache.org, Apache 2.0
-    calcite-linq4j 1.32.0: https://calcite.apache.org, Apache 2.0
+    calcite-core 1.35.0: https://calcite.apache.org, Apache 2.0
+    calcite-linq4j 1.35.0: https://calcite.apache.org, Apache 2.0
     commons-codec 1.15: https://github.com/apache/commons-codec, Apache 2.0
     commons-collections4 4.4: https://github.com/apache/commons-collections, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
@@ -308,11 +308,11 @@ Apache 2.0 licenses
 The following components are provided under the Apache License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    atomikos-util 5.0.9: https://www.atomikos.com, Apache 2.0
-    transactions 5.0.9: https://www.atomikos.com, Apache 2.0
-    transactions-api 5.0.9: https://www.atomikos.com, Apache 2.0
-    transactions-jdbc 5.0.9: https://www.atomikos.com, Apache 2.0
-    transactions-jta 5.0.9: https://www.atomikos.com, Apache 2.0
+    atomikos-util 6.0.0: https://www.atomikos.com, Apache 2.0
+    transactions 6.0.0: https://www.atomikos.com, Apache 2.0
+    transactions-api 6.0.0: https://www.atomikos.com, Apache 2.0
+    transactions-jdbc 6.0.0: https://www.atomikos.com, Apache 2.0
+    transactions-jta 6.0.0: https://www.atomikos.com, Apache 2.0
 
 ========================================================================
 BSD licenses
@@ -372,13 +372,3 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     jul-to-slf4j 1.7.36: https://www.slf4j.org, MIT
     slf4j-api 1.7.36: https://www.slf4j.org, MIT
     jnanoid 2.0.0: https://github.com/aventrix/jnanoid, MIT
-
-========================================================================
-UPL licenses
-========================================================================
-
-The following components are provided under the UPL License. See project link for details.
-The text of each license is also included at licenses/LICENSE-[project].txt.
-
-    graal-sdk 21.2.0: https://github.com/oracle/graal/tree/master/sdk, UPL 1.0
-    truffle-api 21.2.0: https://github.com/oracle/graal/tree/master/truffle, UPL 1.0

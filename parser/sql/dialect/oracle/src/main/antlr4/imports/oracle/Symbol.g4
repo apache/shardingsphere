@@ -59,3 +59,4 @@ AT_:                 '@';
 SEMI_:               ';';
 DOLLAR_:             '$';
 ASSIGNMENT_OPERATOR_:':=';
+ARROW_:              '=>';

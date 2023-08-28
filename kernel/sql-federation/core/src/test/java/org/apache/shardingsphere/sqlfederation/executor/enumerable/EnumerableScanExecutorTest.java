@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.junit.jupiter.api.Test;

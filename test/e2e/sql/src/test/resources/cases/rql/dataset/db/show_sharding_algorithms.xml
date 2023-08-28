@@ -22,6 +22,4 @@
         <column name="props" />
     </metadata>
     <row values="it_standard_fixture| IT.STANDARD.FIXTURE| " />
-    <row values="db_inline_order_id| INLINE| algorithm-expression=ds_${order_id_sharding % 2}" />
-    <row values="db_inline_item_id| INLINE| algorithm-expression=ds_${db_inline_item_id % 2}" />
 </dataset>

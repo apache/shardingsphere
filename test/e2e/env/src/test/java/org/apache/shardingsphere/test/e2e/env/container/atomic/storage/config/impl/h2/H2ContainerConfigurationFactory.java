@@ -19,7 +19,8 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.i
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.h2.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
@@ -55,8 +56,9 @@ public final class H2ContainerConfigurationFactory {
      */
     public static StorageContainerConfiguration newInstance(final String scenario) {
         Map<String, String> mountedResources = new HashMap<>(2, 1F);
-        mountedResources.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, new H2DatabaseType()) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
-        mountedResources.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, new H2DatabaseType()) + "/01-expected-init.sql",
+        mountedResources.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, TypedSPILoader.getService(DatabaseType.class, "H2")) + "/01-actual-init.sql",
+                "/docker-entrypoint-initdb.d/01-actual-init.sql");
+        mountedResources.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, TypedSPILoader.getService(DatabaseType.class, "H2")) + "/01-expected-init.sql",
                 "/docker-entrypoint-initdb.d/01-expected-init.sql");
         return new StorageContainerConfiguration(scenario, "", Collections.emptyMap(), mountedResources, DatabaseEnvironmentManager.getDatabaseNames(scenario),
                 DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario));

@@ -44,6 +44,7 @@
     <alter-user sql-case-id="alter_user_expire_with_options" />
     <alter-user sql-case-id="alter_user_grant_proxy" />
     <alter-user sql-case-id="alter_user_grant_proxy_with_option" />
+    <alter-user sql-case-id="alter_user_default_role" />
     <alter-user sql-case-id="alter_user_revoke_proxy" />
     <alter-user sql-case-id="alter_user_proxys" />
     <alter-user sql-case-id="alter_user_with_password_postgresql" />

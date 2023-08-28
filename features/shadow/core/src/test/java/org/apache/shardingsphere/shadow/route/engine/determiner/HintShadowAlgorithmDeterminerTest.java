@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -48,7 +48,7 @@ class HintShadowAlgorithmDeterminerTest {
     private ShadowRuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setDataSources(createDataSources());
-        result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), Collections.singleton("sql-hint-algorithm"))));
+        result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singleton("shadow-data-source-0"), Collections.singleton("sql-hint-algorithm"))));
         result.setShadowAlgorithms(Collections.singletonMap("sql-hint-algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties())));
         return result;
     }

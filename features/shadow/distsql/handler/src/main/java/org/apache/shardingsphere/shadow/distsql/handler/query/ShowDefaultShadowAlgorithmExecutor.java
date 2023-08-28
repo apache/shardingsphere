@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
+import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -50,7 +50,7 @@ public final class ShowDefaultShadowAlgorithmExecutor implements RQLExecutor<Sho
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) rule.get().getConfiguration();
         String defaultAlgorithm = config.getDefaultShadowAlgorithmName();
         Iterator<Entry<String, AlgorithmConfiguration>> data = config.getShadowAlgorithms().entrySet().stream().filter(each -> each.getKey().equals(defaultAlgorithm))
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> currentValue)).entrySet().iterator();
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue)).entrySet().iterator();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         while (data.hasNext()) {
             Entry<String, AlgorithmConfiguration> entry = data.next();
@@ -69,7 +69,7 @@ public final class ShowDefaultShadowAlgorithmExecutor implements RQLExecutor<Sho
     }
     
     @Override
-    public String getType() {
-        return ShowDefaultShadowAlgorithmStatement.class.getName();
+    public Class<ShowDefaultShadowAlgorithmStatement> getType() {
+        return ShowDefaultShadowAlgorithmStatement.class;
     }
 }
