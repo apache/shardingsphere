@@ -17,6 +17,8 @@
   -->
 
 <sql-cases>
+    <sql-case id="alter_table_add_constraint_foreign_key_references_enable_novalidate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) ENABLE NOVALIDATE" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_foreign_key_references_enable_validate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) ENABLE VALIDATE" db-types="Oracle" />
     <sql-case id="alter_table_modify_lob_shrink_space" value="ALTER TABLE employees MODIFY LOB (perf_review) (SHRINK SPACE)" db-types="Oracle" />
     <sql-case id="alter_table_set_unused" value="ALTER TABLE hr.admin_emp SET UNUSED (hiredate, mgr)" db-types="Oracle" />
     <sql-case id="alter_table_modify_lob_cache" value="ALTER TABLE employees MODIFY LOB (resume) (CACHE)" db-types="Oracle" />
@@ -50,6 +52,7 @@
     <sql-case id="alter_table_modify_unsigned_zerofill_not_null" value="alter table t1 modify c1 real unsigned zerofill not null" db-types="MySQL" />
     <sql-case id="alter_table_change_unsigned_zerofill_not_null" value="alter table t1 change c1 c2 real unsigned zerofill not null" db-types="MySQL" />
     <sql-case id="alter_table_add_partition" value="alter table t1 add partition partitions 10" db-types="MySQL" />
+    <sql-case id="alter_table_add_partition_nested_table_col_properties" value="ALTER TABLE print_media_part ADD PARTITION p4 VALUES LESS THAN (400) LOB(ad_photo, ad_composite) STORE AS (TABLESPACE omf_ts1) LOB(ad_sourcetext, ad_finaltext) STORE AS (TABLESPACE omf_ts1) NESTED TABLE ad_textdocs_ntab STORE AS nt_p3" db-types="Oracle" />
     <sql-case id="alter_table_partition" value="alter table t1 partition by key(c1) partitions 5" db-types="MySQL" />
     <sql-case id="alter_table_if_exists_only" value="ALTER TABLE IF EXISTS ONLY t_log ADD name varchar" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_table_with_force" value="ALTER TABLE t_order FORCE" db-types="MySQL" />
