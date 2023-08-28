@@ -35,7 +35,7 @@ public final class OpenGaussAlterIndexStatement extends AlterIndexStatement impl
     private IndexSegment renameIndex;
     
     private MovePartitionSegment movePartition;
-
+    
     private RenamePartitionSegment renamePartition;
     
     /**
@@ -55,7 +55,7 @@ public final class OpenGaussAlterIndexStatement extends AlterIndexStatement impl
     public Optional<MovePartitionSegment> getMovePartition() {
         return Optional.ofNullable(movePartition);
     }
-
+    
     /**
      * Get rename partition segment.
      *

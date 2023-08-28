@@ -1465,11 +1465,13 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         TablespaceSegment tablespace = new TablespaceSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), (IdentifierValue) visit(ctx.name().identifier()));
         return new MovePartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), partitionName, tablespace);
     }
-
+    
     @Override
     public ASTNode visitAlterIndexRenamePartition(final OpenGaussStatementParser.AlterIndexRenamePartitionContext ctx) {
-        PartitionNameSegment oldPartition = new PartitionNameSegment(ctx.indexPartitionName(0).getStart().getStartIndex(), ctx.indexPartitionName(0).getStop().getStopIndex(), (IdentifierValue) visit(ctx.indexPartitionName(0).identifier()));
-        PartitionNameSegment newPartition = new PartitionNameSegment(ctx.indexPartitionName(1).getStart().getStartIndex(), ctx.indexPartitionName(1).getStop().getStopIndex(), (IdentifierValue) visit(ctx.indexPartitionName(1).identifier()));
+        PartitionNameSegment oldPartition = new PartitionNameSegment(ctx.indexPartitionName(0).getStart().getStartIndex(),
+                ctx.indexPartitionName(0).getStop().getStopIndex(), (IdentifierValue) visit(ctx.indexPartitionName(0).identifier()));
+        PartitionNameSegment newPartition = new PartitionNameSegment(ctx.indexPartitionName(1).getStart().getStartIndex(),
+                ctx.indexPartitionName(1).getStop().getStopIndex(), (IdentifierValue) visit(ctx.indexPartitionName(1).identifier()));
         return new RenamePartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), oldPartition, newPartition);
     }
 }
