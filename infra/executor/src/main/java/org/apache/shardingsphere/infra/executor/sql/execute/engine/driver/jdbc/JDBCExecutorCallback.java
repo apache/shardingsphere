@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorEx
 import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -46,7 +46,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     private final DatabaseType protocolType;
     
-    private final ShardingSphereResourceMetaData resourceMetaData;
+    private final ResourceMetaData resourceMetaData;
     
     private final SQLStatement sqlStatement;
     
@@ -75,11 +75,11 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     private T execute(final JDBCExecutionUnit jdbcExecutionUnit, final boolean isTrunkThread) throws SQLException {
         SQLExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         DatabaseType storageType = resourceMetaData.getStorageType(jdbcExecutionUnit.getExecutionUnit().getDataSourceName());
-        DataSourceMetaData dataSourceMetaData = resourceMetaData.getDataSourceMetaData(jdbcExecutionUnit.getExecutionUnit().getDataSourceName());
+        ConnectionProperties connectionProps = resourceMetaData.getConnectionProperties(jdbcExecutionUnit.getExecutionUnit().getDataSourceName());
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
             SQLUnit sqlUnit = jdbcExecutionUnit.getExecutionUnit().getSqlUnit();
-            sqlExecutionHook.start(jdbcExecutionUnit.getExecutionUnit().getDataSourceName(), sqlUnit.getSql(), sqlUnit.getParameters(), dataSourceMetaData, isTrunkThread);
+            sqlExecutionHook.start(jdbcExecutionUnit.getExecutionUnit().getDataSourceName(), sqlUnit.getSql(), sqlUnit.getParameters(), connectionProps, isTrunkThread);
             T result = executeSQL(sqlUnit.getSql(), jdbcExecutionUnit.getStorageResource(), jdbcExecutionUnit.getConnectionMode(), storageType);
             sqlExecutionHook.finishSuccess();
             processEngine.completeSQLUnitExecution();

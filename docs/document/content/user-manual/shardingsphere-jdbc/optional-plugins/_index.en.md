@@ -50,6 +50,5 @@ All optional plugins are listed below in the form of `groupId:artifactId`.
   - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-consul`, Consul based persistence
 - XA transaction manager provider definition
   - `org.apache.shardingsphere:shardingsphere-transaction-xa-narayana`, XA distributed transaction manager based on Narayana
-  - `org.apache.shardingsphere:shardingsphere-transaction-xa-bitronix`, XA distributed transaction manager based on Bitronix
 - SQL translator
   - `org.apache.shardingsphere:shardingsphere-sql-translator-jooq-provider`, JooQ SQL translator

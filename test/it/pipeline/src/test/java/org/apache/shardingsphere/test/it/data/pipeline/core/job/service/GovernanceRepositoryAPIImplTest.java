@@ -22,9 +22,9 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.common.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyContentCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCountCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyContentCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -97,10 +97,10 @@ class GovernanceRepositoryAPIImplTest {
     @Test
     void assertPersistJobCheckResult() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
-        Map<String, DataConsistencyCheckResult> actual = new HashMap<>();
-        actual.put("test", new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(1, 1), new DataConsistencyContentCheckResult(true)));
+        Map<String, TableDataConsistencyCheckResult> actual = new HashMap<>();
+        actual.put("test", new TableDataConsistencyCheckResult(new TableDataConsistencyCountCheckResult(1, 1), new TableDataConsistencyContentCheckResult(true)));
         governanceRepositoryAPI.persistCheckJobResult(jobItemContext.getJobId(), "j02123", actual);
-        Map<String, DataConsistencyCheckResult> checkResult = governanceRepositoryAPI.getCheckJobResult(jobItemContext.getJobId(), "j02123");
+        Map<String, TableDataConsistencyCheckResult> checkResult = governanceRepositoryAPI.getCheckJobResult(jobItemContext.getJobId(), "j02123");
         assertThat(checkResult.size(), is(1));
         assertTrue(checkResult.get("test").getContentCheckResult().isMatched());
     }

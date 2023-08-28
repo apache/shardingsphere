@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
@@ -51,7 +51,7 @@ public final class FrontDatabaseProtocolTypeFactory {
             return TypedSPILoader.getService(DatabaseType.class, DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
         }
         Optional<ShardingSphereDatabase> database = metaDataContexts.getMetaData().getDatabases().values().stream().filter(ShardingSphereDatabase::containsDataSource).findFirst();
-        return database.isPresent() ? database.get().getResourceMetaData().getStorageTypes().values().iterator().next()
+        return database.isPresent() ? database.get().getResourceMetaData().getStorageUnitMetaData().getStorageUnits().values().iterator().next().getStorageType()
                 : TypedSPILoader.getService(DatabaseType.class, DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
     }
     

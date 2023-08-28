@@ -23,20 +23,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
-import org.apache.shardingsphere.data.pipeline.cdc.client.event.StreamDataEvent;
-import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
-import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtils;
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.ResponseFuture;
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.ServerErrorResult;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataResult;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -46,34 +46,64 @@ import java.util.function.Consumer;
 @Slf4j
 public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
-    private final StartCDCClientParameter parameter;
-    
     private final Consumer<List<Record>> consumer;
     
+    private final ExceptionHandler exceptionHandler;
+    
     @Override
-    public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
-        if (evt instanceof StreamDataEvent) {
-            StreamDataRequestBody streamDataRequestBody = StreamDataRequestBody.newBuilder().setDatabase(parameter.getDatabase()).setFull(parameter.isFull())
-                    .addAllSourceSchemaTable(parameter.getSchemaTables()).build();
-            CDCRequest request = CDCRequest.newBuilder().setRequestId(RequestIdUtils.generateRequestId()).setType(Type.STREAM_DATA).setStreamDataRequestBody(streamDataRequestBody).build();
-            ctx.writeAndFlush(request);
-        }
+    public void channelRegistered(final ChannelHandlerContext ctx) {
+        ClientConnectionContext context = new ClientConnectionContext();
+        context.getStatus().set(ClientConnectionStatus.NOT_LOGGED_IN);
+        ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).setIfAbsent(context);
+    }
+    
+    @Override
+    public void channelInactive(final ChannelHandlerContext ctx) {
+        ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).setIfAbsent(null);
+        log.info("Channel inactive, stop CDC client");
+        ctx.fireChannelInactive();
     }
     
     @Override
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         CDCResponse response = (CDCResponse) msg;
-        if (response.getStatus() != Status.SUCCEED) {
-            log.error("received error response {}", msg);
-        }
         ClientConnectionContext connectionContext = ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).get();
+        Optional<ResponseFuture> responseFuture = Optional.ofNullable(connectionContext.getResponseFutureMap().get(response.getRequestId()));
+        if (response.getStatus() != Status.SUCCEED) {
+            Type requestType = Type.UNKNOWN;
+            if (responseFuture.isPresent()) {
+                final ResponseFuture future = responseFuture.get();
+                future.setErrorCode(response.getErrorCode());
+                future.setErrorMessage(response.getErrorMessage());
+                future.countDown();
+                requestType = future.getRequestType();
+            }
+            exceptionHandler.handleServerException(new ServerErrorResult(response.getErrorCode(), response.getErrorMessage(), requestType));
+            responseFuture.ifPresent(future -> {
+                future.setErrorCode(response.getErrorCode());
+                future.setErrorMessage(response.getErrorMessage());
+                future.countDown();
+            });
+            return;
+        }
+        if (response.hasServerGreetingResult()) {
+            ServerGreetingResult serverGreetingResult = response.getServerGreetingResult();
+            log.info("Received server greeting result, serverVersion={}, protocolVersion={}", serverGreetingResult.getServerVersion(), serverGreetingResult.getProtocolVersion());
+            return;
+        }
+        if (ClientConnectionStatus.NOT_LOGGED_IN == connectionContext.getStatus().get() && responseFuture.isPresent() && Type.LOGIN == responseFuture.get().getRequestType()) {
+            responseFuture.ifPresent(ResponseFuture::countDown);
+            connectionContext.getStatus().set(ClientConnectionStatus.LOGGED_IN);
+            return;
+        }
         if (response.hasStreamDataResult()) {
             StreamDataResult streamDataResult = response.getStreamDataResult();
-            connectionContext.setStreamingId(streamDataResult.getStreamingId());
-            connectionContext.setStatus(ClientConnectionStatus.STREAMING);
+            responseFuture.ifPresent(future -> future.setResult(response.getStreamDataResult().getStreamingId()));
+            connectionContext.getStreamingIds().add(streamDataResult.getStreamingId());
         } else if (response.hasDataRecordResult()) {
             processDataRecords(ctx, response.getDataRecordResult());
         }
+        responseFuture.ifPresent(ResponseFuture::countDown);
     }
     
     private void processDataRecords(final ChannelHandlerContext ctx, final DataRecordResult result) {
@@ -82,14 +112,7 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     }
     
     @Override
-    public void channelInactive(final ChannelHandlerContext ctx) {
-        log.info("Request handler channel inactive");
-        ctx.fireChannelInactive();
-    }
-    
-    @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
-        log.error("handler data streaming error", cause);
-        // TODO passing error messages to the caller
+        exceptionHandler.handleSocketException(cause);
     }
 }

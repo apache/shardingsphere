@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.orderby.en
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;

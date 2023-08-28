@@ -35,8 +35,8 @@ class RoundRobinTrafficLoadBalanceAlgorithmTest {
         InstanceMetaData instance2 = new ProxyInstanceMetaData("127.0.0.1@3308", "127.0.0.1@3308", "foo_version");
         List<InstanceMetaData> instances = Arrays.asList(instance1, instance2);
         RoundRobinTrafficLoadBalanceAlgorithm roundRobinAlgorithm = new RoundRobinTrafficLoadBalanceAlgorithm();
-        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instances), is(instance1));
-        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instances), is(instance2));
-        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instances), is(instance1));
+        assertThat(roundRobinAlgorithm.getInstanceMetaData("simple_traffic", instances), is(instance1));
+        assertThat(roundRobinAlgorithm.getInstanceMetaData("simple_traffic", instances), is(instance2));
+        assertThat(roundRobinAlgorithm.getInstanceMetaData("simple_traffic", instances), is(instance1));
     }
 }

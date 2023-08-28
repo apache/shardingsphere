@@ -20,5 +20,5 @@
         <column name="database" />
         <column name="count" />
     </metadata>
-    <row values="sharding_and_encrypt| 6" />
+    <row values="sharding_and_encrypt| 3" />
 </dataset>

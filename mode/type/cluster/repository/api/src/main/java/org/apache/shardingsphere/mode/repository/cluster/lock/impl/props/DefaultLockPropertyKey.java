@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.repository.cluster.lock.impl.props;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
+import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
 /**
  * Default lock property key.

@@ -55,8 +55,8 @@ class EncryptTokenGenerateBuilderTest {
     void assertGetSQLTokenGenerators() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getAllTables().isEmpty()).thenReturn(false);
-        when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("table"));
-        when(selectStatementContext.getOrderByContext().getItems()).thenReturn(Collections.singletonList(mock(OrderByItem.class)));
+        when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("table"));
+        when(selectStatementContext.getOrderByContext().getItems()).thenReturn(Collections.singleton(mock(OrderByItem.class)));
         when(selectStatementContext.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(selectStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
         EncryptTokenGenerateBuilder encryptTokenGenerateBuilder = new EncryptTokenGenerateBuilder(encryptRule, selectStatementContext, Collections.emptyList(), DefaultDatabase.LOGIC_NAME);
@@ -85,7 +85,7 @@ class EncryptTokenGenerateBuilderTest {
     private Field findField(final Class<?> clazz, final String fieldName, final Class<?> fieldType) {
         Class<?> searchClass = clazz;
         while (null != searchClass && !Object.class.equals(searchClass)) {
-            for (final Field each : searchClass.getDeclaredFields()) {
+            for (Field each : searchClass.getDeclaredFields()) {
                 if (fieldName.equals(each.getName()) && fieldType.equals(each.getType())) {
                     return each;
                 }

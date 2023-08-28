@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Show compute node info handler.
+ * Show compute node info executor.
  */
 public final class ShowComputeNodeInfoExecutor implements InstanceContextRequiredQueryableRALExecutor<ShowComputeNodeInfoStatement> {
     
@@ -51,7 +51,7 @@ public final class ShowComputeNodeInfoExecutor implements InstanceContextRequire
     }
     
     @Override
-    public String getType() {
-        return ShowComputeNodeInfoStatement.class.getName();
+    public Class<ShowComputeNodeInfoStatement> getType() {
+        return ShowComputeNodeInfoStatement.class;
     }
 }

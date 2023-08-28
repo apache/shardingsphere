@@ -1396,3 +1396,11 @@ INOUT
 DUPLICATE
     : D U P L I C A T E
     ;
+
+PREDICT
+    : P R E D I C T
+    ;
+
+FEATURES
+    : F E A T U R E S
+    ;

@@ -38,12 +38,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.BetweenExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.BinaryOperationExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.CaseWhenExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ColumnConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.CollateExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ExistsSubqueryExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ExtractArgExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.FunctionConverter;
@@ -128,6 +130,8 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         }
         if (segment instanceof VariableSegment) {
             return new VariableConverter().convert((VariableSegment) segment);
+        if (segment instanceof CollateExpression) {
+            return new CollateExpressionConverter().convert((CollateExpression) segment);
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }

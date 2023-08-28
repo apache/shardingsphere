@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.encrypt.sm.algorithm;
 
+import lombok.EqualsAndHashCode;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.bouncycastle.crypto.digests.SM3Digest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
@@ -32,6 +33,7 @@ import java.util.Properties;
 /**
  * SM3 encrypt algorithm.
  */
+@EqualsAndHashCode
 public final class SM3EncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
     
     static {
@@ -58,7 +60,7 @@ public final class SM3EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return null == plainValue ? null : ByteUtils.toHexString(digest(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8), sm3Salt));
+        return null == plainValue ? null : Hex.encodeHexString(digest(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8), sm3Salt));
     }
     
     @Override

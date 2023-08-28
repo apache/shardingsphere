@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-expr-espresso</artifactId>
+            <artifactId>shardingsphere-infra-expr-purelist</artifactId>
             <version>${project.version}</version>
         </dependency>
         

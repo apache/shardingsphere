@@ -56,14 +56,14 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
 
 jobs:
-  global-env:
-    name: Import Global Env
+  global-environment:
+    name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
   agent-mysql:
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: E2E - Agent with MySQL
-    needs: global-env
-    if: ${{ needs.global-env.outputs.GLOBAL_IS_JOB_EXECUTABLE == 'true' }}
+    needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -97,25 +97,19 @@ jobs:
             plugin: zipkin
     steps:
       - uses: actions/checkout@v3
-      - name: Setup JDK 11 for Build
-        uses: actions/setup-java@v3
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: 11
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ needs.global-env.outputs.GLOBAL_REPOSITORY_NAME }}-maven-third-party-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Build Project
         run:
           ./mvnw -B clean install -DskipITs -DskipTests -Prelease
-      - name: Setup JDK 8 for Test
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '8'
       - name: Run E2E Test
         run:
           ./mvnw -B clean install -f test/e2e/agent/plugins/${{ matrix.feature }}/${{ matrix.plugin }}/pom.xml -Dspotless.apply.skip=true -Dit.env.adapter=${{ matrix.adapter }} -Dit.env.type=${{ matrix.plugin }} -Pit.env.${{ matrix.adapter }}.${{ matrix.plugin }}

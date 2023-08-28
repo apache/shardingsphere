@@ -203,7 +203,7 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
         String namespace = (String) column.get("typnspname");
         String typeName = (String) column.get("typname");
         Integer numdims = (Integer) column.get("attndims");
-        String schema = null != namespace ? namespace : "";
+        String schema = null == namespace ? "" : namespace;
         String name = checkSchemaInName(typeName, schema);
         if (name.startsWith("_")) {
             if (null == numdims || 0 == numdims) {

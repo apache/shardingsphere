@@ -19,16 +19,16 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit
 
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -71,9 +71,9 @@ class RegisterStorageUnitBackendHandlerTest {
     void setUp() throws ReflectiveOperationException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        when(database.getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
+        when(database.getRuleMetaData()).thenReturn(mock(RuleMetaData.class));
         handler = new RegisterStorageUnitBackendHandler(mock(RegisterStorageUnitStatement.class), connectionSession);
-        Plugins.getMemberAccessor().set(handler.getClass().getDeclaredField("validateHandler"), handler, mock(DataSourcePropertiesValidateHandler.class));
+        Plugins.getMemberAccessor().set(handler.getClass().getDeclaredField("validateHandler"), handler, mock(DataSourcePoolPropertiesValidateHandler.class));
     }
     
     @Test
@@ -97,7 +97,7 @@ class RegisterStorageUnitBackendHandlerTest {
     @Test
     void assertExecuteWithDuplicateStorageUnitNamesWithResourceMetaData() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getDataSourceMap("foo_db").keySet()).thenReturn(Collections.singleton("ds_0"));
+        when(contextManager.getStorageUnits("foo_db").keySet()).thenReturn(Collections.singleton("ds_0"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThrows(DuplicateStorageUnitException.class, () -> handler.execute("foo_db", createRegisterStorageUnitStatement()));
     }

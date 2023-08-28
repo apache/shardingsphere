@@ -22,8 +22,8 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUn
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -61,8 +61,8 @@ class ShowStorageUnitExecutorTest {
     
     @BeforeEach
     void before() {
-        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", createDataSources());
-        ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(Collections.singleton(createShardingRule()));
+        ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", createDataSources());
+        RuleMetaData metaData = new RuleMetaData(Collections.singleton(createShardingRule()));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData()).thenReturn(metaData);
     }
@@ -129,7 +129,7 @@ class ShowStorageUnitExecutorTest {
             assertThat(data.getCell(9), is("100"));
             assertThat(data.getCell(10), is("10"));
             assertThat(data.getCell(11), is(""));
-            assertThat(data.getCell(12), is("{\"openedConnections\":[]}"));
+            assertThat(data.getCell(12), is("{\"openedConnections\":[],\"closed\":false}"));
             index++;
         }
     }
@@ -153,7 +153,7 @@ class ShowStorageUnitExecutorTest {
         assertThat(data.getCell(9), is("100"));
         assertThat(data.getCell(10), is("10"));
         assertThat(data.getCell(11), is(""));
-        assertThat(data.getCell(12), is("{\"openedConnections\":[]}"));
+        assertThat(data.getCell(12), is("{\"openedConnections\":[],\"closed\":false}"));
     }
     
     @Test

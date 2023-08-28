@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateViewSt
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.exception.metadata.EngagedViewException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedCreateViewException;
@@ -82,7 +82,7 @@ class ShardingCreateViewStatementValidatorTest {
     
     @Test
     void assertPreValidateCreateView() {
-        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
         SQLFederationRule sqlFederationRule = mock(SQLFederationRule.class, RETURNS_DEEP_STUBS);
         when(globalRuleMetaData.getSingleRule(SQLFederationRule.class)).thenReturn(sqlFederationRule);
         when(sqlFederationRule.getConfiguration().isSqlFederationEnabled()).thenReturn(false);
@@ -95,7 +95,7 @@ class ShardingCreateViewStatementValidatorTest {
         when(shardingRule.isShardingTable(any())).thenReturn(true);
         when(shardingRule.isAllBindingTables(any())).thenReturn(false);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
-        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
         SQLFederationRule sqlFederationRule = mock(SQLFederationRule.class, RETURNS_DEEP_STUBS);
         when(globalRuleMetaData.getSingleRule(SQLFederationRule.class)).thenReturn(sqlFederationRule);
         when(sqlFederationRule.getConfiguration().isSqlFederationEnabled()).thenReturn(false);
@@ -108,7 +108,7 @@ class ShardingCreateViewStatementValidatorTest {
     void assertPostValidateCreateView() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        assertDoesNotThrow(() -> new ShardingCreateViewStatementValidator(mock(ShardingSphereRuleMetaData.class)).postValidate(
+        assertDoesNotThrow(() -> new ShardingCreateViewStatementValidator(mock(RuleMetaData.class)).postValidate(
                 shardingRule, createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
     }
     
@@ -118,7 +118,7 @@ class ShardingCreateViewStatementValidatorTest {
         when(projectionsSegment.isDistinctRow()).thenReturn(true);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         assertThrows(UnsupportedCreateViewException.class,
-                () -> new ShardingCreateViewStatementValidator(mock(ShardingSphereRuleMetaData.class)).postValidate(shardingRule,
+                () -> new ShardingCreateViewStatementValidator(mock(RuleMetaData.class)).postValidate(shardingRule,
                         createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
     }
 }

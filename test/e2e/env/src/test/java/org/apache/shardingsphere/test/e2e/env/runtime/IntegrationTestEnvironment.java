@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
+import java.util.TimeZone;
 
 /**
  * Integration test environment.
@@ -47,6 +48,7 @@ public final class IntegrationTestEnvironment {
         Properties props = loadProperties();
         runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
         runAdditionalTestCases = Boolean.parseBoolean(props.getProperty("it.run.additional.cases"));
+        TimeZone.setDefault(TimeZone.getTimeZone(props.getProperty("it.timezone", "UTC")));
         scenarios = getScenarios(props);
         clusterEnvironment = new ClusterEnvironment(props);
     }

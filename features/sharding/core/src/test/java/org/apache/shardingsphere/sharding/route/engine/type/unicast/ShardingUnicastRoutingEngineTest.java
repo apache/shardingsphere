@@ -90,7 +90,7 @@ class ShardingUnicastRoutingEngineTest {
     
     @Test
     void assertRoutingForBroadcastTableWithPreferredDataSource() {
-        ConnectionContext connectionContext = new ConnectionContext(() -> Collections.singletonList("ds_1"));
+        ConnectionContext connectionContext = new ConnectionContext(() -> Collections.singleton("ds_1"));
         RouteContext actual = new ShardingUnicastRoutingEngine(mock(SelectStatementContext.class), Collections.singleton("t_config"), connectionContext).route(shardingRule);
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(actual.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_1"));

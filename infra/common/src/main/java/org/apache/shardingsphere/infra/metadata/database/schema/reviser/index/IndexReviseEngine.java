@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.reviser.index;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
-import org.apache.shardingsphere.infra.database.core.dict.model.IndexMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;

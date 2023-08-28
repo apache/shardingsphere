@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValuesContext;
@@ -115,19 +116,22 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.IntervalExpressionProjection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MultisetExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlQueryAndExistsFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlSerializeFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlTableFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.DatetimeProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.IntervalExpressionProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
@@ -147,11 +151,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMul
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.XmlTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -163,6 +170,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleUpdateStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -255,7 +263,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitUpdateSetValueClause(final UpdateSetValueClauseContext ctx) {
-        ColumnSegment column = new ColumnSegment(ctx.alias().start.getStartIndex(), ctx.alias().stop.getStopIndex(), (IdentifierValue) visit(ctx.alias().identifier()));
+        ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         List<ColumnSegment> columnSegments = new LinkedList<>();
         columnSegments.add(column);
         if (null != ctx.expr()) {
@@ -288,7 +296,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.selectSubquery()) {
             OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
-            result.setSelectSubquery(subquerySegment);
+            result.setInsertSelect(subquerySegment);
         }
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
@@ -308,7 +316,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 : (InsertMultiTableElementSegment) visit(ctx.conditionalInsertClause()));
         OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
-        result.setSelectSubquery(subquerySegment);
+        result.setInsertSelect(subquerySegment);
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -410,8 +418,20 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitTableCollectionExpr(final TableCollectionExprContext ctx) {
-        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.collectionExpr().selectSubquery());
-        return new SubquerySegment(ctx.collectionExpr().selectSubquery().start.getStartIndex(), ctx.collectionExpr().selectSubquery().stop.getStopIndex(), subquery);
+        if (null != ctx.collectionExpr().selectSubquery()) {
+            OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.collectionExpr().selectSubquery());
+            return new SubquerySegment(ctx.collectionExpr().selectSubquery().start.getStartIndex(), ctx.collectionExpr().selectSubquery().stop.getStopIndex(), subquery);
+        }
+        if (null != ctx.collectionExpr().functionCall()) {
+            return visit(ctx.collectionExpr().functionCall());
+        }
+        if (null != ctx.collectionExpr().columnName()) {
+            return visit(ctx.collectionExpr().columnName());
+        }
+        if (null != ctx.collectionExpr().expr()) {
+            return visit(ctx.collectionExpr().expr());
+        }
+        throw new UnsupportedOperationException("Unhandled table collection expr");
     }
     
     @Override
@@ -472,6 +492,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
@@ -687,6 +708,23 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     private ASTNode createProjection(final SelectProjectionExprClauseContext ctx) {
         AliasSegment alias = null == ctx.alias() ? null : (AliasSegment) visit(ctx.alias());
         ASTNode projection = visit(ctx.expr());
+        if (projection instanceof AliasAvailable) {
+            ((AliasAvailable) projection).setAlias(alias);
+            return projection;
+        }
+        if (projection instanceof ComplexExpressionSegment) {
+            return createProjectionForComplexExpressionSegment(projection, alias);
+        }
+        if (projection instanceof SimpleExpressionSegment) {
+            return createProjectionForSimpleExpressionSegment(projection, alias, ctx);
+        }
+        if (projection instanceof ExpressionSegment) {
+            return createProjectionForExpressionSegment(projection, alias);
+        }
+        throw new UnsupportedOperationException("Unhandled case");
+    }
+    
+    private ASTNode createProjectionForComplexExpressionSegment(final ASTNode projection, final AliasSegment alias) {
         if (projection instanceof FunctionSegment) {
             FunctionSegment segment = (FunctionSegment) projection;
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText(), segment);
@@ -699,16 +737,35 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result.setAlias(alias);
             return result;
         }
-        // FIXME :For DISTINCT()
-        if (projection instanceof ColumnSegment) {
-            ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) projection);
-            result.setAlias(alias);
-            return result;
+        if (projection instanceof XmlQueryAndExistsFunctionSegment || projection instanceof XmlPiFunctionSegment || projection instanceof XmlSerializeFunctionSegment) {
+            return projection;
         }
+        throw new UnsupportedOperationException("Unsupported Complex Expression");
+    }
+    
+    private ASTNode createProjectionForSimpleExpressionSegment(final ASTNode projection, final AliasSegment alias, final SelectProjectionExprClauseContext ctx) {
         if (projection instanceof SubqueryExpressionSegment) {
             SubqueryExpressionSegment subqueryExpressionSegment = (SubqueryExpressionSegment) projection;
             String text = ctx.start.getInputStream().getText(new Interval(subqueryExpressionSegment.getStartIndex(), subqueryExpressionSegment.getStopIndex()));
             SubqueryProjectionSegment result = new SubqueryProjectionSegment(((SubqueryExpressionSegment) projection).getSubquery(), text);
+            result.setAlias(alias);
+            return result;
+        }
+        if (projection instanceof LiteralExpressionSegment) {
+            LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
+            ExpressionProjectionSegment result = null == alias
+                    ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
+                    : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
+            result.setAlias(alias);
+            return result;
+        }
+        throw new UnsupportedOperationException("Unsupported Simple Expression");
+    }
+    
+    private ASTNode createProjectionForExpressionSegment(final ASTNode projection, final AliasSegment alias) {
+        // FIXME :For DISTINCT()
+        if (projection instanceof ColumnSegment) {
+            ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) projection);
             result.setAlias(alias);
             return result;
         }
@@ -720,19 +777,20 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result.setAlias(alias);
             return result;
         }
+        if (projection instanceof MultisetExpression) {
+            MultisetExpression multisetExpression = (MultisetExpression) projection;
+            int startIndex = multisetExpression.getStartIndex();
+            int stopIndex = null == alias ? multisetExpression.getStopIndex() : alias.getStopIndex();
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, multisetExpression.getText(), multisetExpression);
+            result.setAlias(alias);
+            return result;
+        }
         if (projection instanceof DatetimeExpression) {
             DatetimeExpression datetimeExpression = (DatetimeExpression) projection;
             return null == datetimeExpression.getRight()
                     ? new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(), datetimeExpression.getLeft(), datetimeExpression.getText())
                     : new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(),
                             datetimeExpression.getLeft(), datetimeExpression.getRight(), datetimeExpression.getText());
-        }
-        if (projection instanceof XmlQueryAndExistsFunctionSegment || projection instanceof XmlPiFunctionSegment || projection instanceof XmlSerializeFunctionSegment) {
-            return projection;
-        }
-        if (projection instanceof AliasAvailable) {
-            ((AliasAvailable) projection).setAlias(alias);
-            return projection;
         }
         if (projection instanceof IntervalExpressionProjection) {
             IntervalExpressionProjection intervalExpressionProjection = (IntervalExpressionProjection) projection;
@@ -745,12 +803,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             }
             return result;
         }
-        LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
-        ExpressionProjectionSegment result = null == alias
-                ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
-                : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
-        result.setAlias(alias);
-        return result;
+        throw new UnsupportedOperationException("Unsupported Expression");
     }
     
     @Override
@@ -792,9 +845,12 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitXmlTable(final XmlTableContext ctx) {
-        String tableAlias = null == ctx.alias() ? null : ctx.alias().getText();
-        return new XmlTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.tableName().getText(),
-                tableAlias, (XmlTableFunctionSegment) visit(ctx.xmlTableFunction()), ctx.xmlTableFunctionAlias().alias().getText());
+        XmlTableSegment result = new XmlTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
+                (XmlTableFunctionSegment) visit(ctx.xmlTableFunction()));
+        if (null != ctx.xmlTableFunctionAlias()) {
+            result.setXmlTableFunctionAlias(ctx.xmlTableFunctionAlias().alias().getText());
+        }
+        return result;
     }
     
     @Override
@@ -815,6 +871,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         result.setStartIndex(tableSegment.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setJoinType(getJoinType(ctx));
+        result.setNatural(isNatural(ctx));
         if (null != ctx.innerCrossJoinClause()) {
             TableSegment right = (TableSegment) visit(ctx.innerCrossJoinClause().selectTableReference());
             result.setRight(right);
@@ -832,6 +889,16 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result.setRight(right);
         }
         return result;
+    }
+    
+    private boolean isNatural(final SelectJoinOptionContext ctx) {
+        if (null != ctx.innerCrossJoinClause()) {
+            return null != ctx.innerCrossJoinClause().NATURAL();
+        }
+        if (null != ctx.outerJoinClause()) {
+            return null != ctx.outerJoinClause().NATURAL();
+        }
+        return false;
     }
     
     private String getJoinType(final SelectJoinOptionContext ctx) {
@@ -936,8 +1003,12 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             SubquerySegment subquerySegment = new SubquerySegment(ctx.lateralClause().selectSubquery().start.getStartIndex(), ctx.lateralClause().selectSubquery().stop.getStopIndex(), subquery);
             result = new SubqueryTableSegment(subquerySegment);
         } else {
-            SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.tableCollectionExpr());
-            result = new SubqueryTableSegment(subquerySegment);
+            if (null != ctx.tableCollectionExpr().collectionExpr().selectSubquery()) {
+                SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.tableCollectionExpr());
+                result = new SubqueryTableSegment(subquerySegment);
+            } else {
+                result = new CollectionTableSegment((ExpressionSegment) visit(ctx.tableCollectionExpr()));
+            }
         }
         return result;
     }
@@ -1064,18 +1135,53 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
         OracleMergeStatement result = new OracleMergeStatement();
-        result.setTarget((SimpleTableSegment) visit(ctx.intoClause()));
+        result.setTarget((TableSegment) visit(ctx.intoClause()));
         result.setSource((TableSegment) visit(ctx.usingClause()));
         result.setExpr((ExpressionSegment) visit(ctx.usingClause().expr()));
         if (null != ctx.mergeUpdateClause()) {
-            result.getUpdate().setSetAssignment((SetAssignmentSegment) visit(ctx.mergeUpdateClause().mergeSetAssignmentsClause()));
-            if (null != ctx.mergeUpdateClause().whereClause()) {
-                result.getUpdate().setWhere((WhereSegment) visit(ctx.mergeUpdateClause().whereClause()));
-            }
-            if (null != ctx.mergeUpdateClause().deleteWhereClause()) {
-                result.getDelete().setWhere((WhereSegment) visit(ctx.mergeUpdateClause().deleteWhereClause()));
+            result.setUpdate((UpdateStatement) visitMergeUpdateClause(ctx.mergeUpdateClause()));
+        }
+        if (null != ctx.mergeInsertClause()) {
+            result.setInsert((InsertStatement) visitMergeInsertClause(ctx.mergeInsertClause()));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitMergeInsertClause(final OracleStatementParser.MergeInsertClauseContext ctx) {
+        OracleInsertStatement result = new OracleInsertStatement();
+        if (null != ctx.mergeInsertColumn()) {
+            result.setInsertColumns((InsertColumnsSegment) visit(ctx.mergeInsertColumn()));
+        }
+        if (null != ctx.mergeColumnValue()) {
+            result.getValues().addAll(((CollectionValue<InsertValuesSegment>) visit(ctx.mergeColumnValue())).getValue());
+        }
+        if (null != ctx.whereClause()) {
+            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitMergeInsertColumn(final OracleStatementParser.MergeInsertColumnContext ctx) {
+        Collection<ColumnSegment> columnSegments = new ArrayList<>(ctx.columnName().size());
+        for (ColumnNameContext each : ctx.columnName()) {
+            if (null != each.name()) {
+                columnSegments.add((ColumnSegment) visit(each));
             }
         }
+        return new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegments);
+    }
+    
+    @Override
+    public ASTNode visitMergeColumnValue(final OracleStatementParser.MergeColumnValueContext ctx) {
+        CollectionValue<InsertValuesSegment> result = new CollectionValue<>();
+        List<ExpressionSegment> segments = new LinkedList<>();
+        for (ExprContext each : ctx.expr()) {
+            segments.add(null == each ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText()) : (ExpressionSegment) visit(each));
+        }
+        result.getValue().add(new InsertValuesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), segments));
         return result;
     }
     
@@ -1088,7 +1194,16 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             }
             return result;
         }
-        SimpleTableSegment result = (SimpleTableSegment) visit(ctx.viewName());
+        if (null != ctx.viewName()) {
+            SimpleTableSegment result = (SimpleTableSegment) visit(ctx.viewName());
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
+        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.subquery());
+        SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery);
+        SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
         if (null != ctx.alias()) {
             result.setAlias((AliasSegment) visit(ctx.alias()));
         }
@@ -1122,13 +1237,13 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitMergeUpdateClause(final MergeUpdateClauseContext ctx) {
-        OracleMergeStatement result = new OracleMergeStatement();
-        result.getUpdate().setSetAssignment((SetAssignmentSegment) visit(ctx.mergeSetAssignmentsClause()));
+        OracleUpdateStatement result = new OracleUpdateStatement();
+        result.setSetAssignment((SetAssignmentSegment) visit(ctx.mergeSetAssignmentsClause()));
         if (null != ctx.whereClause()) {
-            result.getUpdate().setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.deleteWhereClause()) {
-            result.getDelete().setWhere((WhereSegment) visit(ctx.deleteWhereClause()));
+            result.setDeleteWhere((WhereSegment) visit(ctx.deleteWhereClause()));
         }
         return result;
     }

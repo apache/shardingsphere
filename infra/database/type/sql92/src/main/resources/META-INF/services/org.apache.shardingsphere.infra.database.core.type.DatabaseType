@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.sql92.SQL92DatabaseType
+org.apache.shardingsphere.infra.database.sql92.type.SQL92DatabaseType

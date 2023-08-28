@@ -240,7 +240,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
             for (int i = 0; i < conditionColumns.size(); i++) {
                 Column keyColumn = conditionColumns.get(i);
                 // TODO There to be compatible with PostgreSQL before value is null except primary key and unsupported updating sharding value now.
-                if (shardingColumns.contains(keyColumn.getName()) && keyColumn.getOldValue() == null) {
+                if (shardingColumns.contains(keyColumn.getName()) && null == keyColumn.getOldValue()) {
                     preparedStatement.setObject(setColumns.size() + i + 1, keyColumn.getValue());
                     continue;
                 }

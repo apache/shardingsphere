@@ -31,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumn
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
@@ -41,14 +42,12 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Delet
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.junit.jupiter.api.AfterEach;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.postgresql.replication.LogSequenceNumber;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -76,8 +75,6 @@ class WALEventConverterTest {
     
     private WALEventConverter walEventConverter;
     
-    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
-    
     private final LogSequenceNumber logSequenceNumber = LogSequenceNumber.valueOf("0/14EFDB8");
     
     private PipelineTableMetaData pipelineTableMetaData;
@@ -85,14 +82,10 @@ class WALEventConverterTest {
     @BeforeEach
     void setUp() {
         dumperConfig = mockDumperConfiguration();
+        PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         walEventConverter = new WALEventConverter(dumperConfig, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig())));
         initTableData(dumperConfig);
         pipelineTableMetaData = new PipelineTableMetaData("t_order", mockOrderColumnsMetaDataMap(), Collections.emptyList());
-    }
-    
-    @AfterEach
-    void tearDown() {
-        dataSourceManager.close();
     }
     
     private DumperConfiguration mockDumperConfiguration() {
@@ -105,8 +98,9 @@ class WALEventConverterTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final DumperConfiguration dumperConfig) {
-        DataSource dataSource = new DefaultPipelineDataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
         try (
+                PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -140,7 +134,7 @@ class WALEventConverterTest {
     private void assertWriteRowEvent0(final Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
         dumperConfig.setTargetTableColumnsMap(targetTableColumnsMap);
         WriteRowEvent rowsEvent = new WriteRowEvent();
-        rowsEvent.setDatabaseName("");
+        rowsEvent.setSchemaName("");
         rowsEvent.setTableName("t_order");
         rowsEvent.setAfterRow(Arrays.asList(101, 1, "OK"));
         Method method = WALEventConverter.class.getDeclaredMethod("handleWriteRowEvent", WriteRowEvent.class, PipelineTableMetaData.class);
@@ -207,14 +201,14 @@ class WALEventConverterTest {
     void assertConvertFailure() {
         AbstractRowEvent event = new AbstractRowEvent() {
         };
-        event.setDatabaseName("");
+        event.setSchemaName("");
         event.setTableName("t_order");
         assertThrows(UnsupportedSQLOperationException.class, () -> walEventConverter.convert(event));
     }
     
     private AbstractRowEvent mockWriteRowEvent() {
         WriteRowEvent result = new WriteRowEvent();
-        result.setDatabaseName("");
+        result.setSchemaName("");
         result.setTableName("t_order");
         result.setAfterRow(Arrays.asList("id", "user_id"));
         return result;
@@ -222,7 +216,7 @@ class WALEventConverterTest {
     
     private AbstractRowEvent mockUpdateRowEvent() {
         UpdateRowEvent result = new UpdateRowEvent();
-        result.setDatabaseName("");
+        result.setSchemaName("");
         result.setTableName("t_order");
         result.setAfterRow(Arrays.asList("id", "user_id"));
         return result;
@@ -230,7 +224,7 @@ class WALEventConverterTest {
     
     private AbstractRowEvent mockDeleteRowEvent() {
         DeleteRowEvent result = new DeleteRowEvent();
-        result.setDatabaseName("");
+        result.setSchemaName("");
         result.setTableName("t_order");
         result.setPrimaryKeys(Collections.singletonList("id"));
         return result;
@@ -238,7 +232,7 @@ class WALEventConverterTest {
     
     private AbstractRowEvent mockUnknownTableEvent() {
         WriteRowEvent result = new WriteRowEvent();
-        result.setDatabaseName("");
+        result.setSchemaName("");
         result.setTableName("t_other");
         return result;
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -160,21 +160,21 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     @SuppressWarnings("unchecked")
     private DataSourceUnitsChangedEvent createDataSourceUnitsChangedEvent(final String databaseName, final String databaseVersion, final DataChangedEvent event) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(event.getValue(), Map.class);
-        Map<String, DataSourceProperties> dataSourcePropertiesMap = yamlDataSources.isEmpty()
+        Map<String, DataSourcePoolProperties> propsMap = yamlDataSources.isEmpty()
                 ? new HashMap<>()
                 : yamlDataSources.entrySet().stream().collect(Collectors.toMap(
-                        Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return new DataSourceUnitsChangedEvent(databaseName, databaseVersion, dataSourcePropertiesMap);
+                        Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return new DataSourceUnitsChangedEvent(databaseName, databaseVersion, propsMap);
     }
     
     @SuppressWarnings("unchecked")
     private DataSourceNodesChangedEvent createDataSourceNodesChangedEvent(final String databaseName, final String databaseVersion, final DataChangedEvent event) {
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(event.getValue(), Map.class);
-        Map<String, DataSourceProperties> dataSourcePropertiesMap = yamlDataSources.isEmpty()
+        Map<String, DataSourcePoolProperties> propsMap = yamlDataSources.isEmpty()
                 ? new HashMap<>()
                 : yamlDataSources.entrySet().stream().collect(Collectors.toMap(
-                        Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        return new DataSourceNodesChangedEvent(databaseName, databaseVersion, dataSourcePropertiesMap);
+                        Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return new DataSourceNodesChangedEvent(databaseName, databaseVersion, propsMap);
     }
     
     @SuppressWarnings("unchecked")

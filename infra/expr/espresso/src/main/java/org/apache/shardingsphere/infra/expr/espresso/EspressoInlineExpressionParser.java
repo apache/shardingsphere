@@ -17,20 +17,23 @@
 
 package org.apache.shardingsphere.infra.expr.espresso;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import groovy.lang.Closure;
-import org.apache.shardingsphere.infra.expr.hotsopt.HotspotInlineExpressionParser;
+import groovy.lang.GroovyShell;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.TypeLiteral;
 import org.graalvm.polyglot.Value;
 
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Espresso inline expression parser.
@@ -39,54 +42,152 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     private static final String JAVA_CLASSPATH;
     
-    private static final String JAVA_HOME;
+    private static final char SPLITTER = ',';
     
     static {
-        JAVA_HOME = System.getenv("JAVA_HOME");
         URL resource = Thread.currentThread().getContextClassLoader().getResource("espresso-need-libs");
-        String dir = null != resource ? resource.getPath() : null;
-        JAVA_CLASSPATH = Stream.of("groovy.jar", "guava.jar", "shardingsphere-infra-expr-hotsopt.jar", "shardingsphere-infra-expr-spi.jar", "shardingsphere-infra-util.jar")
-                .map(each -> dir + File.separator + each).collect(Collectors.joining(":"));
+        String dir = null == resource ? null : resource.getPath();
+        JAVA_CLASSPATH = dir + File.separator + "groovy.jar";
     }
     
     @Override
     public String handlePlaceHolder(final String inlineExpression) {
-        try (Context context = createContext()) {
-            return createInlineExpressionParser(context).invokeMember("handlePlaceHolder", inlineExpression).asString();
-        }
+        return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\$\\{") : inlineExpression;
     }
     
     @Override
     public List<String> splitAndEvaluate(final String inlineExpression) {
         try (Context context = createContext()) {
-            List<String> listProjection = createInlineExpressionParser(context).invokeMember("splitAndEvaluate", inlineExpression)
-                    .as(new TypeLiteral<List<String>>() {
-                    });
-            // org.graalvm.polyglot.Value#as only creates projections for classes in Truffle Context
-            return new ArrayList<>(listProjection);
+            return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split(inlineExpression), context));
         }
     }
     
     @Override
     public Closure<?> evaluateClosure(final String inlineExpression) {
-        try (Context context = createContext()) {
-            return createInlineExpressionParser(context).invokeMember("evaluateClosure", inlineExpression).as(Closure.class);
-        }
-    }
-    
-    private Value createInlineExpressionParser(final Context context) {
-        return context.getBindings("java").getMember(HotspotInlineExpressionParser.class.getName()).newInstance();
+        throw new UnsupportedOperationException("GraalVM Truffle's Espresso implementation cannot return an instance of `groovy.lang.Closure` to the Host JVM.");
     }
     
     private Context createContext() {
         // TODO https://github.com/oracle/graal/issues/4555 not yet closed
-        ShardingSpherePreconditions.checkNotNull(JAVA_HOME, () -> new RuntimeException("Failed to determine the system's environment variable JAVA_HOME!"));
         return Context.newBuilder()
                 .allowAllAccess(true)
-                .option("java.Properties.org.graalvm.home", JAVA_HOME)
-                .option("java.MultiThreaded", Boolean.TRUE.toString())
+                .option("java.Properties.org.graalvm.home", System.getenv("JAVA_HOME"))
                 .option("java.Classpath", JAVA_CLASSPATH)
                 .build();
+    }
+    
+    private List<String> split(final String inlineExpression) {
+        List<String> result = new ArrayList<>();
+        StringBuilder segment = new StringBuilder();
+        int bracketsDepth = 0;
+        for (int i = 0; i < inlineExpression.length(); i++) {
+            char each = inlineExpression.charAt(i);
+            switch (each) {
+                case SPLITTER:
+                    if (bracketsDepth > 0) {
+                        segment.append(each);
+                    } else {
+                        result.add(segment.toString().trim());
+                        segment.setLength(0);
+                    }
+                    break;
+                case '$':
+                    if ('{' == inlineExpression.charAt(i + 1)) {
+                        bracketsDepth++;
+                    }
+                    if ("->{".equals(inlineExpression.substring(i + 1, i + 4))) {
+                        bracketsDepth++;
+                    }
+                    segment.append(each);
+                    break;
+                case '}':
+                    if (bracketsDepth > 0) {
+                        bracketsDepth--;
+                    }
+                    segment.append(each);
+                    break;
+                default:
+                    segment.append(each);
+                    break;
+            }
+        }
+        if (segment.length() > 0) {
+            result.add(segment.toString().trim());
+        }
+        return result;
+    }
+    
+    private List<Value> evaluate(final List<String> inlineExpressions, final Context context) {
+        List<Value> result = new ArrayList<>(inlineExpressions.size());
+        for (String each : inlineExpressions) {
+            StringBuilder expression = new StringBuilder(handlePlaceHolder(each));
+            if (!each.startsWith("\"")) {
+                expression.insert(0, '"');
+            }
+            if (!each.endsWith("\"")) {
+                expression.append('"');
+            }
+            result.add(evaluate(expression.toString(), context));
+        }
+        return result;
+    }
+    
+    private Value evaluate(final String expression, final Context context) {
+        return context.getBindings("java")
+                .getMember(GroovyShell.class.getName())
+                .newInstance()
+                .invokeMember("parse", expression)
+                .invokeMember("run");
+    }
+    
+    private List<String> flatten(final List<Value> segments) {
+        List<String> result = new ArrayList<>();
+        for (Value each : segments) {
+            if (!each.isString()) {
+                result.addAll(assemblyCartesianSegments(each));
+            } else {
+                result.add(each.toString());
+            }
+        }
+        return result;
+    }
+    
+    private List<String> assemblyCartesianSegments(final Value segment) {
+        Set<List<String>> cartesianValues = getCartesianValues(segment);
+        List<String> result = new ArrayList<>(cartesianValues.size());
+        for (List<String> each : cartesianValues) {
+            result.add(assemblySegment(each, segment));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Set<List<String>> getCartesianValues(final Value segment) {
+        Object[] temp = segment.invokeMember("getValues").as(Object[].class);
+        List<Set<String>> result = new ArrayList<>(temp.length);
+        for (Object each : temp) {
+            if (null == each) {
+                continue;
+            }
+            if (each instanceof Collection) {
+                result.add(((Collection<Object>) each).stream().map(Object::toString).collect(Collectors.toCollection(LinkedHashSet::new)));
+            } else {
+                result.add(Sets.newHashSet(each.toString()));
+            }
+        }
+        return Sets.cartesianProduct(result);
+    }
+    
+    private String assemblySegment(final List<String> cartesianValue, final Value segment) {
+        String[] temp = segment.invokeMember("getStrings").as(String[].class);
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < temp.length; i++) {
+            result.append(temp[i]);
+            if (i < cartesianValue.size()) {
+                result.append(cartesianValue.get(i));
+            }
+        }
+        return result.toString();
     }
     
     @Override

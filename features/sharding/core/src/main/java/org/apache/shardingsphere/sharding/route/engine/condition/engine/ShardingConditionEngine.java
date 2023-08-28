@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
@@ -34,7 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class ShardingConditionEngine {
     
-    private final ShardingSphereRuleMetaData globalRuleMetaData;
+    private final RuleMetaData globalRuleMetaData;
     
     private final ShardingSphereDatabase database;
     

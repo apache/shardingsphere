@@ -24,8 +24,8 @@ import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMap
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -82,6 +82,7 @@ public final class ImporterConfiguration {
      * @return schema name. nullable
      */
     public String getSchemaName(final LogicTableName logicTableName) {
-        return TypedSPILoader.getService(DatabaseType.class, dataSourceConfig.getDatabaseType().getType()).isSchemaAvailable() ? tableNameSchemaNameMapping.getSchemaName(logicTableName) : null;
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(dataSourceConfig.getDatabaseType()).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.isSchemaAvailable() ? tableNameSchemaNameMapping.getSchemaName(logicTableName) : null;
     }
 }

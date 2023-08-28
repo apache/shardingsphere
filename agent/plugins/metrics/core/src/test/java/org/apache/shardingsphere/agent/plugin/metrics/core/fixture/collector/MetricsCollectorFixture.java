@@ -76,7 +76,7 @@ public final class MetricsCollectorFixture implements CounterMetricsCollector, G
     
     @Override
     public String toString() {
-        return labeledValues.isEmpty() ? value + "" : String.join(", ", getLabeledContents());
+        return labeledValues.isEmpty() ? String.valueOf(value) : String.join(", ", getLabeledContents());
     }
     
     private Collection<String> getLabeledContents() {

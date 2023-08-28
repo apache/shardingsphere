@@ -76,6 +76,6 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     
     @Override
     public int getStopIndex() {
-        return null != alias ? alias.getStopIndex() : stopIndex;
+        return null == alias ? stopIndex : alias.getStopIndex();
     }
 }

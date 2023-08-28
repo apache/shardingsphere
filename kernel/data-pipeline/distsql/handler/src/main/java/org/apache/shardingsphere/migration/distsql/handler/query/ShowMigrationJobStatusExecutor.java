@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
 
 import java.util.Arrays;
@@ -66,7 +66,7 @@ public final class ShowMigrationJobStatusExecutor implements QueryableRALExecuto
     }
     
     @Override
-    public String getType() {
-        return ShowMigrationStatusStatement.class.getName();
+    public Class<ShowMigrationStatusStatement> getType() {
+        return ShowMigrationStatusStatement.class;
     }
 }

@@ -19,11 +19,14 @@ package org.apache.shardingsphere.infra.binder.segment.projection.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.segment.expression.ColumnSegmentBinder;
+import org.apache.shardingsphere.infra.binder.enums.SegmentType;
+import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -36,13 +39,16 @@ public final class ColumnProjectionSegmentBinder {
      * Bind column projection segment with metadata.
      *
      * @param segment table segment
+     * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
      * @return bounded column projection segment
      */
-    public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ColumnSegment boundedColumn = ColumnSegmentBinder.bind(segment.getColumn(), tableBinderContexts);
+    public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment, final SQLStatementBinderContext statementBinderContext,
+                                               final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        ColumnSegment boundedColumn = ColumnSegmentBinder.bind(segment.getColumn(), SegmentType.PROJECTION, statementBinderContext, tableBinderContexts, Collections.emptyMap());
         ColumnProjectionSegment result = new ColumnProjectionSegment(boundedColumn);
         segment.getAliasSegment().ifPresent(result::setAlias);
+        result.setVisible(segment.isVisible());
         return result;
     }
 }

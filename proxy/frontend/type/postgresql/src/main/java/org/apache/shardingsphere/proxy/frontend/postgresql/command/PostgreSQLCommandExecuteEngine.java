@@ -41,7 +41,7 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
-import org.apache.shardingsphere.proxy.frontend.postgresql.err.PostgreSQLErrPacketFactory;
+import org.apache.shardingsphere.proxy.frontend.postgresql.err.PostgreSQLErrorPacketFactory;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -71,7 +71,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public PostgreSQLPacket getErrorPacket(final Exception cause) {
-        return PostgreSQLErrPacketFactory.newInstance(cause);
+        return PostgreSQLErrorPacketFactory.newInstance(cause);
     }
     
     @Override

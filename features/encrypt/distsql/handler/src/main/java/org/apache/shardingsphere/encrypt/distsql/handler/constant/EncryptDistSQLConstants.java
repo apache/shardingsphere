@@ -30,8 +30,6 @@ public final class EncryptDistSQLConstants {
     
     public static final String SEMI = ";";
     
-    public static final String PROPERTY = "'%s'='%s'";
-    
     public static final String CREATE_ENCRYPT = "CREATE ENCRYPT RULE";
     
     public static final String ENCRYPT = " %s ("
@@ -55,8 +53,4 @@ public final class EncryptDistSQLConstants {
     public static final String ASSISTED_QUERY_ALGORITHM = "ASSISTED_QUERY_ALGORITHM(%s)";
     
     public static final String LIKE_QUERY_ALGORITHM = "LIKE_QUERY_ALGORITHM(%s)";
-    
-    public static final String ALGORITHM_TYPE = "TYPE(NAME='%s', PROPERTIES(%s))";
-    
-    public static final String ALGORITHM_TYPE_WITHOUT_PROPS = "TYPE(NAME='%s')";
 }

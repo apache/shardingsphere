@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.yaml.config.YamlCompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlCompatibleEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ class YamlCompatibleEncryptRuleConfigurationSwapperTest {
     }
     
     private CompatibleEncryptRuleConfiguration createEncryptRuleConfiguration() {
-        Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("tbl", Collections.emptyList()));
+        Collection<EncryptTableRuleConfiguration> tables = Collections.singleton(new EncryptTableRuleConfiguration("tbl", Collections.emptyList()));
         Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("myEncryptor", new AlgorithmConfiguration("FIXTURE", new Properties()));
         return new CompatibleEncryptRuleConfiguration(tables, encryptors);
     }

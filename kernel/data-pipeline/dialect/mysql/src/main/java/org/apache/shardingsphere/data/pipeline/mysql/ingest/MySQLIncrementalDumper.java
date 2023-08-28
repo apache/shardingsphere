@@ -48,10 +48,10 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandler;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.connection.DataSourceMetaDataBuilder;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -89,11 +89,11 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         this.metaDataLoader = metaDataLoader;
         YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcConfig();
         log.info("incremental dump, jdbcUrl={}", jdbcConfig.getUrl());
-        DataSourceMetaDataBuilder builder = DatabaseTypedSPILoader.getService(DataSourceMetaDataBuilder.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        DataSourceMetaData metaData = builder.build(jdbcConfig.getUrl(), null, null);
-        ConnectInfo connectInfo = new ConnectInfo(generateServerId(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword());
+        ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        ConnectionProperties connectionProps = parser.parse(jdbcConfig.getUrl(), null, null);
+        ConnectInfo connectInfo = new ConnectInfo(generateServerId(), connectionProps.getHostname(), connectionProps.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword());
         client = new MySQLClient(connectInfo, dumperConfig.isDecodeWithTX());
-        catalog = metaData.getCatalog();
+        catalog = connectionProps.getCatalog();
     }
     
     private int generateServerId() {
@@ -237,6 +237,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         String tableName = dumperConfig.getLogicTableName(rowsEvent.getTableName()).getOriginal();
         IngestPosition position = new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId());
         DataRecord result = new DataRecord(type, tableName, position, columnCount);
+        result.setActualTableName(rowsEvent.getTableName());
         result.setCommitTime(rowsEvent.getTimestamp() * 1000);
         return result;
     }

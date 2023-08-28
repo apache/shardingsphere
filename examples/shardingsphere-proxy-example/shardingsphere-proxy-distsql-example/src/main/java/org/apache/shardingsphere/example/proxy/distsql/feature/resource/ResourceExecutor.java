@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.example.proxy.distsql.feature.resource;
 
-import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.example.proxy.distsql.feature.AbstractFeatureExecutor;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -61,7 +61,7 @@ public final class ResourceExecutor extends AbstractFeatureExecutor {
     }
     
     @Override
-    public void execute() throws SQLException, InterruptedException {
+    public void execute() throws SQLException {
         executeUseSchema();
         executeShowResources();
         executeAddResource();
@@ -75,7 +75,7 @@ public final class ResourceExecutor extends AbstractFeatureExecutor {
     private void executeShowResources() throws SQLException {
         log.info("show schema resources...");
         ResultSet resultSet = statement.executeQuery(SHOW_RESOURCE);
-        log.info(new Gson().toJson(getResultData(resultSet)));
+        log.info(JsonUtils.toJsonString(getResultData(resultSet)));
     }
     
     private void executeAddResource() throws SQLException {

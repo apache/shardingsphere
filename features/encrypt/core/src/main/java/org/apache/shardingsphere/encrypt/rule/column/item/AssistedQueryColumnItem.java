@@ -35,6 +35,7 @@ public final class AssistedQueryColumnItem {
     @Getter
     private final String name;
     
+    @Getter
     @SuppressWarnings("rawtypes")
     private final AssistedEncryptAlgorithm encryptor;
     

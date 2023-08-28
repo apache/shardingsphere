@@ -30,7 +30,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegme
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -68,7 +68,7 @@ class AlterEncryptRuleStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithoutToBeAlteredEncryptors() {
-        assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration()));
+        assertThrows(ServiceProviderNotFoundException.class, () -> updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration()));
     }
     
     @Test
@@ -78,9 +78,9 @@ class AlterEncryptRuleStatementUpdaterTest {
     
     @Test
     void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
-        EncryptRuleConfiguration currentRuleConfiguration = createCurrentRuleConfigurationWithMultipleTableRules();
-        updater.updateCurrentRuleConfiguration(currentRuleConfiguration, createToBeAlteredRuleConfiguration());
-        assertThat(currentRuleConfiguration.getEncryptors().size(), is(1));
+        EncryptRuleConfiguration currentRuleConfig = createCurrentRuleConfigurationWithMultipleTableRules();
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, createToBeAlteredRuleConfiguration());
+        assertThat(currentRuleConfig.getEncryptors().size(), is(1));
     }
     
     private AlterEncryptRuleStatement createSQLStatement(final String encryptorName) {
