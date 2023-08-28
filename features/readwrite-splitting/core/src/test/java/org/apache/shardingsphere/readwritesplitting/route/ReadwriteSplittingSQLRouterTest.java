@@ -235,7 +235,7 @@ class ReadwriteSplittingSQLRouterTest {
     
     private RouteContext mockRouteContext() {
         RouteContext result = new RouteContext();
-        RouteUnit routeUnit = new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), Collections.singletonList(new RouteMapper("table", "table_0")));
+        RouteUnit routeUnit = new RouteUnit(new RouteMapper(DATASOURCE_NAME, DATASOURCE_NAME), Collections.singleton(new RouteMapper("table", "table_0")));
         result.getRouteUnits().add(routeUnit);
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(NONE_READWRITE_SPLITTING_DATASOURCE_NAME, NONE_READWRITE_SPLITTING_DATASOURCE_NAME), Collections.emptyList()));
         return result;

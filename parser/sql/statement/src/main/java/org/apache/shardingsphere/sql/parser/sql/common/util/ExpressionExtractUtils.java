@@ -109,14 +109,14 @@ public final class ExpressionExtractUtils {
             }
             // TODO support more expression type if necessary
             if (each instanceof BinaryOperationExpression) {
-                extractParameterMarkerExpressions(result, Collections.singletonList(((BinaryOperationExpression) each).getLeft()));
-                extractParameterMarkerExpressions(result, Collections.singletonList(((BinaryOperationExpression) each).getRight()));
+                extractParameterMarkerExpressions(result, Collections.singleton(((BinaryOperationExpression) each).getLeft()));
+                extractParameterMarkerExpressions(result, Collections.singleton(((BinaryOperationExpression) each).getRight()));
             }
             if (each instanceof FunctionSegment) {
                 extractParameterMarkerExpressions(result, ((FunctionSegment) each).getParameters());
             }
             if (each instanceof TypeCastExpression) {
-                extractParameterMarkerExpressions(result, Collections.singletonList(((TypeCastExpression) each).getExpression()));
+                extractParameterMarkerExpressions(result, Collections.singleton(((TypeCastExpression) each).getExpression()));
             }
             if (each instanceof InExpression) {
                 extractParameterMarkerExpressions(result, ((InExpression) each).getExpressionList());
