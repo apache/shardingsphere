@@ -120,6 +120,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.partition.PartitionNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -205,6 +206,7 @@ import java.util.Optional;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionTypeEnum;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.MovePartitionSegment;
 
 /**
  * Statement visitor for openGauss.
@@ -1441,7 +1443,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     
     @Override
     public ASTNode visitIndexPartitionElem(final OpenGaussStatementParser.IndexPartitionElemContext ctx) {
-        IndexPartitionSegment result = new IndexPartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.indexPartitionName()));
+        PartitionNameSegment partitionName =
+                new PartitionNameSegment(ctx.indexPartitionName().getStart().getStartIndex(), ctx.indexPartitionName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.indexPartitionName()));
+        IndexPartitionSegment result = new IndexPartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), partitionName);
         if (null != ctx.tableSpace()) {
             result.setTablespace((TablespaceSegment) visit(ctx.tableSpace()));
         }
@@ -1451,5 +1455,13 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     @Override
     public ASTNode visitTableSpace(final OpenGaussStatementParser.TableSpaceContext ctx) {
         return new TablespaceSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
+    }
+    
+    @Override
+    public ASTNode visitAlterIndexMovePartition(final OpenGaussStatementParser.AlterIndexMovePartitionContext ctx) {
+        PartitionNameSegment partitionName = new PartitionNameSegment(ctx.indexPartitionName().getStart().getStartIndex(), ctx.indexPartitionName().getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.indexPartitionName().identifier()));
+        TablespaceSegment tablespace = new TablespaceSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), (IdentifierValue) visit(ctx.name().identifier()));
+        return new MovePartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), partitionName, tablespace);
     }
 }

@@ -19,18 +19,32 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.partition.PartitionNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateIndexStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.MovePartitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterIndexStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexPartitionsAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.tablespace.TablespaceAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedPartition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.tablespace.ExpectedTablespace;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterIndexStatementTestCase;
 
 import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -49,6 +63,7 @@ public final class AlterIndexStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterIndexStatement actual, final AlterIndexStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertIndex(assertContext, actual, expected);
+        assertMovePartition(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final AlterIndexStatement actual, final AlterIndexStatementTestCase expected) {
@@ -65,6 +80,42 @@ public final class AlterIndexStatementAssert {
         // TODO should assert index for all databases(mysql and sqlserver do not parse index right now)
         if (actual instanceof OracleAlterIndexStatement && actual.getIndex().isPresent()) {
             IndexAssert.assertIs(assertContext, actual.getIndex().get(), expected.getIndex());
+        }
+    }
+    
+    private static void assertMovePartition(final SQLCaseAssertContext assertContext, final AlterIndexStatement actual, final AlterIndexStatementTestCase expected) {
+        if (actual instanceof OpenGaussAlterIndexStatement) {
+            OpenGaussAlterIndexStatement ogActual = (OpenGaussAlterIndexStatement) actual;
+            if (null == expected.getMovePartition()) {
+                assertFalse(ogActual.getMovePartition().isPresent(), assertContext.getText("Actual move partition should not exist."));
+            } else {
+                assertTrue(ogActual.getMovePartition().isPresent(), assertContext.getText("Actual move partition should exist."));
+                MovePartitionSegment actualMovePartition = ogActual.getMovePartition().get();
+                // assert partition
+                assertPartition(assertContext, actualMovePartition.getPartitionName(), expected.getMovePartition().getPartition());
+                // assert tablespace
+                assertTablespace(assertContext, actualMovePartition.getTablespace(), expected.getMovePartition().getTablespace());
+                SQLSegmentAssert.assertIs(assertContext, actualMovePartition, expected.getMovePartition());
+            }
+        }
+    }
+    
+    private static void assertPartition(final SQLCaseAssertContext assertContext, final PartitionNameSegment actual, final ExpectedPartition expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Actual partition name should not exist."));
+        } else {
+            assertNotNull(actual, assertContext.getText("Actual partition name should exist."));
+            assertThat(assertContext.getText("partition name assertion error: "), actual.getIdentifier().getValue(), is(expected.getName()));
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
+    }
+    
+    private static void assertTablespace(final SQLCaseAssertContext assertContext, final TablespaceSegment actual, final ExpectedTablespace expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Actual tablespace segments should not exist."));
+        } else {
+            assertNotNull(actual, assertContext.getText("Actual tablespace segments should exist."));
+            TablespaceAssert.assertIs(assertContext, actual, expected);
         }
     }
 }

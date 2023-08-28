@@ -58,7 +58,7 @@ public class IndexPartitionsAssert {
     private static void assertIs(final SQLCaseAssertContext assertContext, final IndexPartitionSegment actual, final ExpectedIndexPartition expected) {
         assertNotNull(expected, assertContext.getText("Index partition should exist."));
         assertNotNull(actual, assertContext.getText("Index partition should exist."));
-        IdentifierValueAssert.assertIs(assertContext, actual.getIndexPartitionName(), expected, "Index Partition");
+        IdentifierValueAssert.assertIs(assertContext, actual.getPartitionName().getIdentifier(), expected, "Index Partition");
         if (null == expected.getTablespace()) {
             assertFalse(actual.getTablespace().isPresent(), assertContext.getText("Actual tablespace should not exist."));
         } else {

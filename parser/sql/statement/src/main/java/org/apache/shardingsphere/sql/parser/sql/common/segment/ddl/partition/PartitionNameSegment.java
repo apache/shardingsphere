@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.partition;
 
-import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.partition.PartitionNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+/**
+ * Partition name segment.
+ */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public class IndexPartitionSegment implements SQLSegment {
+public class PartitionNameSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final PartitionNameSegment partitionName;
+    private final IdentifierValue identifier;
     
-    private TablespaceSegment tablespace;
-    
-    public Optional<TablespaceSegment> getTablespace() {
-        return Optional.ofNullable(tablespace);
-    }
 }

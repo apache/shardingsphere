@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedIndex;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedMovePartition;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index;
 
 import javax.xml.bind.annotation.XmlElement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.tablespace.ExpectedTablespace;
 
-/**
- * Alter index statement test case.
- */
 @Getter
 @Setter
-public final class AlterIndexStatementTestCase extends SQLParserTestCase {
+public class ExpectedMovePartition extends AbstractExpectedSQLSegment {
     
     @XmlElement
-    private ExpectedIndex index;
+    private ExpectedPartition partition;
     
     @XmlElement
-    private ExpectedSimpleTable table;
-    
-    @XmlElement(name = "move-partition")
-    private ExpectedMovePartition movePartition;
+    private ExpectedTablespace tablespace;
 }
