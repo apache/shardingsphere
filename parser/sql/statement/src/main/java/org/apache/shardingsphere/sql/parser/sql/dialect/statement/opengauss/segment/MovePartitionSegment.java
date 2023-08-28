@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment;
 
-import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.Ta
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class IndexPartitionSegment implements SQLSegment {
+public class MovePartitionSegment implements SQLSegment {
     
     private final int startIndex;
     
@@ -36,9 +35,5 @@ public class IndexPartitionSegment implements SQLSegment {
     
     private final PartitionNameSegment partitionName;
     
-    private TablespaceSegment tablespace;
-    
-    public Optional<TablespaceSegment> getTablespace() {
-        return Optional.ofNullable(tablespace);
-    }
+    private final TablespaceSegment tablespace;
 }

@@ -119,7 +119,7 @@ public final class CreateIndexStatementAssert {
                 TablespaceAssert.assertIs(assertContext, tablespaceSegment, expected.getTablespace());
             }
         }
-
+        
     }
     
     private static void assertIndexPartitions(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {

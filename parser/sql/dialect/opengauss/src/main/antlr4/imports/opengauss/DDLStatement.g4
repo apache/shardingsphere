@@ -361,6 +361,7 @@ partitionCmd
 
 alterIndexDefinitionClause
     : renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace | alterTableCmds | indexPartitionCmd
+    | alterIndexMovePartition
     ;
 
 indexPartitionCmd
@@ -377,6 +378,10 @@ alterIndexDependsOnExtension
 
 alterIndexSetTableSpace
     : (OWNED BY ignoredIdentifiers)? SET TABLESPACE name (NOWAIT)?
+    ;
+
+alterIndexMovePartition
+    : MOVE PARTITION indexPartitionName TABLESPACE name
     ;
 
 tableNamesClause

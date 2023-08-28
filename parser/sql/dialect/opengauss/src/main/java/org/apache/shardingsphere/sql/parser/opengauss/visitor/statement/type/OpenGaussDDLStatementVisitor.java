@@ -255,6 +255,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.MovePartitionSegment;
 
 /**
  * DDL statement visitor for openGauss.
@@ -578,6 +579,9 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
         result.setIndex(createIndexSegment((SimpleTableSegment) visit(ctx.qualifiedName())));
         if (null != ctx.alterIndexDefinitionClause().renameIndexSpecification()) {
             result.setRenameIndex((IndexSegment) visit(ctx.alterIndexDefinitionClause().renameIndexSpecification().indexName()));
+        }
+        if (null != ctx.alterIndexDefinitionClause().alterIndexMovePartition()) {
+            result.setMovePartition((MovePartitionSegment) visit(ctx.alterIndexDefinitionClause().alterIndexMovePartition()));
         }
         return result;
     }
