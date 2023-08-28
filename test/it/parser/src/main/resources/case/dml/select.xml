@@ -6840,4 +6840,75 @@
             <simple-table name="DUAL" start-index="140" stop-index="143" literal-start-index="140" literal-stop-index="143" />
         </from>
     </select>
+    <select sql-case-id="select_with_expressions_in_projection">
+        <projections start-index="7" stop-index="81" literal-start-index="7" literal-stop-index="81">
+            <column-projection name="empid" start-index="75" stop-index="81" literal-start-index="75" literal-stop-index="81">
+                <owner name="a" start-index="75" stop-index="75" literal-start-index="75" literal-stop-index="75" />
+            </column-projection>
+            <expression-projection text="a.enddate - term + term2 + 1) / (last_day(term) - term + 1" alias="cnt" start-index="8" stop-index="72" literal-start-index="8" literal-stop-index="72">
+                <literalText>a.enddate - term + term2 + 1) / (last_day(term) - term + 1</literalText>
+                <expr>
+                    <binary-operation-expression start-index="8" stop-index="67" literal-start-index="8" literal-stop-index="67">
+                        <left>
+                            <binary-operation-expression start-index="9" stop-index="36" literal-start-index="9" literal-stop-index="36">
+                                <left>
+                                    <column name="enddate" start-index="9" stop-index="17" literal-start-index="9" literal-stop-index="17">
+                                        <owner name="a" start-index="9" stop-index="9" literal-start-index="9" literal-stop-index="9" />
+                                    </column>
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <binary-operation-expression start-index="21" stop-index="36" literal-start-index="21" literal-stop-index="36">
+                                        <left>
+                                            <binary-operation-expression start-index="21" stop-index="32" literal-start-index="21" literal-stop-index="32">
+                                                <left>
+                                                    <column name="term" start-index="21" stop-index="24" literal-start-index="21" literal-stop-index="24" />
+                                                </left>
+                                                <operator>+</operator>
+                                                <right>
+                                                    <column name="term2" start-index="28" stop-index="32" literal-start-index="28" literal-stop-index="32" />
+                                                </right>
+                                            </binary-operation-expression>
+                                        </left>
+                                        <operator>+</operator>
+                                        <right>
+                                            <literal-expression value="1" start-index="36" stop-index="36" literal-start-index="36" literal-stop-index="36" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>/</operator>
+                        <right>
+                            <binary-operation-expression start-index="42" stop-index="66" literal-start-index="42" literal-stop-index="66">
+                                <left>
+                                    <function function-name="last_day" text="last_day(term)" start-index="42" stop-index="55" literal-start-index="42" literal-stop-index="55">
+                                        <parameter>
+                                            <column name="term" start-index="51" stop-index="54" literal-start-index="51" literal-stop-index="54" />
+                                        </parameter>
+                                        <literalText>last_day(term)</literalText>
+                                    </function>
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <binary-operation-expression start-index="59" stop-index="66" literal-start-index="59" literal-stop-index="66">
+                                        <left>
+                                            <column name="term" start-index="59" stop-index="62" literal-start-index="59" literal-stop-index="62" />
+                                        </left>
+                                        <operator>+</operator>
+                                        <right>
+                                            <literal-expression value="1" start-index="66" stop-index="66" literal-start-index="66" literal-stop-index="66" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table alias="aWHERE" name="employee" start-index="88" stop-index="102" literal-start-index="88" literal-stop-index="102" />
+        </from>
+    </select>
 </sql-parser-test-cases>
