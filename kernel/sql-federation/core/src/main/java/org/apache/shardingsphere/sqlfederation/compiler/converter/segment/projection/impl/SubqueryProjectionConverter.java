@@ -27,7 +27,11 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSeg
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.select.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Optional;
+import java.util.Collections;
 
 /**
  * Subquery projection converter. 
