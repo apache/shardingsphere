@@ -6825,4 +6825,19 @@
             </expr>
         </having>
     </select>
+    <select sql-case-id="select_with_to_date_function">
+        <projections start-index="7" stop-index="133" literal-start-index="7" literal-stop-index="133">
+            <expression-projection text="TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.')" start-index="7" stop-index="133" literal-start-index="7" literal-stop-index="133">
+                <literalText>TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.')</literalText>
+                <expr>
+                    <function function-name="TO_DATE" text="TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.')" start-index="7" stop-index="133" literal-start-index="7" literal-stop-index="133">
+                        <literalText>TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="140" stop-index="143" literal-start-index="140" literal-stop-index="143" />
+        </from>
+    </select>
 </sql-parser-test-cases>

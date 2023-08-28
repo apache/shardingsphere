@@ -876,7 +876,11 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.cursorFunction()) {
             return visit(ctx.cursorFunction());
         }
-        throw new IllegalStateException("SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, trimFunction or featureFunction.");
+        if (null != ctx.toDateFunction()) {
+            return visit(ctx.toDateFunction());
+        }
+        throw new IllegalStateException(
+                "SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, trimFunction, toDateFunction or featureFunction.");
     }
     
     @Override
@@ -885,6 +889,11 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         result.getParameters()
                 .add(new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.subquery()))));
         return result;
+    }
+    
+    @Override
+    public ASTNode visitToDateFunction(final OracleStatementParser.ToDateFunctionContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TO_DATE().getText(), getOriginalText(ctx));
     }
     
     @Override
