@@ -45,7 +45,7 @@ public final class ExpectedAssignmentValue extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "common-expression")
     private ExpectedCommonExpression commonExpression;
-
+    
     @XmlElement(name = "case-when-expression")
     private ExpectedCaseWhenExpression caseWhenExpression;
     
