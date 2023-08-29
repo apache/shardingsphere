@@ -469,7 +469,16 @@
             <assignment start-index="19" stop-index="37" literal-stop-index="37">
                 <column name="status" start-index="19" stop-index="24" />
                 <assignment-value>
-                    <common-expression text="status - ?" literal-text="status - 1" start-index="28" stop-index="37" literal-start-index="28" literal-stop-index="37" />
+                    <binary-operation-expression start-index="28" stop-index="37" literal-start-index="28" literal-stop-index="37">
+                        <left>
+                            <column name="status" start-index="28" stop-index="33" literal-start-index="28" literal-stop-index="33" />
+                        </left>
+                        <operator>-</operator>
+                        <right>
+                            <literal-expression value="1" start-index="37" stop-index="37" />
+                            <parameter-marker-expression parameter-index="0" start-index="37" stop-index="37" literal-start-index="37" literal-stop-index="37" />
+                        </right>
+                    </binary-operation-expression>
                 </assignment-value>
             </assignment>
         </set>
@@ -1325,8 +1334,19 @@
             <simple-table name="employees" start-index="7" stop-index="15" />
         </table>
         <set start-index="17" stop-index="40">
-            <assignment start-index="17" stop-index="40">
-                <column name="salary" start-index="21" stop-index="26" />
+            <assignment>
+                <columns name="salary" start-index="21" stop-index="26" literal-start-index="21" literal-stop-index="26" />
+                <assignment-value>
+                    <binary-operation-expression start-index="29" stop-index="40" literal-start-index="29" literal-stop-index="40">
+                        <left>
+                            <column name="salary" start-index="29" stop-index="35" literal-start-index="29" literal-stop-index="35" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <literal-expression value="10" start-index="39" stop-index="40" literal-start-index="39" literal-stop-index="40" />
+                        </right>
+                    </binary-operation-expression>
+                </assignment-value>
             </assignment>
         </set>
         <where start-index="43" stop-index="76">

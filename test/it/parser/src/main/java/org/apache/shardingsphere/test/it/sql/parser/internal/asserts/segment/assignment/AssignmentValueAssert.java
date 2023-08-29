@@ -46,27 +46,46 @@ public final class AssignmentValueAssert {
      * @param assertContext assert context
      * @param actual actual expression segment
      * @param expected expected assignment value
+     * @throws UnsupportedOperationException unsupported assertion segment exception               
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedAssignmentValue expected) {
         if (actual instanceof ParameterMarkerExpressionSegment) {
             ExpressionAssert.assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual, expected.getParameterMarkerExpression());
-        } else if (actual instanceof LiteralExpressionSegment) {
+            return;
+        }
+        if (actual instanceof LiteralExpressionSegment) {
             ExpressionAssert.assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual, expected.getLiteralExpression());
             // FIXME should be CommonExpressionProjection, not ExpressionProjectionSegment
-        } else if (actual instanceof ExpressionProjectionSegment) {
-            ExpressionAssert.assertCommonExpression(assertContext, (ExpressionProjectionSegment) actual, expected.getCommonExpression());
-        } else if (actual instanceof ColumnSegment) {
-            ColumnAssert.assertIs(assertContext, (ColumnSegment) actual, expected.getColumn());
-        } else if (actual instanceof SubqueryExpressionSegment) {
-            ExpressionAssert.assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) actual, expected.getSubquery());
-        } else if (actual instanceof FunctionSegment) {
-            ExpressionAssert.assertFunction(assertContext, (FunctionSegment) actual, expected.getFunction());
-        } else if (actual instanceof CommonExpressionSegment) {
-            ExpressionAssert.assertCommonExpression(assertContext, (CommonExpressionSegment) actual, expected.getCommonExpression());
-        } else if (actual instanceof CaseWhenExpression) {
-            ExpressionAssert.assertCaseWhenExpression(assertContext, (CaseWhenExpression) actual, expected.getCaseWhenExpression());
-        } else if (actual instanceof BinaryOperationExpression) {
-            ExpressionAssert.assertBinaryOperationExpression(assertContext, (BinaryOperationExpression) actual, expected.getBinaryOperationExpression());
+            return;
         }
+        if (actual instanceof ExpressionProjectionSegment) {
+            ExpressionAssert.assertCommonExpression(assertContext, (ExpressionProjectionSegment) actual, expected.getCommonExpression());
+            return;
+        }
+        if (actual instanceof ColumnSegment) {
+            ColumnAssert.assertIs(assertContext, (ColumnSegment) actual, expected.getColumn());
+            return;
+        }
+        if (actual instanceof SubqueryExpressionSegment) {
+            ExpressionAssert.assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) actual, expected.getSubquery());
+            return;
+        }
+        if (actual instanceof FunctionSegment) {
+            ExpressionAssert.assertFunction(assertContext, (FunctionSegment) actual, expected.getFunction());
+            return;
+        }
+        if (actual instanceof CommonExpressionSegment) {
+            ExpressionAssert.assertCommonExpression(assertContext, (CommonExpressionSegment) actual, expected.getCommonExpression());
+            return;
+        }
+        if (actual instanceof CaseWhenExpression) {
+            ExpressionAssert.assertCaseWhenExpression(assertContext, (CaseWhenExpression) actual, expected.getCaseWhenExpression());
+            return;
+        }
+        if (actual instanceof BinaryOperationExpression) {
+            ExpressionAssert.assertBinaryOperationExpression(assertContext, (BinaryOperationExpression) actual, expected.getBinaryOperationExpression());
+            return;
+        }
+        throw new UnsupportedOperationException(String.format("Cannot support assert actual class `%s`", actual.getClass()));
     }
 }
