@@ -84,8 +84,6 @@ public final class AssignmentValueAssert {
         }
         if (actual instanceof BinaryOperationExpression) {
             ExpressionAssert.assertBinaryOperationExpression(assertContext, (BinaryOperationExpression) actual, expected.getBinaryOperationExpression());
-            return;
         }
-        throw new UnsupportedOperationException(String.format("Cannot support assert actual class `%s`", actual.getClass()));
     }
 }
