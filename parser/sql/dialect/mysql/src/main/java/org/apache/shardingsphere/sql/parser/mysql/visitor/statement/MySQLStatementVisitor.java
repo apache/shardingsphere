@@ -594,9 +594,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().getStart().getStartIndex(), ctx.subquery().getStop().getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery()));
             if (null != ctx.EXISTS()) {
                 subquerySegment.setSubqueryType(SubqueryType.EXISTS_SUBQUERY);
-                return new SubqueryExpressionSegment(subquerySegment);
+                return new ExistsSubqueryExpression(startIndex, stopIndex, subquerySegment);
             }
-            return new ExistsSubqueryExpression(startIndex, stopIndex, subquerySegment);
+            return new SubqueryExpressionSegment(subquerySegment);
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
