@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expre
 
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -58,6 +59,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projec
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.impl.DataTypeConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.NotExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.MatchExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.VariableSegmentConverter;
 
 import java.util.Optional;
 
@@ -128,6 +130,9 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         }
         if (segment instanceof CollateExpression) {
             return new CollateExpressionConverter().convert((CollateExpression) segment);
+        }
+        if (segment instanceof VariableSegment) {
+            return new VariableSegmentConverter().convert((VariableSegment) segment);
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }
