@@ -79,6 +79,7 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         register(SQLExtensionOperatorTable.SIGNED_LEFT_SHIFT);
         register(SQLExtensionOperatorTable.XOR);
         register(SQLExtensionOperatorTable.LOGICAL_AND);
+        register(SQLExtensionOperatorTable.REGEXP);
         register(SQLExtensionOperatorTable.NOT_REGEXP);
         register(SQLExtensionOperatorTable.SOUNDS_LIKE);
         register(SQLExtensionOperatorTable.NULL_SAFE);

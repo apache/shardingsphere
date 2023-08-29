@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSeg
 import java.util.Optional;
 
 public final class VariableSegmentConverter implements SQLSegmentConverter<VariableSegment, SqlNode> {
-
+    
     @Override
     public Optional<SqlNode> convert(final VariableSegment segment) {
         return Optional.of(new SqlIdentifier(segment.getText(), SqlParserPos.ZERO));

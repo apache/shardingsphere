@@ -48,6 +48,8 @@ public final class SQLExtensionOperatorTable {
     
     public static final SqlBinaryOperator LOGICAL_AND = new SqlBinaryOperator("&&", SqlKind.OTHER, 24, true, null, null, null);
     
+    public static final SqlBinaryOperator REGEXP = new SqlBinaryOperator("REGEXP", SqlKind.OTHER, 30, true, null, null, null);
+    
     public static final SqlBinaryOperator NOT_REGEXP = new SqlBinaryOperator("NOT REGEXP", SqlKind.OTHER, 30, true, null, null, null);
     
     public static final SqlBinaryOperator SOUNDS_LIKE = new SqlBinaryOperator("SOUNDS LIKE", SqlKind.OTHER, 30, true, null, null, null);
@@ -55,6 +57,6 @@ public final class SQLExtensionOperatorTable {
     public static final MySQLMatchAgainstFunction MATCH_AGAINST = new MySQLMatchAgainstFunction();
     
     public static final SqlBinaryOperator COLLATE = new SqlBinaryOperator("COLLATE", SqlKind.OTHER, 30, true, null, null, null);
-
+    
     public static final SqlBinaryOperator ASSIGNMENT = new SqlBinaryOperator(":=", SqlKind.OTHER, 30, true, null, null, null);
 }
