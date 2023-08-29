@@ -539,7 +539,6 @@
                                         <parameter-marker-expression parameter-index="1" start-index="58" stop-index="58" />
                                     </right>
                                 </binary-operation-expression>
-                                <common-expression text="order_id - ?" literal-text="order_id - 2" start-index="47" stop-index="58" />
                             </right>
                         </binary-operation-expression>
                     </left>

@@ -2067,7 +2067,15 @@
                             <column name="sales_mon" start-index="201" stop-index="209" />
                         </assignment-value>
                         <assignment-value>
-                            <common-expression text="weekly_start_date+1" start-index="212" stop-index="230" />
+                            <binary-operation-expression start-index="212" stop-index="230" literal-start-index="212" literal-stop-index="230">
+                                <left>
+                                    <column name="weekly_start_date" start-index="212" stop-index="228" literal-start-index="212" literal-stop-index="228" />
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <literal-expression value="1" start-index="230" stop-index="230" literal-start-index="230" literal-stop-index="230" />
+                                </right>
+                            </binary-operation-expression>
                         </assignment-value>
                     </value>
                 </values>
