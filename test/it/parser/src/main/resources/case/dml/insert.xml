@@ -1200,12 +1200,36 @@
             </value>
         </values>
         <on-duplicate-key-columns start-index="61" stop-index="126" literal-start-index="65" literal-stop-index="130">
-            <assignment start-index="85" stop-index="126" literal-start-index="89" literal-stop-index="130">
+            <assignment>
                 <column name="salary" start-index="85" stop-index="90" literal-start-index="89" literal-stop-index="94" />
                 <assignment-value>
-                    <!-- FIXME -->
-                    <!--<common-expression text="VALUES(salary)+VALUES(salary)*0.2" />-->
-                    <common-expression text="VALUES(salary)" />
+                    <binary-operation-expression start-index="94" stop-index="126" literal-start-index="98" literal-stop-index="130">
+                        <left>
+                            <binary-operation-expression start-index="94" stop-index="122" literal-start-index="98" literal-stop-index="126">
+                                <left>
+                                    <function function-name="VALUES" text="VALUES(salary)" start-index="94" stop-index="107" literal-start-index="98" literal-stop-index="111">
+                                        <parameter>
+                                            <column name="salary" start-index="101" stop-index="106" literal-start-index="105" literal-stop-index="110" />
+                                        </parameter>
+                                        <literalText>VALUES(salary)</literalText>
+                                    </function>
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <function function-name="VALUES" text="VALUES(salary)" start-index="109" stop-index="122" literal-start-index="113" literal-stop-index="126">
+                                        <parameter>
+                                            <column name="salary" start-index="116" stop-index="121" literal-start-index="120" literal-stop-index="125" />
+                                        </parameter>
+                                        <literalText>VALUES(salary)</literalText>
+                                    </function>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>*</operator>
+                        <right>
+                            <literal-expression value="0.2" start-index="124" stop-index="126" literal-start-index="128" literal-stop-index="130" />
+                        </right>
+                    </binary-operation-expression>
                 </assignment-value>
             </assignment>
         </on-duplicate-key-columns>
@@ -2235,7 +2259,15 @@
             <assignment start-index="96" stop-index="116">
                 <column name="user_id" start-index="96" stop-index="102" />
                 <assignment-value>
-                    <common-expression literal-text="user_id + 1" start-index="106" stop-index="116" />
+                    <binary-operation-expression start-index="106" stop-index="116" literal-start-index="106" literal-stop-index="116">
+                        <left>
+                            <column name="user_id" start-index="106" stop-index="112" literal-start-index="106" literal-stop-index="112" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <literal-expression value="1" start-index="116" stop-index="116" literal-start-index="116" literal-stop-index="116" />
+                        </right>
+                    </binary-operation-expression>
                 </assignment-value>
             </assignment>
             <assignment start-index="119" stop-index="133">
