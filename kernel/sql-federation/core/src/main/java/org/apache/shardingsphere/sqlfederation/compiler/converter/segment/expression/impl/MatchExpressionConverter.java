@@ -51,7 +51,7 @@ public final class MatchExpressionConverter implements SQLSegmentConverter<Match
         sqlNodes.add(searchModifier);
         return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.MATCH_AGAINST, sqlNodes, SqlParserPos.ZERO));
     }
-
+    
     private void addOwnerNames(final List<String> names, final OwnerSegment owner) {
         if (null != owner) {
             addOwnerNames(names, owner.getOwner().orElse(null));
