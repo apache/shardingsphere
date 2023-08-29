@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.as
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
@@ -61,6 +62,8 @@ public final class AssignmentValueAssert {
             ExpressionAssert.assertFunction(assertContext, (FunctionSegment) actual, expected.getFunction());
         } else if (actual instanceof CommonExpressionSegment) {
             ExpressionAssert.assertCommonExpression(assertContext, (CommonExpressionSegment) actual, expected.getCommonExpression());
+        } else if (actual instanceof CaseWhenExpression) {
+            ExpressionAssert.assertCaseWhenExpression(assertContext, (CaseWhenExpression) actual, expected.getCaseWhenExpression());
         }
     }
 }

@@ -899,7 +899,6 @@
                                 <literal-expression value="NOT NULL" start-index="44" stop-index="51" />
                             </right>
                         </binary-operation-expression>
-                        <common-expression text="item_id IS NOT NULL" start-index="33" stop-index="51" />
                     </left>
                     <operator>AND</operator>
                     <right>
@@ -951,7 +950,6 @@
                                 <literal-expression value="NOT NULL" start-index="44" stop-index="51" />
                             </right>
                         </binary-operation-expression>
-                        <common-expression text="item_id IS NOT NULL" start-index="33" stop-index="51" />
                     </left>
                     <operator>AND</operator>
                     <right>
