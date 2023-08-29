@@ -17,5 +17,6 @@
   -->
 
 <sql-node-converter-test-cases>
-    <test-cases sql-case-id="select_with_exists_sub_query_with_project" expected-sql="SELECT EXISTS (SELECT 1 FROM t_order)" db-types="MySQL, PostgreSQL,openGauss" />
+    <test-cases sql-case-id="select_with_exists_sub_query_with_project" expected-sql="SELECT EXISTS (SELECT 1 FROM `t_order`)" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_exists_sub_query_with_project" expected-sql="SELECT EXISTS (SELECT 1 FROM &quot;t_order&quot;)" db-types="PostgreSQL,openGauss" />
 </sql-node-converter-test-cases>
