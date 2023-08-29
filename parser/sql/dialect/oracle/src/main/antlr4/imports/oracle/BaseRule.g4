@@ -560,7 +560,7 @@ partitionSetName
     ;
 
 partitionKeyValue
-    : INTEGER_ | dateTimeLiterals
+    : INTEGER_ | dateTimeLiterals | toDateFunction
     ;
 
 subpartitionKeyValue
