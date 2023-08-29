@@ -548,6 +548,17 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.privateExprOfDb()) {
             return visit(ctx.privateExprOfDb());
         }
+        if (null != ctx.LP_()) {
+            if (1 == ctx.expr().size()) {
+                return visit(ctx.expr(0));
+            } else {
+                ListExpression result = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
+                for (ExprContext each : ctx.expr()) {
+                    result.getItems().add((ExpressionSegment) visit(each));
+                }
+                return result;
+            }
+        }
         return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText());
     }
     
