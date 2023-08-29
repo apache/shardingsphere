@@ -62,7 +62,7 @@ class ConditionValueInOperatorGeneratorTest {
         assertThat(((ListShardingConditionValue<?>) shardingConditionValue.get()).getValues().iterator().next(), instanceOf(Date.class));
         assertTrue(shardingConditionValue.get().getParameterMarkerIndexes().isEmpty());
     }
-
+    
     @SuppressWarnings("rawtypes")
     @Test
     void assertNullExpression() {
@@ -76,7 +76,7 @@ class ConditionValueInOperatorGeneratorTest {
         assertTrue(shardingConditionValue.get().getParameterMarkerIndexes().isEmpty());
         assertThat(shardingConditionValue.get().toString(), is("tbl.id in (,)"));
     }
-
+    
     @SuppressWarnings("rawtypes")
     @Test
     void assertNullAndCommonExpression() {
