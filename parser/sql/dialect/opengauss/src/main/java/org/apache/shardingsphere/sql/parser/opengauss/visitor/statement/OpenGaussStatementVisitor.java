@@ -111,7 +111,12 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowSpecificationContext;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.*;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
