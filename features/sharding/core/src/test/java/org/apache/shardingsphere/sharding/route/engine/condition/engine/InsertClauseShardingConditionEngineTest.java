@@ -209,12 +209,12 @@ class InsertClauseShardingConditionEngineTest {
         assertThat(actual.get(0).getValues().get(0).getColumnName(), is("foo_col_2"));
         assertThat(actual.get(0).getValues().get(0).getTableName(), is("foo_table"));
     }
-
+    
     @Test
     void assertCreateShardingConditionsWithCaseSensitiveField() {
         when(shardingRule.findShardingColumn("foo_Col_3", "foo_table")).thenReturn(Optional.of("foo_Col_3"));
         List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
         assertThat(actual.size(), is(1));
-
+        
     }
 }
