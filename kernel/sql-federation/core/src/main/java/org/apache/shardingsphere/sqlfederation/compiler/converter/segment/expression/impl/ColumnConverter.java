@@ -42,7 +42,7 @@ public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment,
         names.add(segment.getIdentifier().getValue());
         return Optional.of(new SqlIdentifier(names, SqlParserPos.ZERO));
     }
-
+    
     private void addOwnerNames(final List<String> names, final OwnerSegment owner) {
         if (null != owner) {
             addOwnerNames(names, owner.getOwner().orElse(null));
