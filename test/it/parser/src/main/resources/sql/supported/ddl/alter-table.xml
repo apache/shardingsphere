@@ -214,4 +214,8 @@
     <sql-case id="alter_table_modify_subpartition_drop_values" value="ALTER TABLE quarterly_regional_sales MODIFY SUBPARTITION q1_1999_southeast DROP VALUES ('KS')" db-types="Oracle" />
     <sql-case id="alter_table_modify_nested_table_return_as_value" value="ALTER TABLE print_media MODIFY NESTED TABLE ad_textdocs_ntab RETURN AS VALUE" db-types="Oracle" />
     <sql-case id="alter_table_modify_nested_owner_table_return_as_value" value="ALTER TABLE print_media MODIFY NESTED TABLE mytable.ad_textdocs_ntab RETURN AS VALUE" db-types="Oracle" />
+    <sql-case id="alter_table_modify_partition_storage" value="ALTER TABLE sales MODIFY PARTITION sales_q1 STORAGE (MAXEXTENTS 10)" db-types="Oracle" />
+    <sql-case id="alter_table_rename_partition" value="ALTER TABLE sales RENAME PARTITION sales_q4_2003 TO sales_currentq" db-types="Oracle" />
+    <sql-case id="alter_table_set_interval_expr" value="ALTER TABLE sales SET INTERVAL (NUMTOYMINTERVAL(1,'MONTH'))" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_primary_key_disable_validate" value="ALTER TABLE sales_01_2001 ADD CONSTRAINT sales_pk_jan01 PRIMARY KEY (sales_transaction_id) DISABLE VALIDATE" db-types="Oracle" />
 </sql-cases>
