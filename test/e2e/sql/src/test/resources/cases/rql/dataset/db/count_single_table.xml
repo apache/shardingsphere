@@ -20,5 +20,5 @@
         <column name="database" />
         <column name="count" />
     </metadata>
-    <row values="db| 11" />
+    <row values="db| 9" />
 </dataset>

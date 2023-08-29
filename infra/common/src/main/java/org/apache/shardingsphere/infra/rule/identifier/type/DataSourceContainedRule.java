@@ -29,7 +29,7 @@ public interface DataSourceContainedRule extends ShardingSphereRule {
     
     /**
      * Get data source mapper.
-     *
+     * 
      * @return data source mapper
      */
     Map<String, Collection<String>> getDataSourceMapper();

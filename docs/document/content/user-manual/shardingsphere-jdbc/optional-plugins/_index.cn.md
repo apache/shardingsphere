@@ -50,6 +50,5 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
   - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-consul`，基于 Consul 的持久化实现
 - XA 分布式事务管理器
   - `org.apache.shardingsphere:shardingsphere-transaction-xa-narayana`，基于 Narayana 的 XA 分布式事务管理器
-  - `org.apache.shardingsphere:shardingsphere-transaction-xa-bitronix`，基于 Bitronix 的 XA 分布式事务管理器
 - SQL 翻译
   - `org.apache.shardingsphere:shardingsphere-sql-translator-jooq-provider`，使用 JooQ 的 SQL 翻译器

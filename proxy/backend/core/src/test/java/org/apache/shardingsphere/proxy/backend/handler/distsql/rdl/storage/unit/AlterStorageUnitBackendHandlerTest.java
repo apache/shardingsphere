@@ -21,15 +21,16 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -70,7 +71,7 @@ class AlterStorageUnitBackendHandlerTest {
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         handler = new AlterStorageUnitBackendHandler(mock(AlterStorageUnitStatement.class), connectionSession);
         Plugins.getMemberAccessor().set(
-                handler.getClass().getDeclaredField("validateHandler"), handler, mock(DataSourcePropertiesValidateHandler.class));
+                handler.getClass().getDeclaredField("validateHandler"), handler, mock(DataSourcePoolPropertiesValidateHandler.class));
     }
     
     @Test
@@ -78,8 +79,10 @@ class AlterStorageUnitBackendHandlerTest {
         ContextManager contextManager = mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_0")));
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(mockHikariDataSource("ds_0"));
+        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         assertThat(handler.execute("foo_db", createAlterStorageUnitStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
     }
@@ -103,8 +106,10 @@ class AlterStorageUnitBackendHandlerTest {
         ContextManager contextManager = mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_1")));
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(mockHikariDataSource("ds_1"));
+        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         assertThrows(InvalidStorageUnitsException.class, () -> handler.execute("foo_db", createAlterStorageUnitStatement("ds_0")));
     }

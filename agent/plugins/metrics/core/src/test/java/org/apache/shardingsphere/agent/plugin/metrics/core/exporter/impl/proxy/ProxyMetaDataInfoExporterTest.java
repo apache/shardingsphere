@@ -25,7 +25,8 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.Met
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -36,7 +37,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -75,7 +75,7 @@ class ProxyMetaDataInfoExporterTest {
     
     private ContextManager mockContextManager() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("ds_0", mock(DataSource.class)));
+        when(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
         when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getDatabases()).thenReturn(Collections.singletonMap("sharding_db", database));

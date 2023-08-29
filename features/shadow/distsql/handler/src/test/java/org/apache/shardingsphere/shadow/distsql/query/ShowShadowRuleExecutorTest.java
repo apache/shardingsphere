@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -84,7 +84,7 @@ class ShowShadowRuleExecutorTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
-        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule)));
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
         return result;
     }
     
@@ -92,8 +92,8 @@ class ShowShadowRuleExecutorTest {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.getDataSources().add(new ShadowDataSourceConfiguration("shadow_rule", "source", "shadow"));
         result.getShadowAlgorithms().put("user_id_select_match_algorithm", new AlgorithmConfiguration("REGEX_MATCH", new Properties()));
-        result.getTables().put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow_rule"), Collections.singletonList("user_id_select_match_algorithm")));
-        result.getTables().put("t_order_item", new ShadowTableConfiguration(Collections.singletonList("shadow_rule"), Collections.singletonList("user_id_select_match_algorithm")));
+        result.getTables().put("t_order", new ShadowTableConfiguration(Collections.singleton("shadow_rule"), Collections.singleton("user_id_select_match_algorithm")));
+        result.getTables().put("t_order_item", new ShadowTableConfiguration(Collections.singleton("shadow_rule"), Collections.singleton("user_id_select_match_algorithm")));
         return result;
     }
 }

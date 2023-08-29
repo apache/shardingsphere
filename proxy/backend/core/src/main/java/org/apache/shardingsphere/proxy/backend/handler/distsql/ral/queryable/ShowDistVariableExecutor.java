@@ -106,7 +106,7 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
     }
     
     @Override
-    public String getType() {
-        return ShowDistVariableStatement.class.getName();
+    public Class<ShowDistVariableStatement> getType() {
+        return ShowDistVariableStatement.class;
     }
 }

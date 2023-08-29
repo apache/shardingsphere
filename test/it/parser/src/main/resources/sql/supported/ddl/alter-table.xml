@@ -17,6 +17,31 @@
   -->
 
 <sql-cases>
+    <sql-case id="alter_table_add_constraint_foreign_key_references_enable_novalidate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) ENABLE NOVALIDATE" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_foreign_key_references_enable_validate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) ENABLE VALIDATE" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_shrink_space" value="ALTER TABLE employees MODIFY LOB (perf_review) (SHRINK SPACE)" db-types="Oracle" />
+    <sql-case id="alter_table_set_unused" value="ALTER TABLE hr.admin_emp SET UNUSED (hiredate, mgr)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_cache" value="ALTER TABLE employees MODIFY LOB (resume) (CACHE)" db-types="Oracle" />
+    <sql-case id="alter_table_move_storage_tablespace" value="ALTER TABLE hr.admin_emp MOVE STORAGE (INITIAL 20K NEXT 40K MINEXTENTS 2 MAXEXTENTS 20 PCTINCREASE 0) TABLESPACE hr_tbs" db-types="Oracle" />
+    <sql-case id="alter_table_modify1" value="ALTER TABLE employee MODIFY (first_name DECRYPT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify2" value="ALTER TABLE employee MODIFY (first_name ENCRYPT SALT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify3" value="ALTER TABLE employee MODIFY (first_name ENCRYPT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify4" value="ALTER TABLE employee MODIFY (first_name ENCRYPT NO SALT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify5" value="ALTER TABLE employee MODIFY (first_name ENCRYPT 'NOMAC')" db-types="Oracle" />
+    <sql-case id="alter_table_modify6" value="ALTER TABLE employees MODIFY (emp_ssn ENCRYPT)" db-types="Oracle" />
+    <sql-case id="alter_table_modify7" value="ALTER TABLE locations MODIFY PRIMARY KEY DISABLE CASCADE" db-types="Oracle" />
+    <sql-case id="alter_table_modify8" value="ALTER TABLE employees MODIFY (salary ENCRYPT USING 'AES256' 'NOMAC')" db-types="Oracle" />
+    <sql-case id="alter_table_modify9" value="ALTER TABLE sales MODIFY CONSTRAINT time_view_fk RELY" db-types="Oracle" />
+    <sql-case id="alter_table_modify10" value="ALTER TABLE locations_demo MODIFY (country_id CONSTRAINT country_nn NOT NULL)" db-types="Oracle" />
+    <sql-case id="alter_table_modify11" value="ALTER TABLE product_information MODIFY (min_price DEFAULT NULL)" db-types="Oracle" />
+    <sql-case id="alter_table_modify12" value="ALTER TABLE product_information MODIFY (min_price DEFAULT 10)" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint" value="ALTER TABLE employees ADD (CONSTRAINT emp_emp_id_pk PRIMARY KEY (employee_id), CONSTRAINT emp_dept_fk FOREIGN KEY (department_id) REFERENCES departments, CONSTRAINT emp_job_fk FOREIGN KEY (job_id) REFERENCES jobs (job_id), CONSTRAINT emp_manager_fk FOREIGN KEY (manager_id) REFERENCES employees)" db-types="Oracle" />
+    <sql-case id="alter_table_no_flashback_archive" value="ALTER TABLE employee NO FLASHBACK ARCHIVE" db-types="Oracle" />
+    <sql-case id="alter_table_move_tablespace_overflow_tablespace" value="ALTER TABLE admin_docindex MOVE TABLESPACE admin_tbs2 OVERFLOW TABLESPACE admin_tbs3" db-types="Oracle" />
+    <sql-case id="alter_table_move_nocompress" value="ALTER TABLE admin_iot5 MOVE NOCOMPRESS" db-types="Oracle" />
+    <sql-case id="alter_table_enable_row_movement1" value="ALTER TABLE SYSTEM.AUD$ ENABLE ROW MOVEMENT" db-types="Oracle" />
+    <sql-case id="alter_table_enable_row_movement2" value="ALTER TABLE employees_test ENABLE ROW MOVEMENT" db-types="Oracle" />
+    <sql-case id="alter_table_shrink_space_cascade" value="ALTER TABLE SYSTEM.AUD$ SHRINK SPACE CASCADE" db-types="Oracle" />
     <sql-case id="alter_table" value="ALTER TABLE t_log ADD name varchar(10)" db-types="MySQL, PostgreSQL,openGauss" />
     <sql-case id="alter_table_oracle" value="ALTER TABLE t_log ADD (name varchar(10))" db-types="Oracle" />
     <sql-case id="alter_table_not_null" value="alter table t1 add c2 real  not null" db-types="MySQL" />
@@ -27,6 +52,7 @@
     <sql-case id="alter_table_modify_unsigned_zerofill_not_null" value="alter table t1 modify c1 real unsigned zerofill not null" db-types="MySQL" />
     <sql-case id="alter_table_change_unsigned_zerofill_not_null" value="alter table t1 change c1 c2 real unsigned zerofill not null" db-types="MySQL" />
     <sql-case id="alter_table_add_partition" value="alter table t1 add partition partitions 10" db-types="MySQL" />
+    <sql-case id="alter_table_add_partition_nested_table_col_properties" value="ALTER TABLE print_media_part ADD PARTITION p4 VALUES LESS THAN (400) LOB(ad_photo, ad_composite) STORE AS (TABLESPACE omf_ts1) LOB(ad_sourcetext, ad_finaltext) STORE AS (TABLESPACE omf_ts1) NESTED TABLE ad_textdocs_ntab STORE AS nt_p3" db-types="Oracle" />
     <sql-case id="alter_table_partition" value="alter table t1 partition by key(c1) partitions 5" db-types="MySQL" />
     <sql-case id="alter_table_if_exists_only" value="ALTER TABLE IF EXISTS ONLY t_log ADD name varchar" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_table_with_force" value="ALTER TABLE t_order FORCE" db-types="MySQL" />
@@ -158,4 +184,34 @@
     <sql-case id="alter_table_drop_expression" value="ALTER TABLE t_order ALTER COLUMN a DROP EXPRESSION;" db-types="PostgreSQL" />
     <sql-case id="alter_table_modify_column_precision_with_decimal" value="ALTER TABLE t_order MODIFY COLUMN a VARCHAR(10.000000000001)" db-types="MySQL" />
     <sql-case id="alter_table_order_by" value="ALTER TABLE t_order ORDER BY t_order.id, t_order.status desc" db-types="MySQL" />
+    <sql-case id="alter_table_add_supplemental_log_group1" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG GROUP emp_fulltime (EMPLOYEE_ID, LAST_NAME, DEPARTMENT_ID)" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_group2" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG GROUP emp_parttime (EMPLOYEE_ID, LAST_NAME, DEPARTMENT_ID) ALWAYS" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_group3" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG GROUP emp_parttime(DEPARTMENT_ID NO LOG, EMPLOYEE_ID)" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_data1" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG DATA (PRIMARY KEY) COLUMNS" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_data2" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG DATA (UNIQUE) COLUMNS" db-types="Oracle" />
+    <sql-case id="alter_table_add_supplemental_log_data3" value="ALTER TABLE HR.EMPLOYEES ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS" db-types="Oracle" />
+    <sql-case id="alter_table_move" value="ALTER TABLE admin_docindex MOVE" db-types="Oracle" />
+    <sql-case id="alter_table_move_online" value="ALTER TABLE admin_docindex MOVE ONLINE" db-types="Oracle" />
+    <sql-case id="alter_table_modify" value="ALTER TABLE customers MODIFY (online_acct_pw DECRYPT)" db-types="Oracle" />
+    <sql-case id="alter_table_add_overflow_tablespace" value="ALTER TABLE admin_iot3 ADD OVERFLOW TABLESPACE admin_tbs2" db-types="Oracle" />
+    <sql-case id="alter_table_add_overflow" value="ALTER TABLE countries_demo ADD OVERFLOW" db-types="Oracle" />
+    <sql-case id="alter_table_enable_novalidate_constraint" value="ALTER TABLE dept ENABLE NOVALIDATE CONSTRAINT dname_ukey" db-types="Oracle" />
+    <sql-case id="alter_table_add_encrypt_no_salt" value="ALTER TABLE mytable ADD (online_acct_pw VARCHAR2(8) ENCRYPT NO SALT 'NOMAC')" db-types="Oracle" />
+    <sql-case id="alter_table_enable_novalidate_primary_key_enable_novalidate_constraint" value="ALTER TABLE mytable ENABLE NOVALIDATE PRIMARY KEY ENABLE NOVALIDATE CONSTRAINT emp_last_name_nn" db-types="Oracle" />
+    <sql-case id="alter_table_modify_partition_coalesce_subpartition" value="ALTER TABLE mytable MODIFY PARTITION us_locations COALESCE SUBPARTITION" db-types="Oracle" />
+    <sql-case id="alter_table_set_subpartition_template1" value="ALTER TABLE mytable SET SUBPARTITION TEMPLATE (SUBPARTITION e TABLESPACE ts1, SUBPARTITION f TABLESPACE ts2, SUBPARTITION g TABLESPACE ts3, SUBPARTITION h TABLESPACE ts4)" db-types="Oracle" />
+    <sql-case id="alter_table_set_subpartition_template2" value="ALTER TABLE emp_sub_template SET SUBPARTITION TEMPLATE()" db-types="Oracle" />
+    <sql-case id="alter_table_modify_default_attributes_for_partition_tablespace" value="ALTER TABLE emp MODIFY DEFAULT ATTRIBUTES FOR PARTITION p1 TABLESPACE ts1" db-types="Oracle" />
+    <sql-case id="alter_table_ref_with_rowid" value="ALTER TABLE emp ADD (REF(column_value) WITH ROWID)" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_foreign_key_references_disable_novalidate" value="ALTER TABLE sales ADD (CONSTRAINT time_view_fk FOREIGN KEY (time_id) REFERENCES time_view(time_id) DISABLE NOVALIDATE)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_nocache" value="ALTER TABLE employees MODIFY LOB (resume) (NOCACHE)" db-types="Oracle" />
+    <sql-case id="alter_table_move_tablespace1" value="ALTER TABLE people_tab MOVE TABLESPACE system" db-types="Oracle" />
+    <sql-case id="alter_table_move_tablespace2" value="ALTER TABLE people_column_nt MOVE TABLESPACE example" db-types="Oracle" />
+    <sql-case id="alter_table_modify_subpartition_rebuild_unusable_local_indexes" value="ALTER TABLE emp MODIFY SUBPARTITION p3_s1 REBUILD UNUSABLE LOCAL INDEXES" db-types="Oracle" />
+    <sql-case id="alter_table_modify_subpartition_add_values" value="ALTER TABLE quarterly_regional_sales MODIFY SUBPARTITION q1_1999_southeast ADD VALUES ('KS')" db-types="Oracle" />
+    <sql-case id="alter_table_add_partition_values_less_than1" value="ALTER TABLE quarterly_regional_sales ADD PARTITION q1_2000 VALUES LESS THAN (TO_DATE('1-APR-2000','DD-MON-YYYY')) STORAGE (INITIAL 20K NEXT 20K) TABLESPACE ts3 NOLOGGING(SUBPARTITION q1_2000_northwest VALUES ('OR', 'WA'), SUBPARTITION q1_2000_southwest VALUES ('AZ', 'UT', 'NM'), SUBPARTITION q1_2000_northeast VALUES ('NY', 'VM', 'NJ'), SUBPARTITION q1_2000_southeast VALUES ('FL', 'GA'), SUBPARTITION q1_2000_northcentral VALUES ('SD', 'WI'), SUBPARTITION q1_2000_southcentral VALUES ('OK', 'TX'))" db-types="Oracle" />
+    <sql-case id="alter_table_add_partition_values_less_than2" value="ALTER TABLE sales ADD PARTITION jan99 VALUES LESS THAN ('01-FEB-1999') TABLESPACE tsx" db-types="Oracle" />
+    <sql-case id="alter_table_modify_subpartition_drop_values" value="ALTER TABLE quarterly_regional_sales MODIFY SUBPARTITION q1_1999_southeast DROP VALUES ('KS')" db-types="Oracle" />
+    <sql-case id="alter_table_modify_nested_table_return_as_value" value="ALTER TABLE print_media MODIFY NESTED TABLE ad_textdocs_ntab RETURN AS VALUE" db-types="Oracle" />
+    <sql-case id="alter_table_modify_nested_owner_table_return_as_value" value="ALTER TABLE print_media MODIFY NESTED TABLE mytable.ad_textdocs_ntab RETURN AS VALUE" db-types="Oracle" />
 </sql-cases>

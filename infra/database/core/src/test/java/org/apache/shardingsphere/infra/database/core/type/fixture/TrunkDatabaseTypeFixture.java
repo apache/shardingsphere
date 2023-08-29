@@ -18,44 +18,15 @@
 package org.apache.shardingsphere.infra.database.core.type.fixture;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public final class TrunkDatabaseTypeFixture implements DatabaseType {
     
     @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
-    }
-    
-    @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
-    }
-    
-    @Override
-    public boolean isReservedWord(final String identifier) {
-        return "SELECT".equalsIgnoreCase(identifier);
-    }
-    
-    @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton("jdbc:trunk:");
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return new HashMap<>();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return Collections.emptyList();
     }
     
     @Override

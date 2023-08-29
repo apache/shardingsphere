@@ -37,10 +37,10 @@ class YamlJdbcConfigurationTest {
     
     @Test
     void assertConstructionWithUrl() {
-        assertYamlJdbcConfiguration(YamlEngine.unmarshal(YamlEngine.marshal(getDataSourcePropsWithUrl()), YamlJdbcConfiguration.class));
+        assertYamlJdbcConfiguration(YamlEngine.unmarshal(YamlEngine.marshal(getDataSourcePoolPropertiesWithUrl()), YamlJdbcConfiguration.class));
     }
     
-    private Map<String, String> getDataSourcePropsWithUrl() {
+    private Map<String, String> getDataSourcePoolPropertiesWithUrl() {
         Map<String, String> result = new HashMap<>(3, 1F);
         result.put("url", JDBC_URL);
         result.put("username", USERNAME);

@@ -20,5 +20,5 @@
         <column name="database" />
         <column name="count" />
     </metadata>
-    <row values="dbtbl_with_readwrite_splitting| 7" />
+    <row values="dbtbl_with_readwrite_splitting| 5" />
 </dataset>

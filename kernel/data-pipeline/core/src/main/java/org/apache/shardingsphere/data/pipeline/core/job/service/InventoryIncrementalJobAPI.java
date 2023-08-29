@@ -19,26 +19,29 @@ package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Inventory incremental job API.
  */
 public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
+    
+    @Override
+    InventoryIncrementalProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     /**
      * Alter process configuration.
@@ -99,24 +102,15 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
     
     /**
-     * Build data consistency calculate algorithm.
-     *
-     * @param algorithmType algorithm type
-     * @param algorithmProps algorithm properties
-     * @return calculate algorithm
-     */
-    DataConsistencyCalculateAlgorithm buildDataConsistencyCalculateAlgorithm(String algorithmType, Properties algorithmProps);
-    
-    /**
-     * Do data consistency check.
+     * Build pipeline data consistency checker.
      *
      * @param pipelineJobConfig job configuration
-     * @param calculateAlgorithm calculate algorithm
+     * @param processContext process context
      * @param progressContext consistency check job item progress context
-     * @return each logic table check result
+     * @return all logic tables check result
      */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(PipelineJobConfiguration pipelineJobConfig, DataConsistencyCalculateAlgorithm calculateAlgorithm,
-                                                                 ConsistencyCheckJobItemProgressContext progressContext);
+    PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(PipelineJobConfiguration pipelineJobConfig, InventoryIncrementalProcessContext processContext,
+                                                                       ConsistencyCheckJobItemProgressContext progressContext);
     
     /**
      * Aggregate data consistency check results.
@@ -125,14 +119,15 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      * @param checkResults check results
      * @return check success or not
      */
-    boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResults);
+    boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, TableDataConsistencyCheckResult> checkResults);
     
     /**
      * Commit pipeline job.
      *
      * @param jobId job ID
+     * @throws SQLException sql exception
      */
-    void commit(String jobId);
+    void commit(String jobId) throws SQLException;
     
     /**
      * Rollback pipeline job.

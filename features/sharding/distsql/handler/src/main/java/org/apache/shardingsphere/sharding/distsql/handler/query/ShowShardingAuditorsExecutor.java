@@ -57,7 +57,7 @@ public final class ShowShardingAuditorsExecutor implements RQLExecutor<ShowShard
     }
     
     @Override
-    public String getType() {
-        return ShowShardingAuditorsStatement.class.getName();
+    public Class<ShowShardingAuditorsStatement> getType() {
+        return ShowShardingAuditorsStatement.class;
     }
 }

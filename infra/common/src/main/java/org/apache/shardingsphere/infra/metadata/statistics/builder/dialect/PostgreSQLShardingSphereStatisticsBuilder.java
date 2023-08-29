@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.statistics.builder.dialect;
 
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -29,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaD
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,6 +49,8 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
     
     private static final Map<String, Collection<String>> INIT_DATA_SCHEMA_TABLES = new LinkedHashMap<>();
     
+    private final SystemDatabase systemDatabase = new SystemDatabase(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+    
     static {
         COLLECTED_SCHEMA_TABLES.put("shardingsphere", Collections.singletonList("sharding_table_statistics"));
         COLLECTED_SCHEMA_TABLES.put("pg_catalog", Arrays.asList("pg_class", "pg_namespace"));
@@ -58,7 +61,7 @@ public final class PostgreSQLShardingSphereStatisticsBuilder implements Sharding
     public ShardingSphereStatistics build(final ShardingSphereMetaData metaData) {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         for (Entry<String, ShardingSphereDatabase> entry : metaData.getDatabases().entrySet()) {
-            if (TypedSPILoader.getService(DatabaseType.class, "PostgreSQL").getSystemDatabaseSchemaMap().containsKey(entry.getKey())) {
+            if (systemDatabase.getSystemDatabaseSchemaMap().containsKey(entry.getKey())) {
                 continue;
             }
             ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();

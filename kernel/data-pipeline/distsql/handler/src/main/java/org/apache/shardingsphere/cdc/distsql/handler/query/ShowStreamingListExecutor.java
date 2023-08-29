@@ -50,7 +50,7 @@ public final class ShowStreamingListExecutor implements QueryableRALExecutor<Sho
     }
     
     @Override
-    public String getType() {
-        return ShowStreamingListStatement.class.getName();
+    public Class<ShowStreamingListStatement> getType() {
+        return ShowStreamingListStatement.class;
     }
 }

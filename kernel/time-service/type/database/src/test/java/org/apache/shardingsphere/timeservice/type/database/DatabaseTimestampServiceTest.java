@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.timeservice.type.database;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.timeservice.spi.TimestampService;

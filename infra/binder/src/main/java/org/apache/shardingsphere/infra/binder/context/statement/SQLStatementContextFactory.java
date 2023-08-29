@@ -59,10 +59,11 @@ import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowCreateTa
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowTableStatusStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowTablesStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.MergeStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dcl.DenyUserStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
@@ -109,6 +110,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
 import java.util.List;
@@ -172,6 +174,9 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof MySQLLoadXMLStatement) {
             return new LoadXMLStatementContext((MySQLLoadXMLStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof OracleMergeStatement) {
+            return new MergeStatementContext((OracleMergeStatement) sqlStatement);
         }
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }

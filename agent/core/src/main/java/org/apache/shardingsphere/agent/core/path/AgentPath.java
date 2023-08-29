@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.agent.core.path;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.core.util.AgentPreconditions;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -47,7 +47,7 @@ public final class AgentPath {
     private static File getJarFile(final String url) {
         try {
             File result = new File(new URL(url.substring(url.indexOf("file:"), url.indexOf('!'))).toURI());
-            Preconditions.checkState(result.exists(), "Can not locate agent jar file by URL `%s`.", url);
+            AgentPreconditions.checkState(result.exists(), String.format("Can not locate agent jar file by URL `%s`.", url));
             return result;
         } catch (final MalformedURLException | URISyntaxException ex) {
             throw new IllegalStateException(String.format("Can not locate agent jar file by URL `%s`.", url), ex);

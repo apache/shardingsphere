@@ -130,8 +130,12 @@ public final class ProjectionAssert {
     }
     
     private static void assertColumnProjection(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) {
-        IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, "Column projection");
         assertThat(assertContext.getText("Column projection alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
+        if (null != actual.getColumn().getNestedObjectAttributes()) {
+            assertThat(assertContext.getText("Nested Object attributes assertion error: "), actual.getColumn().getExpression(), is(expected.getName()));
+        } else {
+            IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, "Column projection");
+        }
         if (null == expected.getOwner()) {
             assertFalse(actual.getColumn().getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
         } else {
@@ -157,9 +161,8 @@ public final class ProjectionAssert {
         String expectedText = SQLCaseType.LITERAL == assertContext.getCaseType() && null != expected.getLiteralText()
                 ? expected.getLiteralText()
                 : expected.getText();
-        assertThat(assertContext.getText("Expression projection text assertion error: "),
-                actual.getText(), is(expectedText));
-        if (expected.getExpr() != null) {
+        assertThat(assertContext.getText("Expression projection text assertion error: "), actual.getText(), is(expectedText));
+        if (null != expected.getExpr()) {
             ExpressionAssert.assertExpression(assertContext, actual.getExpr(), expected.getExpr());
         }
     }

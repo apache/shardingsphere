@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.yaml;
 
-import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.agent.core.util.AgentPreconditions;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
@@ -34,7 +34,7 @@ public final class AgentYamlConstructor extends Constructor {
     
     @Override
     protected Class<?> getClassForName(final String className) throws ClassNotFoundException {
-        Preconditions.checkArgument(className.equals(rootClass.getName()), "Class `%s` is not accepted", className);
+        AgentPreconditions.checkState(className.equals(rootClass.getName()), String.format("Class `%s` is not accepted", className));
         return super.getClassForName(className);
     }
 }

@@ -53,7 +53,7 @@ public final class AlterSQLFederationRuleStatementUpdater implements GlobalRuleR
     }
     
     @Override
-    public String getType() {
-        return AlterSQLFederationRuleStatement.class.getName();
+    public Class<AlterSQLFederationRuleStatement> getType() {
+        return AlterSQLFederationRuleStatement.class;
     }
 }

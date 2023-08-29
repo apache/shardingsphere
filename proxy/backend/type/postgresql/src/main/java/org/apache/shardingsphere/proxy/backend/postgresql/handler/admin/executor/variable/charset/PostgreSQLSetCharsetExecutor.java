@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset;
 
-import org.apache.shardingsphere.dialect.exception.data.InvalidParameterValueException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetVariableProvider;
 
 import java.nio.charset.Charset;

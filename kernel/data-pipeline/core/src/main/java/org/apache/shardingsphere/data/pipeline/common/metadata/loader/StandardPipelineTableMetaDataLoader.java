@@ -26,8 +26,8 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineIndexM
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -76,8 +76,8 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
     
     private void loadTableMetaData(final String schemaName, final String tableNamePattern) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            Map<TableName, PipelineTableMetaData> tableMetaDataMap = loadTableMetaData0(
-                    connection, TypedSPILoader.getService(DatabaseType.class, dataSource.getDatabaseType().getType()).isSchemaAvailable() ? schemaName : null, tableNamePattern);
+            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(dataSource.getDatabaseType()).getDialectDatabaseMetaData();
+            Map<TableName, PipelineTableMetaData> tableMetaDataMap = loadTableMetaData0(connection, dialectDatabaseMetaData.isSchemaAvailable() ? schemaName : null, tableNamePattern);
             this.tableMetaDataMap.putAll(tableMetaDataMap);
         }
     }
@@ -106,7 +106,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
                     String dataTypeName = resultSet.getString("TYPE_NAME");
                     boolean primaryKey = primaryKeys.contains(columnName);
                     boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
-                    boolean isUniqueKey = primaryKey || uniqueKeys.values().stream().anyMatch(names -> names.contains(columnName));
+                    boolean isUniqueKey = uniqueKeys.values().stream().anyMatch(names -> names.contains(columnName));
                     PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(ordinalPosition, columnName, dataType, dataTypeName, isNullable, primaryKey, isUniqueKey);
                     columnMetaDataMap.put(columnName, columnMetaData);
                 }

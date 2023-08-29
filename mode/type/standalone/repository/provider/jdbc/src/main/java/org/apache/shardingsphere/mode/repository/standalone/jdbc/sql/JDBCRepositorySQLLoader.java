@@ -70,7 +70,7 @@ public final class JDBCRepositorySQLLoader {
         while (resources.hasMoreElements()) {
             URL resource = resources.nextElement();
             result = JAR_URL_PROTOCOLS.contains(resource.getProtocol()) ? loadFromJar(resource, type) : loadFromDirectory(resource, type);
-            if (null != result && Objects.equals(result.isDefault(), false)) {
+            if (null != result && !result.isDefault()) {
                 break;
             }
         }
@@ -85,8 +85,7 @@ public final class JDBCRepositorySQLLoader {
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes) throws IOException {
                 if (file.toString().endsWith(FILE_EXTENSION)) {
-                    JDBCRepositorySQL provider = (JDBCRepositorySQL) JAXBContext.newInstance(JDBCRepositorySQL.class).createUnmarshaller()
-                            .unmarshal(Files.newInputStream(file.toFile().toPath()));
+                    JDBCRepositorySQL provider = (JDBCRepositorySQL) JAXBContext.newInstance(JDBCRepositorySQL.class).createUnmarshaller().unmarshal(Files.newInputStream(file.toFile().toPath()));
                     if (provider.isDefault()) {
                         result[0] = provider;
                     }

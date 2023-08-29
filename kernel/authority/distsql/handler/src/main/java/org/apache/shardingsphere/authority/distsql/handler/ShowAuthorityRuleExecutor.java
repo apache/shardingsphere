@@ -48,7 +48,7 @@ public final class ShowAuthorityRuleExecutor implements MetaDataRequiredQueryabl
     }
     
     @Override
-    public String getType() {
-        return ShowAuthorityRuleStatement.class.getName();
+    public Class<ShowAuthorityRuleStatement> getType() {
+        return ShowAuthorityRuleStatement.class;
     }
 }

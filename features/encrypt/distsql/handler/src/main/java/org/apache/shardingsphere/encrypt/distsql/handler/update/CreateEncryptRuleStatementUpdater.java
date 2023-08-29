@@ -30,8 +30,8 @@ import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegme
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -100,7 +100,7 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     }
     
     private void checkDataSources(final ShardingSphereDatabase database) {
-        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getDataSources().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
+        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
     }
     
     @Override
@@ -125,7 +125,7 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     }
     
     @Override
-    public String getType() {
-        return CreateEncryptRuleStatement.class.getName();
+    public Class<CreateEncryptRuleStatement> getType() {
+        return CreateEncryptRuleStatement.class;
     }
 }

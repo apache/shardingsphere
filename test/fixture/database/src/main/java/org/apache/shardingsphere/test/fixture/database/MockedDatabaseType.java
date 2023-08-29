@@ -18,12 +18,9 @@
 package org.apache.shardingsphere.test.fixture.database;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.core.type.enums.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Mocked database type.
@@ -31,28 +28,8 @@ import java.util.Map;
 public final class MockedDatabaseType implements DatabaseType {
     
     @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.NONE;
-    }
-    
-    @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
-    }
-    
-    @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton("jdbc:mock");
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return Collections.emptyList();
     }
     
     @Override

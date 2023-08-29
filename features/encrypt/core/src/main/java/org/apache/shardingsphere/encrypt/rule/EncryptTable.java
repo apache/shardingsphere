@@ -29,7 +29,7 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.Map;
@@ -141,6 +141,22 @@ public final class EncryptTable {
             }
         }
         throw new EncryptLogicColumnNotFoundException(cipherColumnName);
+    }
+    
+    /**
+     * Get logic column by assisted query column.
+     *
+     * @param assistQueryColumnName assisted query column name
+     * @return logic column name
+     * @throws EncryptLogicColumnNotFoundException encrypt logic column not found exception
+     */
+    public String getLogicColumnByAssistedQueryColumn(final String assistQueryColumnName) {
+        for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
+            if (entry.getValue().getAssistedQuery().isPresent() && entry.getValue().getAssistedQuery().get().getName().equalsIgnoreCase(assistQueryColumnName)) {
+                return entry.getKey();
+            }
+        }
+        throw new EncryptLogicColumnNotFoundException(assistQueryColumnName);
     }
     
     /**

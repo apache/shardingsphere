@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DistSQLException;
 import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -86,9 +86,9 @@ class CreateShardingTableRuleStatementUpdaterTest {
     @BeforeEach
     void before() {
         when(database.getName()).thenReturn("schema");
-        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", createDataSource());
+        ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", createDataSource());
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new MockDataSourceContainedRule())));
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new MockDataSourceContainedRule())));
     }
     
     @Test
@@ -240,7 +240,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     private AutoTableRuleSegment createCompleteAutoTableRule() {
-        AutoTableRuleSegment result = new AutoTableRuleSegment("t_order_item_input", Collections.singletonList("logic_ds"));
+        AutoTableRuleSegment result = new AutoTableRuleSegment("t_order_item_input", Collections.singleton("logic_ds"));
         result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
         result.setShardingColumn("order_id");
         result.setShardingAlgorithmSegment(new AlgorithmSegment("FOO.DISTSQL.FIXTURE", PropertiesBuilder.build(new Property("", ""))));
@@ -249,7 +249,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
     
     private TableRuleSegment createCompleteTableRule() {
         KeyGenerateStrategySegment keyGenerator = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        TableRuleSegment result = new TableRuleSegment("t_order_input", Collections.singletonList("ds_${0..1}.t_order_${0..1}"), keyGenerator, null);
+        TableRuleSegment result = new TableRuleSegment("t_order_input", Collections.singleton("ds_${0..1}.t_order_${0..1}"), keyGenerator, null);
         result.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", new AlgorithmSegment("CORE.STANDARD.FIXTURE", new Properties())));
         AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}")));
         result.setDatabaseStrategySegment(new ShardingStrategySegment("standard", "product_id", databaseAlgorithmSegment));
@@ -304,11 +304,6 @@ class CreateShardingTableRuleStatementUpdaterTest {
         @Override
         public Map<String, Collection<String>> getDataSourceMapper() {
             return Collections.singletonMap("logic_ds", null);
-        }
-        
-        @Override
-        public String getType() {
-            return "mock";
         }
     }
 }

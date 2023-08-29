@@ -43,7 +43,7 @@ public final class ShowShardingTableReferenceRuleExecutor implements RQLExecutor
             return Collections.emptyList();
         }
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        for (final ShardingTableReferenceRuleConfiguration referenceRule : ((ShardingRuleConfiguration) rule.get().getConfiguration()).getBindingTableGroups()) {
+        for (ShardingTableReferenceRuleConfiguration referenceRule : ((ShardingRuleConfiguration) rule.get().getConfiguration()).getBindingTableGroups()) {
             if (null == sqlStatement.getRuleName() || referenceRule.getName().equalsIgnoreCase(sqlStatement.getRuleName())) {
                 result.add(new LocalDataQueryResultRow(referenceRule.getName(), referenceRule.getReference()));
             }
@@ -57,7 +57,7 @@ public final class ShowShardingTableReferenceRuleExecutor implements RQLExecutor
     }
     
     @Override
-    public String getType() {
-        return ShowShardingTableReferenceRulesStatement.class.getName();
+    public Class<ShowShardingTableReferenceRulesStatement> getType() {
+        return ShowShardingTableReferenceRulesStatement.class;
     }
 }

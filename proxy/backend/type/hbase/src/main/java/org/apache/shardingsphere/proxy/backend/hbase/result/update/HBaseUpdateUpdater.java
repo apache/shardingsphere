@@ -42,7 +42,7 @@ public final class HBaseUpdateUpdater implements HBaseUpdater {
     }
     
     @Override
-    public String getType() {
-        return MySQLUpdateStatement.class.getCanonicalName();
+    public Class<MySQLUpdateStatement> getType() {
+        return MySQLUpdateStatement.class;
     }
 }

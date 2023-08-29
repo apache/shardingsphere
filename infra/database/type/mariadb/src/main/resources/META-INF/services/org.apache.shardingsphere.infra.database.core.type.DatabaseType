@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.mariadb.MariaDBDatabaseType
+org.apache.shardingsphere.infra.database.mariadb.type.MariaDBDatabaseType

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -27,6 +28,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
@@ -84,6 +87,19 @@ public final class AlterViewStatementHandler implements SQLStatementHandler {
         }
         if (alterViewStatement instanceof OpenGaussStatement) {
             return ((OpenGaussAlterViewStatement) alterViewStatement).getRenameView();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get constraint definition segment.
+     * 
+     * @param alterViewStatement AlterViewStatement
+     * @return constraint definition
+     */
+    public static Optional<ConstraintDefinitionSegment> getConstraintDefinition(final AlterViewStatement alterViewStatement) {
+        if (alterViewStatement instanceof OracleStatement) {
+            return ((OracleAlterViewStatement) alterViewStatement).getConstraintDefinitionSegment();
         }
         return Optional.empty();
     }

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.database.h2.H2DatabaseType
+org.apache.shardingsphere.infra.database.h2.type.H2DatabaseType

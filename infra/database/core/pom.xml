@@ -24,8 +24,14 @@
         <version>5.4.1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-database-core</artifactId>
+    <name>${project.artifactId}</name>
     
     <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-exception-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-util</artifactId>

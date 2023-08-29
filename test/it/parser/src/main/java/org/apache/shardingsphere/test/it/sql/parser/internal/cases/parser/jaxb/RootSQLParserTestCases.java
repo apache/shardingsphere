@@ -133,7 +133,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterPolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterProcedureStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterPublicationStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterProfileStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterRoutineStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterRollbackSegmentStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterSchemaStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterSequenceStatementTestCase;
@@ -159,6 +161,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateAccessMethodStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateAggregateStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateCastStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateClusterStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateCollationStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateContextStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateControlFileStatementTestCase;
@@ -462,6 +465,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "insert")
     private final List<InsertStatementTestCase> insertTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-cluster")
+    private final List<CreateClusterStatementTestCase> createClusterTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-tablespace")
     private final List<DropTableSpaceStatementTestCase> dropTableSpaceTestCases = new LinkedList<>();
@@ -1371,6 +1377,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "alter-operator")
     private final List<AlterOperatorStatementTestCase> alterOperatorTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-profile")
+    private final List<AlterProfileStatementTestCase> alterProfileTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-rollback-segment")
+    private final List<AlterRollbackSegmentStatementTestCase> alterRollbackSegmentTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-text-search")
     private final List<CreateTextSearchStatementTestCase> createTextSearchTestCases = new LinkedList<>();

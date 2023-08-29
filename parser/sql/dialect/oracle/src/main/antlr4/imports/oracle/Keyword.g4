@@ -119,8 +119,20 @@ FUNCTION
     : F U N C T I O N
     ;
 
+CONSTRUCTOR
+    : C O N S T R U C T O R
+    ;
+
+RESULT
+    : R E S U L T
+    ;
+
 TRIGGER
     : T R I G G E R
+    ;
+
+MAP
+    : M A P
     ;
 
 PROCEDURE
@@ -806,4 +818,8 @@ ANYTYPE
     
 ANYDATASET
     : A N Y D A T A S E T
+    ;
+
+AUTONOMOUS_TRANSACTION
+    : A U T O N O M O U S UL_ T R A N S A C T I O N
     ;

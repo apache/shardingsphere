@@ -19,17 +19,17 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.event.storage.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
@@ -148,7 +148,6 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdater impl
         checkResourceExists(contextManager, databaseName, toBeDisabledStorageUnit);
         checkIsDisabled(replicaResources, disabledStorageUnits, toBeDisabledStorageUnit);
         checkIsReplicaResource(replicaResources, toBeDisabledStorageUnit);
-        checkIsLastResource(replicaResources, toBeDisabledStorageUnit);
     }
     
     private void checkIsDisabled(final Map<String, String> replicaResources, final Collection<String> disabledStorageUnits, final String toBeDisabledStorageUnit) {
@@ -160,15 +159,6 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdater impl
     private void checkIsReplicaResource(final Map<String, String> replicaStorageUnits, final String toBeDisabledStorageUnit) {
         ShardingSpherePreconditions.checkState(replicaStorageUnits.containsKey(toBeDisabledStorageUnit),
                 () -> new UnsupportedSQLOperationException(String.format("`%s` is not used as a read storage unit by any read-write separation rules,cannot be disabled", toBeDisabledStorageUnit)));
-    }
-    
-    private void checkIsLastResource(final Map<String, String> replicaStorageUnits, final String toBeDisabledStorageUnit) {
-        Collection<String> onlyOneResourceRules = getOnlyOneResourceRules(replicaStorageUnits);
-        Collection<String> toBeDisabledResourceRuleNames = Splitter.on(",").trimResults().splitToList(replicaStorageUnits.get(toBeDisabledStorageUnit));
-        onlyOneResourceRules = onlyOneResourceRules.stream().filter(toBeDisabledResourceRuleNames::contains).collect(Collectors.toSet());
-        Collection<String> finalOnlyOneResourceRules = onlyOneResourceRules;
-        ShardingSpherePreconditions.checkState(onlyOneResourceRules.isEmpty(),
-                () -> new UnsupportedSQLOperationException(String.format("`%s` is the last read storage unit in `%s`, cannot be disabled", toBeDisabledStorageUnit, finalOnlyOneResourceRules)));
     }
     
     private Collection<String> getGroupNames(final String toBeDisableStorageUnit, final Map<String, String> replicaStorageUnits,
@@ -204,12 +194,6 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdater impl
         return result;
     }
     
-    private Collection<String> getOnlyOneResourceRules(final Map<String, String> replicaStorageUnits) {
-        return replicaStorageUnits.values().stream().map(databaseName -> Arrays.stream(databaseName.split(",")).collect(Collectors.toMap(each -> each, each -> 1)).entrySet())
-                .flatMap(Collection::stream).collect(Collectors.toMap(Entry::getKey, Entry::getValue, Integer::sum)).entrySet().stream()
-                .filter(entry -> entry.getValue() <= 1).map(Entry::getKey).collect(Collectors.toSet());
-    }
-    
     private void addReplicaResource(final Map<String, String> replicaStorageUnits, final Entry<String, Map<String, String>> readwriteSplittingRule) {
         readwriteSplittingRule.getValue().entrySet().stream().filter(entry -> ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES.equals(entry.getKey()))
                 .map(entry -> Arrays.asList(entry.getValue().split(","))).flatMap(Collection::stream).forEach(each -> put(replicaStorageUnits, each, readwriteSplittingRule.getKey()));
@@ -220,7 +204,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdater impl
     }
     
     @Override
-    public String getType() {
-        return AlterReadwriteSplittingStorageUnitStatusStatement.class.getName();
+    public Class<AlterReadwriteSplittingStorageUnitStatusStatement> getType() {
+        return AlterReadwriteSplittingStorageUnitStatusStatement.class;
     }
 }

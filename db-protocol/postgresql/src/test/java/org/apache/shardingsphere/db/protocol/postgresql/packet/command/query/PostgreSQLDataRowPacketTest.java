@@ -59,14 +59,14 @@ class PostgreSQLDataRowPacketTest {
     
     @Test
     void assertWriteWithNull() {
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(null));
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(null));
         actual.write(payload);
         verify(payload).writeInt4(0xFFFFFFFF);
     }
     
     @Test
     void assertWriteWithBytes() {
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(new byte[]{'a'}));
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(new byte[]{'a'}));
         actual.write(payload);
         verify(payload).writeInt4(new byte[]{'a'}.length);
         verify(payload).writeBytes(new byte[]{'a'});
@@ -75,7 +75,7 @@ class PostgreSQLDataRowPacketTest {
     @Test
     void assertWriteWithSQLXML() throws SQLException {
         when(sqlxml.getString()).thenReturn("value");
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(sqlxml));
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(sqlxml));
         actual.write(payload);
         byte[] valueBytes = "value".getBytes(StandardCharsets.UTF_8);
         verify(payload).writeInt4(valueBytes.length);
@@ -84,8 +84,8 @@ class PostgreSQLDataRowPacketTest {
     
     @Test
     void assertWriteWithString() {
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList("value"));
-        assertThat(actual.getData(), is(Collections.singletonList("value")));
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton("value"));
+        assertThat(actual.getData(), is(Collections.singleton("value")));
         actual.write(payload);
         byte[] valueBytes = "value".getBytes(StandardCharsets.UTF_8);
         verify(payload).writeInt4(valueBytes.length);
@@ -95,14 +95,14 @@ class PostgreSQLDataRowPacketTest {
     @Test
     void assertWriteWithSQLXML4Error() throws SQLException {
         when(sqlxml.getString()).thenThrow(new SQLException("mock"));
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(sqlxml));
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(sqlxml));
         assertThrows(RuntimeException.class, () -> actual.write(payload));
         verify(payload, times(0)).writeStringEOF(any());
     }
     
     @Test
     void assertWriteBinaryNull() {
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(new BinaryCell(PostgreSQLColumnType.INT4, null)));
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(new BinaryCell(PostgreSQLColumnType.INT4, null)));
         actual.write(payload);
         verify(payload).writeInt2(1);
         verify(payload).writeInt4(0xFFFFFFFF);
@@ -111,7 +111,7 @@ class PostgreSQLDataRowPacketTest {
     @Test
     void assertWriteBinaryInt4() {
         final int value = 12345678;
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(new BinaryCell(PostgreSQLColumnType.INT4, value)));
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(new BinaryCell(PostgreSQLColumnType.INT4, value)));
         actual.write(payload);
         verify(payload).writeInt2(1);
         verify(payload).writeInt4(4);

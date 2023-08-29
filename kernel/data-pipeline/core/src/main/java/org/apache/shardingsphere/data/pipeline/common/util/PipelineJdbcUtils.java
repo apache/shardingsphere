@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.common.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 
 import java.sql.SQLException;
 import java.sql.Statement;

@@ -49,9 +49,4 @@ public final class TableContainedFixtureRule implements TableContainedRule {
     public RuleConfiguration getConfiguration() {
         return mock(RuleConfiguration.class);
     }
-    
-    @Override
-    public String getType() {
-        return TableContainedFixtureRule.class.getSimpleName();
-    }
 }

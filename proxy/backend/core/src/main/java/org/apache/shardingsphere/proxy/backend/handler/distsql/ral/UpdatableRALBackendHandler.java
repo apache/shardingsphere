@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater.ConnectionSessionRequiredRALUpdater;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -43,7 +43,7 @@ public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> i
     @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() throws SQLException {
-        RALUpdater<T> updater = TypedSPILoader.getService(RALUpdater.class, sqlStatement.getClass().getName());
+        RALUpdater<T> updater = TypedSPILoader.getService(RALUpdater.class, sqlStatement.getClass());
         if (updater instanceof ConnectionSessionRequiredRALUpdater) {
             ((ConnectionSessionRequiredRALUpdater<T>) updater).executeUpdate(connectionSession, (T) sqlStatement);
         } else {

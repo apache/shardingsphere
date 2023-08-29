@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfi
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
 import javax.sql.DataSource;
 import java.util.Arrays;

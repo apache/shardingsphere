@@ -20,10 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.dml;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByContext;
@@ -40,17 +37,20 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
@@ -102,6 +102,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private final Collection<ColumnSegment> columnSegments = new LinkedList<>();
     
+    private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
+    
     private final boolean containsEnhancedTable;
     
     private SubqueryType subqueryType;
@@ -114,14 +116,15 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         super(sqlStatement);
         extractWhereSegments(whereSegments, sqlStatement);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
+        ExpressionExtractUtils.extractJoinConditions(joinConditions, whereSegments);
         subqueryContexts = createSubqueryContexts(metaData, params, defaultDatabaseName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts, getDatabaseType());
-        String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(databaseName, getSchemas(metaData, databaseName), getDatabaseType())
+        projectionsContext = new ProjectionsContextEngine(getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
+        String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
         containsEnhancedTable = isContainsEnhancedTable(metaData, databaseName, getTablesContext().getTableNames());
     }
     
@@ -155,16 +158,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
             result.put(each.getStartIndex(), subqueryContext);
         }
         return result;
-    }
-    
-    private Map<String, ShardingSphereSchema> getSchemas(final ShardingSphereMetaData metaData, final String databaseName) {
-        if (null == databaseName) {
-            ShardingSpherePreconditions.checkState(tablesContext.getSimpleTableSegments().isEmpty(), NoDatabaseSelectedException::new);
-            return Collections.emptyMap();
-        }
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
-        return database.getSchemas();
     }
     
     /**
@@ -367,6 +360,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         return columnSegments;
     }
     
+    @Override
+    public Collection<BinaryOperationExpression> getJoinConditions() {
+        return joinConditions;
+    }
+    
     private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SelectStatement selectStatement) {
         selectStatement.getWhere().ifPresent(whereSegments::add);
         whereSegments.addAll(WhereExtractUtils.getSubqueryWhereSegments(selectStatement));
@@ -383,6 +381,15 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
             }
         }
         return result;
+    }
+    
+    /**
+     * Judge whether sql statement contains table subquery segment or not.
+     *
+     * @return whether sql statement contains table subquery segment or not
+     */
+    public boolean containsTableSubquery() {
+        return getSqlStatement().getFrom() instanceof SubqueryTableSegment;
     }
     
     @Override

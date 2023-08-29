@@ -38,22 +38,22 @@
     </rewrite-assertion>
     
     <rewrite-assertion id="select_unqualified_shorthand_projection_with_join_for_parameters" db-types="MySQL">
-        <input sql="SELECT * FROM t_account t INNER JOIN t_account_bak b ON t.id = b.id WHERE t.password = ? OR b.amount = ? AND t.certificate_number like ?" parameters="1, 2, 3" />
-        <output sql="SELECT t.`account_id`, t.`cipher_certificate_number` AS `certificate_number`, t.`cipher_password` AS `password`, t.`cipher_amount` AS `amount`, b.`account_id`, b.`cipher_certificate_number` AS `certificate_number`, b.`cipher_password` AS `password`, b.`cipher_amount` AS `amount` FROM t_account t INNER JOIN t_account_bak b ON t.id = b.id WHERE t.assisted_query_password = ? OR b.cipher_amount = ? AND t.like_query_certificate_number like ?" parameters="assisted_query_1, encrypt_2, like_query_3" />
+        <input sql="SELECT * FROM t_account t INNER JOIN t_account_bak b ON t.account_id = b.account_id WHERE t.password = ? OR b.amount = ? AND t.certificate_number like ?" parameters="1, 2, 3" />
+        <output sql="SELECT t.`account_id`, t.`cipher_certificate_number` AS `certificate_number`, t.`cipher_password` AS `password`, t.`cipher_amount` AS `amount`, b.`account_id`, b.`cipher_certificate_number` AS `certificate_number`, b.`cipher_password` AS `password`, b.`cipher_amount` AS `amount` FROM t_account t INNER JOIN t_account_bak b ON t.account_id = b.account_id WHERE t.assisted_query_password = ? OR b.cipher_amount = ? AND t.like_query_certificate_number like ?" parameters="assisted_query_1, encrypt_2, like_query_3" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_unqualified_shorthand_projection_with_join_for_literals" db-types="MySQL">
-        <input sql="SELECT * FROM t_account t INNER JOIN t_account_bak b ON t.id = b.id WHERE t.password = 1 OR b.amount = 2 AND t.certificate_number like 3" />
-        <output sql="SELECT t.`account_id`, t.`cipher_certificate_number` AS `certificate_number`, t.`cipher_password` AS `password`, t.`cipher_amount` AS `amount`, b.`account_id`, b.`cipher_certificate_number` AS `certificate_number`, b.`cipher_password` AS `password`, b.`cipher_amount` AS `amount` FROM t_account t INNER JOIN t_account_bak b ON t.id = b.id WHERE t.assisted_query_password = 'assisted_query_1' OR b.cipher_amount = 'encrypt_2' AND t.like_query_certificate_number like 'like_query_3'"/>
+        <input sql="SELECT * FROM t_account t INNER JOIN t_account_bak b ON t.account_id = b.account_id WHERE t.password = 1 OR b.amount = 2 AND t.certificate_number like 3" />
+        <output sql="SELECT t.`account_id`, t.`cipher_certificate_number` AS `certificate_number`, t.`cipher_password` AS `password`, t.`cipher_amount` AS `amount`, b.`account_id`, b.`cipher_certificate_number` AS `certificate_number`, b.`cipher_password` AS `password`, b.`cipher_amount` AS `amount` FROM t_account t INNER JOIN t_account_bak b ON t.account_id = b.account_id WHERE t.assisted_query_password = 'assisted_query_1' OR b.cipher_amount = 'encrypt_2' AND t.like_query_certificate_number like 'like_query_3'"/>
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_join_for_parameters" db-types="MySQL">
-        <input sql="SELECT t_account.amount, t_account_bak.amount FROM t_account LEFT JOIN t_account_bak ON t_account.id = t_account_bak.id WHERE t_account.password = ? OR t_account_bak.amount = ? AND t_account.certificate_number like ?" parameters="1, 2, 3" />
-        <output sql="SELECT t_account.cipher_amount AS amount, t_account_bak.cipher_amount AS amount FROM t_account LEFT JOIN t_account_bak ON t_account.id = t_account_bak.id WHERE t_account.assisted_query_password = ? OR t_account_bak.cipher_amount = ? AND t_account.like_query_certificate_number like ?" parameters="assisted_query_1, encrypt_2, like_query_3" />
+        <input sql="SELECT t_account.amount, t_account_bak.amount FROM t_account LEFT JOIN t_account_bak ON t_account.account_id = t_account_bak.account_id WHERE t_account.password = ? OR t_account_bak.amount = ? AND t_account.certificate_number like ?" parameters="1, 2, 3" />
+        <output sql="SELECT t_account.cipher_amount AS amount, t_account_bak.cipher_amount AS amount FROM t_account LEFT JOIN t_account_bak ON t_account.account_id = t_account_bak.account_id WHERE t_account.assisted_query_password = ? OR t_account_bak.cipher_amount = ? AND t_account.like_query_certificate_number like ?" parameters="assisted_query_1, encrypt_2, like_query_3" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_join_for_literals" db-types="MySQL">
-        <input sql="SELECT t_account.amount, t_account_bak.amount FROM t_account LEFT JOIN t_account_bak ON t_account.id = t_account_bak.id WHERE t_account.password = 1 OR t_account_bak.amount = 2 AND t_account.certificate_number like 3" />
-        <output sql="SELECT t_account.cipher_amount AS amount, t_account_bak.cipher_amount AS amount FROM t_account LEFT JOIN t_account_bak ON t_account.id = t_account_bak.id WHERE t_account.assisted_query_password = 'assisted_query_1' OR t_account_bak.cipher_amount = 'encrypt_2' AND t_account.like_query_certificate_number like 'like_query_3'" />
+        <input sql="SELECT t_account.amount, t_account_bak.amount FROM t_account LEFT JOIN t_account_bak ON t_account.account_id = t_account_bak.account_id WHERE t_account.password = 1 OR t_account_bak.amount = 2 AND t_account.certificate_number like 3" />
+        <output sql="SELECT t_account.cipher_amount AS amount, t_account_bak.cipher_amount AS amount FROM t_account LEFT JOIN t_account_bak ON t_account.account_id = t_account_bak.account_id WHERE t_account.assisted_query_password = 'assisted_query_1' OR t_account_bak.cipher_amount = 'encrypt_2' AND t_account.like_query_certificate_number like 'like_query_3'" />
     </rewrite-assertion>
 </rewrite-assertions>
