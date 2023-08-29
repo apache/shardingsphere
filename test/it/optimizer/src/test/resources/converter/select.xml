@@ -19,4 +19,6 @@
 <sql-node-converter-test-cases>
     <test-cases sql-case-id="select_with_database_name_and_schema_name_in_table" expected-sql="SELECT &quot;order_id&quot; FROM &quot;sharding_db&quot;.&quot;public&quot;.&quot;t_order&quot; WHERE &quot;user_id&quot; = ? AND &quot;order_id&quot; = ?" db-types="PostgreSQL,openGauss" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="select_with_database_name_and_schema_name_in_table" expected-sql="SELECT &quot;order_id&quot; FROM &quot;sharding_db&quot;.&quot;public&quot;.&quot;t_order&quot; WHERE &quot;user_id&quot; = 1 AND &quot;order_id&quot; = 1" db-types="PostgreSQL,openGauss" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_with_match_against" expected-sql="SELECT * FROM `t_order_item` WHERE MATCH (`t_order_item`.`description`) AGAINST (? IN NATURAL LANGUAGE MODE) AND `user_id` = ?" db-types="MySQL" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="select_with_match_against" expected-sql="SELECT * FROM `t_order_item` WHERE MATCH (`t_order_item`.`description`) AGAINST ('hello' IN NATURAL LANGUAGE MODE) AND `user_id` = 10" db-types="MySQL" sql-case-types="LITERAL" />
 </sql-node-converter-test-cases>
