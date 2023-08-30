@@ -35,12 +35,12 @@ import java.util.Optional;
  * Row expression converter.
  */
 public class RowExpressionConverter implements SQLSegmentConverter<RowExpression, SqlNode> {
-
+    
     @Override
     public Optional<SqlNode> convert(RowExpression segment) {
         List<SqlNode> sqlNodes = new ArrayList<>();
         ExpressionConverter expressionConverter = new ExpressionConverter();
-        for (ExpressionSegment expressionSegment: segment.getItems()) {
+        for (ExpressionSegment expressionSegment : segment.getItems()) {
             sqlNodes.add(expressionConverter.convert(expressionSegment).get());
         }
         return Optional.of(SqlStdOperatorTable.ROW.createCall(SqlParserPos.ZERO, sqlNodes));

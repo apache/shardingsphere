@@ -1180,7 +1180,6 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             RowExpression result = new RowExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
             result.getItems().add(items);
             return result;
-
         }
         for (ExprContext each : ctx.expr()) {
             visit(each);

@@ -29,12 +29,12 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 @Getter
 public final class RowExpression implements ExpressionSegment {
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
-
+    
     private final Collection<ExpressionSegment> items = new LinkedList<>();
-
+    
     private final String text;
 }
