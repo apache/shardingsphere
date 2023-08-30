@@ -1178,7 +1178,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (null != ctx.RETURNING()) {
             ListExpression list = new ListExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-            list.getItems().addAll(Arrays.asList(new LiteralExpressionSegment(ctx.path().start.getStartIndex(), ctx.path().stop.getStopIndex(), ctx.path().getText()), new LiteralExpressionSegment(ctx.RETURNING().getSymbol().getStartIndex(), ctx.RETURNING().getSymbol().getStopIndex(), ctx.RETURNING().getSymbol().getText()), (ExpressionSegment) visit(ctx.dataType())));
+            list.getItems()
+                    .addAll(Arrays.asList(new LiteralExpressionSegment(ctx.path().start.getStartIndex(), ctx.path().stop.getStopIndex(), ctx.path().getText()),
+                            new LiteralExpressionSegment(ctx.RETURNING().getSymbol().getStartIndex(), ctx.RETURNING().getSymbol().getStopIndex(), ctx.RETURNING().getSymbol().getText()),
+                            (ExpressionSegment) visit(ctx.dataType())));
             return list;
         }
         for (ExprContext each : ctx.expr()) {
