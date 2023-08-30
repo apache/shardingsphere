@@ -22,5 +22,5 @@ package org.apache.shardingsphere.infra.binder.enums;
  */
 public enum SegmentType {
     
-    PROJECTION, PREDICATE, JOIN_ON, JOIN_USING, ORDER_BY, GROUP_BY
+    PROJECTION, PREDICATE, JOIN_ON, JOIN_USING, ORDER_BY, GROUP_BY, LOCK, SET_ASSIGNMENT, VALUES
 }

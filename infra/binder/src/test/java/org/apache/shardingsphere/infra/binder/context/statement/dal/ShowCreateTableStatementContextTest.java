@@ -37,12 +37,12 @@ class ShowCreateTableStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        MySQLShowCreateTableStatement mySQLShowCreateTableStatement = mock(MySQLShowCreateTableStatement.class);
+        MySQLShowCreateTableStatement showCreateTableStatement = mock(MySQLShowCreateTableStatement.class);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
-        when(mySQLShowCreateTableStatement.getTable()).thenReturn(table);
-        ShowCreateTableStatementContext actual = new ShowCreateTableStatementContext(mySQLShowCreateTableStatement);
+        when(showCreateTableStatement.getTable()).thenReturn(table);
+        ShowCreateTableStatementContext actual = new ShowCreateTableStatementContext(showCreateTableStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
-        assertThat(actual.getSqlStatement(), is(mySQLShowCreateTableStatement));
+        assertThat(actual.getSqlStatement(), is(showCreateTableStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("tbl_1")));
     }
 }

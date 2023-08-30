@@ -52,7 +52,7 @@ So far, ShardingSphere has been used by over [10,000 projects on GitHub](https:/
 
 For full documentation & more details, visit: [Docs](https://shardingsphere.apache.org/document/current/en/overview/)
 
-### CONTRIBUTION🚀🧑‍💻
+### CONTRIBUTION🚀🧑💻
 
 <hr>
 

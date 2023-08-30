@@ -134,7 +134,7 @@ class WALEventConverterTest {
     private void assertWriteRowEvent0(final Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
         dumperConfig.setTargetTableColumnsMap(targetTableColumnsMap);
         WriteRowEvent rowsEvent = new WriteRowEvent();
-        rowsEvent.setDatabaseName("");
+        rowsEvent.setSchemaName("");
         rowsEvent.setTableName("t_order");
         rowsEvent.setAfterRow(Arrays.asList(101, 1, "OK"));
         Method method = WALEventConverter.class.getDeclaredMethod("handleWriteRowEvent", WriteRowEvent.class, PipelineTableMetaData.class);
@@ -201,14 +201,14 @@ class WALEventConverterTest {
     void assertConvertFailure() {
         AbstractRowEvent event = new AbstractRowEvent() {
         };
-        event.setDatabaseName("");
+        event.setSchemaName("");
         event.setTableName("t_order");
         assertThrows(UnsupportedSQLOperationException.class, () -> walEventConverter.convert(event));
     }
     
     private AbstractRowEvent mockWriteRowEvent() {
         WriteRowEvent result = new WriteRowEvent();
-        result.setDatabaseName("");
+        result.setSchemaName("");
         result.setTableName("t_order");
         result.setAfterRow(Arrays.asList("id", "user_id"));
         return result;
@@ -216,7 +216,7 @@ class WALEventConverterTest {
     
     private AbstractRowEvent mockUpdateRowEvent() {
         UpdateRowEvent result = new UpdateRowEvent();
-        result.setDatabaseName("");
+        result.setSchemaName("");
         result.setTableName("t_order");
         result.setAfterRow(Arrays.asList("id", "user_id"));
         return result;
@@ -224,7 +224,7 @@ class WALEventConverterTest {
     
     private AbstractRowEvent mockDeleteRowEvent() {
         DeleteRowEvent result = new DeleteRowEvent();
-        result.setDatabaseName("");
+        result.setSchemaName("");
         result.setTableName("t_order");
         result.setPrimaryKeys(Collections.singletonList("id"));
         return result;
@@ -232,7 +232,7 @@ class WALEventConverterTest {
     
     private AbstractRowEvent mockUnknownTableEvent() {
         WriteRowEvent result = new WriteRowEvent();
-        result.setDatabaseName("");
+        result.setSchemaName("");
         result.setTableName("t_other");
         return result;
     }

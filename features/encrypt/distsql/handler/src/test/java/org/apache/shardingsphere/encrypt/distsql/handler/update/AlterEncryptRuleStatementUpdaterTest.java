@@ -78,9 +78,9 @@ class AlterEncryptRuleStatementUpdaterTest {
     
     @Test
     void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
-        EncryptRuleConfiguration currentRuleConfiguration = createCurrentRuleConfigurationWithMultipleTableRules();
-        updater.updateCurrentRuleConfiguration(currentRuleConfiguration, createToBeAlteredRuleConfiguration());
-        assertThat(currentRuleConfiguration.getEncryptors().size(), is(1));
+        EncryptRuleConfiguration currentRuleConfig = createCurrentRuleConfigurationWithMultipleTableRules();
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, createToBeAlteredRuleConfiguration());
+        assertThat(currentRuleConfig.getEncryptors().size(), is(1));
     }
     
     private AlterEncryptRuleStatement createSQLStatement(final String encryptorName) {

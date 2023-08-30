@@ -20,6 +20,8 @@ package org.apache.shardingsphere.data.pipeline.common.datanode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 
 import java.util.LinkedHashMap;
@@ -61,6 +63,22 @@ public final class JobDataNodeLineConvertUtils {
             for (DataNode each : entry.getValue()) {
                 Map<String, List<DataNode>> groupedDataNodesMap = result.computeIfAbsent(each.getDataSourceName(), key -> new LinkedHashMap<>());
                 groupedDataNodesMap.computeIfAbsent(entry.getKey(), key -> new LinkedList<>()).add(each);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Build table name map.
+     *
+     * @param dataNodeLine data node line
+     * @return actual table and logic table map
+     */
+    public static Map<ActualTableName, LogicTableName> buildTableNameMap(final JobDataNodeLine dataNodeLine) {
+        Map<ActualTableName, LogicTableName> result = new LinkedHashMap<>();
+        for (JobDataNodeEntry each : dataNodeLine.getEntries()) {
+            for (DataNode dataNode : each.getDataNodes()) {
+                result.put(new ActualTableName(dataNode.getTableName()), new LogicTableName(each.getLogicTableName()));
             }
         }
         return result;

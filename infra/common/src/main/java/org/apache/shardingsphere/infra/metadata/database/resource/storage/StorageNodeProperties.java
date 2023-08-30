@@ -38,8 +38,8 @@ public final class StorageNodeProperties {
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof StorageNodeProperties) {
-            StorageNodeProperties storageNodeProperties = (StorageNodeProperties) obj;
-            return storageNodeProperties.name.equals(name);
+            StorageNodeProperties storageNodeProps = (StorageNodeProperties) obj;
+            return storageNodeProps.name.equals(name);
         }
         return false;
     }

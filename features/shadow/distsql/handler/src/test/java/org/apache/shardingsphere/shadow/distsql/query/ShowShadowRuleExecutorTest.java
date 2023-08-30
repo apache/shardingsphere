@@ -92,8 +92,8 @@ class ShowShadowRuleExecutorTest {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.getDataSources().add(new ShadowDataSourceConfiguration("shadow_rule", "source", "shadow"));
         result.getShadowAlgorithms().put("user_id_select_match_algorithm", new AlgorithmConfiguration("REGEX_MATCH", new Properties()));
-        result.getTables().put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow_rule"), Collections.singletonList("user_id_select_match_algorithm")));
-        result.getTables().put("t_order_item", new ShadowTableConfiguration(Collections.singletonList("shadow_rule"), Collections.singletonList("user_id_select_match_algorithm")));
+        result.getTables().put("t_order", new ShadowTableConfiguration(Collections.singleton("shadow_rule"), Collections.singleton("user_id_select_match_algorithm")));
+        result.getTables().put("t_order_item", new ShadowTableConfiguration(Collections.singleton("shadow_rule"), Collections.singleton("user_id_select_match_algorithm")));
         return result;
     }
 }

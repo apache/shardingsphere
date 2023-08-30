@@ -70,7 +70,7 @@ class CountShardingRuleExecutorTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("db_1");
-        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singletonList(mockShardingRule()));
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(mockShardingRule()));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;
     }
@@ -79,12 +79,12 @@ class CountShardingRuleExecutorTest {
         Map<String, TableRule> tableRules = new LinkedHashMap<>();
         tableRules.put("t_order_item", mock(TableRule.class));
         tableRules.put("t_order", mock(TableRule.class));
-        ShardingRuleConfiguration ruleConfiguration = new ShardingRuleConfiguration();
-        ShardingTableReferenceRuleConfiguration shardingTableReferenceRuleConfiguration = new ShardingTableReferenceRuleConfiguration("refRule", "ref");
-        ruleConfiguration.getBindingTableGroups().add(shardingTableReferenceRuleConfiguration);
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ShardingTableReferenceRuleConfiguration shardingTableReferenceRuleConfig = new ShardingTableReferenceRuleConfiguration("refRule", "ref");
+        ruleConfig.getBindingTableGroups().add(shardingTableReferenceRuleConfig);
         ShardingRule result = mock(ShardingRule.class);
         when(result.getTableRules()).thenReturn(tableRules);
-        when(result.getConfiguration()).thenReturn(ruleConfiguration);
+        when(result.getConfiguration()).thenReturn(ruleConfig);
         return result;
     }
 }

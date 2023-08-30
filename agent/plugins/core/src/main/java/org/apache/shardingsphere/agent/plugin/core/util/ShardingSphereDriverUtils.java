@@ -27,10 +27,10 @@ import java.util.Enumeration;
 import java.util.Optional;
 
 /**
- * ShardingSphere driver util.
+ * ShardingSphere driver utils.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereDriverUtil {
+public final class ShardingSphereDriverUtils {
     
     /**
      * Get sharding sphere driver.

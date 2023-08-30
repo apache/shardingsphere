@@ -161,6 +161,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final HintValueContext hintValueContext;
     
+    private ResultSet currentBatchGeneratedKeysResultSet;
+    
     public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql) throws SQLException {
         this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, false, null);
     }
@@ -611,6 +613,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
+        if (null != currentBatchGeneratedKeysResultSet) {
+            return currentBatchGeneratedKeysResultSet;
+        }
         Optional<GeneratedKeyContext> generatedKey = findGeneratedKey(executionContext);
         if (generatedKey.isPresent() && statementOption.isReturnGeneratedKeys() && !generatedValues.isEmpty()) {
             return new GeneratedKeysResultSet(getGeneratedKeysColumnName(generatedKey.get().getColumnName()), generatedValues.iterator(), this);
@@ -634,7 +639,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         try {
             QueryContext queryContext = createQueryContext();
             trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
-            executionContext = null != trafficInstanceId ? createExecutionContext(queryContext, trafficInstanceId) : createExecutionContext(queryContext);
+            executionContext = null == trafficInstanceId ? createExecutionContext(queryContext) : createExecutionContext(queryContext, trafficInstanceId);
             batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
         } finally {
             currentResultSet = null;
@@ -650,7 +655,16 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         try {
             // TODO add raw SQL executor
             initBatchPreparedStatementExecutor();
-            return batchPreparedStatementExecutor.executeBatch(executionContext.getSqlStatementContext());
+            int[] results = batchPreparedStatementExecutor.executeBatch(executionContext.getSqlStatementContext());
+            if (statementOption.isReturnGeneratedKeys() && generatedValues.isEmpty()) {
+                List<Statement> batchPreparedStatementExecutorStatements = batchPreparedStatementExecutor.getStatements();
+                for (Statement statement : batchPreparedStatementExecutorStatements) {
+                    statements.add((PreparedStatement) statement);
+                }
+                currentBatchGeneratedKeysResultSet = getGeneratedKeys();
+                statements.clear();
+            }
+            return results;
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON

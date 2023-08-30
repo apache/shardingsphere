@@ -139,6 +139,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexE
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InlineConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyCollectionRetrievalContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColPropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyConstraintClauseContext;
@@ -160,6 +161,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinit
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyCollectionRetrievalSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -386,7 +388,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        DataTypeSegment dataType = null != ctx.dataType() ? (DataTypeSegment) visit(ctx.dataType()) : null;
+        DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = ctx.inlineConstraint().stream().anyMatch(each -> null != each.primaryKey());
         boolean isNotNull = ctx.inlineConstraint().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, isNotNull);
@@ -451,6 +453,8 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     result.getModifyConstraintDefinitions().add((ModifyConstraintDefinitionSegment) each);
                 } else if (each instanceof DropConstraintDefinitionSegment) {
                     result.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) each);
+                } else if (each instanceof ModifyCollectionRetrievalSegment) {
+                    result.setModifyCollectionRetrieval((ModifyCollectionRetrievalSegment) each);
                 }
             }
         }
@@ -487,6 +491,9 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     result.getValue().add((DropColumnDefinitionSegment) visit(each.dropColumnClause()));
                 }
             }
+            if (null != ctx.columnClauses().modifyCollectionRetrieval()) {
+                result.getValue().add((ModifyCollectionRetrievalSegment) visit(ctx.columnClauses().modifyCollectionRetrieval()));
+            }
         }
         if (null != ctx.constraintClauses()) {
             // TODO Support rename constraint
@@ -504,6 +511,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             }
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitModifyCollectionRetrieval(final ModifyCollectionRetrievalContext ctx) {
+        return new ModifyCollectionRetrievalSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override
@@ -549,7 +561,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitModifyColProperties(final ModifyColPropertiesContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        DataTypeSegment dataType = null != ctx.dataType() ? (DataTypeSegment) visit(ctx.dataType()) : null;
+        DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
         // TODO visit pk and reference table
         return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false);
     }
@@ -727,7 +739,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitIndexExpression(final IndexExpressionContext ctx) {
-        return null != ctx.expr() ? visit(ctx.expr()) : visit(ctx.columnName());
+        return null == ctx.expr() ? visit(ctx.columnName()) : visit(ctx.expr());
     }
     
     @Override
@@ -848,7 +860,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAudit(final AuditContext ctx) {
-        return null != ctx.auditTraditional() ? visit(ctx.auditTraditional()) : visit(ctx.auditUnified());
+        return null == ctx.auditTraditional() ? visit(ctx.auditUnified()) : visit(ctx.auditTraditional());
     }
     
     @Override

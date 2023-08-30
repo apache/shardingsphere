@@ -81,7 +81,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 
@@ -167,8 +166,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         YamlRootConfiguration targetRootConfig = new YamlRootConfiguration();
         targetRootConfig.setDatabaseName(database.getName());
         targetRootConfig.setDataSources(dataSourcePoolProps);
-        Collection<YamlRuleConfiguration> yamlRuleConfigurations = ruleConfigSwapperEngine.swapToYamlRuleConfigurations(database.getRuleMetaData().getConfigurations());
-        targetRootConfig.setRules(yamlRuleConfigurations);
+        targetRootConfig.setRules(ruleConfigSwapperEngine.swapToYamlRuleConfigurations(database.getRuleMetaData().getConfigurations()));
         return new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
     }
     

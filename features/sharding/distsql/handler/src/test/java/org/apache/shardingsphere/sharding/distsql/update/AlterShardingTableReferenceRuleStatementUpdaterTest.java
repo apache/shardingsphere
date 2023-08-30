@@ -71,7 +71,7 @@ class AlterShardingTableReferenceRuleStatementUpdaterTest {
     }
     
     private AlterShardingTableReferenceRuleStatement createSQLStatement(final String name, final String reference) {
-        return new AlterShardingTableReferenceRuleStatement(Collections.singletonList(new TableReferenceRuleSegment(name, reference)));
+        return new AlterShardingTableReferenceRuleStatement(Collections.singleton(new TableReferenceRuleSegment(name, reference)));
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

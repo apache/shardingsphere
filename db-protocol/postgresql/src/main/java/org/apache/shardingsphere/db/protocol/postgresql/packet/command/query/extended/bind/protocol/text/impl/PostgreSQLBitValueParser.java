@@ -35,7 +35,7 @@ public final class PostgreSQLBitValueParser implements PostgreSQLTextValueParser
             result.setType("bit");
             result.setValue(value);
             return result;
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
     }

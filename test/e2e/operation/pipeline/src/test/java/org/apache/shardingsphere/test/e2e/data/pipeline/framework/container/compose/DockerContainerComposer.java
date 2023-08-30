@@ -75,8 +75,9 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             storageContainers.add(storageContainer);
         }
         AdaptorContainerConfiguration containerConfig = PipelineProxyClusterContainerConfigurationFactory.newInstance(databaseType);
+        DatabaseType proxyDatabaseType = databaseType instanceof OracleDatabaseType ? TypedSPILoader.getService(DatabaseType.class, "MySQL") : databaseType;
         ShardingSphereProxyClusterContainer proxyClusterContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(
-                AdapterMode.CLUSTER, AdapterType.PROXY, databaseType, null, "", containerConfig);
+                AdapterMode.CLUSTER, AdapterType.PROXY, proxyDatabaseType, null, "", containerConfig);
         for (DockerStorageContainer each : storageContainers) {
             proxyClusterContainer.dependsOn(governanceContainer, each);
         }

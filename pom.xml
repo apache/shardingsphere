@@ -84,7 +84,7 @@
         <activation-api.version>1.2.0</activation-api.version>
         <truffle-api.version>21.2.0</truffle-api.version>
         
-        <calcite.version>1.32.0</calcite.version>
+        <calcite.version>1.35.0</calcite.version>
         <immutables.version>2.9.3</immutables.version>
         <netty.version>4.1.90.Final</netty.version>
         <bouncycastle.version>1.70</bouncycastle.version>

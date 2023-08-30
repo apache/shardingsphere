@@ -490,7 +490,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         } else {
             right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery())));
         }
-        String operator = null != ctx.SAFE_EQ_() ? ctx.SAFE_EQ_().getText() : ctx.comparisonOperator().getText();
+        String operator = null == ctx.SAFE_EQ_() ? ctx.comparisonOperator().getText() : ctx.SAFE_EQ_().getText();
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
@@ -543,7 +543,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 listExpression.getItems().add((ExpressionSegment) visit(each));
             }
             right = listExpression;
-            operator = null != ctx.NOT() ? "NOT LIKE" : "LIKE";
+            operator = null == ctx.NOT() ? "LIKE" : "NOT LIKE";
         }
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
@@ -552,7 +552,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     private BinaryOperationExpression createBinaryOperationExpressionFromRegexp(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right = (ExpressionSegment) visit(ctx.bitExpr(1));
-        String operator = null != ctx.NOT() ? "NOT REGEXP" : "REGEXP";
+        String operator = null == ctx.NOT() ? "REGEXP" : "NOT REGEXP";
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
@@ -560,7 +560,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     private BinaryOperationExpression createBinaryOperationExpressionFromRlike(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right = (ExpressionSegment) visit(ctx.bitExpr(1));
-        String operator = null != ctx.NOT() ? "NOT RLIKE" : "RLIKE";
+        String operator = null == ctx.NOT() ? "RLIKE" : "NOT RLIKE";
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
@@ -748,9 +748,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.EXCEPT()) {
             combineType = CombineType.EXCEPT;
         } else {
-            combineType = null != ctx.combineOption() && null != ctx.combineOption().ALL() ? CombineType.UNION_ALL : CombineType.UNION;
+            combineType = null == ctx.combineOption() || null == ctx.combineOption().ALL() ? CombineType.UNION : CombineType.UNION_ALL;
         }
-        MySQLSelectStatement right = null != ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryPrimary()) : (MySQLSelectStatement) visit(ctx.queryExpressionParens());
+        MySQLSelectStatement right = null == ctx.queryPrimary() ? (MySQLSelectStatement) visit(ctx.queryExpressionParens()) : (MySQLSelectStatement) visit(ctx.queryPrimary());
         return new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left, combineType, right);
     }
     
@@ -1134,7 +1134,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
-        return null != ctx.completeRegularFunction() ? visit(ctx.completeRegularFunction()) : visit(ctx.shorthandRegularFunction());
+        return null == ctx.completeRegularFunction() ? visit(ctx.shorthandRegularFunction()) : visit(ctx.completeRegularFunction());
     }
     
     @Override
@@ -1196,7 +1196,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitVariable(final VariableContext ctx) {
-        return null != ctx.systemVariable() ? visit(ctx.systemVariable()) : visit(ctx.userVariable());
+        return null == ctx.systemVariable() ? visit(ctx.userVariable()) : visit(ctx.systemVariable());
     }
     
     @Override
@@ -1286,7 +1286,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection;
         if (null != ctx.direction()) {
-            orderDirection = null != ctx.direction().DESC() ? OrderDirection.DESC : OrderDirection.ASC;
+            orderDirection = null == ctx.direction().DESC() ? OrderDirection.ASC : OrderDirection.DESC;
         } else {
             orderDirection = OrderDirection.ASC;
         }
@@ -1693,7 +1693,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (projection instanceof BinaryOperationExpression) {
             int startIndex = projection.getStartIndex();
-            int stopIndex = null != alias ? alias.getStopIndex() : projection.getStopIndex();
+            int stopIndex = null == alias ? projection.getStopIndex() : alias.getStopIndex();
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, projection.getText(), projection);
             result.setAlias(alias);
             return result;
@@ -1763,7 +1763,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         TableSegment result;
         TableSegment left;
-        left = null != ctx.tableFactor() ? (TableSegment) visit(ctx.tableFactor()) : (TableSegment) visit(ctx.escapedTableReference());
+        left = null == ctx.tableFactor() ? (TableSegment) visit(ctx.escapedTableReference()) : (TableSegment) visit(ctx.tableFactor());
         for (JoinedTableContext each : ctx.joinedTable()) {
             left = visitJoinedTable(each, left);
         }
@@ -1799,9 +1799,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setJoinType(getJoinType(ctx));
         result.setNatural(null != ctx.naturalJoinType());
-        TableSegment right = null != ctx.tableFactor() ? (TableSegment) visit(ctx.tableFactor()) : (TableSegment) visit(ctx.tableReference());
+        TableSegment right = null == ctx.tableFactor() ? (TableSegment) visit(ctx.tableReference()) : (TableSegment) visit(ctx.tableFactor());
         result.setRight(right);
-        return null != ctx.joinSpecification() ? visitJoinSpecification(ctx.joinSpecification(), result) : result;
+        return null == ctx.joinSpecification() ? result : visitJoinSpecification(ctx.joinSpecification(), result);
     }
     
     private String getJoinType(final JoinedTableContext ctx) {
@@ -1809,7 +1809,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             return JoinType.INNER.name();
         }
         if (null != ctx.outerJoinType()) {
-            return ctx.outerJoinType().LEFT() != null ? JoinType.LEFT.name() : JoinType.RIGHT.name();
+            return null == ctx.outerJoinType().LEFT() ? JoinType.RIGHT.name() : JoinType.LEFT.name();
         }
         if (null != ctx.naturalJoinType()) {
             return getNaturalJoinType(ctx.naturalJoinType());
@@ -1820,11 +1820,11 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     private String getNaturalJoinType(final NaturalJoinTypeContext ctx) {
         if (null != ctx.LEFT()) {
             return JoinType.LEFT.name();
-        } else if (null != ctx.RIGHT()) {
-            return JoinType.RIGHT.name();
-        } else {
-            return JoinType.INNER.name();
         }
+        if (null != ctx.RIGHT()) {
+            return JoinType.RIGHT.name();
+        }
+        return JoinType.INNER.name();
     }
     
     private JoinTableSegment visitJoinSpecification(final JoinSpecificationContext ctx, final JoinTableSegment result) {
