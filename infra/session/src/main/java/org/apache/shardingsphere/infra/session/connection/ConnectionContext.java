@@ -59,7 +59,7 @@ public final class ConnectionContext implements AutoCloseable {
      * @return used data source names
      */
     public Collection<String> getUsedDataSourceNames() {
-        return usedDataSourceProvider.getNames().stream().map(s -> s.split("\\.")[1]).collect(Collectors.toList());
+        return usedDataSourceProvider.getNames().stream().map(each -> each.contains(".") ? each.split("\\.")[1] : each).collect(Collectors.toList());
     }
     
     /**
