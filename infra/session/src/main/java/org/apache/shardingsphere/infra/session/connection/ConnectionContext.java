@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.session.connection.transaction.Transactio
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Connection context.
@@ -58,7 +59,7 @@ public final class ConnectionContext implements AutoCloseable {
      * @return used data source names
      */
     public Collection<String> getUsedDataSourceNames() {
-        return usedDataSourceProvider.getNames();
+        return usedDataSourceProvider.getNames().stream().map(s -> s.split("\\.")[1]).collect(Collectors.toList());
     }
     
     /**
