@@ -1188,7 +1188,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
-
+    
     @Override
     public ASTNode visitCaseExpression(final CaseExpressionContext ctx) {
         Collection<ExpressionSegment> whenExprs = new LinkedList<>();
