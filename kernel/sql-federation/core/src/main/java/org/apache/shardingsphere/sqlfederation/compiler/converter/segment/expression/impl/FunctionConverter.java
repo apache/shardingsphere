@@ -17,18 +17,13 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlBasicCall;
-import org.apache.calcite.sql.SqlFunctionCategory;
-import org.apache.calcite.sql.SqlIdentifier;
-import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlOperator;
-import org.apache.calcite.sql.SqlSyntax;
-import org.apache.calcite.sql.SqlUnresolvedFunction;
+import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.validate.SqlNameMatchers;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.ExpressionConverter;
 
@@ -62,8 +57,16 @@ public class FunctionConverter implements SQLSegmentConverter<FunctionSegment, S
     
     private List<SqlNode> getFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {
         List<SqlNode> result = new LinkedList<>();
+        ExpressionConverter expressionConverter = new ExpressionConverter();
         for (ExpressionSegment each : sqlSegments) {
-            new ExpressionConverter().convert(each).ifPresent(result::add);
+            if (expressionConverter.convert(each).isPresent()) {
+                SqlNode sqlNode = expressionConverter.convert(each).get();
+                if (sqlNode instanceof SqlNodeList) {
+                    result.addAll(((SqlNodeList) sqlNode).getList());
+                } else {
+                    result.add(expressionConverter.convert(each).get());
+                }
+            }
         }
         return result;
     }
