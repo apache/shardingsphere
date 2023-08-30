@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Row expression converter.
+ */
 public class RowExpressionConverter implements SQLSegmentConverter<RowExpression, SqlNode> {
 
     @Override
