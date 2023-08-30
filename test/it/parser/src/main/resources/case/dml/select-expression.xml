@@ -2072,7 +2072,18 @@
         </from>
         <where start-index="43" stop-index="84">
             <expr>
-                <function function-name="json_contains" text="json_contains(order_info, ?, '$.id')" literal-text="json_contains(order_info, 1, '$.id')" start-index="49" stop-index="84" />
+                <function function-name="json_contains" text="json_contains(order_info, ?, '$.id')" literal-text="json_contains(order_info, 1, '$.id')" start-index="49" stop-index="84" >
+                    <parameter>
+                        <column start-index="63" stop-index="72" name="order_info" />
+                    </parameter>
+                    <parameter>
+                        <parameter-marker-expression start-index="75" stop-index="75" parameter-index="0" />
+                        <literal-expression start-index="75" stop-index="75" value="1" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression start-index="78" stop-index="83" value="$.id" />
+                    </parameter>
+                </function>
             </expr>
         </where>
         <limit start-index="86" stop-index="95">

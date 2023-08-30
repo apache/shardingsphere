@@ -3748,7 +3748,17 @@
                                 <column name="items" start-index="39" stop-index="43" />
                             </parameter>
                             <parameter>
-                                <common-expression text="'$.name' RETURNING VARCHAR(100)" start-index="46" stop-index="76" />
+                                <list-expression start-index="46" stop-index="76" >
+                                    <items>
+                                        <literal-expression start-index="46" stop-index="53" value="'$.name'" />
+                                    </items>
+                                    <items>
+                                        <literal-expression start-index="55" stop-index="63" value="RETURNING" />
+                                    </items>
+                                    <items>
+                                        <data-type value="VARCHAR" start-index="65" stop-index="76" />
+                                    </items>
+                                </list-expression>
                             </parameter>
                         </function>
                     </left>
