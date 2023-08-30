@@ -1171,6 +1171,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.variable()) {
             return visit(ctx.variable());
         }
+        if (null != ctx.RETURNING()) {
+            
+        }
         for (ExprContext each : ctx.expr()) {
             visit(each);
         }
