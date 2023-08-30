@@ -28,7 +28,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class ExpectedRowExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
-
+    
     @XmlElement
     private final List<ExpectedExpression> items = new ArrayList<>();
 }

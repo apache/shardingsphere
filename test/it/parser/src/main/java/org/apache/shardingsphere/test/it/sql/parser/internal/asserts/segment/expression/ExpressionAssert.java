@@ -513,7 +513,7 @@ public final class ExpressionAssert {
         assertThat(assertContext.getText("Multiset operator assertion error: "), actual.getOperator(), is(expected.getOperator()));
         assertThat(assertContext.getText("Multiset keyword assertion error: "), actual.getKeyWord(), is(expected.getKeyWord()));
     }
-
+    
     /**
      * Assert row expression.
      *
@@ -528,7 +528,7 @@ public final class ExpressionAssert {
             assertNotNull(actual, assertContext.getText("Actual list expression should not exist."));
             assertThat(assertContext.getText("Row expression item size assert error."),
                     actual.getItems().size(), is(expected.getItems().size()));
-            Iterator<ExpressionSegment> actualItems =  actual.getItems().iterator();
+            Iterator<ExpressionSegment> actualItems = actual.getItems().iterator();
             Iterator<ExpectedExpression> expectedItems = expected.getItems().iterator();
             while (actualItems.hasNext()) {
                 assertExpression(assertContext, actualItems.next(), expectedItems.next());
@@ -602,7 +602,7 @@ public final class ExpressionAssert {
             assertIntervalExpression(assertContext, (IntervalExpressionProjection) actual, expected.getIntervalExpression());
         } else if (actual instanceof MultisetExpression) {
             assertMultisetExpression(assertContext, (MultisetExpression) actual, expected.getMultisetExpression());
-        } else if (actual instanceof RowExpression){
+        } else if (actual instanceof RowExpression) {
             assertRowExpression(assertContext, (RowExpression) actual, expected.getRowExpression());
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported expression: %s", actual.getClass().getName()));
