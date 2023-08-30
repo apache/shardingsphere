@@ -113,4 +113,7 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "multiset-expression")
     private ExpectedMultisetExpression multisetExpression;
+
+    @XmlElement(name = "row-expression")
+    private ExpectedRowExpression rowExpression;
 }
