@@ -27,6 +27,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -85,7 +87,12 @@ class YamlEngineTest {
     void assertMarshal() {
         YamlShortcutsConfigurationFixture actual = new YamlShortcutsConfigurationFixture();
         actual.setName("test");
-        assertThat(YamlEngine.marshal(actual), is("name: test" + System.lineSeparator()));
+        LinkedList<String> linkedList = new LinkedList<>();
+        linkedList.add("1");
+        linkedList.add("2");
+        actual.setIgnoredProcedureNames(linkedList);
+        List<YamlShortcutsConfigurationFixture> actualList = Arrays.asList(actual);
+        assertThat(YamlEngine.marshal(actualList), is("name: test" + System.lineSeparator()));
     }
     
     @Test
