@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -93,7 +94,7 @@ public final class ExampleGeneratorFactory {
                 result.setFrameworks(getSysEnvByKey(props, "frameworks"));
             }
         }
-        result.setProducts(Lists.newArrayList("jdbc"));
+        result.setProducts(Collections.singletonList("jdbc"));
         return result;
     }
     
