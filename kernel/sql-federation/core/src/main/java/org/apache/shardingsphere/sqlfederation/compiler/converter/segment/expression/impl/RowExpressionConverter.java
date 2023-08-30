@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlBasicCall;
-import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
@@ -34,10 +32,10 @@ import java.util.Optional;
 /**
  * Row expression converter.
  */
-public class RowExpressionConverter implements SQLSegmentConverter<RowExpression, SqlNode> {
+public final class RowExpressionConverter implements SQLSegmentConverter<RowExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(RowExpression segment) {
+    public Optional<SqlNode> convert(final RowExpression segment) {
         List<SqlNode> sqlNodes = new ArrayList<>();
         ExpressionConverter expressionConverter = new ExpressionConverter();
         for (ExpressionSegment expressionSegment : segment.getItems()) {
