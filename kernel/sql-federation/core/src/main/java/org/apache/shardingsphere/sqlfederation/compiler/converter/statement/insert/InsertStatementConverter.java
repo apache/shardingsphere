@@ -72,7 +72,7 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
         return new SqlInsert(SqlParserPos.ZERO, keywords, table, source, columnList);
     }
     
-    private SqlNode convertSelect(SubquerySegment subquerySegment) {
+    private SqlNode convertSelect(final SubquerySegment subquerySegment) {
         SelectStatement selectStatement = subquerySegment.getSelect();
         SqlNodeList distinct = new DistinctConverter().convert(selectStatement.getProjections()).orElse(null);
         SqlNodeList projection = new ProjectionsConverter().convert(selectStatement.getProjections()).orElseThrow(IllegalStateException::new);
@@ -84,13 +84,13 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
         return new SqlSelect(SqlParserPos.ZERO, distinct, projection, from, where, groupBy, having, window, null, null, null, null, SqlNodeList.EMPTY);
     }
     
-    private SqlNode convertValues(Collection<InsertValuesSegment> insertValuesSegments){
+    private SqlNode convertValues(final Collection<InsertValuesSegment> insertValuesSegments) {
         List<SqlNode> values = new ArrayList<>();
         for (InsertValuesSegment each : insertValuesSegments) {
             values.add(convertExpression(each.getValues().get(0)));
         }
         List<SqlNode> operands = new ArrayList<>();
-        operands.add(new SqlBasicCall(new SqlRowOperator("ROW"), values ,SqlParserPos.ZERO));
+        operands.add(new SqlBasicCall(new SqlRowOperator("ROW"), values, SqlParserPos.ZERO));
         return new SqlBasicCall(new SqlValuesOperator(), operands, SqlParserPos.ZERO);
     }
     
