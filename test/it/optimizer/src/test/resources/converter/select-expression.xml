@@ -49,4 +49,5 @@
     <test-cases sql-case-id="select_where_with_predicate_with_in_subquery" expected-sql="SELECT * FROM &quot;t_order&quot; WHERE &quot;t_order&quot;.&quot;order_id&quot; NOT IN (SELECT &quot;order_id&quot; FROM &quot;t_order_item&quot; WHERE &quot;status&quot; &gt; 1)" db-types="PostgreSQL, openGauss" sql-case-types="LITERAL" />
     <test-cases sql-case-id="select_where_with_predicate_with_in_subquery" expected-sql="SELECT * FROM &quot;t_order&quot; WHERE &quot;t_order&quot;.&quot;order_id&quot; NOT IN (SELECT &quot;order_id&quot; FROM &quot;t_order_item&quot; WHERE &quot;status&quot; &gt; ?)" db-types="PostgreSQL, openGauss" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="select_where_with_simple_expr_with_collate" expected-sql="SELECT * FROM `t_order` WHERE `order_id` COLLATE 'utf8mb4_0900_ai_ci'" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_where_with_simple_expr_with_row" expected-sql="SELECT * FROM t_order WHERE ROW(?, now()) = (order_id, status)" db-types="MySQL" sql-case-types="PLACEHOLDER" />
 </sql-node-converter-test-cases>

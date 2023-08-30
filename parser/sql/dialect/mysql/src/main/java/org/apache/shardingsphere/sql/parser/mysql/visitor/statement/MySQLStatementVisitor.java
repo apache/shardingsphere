@@ -1171,6 +1171,14 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.variable()) {
             return visit(ctx.variable());
         }
+        if (null != ctx.LP_()) {
+            ListExpression expressions = new ListExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+            for (ExprContext each : ctx.expr()) {
+                expressions.getItems().add((ExpressionSegment) visit(each));
+            }
+            return expressions;
+
+        }
         for (ExprContext each : ctx.expr()) {
             visit(each);
         }
@@ -1180,7 +1188,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
-    
+
     @Override
     public ASTNode visitCaseExpression(final CaseExpressionContext ctx) {
         Collection<ExpressionSegment> whenExprs = new LinkedList<>();
