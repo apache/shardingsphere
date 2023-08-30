@@ -387,6 +387,8 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
                     result.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) each);
                 } else if (each instanceof RenameTableDefinitionSegment) {
                     result.setRenameTable(((RenameTableDefinitionSegment) each).getRenameTable());
+                } else if (each instanceof RenameColumnSegment) {
+                    result.getRenameColumnDefinitions().add((RenameColumnSegment) each);
                 }
             }
         }
