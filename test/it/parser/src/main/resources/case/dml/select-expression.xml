@@ -2047,7 +2047,17 @@
         </projections>
         <where start-index="22" stop-index="76">
             <expr>
-                <function function-name="JSON_CONTAINS" text="JSON_CONTAINS(order_msg -> '$[*].code', 'x', '$')" start-index="28" stop-index="76" />
+                <function function-name="JSON_CONTAINS" text="JSON_CONTAINS(order_msg -> '$[*].code', 'x', '$')" start-index="28" stop-index="76" >
+                    <parameter>
+                        <function start-index="42" stop-index="65" function-name="->" text="order_msg -> '$[*].code'" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression start-index="68" stop-index="70" value="x" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression start-index="73" stop-index="75" value="$" />
+                    </parameter>
+                </function>
             </expr>
         </where>
     </select>
