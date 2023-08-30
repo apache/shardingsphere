@@ -27,7 +27,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.UnaryOpe
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.ExpressionConverter;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
+import java.util.List;
+import java.util.LinkedList;
 
 /**
  * Unary operation expression converter.
@@ -51,9 +55,9 @@ public class UnaryOperationExpressionConverter implements SQLSegmentConverter<Un
     }
     
     @Override
-    public Optional<SqlNode> convert(UnaryOperationExpression segment) {
+    public Optional<SqlNode> convert(final UnaryOperationExpression segment) {
         SqlOperator operator = convertOperator(segment);
-        List<SqlNode> sqlNodes = convertSqlNodes(segment, operator);
+        List<SqlNode> sqlNodes = convertSqlNodes(segment);
         return Optional.of(new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO));
     }
     
@@ -63,7 +67,7 @@ public class UnaryOperationExpressionConverter implements SQLSegmentConverter<Un
         return REGISTRY.get(operator);
     }
     
-    private List<SqlNode> convertSqlNodes(final UnaryOperationExpression segment, final SqlOperator operator) {
+    private List<SqlNode> convertSqlNodes(final UnaryOperationExpression segment) {
         SqlNode expression = new ExpressionConverter().convert(segment.getExpression()).orElseThrow(IllegalStateException::new);
         List<SqlNode> result = new LinkedList<>();
         result.add(expression);
