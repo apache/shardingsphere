@@ -2969,4 +2969,12 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_ts_rewrite_function">
+        <projections start-index="7" stop-index="62">
+            <expression-projection start-index="7" stop-index="62" text="ts_rewrite('a &amp; b'::tsquery, 'a'::tsquery, 'c'::tsquery)">
+                <function start-index="7" stop-index="62" function-name="ts_rewrite" text="ts_rewrite('a &amp; b'::tsquery, 'a'::tsquery, 'c'::tsquery)" />
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
