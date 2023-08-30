@@ -21,13 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-import java.util.LinkedList;
-
 @Getter
 @Setter
 public final class YamlShortcutsConfigurationFixture implements YamlConfiguration {
     
     private String name;
-    
-    private LinkedList<String> ignoredProcedureNames;
 }
