@@ -165,18 +165,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAgainstExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.*;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -1172,11 +1161,13 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             return visit(ctx.variable());
         }
         if (null != ctx.LP_()) {
-            ListExpression expressions = new ListExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+            ListExpression items = new ListExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
             for (ExprContext each : ctx.expr()) {
-                expressions.getItems().add((ExpressionSegment) visit(each));
+                items.getItems().add((ExpressionSegment) visit(each));
             }
-            return expressions;
+            RowExpression result = new RowExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+            result.getItems().add(items);
+            return result;
 
         }
         for (ExprContext each : ctx.expr()) {
