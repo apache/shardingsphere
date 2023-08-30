@@ -1809,7 +1809,14 @@
         </projections>
         <where start-index="22" stop-index="44">
             <expr>
-                <common-expression text="~t_order.order_id" start-index="28" stop-index="44" />
+                <unary-operation-expression text="~t_order.order_id" start-index="28" stop-index="44">
+                    <operator>~</operator>
+                    <expr>
+                        <column name="order_id" start-index="29" stop-index="44">
+                            <owner name="t_order" start-index="29" stop-index="35" />
+                        </column>
+                    </expr>
+                </unary-operation-expression>
             </expr>
         </where>
     </select>

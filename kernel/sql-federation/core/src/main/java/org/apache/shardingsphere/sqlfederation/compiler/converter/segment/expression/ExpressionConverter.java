@@ -38,26 +38,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAga
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.BetweenExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.BinaryOperationExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.CaseWhenExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ColumnConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.CollateExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ExistsSubqueryExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ExtractArgExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.FunctionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.InExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ListExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.LiteralExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ParameterMarkerExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.SubqueryExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.TypeCastExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.*;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.impl.AggregationProjectionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.impl.DataTypeConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.NotExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.MatchExpressionConverter;
 
 import java.util.Optional;
 
@@ -128,6 +114,9 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         }
         if (segment instanceof CollateExpression) {
             return new CollateExpressionConverter().convert((CollateExpression) segment);
+        }
+        if (segment instanceof UnaryOperationExpression) {
+            return new UnaryOperationExpressionConverter().convert((UnaryOperationExpression) segment);
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }
