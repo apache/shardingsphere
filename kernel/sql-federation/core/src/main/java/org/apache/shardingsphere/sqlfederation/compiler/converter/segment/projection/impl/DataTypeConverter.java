@@ -38,6 +38,7 @@ public final class DataTypeConverter implements SQLSegmentConverter<DataTypeSegm
         if (null == segment) {
             return Optional.empty();
         }
-        return Optional.of(new SqlDataTypeSpec(new SqlBasicTypeNameSpec(Objects.requireNonNull(SqlTypeName.get(segment.getDataTypeName())), segment.getDataLength().getPrecision(), SqlParserPos.ZERO), SqlParserPos.ZERO));
+        return Optional.of(new SqlDataTypeSpec(new SqlBasicTypeNameSpec(Objects.requireNonNull(SqlTypeName.get(segment.getDataTypeName())), segment.getDataLength().getPrecision(), SqlParserPos.ZERO),
+                SqlParserPos.ZERO));
     }
 }
