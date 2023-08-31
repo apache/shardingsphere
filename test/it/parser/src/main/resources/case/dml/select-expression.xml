@@ -1983,7 +1983,8 @@
         </projections>
         <where start-index="22" stop-index="33" literal-stop-index="53">
             <expr>
-                <common-expression text="{ts ?}" literal-text="{ts '1994-02-04 12:23:00'}" start-index="28" stop-index="33" literal-stop-index="53" />
+                <parameter-marker-expression start-index="32" stop-index="32" parameter-index="0" />
+                <literal-expression start-index="32" stop-index="52" value="1994-02-04 12:23:00" />
             </expr>
         </where>
     </select>
