@@ -97,17 +97,15 @@ public final class TableAssert {
     }
     
     /**
-     * Assert actual xml table segment is correct with expected xml table.
+     * Assert actual function table segment is correct with expected table.
      *
      * @param assertContext assert context
-     * @param actual actual xml table
-     * @param expected expected xml table
+     * @param actual actual function table
+     * @param expected expected function table
      */
     private static void assertIs(final SQLCaseAssertContext assertContext, final FunctionTableSegment actual, final ExpectedFunctionTable expected) {
         assertTableFunction(assertContext, actual.getTableFunction(), expected.getTableFunction());
-        if (actual.getAliasName().isPresent()) {
-            assertThat(assertContext.getText("Table function alias assertion error"), actual.getAliasName().get(), is(expected.getTableAlias()));
-        }
+        actual.getAliasName().ifPresent(optional -> assertThat(assertContext.getText("Table function alias assertion error"), optional, is(expected.getTableAlias())));
     }
     
     /**
@@ -202,11 +200,11 @@ public final class TableAssert {
     }
     
     /**
-     * Assert actual xml table function segment is correct with expected xml table function.
+     * Assert actual table function segment is correct with expected table function.
      *
      * @param assertContext assert context
-     * @param actual actual xml table function
-     * @param expected expected xml table function
+     * @param actual actual table function
+     * @param expected expected table function
      */
     private static void assertTableFunction(final SQLCaseAssertContext assertContext, final ExpressionSegment actual, final ExpectedTableFunction expected) {
         if (actual instanceof XmlTableFunctionSegment) {
