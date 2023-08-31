@@ -2977,4 +2977,12 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_int_2_function">
+        <projections start-index="7" stop-index="16">
+            <expression-projection start-index="7" stop-index="16" text="int2(25.3)">
+                <function start-index="7" stop-index="16" text="int2(25.3);" function-name="int2" />
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

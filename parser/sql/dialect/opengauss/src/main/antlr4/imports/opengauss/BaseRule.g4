@@ -440,6 +440,11 @@ unreservedWord
     | JSON
     | POSITION
     | INET
+    | INT1
+    | INT2
+    | INT4
+    | INT16
+    | FLOAT4
     ;
 
 typeFuncNameKeyword

@@ -1408,3 +1408,11 @@ FEATURES
 TS_REWRITE
     : T S UL_ R E W R I T E
     ;
+
+INT16
+    : I N T [16]
+    ;
+
+INT1
+    : I N T [1]
+    ;
