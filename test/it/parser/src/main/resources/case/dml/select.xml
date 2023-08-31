@@ -6909,4 +6909,15 @@
             <simple-table alias="aWHERE" name="employee" start-index="88" stop-index="102" literal-start-index="88" literal-stop-index="102" />
         </from>
     </select>
+    <select sql-case-id="select_with_custom_table_function">
+        <projections start-index="7" stop-index="18" literal-start-index="7" literal-stop-index="18">
+            <aggregation-projection type="COUNT" expression="COUNT(empid)" start-index="7" stop-index="18"
+                                    literal-start-index="7" literal-stop-index="18"/>
+        </projections>
+        <from>
+            <function-table>
+                <table-function function-name="custom_function" text="custom_function(orgid)"/>
+            </function-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
