@@ -6922,11 +6922,33 @@
                                   literal-stop-index="34"/>
                 </left>
                 <right>
-                    <function-table>
+                    <function-table table-alias="a">
                         <table-function function-name="custom_function" text="custom_function(b.orgid)"/>
                     </function-table>
                 </right>
             </join-table>
         </from>
+        <where start-index="64" stop-index="88" literal-start-index="64" literal-stop-index="88">
+            <expr>
+                <binary-operation-expression start-index="70" stop-index="88" literal-start-index="70"
+                                             literal-stop-index="88">
+                    <left>
+                        <column name="postid" start-index="70" stop-index="77" literal-start-index="70"
+                                literal-stop-index="77">
+                            <owner name="a" start-index="70" stop-index="70" literal-start-index="70"
+                                   literal-stop-index="70"/>
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="postid" start-index="81" stop-index="88" literal-start-index="81"
+                                literal-stop-index="88">
+                            <owner name="b" start-index="81" stop-index="81" literal-start-index="81"
+                                   literal-stop-index="81"/>
+                        </column>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </select>
 </sql-parser-test-cases>
