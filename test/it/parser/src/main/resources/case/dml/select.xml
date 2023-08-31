@@ -5721,7 +5721,6 @@
                                         text="XMLTABLE('/Warehouse' PASSING warehouses.warehouse_spec COLUMNS &quot;Water&quot; varchar2(6) PATH 'WaterAccess',&quot;Rail&quot; varchar2(6) PATH 'RailAccess')"/>
                     </function-table>
                 </right>
-                <on-condition/>
             </join-table>
         </from>
     </select>
