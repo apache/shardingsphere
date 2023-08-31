@@ -78,7 +78,7 @@ The following table can be used for comparison to help developers choose the sui
 | Business transformation  | None            | None               | Seata server needed|
 | Consistency    | Not supported         | Not supported             | Final consistency       |
 | Isolation    | Not supported        | Supported           | Business side guaranteed  |
-| Concurrent performance | no loss        | severe loss          | slight loss       |
+| Concurrent performance | no loss        | slight loss          | severe loss       |
 | Applied scenarios  | Inconsistent processing by the business side | short transaction & low-level concurrency | long transaction & high concurrency |
 
 ## Application Scenarios
@@ -93,7 +93,7 @@ Strong data consistency is guaranteed in a distributed environment in terms of X
 
 ### Application Scenarios for ShardingSphere BASE Transaction
 
-In terms of BASE transactions, final data consistency is guaranteed in a distributed environment. Unlike XA transactions, resources are not locked during the whole transaction process, so its performance is relatively higher.
+In terms of BASE transactions, final data consistency is guaranteed in a distributed environment. The XA transactions does not require long waits for transaction execution; it only needs to handle commit and rollback operations, so its performance is relatively higher.
 
 ### Application Scenarios for ShardingSphere LOCAL Transaction
 
