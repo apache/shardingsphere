@@ -1404,3 +1404,7 @@ PREDICT
 FEATURES
     : F E A T U R E S
     ;
+
+TS_REWRITE
+    : T S UL_ R E W R I T E
+    ;

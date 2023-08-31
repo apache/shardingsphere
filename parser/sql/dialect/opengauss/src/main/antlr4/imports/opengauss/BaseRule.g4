@@ -1085,6 +1085,7 @@ functionExprCommonSubexpr
     | XMLROOT LP_ aExpr COMMA_ xmlRootVersion xmlRootStandalone? RP_
     | XMLSERIALIZE LP_ documentOrContent aExpr AS simpleTypeName RP_
     | PREDICT BY modelName LP_ FEATURES name (COMMA_ name)* RP_
+    | TS_REWRITE LP_ aExpr (TYPE_CAST_ TSQUERY)? (COMMA_ aExpr (TYPE_CAST_ TSQUERY)?)* RP_
     ;
 
 typeName
