@@ -6916,9 +6916,17 @@
                                     literal-start-index="7" literal-stop-index="18"/>
         </projections>
         <from>
-            <function-table>
-                <table-function function-name="custom_function" text="custom_function(orgid)"/>
-            </function-table>
+            <join-table join-type="COMMA" natural="false">
+                <left>
+                    <simple-table alias="b" name="EMPLOYEE" start-index="25" stop-index="34" literal-start-index="25"
+                                  literal-stop-index="34"/>
+                </left>
+                <right>
+                    <function-table>
+                        <table-function function-name="custom_function" text="custom_function(b.orgid)"/>
+                    </function-table>
+                </right>
+            </join-table>
         </from>
     </select>
 </sql-parser-test-cases>
