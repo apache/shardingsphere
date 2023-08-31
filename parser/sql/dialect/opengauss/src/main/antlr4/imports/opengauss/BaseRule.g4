@@ -584,6 +584,11 @@ aExpr
     | aExpr MOD_ aExpr
     | aExpr CARET_ aExpr
     | aExpr AMPERSAND_ aExpr
+    | DN_ aExpr
+    | aExpr NOT_
+    | aExpr POUND_ aExpr
+    | TILDE_ aExpr
+    | CUBE_ROOT_ aExpr
     | aExpr VERTICAL_BAR_ aExpr
     | aExpr qualOp aExpr
     | qualOp aExpr
