@@ -560,8 +560,24 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
                 return result;
             }
         }
+        return visitRemainSimpleExpr(ctx, startIndex, stopIndex);
+    }
+    
+    private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx, final int startIndex, final int stopIndex) {
+        if (null != ctx.OR_()) {
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.simpleExpr(0));
+            ExpressionSegment right = (ExpressionSegment) visit(ctx.simpleExpr(1));
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, ctx.OR_().getText(), text);
+        }
         if (null != ctx.caseExpression()) {
             return visit(ctx.caseExpression());
+        }
+        if (null != ctx.BINARY()) {
+            return visit(ctx.simpleExpr(0));
+        }
+        for (SimpleExprContext each : ctx.simpleExpr()) {
+            visit(each);
         }
         return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText());
     }

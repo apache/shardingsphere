@@ -209,4 +209,6 @@
     <sql-case id="select_with_group_by_and_having" value="select cfg_name from bmsql_config group by cfg_name having cfg_name='1';" db-types="openGauss" />
     <sql-case id="select_with_to_date_function" value="SELECT TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.') FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_with_expressions_in_projection" value="SELECT ((a.enddate - term + term2 + 1) / (last_day(term) - term + 1)) cnt, a.empid FROM employee aWHERE nvl(disabled, 0) = 1  AND enddate BETWEEN term AND last_day(term)  AND EXISTS (SELECT 1 FROM post d WHERE a.orgid = d.orgid   AND a.postid = d.postid   AND d.title != 'TEST'   AND nvl(d.postid, 0) != 0)" db-types="Oracle" />
+    <sql-case id="select_with_custom_table_function" value="SELECT COUNT(empid) FROM EMPLOYEE b, custom_function(b.orgid) a WHERE a.postid = b.postid" db-types="Oracle" />
+    <sql-case id="select_numeric_operator" value="SELECT 5! AS RESULT;" db-types="openGauss" />
 </sql-cases>

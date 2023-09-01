@@ -20,40 +20,44 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlTableFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
 /**
- * XML table segment.
+ * Function table segment.
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class XmlTableSegment implements TableSegment {
+public final class FunctionTableSegment implements TableSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final XmlTableFunctionSegment xmlTableFunction;
+    private final ExpressionSegment tableFunction;
     
     @Setter
-    private String xmlTableFunctionAlias;
+    private AliasSegment alias;
     
-    @Override
     public Optional<String> getAliasName() {
-        return Optional.empty();
+        return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
     
     @Override
     public Optional<IdentifierValue> getAlias() {
-        return Optional.empty();
+        return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
     }
     
-    @Override
-    public void setAlias(final AliasSegment alias) {
+    /**
+     * Get alias segment.
+     *
+     * @return alias segment
+     */
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
     }
 }

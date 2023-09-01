@@ -136,8 +136,9 @@ class DriverDatabaseConnectionManagerTest {
     @Test
     void assertGetRandomPhysicalDataSourceNameFromCache() throws SQLException {
         databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
-        String actual = databaseConnectionManager.getRandomPhysicalDataSourceName();
-        assertThat(actual, is("ds"));
+        assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
+        assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
+        assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
     }
     
     @Test

@@ -125,4 +125,7 @@
     <sql-case id="select_predict_by_function" value="SELECT PREDICT BY point_kmeans (FEATURES position) as pos FROM (select * from kmeans_2d limit 10);" db-types="openGauss" />
     <sql-case id="select_inet_function" value="SELECT inet '192.168.1.5' = inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
     <sql-case id="select_inet_function_with_inet_operator" value="SELECT inet '192.168.1.5' &lt;&lt;= inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_ts_rewrite_function" value="SELECT ts_rewrite('a &amp; b'::tsquery, 'a'::tsquery, 'c'::tsquery);" db-types="openGauss" />
+    <sql-case id="select_int_2_function" value="select int2(25.3);" db-types="openGauss" />
+    <sql-case id="select_elem_contained_by_range_function" value="SELECT elem_contained_by_range('2', numrange(1.1,2.2));" db-types="openGauss" />
 </sql-cases>
