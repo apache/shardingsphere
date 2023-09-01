@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.exception.TableNotExistsException;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -74,7 +76,10 @@ public final class SimpleTableSegmentBinder {
     public static SimpleTableSegment bind(final SimpleTableSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         IdentifierValue originalDatabase = getDatabaseName(segment, statementBinderContext);
         IdentifierValue originalSchema = getSchemaName(segment, statementBinderContext);
-        // TODO check database and schema
+        ShardingSpherePreconditions.checkState(statementBinderContext.getMetaData().containsDatabase(originalDatabase.getValue())
+                && statementBinderContext.getMetaData().getDatabase(originalDatabase.getValue()).containsSchema(originalSchema.getValue()) 
+                && statementBinderContext.getMetaData().getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue()).containsTable(segment.getTableName().getIdentifier().getValue()),
+                () -> new TableNotExistsException(segment.getTableName().getIdentifier().getValue()));
         ShardingSphereSchema schema = statementBinderContext.getMetaData().getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
         tableBinderContexts.put(segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue()),
                 createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema, statementBinderContext.getDatabaseType()));
