@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
-import org.apache.shardingsphere.dialect.mysql.exception.ErrorGlobalVariableException;
-import org.apache.shardingsphere.dialect.mysql.exception.UnknownSystemVariableException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorGlobalVariableException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -97,7 +97,7 @@ class MySQLSetVariableAdminExecutorTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(mock(ShardingSphereDatabase.class));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
-                .thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(false, new CacheOption(1, 1), new CacheOption(1, 1))))));
+                .thenReturn(new RuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(false, new CacheOption(1, 1), new CacheOption(1, 1))))));
         return result;
     }
     

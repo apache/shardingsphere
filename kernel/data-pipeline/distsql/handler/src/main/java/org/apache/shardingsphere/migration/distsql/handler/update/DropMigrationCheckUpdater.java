@@ -34,7 +34,7 @@ public final class DropMigrationCheckUpdater implements RALUpdater<DropMigration
     }
     
     @Override
-    public String getType() {
-        return DropMigrationCheckStatement.class.getName();
+    public Class<DropMigrationCheckStatement> getType() {
+        return DropMigrationCheckStatement.class;
     }
 }

@@ -21,7 +21,15 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.delete.DeleteStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.explain.ExplainStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.insert.InsertStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.update.UpdateStatementConverter;
 import org.apache.shardingsphere.sqlfederation.exception.OptimizationSQLNodeConvertException;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.select.SelectStatementConverter;
 
@@ -41,6 +49,18 @@ public final class SQLNodeConverterEngine {
     public static SqlNode convert(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
             return new SelectStatementConverter().convert((SelectStatement) statement);
+        }
+        if (statement instanceof DeleteStatement) {
+            return new DeleteStatementConverter().convert((DeleteStatement) statement);
+        }
+        if (statement instanceof ExplainStatement) {
+            return new ExplainStatementConverter().convert((ExplainStatement) statement);
+        }
+        if (statement instanceof UpdateStatement) {
+            return new UpdateStatementConverter().convert((UpdateStatement) statement);
+        }
+        if (statement instanceof InsertStatement) {
+            return new InsertStatementConverter().convert((InsertStatement) statement);
         }
         throw new OptimizationSQLNodeConvertException(statement);
     }

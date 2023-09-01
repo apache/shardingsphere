@@ -98,13 +98,15 @@
         <assertion parameters="12:int, 1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT (SELECT MAX(user_id) FROM t_order_federate_sharding) max_user_id, order_id_sharding, status FROM t_order_federate_sharding WHERE order_id_sharding > ?" db-types="MySQL,PostgreSQL" scenario-types="tbl">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="SELECT (SELECT MAX(user_id) FROM t_order_federate_sharding) max_user_id, order_id_sharding, status FROM t_order_federate_sharding WHERE order_id_sharding > ?" db-types="MySQL,PostgreSQL" scenario-types="tbl">
         <assertion parameters="1100:int" />
-    </test-case>
+    </test-case>-->
     
-    <test-case sql="SELECT user_id, SUM(order_id_sharding) FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ? ORDER BY user_id" db-types="MySQL,PostgreSQL" scenario-types="tbl">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="SELECT user_id, SUM(order_id_sharding) FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ? ORDER BY user_id" db-types="MySQL,PostgreSQL" scenario-types="tbl">
         <assertion parameters="1000:int" />
-    </test-case>
+    </test-case>-->
     
     <test-case sql="SELECT COUNT(1) FROM t_order WHERE order_id &lt; ?" db-types="PostgreSQL" scenario-types="db,tbl">
         <assertion parameters="2000:int" />
@@ -114,9 +116,10 @@
         <assertion parameters="1000:int" />
     </test-case>
     
-    <test-case sql="SELECT AVG(order_id_sharding) AS order_id_sharding_avg FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting" db-types="MySQL">
+    <!-- TODO Replace with standard table structure -->
+    <!--<test-case sql="SELECT AVG(order_id_sharding) AS order_id_sharding_avg FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting" db-types="MySQL">
         <assertion expected-data-source-name="read_dataset" />
-    </test-case>
+    </test-case>-->
     
     <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), i.product_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? GROUP BY i.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />

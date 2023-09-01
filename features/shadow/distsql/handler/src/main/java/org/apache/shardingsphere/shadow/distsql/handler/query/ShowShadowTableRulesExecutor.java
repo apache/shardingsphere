@@ -59,9 +59,9 @@ public final class ShowShadowTableRulesExecutor implements RQLExecutor<ShowShado
         return result;
     }
     
-    private List<Map<String, String>> buildData(final ShadowRuleConfiguration shadowRuleConfiguration) {
+    private List<Map<String, String>> buildData(final ShadowRuleConfiguration shadowRuleConfig) {
         List<Map<String, String>> result = new ArrayList<>();
-        shadowRuleConfiguration.getTables().forEach((key, value) -> {
+        shadowRuleConfig.getTables().forEach((key, value) -> {
             Map<String, String> map = new HashMap<>();
             map.put(SHADOW_TABLE, key);
             map.put(SHADOW_ALGORITHM_NAME, convertToString(value.getShadowAlgorithmNames()));
@@ -80,7 +80,7 @@ public final class ShowShadowTableRulesExecutor implements RQLExecutor<ShowShado
     }
     
     @Override
-    public String getType() {
-        return ShowShadowTableRulesStatement.class.getName();
+    public Class<ShowShadowTableRulesStatement> getType() {
+        return ShowShadowTableRulesStatement.class;
     }
 }

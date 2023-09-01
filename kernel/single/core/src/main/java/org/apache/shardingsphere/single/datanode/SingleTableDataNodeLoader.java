@@ -19,9 +19,9 @@ package org.apache.shardingsphere.single.datanode;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.metadata.data.loader.type.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 import org.apache.shardingsphere.single.exception.SingleTablesLoadingException;
@@ -127,7 +127,7 @@ public final class SingleTableDataNodeLoader {
     
     private static Collection<DataNode> loadSpecifiedDataNode(final Collection<DataNode> dataNodes, final Collection<String> featureRequiredSingleTables,
                                                               final Map<String, Map<String, Collection<String>>> configuredTableMap) {
-        for (final DataNode each : dataNodes) {
+        for (DataNode each : dataNodes) {
             if (featureRequiredSingleTables.contains(each.getTableName())) {
                 return getSingleDataNodeCollection(each);
             }
@@ -142,7 +142,7 @@ public final class SingleTableDataNodeLoader {
             if (null == configuredTablesForSchema || configuredTablesForSchema.isEmpty()) {
                 continue;
             }
-            if (configuredTablesForSchema.contains(SingleTableConstants.ASTERISK) || configuredTablesForSchema.contains(each.getTableName())) {
+            if (configuredTablesForSchema.contains(SingleTableConstants.ASTERISK) || configuredTablesForSchema.contains(each.getTableName().toLowerCase())) {
                 return getSingleDataNodeCollection(each);
             }
         }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;

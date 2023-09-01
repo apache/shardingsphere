@@ -75,13 +75,13 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     @Override
     public List<Record> peekRecords() {
         List<Record> result = queue.peek();
-        return null != result ? result : Collections.emptyList();
+        return null == result ? Collections.emptyList() : result;
     }
     
     @Override
     public List<Record> pollRecords() {
         List<Record> result = queue.poll();
-        return null != result ? result : Collections.emptyList();
+        return null == result ? Collections.emptyList() : result;
     }
     
     @Override

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.adapter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereJdbcContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
@@ -54,7 +54,7 @@ public final class AdapterContainerFactory {
                         ? new ShardingSphereProxyClusterContainer(databaseType, containerConfig)
                         : new ShardingSphereProxyStandaloneContainer(databaseType, containerConfig);
             case JDBC:
-                return new ShardingSphereJdbcContainer(storageContainer, scenario);
+                return new ShardingSphereJdbcContainer(storageContainer, scenario, databaseType);
             default:
                 throw new RuntimeException(String.format("Unknown adapter `%s`.", adapter));
         }

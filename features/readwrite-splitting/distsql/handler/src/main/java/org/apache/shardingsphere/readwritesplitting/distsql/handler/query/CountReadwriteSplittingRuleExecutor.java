@@ -51,7 +51,7 @@ public final class CountReadwriteSplittingRuleExecutor implements RQLExecutor<Co
     }
     
     @Override
-    public String getType() {
-        return CountReadwriteSplittingRuleStatement.class.getName();
+    public Class<CountReadwriteSplittingRuleStatement> getType() {
+        return CountReadwriteSplittingRuleStatement.class;
     }
 }

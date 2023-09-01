@@ -29,7 +29,7 @@ public final class DockerImageVersion {
     private final String version;
     
     public DockerImageVersion(final String dockerImageName) {
-        version = dockerImageName.contains(SEPARATOR) ? dockerImageName.split(SEPARATOR)[1] : dockerImageName;
+        version = dockerImageName.contains(SEPARATOR) ? dockerImageName.split(SEPARATOR)[1] : "0";
     }
     
     /**

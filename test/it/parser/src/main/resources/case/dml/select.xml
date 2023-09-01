@@ -899,7 +899,6 @@
                                 <literal-expression value="NOT NULL" start-index="44" stop-index="51" />
                             </right>
                         </binary-operation-expression>
-                        <common-expression text="item_id IS NOT NULL" start-index="33" stop-index="51" />
                     </left>
                     <operator>AND</operator>
                     <right>
@@ -951,7 +950,6 @@
                                 <literal-expression value="NOT NULL" start-index="44" stop-index="51" />
                             </right>
                         </binary-operation-expression>
-                        <common-expression text="item_id IS NOT NULL" start-index="33" stop-index="51" />
                     </left>
                     <operator>AND</operator>
                     <right>
@@ -1378,7 +1376,7 @@
             <simple-table name="t_order" start-index="21" stop-index="27" />
         </from>
         <projections start-index="7" stop-index="14">
-            <aggregation-projection type="COUNT" inner-expression="(*)" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14" />
         </projections>
         <where start-index="29" stop-index="65" literal-stop-index="70">
             <expr>
@@ -1422,7 +1420,7 @@
             <simple-table name="t_order" start-index="21" stop-index="27" />
         </from>
         <projections start-index="7" stop-index="14">
-            <aggregation-projection type="COUNT" inner-expression="(*)" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14" />
         </projections>
         <where start-index="29" stop-index="58" literal-stop-index="60">
             <expr>
@@ -1456,7 +1454,7 @@
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="count(0)" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="47" stop-index="142" literal-stop-index="148">
             <expr>
@@ -1546,7 +1544,7 @@
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="count(0)" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="47" stop-index="142" literal-stop-index="148">
             <expr>
@@ -1661,7 +1659,7 @@
             <simple-table name="t_order" alias="o" start-index="37" stop-index="45" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-projection type="COUNT" inner-expression="(0)" alias="orders_count" start-index="7" stop-index="14" />
+            <aggregation-projection type="COUNT" expression="count(0)" alias="orders_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="47" stop-index="140" literal-stop-index="146">
             <expr>
@@ -3068,7 +3066,7 @@
             <simple-table  name="t_order" start-index="37" stop-index="43" />
         </from>
         <projections start-index="7" stop-index="30">
-            <aggregation-distinct-projection type="SUM" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="s" start-index="7" stop-index="28" />
+            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id)" distinct-inner-expression="order_id" alias="s" start-index="7" stop-index="28" />
         </projections>
         <where start-index="45" stop-index="65">
             <expr>
@@ -3090,7 +3088,7 @@
             <simple-table name="t_order" start-index="39" stop-index="45" />
         </from>
         <projections start-index="7" stop-index="32">
-            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-inner-expression="order_id" alias="c" start-index="7" stop-index="30" />
         </projections>
         <where start-index="47" stop-index="67">
             <expr>
@@ -3112,7 +3110,7 @@
             <simple-table name="t_order" start-index="35" stop-index="41" />
         </from>
         <projections start-index="7" stop-index="28">
-            <aggregation-distinct-projection type="AVG" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="28" />
+            <aggregation-distinct-projection type="AVG" expression="AVG(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="7" stop-index="28" />
         </projections>
         <where start-index="43" stop-index="63">
             <expr>
@@ -3134,8 +3132,8 @@
             <simple-table name="t_order" start-index="61" stop-index="67" />
         </from>
         <projections start-index="7" stop-index="54">
-            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="30" />
-            <aggregation-distinct-projection type="SUM" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="33" stop-index="54" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="7" stop-index="30" />
+            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="33" stop-index="54" />
         </projections>
         <where start-index="69" stop-index="89">
             <expr>
@@ -3158,7 +3156,7 @@
         </from>
         <projections start-index="7" stop-index="42">
             <column-projection name="order_id" start-index="7" stop-index="14" />
-            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="17" stop-index="40" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-inner-expression="order_id" alias="c" start-index="17" stop-index="40" />
         </projections>
         <where start-index="57" stop-index="77">
             <expr>
@@ -3186,7 +3184,7 @@
             <simple-table name="t_order" start-index="49" stop-index="55" />
         </from>
         <projections start-index="7" stop-index="42">
-            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" alias="c" start-index="7" stop-index="30" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT order_id)" distinct-inner-expression="order_id" alias="c" start-index="7" stop-index="30" />
             <column-projection name="order_id" start-index="35" stop-index="42" />
         </projections>
         <group-by>
@@ -3226,7 +3224,7 @@
             <simple-table name="t_order" start-index="49" stop-index="55" />
         </from>
         <projections start-index="7" stop-index="42">
-            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT user_id + order_id)" distinct-expression="user_id+order_id" alias="c" start-index="7" stop-index="40" />
+            <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT user_id + order_id)" distinct-inner-expression="user_id+order_id" alias="c" start-index="7" stop-index="40" />
         </projections>
         <where start-index="57" stop-index="77">
             <expr>
@@ -3248,9 +3246,9 @@
             <simple-table  name="t_order" start-index="77" stop-index="83" />
         </from>
         <projections start-index="7" stop-index="69">
-            <aggregation-distinct-projection type="SUM" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="7" stop-index="28" />
-            <aggregation-distinct-projection type="COUNT" inner-expression="(DISTINCT order_id)" distinct-expression="order_id" start-index="30" stop-index="53" />
-            <aggregation-projection type="COUNT" inner-expression="(order_id)" start-index="55" stop-index="69" />
+            <aggregation-distinct-projection type="SUM" expression="SUM(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="7" stop-index="28" />
+            <aggregation-distinct-projection type="COUNT" expression="count(DISTINCT order_id)" distinct-inner-expression="order_id" start-index="30" stop-index="53" />
+            <aggregation-projection type="COUNT" expression="count(order_id)" start-index="55" stop-index="69" />
         </projections>
         <where start-index="85" stop-index="105">
             <expr>
@@ -3427,7 +3425,7 @@
             <simple-table name="t_order" start-index="48" stop-index="54" />
         </from>
         <projections start-index="7" stop-index="41">
-            <aggregation-projection type="SUM" inner-expression="(if(status=0, 1, 0))" alias="func_status" start-index="7" stop-index="29" />
+            <aggregation-projection type="SUM" expression="sum(if(status=0, 1, 0))" alias="func_status" start-index="7" stop-index="29" />
         </projections>
         <where start-index="56" stop-index="89" literal-stop-index="93">
             <expr>
@@ -4131,8 +4129,8 @@
                             <select>
                                 <projections start-index="127" stop-index="178">
                                     <column-projection name="department_id" start-index="127" stop-index="139" />
-                                    <aggregation-projection type="COUNT" alias="num_emp" inner-expression="(*)" start-index="142" stop-index="149" />
-                                    <aggregation-projection type="SUM" alias="sal_sum" inner-expression="(salary)" start-index="160" stop-index="170" />
+                                    <aggregation-projection type="COUNT" alias="num_emp" expression="COUNT(*)" start-index="142" stop-index="149" />
+                                    <aggregation-projection type="SUM" alias="sal_sum" expression="SUM(salary)" start-index="160" stop-index="170" />
                                 </projections>
                                 <from>
                                     <simple-table name="employees" start-index="185" stop-index="193" />
@@ -4149,8 +4147,8 @@
                         <subquery>
                             <select>
                                 <projections start-index="230" stop-index="272">
-                                    <aggregation-projection type="COUNT" alias="total_count" inner-expression="(*)" start-index="230" stop-index="237" />
-                                    <aggregation-projection type="SUM" alias="total_sal" inner-expression="(salary)" start-index="252" stop-index="262" />
+                                    <aggregation-projection type="COUNT" alias="total_count" expression="COUNT(*)" start-index="230" stop-index="237" />
+                                    <aggregation-projection type="SUM" alias="total_sal" expression="SUM(salary)" start-index="252" stop-index="262" />
                                 </projections>
                                 <from>
                                     <simple-table name="employees" start-index="279" stop-index="287" />
@@ -4433,7 +4431,7 @@
                         <projections start-index="46" stop-index="74">
                             <column-projection name="country" start-index="46" stop-index="52" />
                             <column-projection name="year" start-index="55" stop-index="58" />
-                            <aggregation-projection type="SUM" alias="sale" inner-expression="(sale)" start-index="61" stop-index="69" />
+                            <aggregation-projection type="SUM" alias="sale" expression="SUM(sale)" start-index="61" stop-index="69" />
                         </projections>
                         <group-by>
                             <column-item name="country" start-index="105" stop-index="111" />
@@ -4462,11 +4460,43 @@
         <from>
             <simple-table name="sales_view" start-index="78" stop-index="87" />
         </from>
-        <projections start-index="7" stop-index="71">
-            <expression-projection text="SUBSTR(country,1,20)" alias="country" start-index="7" stop-index="34" />
-            <expression-projection text="SUBSTR(prod,1,15)" alias="prod" start-index="37" stop-index="58" />
-            <column-projection name="year" start-index="61" stop-index="64" />
-            <column-projection name="sales" start-index="67" stop-index="71" />
+        <projections start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
+            <column-projection name="year" start-index="61" stop-index="64" literal-start-index="61" literal-stop-index="64" />
+            <column-projection name="sales" start-index="67" stop-index="71" literal-start-index="67" literal-stop-index="71" />
+            <expression-projection text="SUBSTR(country,1,20)" alias="country" start-index="7" stop-index="34" literal-start-index="7" literal-stop-index="34">
+                <literalText>SUBSTR(country,1,20)</literalText>
+                <expr>
+                    <function function-name="SUBSTR" text="SUBSTR(country,1,20)" start-index="7" stop-index="26" literal-start-index="7" literal-stop-index="26">
+                        <parameter>
+                            <column name="country" start-index="14" stop-index="20" literal-start-index="14" literal-stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="22" stop-index="22" literal-start-index="22" literal-stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="20" start-index="24" stop-index="25" literal-start-index="24" literal-stop-index="25" />
+                        </parameter>
+                        <literalText>SUBSTR(country,1,20)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="SUBSTR(prod,1,15)" alias="prod" start-index="37" stop-index="58" literal-start-index="37" literal-stop-index="58">
+                <literalText>SUBSTR(prod,1,15)</literalText>
+                <expr>
+                    <function function-name="SUBSTR" text="SUBSTR(prod,1,15)" start-index="37" stop-index="53" literal-start-index="37" literal-stop-index="53">
+                        <parameter>
+                            <column name="prod" start-index="44" stop-index="47" literal-start-index="44" literal-stop-index="47" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="49" stop-index="49" literal-start-index="49" literal-stop-index="49" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="15" start-index="51" stop-index="52" literal-start-index="51" literal-stop-index="52" />
+                        </parameter>
+                        <literalText>SUBSTR(prod,1,15)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <where start-index="89" stop-index="109">
             <expr>
@@ -4496,11 +4526,27 @@
         <from>
             <simple-table name="sales_view" start-index="72" stop-index="81" />
         </from>
-        <projections start-index="7" stop-index="65">
-            <expression-projection text="SUBSTR(country,1,20)" alias="country" start-index="7" stop-index="34" />
-            <column-projection name="year" start-index="37" stop-index="40" />
-            <column-projection name="localsales" start-index="43" stop-index="52" />
-            <column-projection name="dollarsales" start-index="55" stop-index="65" />
+        <projections start-index="7" stop-index="65" literal-start-index="7" literal-stop-index="65">
+            <column-projection name="year" start-index="37" stop-index="40" literal-start-index="37" literal-stop-index="40" />
+            <column-projection name="localsales" start-index="43" stop-index="52" literal-start-index="43" literal-stop-index="52" />
+            <column-projection name="dollarsales" start-index="55" stop-index="65" literal-start-index="55" literal-stop-index="65" />
+            <expression-projection text="SUBSTR(country,1,20)" alias="country" start-index="7" stop-index="34" literal-start-index="7" literal-stop-index="34">
+                <literalText>SUBSTR(country,1,20)</literalText>
+                <expr>
+                    <function function-name="SUBSTR" text="SUBSTR(country,1,20)" start-index="7" stop-index="26" literal-start-index="7" literal-stop-index="26">
+                        <parameter>
+                            <column name="country" start-index="14" stop-index="20" literal-start-index="14" literal-stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="22" stop-index="22" literal-start-index="22" literal-stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="20" start-index="24" stop-index="25" literal-start-index="24" literal-stop-index="25" />
+                        </parameter>
+                        <literalText>SUBSTR(country,1,20)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <where start-index="83" stop-index="119">
             <expr>
@@ -4611,7 +4657,12 @@
                     <simple-table name="sales_view" start-index="222" stop-index="231" />
                 </from>
                 <projections start-index="188" stop-index="215" distinct-row="true">
-                    <expression-projection text="new_country" start-index="188" stop-index="200" />
+                    <expression-projection text="new_country" start-index="188" stop-index="200" literal-start-index="188" literal-stop-index="200">
+                        <literalText>new_country</literalText>
+                        <expr>
+                            <literal-expression value="new_country" start-index="188" stop-index="200" literal-start-index="188" literal-stop-index="200" />
+                        </expr>
+                    </expression-projection>
                     <column-projection name="product" start-index="203" stop-index="209" />
                     <column-projection name="year" start-index="212" stop-index="215" />
                 </projections>
@@ -4654,12 +4705,22 @@
             <subquery-table>
                 <subquery>
                     <select>
-                        <projections start-index="55" stop-index="107">
-                            <expression-projection text="1001" alias="order_id_value" start-index="55" stop-index="76" />
-                            <expression-projection text="100001" alias="order_item_id_value" start-index="79" stop-index="107" />
+                        <projections start-index="55" stop-index="107" literal-start-index="55" literal-stop-index="107">
+                            <expression-projection text="1001" alias="order_id_value" start-index="55" stop-index="76" literal-start-index="55" literal-stop-index="76">
+                                <literalText>1001</literalText>
+                                <expr>
+                                    <literal-expression value="1001" start-index="55" stop-index="58" literal-start-index="55" literal-stop-index="58" />
+                                </expr>
+                            </expression-projection>
+                            <expression-projection text="100001" alias="order_item_id_value" start-index="79" stop-index="107" literal-start-index="79" literal-stop-index="107">
+                                <literalText>100001</literalText>
+                                <expr>
+                                    <literal-expression value="100001" start-index="79" stop-index="84" literal-start-index="79" literal-stop-index="84" />
+                                </expr>
+                            </expression-projection>
                         </projections>
                         <from>
-                            <simple-table name="dual" start-index="114" stop-index="117" />
+                            <simple-table name="dual" start-index="114" stop-index="117" literal-start-index="114" literal-stop-index="117" />
                         </from>
                     </select>
                 </subquery>
@@ -5105,7 +5166,22 @@
 
     <select sql-case-id="select_with_listagg_function_start_with_connect_by">
         <projections start-index="7" stop-index="101">
-            <expression-projection text="LISTAGG(c.category_name, '/') WITHIN GROUP (ORDER BY LENGTH (c.&quot;level&quot;) DESC)" start-index="7" stop-index="101" alias="category_level" />
+            <expression-projection text="LISTAGG(c.category_name, '/') WITHIN GROUP (ORDER BY LENGTH (c.&quot;level&quot;) DESC)" alias="category_level" start-index="7" stop-index="101" literal-start-index="7" literal-stop-index="101">
+                <literalText>LISTAGG(c.category_name, '/') WITHIN GROUP (ORDER BY LENGTH (c."level") DESC)</literalText>
+                <expr>
+                    <function function-name="LISTAGG" text="LISTAGG(c.category_name, '/') WITHIN GROUP (ORDER BY LENGTH (c.&quot;level&quot;) DESC)" start-index="7" stop-index="83" literal-start-index="7" literal-stop-index="83">
+                        <parameter>
+                            <column name="category_name" start-index="15" stop-index="29" literal-start-index="15" literal-stop-index="29">
+                                <owner name="c" start-index="15" stop-index="15" literal-start-index="15" literal-stop-index="15" />
+                            </column>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/" start-index="32" stop-index="34" literal-start-index="32" literal-stop-index="34" />
+                        </parameter>
+                        <literalText>LISTAGG(c.category_name, '/') WITHIN GROUP (ORDER BY LENGTH (c."level") DESC)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table name="t_product_category" start-index="108" stop-index="127" alias="c" />
@@ -5191,7 +5267,20 @@
 
     <select sql-case-id="select_aggregate_cume_dist">
         <projections start-index="7" stop-index="95">
-            <expression-projection text="CUME_DIST(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct)" alias="Cume-Dist of 15500" start-index="7" stop-index="95" />
+            <expression-projection text="CUME_DIST(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct)" alias="Cume-Dist of 15500" start-index="7" stop-index="95" literal-start-index="7" literal-stop-index="95">
+                <literalText>CUME_DIST(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct)</literalText>
+                <expr>
+                    <function function-name="CUME_DIST" text="CUME_DIST(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct)" start-index="7" stop-index="74" literal-start-index="7" literal-stop-index="74">
+                        <parameter>
+                            <literal-expression value="15500" start-index="17" stop-index="21" literal-start-index="17" literal-stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0.05" start-index="24" stop-index="26" literal-start-index="24" literal-stop-index="26" />
+                        </parameter>
+                        <literalText>CUME_DIST(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table name="employees" start-index="102" stop-index="110" />
@@ -5241,16 +5330,142 @@
     </select>
 
     <select sql-case-id="select_linear_regression_function">
-        <projections start-index="7" stop-index="465">
-            <column-projection name="job_id" start-index="7" stop-index="12" />
-            <column-projection name="employee_id" start-index="15" stop-index="28" alias="ID" />
-            <column-projection name="salary" start-index="31" stop-index="36" />
-            <expression-projection text="REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="39" stop-index="108" alias="slope" />
-            <expression-projection text="REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="111" stop-index="185" alias="intcpt" />
-            <expression-projection text="REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="188" stop-index="253" alias="rsqr" />
-            <expression-projection text="REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="256" stop-index="325" alias="count" />
-            <expression-projection text="REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="328" stop-index="395" alias="avgx" />
-            <expression-projection text="REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="398" stop-index="465" alias="avgy" />
+        <projections start-index="7" stop-index="465" literal-start-index="7" literal-stop-index="465">
+            <column-projection name="job_id" start-index="7" stop-index="12" literal-start-index="7" literal-stop-index="12" />
+            <column-projection alias="ID" name="employee_id" start-index="15" stop-index="28" literal-start-index="15" literal-stop-index="28" />
+            <column-projection name="salary" start-index="31" stop-index="36" literal-start-index="31" literal-stop-index="36" />
+            <expression-projection text="REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" alias="slope" start-index="39" stop-index="108" literal-start-index="39" literal-stop-index="108">
+                <literalText>REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                <expr>
+                    <function function-name="REGR_SLOPE" text="REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="39" stop-index="102" literal-start-index="39" literal-stop-index="102">
+                        <parameter>
+                            <binary-operation-expression start-index="50" stop-index="66" literal-start-index="50" literal-stop-index="66">
+                                <left>
+                                    <column name="SYSDATE" start-index="50" stop-index="56" literal-start-index="50" literal-stop-index="56" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="58" stop-index="66" literal-start-index="58" literal-stop-index="66" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="69" stop-index="74" literal-start-index="69" literal-stop-index="74" />
+                        </parameter>
+                        <literalText>REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" alias="intcpt" start-index="111" stop-index="185" literal-start-index="111" literal-stop-index="185">
+                <literalText>REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                <expr>
+                    <function function-name="REGR_INTERCEPT" text="REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="111" stop-index="178" literal-start-index="111" literal-stop-index="178">
+                        <parameter>
+                            <binary-operation-expression start-index="126" stop-index="142" literal-start-index="126" literal-stop-index="142">
+                                <left>
+                                    <column name="SYSDATE" start-index="126" stop-index="132" literal-start-index="126" literal-stop-index="132" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="134" stop-index="142" literal-start-index="134" literal-stop-index="142" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="145" stop-index="150" literal-start-index="145" literal-stop-index="150" />
+                        </parameter>
+                        <literalText>REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" alias="rsqr" start-index="188" stop-index="253" literal-start-index="188" literal-stop-index="253">
+                <literalText>REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                <expr>
+                    <function function-name="REGR_R2" text="REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="188" stop-index="248" literal-start-index="188" literal-stop-index="248">
+                        <parameter>
+                            <binary-operation-expression start-index="196" stop-index="212" literal-start-index="196" literal-stop-index="212">
+                                <left>
+                                    <column name="SYSDATE" start-index="196" stop-index="202" literal-start-index="196" literal-stop-index="202" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="204" stop-index="212" literal-start-index="204" literal-stop-index="212" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="215" stop-index="220" literal-start-index="215" literal-stop-index="220" />
+                        </parameter>
+                        <literalText>REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" alias="count" start-index="256" stop-index="325" literal-start-index="256" literal-stop-index="325">
+                <literalText>REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                <expr>
+                    <function function-name="REGR_COUNT" text="REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="256" stop-index="319" literal-start-index="256" literal-stop-index="319">
+                        <parameter>
+                            <binary-operation-expression start-index="267" stop-index="283" literal-start-index="267" literal-stop-index="283">
+                                <left>
+                                    <column name="SYSDATE" start-index="267" stop-index="273" literal-start-index="267" literal-stop-index="273" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="275" stop-index="283" literal-start-index="275" literal-stop-index="283" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="286" stop-index="291" literal-start-index="286" literal-stop-index="291" />
+                        </parameter>
+                        <literalText>REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" alias="avgx" start-index="328" stop-index="395" literal-start-index="328" literal-stop-index="395">
+                <literalText>REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                <expr>
+                    <function function-name="REGR_AVGX" text="REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="328" stop-index="390" literal-start-index="328" literal-stop-index="390">
+                        <parameter>
+                            <binary-operation-expression start-index="338" stop-index="354" literal-start-index="338" literal-stop-index="354">
+                                <left>
+                                    <column name="SYSDATE" start-index="338" stop-index="344" literal-start-index="338" literal-stop-index="344" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="346" stop-index="354" literal-start-index="346" literal-stop-index="354" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="357" stop-index="362" literal-start-index="357" literal-stop-index="362" />
+                        </parameter>
+                        <literalText>REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" alias="avgy" start-index="398" stop-index="465" literal-start-index="398" literal-stop-index="465">
+                <literalText>REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                <expr>
+                    <function function-name="REGR_AVGY" text="REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="398" stop-index="460" literal-start-index="398" literal-stop-index="460">
+                        <parameter>
+                            <binary-operation-expression start-index="408" stop-index="424" literal-start-index="408" literal-stop-index="424">
+                                <left>
+                                    <column name="SYSDATE" start-index="408" stop-index="414" literal-start-index="408" literal-stop-index="414" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="416" stop-index="424" literal-start-index="416" literal-stop-index="424" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="427" stop-index="432" literal-start-index="427" literal-stop-index="432" />
+                        </parameter>
+                        <literalText>REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table name="employees" start-index="472" stop-index="480" />
@@ -5303,7 +5518,22 @@
 
     <select sql-case-id="select_xmlelement_xmlagg_function">
         <projections start-index="7" stop-index="124">
-            <expression-projection text="XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name))" alias="Dept_list" start-index="7" stop-index="124" />
+            <expression-projection text="XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name))" alias="Dept_list" start-index="7" stop-index="124" literal-start-index="7" literal-stop-index="124">
+                <literalText>XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name))</literalText>
+                <expr>
+                    <function function-name="XMLELEMENT" text="XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name))" start-index="7" stop-index="109" literal-start-index="7" literal-stop-index="109">
+                        <parameter>
+                            <literal-expression value="Department" start-index="18" stop-index="29" literal-start-index="18" literal-stop-index="29" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLAGG" text="XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name)" start-index="32" stop-index="108" literal-start-index="32" literal-stop-index="108">
+                                <literalText>XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name)</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table name="employees" alias="e" start-index="131" stop-index="141" />
@@ -5327,7 +5557,22 @@
 
     <select sql-case-id="select_xmlcast_function">
         <projections start-index="7" stop-index="48">
-            <expression-projection text="XMLCAST(des.COLUMN_VALUE AS VARCHAR2(256))" start-index="7" stop-index="48" />
+            <expression-projection text="XMLCAST(des.COLUMN_VALUE AS VARCHAR2(256))" start-index="7" stop-index="48">
+                <literalText>XMLCAST(des.COLUMN_VALUE AS VARCHAR2(256))</literalText>
+                <expr>
+                    <function function-name="XMLCAST" text="XMLCAST(des.COLUMN_VALUE AS VARCHAR2(256))" start-index="7" stop-index="48" literal-start-index="7" literal-stop-index="48">
+                        <parameter>
+                            <column name="COLUMN_VALUE" start-index="15" stop-index="30" literal-start-index="15" literal-stop-index="30">
+                                <owner name="des" start-index="15" stop-index="17" literal-start-index="15" literal-stop-index="17" />
+                            </column>
+                        </parameter>
+                        <parameter>
+                            <data-type value="VARCHAR2" start-index="35" stop-index="47" />
+                        </parameter>
+                        <literalText>XMLCAST(des.COLUMN_VALUE AS VARCHAR2(256))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table name="purchaseorder" start-index="55" stop-index="67" />
@@ -5336,7 +5581,29 @@
 
     <select sql-case-id="select_xmlcolattval_function">
         <projections start-index="7" stop-index="95" >
-            <expression-projection text="XMLCOLATTVAL(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary)" alias="Emp Element" start-index="7" stop-index="95" />
+            <expression-projection text="XMLCOLATTVAL(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary)" alias="Emp Element" start-index="7" stop-index="95" literal-start-index="7" literal-stop-index="95">
+                <literalText>XMLCOLATTVAL(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary)</literalText>
+                <expr>
+                    <function function-name="XMLCOLATTVAL" text="XMLCOLATTVAL(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary)" start-index="7" stop-index="81" literal-start-index="7" literal-stop-index="81">
+                        <parameter>
+                            <column name="employee_id" start-index="20" stop-index="32" literal-start-index="20" literal-stop-index="32">
+                                <owner name="e" start-index="20" stop-index="20" literal-start-index="20" literal-stop-index="20" />
+                            </column>
+                        </parameter>
+                        <parameter>
+                            <column name="last_name" start-index="52" stop-index="62" literal-start-index="52" literal-stop-index="62">
+                                <owner name="e" start-index="52" stop-index="52" literal-start-index="52" literal-stop-index="52" />
+                            </column>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="73" stop-index="80" literal-start-index="73" literal-stop-index="80">
+                                <owner name="e" start-index="73" stop-index="73" literal-start-index="73" literal-stop-index="73" />
+                            </column>
+                        </parameter>
+                        <literalText>XMLCOLATTVAL(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <simple-table name="employees" alias="e" start-index="102" stop-index="112" />
@@ -5435,7 +5702,7 @@
 
     <select sql-case-id="select_from_xmltable_function">
         <projections start-index="7" stop-index="65">
-            <column-projection name="warehouse_name" alias="warehouse" start-index="7" stop-index="30" />
+            <column-projection alias="warehouse" name="warehouse_name" start-index="7" stop-index="30" />
             <column-projection name="Water" start-index="33" stop-index="48">
                 <owner name="warehouse2" start-index="33" stop-index="42" />
             </column-projection>
@@ -5444,9 +5711,17 @@
             </column-projection>
         </projections>
         <from>
-            <xml-table table-name="warehouses" xml-table-function-alias="warehouse2" start-index="76" stop-index="238">
-                <xml-table-function function-name="XMLTABLE" text="XMLTABLE('/Warehouse' PASSING warehouses.warehouse_spec COLUMNS &quot;Water&quot; varchar2(6) PATH 'WaterAccess',&quot;Rail&quot; varchar2(6) PATH 'RailAccess')" start-index="88" stop-index="227" />
-            </xml-table>
+            <join-table join-type="COMMA">
+                <left>
+                    <simple-table name="warehouses" start-index="72" stop-index="81" />
+                </left>
+                <right>
+                    <function-table table-alias="warehouse2">
+                        <table-function function-name="XMLTABLE"
+                                        text="XMLTABLE('/Warehouse' PASSING warehouses.warehouse_spec COLUMNS &quot;Water&quot; varchar2(6) PATH 'WaterAccess',&quot;Rail&quot; varchar2(6) PATH 'RailAccess')"/>
+                    </function-table>
+                </right>
+            </join-table>
         </from>
     </select>
 
@@ -5631,16 +5906,25 @@
     </select>
     
     <select sql-case-id="select_with_format_function">
-        <from>
-            <simple-table alias="wi" name="warehouse_info" start-index="66" stop-index="82" literal-start-index="66" literal-stop-index="82"/>
-        </from>
-        <projections distinct-row="false" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
-            <expression-projection text="wi.code.format(null,'PURE_IDENTITY')" literal-text="wi.code.format(null,'PURE_IDENTITY')" alias="PURE_IDENTITY" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
-                <expr >
-                    <function function-name="wi" text="wi.code.format(null,'PURE_IDENTITY')" literal-text="wi.code.format(null,'PURE_IDENTITY')" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42"/>
+        <projections start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
+            <expression-projection text="wi.code.format(null,'PURE_IDENTITY')" alias="PURE_IDENTITY" start-index="7" stop-index="59" literal-start-index="7" literal-stop-index="59">
+                <literalText>wi.code.format(null,'PURE_IDENTITY')</literalText>
+                <expr>
+                    <function function-name="format" text="wi.code.format(null,'PURE_IDENTITY')" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42">
+                        <parameter>
+                            <literal-expression value="null" start-index="22" stop-index="25" literal-start-index="22" literal-stop-index="25" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="PURE_IDENTITY" start-index="27" stop-index="41" literal-start-index="27" literal-stop-index="41" />
+                        </parameter>
+                        <literalText>wi.code.format(null,'PURE_IDENTITY')</literalText>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
+        <from>
+            <simple-table alias="wi" name="warehouse_info" start-index="66" stop-index="82" literal-start-index="66" literal-stop-index="82" />
+        </from>
     </select>
 
     <select sql-case-id="select_with_xml_is_schema_valid_function">
@@ -5666,13 +5950,1011 @@
     <select sql-case-id="select_with_last_value_function">
         <projections start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
             <expression-projection text="LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
+                <literalText>LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)</literalText>
                 <expr>
-                    <function function-name="LAST_VALUE" text="LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71"/>
+                    <function function-name="LAST_VALUE" text="LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)" start-index="7" stop-index="71" literal-start-index="7" literal-stop-index="71">
+                        <parameter>
+                            <column name="AGE" start-index="18" stop-index="20" literal-start-index="18" literal-stop-index="20" />
+                        </parameter>
+                        <literalText>LAST_VALUE(AGE IGNORE NULLS) OVER (PARTITION BY AGE ORDER BY AGE)</literalText>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
         <from>
-            <simple-table name="TEST" start-index="78" stop-index="81" literal-start-index="78" literal-stop-index="81"/>
+            <simple-table name="TEST" start-index="78" stop-index="81" literal-start-index="78" literal-stop-index="81" />
         </from>
+    </select>
+
+    <select sql-case-id="select_with_connect_by_root">
+        <projections start-index="7" stop-index="41" literal-start-index="7" literal-stop-index="41">
+            <column-projection alias="Manager" name="last_name" start-index="23" stop-index="41" literal-start-index="23" literal-stop-index="41"/>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="48" stop-index="56" literal-start-index="48" literal-stop-index="56"/>
+        </from>
+    </select>
+    
+    <select sql-case-id="select_with_ntile_function">
+        <projections start-index="7" stop-index="54" literal-start-index="7" literal-stop-index="54">
+            <expression-projection text="NTILE(4) OVER (ORDER BY salary DESC)" alias="quartile" start-index="7" stop-index="54" literal-start-index="7" literal-stop-index="54">
+                <literalText>NTILE(4) OVER (ORDER BY salary DESC)</literalText>
+                <expr>
+                    <function function-name="NTILE" text="NTILE(4) OVER (ORDER BY salary DESC)" start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42">
+                        <parameter>
+                            <literal-expression value="4" start-index="13" stop-index="13" literal-start-index="13" literal-stop-index="13" />
+                        </parameter>
+                        <literalText>NTILE(4) OVER (ORDER BY salary DESC)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="61" stop-index="69" literal-start-index="61" literal-stop-index="69" />
+        </from>
+        <where start-index="71" stop-index="95" literal-start-index="71" literal-stop-index="95">
+            <expr>
+                <binary-operation-expression start-index="77" stop-index="95" literal-start-index="77" literal-stop-index="95">
+                    <left>
+                        <column name="department_id" start-index="77" stop-index="89" literal-start-index="77" literal-stop-index="89" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="100" start-index="93" stop-index="95" literal-start-index="93" literal-stop-index="95" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="last_name" order-direction="ASC" start-index="106" stop-index="114" literal-start-index="106" literal-stop-index="114" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_percentile_functions">
+        <projections start-index="7" stop-index="163" literal-start-index="7" literal-stop-index="163">
+            <column-projection name="department_id" start-index="7" stop-index="19" literal-start-index="7" literal-stop-index="19" />
+            <expression-projection text="PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC)" alias="Median cont" start-index="22" stop-index="91" literal-start-index="22" literal-stop-index="91" />
+            <expression-projection text="PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY salary DESC)" alias="Median disc" start-index="94" stop-index="163" literal-start-index="94" literal-stop-index="163" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="170" stop-index="178" literal-start-index="170" literal-stop-index="178" />
+        </from>
+        <group-by>
+            <column-item name="department_id" order-direction="ASC" start-index="189" stop-index="201" literal-start-index="189" literal-stop-index="201" />
+        </group-by>
+    </select>
+
+    <select sql-case-id="select_with_keep_clause">
+        <projections start-index="7" stop-index="215" literal-start-index="7" literal-stop-index="215">
+            <column-projection name="salary" start-index="7" stop-index="12" literal-start-index="7" literal-stop-index="12" />
+            <aggregation-projection type="MIN" expression="MIN(salary) KEEP (DENSE_RANK FIRST ORDER BY commission_pct) OVER (PARTITION BY department_id)" alias="Worst" start-index="14" stop-index="106" literal-start-index="14" literal-stop-index="106" />
+            <aggregation-projection type="MAX" expression="MAX(salary) KEEP (DENSE_RANK LAST ORDER BY commission_pct) OVER (PARTITION BY department_id)" alias="Best" start-index="117" stop-index="208" literal-start-index="117" literal-stop-index="208" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="222" stop-index="230" literal-start-index="222" literal-stop-index="230" />
+        </from>
+        <order-by>
+            <column-item name="department_id" order-direction="ASC" start-index="241" stop-index="253" literal-start-index="241" literal-stop-index="253" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_corr_function">
+        <projections start-index="7" stop-index="52" literal-start-index="7" literal-stop-index="52">
+            <column-projection name="employee_id" start-index="7" stop-index="17" literal-start-index="7" literal-stop-index="17" />
+            <expression-projection text="CORR(SYSDATE - hire_date, salary)" start-index="20" stop-index="52" literal-start-index="20" literal-stop-index="52">
+                <literalText>CORR(SYSDATE - hire_date, salary)</literalText>
+                <expr>
+                    <function function-name="CORR" text="CORR(SYSDATE - hire_date, salary)" start-index="20" stop-index="52" literal-start-index="20" literal-stop-index="52">
+                        <parameter>
+                            <binary-operation-expression start-index="25" stop-index="43" literal-start-index="25" literal-stop-index="43">
+                                <left>
+                                    <column name="SYSDATE" start-index="25" stop-index="31" literal-start-index="25" literal-stop-index="31" />
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <column name="hire_date" start-index="35" stop-index="43" literal-start-index="35" literal-stop-index="43" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="salary" start-index="46" stop-index="51" literal-start-index="46" literal-stop-index="51" />
+                        </parameter>
+                        <literalText>CORR(SYSDATE - hire_date, salary)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="59" stop-index="67" literal-start-index="59" literal-stop-index="67" />
+        </from>
+        <where start-index="69" stop-index="99" literal-start-index="69" literal-stop-index="99">
+            <expr>
+                <in-expression start-index="75" stop-index="99" literal-start-index="75" literal-stop-index="99">
+                    <not>false</not>
+                    <left>
+                        <column name="department_id" start-index="75" stop-index="87" literal-start-index="75" literal-stop-index="87" />
+                    </left>
+                    <right>
+                        <list-expression start-index="92" stop-index="99" literal-start-index="92" literal-stop-index="99">
+                            <items>
+                                <literal-expression value="50" start-index="93" stop-index="94" literal-start-index="93" literal-stop-index="94" />
+                            </items>
+                            <items>
+                                <literal-expression value="80" start-index="97" stop-index="98" literal-start-index="97" literal-stop-index="98" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="employee_id" order-direction="ASC" start-index="110" stop-index="120" literal-start-index="110" literal-stop-index="120" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_trim_function">
+        <projections start-index="7" stop-index="203" literal-start-index="7" literal-stop-index="203">
+            <expression-projection text="TRIM('  derby ')" start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
+                <literalText>TRIM(' derby ')</literalText>
+                <expr>
+                    <function function-name="TRIM" text="TRIM('  derby ')" start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
+                        <parameter>
+                            <literal-expression value="  derby " start-index="12" stop-index="21" literal-start-index="12" literal-stop-index="21" />
+                        </parameter>
+                        <literalText>TRIM(' derby ')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="TRIM(BOTH ' ' FROM '  derby ')" start-index="25" stop-index="54" literal-start-index="25" literal-stop-index="54">
+                <literalText>TRIM(BOTH ' ' FROM ' derby ')</literalText>
+                <expr>
+                    <function function-name="TRIM" text="TRIM(BOTH ' ' FROM '  derby ')" start-index="25" stop-index="54" literal-start-index="25" literal-stop-index="54">
+                        <parameter>
+                            <literal-expression value="  derby " start-index="44" stop-index="53" literal-start-index="44" literal-stop-index="53" />
+                        </parameter>
+                        <literalText>TRIM(BOTH ' ' FROM ' derby ')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="TRIM(TRAILING ' ' FROM '  derby ')" start-index="57" stop-index="90" literal-start-index="57" literal-stop-index="90">
+                <literalText>TRIM(TRAILING ' ' FROM ' derby ')</literalText>
+                <expr>
+                    <function function-name="TRIM" text="TRIM(TRAILING ' ' FROM '  derby ')" start-index="57" stop-index="90" literal-start-index="57" literal-stop-index="90">
+                        <parameter>
+                            <literal-expression value="  derby " start-index="80" stop-index="89" literal-start-index="80" literal-stop-index="89" />
+                        </parameter>
+                        <literalText>TRIM(TRAILING ' ' FROM ' derby ')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="TRIM(cast (null as char(1)) FROM '  derby ')" start-index="93" stop-index="136" literal-start-index="93" literal-stop-index="136">
+                <literalText>TRIM(cast (null as char(1)) FROM ' derby ')</literalText>
+                <expr>
+                    <function function-name="TRIM" text="TRIM(cast (null as char(1)) FROM '  derby ')" start-index="93" stop-index="136" literal-start-index="93" literal-stop-index="136">
+                        <parameter>
+                            <literal-expression value="  derby " start-index="126" stop-index="135" literal-start-index="126" literal-stop-index="135" />
+                        </parameter>
+                        <literalText>TRIM(cast (null as char(1)) FROM ' derby ')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="TRIM(' ' FROM cast(null as varchar(30)))" start-index="139" stop-index="178" literal-start-index="139" literal-stop-index="178">
+                <literalText>TRIM(' ' FROM cast(null as varchar(30)))</literalText>
+                <expr>
+                    <function function-name="TRIM" text="TRIM(' ' FROM cast(null as varchar(30)))" start-index="139" stop-index="178" literal-start-index="139" literal-stop-index="178">
+                        <parameter>
+                            <function function-name="cast" text="cast(null as varchar(30))" start-index="153" stop-index="177" literal-start-index="153" literal-stop-index="177">
+                                <parameter>
+                                    <literal-expression value="null" start-index="158" stop-index="161" literal-start-index="158" literal-stop-index="161" />
+                                </parameter>
+                                <parameter>
+                                    <data-type value="varchar" start-index="166" stop-index="176" />
+                                </parameter>
+                                <literalText>cast(null as varchar(30))</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>TRIM(' ' FROM cast(null as varchar(30)))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="TRIM('y' FROM ' derby')" start-index="181" stop-index="203" literal-start-index="181" literal-stop-index="203">
+                <literalText>TRIM('y' FROM ' derby')</literalText>
+                <expr>
+                    <function function-name="TRIM" text="TRIM('y' FROM ' derby')" start-index="181" stop-index="203" literal-start-index="181" literal-stop-index="203">
+                        <parameter>
+                            <literal-expression value=" derby" start-index="195" stop-index="202" literal-start-index="195" literal-stop-index="202" />
+                        </parameter>
+                        <literalText>TRIM('y' FROM ' derby')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="210" stop-index="218" literal-start-index="210" literal-stop-index="218" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_ratio_to_report_function">
+        <projections start-index="7" stop-index="79" literal-start-index="7" literal-stop-index="79">
+            <expression-projection text="TO_CHAR(RATIO_TO_REPORT(amount_sold) OVER (), '9.999')" alias="RATIO_TO_REPORT" start-index="7" stop-index="79" literal-start-index="7" literal-stop-index="79">
+                <literalText>TO_CHAR(RATIO_TO_REPORT(amount_sold) OVER (), '9.999')</literalText>
+                <expr>
+                    <function function-name="TO_CHAR" text="TO_CHAR(RATIO_TO_REPORT(amount_sold) OVER (), '9.999')" start-index="7" stop-index="60" literal-start-index="7" literal-stop-index="60">
+                        <parameter>
+                            <function function-name="RATIO_TO_REPORT" text="RATIO_TO_REPORT(amount_sold) OVER ()" start-index="15" stop-index="50" literal-start-index="15" literal-stop-index="50">
+                                <parameter>
+                                    <column name="amount_sold" start-index="31" stop-index="41" literal-start-index="31" literal-stop-index="41" />
+                                </parameter>
+                                <literalText>RATIO_TO_REPORT(amount_sold) OVER ()</literalText>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="9.999" start-index="53" stop-index="59" literal-start-index="53" literal-stop-index="59" />
+                        </parameter>
+                        <literalText>TO_CHAR(RATIO_TO_REPORT(amount_sold) OVER (), '9.999')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table alias="s" name="sales" start-index="86" stop-index="92" literal-start-index="86" literal-stop-index="92" />
+        </from>
+        <group-by>
+            <column-item name="channel_desc" order-direction="ASC" start-index="103" stop-index="116" literal-start-index="103" literal-stop-index="116">
+                <owner name="s" start-index="103" stop-index="103" literal-start-index="103" literal-stop-index="103" />
+            </column-item>
+        </group-by>
+    </select>
+
+    <select sql-case-id="select_with_sys_xmlagg_and_xmlgen">
+        <projections start-index="7" stop-index="54" literal-start-index="7" literal-stop-index="54">
+            <expression-projection text="SYS_XMLAGG(last_name)" alias="a" start-index="7" stop-index="29" literal-start-index="7" literal-stop-index="29">
+                <literalText>SYS_XMLAGG(last_name)</literalText>
+                <expr>
+                    <function function-name="SYS_XMLAGG" text="SYS_XMLAGG(last_name)" start-index="7" stop-index="27" literal-start-index="7" literal-stop-index="27">
+                        <parameter>
+                            <column name="last_name" start-index="18" stop-index="26" literal-start-index="18" literal-stop-index="26" />
+                        </parameter>
+                        <literalText>SYS_XMLAGG(last_name)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="SYS_XMLGEN(last_name)" alias="b" start-index="32" stop-index="54" literal-start-index="32" literal-stop-index="54">
+                <literalText>SYS_XMLGEN(last_name)</literalText>
+                <expr>
+                    <function function-name="SYS_XMLGEN" text="SYS_XMLGEN(last_name)" start-index="32" stop-index="52" literal-start-index="32" literal-stop-index="52">
+                        <parameter>
+                            <column name="last_name" start-index="43" stop-index="51" literal-start-index="43" literal-stop-index="51" />
+                        </parameter>
+                        <literalText>SYS_XMLGEN(last_name)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="61" stop-index="69" literal-start-index="61" literal-stop-index="69" />
+        </from>
+        <where start-index="71" stop-index="95" literal-start-index="71" literal-stop-index="95">
+            <expr>
+                <binary-operation-expression start-index="77" stop-index="95" literal-start-index="77" literal-stop-index="95">
+                    <left>
+                        <column name="last_name" start-index="77" stop-index="85" literal-start-index="77" literal-stop-index="85" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="92" stop-index="95" literal-start-index="92" literal-stop-index="95">
+                            <items>
+                                <literal-expression value="R%" start-index="92" stop-index="95" literal-start-index="92" literal-stop-index="95" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="xmlagg" order-direction="ASC" start-index="106" stop-index="111"/>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_cover_pop_and_covar_samp">
+        <projections start-index="7" stop-index="203" literal-start-index="7" literal-stop-index="203">
+            <column-projection name="product_id" start-index="7" stop-index="16" literal-start-index="7" literal-stop-index="16" />
+            <column-projection name="supplier_id" start-index="19" stop-index="29" literal-start-index="19" literal-stop-index="29" />
+            <expression-projection text="COVAR_POP(list_price, min_price)  OVER (ORDER BY product_id, supplier_id)" alias="CUM_COVP" start-index="32" stop-index="116" literal-start-index="32" literal-stop-index="116">
+                <literalText>COVAR_POP(list_price, min_price) OVER (ORDER BY product_id, supplier_id)</literalText>
+                <expr>
+                    <function function-name="COVAR_POP" text="COVAR_POP(list_price, min_price)  OVER (ORDER BY product_id, supplier_id)" start-index="32" stop-index="104" literal-start-index="32" literal-stop-index="104">
+                        <parameter>
+                            <column name="list_price" start-index="42" stop-index="51" literal-start-index="42" literal-stop-index="51" />
+                        </parameter>
+                        <parameter>
+                            <column name="min_price" start-index="54" stop-index="62" literal-start-index="54" literal-stop-index="62" />
+                        </parameter>
+                        <literalText>COVAR_POP(list_price, min_price) OVER (ORDER BY product_id, supplier_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="COVAR_SAMP(list_price, min_price) OVER (ORDER BY product_id, supplier_id)" alias="CUM_COVS" start-index="119" stop-index="203" literal-start-index="119" literal-stop-index="203">
+                <literalText>COVAR_SAMP(list_price, min_price) OVER (ORDER BY product_id, supplier_id)</literalText>
+                <expr>
+                    <function function-name="COVAR_SAMP" text="COVAR_SAMP(list_price, min_price) OVER (ORDER BY product_id, supplier_id)" start-index="119" stop-index="191" literal-start-index="119" literal-stop-index="191">
+                        <parameter>
+                            <column name="list_price" start-index="130" stop-index="139" literal-start-index="130" literal-stop-index="139" />
+                        </parameter>
+                        <parameter>
+                            <column name="min_price" start-index="142" stop-index="150" literal-start-index="142" literal-stop-index="150" />
+                        </parameter>
+                        <literalText>COVAR_SAMP(list_price, min_price) OVER (ORDER BY product_id, supplier_id)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table alias="p" name="product_information" start-index="211" stop-index="231" literal-start-index="211" literal-stop-index="231" />
+        </from>
+        <where start-index="233" stop-index="254" literal-start-index="233" literal-stop-index="254">
+            <expr>
+                <binary-operation-expression start-index="239" stop-index="254" literal-start-index="239" literal-stop-index="254">
+                    <left>
+                        <column name="category_id" start-index="239" stop-index="249" literal-start-index="239" literal-stop-index="249" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="29" start-index="253" stop-index="254" literal-start-index="253" literal-stop-index="254" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="product_id" order-direction="ASC" start-index="265" stop-index="274" literal-start-index="265" literal-stop-index="274" />
+            <column-item name="supplier_id" order-direction="ASC" start-index="277" stop-index="287" literal-start-index="277" literal-stop-index="287" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_percent_rank_function">
+        <projections start-index="7" stop-index="116" literal-start-index="7" literal-stop-index="116">
+            <column-projection name="department_id" start-index="7" stop-index="19" literal-start-index="7" literal-stop-index="19" />
+            <column-projection name="last_name" start-index="22" stop-index="30" literal-start-index="22" literal-stop-index="30" />
+            <column-projection name="salary" start-index="33" stop-index="38" literal-start-index="33" literal-stop-index="38" />
+            <expression-projection text="PERCENT_RANK()  OVER (PARTITION BY department_id ORDER BY salary DESC)" alias="pr" start-index="41" stop-index="116" literal-start-index="41" literal-stop-index="116">
+                <literalText>PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC)</literalText>
+                <expr>
+                    <function function-name="PERCENT_RANK" text="PERCENT_RANK()  OVER (PARTITION BY department_id ORDER BY salary DESC)" start-index="41" stop-index="110" literal-start-index="41" literal-stop-index="110">
+                        <literalText>PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="123" stop-index="131" literal-start-index="123" literal-stop-index="131" />
+        </from>
+        <order-by>
+            <column-item name="pr" order-direction="ASC" start-index="142" stop-index="143" literal-start-index="142" literal-stop-index="143" />
+            <column-item name="salary" order-direction="ASC" start-index="146" stop-index="151" literal-start-index="146" literal-stop-index="151" />
+            <column-item name="last_name" order-direction="ASC" start-index="154" stop-index="162" literal-start-index="154" literal-stop-index="162" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_rank_function">
+        <projections start-index="7" stop-index="76" literal-start-index="7" literal-stop-index="76">
+            <expression-projection text="RANK(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct)" alias="Rank" start-index="7" stop-index="76" literal-start-index="7" literal-stop-index="76">
+                <literalText>RANK(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct)</literalText>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="83" stop-index="91" literal-start-index="83" literal-stop-index="91" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_rownumber_function">
+        <projections start-index="7" stop-index="50" literal-start-index="7" literal-stop-index="50">
+            <column-projection name="department_id" start-index="7" stop-index="19" literal-start-index="7" literal-stop-index="19" />
+            <column-projection name="first_name" start-index="22" stop-index="31" literal-start-index="22" literal-stop-index="31" />
+            <column-projection name="last_name" start-index="34" stop-index="42" literal-start-index="34" literal-stop-index="42" />
+            <column-projection name="salary" start-index="45" stop-index="50" literal-start-index="45" literal-stop-index="50" />
+        </projections>
+        <from>
+            <subquery-table>
+                <subquery>
+                    <select>
+                        <projections start-index="65" stop-index="180" literal-start-index="65" literal-stop-index="180">
+                            <column-projection name="department_id" start-index="65" stop-index="77" literal-start-index="65" literal-stop-index="77" />
+                            <column-projection name="first_name" start-index="80" stop-index="89" literal-start-index="80" literal-stop-index="89" />
+                            <column-projection name="last_name" start-index="92" stop-index="100" literal-start-index="92" literal-stop-index="100" />
+                            <column-projection name="salary" start-index="103" stop-index="108" literal-start-index="103" literal-stop-index="108" />
+                            <expression-projection text="ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary desc)" alias="rn" start-index="111" stop-index="180" literal-start-index="111" literal-stop-index="180">
+                                <literalText>ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary desc)</literalText>
+                                <expr>
+                                    <function function-name="ROW_NUMBER" text="ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary desc)" start-index="111" stop-index="177" literal-start-index="111" literal-stop-index="177">
+                                        <literalText>ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary desc)</literalText>
+                                    </function>
+                                </expr>
+                            </expression-projection>
+                        </projections>
+                        <from>
+                            <simple-table name="employees" start-index="188" stop-index="196" literal-start-index="188" literal-stop-index="196" />
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+        <where start-index="199" stop-index="210" literal-start-index="199" literal-stop-index="210">
+            <expr>
+                <binary-operation-expression start-index="205" stop-index="210" literal-start-index="205" literal-stop-index="210">
+                    <left>
+                        <column name="rn" start-index="205" stop-index="206" literal-start-index="205" literal-stop-index="206" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="3" start-index="210" stop-index="210" literal-start-index="210" literal-stop-index="210" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="department_id" order-direction="ASC" start-index="221" stop-index="233" literal-start-index="221" literal-stop-index="233" />
+            <column-item name="salary" order-direction="DESC" start-index="236" stop-index="241" literal-start-index="236" literal-stop-index="241" />
+            <column-item name="last_name" order-direction="ASC" start-index="249" stop-index="257" literal-start-index="249" literal-stop-index="257" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_xml_functions">
+        <projections start-index="7" stop-index="830" literal-start-index="7" literal-stop-index="830">
+            <expression-projection text="INSERTCHILDXML(warehouse_spec, '/Warehouse/Building', 'Owner', XMLType('&lt;Owner&gt;LesserCo&lt;/Owner&gt;'))" start-index="7" stop-index="104" literal-start-index="7" literal-stop-index="104">
+                <literalText>INSERTCHILDXML(warehouse_spec, '/Warehouse/Building', 'Owner', XMLType('&lt;Owner&gt;LesserCo&lt;/Owner&gt;'))</literalText>
+                <expr>
+                    <function function-name="INSERTCHILDXML" text="INSERTCHILDXML(warehouse_spec, '/Warehouse/Building', 'Owner', XMLType('&lt;Owner&gt;LesserCo&lt;/Owner&gt;'))" start-index="7" stop-index="104" literal-start-index="7" literal-stop-index="104">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="22" stop-index="35" literal-start-index="22" literal-stop-index="35" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Building" start-index="38" stop-index="58" literal-start-index="38" literal-stop-index="58" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Owner" start-index="61" stop-index="67" literal-start-index="61" literal-stop-index="67" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLType" text="XMLType('&lt;Owner&gt;LesserCo&lt;/Owner&gt;')" start-index="70" stop-index="103" literal-start-index="70" literal-stop-index="103">
+                                <parameter>
+                                    <literal-expression value="&lt;Owner&gt;LesserCo&lt;/Owner&gt;" start-index="78" stop-index="102" literal-start-index="78" literal-stop-index="102" />
+                                </parameter>
+                                <literalText>XMLType('&lt;Owner&gt;LesserCo&lt;/Owner&gt;')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>INSERTCHILDXML(warehouse_spec, '/Warehouse/Building', 'Owner', XMLType('&lt;Owner&gt;LesserCo&lt;/Owner&gt;'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="SYS_DBURIGEN(employee_id, email)" start-index="107" stop-index="138" literal-start-index="107" literal-stop-index="138">
+                <literalText>SYS_DBURIGEN(employee_id, email)</literalText>
+                <expr>
+                    <function function-name="SYS_DBURIGEN" text="SYS_DBURIGEN(employee_id, email)" start-index="107" stop-index="138" literal-start-index="107" literal-stop-index="138">
+                        <parameter>
+                            <column name="employee_id" start-index="120" stop-index="130" literal-start-index="120" literal-stop-index="130" />
+                        </parameter>
+                        <parameter>
+                            <column name="email" start-index="133" stop-index="137" literal-start-index="133" literal-stop-index="137" />
+                        </parameter>
+                        <literalText>SYS_DBURIGEN(employee_id, email)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="INSERTCHILDXMLAFTER(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))" start-index="141" stop-index="247" literal-start-index="141" literal-stop-index="247">
+                <literalText>INSERTCHILDXMLAFTER(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))</literalText>
+                <expr>
+                    <function function-name="INSERTCHILDXMLAFTER" text="INSERTCHILDXMLAFTER(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))" start-index="141" stop-index="247" literal-start-index="141" literal-stop-index="247">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="161" stop-index="174" literal-start-index="161" literal-stop-index="174" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Building" start-index="177" stop-index="197" literal-start-index="177" literal-stop-index="197" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Owner[2]" start-index="199" stop-index="208" literal-start-index="199" literal-stop-index="208" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLType" text="XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;')" start-index="211" stop-index="246" literal-start-index="211" literal-stop-index="246">
+                                <parameter>
+                                    <literal-expression value="&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;" start-index="219" stop-index="245" literal-start-index="219" literal-stop-index="245" />
+                                </parameter>
+                                <literalText>XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>INSERTCHILDXMLAFTER(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="INSERTCHILDXMLBEFORE(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))" start-index="250" stop-index="357" literal-start-index="250" literal-stop-index="357">
+                <literalText>INSERTCHILDXMLBEFORE(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))</literalText>
+                <expr>
+                    <function function-name="INSERTCHILDXMLBEFORE" text="INSERTCHILDXMLBEFORE(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))" start-index="250" stop-index="357" literal-start-index="250" literal-stop-index="357">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="271" stop-index="284" literal-start-index="271" literal-stop-index="284" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Building" start-index="287" stop-index="307" literal-start-index="287" literal-stop-index="307" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Owner[2]" start-index="309" stop-index="318" literal-start-index="309" literal-stop-index="318" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLType" text="XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;')" start-index="321" stop-index="356" literal-start-index="321" literal-stop-index="356">
+                                <parameter>
+                                    <literal-expression value="&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;" start-index="329" stop-index="355" literal-start-index="329" literal-stop-index="355" />
+                                </parameter>
+                                <literalText>XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>INSERTCHILDXMLBEFORE(warehouse_spec, '/Warehouse/Building','Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="INSERTXMLAFTER(warehouse_spec,'/Warehouse/Building/Owner[1]', XMLType('&lt;Owner&gt;SecondOwner&lt;/Owner&gt;'))" start-index="360" stop-index="459" literal-start-index="360" literal-stop-index="459">
+                <literalText>INSERTXMLAFTER(warehouse_spec,'/Warehouse/Building/Owner[1]', XMLType('&lt;Owner&gt;SecondOwner&lt;/Owner&gt;'))</literalText>
+                <expr>
+                    <function function-name="INSERTXMLAFTER" text="INSERTXMLAFTER(warehouse_spec,'/Warehouse/Building/Owner[1]', XMLType('&lt;Owner&gt;SecondOwner&lt;/Owner&gt;'))" start-index="360" stop-index="459" literal-start-index="360" literal-stop-index="459">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="375" stop-index="388" literal-start-index="375" literal-stop-index="388" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Building/Owner[1]" start-index="390" stop-index="419" literal-start-index="390" literal-stop-index="419" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLType" text="XMLType('&lt;Owner&gt;SecondOwner&lt;/Owner&gt;')" start-index="422" stop-index="458" literal-start-index="422" literal-stop-index="458">
+                                <parameter>
+                                    <literal-expression value="&lt;Owner&gt;SecondOwner&lt;/Owner&gt;" start-index="430" stop-index="457" literal-start-index="430" literal-stop-index="457" />
+                                </parameter>
+                                <literalText>XMLType('&lt;Owner&gt;SecondOwner&lt;/Owner&gt;')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>INSERTXMLAFTER(warehouse_spec,'/Warehouse/Building/Owner[1]', XMLType('&lt;Owner&gt;SecondOwner&lt;/Owner&gt;'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="INSERTXMLBEFORE(warehouse_spec, '/Warehouse/Building/Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))" start-index="462" stop-index="562" literal-start-index="462" literal-stop-index="562">
+                <literalText>INSERTXMLBEFORE(warehouse_spec, '/Warehouse/Building/Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))</literalText>
+                <expr>
+                    <function function-name="INSERTXMLBEFORE" text="INSERTXMLBEFORE(warehouse_spec, '/Warehouse/Building/Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))" start-index="462" stop-index="562" literal-start-index="462" literal-stop-index="562">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="478" stop-index="491" literal-start-index="478" literal-stop-index="491" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Building/Owner[2]" start-index="494" stop-index="523" literal-start-index="494" literal-stop-index="523" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLType" text="XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;')" start-index="526" stop-index="561" literal-start-index="526" literal-stop-index="561">
+                                <parameter>
+                                    <literal-expression value="&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;" start-index="534" stop-index="560" literal-start-index="534" literal-stop-index="560" />
+                                </parameter>
+                                <literalText>XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>INSERTXMLBEFORE(warehouse_spec, '/Warehouse/Building/Owner[2]', XMLType('&lt;Owner&gt;ThirdOwner&lt;/Owner&gt;'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="EXTRACT(warehouse_spec, '/Warehouse/Docks')" alias="Number of Docks" start-index="565" stop-index="625" literal-start-index="565" literal-stop-index="625">
+                <literalText>EXTRACT(warehouse_spec, '/Warehouse/Docks')</literalText>
+                <expr>
+                    <function function-name="EXTRACT" text="EXTRACT(warehouse_spec, '/Warehouse/Docks')" start-index="565" stop-index="607" literal-start-index="565" literal-stop-index="607">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="573" stop-index="586" literal-start-index="573" literal-stop-index="586" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Docks" start-index="589" stop-index="606" literal-start-index="589" literal-stop-index="606" />
+                        </parameter>
+                        <literalText>EXTRACT(warehouse_spec, '/Warehouse/Docks')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="EXTRACTVALUE(e.warehouse_spec, '/Warehouse/Docks')" alias="Docks" start-index="628" stop-index="685" literal-start-index="628" literal-stop-index="685">
+                <literalText>EXTRACTVALUE(e.warehouse_spec, '/Warehouse/Docks')</literalText>
+                <expr>
+                    <function function-name="EXTRACTVALUE" text="EXTRACTVALUE(e.warehouse_spec, '/Warehouse/Docks')" start-index="628" stop-index="677" literal-start-index="628" literal-stop-index="677">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="641" stop-index="656" literal-start-index="641" literal-stop-index="656">
+                                <owner name="e" start-index="641" stop-index="641" literal-start-index="641" literal-stop-index="641" />
+                            </column>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Docks" start-index="659" stop-index="676" literal-start-index="659" literal-stop-index="676" />
+                        </parameter>
+                        <literalText>EXTRACTVALUE(e.warehouse_spec, '/Warehouse/Docks')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="APPENDCHILDXML(warehouse_spec, 'Warehouse/Building', XMLType('&lt;Owner&gt;Grandco&lt;/Owner&gt;'))" start-index="688" stop-index="774" literal-start-index="688" literal-stop-index="774">
+                <literalText>APPENDCHILDXML(warehouse_spec, 'Warehouse/Building', XMLType('&lt;Owner&gt;Grandco&lt;/Owner&gt;'))</literalText>
+                <expr>
+                    <function function-name="APPENDCHILDXML" text="APPENDCHILDXML(warehouse_spec, 'Warehouse/Building', XMLType('&lt;Owner&gt;Grandco&lt;/Owner&gt;'))" start-index="688" stop-index="774" literal-start-index="688" literal-stop-index="774">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="703" stop-index="716" literal-start-index="703" literal-stop-index="716" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Warehouse/Building" start-index="719" stop-index="738" literal-start-index="719" literal-stop-index="738" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLType" text="XMLType('&lt;Owner&gt;Grandco&lt;/Owner&gt;')" start-index="741" stop-index="773" literal-start-index="741" literal-stop-index="773">
+                                <parameter>
+                                    <literal-expression value="&lt;Owner&gt;Grandco&lt;/Owner&gt;" start-index="749" stop-index="772" literal-start-index="749" literal-stop-index="772" />
+                                </parameter>
+                                <literalText>XMLType('&lt;Owner&gt;Grandco&lt;/Owner&gt;')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>APPENDCHILDXML(warehouse_spec, 'Warehouse/Building', XMLType('&lt;Owner&gt;Grandco&lt;/Owner&gt;'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="DELETEXML(warehouse_spec, '/Warehouse/Building/Owner')" start-index="777" stop-index="830" literal-start-index="777" literal-stop-index="830">
+                <literalText>DELETEXML(warehouse_spec, '/Warehouse/Building/Owner')</literalText>
+                <expr>
+                    <function function-name="DELETEXML" text="DELETEXML(warehouse_spec, '/Warehouse/Building/Owner')" start-index="777" stop-index="830" literal-start-index="777" literal-stop-index="830">
+                        <parameter>
+                            <column name="warehouse_spec" start-index="787" stop-index="800" literal-start-index="787" literal-stop-index="800" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="/Warehouse/Building/Owner" start-index="803" stop-index="829" literal-start-index="803" literal-stop-index="829" />
+                        </parameter>
+                        <literalText>DELETEXML(warehouse_spec, '/Warehouse/Building/Owner')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="warehouses" start-index="839" stop-index="848" literal-start-index="839" literal-stop-index="848" />
+        </from>
+        <where start-index="852" stop-index="907" literal-start-index="852" literal-stop-index="907">
+            <expr>
+                <binary-operation-expression start-index="858" stop-index="907" literal-start-index="858" literal-stop-index="907">
+                    <left>
+                        <function function-name="EXISTSNODE" text="EXISTSNODE(warehouse_spec, '/Warehouse/Docks')" start-index="858" stop-index="903" literal-start-index="858" literal-stop-index="903">
+                            <parameter>
+                                <column name="warehouse_spec" start-index="869" stop-index="882" literal-start-index="869" literal-stop-index="882" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="/Warehouse/Docks" start-index="885" stop-index="902" literal-start-index="885" literal-stop-index="902" />
+                            </parameter>
+                            <literalText>EXISTSNODE(warehouse_spec, '/Warehouse/Docks')</literalText>
+                        </function>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="907" stop-index="907" literal-start-index="907" literal-stop-index="907" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="warehouse_id" order-direction="ASC" start-index="920" stop-index="931" literal-start-index="920" literal-stop-index="931" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_more_xml_functions">
+        <projections start-index="7" stop-index="348" literal-start-index="7" literal-stop-index="348">
+            <expression-projection text="XMLCOMMENT('OrderAnalysisComp imported, reconfigured, disassembled')" start-index="7" stop-index="74" literal-start-index="7" literal-stop-index="74">
+                <literalText>XMLCOMMENT('OrderAnalysisComp imported, reconfigured, disassembled')</literalText>
+                <expr>
+                    <function function-name="XMLCOMMENT" text="XMLCOMMENT('OrderAnalysisComp imported, reconfigured, disassembled')" start-index="7" stop-index="74" literal-start-index="7" literal-stop-index="74">
+                        <parameter>
+                            <literal-expression value="OrderAnalysisComp imported, reconfigured, disassembled" start-index="18" stop-index="73" literal-start-index="18" literal-stop-index="73" />
+                        </parameter>
+                        <literalText>XMLCOMMENT('OrderAnalysisComp imported, reconfigured, disassembled')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="XMLCONCAT(XMLELEMENT('First', e.first_name), XMLELEMENT('Last', e.last_name))" alias="Result" start-index="77" stop-index="165" literal-start-index="77" literal-stop-index="165">
+                <literalText>XMLCONCAT(XMLELEMENT('First', e.first_name), XMLELEMENT('Last', e.last_name))</literalText>
+                <expr>
+                    <function function-name="XMLCONCAT" text="XMLCONCAT(XMLELEMENT('First', e.first_name), XMLELEMENT('Last', e.last_name))" start-index="77" stop-index="153" literal-start-index="77" literal-stop-index="153">
+                        <parameter>
+                            <function function-name="XMLELEMENT" text="XMLELEMENT('First', e.first_name)" start-index="87" stop-index="119" literal-start-index="87" literal-stop-index="119">
+                                <parameter>
+                                    <literal-expression value="First" start-index="98" stop-index="104" literal-start-index="98" literal-stop-index="104" />
+                                </parameter>
+                                <parameter>
+                                    <column name="first_name" start-index="107" stop-index="118" literal-start-index="107" literal-stop-index="118">
+                                        <owner name="e" start-index="107" stop-index="107" literal-start-index="107" literal-stop-index="107" />
+                                    </column>
+                                </parameter>
+                                <literalText>XMLELEMENT('First', e.first_name)</literalText>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLELEMENT" text="XMLELEMENT('Last', e.last_name)" start-index="122" stop-index="152" literal-start-index="122" literal-stop-index="152">
+                                <parameter>
+                                    <literal-expression value="Last" start-index="133" stop-index="138" literal-start-index="133" literal-stop-index="138" />
+                                </parameter>
+                                <parameter>
+                                    <column name="last_name" start-index="141" stop-index="151" literal-start-index="141" literal-stop-index="151">
+                                        <owner name="e" start-index="141" stop-index="141" literal-start-index="141" literal-stop-index="141" />
+                                    </column>
+                                </parameter>
+                                <literalText>XMLELEMENT('Last', e.last_name)</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>XMLCONCAT(XMLELEMENT('First', e.first_name), XMLELEMENT('Last', e.last_name))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="XMLPATCH(XMLTYPE('xml'))" start-index="168" stop-index="191" literal-start-index="168" literal-stop-index="191">
+                <literalText>XMLPATCH(XMLTYPE('xml'))</literalText>
+                <expr>
+                    <function function-name="XMLPATCH" text="XMLPATCH(XMLTYPE('xml'))" start-index="168" stop-index="191" literal-start-index="168" literal-stop-index="191">
+                        <parameter>
+                            <function function-name="XMLTYPE" text="XMLTYPE('xml')" start-index="177" stop-index="190" literal-start-index="177" literal-stop-index="190">
+                                <parameter>
+                                    <literal-expression value="xml" start-index="185" stop-index="189" literal-start-index="185" literal-stop-index="189" />
+                                </parameter>
+                                <literalText>XMLTYPE('xml')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>XMLPATCH(XMLTYPE('xml'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="XMLDIFF(XMLTYPE('xml'),XMLTYPE('xml2'))" start-index="194" stop-index="232" literal-start-index="194" literal-stop-index="232">
+                <literalText>XMLDIFF(XMLTYPE('xml'),XMLTYPE('xml2'))</literalText>
+                <expr>
+                    <function function-name="XMLDIFF" text="XMLDIFF(XMLTYPE('xml'),XMLTYPE('xml2'))" start-index="194" stop-index="232" literal-start-index="194" literal-stop-index="232">
+                        <parameter>
+                            <function function-name="XMLTYPE" text="XMLTYPE('xml')" start-index="202" stop-index="215" literal-start-index="202" literal-stop-index="215">
+                                <parameter>
+                                    <literal-expression value="xml" start-index="210" stop-index="214" literal-start-index="210" literal-stop-index="214" />
+                                </parameter>
+                                <literalText>XMLTYPE('xml')</literalText>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLTYPE" text="XMLTYPE('xml2')" start-index="217" stop-index="231" literal-start-index="217" literal-stop-index="231">
+                                <parameter>
+                                    <literal-expression value="xml2" start-index="225" stop-index="230" literal-start-index="225" literal-stop-index="230" />
+                                </parameter>
+                                <literalText>XMLTYPE('xml2')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>XMLDIFF(XMLTYPE('xml'),XMLTYPE('xml2'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="XMLELEMENT('Emp', XMLATTRIBUTES(e.employee_id, e.last_name))" start-index="235" stop-index="294" literal-start-index="235" literal-stop-index="294">
+                <literalText>XMLELEMENT('Emp', XMLATTRIBUTES(e.employee_id, e.last_name))</literalText>
+                <expr>
+                    <function function-name="XMLELEMENT" text="XMLELEMENT('Emp', XMLATTRIBUTES(e.employee_id, e.last_name))" start-index="235" stop-index="294" literal-start-index="235" literal-stop-index="294">
+                        <parameter>
+                            <literal-expression value="Emp" start-index="246" stop-index="250" literal-start-index="246" literal-stop-index="250" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="XMLATTRIBUTES" text="XMLATTRIBUTES(e.employee_id, e.last_name)" start-index="253" stop-index="293" literal-start-index="253" literal-stop-index="293">
+                                <parameter>
+                                    <column name="employee_id" start-index="267" stop-index="279" literal-start-index="267" literal-stop-index="279">
+                                        <owner name="e" start-index="267" stop-index="267" literal-start-index="267" literal-stop-index="267" />
+                                    </column>
+                                </parameter>
+                                <parameter>
+                                    <column name="last_name" start-index="282" stop-index="292" literal-start-index="282" literal-stop-index="292">
+                                        <owner name="e" start-index="282" stop-index="282" literal-start-index="282" literal-stop-index="282" />
+                                    </column>
+                                </parameter>
+                                <literalText>XMLATTRIBUTES(e.employee_id, e.last_name)</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>XMLELEMENT('Emp', XMLATTRIBUTES(e.employee_id, e.last_name))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="XMLSEQUENCE(EXTRACT(warehouse_spec, '/Warehouse/*'))" start-index="297" stop-index="348" literal-start-index="297" literal-stop-index="348">
+                <literalText>XMLSEQUENCE(EXTRACT(warehouse_spec, '/Warehouse/*'))</literalText>
+                <expr>
+                    <function function-name="XMLSEQUENCE" text="XMLSEQUENCE(EXTRACT(warehouse_spec, '/Warehouse/*'))" start-index="297" stop-index="348" literal-start-index="297" literal-stop-index="348">
+                        <parameter>
+                            <function function-name="EXTRACT" text="EXTRACT(warehouse_spec, '/Warehouse/*')" start-index="309" stop-index="347" literal-start-index="309" literal-stop-index="347">
+                                <parameter>
+                                    <column name="warehouse_spec" start-index="317" stop-index="330" literal-start-index="317" literal-stop-index="330" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="/Warehouse/*" start-index="333" stop-index="346" literal-start-index="333" literal-stop-index="346" />
+                                </parameter>
+                                <literalText>EXTRACT(warehouse_spec, '/Warehouse/*')</literalText>
+                            </function>
+                        </parameter>
+                        <literalText>XMLSEQUENCE(EXTRACT(warehouse_spec, '/Warehouse/*'))</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="355" stop-index="358" literal-start-index="355" literal-stop-index="358" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_nested_object">
+        <projections start-index="7" stop-index="42" literal-start-index="7" literal-stop-index="42">
+            <column-projection name="o.item.line_item_id" start-index="7" stop-index="25" >
+                <owner name="o" start-index="7" stop-index="7" />
+            </column-projection>>
+            <column-projection name="o.item.quantity" start-index="28" stop-index="42" >
+                <owner name="o" start-index="28" stop-index="28" />
+            </column-projection>>
+        </projections>
+        <from>
+            <simple-table name="short_orders" alias="o" start-index="49" stop-index="62" literal-start-index="49" literal-stop-index="62" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_collection_table">
+        <projections start-index="7" stop-index="14" literal-start-index="7" literal-stop-index="14">
+            <expression-projection text="VALUE(p)" start-index="7" stop-index="14">
+                <function function-name="value" start-index="7" stop-index="14" />
+            </expression-projection>
+        </projections>
+        <from>
+            <join-table join-type="COMMA">
+                <left>
+                    <simple-table name="warehouses" alias="w" start-index="21" stop-index="32" />
+                </left>
+                <right>
+                    <collection-table alias="p" start-index="37" stop-index="50">
+                    </collection-table>>
+                </right>
+            </join-table>
+        </from>
+    </select>
+    
+    <select sql-case-id="select_with_group_by_and_having">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="cfg_name" start-index="7" stop-index="14" />
+        </projections>
+        <from>
+            <simple-table name="bmsql_config" start-index="21" stop-index="32" />
+        </from>
+        <group-by>
+            <column-item start-index="43" stop-index="50" name="cfg_name" />
+        </group-by>
+        <having start-index="52" stop-index="70">
+            <expr>
+                <binary-operation-expression start-index="59" stop-index="70">
+                    <left>
+                        <column name="cfg_name" start-index="59" stop-index="66" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression start-index="68" stop-index="70" value="1" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
+    </select>
+    <select sql-case-id="select_with_to_date_function">
+        <projections start-index="7" stop-index="133" literal-start-index="7" literal-stop-index="133">
+            <expression-projection text="TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.')" start-index="7" stop-index="133" literal-start-index="7" literal-stop-index="133">
+                <literalText>TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.')</literalText>
+                <expr>
+                    <function function-name="TO_DATE" text="TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.')" start-index="7" stop-index="133" literal-start-index="7" literal-stop-index="133">
+                        <literalText>TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.')</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="140" stop-index="143" literal-start-index="140" literal-stop-index="143" />
+        </from>
+    </select>
+    <select sql-case-id="select_with_expressions_in_projection">
+        <projections start-index="7" stop-index="81" literal-start-index="7" literal-stop-index="81">
+            <column-projection name="empid" start-index="75" stop-index="81" literal-start-index="75" literal-stop-index="81">
+                <owner name="a" start-index="75" stop-index="75" literal-start-index="75" literal-stop-index="75" />
+            </column-projection>
+            <expression-projection text="a.enddate - term + term2 + 1) / (last_day(term) - term + 1" alias="cnt" start-index="8" stop-index="72" literal-start-index="8" literal-stop-index="72">
+                <literalText>a.enddate - term + term2 + 1) / (last_day(term) - term + 1</literalText>
+                <expr>
+                    <binary-operation-expression start-index="8" stop-index="67" literal-start-index="8" literal-stop-index="67">
+                        <left>
+                            <binary-operation-expression start-index="9" stop-index="36" literal-start-index="9" literal-stop-index="36">
+                                <left>
+                                    <column name="enddate" start-index="9" stop-index="17" literal-start-index="9" literal-stop-index="17">
+                                        <owner name="a" start-index="9" stop-index="9" literal-start-index="9" literal-stop-index="9" />
+                                    </column>
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <binary-operation-expression start-index="21" stop-index="36" literal-start-index="21" literal-stop-index="36">
+                                        <left>
+                                            <binary-operation-expression start-index="21" stop-index="32" literal-start-index="21" literal-stop-index="32">
+                                                <left>
+                                                    <column name="term" start-index="21" stop-index="24" literal-start-index="21" literal-stop-index="24" />
+                                                </left>
+                                                <operator>+</operator>
+                                                <right>
+                                                    <column name="term2" start-index="28" stop-index="32" literal-start-index="28" literal-stop-index="32" />
+                                                </right>
+                                            </binary-operation-expression>
+                                        </left>
+                                        <operator>+</operator>
+                                        <right>
+                                            <literal-expression value="1" start-index="36" stop-index="36" literal-start-index="36" literal-stop-index="36" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>/</operator>
+                        <right>
+                            <binary-operation-expression start-index="42" stop-index="66" literal-start-index="42" literal-stop-index="66">
+                                <left>
+                                    <function function-name="last_day" text="last_day(term)" start-index="42" stop-index="55" literal-start-index="42" literal-stop-index="55">
+                                        <parameter>
+                                            <column name="term" start-index="51" stop-index="54" literal-start-index="51" literal-stop-index="54" />
+                                        </parameter>
+                                        <literalText>last_day(term)</literalText>
+                                    </function>
+                                </left>
+                                <operator>-</operator>
+                                <right>
+                                    <binary-operation-expression start-index="59" stop-index="66" literal-start-index="59" literal-stop-index="66">
+                                        <left>
+                                            <column name="term" start-index="59" stop-index="62" literal-start-index="59" literal-stop-index="62" />
+                                        </left>
+                                        <operator>+</operator>
+                                        <right>
+                                            <literal-expression value="1" start-index="66" stop-index="66" literal-start-index="66" literal-stop-index="66" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table alias="aWHERE" name="employee" start-index="88" stop-index="102" literal-start-index="88" literal-stop-index="102" />
+        </from>
+    </select>
+    <select sql-case-id="select_with_custom_table_function">
+        <projections start-index="7" stop-index="18" literal-start-index="7" literal-stop-index="18">
+            <aggregation-projection type="COUNT" expression="COUNT(empid)" start-index="7" stop-index="18"
+                                    literal-start-index="7" literal-stop-index="18"/>
+        </projections>
+        <from>
+            <join-table join-type="COMMA" natural="false">
+                <left>
+                    <simple-table alias="b" name="EMPLOYEE" start-index="25" stop-index="34" literal-start-index="25"
+                                  literal-stop-index="34"/>
+                </left>
+                <right>
+                    <function-table table-alias="a">
+                        <table-function function-name="custom_function" text="custom_function(b.orgid)"/>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="64" stop-index="88" literal-start-index="64" literal-stop-index="88">
+            <expr>
+                <binary-operation-expression start-index="70" stop-index="88" literal-start-index="70"
+                                             literal-stop-index="88">
+                    <left>
+                        <column name="postid" start-index="70" stop-index="77" literal-start-index="70"
+                                literal-stop-index="77">
+                            <owner name="a" start-index="70" stop-index="70" literal-start-index="70"
+                                   literal-stop-index="70"/>
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="postid" start-index="81" stop-index="88" literal-start-index="81"
+                                literal-stop-index="88">
+                            <owner name="b" start-index="81" stop-index="81" literal-start-index="81"
+                                   literal-stop-index="81"/>
+                        </column>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_numeric_operator">
+        <projections start-index="7" stop-index="18">
+            <expression-projection start-index="7" stop-index="18" text="5!" alias="RESULT" />
+        </projections>
     </select>
 </sql-parser-test-cases>

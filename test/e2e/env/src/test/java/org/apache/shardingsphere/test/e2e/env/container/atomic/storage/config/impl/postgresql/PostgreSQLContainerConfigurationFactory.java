@@ -19,7 +19,8 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.i
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.PostgreSQLContainer;
@@ -75,9 +76,9 @@ public final class PostgreSQLContainerConfigurationFactory {
     
     private static Map<String, String> getMountedResources(final String scenario) {
         Map<String, String> result = new HashMap<>(3, 1F);
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, new PostgreSQLDatabaseType()) + "/01-actual-init.sql",
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")) + "/01-actual-init.sql",
                 "/docker-entrypoint-initdb.d/01-actual-init.sql");
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, new PostgreSQLDatabaseType()) + "/01-expected-init.sql",
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")) + "/01-expected-init.sql",
                 "/docker-entrypoint-initdb.d/01-expected-init.sql");
         result.put("/env/postgresql/postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
         return result;

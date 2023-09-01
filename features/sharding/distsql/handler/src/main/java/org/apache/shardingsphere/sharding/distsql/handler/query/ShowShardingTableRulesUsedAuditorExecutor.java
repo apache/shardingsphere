@@ -63,7 +63,7 @@ public final class ShowShardingTableRulesUsedAuditorExecutor implements RQLExecu
     }
     
     @Override
-    public String getType() {
-        return ShowShardingTableRulesUsedAuditorStatement.class.getName();
+    public Class<ShowShardingTableRulesUsedAuditorStatement> getType() {
+        return ShowShardingTableRulesUsedAuditorStatement.class;
     }
 }

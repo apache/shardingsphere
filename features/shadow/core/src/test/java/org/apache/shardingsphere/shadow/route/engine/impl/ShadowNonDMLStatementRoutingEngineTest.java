@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.route.engine.impl;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -83,8 +83,8 @@ class ShadowNonDMLStatementRoutingEngineTest {
     
     private ShadowRuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.setDataSources(Collections.singletonList(new ShadowDataSourceConfiguration("shadow-data-source", "ds", "ds_shadow")));
-        result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source"), Collections.singleton("sql-hint-algorithm"))));
+        result.setDataSources(Collections.singleton(new ShadowDataSourceConfiguration("shadow-data-source", "ds", "ds_shadow")));
+        result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singleton("shadow-data-source"), Collections.singleton("sql-hint-algorithm"))));
         result.setShadowAlgorithms(createShadowAlgorithms());
         return result;
     }

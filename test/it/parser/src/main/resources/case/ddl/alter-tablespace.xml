@@ -21,4 +21,32 @@
         <tablespace start-index="17" stop-index="19" name="ts1" />
         <rename start-index="31" stop-index="33" name="ts2" />
     </alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_read_only"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_read_write"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile_autoextend_next_maxsize_unlimited"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile_size_autoextend_next_maxsize"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile_size_reuse"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_add_tempfile_size_autoextend"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_shrink_tempfile"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_shrink_space"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_shrink_space_keep"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_drop_tempfile"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_drop_datafile"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_group_newname"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_group_empty"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_begin_backup"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_end_backup"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_online"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_offline"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_offline_normal"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_offline_immediate"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_offline_temporary"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_flashback_off"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_flashback_on"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_retention_guarantee"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_retention_noguarantee"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_rename_datafile"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_rename_datafile_single"></alter-tablespace>
+    <alter-tablespace sql-case-id="alter_tablespace_rename_datafile_multiple"></alter-tablespace>
 </sql-parser-test-cases>

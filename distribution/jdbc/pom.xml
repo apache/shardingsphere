@@ -47,11 +47,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-bitronix</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -69,6 +64,7 @@
             <properties>
                 <maven.javadoc.skip>false</maven.javadoc.skip>
                 <checkstyle.skip>false</checkstyle.skip>
+                <rat.skip>false</rat.skip>
             </properties>
             <build>
                 <finalName>apache-shardingsphere-${project.version}</finalName>

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.prometheus;
 
-import com.google.common.base.Strings;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
@@ -85,7 +84,11 @@ public final class PrometheusPluginLifecycleService implements PluginLifecycleSe
     }
     
     private InetSocketAddress getSocketAddress(final PluginConfiguration pluginConfig) {
-        return Strings.isNullOrEmpty(pluginConfig.getHost()) ? new InetSocketAddress(pluginConfig.getPort()) : new InetSocketAddress(pluginConfig.getHost(), pluginConfig.getPort());
+        return isNullOrEmpty(pluginConfig.getHost()) ? new InetSocketAddress(pluginConfig.getPort()) : new InetSocketAddress(pluginConfig.getHost(), pluginConfig.getPort());
+    }
+    
+    private boolean isNullOrEmpty(final String string) {
+        return null == string || string.isEmpty();
     }
     
     @Override

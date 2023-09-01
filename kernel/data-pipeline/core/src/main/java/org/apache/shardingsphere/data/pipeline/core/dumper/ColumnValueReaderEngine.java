@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.dumper;
 
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.DialectColumnValueReader;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -63,13 +63,29 @@ public final class ColumnValueReaderEngine {
             case Types.BOOLEAN:
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:
-                return metaData.isSigned(columnIndex) ? resultSet.getByte(columnIndex) : resultSet.getShort(columnIndex);
+                if (isSigned(metaData, columnIndex)) {
+                    return resultSet.getByte(columnIndex);
+                } else {
+                    return resultSet.getShort(columnIndex);
+                }
             case Types.SMALLINT:
-                return metaData.isSigned(columnIndex) ? resultSet.getShort(columnIndex) : resultSet.getInt(columnIndex);
+                if (isSigned(metaData, columnIndex)) {
+                    return resultSet.getShort(columnIndex);
+                } else {
+                    return resultSet.getInt(columnIndex);
+                }
             case Types.INTEGER:
-                return metaData.isSigned(columnIndex) ? resultSet.getInt(columnIndex) : resultSet.getLong(columnIndex);
+                if (isSigned(metaData, columnIndex)) {
+                    return resultSet.getInt(columnIndex);
+                } else {
+                    return resultSet.getLong(columnIndex);
+                }
             case Types.BIGINT:
-                return metaData.isSigned(columnIndex) ? resultSet.getLong(columnIndex) : resultSet.getBigDecimal(columnIndex);
+                if (isSigned(metaData, columnIndex)) {
+                    return resultSet.getLong(columnIndex);
+                } else {
+                    return resultSet.getBigDecimal(columnIndex);
+                }
             case Types.NUMERIC:
             case Types.DECIMAL:
                 return resultSet.getBigDecimal(columnIndex);
@@ -106,5 +122,9 @@ public final class ColumnValueReaderEngine {
             default:
                 return resultSet.getObject(columnIndex);
         }
+    }
+    
+    private static boolean isSigned(final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return metaData.isSigned(columnIndex);
     }
 }

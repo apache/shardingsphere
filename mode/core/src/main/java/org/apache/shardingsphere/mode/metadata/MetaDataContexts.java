@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
@@ -26,8 +29,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 
 import java.util.Map.Entry;
@@ -56,19 +58,15 @@ public final class MetaDataContexts implements AutoCloseable {
             return new ShardingSphereStatistics();
         }
         DatabaseType protocolType = metaData.getDatabases().values().iterator().next().getProtocolType();
-        if (null == protocolType) {
-            return new ShardingSphereStatistics();
-        }
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(protocolType).getDialectDatabaseMetaData();
         // TODO can `protocolType instanceof SchemaSupportedDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
-        Optional<ShardingSphereStatisticsBuilder> statisticsBuilder = DatabaseTypedSPILoader.findService(ShardingSphereStatisticsBuilder.class, protocolType.getDefaultSchema().isPresent()
-                ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")
-                : protocolType);
+        DatabaseType databaseType = dialectDatabaseMetaData.getDefaultSchema().isPresent() ? TypedSPILoader.getService(DatabaseType.class, "PostgreSQL") : protocolType;
+        Optional<ShardingSphereStatisticsBuilder> statisticsBuilder = DatabaseTypedSPILoader.findService(ShardingSphereStatisticsBuilder.class, databaseType);
         if (!statisticsBuilder.isPresent()) {
             return new ShardingSphereStatistics();
         }
         ShardingSphereStatistics result = statisticsBuilder.get().build(metaData);
-        Optional<ShardingSphereStatistics> loadedStatistics = Optional.ofNullable(persistService.getShardingSphereDataPersistService())
-                .flatMap(shardingSphereDataPersistService -> shardingSphereDataPersistService.load(metaData));
+        Optional<ShardingSphereStatistics> loadedStatistics = persistService.getShardingSphereDataPersistService().load(metaData);
         loadedStatistics.ifPresent(optional -> useLoadedToReplaceInit(result, optional));
         return result;
     }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -82,10 +82,5 @@ public final class MaskRule implements DatabaseRule, TableContainedRule {
     @Override
     public TableNamesMapper getEnhancedTableMapper() {
         return new TableNamesMapper();
-    }
-    
-    @Override
-    public String getType() {
-        return MaskRule.class.getSimpleName();
     }
 }

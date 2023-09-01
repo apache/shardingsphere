@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset;
 
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -111,7 +111,7 @@ public enum PostgreSQLCharacterSets {
     public static Charset findCharacterSet(final String charsetName) {
         String formattedCharsetName = formatValue(charsetName);
         PostgreSQLCharacterSets result = CHARACTER_SETS_MAP.get(formattedCharsetName.toUpperCase());
-        return null != result && null != result.charset ? result.charset : Charset.forName(formattedCharsetName);
+        return null == result || null == result.charset ? Charset.forName(formattedCharsetName) : result.charset;
     }
     
     private static String formatValue(final String value) {

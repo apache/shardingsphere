@@ -47,7 +47,7 @@ public final class ShowBroadcastTableRuleExecutor implements RQLExecutor<ShowBro
     }
     
     @Override
-    public String getType() {
-        return ShowBroadcastTableRulesStatement.class.getName();
+    public Class<ShowBroadcastTableRulesStatement> getType() {
+        return ShowBroadcastTableRulesStatement.class;
     }
 }

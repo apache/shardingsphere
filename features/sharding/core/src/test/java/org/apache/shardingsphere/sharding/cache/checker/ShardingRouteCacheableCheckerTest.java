@@ -17,22 +17,23 @@
 
 package org.apache.shardingsphere.sharding.cache.checker;
 
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
@@ -111,28 +112,29 @@ class ShardingRouteCacheableCheckerTest {
     private ShardingSphereDatabase createDatabase(final ShardingRule shardingRule, final TimestampServiceRule timestampServiceRule) {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("t_warehouse", new ShardingSphereTable("t_warehouse",
-                Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false)),
+                Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         schema.getTables().put("t_order", new ShardingSphereTable("t_order", Arrays.asList(
-                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false)),
+                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         schema.getTables().put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(
-                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false),
-                new ShardingSphereColumn("order_broadcast_table_id", Types.INTEGER, true, false, false, true, false)),
+                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("order_broadcast_table_id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         return new ShardingSphereDatabase(DATABASE_NAME, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"),
-                new ShardingSphereResourceMetaData(DATABASE_NAME, Collections.emptyMap()), new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, timestampServiceRule)),
+                new ResourceMetaData(DATABASE_NAME, Collections.emptyMap()), new RuleMetaData(Arrays.asList(shardingRule, timestampServiceRule)),
                 Collections.singletonMap(SCHEMA_NAME, schema));
     }
     
     private QueryContext createQueryContext(final ShardingSphereDatabase database, final String sql, final List<Object> params) {
-        return new QueryContext(SQLStatementContextFactory.newInstance(createShardingSphereMetaData(database), params, parse(sql), DATABASE_NAME), sql, params);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(createShardingSphereMetaData(database), DATABASE_NAME).bind(parse(sql), params);
+        return new QueryContext(sqlStatementContext, sql, params);
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DATABASE_NAME, database), mock(ShardingSphereResourceMetaData.class),
-                mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+        return new ShardingSphereMetaData(Collections.singletonMap(DATABASE_NAME, database), mock(ResourceMetaData.class),
+                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     private SQLStatement parse(final String sql) {

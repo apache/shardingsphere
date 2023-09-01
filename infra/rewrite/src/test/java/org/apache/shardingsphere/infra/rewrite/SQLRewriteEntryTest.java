@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.infra.rewrite;
 
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
@@ -32,7 +33,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.jupiter.api.Test;
@@ -45,6 +46,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -52,10 +54,10 @@ class SQLRewriteEntryTest {
     
     @Test
     void assertRewriteForGenericSQLRewriteResult() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "H2"), mockResource(),
-                mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "H2"), mockResourceMetaData(),
+                mock(RuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
-                database, new ShardingSphereRuleMetaData(Collections.singleton(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()))), new ConfigurationProperties(new Properties()));
+                database, new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()))), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         GenericSQLRewriteResult sqlRewriteResult = (GenericSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(CommonSQLStatementContext.class), routeContext,
                 mock(ConnectionContext.class), new HintValueContext());
@@ -65,10 +67,10 @@ class SQLRewriteEntryTest {
     
     @Test
     void assertRewriteForRouteSQLRewriteResult() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "H2"), mockResource(),
-                mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "H2"), mockResourceMetaData(),
+                mock(RuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
-                database, new ShardingSphereRuleMetaData(Collections.singleton(mock(SQLTranslatorRule.class))), new ConfigurationProperties(new Properties()));
+                database, new RuleMetaData(Collections.singleton(mock(SQLTranslatorRule.class))), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         RouteUnit firstRouteUnit = mock(RouteUnit.class);
         when(firstRouteUnit.getDataSourceMapper()).thenReturn(new RouteMapper("ds", "ds_0"));
@@ -80,12 +82,16 @@ class SQLRewriteEntryTest {
         assertThat(sqlRewriteResult.getSqlRewriteUnits().size(), is(2));
     }
     
-    private ShardingSphereResourceMetaData mockResource() {
-        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
-        databaseTypes.put("ds_0", TypedSPILoader.getService(DatabaseType.class, "H2"));
-        databaseTypes.put("ds_1", TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        when(result.getStorageTypes()).thenReturn(databaseTypes);
+    private ResourceMetaData mockResourceMetaData() {
+        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
+        StorageUnit storageUnit1 = mock(StorageUnit.class);
+        when(storageUnit1.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "H2"));
+        StorageUnit storageUnit2 = mock(StorageUnit.class);
+        when(storageUnit2.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        storageUnits.put("ds_0", storageUnit1);
+        storageUnits.put("ds_1", storageUnit2);
+        ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
         return result;
     }
 }

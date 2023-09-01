@@ -35,7 +35,6 @@ Java API 形式配置的读写分离可以方便的适用于各种场景，不�
 | loadBalancerName (?)               | String                         | 读库负载均衡算法名称                                                                  | 轮询负载均衡算法 |
 
 算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/common-config/builtin-algorithm/load-balance)。
-查询一致性路由的详情，请参见[核心特性：读写分离](/cn/features/readwrite-splitting/)。
 
 ## 操作步骤
 

@@ -62,7 +62,7 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowRulesUsedStorageUnitStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         String resourceName = sqlStatement.getStorageUnitName().orElse(null);
-        if (database.getResourceMetaData().getDataSources().containsKey(resourceName)) {
+        if (database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().containsKey(resourceName)) {
             result.addAll(getShardingData(database));
             result.addAll(getReadwriteSplittingData(database, resourceName));
             result.addAll(getEncryptData(database));
@@ -147,7 +147,7 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
     }
     
     @Override
-    public String getType() {
-        return ShowRulesUsedStorageUnitStatement.class.getName();
+    public Class<ShowRulesUsedStorageUnitStatement> getType() {
+        return ShowRulesUsedStorageUnitStatement.class;
     }
 }

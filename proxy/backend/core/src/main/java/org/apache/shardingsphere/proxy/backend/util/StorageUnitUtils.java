@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 
@@ -45,14 +45,15 @@ public final class StorageUnitUtils {
      * @param initialCapacity the initial capacity for map
      * @return in used storage units
      */
-    public static Map<String, Collection<String>> getInUsedStorageUnits(final ShardingSphereRuleMetaData ruleMetaData, final int initialCapacity) {
+    public static Map<String, Collection<String>> getInUsedStorageUnits(final RuleMetaData ruleMetaData, final int initialCapacity) {
         Map<String, Collection<String>> result = new LinkedHashMap<>(initialCapacity, 1F);
-        getFromDataSourceContainedRules(result, ruleMetaData.findRules(DataSourceContainedRule.class));
-        getFromDataNodeContainedRules(result, ruleMetaData.findRules(DataNodeContainedRule.class));
+        result.putAll(getFromDataSourceContainedRules(ruleMetaData.findRules(DataSourceContainedRule.class)));
+        result.putAll(getFromDataNodeContainedRules(ruleMetaData.findRules(DataNodeContainedRule.class)));
         return result;
     }
     
-    private static void getFromDataSourceContainedRules(final Map<String, Collection<String>> result, final Collection<DataSourceContainedRule> dataSourceContainedRules) {
+    private static Map<String, Collection<String>> getFromDataSourceContainedRules(final Collection<DataSourceContainedRule> dataSourceContainedRules) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
         for (DataSourceContainedRule each : dataSourceContainedRules) {
             Collection<String> inUsedStorageUnits = getInUsedStorageUnitNames(each);
             if (inUsedStorageUnits.isEmpty()) {
@@ -60,13 +61,15 @@ public final class StorageUnitUtils {
             }
             inUsedStorageUnits.forEach(storageUnit -> {
                 Collection<String> rules = result.getOrDefault(storageUnit, new LinkedHashSet<>());
-                rules.add(each.getType());
+                rules.add(each.getClass().getSimpleName());
                 result.put(storageUnit, rules);
             });
         }
+        return result;
     }
     
-    private static void getFromDataNodeContainedRules(final Map<String, Collection<String>> result, final Collection<DataNodeContainedRule> dataNodeContainedRules) {
+    private static Map<String, Collection<String>> getFromDataNodeContainedRules(final Collection<DataNodeContainedRule> dataNodeContainedRules) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
         for (DataNodeContainedRule each : dataNodeContainedRules) {
             Collection<String> inUsedStorageUnits = getInUsedStorageUnitNames(each);
             if (inUsedStorageUnits.isEmpty()) {
@@ -74,10 +77,11 @@ public final class StorageUnitUtils {
             }
             inUsedStorageUnits.forEach(storageUnit -> {
                 Collection<String> rules = result.getOrDefault(storageUnit, new LinkedHashSet<>());
-                rules.add(each.getType());
+                rules.add(each.getClass().getSimpleName());
                 result.put(storageUnit, rules);
             });
         }
+        return result;
     }
     
     private static Collection<String> getInUsedStorageUnitNames(final DataSourceContainedRule rule) {

@@ -18,8 +18,6 @@
 plugins:
 #  logging:
 #    File:
-#      props:
-#        level: "INFO"
 #  metrics:
 #    Prometheus:
 #      host:  "localhost"

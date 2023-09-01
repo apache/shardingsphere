@@ -20,8 +20,8 @@ package org.apache.shardingsphere.parser.distsql.handler.query;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.parser.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -68,7 +68,7 @@ class ShowSQLParserRuleExecutorTest {
     private ShardingSphereMetaData mockMetaData() {
         SQLParserRule sqlParserRule = mock(SQLParserRule.class);
         when(sqlParserRule.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(true, new CacheOption(128, 1024), new CacheOption(2000, 65535)));
-        return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ShardingSphereResourceMetaData.class),
-                new ShardingSphereRuleMetaData(Collections.singleton(sqlParserRule)), new ConfigurationProperties(new Properties()));
+        return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class),
+                new RuleMetaData(Collections.singleton(sqlParserRule)), new ConfigurationProperties(new Properties()));
     }
 }

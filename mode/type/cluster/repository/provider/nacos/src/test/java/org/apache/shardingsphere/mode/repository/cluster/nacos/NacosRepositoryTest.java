@@ -24,10 +24,9 @@ import com.alibaba.nacos.api.naming.listener.Event;
 import com.alibaba.nacos.api.naming.listener.EventListener;
 import com.alibaba.nacos.api.naming.listener.NamingEvent;
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.alibaba.nacos.common.utils.StringUtils;
 import com.google.common.util.concurrent.SettableFuture;
-import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceController;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosProperties;
@@ -50,6 +49,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -361,7 +361,7 @@ class NacosRepositoryTest {
     private VoidAnswer2<String, Instance> getRegisterInstanceAnswer() {
         return (serviceName, instance) -> {
             List<Instance> instances = client.getAllInstances(serviceName, false);
-            instances.removeIf(each -> StringUtils.equals(each.getIp(), instance.getIp()) && each.getPort() == instance.getPort());
+            instances.removeIf(each -> Objects.equals(each.getIp(), instance.getIp()) && each.getPort() == instance.getPort());
             instances.add(instance);
             when(client.getAllInstances(serviceName, false)).thenReturn(instances);
         };

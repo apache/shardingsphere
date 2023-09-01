@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.algorithm.like;
 
 import com.google.common.base.Strings;
+import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
@@ -35,6 +36,7 @@ import java.util.stream.IntStream;
 /**
  * Char digest like encrypt algorithm.
  */
+@EqualsAndHashCode
 public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorithm<Object, String> {
     
     private static final String DELTA_KEY = "delta";
@@ -104,7 +106,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     private Map<Character, Integer> createCharIndexes(final Properties props) {
         String dictContent = props.containsKey(DICT_KEY) && !Strings.isNullOrEmpty(props.getProperty(DICT_KEY)) ? props.getProperty(DICT_KEY) : initDefaultDict();
-        return IntStream.range(0, dictContent.length()).boxed().collect(Collectors.toMap(dictContent::charAt, index -> index, (a, b) -> b));
+        return IntStream.range(0, dictContent.length()).boxed().collect(Collectors.toMap(dictContent::charAt, index -> index, (oldValue, currentValue) -> oldValue));
     }
     
     @SneakyThrows(IOException.class)

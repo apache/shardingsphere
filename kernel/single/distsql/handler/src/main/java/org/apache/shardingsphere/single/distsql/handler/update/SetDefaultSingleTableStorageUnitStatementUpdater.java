@@ -20,8 +20,8 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rdl.SetDefaultSingleTableStorageUnitStatement;
 
@@ -40,7 +40,7 @@ public final class SetDefaultSingleTableStorageUnitStatementUpdater implements R
     
     private void checkStorageUnitExist(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         if (!Strings.isNullOrEmpty(sqlStatement.getDefaultStorageUnit())) {
-            Collection<String> storageUnitNames = database.getResourceMetaData().getDataSources().keySet();
+            Collection<String> storageUnitNames = database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().keySet();
             ShardingSpherePreconditions.checkState(storageUnitNames.contains(sqlStatement.getDefaultStorageUnit()),
                     () -> new MissingRequiredStorageUnitsException(database.getName(), Collections.singleton(sqlStatement.getDefaultStorageUnit())));
         }
@@ -64,7 +64,7 @@ public final class SetDefaultSingleTableStorageUnitStatementUpdater implements R
     }
     
     @Override
-    public String getType() {
-        return SetDefaultSingleTableStorageUnitStatement.class.getName();
+    public Class<SetDefaultSingleTableStorageUnitStatement> getType() {
+        return SetDefaultSingleTableStorageUnitStatement.class;
     }
 }

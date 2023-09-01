@@ -40,7 +40,7 @@ class YamlProcessSwapperTest {
     void assertSwapToYamlConfiguration() {
         ExecutionGroupReportContext reportContext = new ExecutionGroupReportContext("foo_db", new Grantee("root", "localhost"));
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
-        Process process = new Process("SELECT 1", executionGroupContext);
+        Process process = new Process("SELECT 1", executionGroupContext, true);
         YamlProcess actual = new YamlProcessSwapper().swapToYamlConfiguration(process);
         assertNotNull(actual.getId());
         assertThat(actual.getStartMillis(), lessThanOrEqualTo(System.currentTimeMillis()));
@@ -50,6 +50,7 @@ class YamlProcessSwapperTest {
         assertThat(actual.getHostname(), is("localhost"));
         assertThat(actual.getCompletedUnitCount(), is(0));
         assertThat(actual.getTotalUnitCount(), is(0));
+        assertThat(actual.isHeldByConnection(), is(true));
         assertFalse(actual.isIdle());
     }
     
@@ -64,6 +65,7 @@ class YamlProcessSwapperTest {
         assertThat(actual.getHostname(), is("localhost"));
         assertThat(actual.getTotalUnitCount(), is(10));
         assertThat(actual.getCompletedUnitCount(), is(5));
+        assertThat(actual.isHeldByConnection(), is(false));
         assertTrue(actual.isIdle());
     }
     
@@ -78,6 +80,7 @@ class YamlProcessSwapperTest {
         result.setTotalUnitCount(10);
         result.setCompletedUnitCount(5);
         result.setIdle(true);
+        result.setHeldByConnection(false);
         return result;
     }
 }

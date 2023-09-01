@@ -19,7 +19,9 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.TableSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
@@ -27,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class TableNameSegment implements SQLSegment {
     
     private final int startIndex;
@@ -34,4 +37,6 @@ public final class TableNameSegment implements SQLSegment {
     private final int stopIndex;
     
     private final IdentifierValue identifier;
+    
+    private TableSegmentBoundedInfo tableBoundedInfo;
 }

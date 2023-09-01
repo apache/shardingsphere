@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.parser.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.parser.SimpleSQLParserEngine;
@@ -60,10 +60,5 @@ public final class SQLParserRule implements GlobalRule {
         return "Standard".equals(engineType)
                 ? new ShardingSphereSQLParserEngine(databaseType, sqlStatementCache, parseTreeCache, sqlCommentParseEnabled)
                 : new SimpleSQLParserEngine();
-    }
-    
-    @Override
-    public String getType() {
-        return SQLParserRule.class.getSimpleName();
     }
 }

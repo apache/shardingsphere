@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import io.netty.util.DefaultAttributeMap;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -66,7 +66,7 @@ class ShowProcessListExecutorTest {
     
     private void setupProcesses(final ShowProcessListExecutor showProcessListExecutor) throws ReflectiveOperationException {
         Process process = new Process("f6c2336a-63ba-41bf-941e-2e3504eb2c80", 1617939785160L,
-                "ALTER TABLE t_order ADD COLUMN a varchar(64) AFTER order_id", "foo_db", "root", "127.0.0.1", 2, Collections.emptyList(), new AtomicInteger(1), false);
+                "ALTER TABLE t_order ADD COLUMN a varchar(64) AFTER order_id", "foo_db", "root", "127.0.0.1", 2, Collections.emptyList(), new AtomicInteger(1), false, false);
         Plugins.getMemberAccessor().set(
                 showProcessListExecutor.getClass().getDeclaredField("processes"), showProcessListExecutor, Collections.singleton(process));
     }

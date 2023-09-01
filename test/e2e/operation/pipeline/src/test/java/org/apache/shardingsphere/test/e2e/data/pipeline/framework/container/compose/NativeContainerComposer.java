@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.core.url.JdbcUrlAppender;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrlAppender;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -78,6 +79,12 @@ public final class NativeContainerComposer extends BaseContainerComposer {
                     connection.createStatement().execute("DROP SCHEMA IF EXISTS test;");
                 }
                 break;
+            case "Oracle":
+                jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", actualDatabasePort, "");
+                try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
+                    dropTableWithOracle(connection, databaseName);
+                }
+                break;
             default:
         }
     }
@@ -100,8 +107,21 @@ public final class NativeContainerComposer extends BaseContainerComposer {
         }
     }
     
+    private void dropTableWithOracle(final Connection connection, final String schema) throws SQLException {
+        String queryAllTables = String.format("SELECT TABLE_NAME FROM ALL_TABLES WHERE OWNER = '%s'", schema);
+        try (ResultSet resultSet = connection.createStatement().executeQuery(String.format(queryAllTables, schema))) {
+            List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
+            for (String each : actualTableNames) {
+                connection.createStatement().executeUpdate(String.format("DROP TABLE %s.%s", schema, each));
+            }
+        }
+    }
+    
     @Override
     public String getProxyJdbcUrl(final String databaseName) {
+        if (databaseType instanceof OracleDatabaseType) {
+            return String.format("jdbc:mysql://localhost:3307/%s?useSSL=false", databaseName);
+        }
         return DataSourceEnvironment.getURL(databaseType, "localhost", 3307, databaseName);
     }
     

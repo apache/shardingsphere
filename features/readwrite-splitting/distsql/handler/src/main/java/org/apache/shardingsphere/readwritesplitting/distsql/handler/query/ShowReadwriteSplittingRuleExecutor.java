@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
-import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
+import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
@@ -106,7 +106,7 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
     }
     
     @Override
-    public String getType() {
-        return ShowReadwriteSplittingRulesStatement.class.getName();
+    public Class<ShowReadwriteSplittingRulesStatement> getType() {
+        return ShowReadwriteSplittingRulesStatement.class;
     }
 }

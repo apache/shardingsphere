@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
@@ -64,7 +65,11 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     
     @Override
     protected void configure() {
+        if (!Strings.isNullOrEmpty(config.getContainerCommand())) {
+            setCommand(config.getContainerCommand());
+        }
         withExposedPorts(3307, 33071, 3308);
+        addEnv("TZ", "UTC");
         mountConfigurationFiles();
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType,
                 getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)));

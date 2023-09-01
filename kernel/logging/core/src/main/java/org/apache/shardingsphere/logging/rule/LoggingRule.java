@@ -32,9 +32,4 @@ public final class LoggingRule implements GlobalRule {
     public LoggingRule(final LoggingRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
     }
-    
-    @Override
-    public String getType() {
-        return LoggingRule.class.getSimpleName();
-    }
 }

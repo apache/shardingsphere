@@ -18,16 +18,20 @@
 package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
 /**
  * Pipeline SQL segment builder.
  */
-@RequiredArgsConstructor
 public final class PipelineSQLSegmentBuilder {
     
-    private final DatabaseType databaseType;
+    private final DialectDatabaseMetaData dialectDatabaseMetaData;
+    
+    public PipelineSQLSegmentBuilder(final DatabaseType databaseType) {
+        dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+    }
     
     /**
      * Get escaped identifier.
@@ -36,7 +40,7 @@ public final class PipelineSQLSegmentBuilder {
      * @return escaped identifier
      */
     public String getEscapedIdentifier(final String identifier) {
-        return databaseType.isReservedWord(identifier) ? databaseType.getQuoteCharacter().wrap(identifier) : identifier;
+        return dialectDatabaseMetaData.isReservedWord(identifier) ? dialectDatabaseMetaData.getQuoteCharacter().wrap(identifier) : identifier;
     }
     
     /**
@@ -48,7 +52,7 @@ public final class PipelineSQLSegmentBuilder {
      */
     public String getQualifiedTableName(final String schemaName, final String tableName) {
         StringBuilder result = new StringBuilder();
-        if (databaseType.isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
+        if (dialectDatabaseMetaData.isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
             result.append(getEscapedIdentifier(schemaName)).append('.');
         }
         result.append(getEscapedIdentifier(tableName));

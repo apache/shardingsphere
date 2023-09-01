@@ -19,8 +19,8 @@ package org.apache.shardingsphere.transaction.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.ral.update.GlobalRuleRALUpdater;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.updatable.AlterTransactionRuleStatement;
@@ -79,7 +79,7 @@ public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRAL
     }
     
     @Override
-    public String getType() {
-        return AlterTransactionRuleStatement.class.getName();
+    public Class<AlterTransactionRuleStatement> getType() {
+        return AlterTransactionRuleStatement.class;
     }
 }

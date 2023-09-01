@@ -19,7 +19,8 @@ package org.apache.shardingsphere.test.e2e.transaction.framework.container.confi
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
@@ -60,8 +61,9 @@ public final class MySQLContainerConfigurationFactory {
     
     private static Map<String, String> getMountedResources(final String scenario) {
         Map<String, String> result = new HashMap<>();
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, new MySQLDatabaseType()) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, new MySQLDatabaseType()) + "/01-expected-init.sql",
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, TypedSPILoader.getService(DatabaseType.class, "MySQL")) + "/01-actual-init.sql",
+                "/docker-entrypoint-initdb.d/01-actual-init.sql");
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, TypedSPILoader.getService(DatabaseType.class, "MySQL")) + "/01-expected-init.sql",
                 "/docker-entrypoint-initdb.d/01-expected-init.sql");
         result.put("/env/mysql/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
         return result;

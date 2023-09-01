@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.lock.impl;
 
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.retry.RetryExecutor;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;

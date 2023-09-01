@@ -62,7 +62,7 @@ class TableExtractorTest {
     
     @Test
     void assertExtractTablesFromSelectProjects() {
-        AggregationProjectionSegment aggregationProjection = new AggregationProjectionSegment(10, 20, AggregationType.SUM, "t_order.id");
+        AggregationProjectionSegment aggregationProjection = new AggregationProjectionSegment(10, 20, AggregationType.SUM, "SUM(t_order.id)");
         ColumnSegment columnSegment = new ColumnSegment(133, 136, new IdentifierValue("id"));
         columnSegment.setOwner(new OwnerSegment(130, 132, new IdentifierValue("t_order")));
         aggregationProjection.getParameters().add(columnSegment);
@@ -92,14 +92,14 @@ class TableExtractorTest {
     
     @Test
     void assertExtractTablesFromInsert() {
-        MySQLInsertStatement mySQLInsertStatement = new MySQLInsertStatement();
-        mySQLInsertStatement.setTable(new SimpleTableSegment(new TableNameSegment(122, 128, new IdentifierValue("t_order"))));
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(122, 128, new IdentifierValue("t_order"))));
         Collection<AssignmentSegment> assignmentSegments = new LinkedList<>();
         ColumnSegment columnSegment = new ColumnSegment(133, 136, new IdentifierValue("id"));
         columnSegment.setOwner(new OwnerSegment(130, 132, new IdentifierValue("t_order")));
         assignmentSegments.add(new ColumnAssignmentSegment(130, 140, Collections.singletonList(columnSegment), new LiteralExpressionSegment(141, 142, 1)));
-        mySQLInsertStatement.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(130, 140, assignmentSegments));
-        tableExtractor.extractTablesFromInsert(mySQLInsertStatement);
+        insertStatement.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(130, 140, assignmentSegments));
+        tableExtractor.extractTablesFromInsert(insertStatement);
         assertThat(tableExtractor.getRewriteTables().size(), is(2));
         Iterator<SimpleTableSegment> tableSegmentIterator = tableExtractor.getRewriteTables().iterator();
         assertTableSegment(tableSegmentIterator.next(), 122, 128, "t_order");

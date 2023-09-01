@@ -27,13 +27,6 @@ MAINTAINER ShardingSphere "dev@shardingsphere.apache.org"
 
 ARG NATIVE_IMAGE_NAME
 ENV LOCAL_PATH /opt/shardingsphere-proxy-native
-ENV JAVA_HOME "/opt/graalvm-ce-java17-22.3.1"
-ENV PATH "$JAVA_HOME/bin:$PATH"
-
-RUN microdnf install gzip -y && \
-    bash <(curl -sL https://get.graalvm.org/jdk) --to "/opt" -c espresso graalvm-ce-java17-22.3.1 && \
-    $JAVA_HOME/bin/gu remove native-image && \
-    microdnf clean all
 
 COPY --from=prepare ${LOCAL_PATH} ${LOCAL_PATH}
 ENTRYPOINT ${LOCAL_PATH}/${NATIVE_IMAGE_NAME} 3307 ${LOCAL_PATH}/conf "0.0.0.0" false

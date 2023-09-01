@@ -20,7 +20,7 @@ package org.apache.shardingsphere.single.distsql.handler.query;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -60,7 +60,7 @@ class ShowDefaultSingleTableStorageUnitExecutorTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         SingleRule singleRule = mock(SingleRule.class);
         when(singleRule.getConfiguration()).thenReturn(new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"));
-        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(singleRule)));
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(singleRule)));
         return result;
     }
 }

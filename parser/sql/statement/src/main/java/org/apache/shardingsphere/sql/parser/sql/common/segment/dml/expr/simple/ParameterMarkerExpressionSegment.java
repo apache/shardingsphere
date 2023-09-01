@@ -57,6 +57,11 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     }
     
     @Override
+    public String getColumnLabel() {
+        return getAliasName().orElse(String.valueOf(parameterMarkerIndex));
+    }
+    
+    @Override
     public Optional<String> getAliasName() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
@@ -73,7 +78,7 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     
     @Override
     public int getStopIndex() {
-        return null != alias ? alias.getStopIndex() : stopIndex;
+        return null == alias ? stopIndex : alias.getStopIndex();
     }
     
     @Override

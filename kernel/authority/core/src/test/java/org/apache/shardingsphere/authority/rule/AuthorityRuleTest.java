@@ -24,14 +24,13 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AuthorityRuleTest {
@@ -59,6 +58,6 @@ class AuthorityRuleTest {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         users.add(new ShardingSphereUser("root", "root", "localhost"));
         users.add(new ShardingSphereUser("admin", "123456", "localhost"));
-        return new AuthorityRule(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null), Collections.emptyMap());
+        return new AuthorityRule(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null));
     }
 }

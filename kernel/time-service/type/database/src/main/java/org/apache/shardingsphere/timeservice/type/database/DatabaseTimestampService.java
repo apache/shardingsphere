@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.timeservice.type.database;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
@@ -48,8 +48,8 @@ public final class DatabaseTimestampService implements TimestampService {
     
     @Override
     public void init(final Properties props) {
-        dataSource = DataSourcePoolCreator.create(new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(
-                props.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue, (key, value) -> value))));
+        dataSource = DataSourcePoolCreator.create(new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(
+                props.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue))));
         storageType = DatabaseTypeEngine.getStorageType(Collections.singleton(dataSource));
     }
     

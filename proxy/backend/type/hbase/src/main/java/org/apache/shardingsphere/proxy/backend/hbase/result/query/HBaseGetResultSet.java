@@ -26,8 +26,8 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverterFactory;
@@ -181,14 +181,14 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
         if (expressionSegment instanceof BetweenExpression) {
             result.append(((BetweenExpression) expressionSegment).getBetweenExpr());
         } else if (expressionSegment instanceof BinaryOperationExpression) {
-            result.append(((BinaryOperationExpression) expressionSegment).getText());
+            result.append(expressionSegment.getText());
         }
         return result.toString();
     }
     
     @Override
     public boolean next() {
-        return resultNum < maxLimitResultSize && (rows.hasNext() || compensateResult != null);
+        return resultNum < maxLimitResultSize && (rows.hasNext() || null != compensateResult);
     }
     
     @Override
@@ -205,7 +205,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
     }
     
     @Override
-    public String getType() {
-        return MySQLSelectStatement.class.getCanonicalName();
+    public Class<MySQLSelectStatement> getType() {
+        return MySQLSelectStatement.class;
     }
 }

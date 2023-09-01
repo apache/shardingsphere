@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -26,12 +27,14 @@ import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
-import org.apache.shardingsphere.infra.database.core.url.JdbcUrlAppender;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.mysql.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.opengauss.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrlAppender;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
+import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
@@ -196,7 +199,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
             return;
         }
         for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
-            containerComposer.cleanUpDatabase(each);
+            String databaseName = databaseType instanceof OracleDatabaseType ? each.toUpperCase() : each;
+            containerComposer.cleanUpDatabase(databaseName);
         }
     }
     
@@ -224,11 +228,12 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public void registerStorageUnit(final String storageUnitName) throws SQLException {
+        String username = getDatabaseType() instanceof OracleDatabaseType ? storageUnitName : getUsername();
         String registerStorageUnitTemplate = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
-                .replace("${user}", getUsername())
+                .replace("${user}", username)
                 .replace("${password}", getPassword())
                 .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, true));
-        proxyExecuteWithLog(registerStorageUnitTemplate, 1);
+        proxyExecuteWithLog(registerStorageUnitTemplate, 0);
         Awaitility.await().ignoreExceptions().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
     }
     
@@ -267,7 +272,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
                     ? DataSourceEnvironment.getURL(databaseType, storageContainer.getNetworkAliases().get(0), storageContainer.getExposedPort(), databaseName)
                     : storageContainer.getJdbcUrl(databaseName);
         }
-        return DataSourceEnvironment.getURL(databaseType, "127.0.0.1", PipelineE2EEnvironment.getInstance().getActualDataSourceDefaultPort(databaseType), databaseName);
+        return DataSourceEnvironment.getURL(databaseType, "127.0.0.1", PipelineE2EEnvironment.getInstance().getActualDatabasePort(databaseType), databaseName);
     }
     
     /**
@@ -278,6 +283,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @return actual JDBC URL template
      */
     public String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
+        if (databaseType instanceof OracleDatabaseType) {
+            return getActualJdbcUrlTemplate(databaseName, isInContainer, 0);
+        }
         return appendExtraParameter(getActualJdbcUrlTemplate(databaseName, isInContainer, 0));
     }
     
@@ -289,7 +297,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public void createSchema(final Connection connection, final int sleepSeconds) throws SQLException {
-        if (!databaseType.isSchemaAvailable()) {
+        if (!new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().isSchemaAvailable()) {
             return;
         }
         connection.createStatement().execute(String.format("CREATE SCHEMA %s", SCHEMA_NAME));
@@ -365,8 +373,11 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     public void proxyExecuteWithLog(final String sql, final int sleepSeconds) throws SQLException {
         log.info("proxy execute :{}", sql);
+        List<String> sqlList = Splitter.on(";").trimResults().omitEmptyStrings().splitToList(sql);
         try (Connection connection = proxyDataSource.getConnection()) {
-            connection.createStatement().execute(sql);
+            for (String each : sqlList) {
+                connection.createStatement().execute(each);
+            }
         }
         Awaitility.await().pollDelay(Math.max(sleepSeconds, 0L), TimeUnit.SECONDS).until(() -> true);
     }

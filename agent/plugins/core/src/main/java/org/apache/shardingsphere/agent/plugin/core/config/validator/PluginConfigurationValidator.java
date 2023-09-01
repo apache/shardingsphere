@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.agent.plugin.core.config.validator;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
+import org.apache.shardingsphere.agent.plugin.core.util.PluginPreconditions;
 
 /**
  * Remote plugin configuration validator.
@@ -47,7 +46,7 @@ public final class PluginConfigurationValidator {
      * @param pluginConfig to be validated plugin configuration
      */
     public static void validateHost(final String type, final PluginConfiguration pluginConfig) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(pluginConfig.getHost()), "Hostname of %s is required.", type);
+        PluginPreconditions.checkArgument(!(null == pluginConfig.getHost() || pluginConfig.getHost().isEmpty()), String.format("Hostname of %s is required.", type));
     }
     
     /**
@@ -57,6 +56,6 @@ public final class PluginConfigurationValidator {
      * @param pluginConfig to be validated plugin configuration
      */
     public static void validatePort(final String type, final PluginConfiguration pluginConfig) {
-        Preconditions.checkArgument(pluginConfig.getPort() > 0, "Port `%s` of %s must be a positive number.", pluginConfig.getPort(), type);
+        PluginPreconditions.checkArgument(pluginConfig.getPort() > 0, String.format("Port `%s` of %s must be a positive number.", pluginConfig.getPort(), type));
     }
 }

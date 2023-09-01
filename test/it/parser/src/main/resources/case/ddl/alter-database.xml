@@ -85,4 +85,6 @@
     <alter-database sql-case-id="alter_database_create3" />
     <alter-database sql-case-id="alter_database_modify_name" />
     <alter-database sql-case-id="alter_database_set_options" />
+    <alter-database sql-case-id="alter_database_enable_block_change_tracking_using_file" />
+    <alter-database sql-case-id="alter_database_backup_controlfile_to" />
 </sql-parser-test-cases>

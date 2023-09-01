@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dialect.mysql.exception.UnknownSystemVariableException;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownSystemVariableException;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
@@ -90,8 +90,8 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
-                sqlStatement, connectionSession.getDefaultDatabaseName());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
+                connectionSession.getDefaultDatabaseName()).bind(sqlStatement, Collections.emptyList());
         DatabaseBackendHandler databaseBackendHandler = DatabaseConnectorFactory.getInstance()
                 .newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList()), connectionSession.getDatabaseConnectionManager(), false);
         try {

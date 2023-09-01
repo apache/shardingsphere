@@ -38,4 +38,12 @@
     <sql-case id="alter_system_switch_logfile" value="ALTER SYSTEM SWITCH LOGFILE" db-types="Oracle" />
     <sql-case id="alter_system_enable_distributed_recovery" value="ALTER SYSTEM ENABLE DISTRIBUTED RECOVERY" db-types="Oracle" />
     <sql-case id="alter_system_flush_passwordfile_metada_cache" value="ALTER SYSTEM FLUSH PASSWORDFILE_METADATA_CACHE" db-types="Oracle" />
+    <sql-case id="alter_system_disconnect_session_post_transaction" value="ALTER SYSTEM DISCONNECT SESSION '13, 8' POST_TRANSACTION" db-types="Oracle" />
+    <sql-case id="alter_system_kill_session1" value="ALTER SYSTEM KILL SESSION '39, 23'" db-types="Oracle" />
+    <sql-case id="alter_system_kill_session2" value="ALTER SYSTEM KILL SESSION '127, 55234'" db-types="Oracle" />
+    <sql-case id="alter_system_reset_open_cursors_scope_sid" value="ALTER SYSTEM RESET OPEN_CURSORS SCOPE=SPFILE SID='prod1'" db-types="Oracle" />
+    <sql-case id="alter_system_set_db_recovery_file_dest_size_g" value="ALTER SYSTEM SET DB_RECOVERY_FILE_DEST_SIZE = 10G SCOPE=BOTH SID='*'" db-types="Oracle" />
+    <sql-case id="alter_system_set_parameter_recyclebin_scope" value="ALTER SYSTEM SET recyclebin = ON SCOPE = SPFILE" db-types="Oracle" />
+    <sql-case id="alter_system_set_events1" value="ALTER SYSTEM SET EVENTS 'CLIENTID_OVERWRITE'" db-types="Oracle" />
+    <sql-case id="alter_system_set_events2" value="ALTER SYSTEM SET EVENTS 'CLIENTID_OVERWRITE OFF'" db-types="Oracle" />
 </sql-cases>

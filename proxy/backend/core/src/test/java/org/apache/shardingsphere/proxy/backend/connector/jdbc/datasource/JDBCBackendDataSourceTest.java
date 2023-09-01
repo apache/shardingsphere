@@ -19,14 +19,14 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -49,10 +49,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -86,25 +86,25 @@ class JDBCBackendDataSourceTest {
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(createDatabases(), mock(ShardingSphereResourceMetaData.class), mockGlobalRuleMetaData(), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(createDatabases(), mock(ResourceMetaData.class), mockGlobalRuleMetaData(), new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(2, 1F);
-        storageTypes.put("ds_0", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        storageTypes.put("ds_1", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        when(database.getResourceMetaData().getStorageTypes()).thenReturn(storageTypes);
-        when(database.getResourceMetaData().getDataSources()).thenReturn(mockDataSources(2));
+        when(database.getProtocolType()).thenReturn(databaseType);
+        for (Entry<String, DataSource> entry : mockDataSources(2).entrySet()) {
+            when(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().get(entry.getKey()).getDataSource()).thenReturn(entry.getValue());
+        }
         return Collections.singletonMap("schema", database);
     }
     
-    private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
+    private RuleMetaData mockGlobalRuleMetaData() {
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
-        return new ShardingSphereRuleMetaData(Collections.singleton(transactionRule));
+        return new RuleMetaData(Collections.singleton(transactionRule));
     }
     
     private Map<String, DataSource> mockDataSources(final int size) {

@@ -17,17 +17,10 @@
 
 package org.apache.shardingsphere.test.fixture.database;
 
-import org.apache.shardingsphere.infra.database.spi.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
 
 /**
  * Mocked database type.
@@ -35,33 +28,8 @@ import static org.mockito.Mockito.mock;
 public final class MockedDatabaseType implements DatabaseType {
     
     @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.NONE;
-    }
-    
-    @Override
-    public NullsOrderType getDefaultNullsOrderType() {
-        return NullsOrderType.FIRST;
-    }
-    
-    @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton("jdbc:mock");
-    }
-    
-    @Override
-    public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return mock(DataSourceMetaData.class, RETURNS_DEEP_STUBS);
-    }
-    
-    @Override
-    public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Collection<String> getSystemSchemas() {
-        return Collections.emptyList();
     }
     
     @Override
