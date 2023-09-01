@@ -6951,4 +6951,10 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_numeric_operator">
+        <projections start-index="7" stop-index="18">
+            <expression-projection start-index="7" stop-index="18" text="5!" alias="RESULT" />
+        </projections>
+    </select>
 </sql-parser-test-cases>
