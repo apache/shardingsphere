@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -80,7 +81,7 @@ public final class SimpleTableSegmentBinder {
         checkTableExists(segment.getTableName().getIdentifier().getValue(), statementBinderContext, originalDatabase.getValue(), originalSchema.getValue());
         ShardingSphereSchema schema = statementBinderContext.getMetaData().getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
         tableBinderContexts.put(segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue()),
-                createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema, statementBinderContext.getDatabaseType()));
+                createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema, statementBinderContext));
         TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), segment.getTableName().getIdentifier());
         tableNameSegment.setTableBoundedInfo(new TableSegmentBoundedInfo(originalDatabase, originalSchema));
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
@@ -109,11 +110,12 @@ public final class SimpleTableSegmentBinder {
     }
     
     private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema,
-                                                                            final IdentifierValue originalDatabase, final IdentifierValue originalSchema, final DatabaseType databaseType) {
+                                                                            final IdentifierValue originalDatabase, final IdentifierValue originalSchema,
+                                                                            final SQLStatementBinderContext statementBinderContext) {
         Collection<ShardingSphereColumn> columnNames =
                 Optional.ofNullable(schema.getTable(segment.getTableName().getIdentifier().getValue())).map(ShardingSphereTable::getColumnValues).orElseGet(Collections::emptyList);
         Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(statementBinderContext.getDatabaseType()).getDialectDatabaseMetaData();
         for (ShardingSphereColumn each : columnNames) {
             ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each.getName(), dialectDatabaseMetaData.getQuoteCharacter()));
             columnSegment.setOwner(new OwnerSegment(0, 0, segment.getAlias().orElse(segment.getTableName().getIdentifier())));
@@ -123,7 +125,22 @@ public final class SimpleTableSegmentBinder {
             columnProjectionSegment.setVisible(each.isVisible());
             projectionSegments.add(columnProjectionSegment);
         }
-        return new TableSegmentBinderContext(projectionSegments);
+        TableSegmentBinderContext result = new TableSegmentBinderContext(projectionSegments);
+        getVariableProjectionSegments(segment, originalDatabase, originalSchema, statementBinderContext, dialectDatabaseMetaData).forEach(result::putVariableLabelProjectionSegments);
+        return result;
+    }
+    
+    private static Collection<ProjectionSegment> getVariableProjectionSegments(final SimpleTableSegment segment, final IdentifierValue originalDatabase, final IdentifierValue originalSchema,
+                                                                               final SQLStatementBinderContext statementBinderContext, final DialectDatabaseMetaData dialectDatabaseMetaData) {
+        Collection<ProjectionSegment> result = new ArrayList<>(statementBinderContext.getVariableNames().size());
+        statementBinderContext.getVariableNames().forEach(each -> {
+            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each, dialectDatabaseMetaData.getQuoteCharacter()));
+            columnSegment.setVariable(true);
+            columnSegment.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(originalDatabase, originalSchema, segment.getTableName().getIdentifier(),
+                    new IdentifierValue(each, dialectDatabaseMetaData.getQuoteCharacter())));
+            result.add(new ColumnProjectionSegment(columnSegment));
+        });
+        return result;
     }
     
     private static void checkTableExists(final String tableName, final SQLStatementBinderContext statementBinderContext, final String databaseName, final String schemaName) {

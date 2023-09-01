@@ -74,6 +74,7 @@ public final class ColumnSegmentBinder {
         Collection<TableSegmentBinderContext> tableBinderContextValues =
                 getTableSegmentBinderContexts(segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment, parentSegmentType, tableBinderContextValues);
+        inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
         result.setColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, inputColumnSegment.orElse(null)));
         return result;
     }
@@ -121,8 +122,24 @@ public final class ColumnSegmentBinder {
                 isFindInputColumn = true;
             }
         }
+        if (!isFindInputColumn) {
+            result = findInputColumnSegmentByVariables(segment, tableBinderContexts).orElse(null);
+            isFindInputColumn = result != null;
+        }
         ShardingSpherePreconditions.checkState(isFindInputColumn,
                 () -> new UnknownColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
+        return Optional.ofNullable(result);
+    }
+    
+    private static Optional<ColumnSegment> findInputColumnSegmentByVariables(final ColumnSegment segment, final Collection<TableSegmentBinderContext> tableBinderContexts) {
+        ColumnSegment result = null;
+        for (TableSegmentBinderContext each : tableBinderContexts) {
+            ProjectionSegment variableSegment = each.getProjectionSegmentByVariableLabel(segment.getIdentifier().getValue());
+            if (variableSegment instanceof ColumnProjectionSegment) {
+                result = ((ColumnProjectionSegment) variableSegment).getColumn();
+                break;
+            }
+        }
         return Optional.ofNullable(result);
     }
     
