@@ -156,4 +156,8 @@
     <audit sql-case-id="audit_update_on_default" />
     <audit sql-case-id="audit_execute_on_default" />
     <audit sql-case-id="audit_read_on_default" />
+    <audit sql-case-id="audit_all_by_by_access" />
+    <audit sql-case-id="audit_all_on_default_by_access" />
+    <audit sql-case-id="audit_all_statements_by_by_access_whenever_successful" />
+    <audit sql-case-id="audit_all_statements_in_session_current" />
 </sql-parser-test-cases>
