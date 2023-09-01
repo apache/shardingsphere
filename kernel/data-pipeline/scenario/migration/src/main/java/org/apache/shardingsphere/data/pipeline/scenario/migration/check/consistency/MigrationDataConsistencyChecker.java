@@ -51,9 +51,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Data consistency checker for migration job.
@@ -84,14 +86,14 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         progressContext.setRecordsCount(getRecordsCount());
         progressContext.getTableNames().addAll(sourceTableNames);
         progressContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
-        Map<String, TableDataConsistencyCheckResult> result = new LinkedHashMap<>();
+        Map<DataNode, TableDataConsistencyCheckResult> result = new LinkedHashMap<>();
         TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps);
         try (PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager()) {
             for (JobDataNodeLine each : jobConfig.getJobShardingDataNodes()) {
                 checkTableInventoryData(each, tableChecker, result, dataSourceManager);
             }
         }
-        return result;
+        return result.entrySet().stream().collect(Collectors.toMap(entry -> DataNodeUtils.formatWithSchema(entry.getKey()), Entry::getValue));
     }
     
     private long getRecordsCount() {
@@ -100,11 +102,11 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     }
     
     private void checkTableInventoryData(final JobDataNodeLine jobDataNodeLine, final TableDataConsistencyChecker tableChecker,
-                                         final Map<String, TableDataConsistencyCheckResult> checkResults, final PipelineDataSourceManager dataSourceManager) {
+                                         final Map<DataNode, TableDataConsistencyCheckResult> checkResultMap, final PipelineDataSourceManager dataSourceManager) {
         for (JobDataNodeEntry entry : jobDataNodeLine.getEntries()) {
             for (DataNode each : entry.getDataNodes()) {
                 TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(entry.getLogicTableName(), each, tableChecker, dataSourceManager);
-                checkResults.put(DataNodeUtils.formatWithSchema(each), checkResult);
+                checkResultMap.put(each, checkResult);
                 if (!checkResult.isMatched() && tableChecker.isBreakOnInventoryCheckNotMatched()) {
                     log.info("Unmatched on table '{}', ignore left tables", DataNodeUtils.formatWithSchema(each));
                     return;
