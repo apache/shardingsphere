@@ -17,37 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-
-import java.util.Collection;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineCancellable;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 
 /**
- * Table data consistency checker.
+ * Table inventory checker.
  */
-public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm {
+public interface TableInventoryChecker extends PipelineCancellable {
     
     /**
-     * Build table inventory checker.
+     * Data consistency check for single table inventory data.
      *
-     * @param param check parameter
-     * @return table inventory checker
+     * @return check result
      */
-    TableInventoryChecker buildTableInventoryChecker(TableInventoryCheckParameter param);
-    
-    /**
-     * Is break on inventory check not matched.
-     *
-     * @return break or not
-     */
-    default boolean isBreakOnInventoryCheckNotMatched() {
-        return true;
-    }
-    
-    /**
-     * Get supported database types.
-     *
-     * @return supported database types
-     */
-    Collection<DatabaseType> getSupportedDatabaseTypes();
+    TableDataConsistencyCheckResult checkSingleTableInventoryData();
 }
