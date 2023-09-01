@@ -143,6 +143,7 @@ class SimpleTableSegmentBinderTest {
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
         assertThrows(TableNotExistsException.class,
-                () -> SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType), tableBinderContexts));
+                () -> SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
+                        tableBinderContexts));
     }
 }
