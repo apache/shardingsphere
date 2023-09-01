@@ -445,6 +445,8 @@ unreservedWord
     | INT4
     | INT16
     | FLOAT4
+    | ELEM_CONTAINED_BY_RANGE
+
     ;
 
 typeFuncNameKeyword
@@ -1096,6 +1098,7 @@ functionExprCommonSubexpr
     | XMLSERIALIZE LP_ documentOrContent aExpr AS simpleTypeName RP_
     | PREDICT BY modelName LP_ FEATURES name (COMMA_ name)* RP_
     | TS_REWRITE LP_ aExpr (TYPE_CAST_ TSQUERY)? (COMMA_ aExpr (TYPE_CAST_ TSQUERY)?)* RP_
+    | ELEM_CONTAINED_BY_RANGE LP_ aExpr COMMA_ dataType RP_
     ;
 
 typeName
