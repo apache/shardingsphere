@@ -77,7 +77,7 @@ public final class SimpleTableSegmentBinder {
         IdentifierValue originalDatabase = getDatabaseName(segment, statementBinderContext);
         IdentifierValue originalSchema = getSchemaName(segment, statementBinderContext);
         ShardingSpherePreconditions.checkState(statementBinderContext.getMetaData().containsDatabase(originalDatabase.getValue())
-                && statementBinderContext.getMetaData().getDatabase(originalDatabase.getValue()).containsSchema(originalSchema.getValue()) 
+                && statementBinderContext.getMetaData().getDatabase(originalDatabase.getValue()).containsSchema(originalSchema.getValue())
                 && statementBinderContext.getMetaData().getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue()).containsTable(segment.getTableName().getIdentifier().getValue()),
                 () -> new TableNotExistsException(segment.getTableName().getIdentifier().getValue()));
         ShardingSphereSchema schema = statementBinderContext.getMetaData().getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());

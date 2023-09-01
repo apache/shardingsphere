@@ -124,6 +124,12 @@ class SimpleTableSegmentBinderTest {
         when(result.getDatabase("sharding_db").getSchema("sharding_db")).thenReturn(schema);
         when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getSchema("public")).thenReturn(schema);
         when(result.getDatabase("sharding_db").getSchema("test")).thenReturn(schema);
+        when(result.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
+        when(result.getDatabase(DefaultDatabase.LOGIC_NAME).containsSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
+        when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order")).thenReturn(true);
+        when(result.containsDatabase("sharding_db")).thenReturn(true);
+        when(result.getDatabase("sharding_db").containsSchema("sharding_db")).thenReturn(true);
+        when(result.getDatabase("sharding_db").getSchema("sharding_db").containsTable("t_order")).thenReturn(true);
         return result;
     }
     
