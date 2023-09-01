@@ -64,7 +64,7 @@ class DropShardingAuditorStatementUpdaterTest {
     
     @Test
     void assertExecuteWithNotExistWithIfExists() {
-        DropShardingAuditorStatement sqlStatement = new DropShardingAuditorStatement(true, Collections.singletonList("sharding_key_required_auditor"));
+        DropShardingAuditorStatement sqlStatement = new DropShardingAuditorStatement(true, Collections.singleton("sharding_key_required_auditor"));
         updater.checkSQLStatement(database, sqlStatement, new ShardingRuleConfiguration());
     }
     
@@ -86,7 +86,7 @@ class DropShardingAuditorStatementUpdaterTest {
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table", null);
-        result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singletonList("sharding_key_required_auditor"), true));
+        result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("sharding_key_required_auditor"), true));
         return result;
     }
     

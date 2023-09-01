@@ -21,8 +21,8 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleExc
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.junit.jupiter.api.Test;
@@ -53,12 +53,12 @@ class ShardingRuleConfigurationImportCheckerTest {
     
     @Test
     void assertCheckKeyGenerators() {
-        assertThrows(ServiceProviderNotFoundServerException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidKeyGeneratorRuleConfiguration()));
+        assertThrows(ServiceProviderNotFoundException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidKeyGeneratorRuleConfiguration()));
     }
     
     @Test
     void assertCheckShardingAlgorithms() {
-        assertThrows(ServiceProviderNotFoundServerException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidShardingAlgorithmRuleConfiguration()));
+        assertThrows(ServiceProviderNotFoundException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidShardingAlgorithmRuleConfiguration()));
     }
     
     private ShardingRuleConfiguration createDuplicatedTablesRuleConfiguration() {
@@ -73,14 +73,14 @@ class ShardingRuleConfigurationImportCheckerTest {
         Collection<String> dataSources = new LinkedList<>();
         dataSources.add("su_1");
         when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(dataSources);
-        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         return result;
     }
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
-        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         return result;
     }
     

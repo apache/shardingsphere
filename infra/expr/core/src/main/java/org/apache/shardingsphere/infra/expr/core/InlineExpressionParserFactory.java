@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.expr.core;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 /**
  * Inline expression parser factory.
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InlineExpressionParserFactory {
     
-    // workaround for https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/condition/EnabledInNativeImage.html
+    // workaround for https://junit.org/junit5/docs/5.10.0/api/org.junit.jupiter.api/org/junit/jupiter/api/condition/EnabledInNativeImage.html
     private static final boolean IS_SUBSTRATE_VM = "runtime".equals(System.getProperty("org.graalvm.nativeimage.imagecode"));
     
     /**
@@ -37,6 +37,6 @@ public final class InlineExpressionParserFactory {
      * @return created instance
      */
     public static InlineExpressionParser newInstance() {
-        return TypedSPILoader.getService(InlineExpressionParser.class, IS_SUBSTRATE_VM ? "ESPRESSO" : "HOTSPOT");
+        return TypedSPILoader.getService(InlineExpressionParser.class, IS_SUBSTRATE_VM ? "PURELIST" : "HOTSPOT");
     }
 }

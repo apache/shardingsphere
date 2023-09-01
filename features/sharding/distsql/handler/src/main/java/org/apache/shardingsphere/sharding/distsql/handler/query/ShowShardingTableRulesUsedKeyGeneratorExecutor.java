@@ -65,7 +65,7 @@ public final class ShowShardingTableRulesUsedKeyGeneratorExecutor implements RQL
     }
     
     @Override
-    public String getType() {
-        return ShowShardingTableRulesUsedKeyGeneratorStatement.class.getName();
+    public Class<ShowShardingTableRulesUsedKeyGeneratorStatement> getType() {
+        return ShowShardingTableRulesUsedKeyGeneratorStatement.class;
     }
 }

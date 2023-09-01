@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.yaml.job;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
@@ -44,7 +44,7 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
         result.setSourceDatabaseType(data.getSourceDatabaseType().getType());
         result.setTargetDatabaseType(data.getTargetDatabaseType().getType());
         result.setSources(data.getSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-                entry -> dataSourceConfigSwapper.swapToYamlConfiguration(entry.getValue()), (key, value) -> value, LinkedHashMap::new)));
+                entry -> dataSourceConfigSwapper.swapToYamlConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         result.setTarget(dataSourceConfigSwapper.swapToYamlConfiguration(data.getTarget()));
         result.setTargetTableNames(data.getTargetTableNames());
         result.setTargetTableSchemaMap(data.getTargetTableSchemaMap());
@@ -60,7 +60,7 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
         return new MigrationJobConfiguration(yamlConfig.getJobId(), yamlConfig.getDatabaseName(),
                 TypedSPILoader.getService(DatabaseType.class, yamlConfig.getSourceDatabaseType()), TypedSPILoader.getService(DatabaseType.class, yamlConfig.getTargetDatabaseType()),
                 yamlConfig.getSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-                        entry -> dataSourceConfigSwapper.swapToObject(entry.getValue()), (key, value) -> value, LinkedHashMap::new)),
+                        entry -> dataSourceConfigSwapper.swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 dataSourceConfigSwapper.swapToObject(yamlConfig.getTarget()),
                 yamlConfig.getTargetTableNames(), yamlConfig.getTargetTableSchemaMap(),
                 JobDataNodeLine.unmarshal(yamlConfig.getTablesFirstDataNodes()), yamlConfig.getJobShardingDataNodes().stream().map(JobDataNodeLine::unmarshal).collect(Collectors.toList()),

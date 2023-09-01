@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
+import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowAlgorithmsStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -63,11 +63,11 @@ public final class ShowShadowAlgorithmsExecutor implements RQLExecutor<ShowShado
     }
     
     private String convertToString(final Properties props) {
-        return null != props ? PropertiesConverter.convert(props) : "";
+        return null == props ? "" : PropertiesConverter.convert(props);
     }
     
     @Override
-    public String getType() {
-        return ShowShadowAlgorithmsStatement.class.getName();
+    public Class<ShowShadowAlgorithmsStatement> getType() {
+        return ShowShadowAlgorithmsStatement.class;
     }
 }

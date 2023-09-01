@@ -469,7 +469,16 @@
             <assignment start-index="19" stop-index="37" literal-stop-index="37">
                 <column name="status" start-index="19" stop-index="24" />
                 <assignment-value>
-                    <common-expression text="status - ?" literal-text="status - 1" start-index="28" stop-index="37" literal-start-index="28" literal-stop-index="37" />
+                    <binary-operation-expression start-index="28" stop-index="37" literal-start-index="28" literal-stop-index="37">
+                        <left>
+                            <column name="status" start-index="28" stop-index="33" literal-start-index="28" literal-stop-index="33" />
+                        </left>
+                        <operator>-</operator>
+                        <right>
+                            <literal-expression value="1" start-index="37" stop-index="37" />
+                            <parameter-marker-expression parameter-index="0" start-index="37" stop-index="37" literal-start-index="37" literal-stop-index="37" />
+                        </right>
+                    </binary-operation-expression>
                 </assignment-value>
             </assignment>
         </set>
@@ -539,7 +548,6 @@
                                         <parameter-marker-expression parameter-index="1" start-index="58" stop-index="58" />
                                     </right>
                                 </binary-operation-expression>
-                                <common-expression text="order_id - ?" literal-text="order_id - 2" start-index="47" stop-index="58" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -620,19 +628,134 @@
             <assignment start-index="31" stop-index="106" literal-start-index="31" literal-stop-index="107">
                 <column name="row_status" start-index="31" stop-index="40" />
                 <assignment-value>
-                    <common-expression text="case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end" literal-text="case WHEN (id=3) THEN 2 WHEN (id=4) THEN 2 WHEN (id=10) THEN 2 end" start-index="42" stop-index="106" literal-start-index="42" literal-stop-index="107" />
+                    <case-when-expression>
+                        <when-exprs>
+                            <binary-operation-expression start-index="53" stop-index="56" literal-start-index="53" literal-stop-index="56">
+                                <left>
+                                    <column name="id" start-index="53" stop-index="54" literal-start-index="53" literal-stop-index="54" />
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="3" start-index="56" stop-index="56" />
+                                    <parameter-marker-expression parameter-index="0" start-index="56" stop-index="56" literal-start-index="56" literal-stop-index="56" />
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <when-exprs>
+                            <binary-operation-expression start-index="72" stop-index="75" literal-start-index="72" literal-stop-index="75">
+                                <left>
+                                    <column name="id" start-index="72" stop-index="73" literal-start-index="72" literal-stop-index="73" />
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="4" start-index="75" stop-index="75" />
+                                    <parameter-marker-expression parameter-index="2" start-index="75" stop-index="75" literal-start-index="75" literal-stop-index="75" />
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <when-exprs>
+                            <binary-operation-expression start-index="91" stop-index="94" literal-start-index="91" literal-stop-index="95">
+                                <left>
+                                    <column name="id" start-index="91" stop-index="92" literal-start-index="91" literal-stop-index="92" />
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="10" start-index="94" stop-index="94" literal-start-index="94" literal-stop-index="95" />
+                                    <parameter-marker-expression parameter-index="4" start-index="94" stop-index="94" literal-start-index="94" literal-stop-index="94" />
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="2" start-index="64" stop-index="64" />
+                            <parameter-marker-expression parameter-index="1" start-index="64" stop-index="64" literal-start-index="64" literal-stop-index="64" />
+                        </then-exprs>
+                        <then-exprs>
+                            <literal-expression value="2" start-index="83" stop-index="83" />
+                            <parameter-marker-expression parameter-index="3" start-index="83" stop-index="83" literal-start-index="83" literal-stop-index="83" />
+                        </then-exprs>
+                        <then-exprs>
+                            <literal-expression value="2" start-index="103" stop-index="103" literal-start-index="103" literal-stop-index="103" />
+                            <parameter-marker-expression parameter-index="5" start-index="102" stop-index="102" literal-start-index="103" literal-stop-index="103" />
+                        </then-exprs>
+                    </case-when-expression>
                 </assignment-value>
             </assignment>
             <assignment start-index="113" stop-index="189" literal-start-index="114" literal-stop-index="200">
                 <column name="update_user" start-index="113" stop-index="123" literal-start-index="114" literal-stop-index="124" />
                 <assignment-value>
-                    <common-expression text="case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end" literal-text="case WHEN (id=3) THEN 'll' WHEN (id=4) THEN 'll' WHEN (id=10) THEN 'll' end" start-index="125" stop-index="189" literal-start-index="126" literal-stop-index="200" />
+                    <case-when-expression>
+                        <when-exprs>
+                            <binary-operation-expression start-index="136" stop-index="139" literal-start-index="137" literal-stop-index="140">
+                                <left>
+                                    <column name="id" start-index="136" stop-index="137" literal-start-index="137" literal-stop-index="138" />
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="3" start-index="140" stop-index="140" literal-start-index="140" literal-stop-index="140" />
+                                    <parameter-marker-expression parameter-index="6" start-index="139" stop-index="139" literal-start-index="139" literal-stop-index="139" />
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <when-exprs>
+                            <binary-operation-expression start-index="155" stop-index="158" literal-start-index="159" literal-stop-index="162">
+                                <left>
+                                    <column name="id" start-index="155" stop-index="156" literal-start-index="159" literal-stop-index="160" />
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="4" start-index="162" stop-index="162" literal-start-index="162" literal-stop-index="162" />
+                                    <parameter-marker-expression parameter-index="8" start-index="158" stop-index="158" literal-start-index="158" literal-stop-index="158" />
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <when-exprs>
+                            <binary-operation-expression start-index="174" stop-index="177" literal-start-index="181" literal-stop-index="185">
+                                <left>
+                                    <column name="id" start-index="174" stop-index="175" literal-start-index="181" literal-stop-index="182" />
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="10" start-index="184" stop-index="185" literal-start-index="184" literal-stop-index="185" />
+                                    <parameter-marker-expression parameter-index="10" start-index="177" stop-index="177" literal-start-index="177" literal-stop-index="177" />
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="ll" start-index="148" stop-index="151" literal-start-index="148" literal-stop-index="151" />
+                            <parameter-marker-expression parameter-index="7" start-index="147" stop-index="147" literal-start-index="147" literal-stop-index="147" />
+                        </then-exprs>
+                        <then-exprs>
+                            <literal-expression value="ll" start-index="170" stop-index="173" literal-start-index="170" literal-stop-index="173" />
+                            <parameter-marker-expression parameter-index="9" start-index="166" stop-index="166" literal-start-index="166" literal-stop-index="166" />
+                        </then-exprs>
+                        <then-exprs>
+                            <literal-expression value="ll" start-index="193" stop-index="196" literal-start-index="193" literal-stop-index="196" />
+                            <parameter-marker-expression parameter-index="11" start-index="185" stop-index="185" literal-start-index="185" literal-stop-index="185" />
+                        </then-exprs>
+                    </case-when-expression>
                 </assignment-value>
             </assignment>
             <assignment start-index="192" stop-index="230" literal-start-index="203" literal-stop-index="270">
                 <column name="update_time" start-index="192" stop-index="202" literal-start-index="203" literal-stop-index="213" />
                 <assignment-value>
-                    <common-expression text="case WHEN (id=?) THEN ? end" literal-text="case WHEN (id=3) THEN '2020-08-10T17:15:25.979+0800' end" start-index="204" stop-index="230" literal-start-index="215" literal-stop-index="270" />
+                    <case-when-expression>
+                        <when-exprs>
+                            <binary-operation-expression start-index="215" stop-index="218" literal-start-index="226" literal-stop-index="229">
+                                <left>
+                                    <column name="id" start-index="215" stop-index="216" literal-start-index="226" literal-stop-index="227" />
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="3" start-index="229" stop-index="229" literal-start-index="229" literal-stop-index="229" />
+                                    <parameter-marker-expression parameter-index="12" start-index="218" stop-index="218" literal-start-index="218" literal-stop-index="218" />
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="2020-08-10T17:15:25.979+0800" start-index="237" stop-index="266" literal-start-index="237" literal-stop-index="266" />
+                            <parameter-marker-expression parameter-index="13" start-index="226" stop-index="226" literal-start-index="226" literal-stop-index="226" />
+                        </then-exprs>
+                    </case-when-expression>
                 </assignment-value>
             </assignment>
         </set>
@@ -933,6 +1056,55 @@
         </set>
     </update>
 
+    <update sql-case-id="update_with_subquery_using_interval">
+        <table start-index="7" stop-index="17">
+            <simple-table name="employees" alias="a" start-index="7" stop-index="17" />
+        </table>
+        <set start-index="19" stop-index="140">
+            <assignment start-index="23" stop-index="140">
+                <column name="salary" start-index="23" stop-index="28" />
+                <assignment-value>
+                    <subquery start-index="32" stop-index="140">
+                        <select>
+                            <from start-index="52" stop-index="60">
+                                <simple-table name="employees" start-index="52" stop-index="60" />
+                            </from>
+                            <projections start-index="40" stop-index="45">
+                                <column-projection name="salary" start-index="40" stop-index="45" />
+                            </projections>
+                            <where start-index="115" stop-index="139">
+                                <expr>
+                                    <binary-operation-expression start-index="121" stop-index="139">
+                                        <left>
+                                            <column name="last_name" start-index="121" stop-index="129" />
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <literal-expression value="Chung" start-index="133" stop-index="139" />
+                                        </right>
+                                    </binary-operation-expression>
+                                </expr>
+                            </where>
+                        </select>
+                    </subquery>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="142" stop-index="166">
+            <expr>
+                <binary-operation-expression start-index="148" stop-index="166">
+                    <left>
+                        <column name="last_name" start-index="148" stop-index="156" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="Chung" start-index="160" stop-index="166" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+
     <update sql-case-id="update_with_multiple_set">
         <table start-index="7" stop-index="15">
             <simple-table name="employees" start-index="7" stop-index="15" />
@@ -985,8 +1157,18 @@
                             <from start-index="59" stop-index="72">
                                 <simple-table name="people_demo2" alias="q" start-index="59" stop-index="72" />
                             </from>
-                            <projections start-index="45" stop-index="52">
-                                <expression-projection text="VALUE(q)" start-index="45" stop-index="52" />
+                            <projections start-index="45" stop-index="52" literal-start-index="45" literal-stop-index="52">
+                                <expression-projection text="VALUE(q)" start-index="45" stop-index="52" literal-start-index="45" literal-stop-index="52">
+                                    <literalText>VALUE(q)</literalText>
+                                    <expr>
+                                        <function function-name="VALUE" text="VALUE(q)" start-index="45" stop-index="52" literal-start-index="45" literal-stop-index="52">
+                                            <parameter>
+                                                <column name="q" start-index="51" stop-index="51" literal-start-index="51" literal-stop-index="51" />
+                                            </parameter>
+                                            <literalText>VALUE(q)</literalText>
+                                        </function>
+                                    </expr>
+                                </expression-projection>
                             </projections>
                             <where start-index="74" stop-index="112">
                                 <expr>
@@ -1120,6 +1302,107 @@
                     <right>
                         <literal-expression value="1" start-index="76" stop-index="76" />
                         <parameter-marker-expression parameter-index="1" start-index="69" stop-index="69" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+
+    <update sql-case-id="update_with_translate_function">
+        <table start-index="7" stop-index="19">
+            <simple-table name="translate_tab" start-index="7" stop-index="19" />
+        </table>
+        <set start-index="21" stop-index="70">
+            <assignment start-index="21" stop-index="70" >
+                <column name="char_col" start-index="25" stop-index="32" />
+                <assignment-value>
+                    <function function-name="TRANSLATE" text="TRANSLATE (nchar_col USING CHAR_CS)" start-index="36" stop-index="70">
+                        <parameter>
+                            <column name="nchar_col" start-index="47" stop-index="55" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="CHAR_CS" start-index="63" stop-index="69" />
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_with_dot_column_name">
+        <table start-index="7" stop-index="15">
+            <simple-table name="employees" start-index="7" stop-index="15" />
+        </table>
+        <set start-index="17" stop-index="40">
+            <assignment>
+                <columns name="salary" start-index="21" stop-index="26" literal-start-index="21" literal-stop-index="26" />
+                <assignment-value>
+                    <binary-operation-expression start-index="29" stop-index="40" literal-start-index="29" literal-stop-index="40">
+                        <left>
+                            <column name="salary" start-index="29" stop-index="35" literal-start-index="29" literal-stop-index="35" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <literal-expression value="10" start-index="39" stop-index="40" literal-start-index="39" literal-stop-index="40" />
+                        </right>
+                    </binary-operation-expression>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="43" stop-index="76">
+            <expr>
+                <between-expression start-index="49" stop-index="76">
+                    <left>
+                        <column start-index="49" stop-index="59" name="employee_id" />
+                    </left>
+                    <between-expr>
+                        <literal-expression start-index="69" stop-index="69" value="1" />
+                    </between-expr>
+                    <and-expr>
+                        <literal-expression start-index="75" stop-index="76" value="10" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+    </update>
+    
+    <update sql-case-id="update_with_set_value_clause">
+        <table start-index="7" stop-index="9">
+            <simple-table name="ot1" start-index="7" stop-index="9" />
+        </table>
+        <set start-index="11" stop-index="35">
+            <assignment start-index="11" stop-index="35">
+                <column name="x" start-index="21" stop-index="25">
+                    <owner name="ot1" start-index="21" stop-index="23" />
+                </column>
+                <assignment-value>
+                    <function start-index="30" stop-index="35" function-name="t1" text="t1(20)">
+                        <parameter>
+                            <literal-expression value="20" start-index="33" stop-index="34" />
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="37" stop-index="63">
+            <expr>
+                <binary-operation-expression start-index="43" stop-index="63">
+                    <left>
+                        <function start-index="43" stop-index="54" function-name="VALUE" text="VALUE(ot1.x)">
+                            <parameter>
+                                <column start-index="49" stop-index="53" name="x">
+                                    <owner start-index="49" stop-index="51" name="ot1" />
+                                </column>
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <function start-index="58" stop-index="63" function-name="t1" text="t1(10)">
+                            <parameter>
+                                <literal-expression value="10" start-index="61" stop-index="62" />
+                            </parameter>
+                        </function>
                     </right>
                 </binary-operation-expression>
             </expr>

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey
 import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequiredTargetDatabaseException;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 
 /**
@@ -41,7 +41,7 @@ public final class MigrateTableUpdater implements RALUpdater<MigrateTableStateme
     }
     
     @Override
-    public String getType() {
-        return MigrateTableStatement.class.getName();
+    public Class<MigrateTableStatement> getType() {
+        return MigrateTableStatement.class;
     }
 }

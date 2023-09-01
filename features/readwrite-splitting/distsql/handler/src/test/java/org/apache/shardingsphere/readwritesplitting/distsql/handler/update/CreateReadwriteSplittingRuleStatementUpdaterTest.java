@@ -22,15 +22,14 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfi
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,25 +61,26 @@ class CreateReadwriteSplittingRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResourceMetaData resourceMetaData;
+    private ResourceMetaData resourceMetaData;
     
     private final CreateReadwriteSplittingRuleStatementUpdater updater = new CreateReadwriteSplittingRuleStatementUpdater();
     
     @BeforeEach
     void before() {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        when(resourceMetaData.getStorageUnitMetaData()).thenReturn(mock(StorageUnitMetaData.class));
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.emptyList());
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateRuleNames() {
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.emptyMap());
+        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("TEST"), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateResource() {
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("write_ds", null));
+        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("write_ds", null));
         assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, createSQLStatement("write_ds", "TEST"), createCurrentRuleConfiguration()));
     }
     
@@ -98,13 +98,6 @@ class CreateReadwriteSplittingRuleStatementUpdaterTest {
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("duplicate_ds", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"),
                 new AlgorithmSegment(null, new Properties()));
         assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, ruleSegment), null));
-    }
-    
-    @Test
-    void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() {
-        when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.emptyList());
-        when(TypedSPILoader.checkService(any(), any(), any())).thenCallRealMethod();
-        assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), null));
     }
     
     @Test
@@ -142,7 +135,6 @@ class CreateReadwriteSplittingRuleStatementUpdaterTest {
         DataSourceContainedRule dataSourceContainedRule = mock(DataSourceContainedRule.class);
         when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("ms_group", Collections.singleton("ds_0")));
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(dataSourceContainedRule));
-        when(TypedSPILoader.contains(ReadQueryLoadBalanceAlgorithm.class, "TEST")).thenReturn(true);
         ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment("static_rule", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"),
                 new AlgorithmSegment("TEST", new Properties()));
         CreateReadwriteSplittingRuleStatement statement = createSQLStatement(false, staticSegment);

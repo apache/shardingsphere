@@ -33,11 +33,6 @@ public final class TableNameSchemaNameMapping {
     
     private final Map<LogicTableName, String> mapping;
     
-    /**
-     * Convert table name and schema name mapping from schemas.
-     *
-     * @param tableSchemaMap table name and schema name map
-     */
     public TableNameSchemaNameMapping(final Map<String, String> tableSchemaMap) {
         mapping = null == tableSchemaMap ? Collections.emptyMap() : getLogicTableNameMap(tableSchemaMap);
     }

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
 
-import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor.ConnectionSessionRequiredRULExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -43,7 +43,7 @@ public final class ParseDistSQLExecutor implements ConnectionSessionRequiredRULE
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final ParseStatement sqlStatement) {
         SQLStatement parsedSqlStatement = parseSQL(metaData, connectionSession, sqlStatement);
-        return Collections.singleton(new LocalDataQueryResultRow(parsedSqlStatement.getClass().getSimpleName(), new Gson().toJson(parsedSqlStatement)));
+        return Collections.singleton(new LocalDataQueryResultRow(parsedSqlStatement.getClass().getSimpleName(), JsonUtils.toJsonString(parsedSqlStatement)));
     }
     
     private SQLStatement parseSQL(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final ParseStatement sqlStatement) {
@@ -52,7 +52,7 @@ public final class ParseDistSQLExecutor implements ConnectionSessionRequiredRULE
     }
     
     @Override
-    public String getType() {
-        return ParseStatement.class.getName();
+    public Class<ParseStatement> getType() {
+        return ParseStatement.class;
     }
 }

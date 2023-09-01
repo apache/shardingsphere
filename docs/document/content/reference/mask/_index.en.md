@@ -22,7 +22,7 @@ Desensitization configuration is mainly divided into three parts: data source co
 
 **Data source configuration**: the configuration of the data source.
 
-**Mask algorithm configuration**: currently, ShardingSphere has a variety of built-in desensitization algorithms: MD5, KEEP_FIRST_N_LAST_M, KEEP_FROM_X_TO_Y , MASK_FIRST_N_LAST_M, MASK_FROM_X_TO_Y, MASK_BEFORE_SPECIAL_CHARS, MASK_AFTER_SPECIAL_CHARS, PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE, MILITARY_IDENTITY_NUMBER_RANDOM_REPLACE, and TELEPHONE_RANDOM_REPLACE. 
+**Mask algorithm configuration**: currently, ShardingSphere has a variety of built-in desensitization algorithms: MD5, KEEP_FIRST_N_LAST_M, KEEP_FROM_X_TO_Y , MASK_FIRST_N_LAST_M, MASK_FROM_X_TO_Y, MASK_BEFORE_SPECIAL_CHARS, MASK_AFTER_SPECIAL_CHARS and GENERIC_TABLE_RANDOM_REPLACE. 
 
 Users can also implement a set of desensitization algorithms by implementing the interface provided by ShardingSphere.
 

@@ -58,13 +58,21 @@ class SQLNodeConverterEngineIT {
     
     private static final String SELECT_STATEMENT_PREFIX = "SELECT";
     
+    private static final String DELETE_STATEMENT_PREFIX = "DELETE";
+    
+    private static final String EXPLAIN_STATEMENT_PREFIX = "EXPLAIN";
+    
+    private static final String UPDATE_STATEMENT_PREFIX = "UPDATE";
+    
+    private static final String INSERT_STATEMENT_PREFIX = "INSERT";
+    
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertConvert(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
         String expected;
         try {
             expected = SQL_NODE_CONVERTER_TEST_CASES.get(sqlCaseId, sqlCaseType, databaseType).getExpectedSQL();
-        } catch (IllegalStateException ex) {
+        } catch (final IllegalStateException ex) {
             log.warn(ex.getMessage());
             return;
         }
@@ -81,7 +89,7 @@ class SQLNodeConverterEngineIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return getTestParameters("MySQL", "PostgreSQL", "openGauss").stream();
+            return getTestParameters("MySQL", "PostgreSQL", "openGauss", "Oracle").stream();
         }
         
         private Collection<Arguments> getTestParameters(final String... databaseTypes) {
@@ -99,7 +107,11 @@ class SQLNodeConverterEngineIT {
         }
         
         private boolean isSupportedSQLCase(final InternalSQLParserTestParameter testParam) {
-            return testParam.getSqlCaseId().toUpperCase().startsWith(SELECT_STATEMENT_PREFIX);
+            return testParam.getSqlCaseId().toUpperCase().startsWith(SELECT_STATEMENT_PREFIX)
+                    || testParam.getSqlCaseId().toUpperCase().startsWith(DELETE_STATEMENT_PREFIX)
+                    || testParam.getSqlCaseId().toUpperCase().startsWith(EXPLAIN_STATEMENT_PREFIX)
+                    || testParam.getSqlCaseId().toUpperCase().startsWith(UPDATE_STATEMENT_PREFIX)
+                    || testParam.getSqlCaseId().toUpperCase().startsWith(INSERT_STATEMENT_PREFIX);
         }
     }
 }

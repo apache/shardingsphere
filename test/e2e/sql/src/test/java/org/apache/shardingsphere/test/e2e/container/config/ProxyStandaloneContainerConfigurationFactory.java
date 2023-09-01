@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.container.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
@@ -42,7 +42,7 @@ public final class ProxyStandaloneContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage());
+        return new AdaptorContainerConfiguration(scenario, getMountedResources(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage(), "");
     }
     
     private static Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType) {

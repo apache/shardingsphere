@@ -32,7 +32,6 @@
     
     <modules>
         <module>infra</module>
-        <module>dialect-exception</module>
         <module>parser</module>
         <module>db-protocol</module>
         <module>mode</module>
@@ -85,7 +84,7 @@
         <activation-api.version>1.2.0</activation-api.version>
         <truffle-api.version>21.2.0</truffle-api.version>
         
-        <calcite.version>1.32.0</calcite.version>
+        <calcite.version>1.35.0</calcite.version>
         <immutables.version>2.9.3</immutables.version>
         <netty.version>4.1.90.Final</netty.version>
         <bouncycastle.version>1.70</bouncycastle.version>
@@ -95,6 +94,7 @@
         <zookeeper.version>3.8.1</zookeeper.version>
         <curator.version>5.4.0</curator.version>
         <jetcd.version>0.7.5</jetcd.version>
+        <grpc.version>1.51.0</grpc.version>
         <apollo-client.version>1.9.0</apollo-client.version>
         
         <elasticjob.version>3.0.3</elasticjob.version>
@@ -114,6 +114,7 @@
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
         <commons-dbcp2.version>2.9.0</commons-dbcp2.version>
+        <c3p0.version>0.9.5.5</c3p0.version>
         
         <junit.version>5.9.2</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
@@ -127,7 +128,7 @@
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
         <os-maven-plugin.version>1.6.2</os-maven-plugin.version>
-        <native-maven-plugin.version>0.9.22</native-maven-plugin.version>
+        <native-maven-plugin.version>0.9.24</native-maven-plugin.version>
         
         <!-- Compile plugin versions -->
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
@@ -403,7 +404,16 @@
                         <groupId>io.netty</groupId>
                         <artifactId>netty-transport-native-unix-common</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>io.grpc</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-all</artifactId>
+                <version>${grpc.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.ctrip.framework.apollo</groupId>
@@ -529,6 +539,12 @@
                 <version>${commons-dbcp2.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>com.mchange</groupId>
+                <artifactId>c3p0</artifactId>
+                <version>${c3p0.version}</version>
+                <scope>test</scope>
+            </dependency>
             
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -624,6 +640,14 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
         </dependency>
         
         <dependency>
@@ -1185,7 +1209,7 @@
         <profile>
             <id>generateStandardMetadata</id>
             <properties>
-                <truffle-api.version>22.3.1</truffle-api.version>
+                <truffle-api.version>23.0.1</truffle-api.version>
                 <jacoco.skip>true</jacoco.skip>
                 <maven.javadoc.skip>true</maven.javadoc.skip>
                 <checkstyle.skip>true</checkstyle.skip>

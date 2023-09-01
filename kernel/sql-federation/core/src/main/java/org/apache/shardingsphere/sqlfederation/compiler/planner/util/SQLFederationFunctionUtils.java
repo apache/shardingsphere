@@ -41,6 +41,7 @@ public final class SQLFederationFunctionUtils {
      */
     public static void registryUserDefinedFunction(final String schemaName, final SchemaPlus schemaPlus) {
         schemaPlus.add("version", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "version"));
+        schemaPlus.add("opengauss_version", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "openGaussVersion"));
         schemaPlus.add("gs_password_deadline", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "gsPasswordDeadline"));
         schemaPlus.add("intervaltonum", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "intervalToNum"));
         schemaPlus.add("gs_password_notifyTime", ScalarFunctionImpl.create(SQLFederationFunctionUtils.class, "gsPasswordNotifyTime"));
@@ -79,6 +80,16 @@ public final class SQLFederationFunctionUtils {
      */
     public static String version() {
         return "ShardingSphere-Proxy " + ShardingSphereVersion.VERSION + ("-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV) + (ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "");
+    }
+    
+    /**
+     * Get version of ShardingSphere-Proxy for openGauss.
+     *
+     * @return version message
+     */
+    @SuppressWarnings("unused")
+    public static String openGaussVersion() {
+        return ShardingSphereVersion.VERSION;
     }
     
     /**

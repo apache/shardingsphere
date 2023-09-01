@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.example.proxy.spring.boot.mybatis;
 
-import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.mybatis.spring.annotation.MapperScan;
+import org.apache.shardingsphere.example.proxy.spring.boot.mybatis.service.OrderService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -35,7 +34,6 @@ import java.sql.SQLException;
  * 2. Please make sure ShardingSphere-Proxy is running before you run this example.
  */
 @ComponentScan("org.apache.shardingsphere.example")
-@MapperScan(basePackages = "org.apache.shardingsphere.example.core.mybatis.repository")
 @SpringBootApplication
 public class ProxySpringBootStarterExample {
     
@@ -46,20 +44,16 @@ public class ProxySpringBootStarterExample {
     }
     
     private static void process(final ConfigurableApplicationContext applicationContext) throws SQLException {
-        ExampleService exampleService = getExampleService(applicationContext);
-        exampleService.initEnvironment();
-        exampleService.processSuccess();
+        OrderService orderService = applicationContext.getBean(OrderService.class);
+        orderService.initEnvironment();
+        orderService.processSuccess();
         try {
-            exampleService.processFailure();
+            orderService.processFailure();
         } catch (final Exception ex) {
             System.out.println(ex.getMessage());
-            exampleService.printData();
+            orderService.printData();
         } finally {
-            exampleService.cleanEnvironment();
+            orderService.cleanEnvironment();
         }
-    }
-    
-    private static ExampleService getExampleService(final ConfigurableApplicationContext applicationContext) {
-        return applicationContext.getBean(ExampleService.class);
     }
 }

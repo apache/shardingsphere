@@ -104,10 +104,6 @@
                                     <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>com.google</pattern>
-                                    <shadedPattern>${shade.package}.com.google</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>io.opentelemetry</pattern>
                                     <shadedPattern>${shade.package}.io.opentelemetry</shadedPattern>
                                 </relocation>

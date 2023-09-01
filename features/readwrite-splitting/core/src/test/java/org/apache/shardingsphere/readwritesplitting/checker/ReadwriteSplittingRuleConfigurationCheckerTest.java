@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.checker;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.DataSourceNameExistedException;
@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -65,9 +66,9 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
     @Test
     void assertCheckWhenConfigInvalidWriteDataSource() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
-        List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig(
+        List<ReadwriteSplittingDataSourceRuleConfiguration> configs = Arrays.asList(createDataSourceRuleConfig(
                 "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")), createDataSourceRuleConfig("write_ds_2", Arrays.asList("read_ds_0", "read_ds_1")));
-        when(config.getDataSources()).thenReturn(configurations);
+        when(config.getDataSources()).thenReturn(configs);
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         assertThrows(DataSourceNameExistedException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
     }
@@ -76,9 +77,9 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
     @Test
     void assertCheckWhenConfigInvalidReadDataSource() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
-        List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig(
+        List<ReadwriteSplittingDataSourceRuleConfiguration> configs = Arrays.asList(createDataSourceRuleConfig(
                 "write_ds_0", Arrays.asList("read_ds_0", "read_ds_0")), createDataSourceRuleConfig("write_ds_1", Arrays.asList("read_ds_0", "read_ds_0")));
-        when(config.getDataSources()).thenReturn(configurations);
+        when(config.getDataSources()).thenReturn(configs);
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         assertThrows(DuplicateDataSourceException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
     }
@@ -87,7 +88,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
     @Test
     void assertCheckWeightLoadBalanceInvalidDataSourceName() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
-        List<ReadwriteSplittingDataSourceRuleConfiguration> configs = Collections.singletonList(createDataSourceRuleConfig("write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")));
+        Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs = Collections.singleton(createDataSourceRuleConfig("write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")));
         when(config.getDataSources()).thenReturn(configs);
         AlgorithmConfiguration algorithm = new AlgorithmConfiguration("WEIGHT", PropertiesBuilder.build(new Property("read_ds_2", "1"), new Property("read_ds_1", "2")));
         when(config.getLoadBalancers()).thenReturn(Collections.singletonMap("weight_ds", algorithm));
@@ -111,7 +112,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
         when(dataSourceConfig.getName()).thenReturn("readwrite_ds");
         when(dataSourceConfig.getWriteDataSourceName()).thenReturn("otherDatasourceName");
         when(dataSourceConfig.getReadDataSourceNames()).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
-        when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceConfig));
+        when(result.getDataSources()).thenReturn(Collections.singleton(dataSourceConfig));
         return result;
     }
     

@@ -18,29 +18,34 @@
 name: Required - Check
 
 on:
-  push:
   pull_request:
+    branches: [ master ]
   workflow_dispatch:
 
 concurrency:
-  group: check-${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
+  group: check-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  REPOSITORY_NAME: shardingsphere
-
 jobs:
+  global-environment:
+    name: Import Global Environment
+    uses: ./.github/workflows/required-reusable.yml
+
   check-checkstyle:
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - CheckStyle
+    needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
       - name: Run CheckStyle
-        run: ./mvnw checkstyle:check -T1C
+        run: ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
 
   check-spotless:
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - Spotless
+    needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -49,10 +54,12 @@ jobs:
         run: ./mvnw spotless:check -T1C
 
   check-license:
+    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: Check - License
+    needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
       - name: Run Apache Rat
-        run: ./mvnw apache-rat:check -T1C
+        run: ./mvnw apache-rat:check -Drat.skip=false -T1C

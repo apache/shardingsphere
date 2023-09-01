@@ -18,8 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.hbase.converter.type;
 
 import org.apache.hadoop.hbase.client.Put;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverterFactory;
@@ -28,16 +36,24 @@ import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLSta
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class HBaseUpdateOperationConverterTest {
     
     @Test
     void assertConvert() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getUpdateStatement());
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(sqlStatement, Collections.emptyList());
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         HBaseOperation operation = converter.convert();
         assertThat(operation.getTableName(), is(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));
@@ -48,11 +64,23 @@ class HBaseUpdateOperationConverterTest {
     void assertConvertWithIn() {
         String sql = " update /*+ hbase */ t_test_order set age = 10 where rowKey in (1, '2')";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), DefaultDatabase.LOGIC_NAME).bind(sqlStatement, Collections.emptyList());
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         HBaseOperation operation = converter.convert();
         assertThat(operation.getTableName(), is(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));
         assertThat(operation.getOperation(), instanceOf(HBaseUpdateOperation.class));
         assertThat(((HBaseUpdateOperation) operation.getOperation()).getPuts().size(), is(2));
+    }
+    
+    private ShardingSphereMetaData mockMetaData() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingSphereTable table = new ShardingSphereTable("t_test_order", Arrays.asList(new ShardingSphereColumn("rowKey", Types.VARCHAR, true, false, false, false, true, false),
+                new ShardingSphereColumn("age", Types.INTEGER, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
+        when(database.getSchema(DefaultDatabase.LOGIC_NAME).getTable("t_test_order")).thenReturn(table);
+        when(database.containsSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
+        when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_test_order")).thenReturn(true);
+        Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
+        return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
+        
     }
 }

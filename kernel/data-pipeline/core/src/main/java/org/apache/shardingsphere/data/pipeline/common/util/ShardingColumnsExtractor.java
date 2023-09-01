@@ -49,15 +49,14 @@ public final class ShardingColumnsExtractor {
      * @return sharding columns map
      */
     public Map<LogicTableName, Set<String>> getShardingColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs, final Set<LogicTableName> logicTableNames) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfigOptional = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRuleConfigs);
-        if (!shardingRuleConfigOptional.isPresent()) {
+        Optional<ShardingRuleConfiguration> shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRuleConfigs);
+        if (!shardingRuleConfig.isPresent()) {
             return Collections.emptyMap();
         }
-        ShardingRuleConfiguration shardingRuleConfig = shardingRuleConfigOptional.get();
-        Set<String> defaultDatabaseShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultDatabaseShardingStrategy());
-        Set<String> defaultTableShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultTableShardingStrategy());
+        Set<String> defaultDatabaseShardingColumns = extractShardingColumns(shardingRuleConfig.get().getDefaultDatabaseShardingStrategy());
+        Set<String> defaultTableShardingColumns = extractShardingColumns(shardingRuleConfig.get().getDefaultTableShardingStrategy());
         Map<LogicTableName, Set<String>> result = new ConcurrentHashMap<>();
-        for (ShardingTableRuleConfiguration each : shardingRuleConfig.getTables()) {
+        for (ShardingTableRuleConfiguration each : shardingRuleConfig.get().getTables()) {
             LogicTableName logicTableName = new LogicTableName(each.getLogicTable());
             if (!logicTableNames.contains(logicTableName)) {
                 continue;
@@ -67,7 +66,7 @@ public final class ShardingColumnsExtractor {
             shardingColumns.addAll(null == each.getTableShardingStrategy() ? defaultTableShardingColumns : extractShardingColumns(each.getTableShardingStrategy()));
             result.put(logicTableName, shardingColumns);
         }
-        for (ShardingAutoTableRuleConfiguration each : shardingRuleConfig.getAutoTables()) {
+        for (ShardingAutoTableRuleConfiguration each : shardingRuleConfig.get().getAutoTables()) {
             LogicTableName logicTableName = new LogicTableName(each.getLogicTable());
             if (!logicTableNames.contains(logicTableName)) {
                 continue;

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -54,9 +54,9 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
     private ShardingSphereSchema prepareSchema() {
         ShardingSphereTable table = new ShardingSphereTable();
-        table.putColumn(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true));
-        table.putColumn(new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false));
-        table.putColumn(new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true));
+        table.putColumn(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false));
+        table.putColumn(new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false));
+        table.putColumn(new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false));
         ShardingSphereSchema result = new ShardingSphereSchema();
         result.getTables().put("user", table);
         return result;

@@ -129,7 +129,17 @@
                 <in-expression start-index="38" stop-index="211">
                     <not>false</not>
                     <left>
-                        <common-expression text="(product_id,currency_code,effective_from_date)" start-index="38" stop-index="85" />
+                        <list-expression start-index="38" stop-index="85" literal-start-index="38" literal-stop-index="85">
+                            <items>
+                                <column name="product_id" start-index="39" stop-index="48" literal-start-index="39" literal-stop-index="48" />
+                            </items>
+                            <items>
+                                <column name="currency_code" start-index="51" stop-index="63" literal-start-index="51" literal-stop-index="63" />
+                            </items>
+                            <items>
+                                <column name="effective_from_date" start-index="66" stop-index="84" literal-start-index="66" literal-stop-index="84" />
+                            </items>
+                        </list-expression>
                     </left>
                     <right>
                         <subquery start-index="90" stop-index="211">

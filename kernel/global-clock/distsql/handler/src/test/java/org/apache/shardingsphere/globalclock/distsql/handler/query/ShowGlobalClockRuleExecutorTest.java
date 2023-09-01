@@ -22,8 +22,8 @@ import org.apache.shardingsphere.globalclock.core.rule.builder.DefaultGlobalCloc
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.globalclock.distsql.parser.statement.queryable.ShowGlobalClockRuleStatement;
 import org.junit.jupiter.api.Test;
 
@@ -69,7 +69,7 @@ class ShowGlobalClockRuleExecutorTest {
     private ShardingSphereMetaData mockMetaData() {
         GlobalClockRule sqlParserRule = mock(GlobalClockRule.class);
         when(sqlParserRule.getConfiguration()).thenReturn(new DefaultGlobalClockRuleConfigurationBuilder().build());
-        return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ShardingSphereResourceMetaData.class),
-                new ShardingSphereRuleMetaData(Collections.singleton(sqlParserRule)), new ConfigurationProperties(new Properties()));
+        return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class),
+                new RuleMetaData(Collections.singleton(sqlParserRule)), new ConfigurationProperties(new Properties()));
     }
 }

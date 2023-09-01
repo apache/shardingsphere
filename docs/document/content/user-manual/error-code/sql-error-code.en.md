@@ -19,6 +19,9 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
 | HY004     | 10003       | Invalid format for actual data node \`%s\`.                                    |
 | 42000     | 10004       | Unsupported SQL node conversion for SQL statement \`%s\`.                      |
+| HY000     | 10005       | Column '%s' in %s is ambiguous.                                                |
+| 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
+| 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
 | 42000     | 10010       | Rule does not exist.                                                           |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
@@ -36,16 +39,16 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Syntax
 
-| SQL State | Vendor Code | Reason                                       |
-|-----------|-------------|----------------------------------------------|
-| 42000     | 12000       | You have an error in your SQL syntax: %s     |
-| 42000     | 12001       | Can not accept SQL type \`%s\`.              |
-| 42000     | 12002       | SQL String can not be NULL or empty.         |
-| 42000     | 12010       | Can not support variable \`%s\`.             |
-| 42S02     | 12011       | Can not find column label \`%s\`.            |
-| 42S02     | 12012       | Can not find driver url provider for \`%s`\. |
-| HV008     | 12020       | Column index \`%d\` is out of range.         |
-| 0A000     | 12100       | DROP TABLE ... CASCADE is not supported.     |
+| SQL State | Vendor Code | Reason                                      |
+|-----------|-------------|---------------------------------------------|
+| 42000     | 12000       | You have an error in your SQL syntax: %s    |
+| 42000     | 12001       | Can not accept SQL type \`%s\`.             |
+| 42000     | 12002       | SQL String can not be NULL or empty.        |
+| 42000     | 12010       | Can not support variable \`%s\`.            |
+| 42S02     | 12011       | Can not find column label \`%s\`.           |
+| 42S02     | 12012       | Can not find url provider for \`%s`\. |
+| HV008     | 12020       | Column index \`%d\` is out of range.        |
+| 0A000     | 12100       | DROP TABLE ... CASCADE is not supported.    |
 
 ### Connection
 
@@ -268,7 +271,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt.                                          |
 | 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule.                                              |
 | HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s.                                     |
-| HY004     | 20781       | \`%s\` column's encryptor name \`%s\` does not match encrypt algorithm type \`%s\`.                |
+| HY004     | 20781       | \`%s\` column's encryptor name \`%s\` does not match encrypt algorithm type \`%s\ in database \`%s\`.|
 | 44000     | 20703       | Cipher column of \`%s\` can not be null in database \`%s\`.                                        |
 | 44000     | 20704       | Can not find (STANDARD\|ASSIST_QUERY\|LIKE_QUERY) encryptor in table \`%s\` and column \`%s\`.     |
 | 44000     | 20705       | Assisted query column of \`%s\` can not be null in database \`%s\`.                                |

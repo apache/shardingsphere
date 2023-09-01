@@ -44,7 +44,7 @@ public final class CountSingleTableExecutor implements RQLExecutor<CountSingleTa
     }
     
     @Override
-    public String getType() {
-        return CountSingleTableStatement.class.getName();
+    public Class<CountSingleTableStatement> getType() {
+        return CountSingleTableStatement.class;
     }
 }

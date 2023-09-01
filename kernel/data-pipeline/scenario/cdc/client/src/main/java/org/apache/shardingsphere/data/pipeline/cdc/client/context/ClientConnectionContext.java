@@ -21,6 +21,13 @@ import io.netty.util.AttributeKey;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.ResponseFuture;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Client connection context.
@@ -31,7 +38,9 @@ public final class ClientConnectionContext {
     
     public static final AttributeKey<ClientConnectionContext> CONTEXT_KEY = AttributeKey.valueOf("client.context");
     
-    private volatile ClientConnectionStatus status;
+    private final AtomicReference<ClientConnectionStatus> status = new AtomicReference<>();
     
-    private volatile String streamingId;
+    private final Set<String> streamingIds = new CopyOnWriteArraySet<>();
+    
+    private final Map<String, ResponseFuture> responseFutureMap = new ConcurrentHashMap<>();
 }

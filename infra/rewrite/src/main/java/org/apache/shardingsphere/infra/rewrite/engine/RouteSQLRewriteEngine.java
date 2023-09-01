@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.infra.rewrite.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
@@ -53,7 +54,7 @@ public final class RouteSQLRewriteEngine {
     
     private final DatabaseType protocolType;
     
-    private final Map<String, DatabaseType> storageTypes;
+    private final Map<String, StorageUnit> storageUnits;
     
     /**
      * Rewrite SQL and parameters.
@@ -156,7 +157,7 @@ public final class RouteSQLRewriteEngine {
     private Map<RouteUnit, SQLRewriteUnit> translate(final SQLStatement sqlStatement, final Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits) {
         Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(sqlRewriteUnits.size(), 1F);
         for (Entry<RouteUnit, SQLRewriteUnit> entry : sqlRewriteUnits.entrySet()) {
-            DatabaseType storageType = storageTypes.get(entry.getKey().getDataSourceMapper().getActualName());
+            DatabaseType storageType = storageUnits.get(entry.getKey().getDataSourceMapper().getActualName()).getStorageType();
             String sql = translatorRule.translate(entry.getValue().getSql(), sqlStatement, protocolType, storageType);
             SQLRewriteUnit sqlRewriteUnit = new SQLRewriteUnit(sql, entry.getValue().getParameters());
             result.put(entry.getKey(), sqlRewriteUnit);

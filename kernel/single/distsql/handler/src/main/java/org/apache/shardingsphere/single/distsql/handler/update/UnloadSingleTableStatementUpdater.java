@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.single.distsql.handler.update;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.api.constant.SingleTableConstants;
 import org.apache.shardingsphere.single.distsql.statement.rdl.UnloadSingleTableStatement;
@@ -76,7 +76,7 @@ public final class UnloadSingleTableStatementUpdater implements RuleDefinitionAl
     }
     
     private Collection<String> getAllTableNames(final ShardingSphereDatabase database) {
-        String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(database.getProtocolType(), database.getName());
+        String defaultSchemaName = new DatabaseTypeRegistry(database.getProtocolType()).getDefaultSchemaName(database.getName());
         return database.getSchema(defaultSchemaName).getTables().values().stream().map(ShardingSphereTable::getName).collect(Collectors.toList());
     }
     
@@ -114,7 +114,7 @@ public final class UnloadSingleTableStatementUpdater implements RuleDefinitionAl
     }
     
     @Override
-    public String getType() {
-        return UnloadSingleTableStatement.class.getName();
+    public Class<UnloadSingleTableStatement> getType() {
+        return UnloadSingleTableStatement.class;
     }
 }

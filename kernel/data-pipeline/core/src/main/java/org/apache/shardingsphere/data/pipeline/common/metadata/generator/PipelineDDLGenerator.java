@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.common.metadata.generator;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CommentStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CommentStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CreateIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
-import org.apache.shardingsphere.infra.binder.type.ConstraintAvailable;
-import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -87,7 +87,7 @@ public final class PipelineDDLGenerator {
     
     private Optional<String> decorate(final DatabaseType databaseType, final DataSource dataSource, final String schemaName, final String targetTableName,
                                       final SQLParserEngine parserEngine, final String sql) throws SQLException {
-        if (StringUtils.isBlank(sql)) {
+        if (Strings.isNullOrEmpty(sql)) {
             return Optional.empty();
         }
         String databaseName;
@@ -125,7 +125,7 @@ public final class PipelineDDLGenerator {
     }
     
     private QueryContext getQueryContext(final String databaseName, final SQLParserEngine parserEngine, final String sql) {
-        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, parserEngine.parse(sql, false), databaseName);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(null, databaseName).bind(parserEngine.parse(sql, false), Collections.emptyList());
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList());
     }
     

@@ -48,7 +48,7 @@ public final class ImportDatabaseConfigurationUpdater implements RALUpdater<Impo
     }
     
     @Override
-    public String getType() {
-        return ImportDatabaseConfigurationStatement.class.getName();
+    public Class<ImportDatabaseConfigurationStatement> getType() {
+        return ImportDatabaseConfigurationStatement.class;
     }
 }

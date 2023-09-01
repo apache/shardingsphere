@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;

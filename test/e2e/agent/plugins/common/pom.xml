@@ -32,8 +32,9 @@
     
     <dependencies>
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-util</artifactId>
+            <version>${project.version}</version>
         </dependency>
         
         <dependency>

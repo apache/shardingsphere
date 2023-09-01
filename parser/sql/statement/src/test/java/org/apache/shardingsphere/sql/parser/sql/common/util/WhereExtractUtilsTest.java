@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.util;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
@@ -72,6 +73,7 @@ class WhereExtractUtilsTest {
         selectStatement.setProjections(projections);
         Collection<WhereSegment> subqueryWhereSegments = WhereExtractUtils.getSubqueryWhereSegments(selectStatement);
         WhereSegment actual = subqueryWhereSegments.iterator().next();
+        Preconditions.checkState(subQuerySelectStatement.getWhere().isPresent());
         assertThat(actual.getExpr(), is(subQuerySelectStatement.getWhere().get().getExpr()));
     }
     
@@ -85,9 +87,9 @@ class WhereExtractUtilsTest {
                 new ColumnSegment(75, 83, new IdentifierValue("order_id")), "=", "oi.order_id = o.order_id"));
         MySQLSelectStatement subQuerySelectStatement = new MySQLSelectStatement();
         subQuerySelectStatement.setFrom(joinTableSegment);
-        MySQLSelectStatement mySQLSelectStatement = new MySQLSelectStatement();
-        mySQLSelectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(20, 84, subQuerySelectStatement)));
-        Collection<WhereSegment> subqueryWhereSegments = WhereExtractUtils.getSubqueryWhereSegments(mySQLSelectStatement);
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        selectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(20, 84, subQuerySelectStatement)));
+        Collection<WhereSegment> subqueryWhereSegments = WhereExtractUtils.getSubqueryWhereSegments(selectStatement);
         WhereSegment actual = subqueryWhereSegments.iterator().next();
         assertThat(actual.getExpr(), is(((JoinTableSegment) subQuerySelectStatement.getFrom()).getCondition()));
     }

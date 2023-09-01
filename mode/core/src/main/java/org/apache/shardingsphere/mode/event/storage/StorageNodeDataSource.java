@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.event.storage;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
+import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 
 /**
  * Data source of storage node.

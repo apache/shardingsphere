@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAnalyticViewContext;
@@ -48,22 +49,28 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterO
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterPackageContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterPluggableDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterProcedureContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterProfileContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterRollbackSegmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSessionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSynonymContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSystemContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyzeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssociateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AuditContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AuditTraditionalContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AuditUnifiedContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnOrVirtualDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CommentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConstraintClausesContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateClusterContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateContextContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateControlFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateDatabaseContext;
@@ -89,6 +96,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DisassociateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropClusterContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropColumnClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropConstraintClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropContextContext;
@@ -131,6 +139,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexE
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InlineConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyCollectionRetrievalContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColPropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyConstraintClauseContext;
@@ -152,6 +161,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinit
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyCollectionRetrievalSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -161,12 +171,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.al
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.PackageSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAnalyticViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAttributeDimensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAuditPolicyStatement;
@@ -193,11 +206,14 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterPackageStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterPluggableDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterProfileStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterRollbackSegmentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSessionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterViewStatement;
@@ -205,6 +221,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAssociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAuditStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCommentStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateClusterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateContextStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateControlFileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateDatabaseLinkStatement;
@@ -218,15 +235,19 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateInmemoryJoinGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateLockdownProfileStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateNestedTableTypeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateObjectTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreatePFileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateRestorePointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateRollbackSegmentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSPFileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSequenceStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSubTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateVarrayTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropClusterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropContextStatement;
@@ -272,6 +293,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * DDL statement visitor for Oracle.
@@ -297,6 +319,53 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     }
     
     @Override
+    public ASTNode visitCreateType(final OracleStatementParser.CreateTypeContext ctx) {
+        boolean isReplace = null != ctx.REPLACE();
+        boolean isEditionable = null == ctx.NONEDITIONABLE();
+        TypeSegment typeSegment = (TypeSegment) visit(ctx.plsqlTypeSource().typeName());
+        if (null != ctx.plsqlTypeSource().objectSubTypeDef()) {
+            OracleStatementParser.ObjectSubTypeDefContext objectSubTypeDefContext = ctx.plsqlTypeSource().objectSubTypeDef();
+            return new OracleCreateSubTypeStatement(isReplace, isEditionable,
+                    null == objectSubTypeDefContext.finalClause() || null == objectSubTypeDefContext.finalClause().NOT(),
+                    null == objectSubTypeDefContext.instantiableClause() || null == objectSubTypeDefContext.instantiableClause().NOT(),
+                    typeSegment,
+                    objectSubTypeDefContext.dataTypeDefinition().stream().map(definition -> (TypeDefinitionSegment) visit(definition)).collect(Collectors.toList()));
+        } else {
+            return visitCreateTypeObjectBaseTypeDef(ctx.plsqlTypeSource().objectBaseTypeDef(), isReplace, isEditionable, typeSegment);
+        }
+    }
+    
+    private ASTNode visitCreateTypeObjectBaseTypeDef(final OracleStatementParser.ObjectBaseTypeDefContext ctx, final boolean isReplace, final boolean isEditionable, final TypeSegment typeSegment) {
+        if (null != ctx.objectTypeDef()) {
+            OracleStatementParser.ObjectTypeDefContext objectTypeDefContext = ctx.objectTypeDef();
+            return new OracleCreateObjectTypeStatement(isReplace, isEditionable, null == objectTypeDefContext.finalClause() || null == objectTypeDefContext.finalClause().NOT(),
+                    null == objectTypeDefContext.instantiableClause() || null == objectTypeDefContext.instantiableClause().NOT(),
+                    null == objectTypeDefContext.persistableClause() || null == objectTypeDefContext.persistableClause().NOT(),
+                    typeSegment, objectTypeDefContext.dataTypeDefinition().stream().map(definition -> (TypeDefinitionSegment) visit(definition)).collect(Collectors.toList()));
+        } else if (null != ctx.varrayTypeSpec()) {
+            OracleStatementParser.VarrayTypeSpecContext varrayTypeSpecContext = ctx.varrayTypeSpec();
+            return new OracleCreateVarrayTypeStatement(isReplace, isEditionable,
+                    null == varrayTypeSpecContext.INTEGER_() ? -1 : Integer.parseInt(varrayTypeSpecContext.INTEGER_().getText()),
+                    null != varrayTypeSpecContext.typeSpec().NULL(),
+                    null == varrayTypeSpecContext.typeSpec().persistableClause() || null == varrayTypeSpecContext.typeSpec().persistableClause().NOT(),
+                    typeSegment,
+                    (DataTypeSegment) visit(varrayTypeSpecContext.typeSpec().dataType()));
+        } else {
+            OracleStatementParser.NestedTableTypeSpecContext nestedTableTypeSpecContext = ctx.nestedTableTypeSpec();
+            return new OracleCreateNestedTableTypeStatement(isReplace, isEditionable,
+                    null != nestedTableTypeSpecContext.typeSpec().NULL(),
+                    null == nestedTableTypeSpecContext.typeSpec().persistableClause() || null == nestedTableTypeSpecContext.typeSpec().persistableClause().NOT(),
+                    typeSegment,
+                    (DataTypeSegment) visit(nestedTableTypeSpecContext.typeSpec().dataType()));
+        }
+    }
+    
+    @Override
+    public ASTNode visitDataTypeDefinition(final OracleStatementParser.DataTypeDefinitionContext ctx) {
+        return new TypeDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.name().getText(), (DataTypeSegment) visit(ctx.dataType()));
+    }
+    
+    @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
         CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
         if (null == ctx.createRelationalTableClause()) {
@@ -319,7 +388,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
+        DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = ctx.inlineConstraint().stream().anyMatch(each -> null != each.primaryKey());
         boolean isNotNull = ctx.inlineConstraint().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, isNotNull);
@@ -384,8 +453,24 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     result.getModifyConstraintDefinitions().add((ModifyConstraintDefinitionSegment) each);
                 } else if (each instanceof DropConstraintDefinitionSegment) {
                     result.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) each);
+                } else if (each instanceof ModifyCollectionRetrievalSegment) {
+                    result.setModifyCollectionRetrieval((ModifyCollectionRetrievalSegment) each);
                 }
             }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterTablespace(final AlterTablespaceContext ctx) {
+        OracleAlterTablespaceStatement result = new OracleAlterTablespaceStatement();
+        if (null != ctx.tablespaceName()) {
+            result.setTablespaceSegment(
+                    new TablespaceSegment(ctx.tablespaceName().getStart().getStartIndex(), ctx.tablespaceName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.tablespaceName())));
+        }
+        if (null != ctx.newTablespaceName()) {
+            result.setRenameTablespaceSegment(
+                    new TablespaceSegment(ctx.newTablespaceName().getStart().getStartIndex(), ctx.newTablespaceName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.newTablespaceName())));
         }
         return result;
     }
@@ -406,6 +491,9 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     result.getValue().add((DropColumnDefinitionSegment) visit(each.dropColumnClause()));
                 }
             }
+            if (null != ctx.columnClauses().modifyCollectionRetrieval()) {
+                result.getValue().add((ModifyCollectionRetrievalSegment) visit(ctx.columnClauses().modifyCollectionRetrieval()));
+            }
         }
         if (null != ctx.constraintClauses()) {
             // TODO Support rename constraint
@@ -423,6 +511,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             }
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitModifyCollectionRetrieval(final ModifyCollectionRetrievalContext ctx) {
+        return new ModifyCollectionRetrievalSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override
@@ -450,9 +543,25 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     }
     
     @Override
+    public ASTNode visitDropColumnClause(final DropColumnClauseContext ctx) {
+        if (null != ctx.dropColumnSpecification()) {
+            return visit(ctx.dropColumnSpecification());
+        }
+        Collection<ColumnSegment> columns = new LinkedList<>();
+        if (null != ctx.columnOrColumnList().columnName()) {
+            columns.add((ColumnSegment) visit(ctx.columnOrColumnList().columnName()));
+        } else {
+            for (ColumnNameContext each : ctx.columnOrColumnList().columnNames().columnName()) {
+                columns.add((ColumnSegment) visit(each));
+            }
+        }
+        return new DropColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columns);
+    }
+    
+    @Override
     public ASTNode visitModifyColProperties(final ModifyColPropertiesContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
+        DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
         // TODO visit pk and reference table
         return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false);
     }
@@ -485,8 +594,12 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitModifyConstraintClause(final ModifyConstraintClauseContext ctx) {
-        return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                (ConstraintSegment) visit(ctx.constraintOption().constraintWithName().constraintName()));
+        if (null != ctx.constraintOption().constraintWithName()) {
+            return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                    (ConstraintSegment) visit(ctx.constraintOption().constraintWithName().constraintName()));
+        } else {
+            return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null);
+        }
     }
     
     @Override
@@ -525,6 +638,18 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         OracleAlterViewStatement result = new OracleAlterViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        result.setConstraintDefinitionSegment((ConstraintDefinitionSegment) getAlterViewConstraintDefinition(ctx));
+        return result;
+    }
+    
+    private ASTNode getAlterViewConstraintDefinition(final AlterViewContext ctx) {
+        ConstraintDefinitionSegment result = null;
+        if (null != ctx.outOfLineConstraint()) {
+            result = (ConstraintDefinitionSegment) visit(ctx.outOfLineConstraint());
+        } else if (null != ctx.constraintName()) {
+            result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+            result.setConstraintName((ConstraintSegment) visit(ctx.constraintName()));
+        }
         return result;
     }
     
@@ -601,13 +726,20 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             if (astNode instanceof ColumnSegment) {
                 result.getValue().add((ColumnSegment) astNode);
             }
+            if (astNode instanceof FunctionSegment) {
+                ((FunctionSegment) astNode).getParameters().forEach(parameter -> {
+                    if (parameter instanceof ColumnSegment) {
+                        result.getValue().add((ColumnSegment) parameter);
+                    }
+                });
+            }
         }
         return result;
     }
     
     @Override
     public ASTNode visitIndexExpression(final IndexExpressionContext ctx) {
-        return null != ctx.expr() ? visit(ctx.expr()) : visit(ctx.columnName());
+        return null == ctx.expr() ? visit(ctx.columnName()) : visit(ctx.expr());
     }
     
     @Override
@@ -728,6 +860,16 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAudit(final AuditContext ctx) {
+        return null == ctx.auditTraditional() ? visit(ctx.auditUnified()) : visit(ctx.auditTraditional());
+    }
+    
+    @Override
+    public ASTNode visitAuditTraditional(final AuditTraditionalContext ctx) {
+        return new OracleAuditStatement();
+    }
+    
+    @Override
+    public ASTNode visitAuditUnified(final AuditUnifiedContext ctx) {
         return new OracleAuditStatement();
     }
     
@@ -955,6 +1097,16 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     }
     
     @Override
+    public ASTNode visitAlterProfile(final AlterProfileContext ctx) {
+        return new OracleAlterProfileStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterRollbackSegment(final AlterRollbackSegmentContext ctx) {
+        return new OracleAlterRollbackSegmentStatement();
+    }
+    
+    @Override
     public ASTNode visitDropOperator(final DropOperatorContext ctx) {
         return new OracleDropOperatorStatement();
     }
@@ -1102,6 +1254,11 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
         return new OracleCreateTablespaceStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateCluster(final CreateClusterContext ctx) {
+        return new OracleCreateClusterStatement();
     }
     
     @Override

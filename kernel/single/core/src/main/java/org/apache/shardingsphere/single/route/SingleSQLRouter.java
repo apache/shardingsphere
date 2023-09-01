@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.single.route;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.validator.ShardingSphereMetaDataValidateUtils;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTable
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Single SQL router.
@@ -45,10 +45,10 @@ import java.util.Collections;
 public final class SingleSQLRouter implements SQLRouter<SingleRule> {
     
     @Override
-    public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule,
+    public RouteContext createRouteContext(final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule,
                                            final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        if (1 == database.getResourceMetaData().getDataSources().size()) {
-            return createSingleDataSourceRouteContext(rule, database);
+        if (1 == database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().size()) {
+            return createSingleDataSourceRouteContext(rule, database, queryContext);
         }
         RouteContext result = new RouteContext();
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
@@ -66,7 +66,7 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         }
     }
     
-    private Collection<QualifiedTable> getSingleTables(ShardingSphereDatabase database, SingleRule rule, RouteContext result, SQLStatementContext sqlStatementContext) {
+    private Collection<QualifiedTable> getSingleTables(final ShardingSphereDatabase database, final SingleRule rule, final RouteContext result, final SQLStatementContext sqlStatementContext) {
         Collection<QualifiedTable> qualifiedTables = rule.getQualifiedTables(sqlStatementContext, database);
         return result.getRouteUnits().isEmpty() && sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? qualifiedTables : rule.getSingleTables(qualifiedTables);
     }
@@ -80,11 +80,19 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         SingleRouteEngineFactory.newInstance(singleTables, sqlStatementContext.getSqlStatement()).ifPresent(optional -> optional.route(routeContext, rule));
     }
     
-    private RouteContext createSingleDataSourceRouteContext(final SingleRule rule, final ShardingSphereDatabase database) {
+    private RouteContext createSingleDataSourceRouteContext(final SingleRule rule, final ShardingSphereDatabase database, final QueryContext queryContext) {
         String logicDataSource = rule.getDataSourceNames().iterator().next();
-        String actualDataSource = database.getResourceMetaData().getDataSources().keySet().iterator().next();
+        String actualDataSource = database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().keySet().iterator().next();
         RouteContext result = new RouteContext();
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), Collections.emptyList()));
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), createTableMappers(queryContext.getSqlStatementContext().getTablesContext().getTableNames())));
+        return result;
+    }
+    
+    private Collection<RouteMapper> createTableMappers(final Collection<String> tableNames) {
+        Collection<RouteMapper> result = new LinkedList<>();
+        for (String each : tableNames) {
+            result.add(new RouteMapper(each, each));
+        }
         return result;
     }
     

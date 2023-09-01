@@ -29,6 +29,8 @@ spring.datasource.driver-class-name=org.apache.shardingsphere.driver.ShardingSph
 spring.datasource.url=jdbc:shardingsphere:classpath:xxx.yaml
 ```
 
+The YAML configuration file in 'spring.datasource.url' currently support in three ways, the absolute path 'absolutepath:', Apollo configuration center 'apollo:', and CLASSPATH 'classpath:', which can be referred to `org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereURLProvider`'s implementation for details.
+
 ### Use Data Source
 
 Use this data source directly; or configure ShardingSphereDataSource to be used in conjunction with ORM frameworks such as JPA, Hibernate, and MyBatis.

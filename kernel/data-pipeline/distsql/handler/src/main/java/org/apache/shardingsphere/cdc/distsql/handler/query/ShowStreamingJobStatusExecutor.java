@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,7 +67,7 @@ public final class ShowStreamingJobStatusExecutor implements QueryableRALExecuto
     }
     
     @Override
-    public String getType() {
-        return ShowStreamingStatusStatement.class.getName();
+    public Class<ShowStreamingStatusStatement> getType() {
+        return ShowStreamingStatusStatement.class;
     }
 }

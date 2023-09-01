@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor.ConnectionSessionRequiredRULExecutor;
@@ -52,7 +52,7 @@ public final class FormatSQLExecutor implements ConnectionSessionRequiredRULExec
     }
     
     @Override
-    public String getType() {
-        return FormatStatement.class.getName();
+    public Class<FormatStatement> getType() {
+        return FormatStatement.class;
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 
 /**
  * PostgreSQL value format.

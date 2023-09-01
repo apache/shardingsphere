@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token;
 
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.OrderByTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.OrderByToken;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -72,10 +72,10 @@ class OrderByTokenGeneratorTest {
     void assertGenerateSQLToken() {
         WindowSegment windowSegment = mock(WindowSegment.class);
         when(windowSegment.getStopIndex()).thenReturn(2);
-        MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
-        when(mySQLSelectStatement.getWindow()).thenReturn(Optional.of(windowSegment));
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        when(selectStatement.getWindow()).thenReturn(Optional.of(windowSegment));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getSqlStatement()).thenReturn(mySQLSelectStatement);
+        when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
         Collection<OrderByItem> orderByItems = getOrderByItems();
         when(selectStatementContext.getOrderByContext().getItems()).thenReturn(orderByItems);
         OrderByTokenGenerator generator = new OrderByTokenGenerator();

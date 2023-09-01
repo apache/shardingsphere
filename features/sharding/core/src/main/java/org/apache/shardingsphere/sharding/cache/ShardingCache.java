@@ -41,11 +41,11 @@ public final class ShardingCache {
     
     private final ShardingRouteCache routeCache;
     
-    public ShardingCache(final ShardingCacheConfiguration configuration, final ShardingRule shardingRule) {
-        this.configuration = configuration;
+    public ShardingCache(final ShardingCacheConfiguration config, final ShardingRule shardingRule) {
+        configuration = config;
         this.shardingRule = shardingRule;
         timestampServiceRule = new TimestampServiceRule(new DefaultTimestampServiceConfigurationBuilder().build());
         routeCacheableChecker = new ShardingRouteCacheableChecker(this);
-        routeCache = new ShardingRouteCache(configuration.getRouteCache());
+        routeCache = new ShardingRouteCache(config.getRouteCache());
     }
 }

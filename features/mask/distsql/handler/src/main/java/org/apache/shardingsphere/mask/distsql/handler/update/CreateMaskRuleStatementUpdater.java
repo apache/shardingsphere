@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mask.distsql.handler.update;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
@@ -71,11 +71,6 @@ public final class CreateMaskRuleStatementUpdater implements RuleDefinitionCreat
     }
     
     @Override
-    public String getType() {
-        return CreateMaskRuleStatement.class.getName();
-    }
-    
-    @Override
     public MaskRuleConfiguration buildToBeCreatedRuleConfiguration(final MaskRuleConfiguration currentRuleConfig, final CreateMaskRuleStatement sqlStatement) {
         return MaskRuleStatementConverter.convert(sqlStatement.getRules());
     }
@@ -105,5 +100,10 @@ public final class CreateMaskRuleStatementUpdater implements RuleDefinitionCreat
         });
         toBeCreatedRuleConfig.getTables().removeIf(each -> toBeRemovedTables.contains(each.getName()));
         toBeCreatedRuleConfig.getMaskAlgorithms().keySet().removeIf(toBeRemovedAlgorithms::contains);
+    }
+    
+    @Override
+    public Class<CreateMaskRuleStatement> getType() {
+        return CreateMaskRuleStatement.class;
     }
 }

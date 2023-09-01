@@ -46,6 +46,7 @@
     <sql-case id="grant_object_privilege_column" value="GRANT SELECT (order_id) ON ds_0.t_order TO user1" db-types="Oracle" />
     <sql-case id="grant_program" value="GRANT role1 TO FUNCTION ds_0.function1" db-types="Oracle" />
     <sql-case id="grant_roles_to_programs" value="GRANT role1, role2 TO FUNCTION ds_0.function1, FUNCTION ds_0.function2" db-types="Oracle" />
+    <sql-case id="grant_create_rule_to_user" value="GRANT CREATE ANY RULE, CREATE ANY RULE SET, CREATE ANY EVALUATION CONTEXT TO johndoe" db-types="Oracle" />
     <sql-case id="grant_all_on_table_to_roles" value="GRANT ALL PRIVILEGES ON TABLE t_order TO role1, role2" db-types="PostgreSQL,openGauss" />
     <sql-case id="grant_all_on_table_to_current_user" value="GRANT ALL PRIVILEGES ON TABLE t_order TO CURRENT_USER" db-types="PostgreSQL,openGauss" />
     <sql-case id="grant_select_on_tables" value="GRANT SELECT ON TABLE t_order, t_order_item TO role1" db-types="PostgreSQL,openGauss" />

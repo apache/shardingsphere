@@ -19,13 +19,17 @@ lexer grammar Literals;
 
 import Alphabet, Symbol;
 
+TIME_UNIT
+    : M | H
+    ;
+
 IDENTIFIER_
     : [A-Za-z\u0080-\uFF0B\uFF0D-\uFFFF]+[A-Za-z_$#0-9\u0080-\uFF0B\uFF0D-\uFFFF]*
     ;
 
 STRING_
     : SINGLE_QUOTED_TEXT
-    | DOUBLE_QUOTED_TEXT
+    | N? SINGLE_QUOTED_TEXT
     ;
 
 SINGLE_QUOTED_TEXT

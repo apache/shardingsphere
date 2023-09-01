@@ -20,14 +20,13 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.dump;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shardingsphere.data.pipeline.core.dumper.ColumnValueReaderEngine;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -45,8 +44,8 @@ class ColumnValueReaderEngineTest {
             connection.createStatement().executeUpdate("INSERT INTO t_order(order_id, user_id, status, c_year) VALUES (1, 2,'ok', null)");
             ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM t_order");
             resultSet.next();
-            assertThat(((Long) Objects.requireNonNull(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 1))).intValue(), is(1));
-            assertThat(((Long) Objects.requireNonNull(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 2))).intValue(), is(2));
+            assertThat(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 1), is(1));
+            assertThat(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 2), is(2));
             assertThat(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 3), is("ok"));
             assertNull(columnValueReaderEngine.read(resultSet, resultSet.getMetaData(), 4));
         }

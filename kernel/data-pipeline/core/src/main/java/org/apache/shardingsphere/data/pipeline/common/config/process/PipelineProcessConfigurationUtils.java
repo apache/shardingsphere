@@ -42,7 +42,7 @@ public final class PipelineProcessConfigurationUtils {
      * @return process configuration
      */
     public static PipelineProcessConfiguration convertWithDefaultValue(final PipelineProcessConfiguration originalConfig) {
-        YamlPipelineProcessConfiguration yamlConfig = null != originalConfig ? SWAPPER.swapToYamlConfiguration(originalConfig) : new YamlPipelineProcessConfiguration();
+        YamlPipelineProcessConfiguration yamlConfig = null == originalConfig ? new YamlPipelineProcessConfiguration() : SWAPPER.swapToYamlConfiguration(originalConfig);
         fillInDefaultValue(yamlConfig);
         return SWAPPER.swapToObject(yamlConfig);
     }

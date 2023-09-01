@@ -19,14 +19,16 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.enums.NullsOrderType;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -138,6 +140,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     }
     
     private NullsOrderType generateNewNullsOrderType(final OrderDirection orderDirection, final DatabaseType databaseType) {
-        return OrderDirection.ASC == orderDirection ? databaseType.getDefaultNullsOrderType() : databaseType.getDefaultNullsOrderType().getReversedOrderType();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        return OrderDirection.ASC == orderDirection ? dialectDatabaseMetaData.getDefaultNullsOrderType() : dialectDatabaseMetaData.getDefaultNullsOrderType().getReversedOrderType();
     }
 }

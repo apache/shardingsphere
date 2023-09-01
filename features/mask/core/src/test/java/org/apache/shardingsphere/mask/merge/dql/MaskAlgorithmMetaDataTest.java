@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.mask.merge.dql;
 
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -35,6 +37,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,8 +56,11 @@ class MaskAlgorithmMetaDataTest {
     @Test
     void assertFindMaskAlgorithmByColumnIndex() {
         when(maskRule.findMaskAlgorithm("t_order", "order_id")).thenReturn(Optional.of(TypedSPILoader.getService(MaskAlgorithm.class, "MD5")));
-        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(new ColumnProjection(null, "order_id", null)));
-        when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
+        ColumnProjection columnProjection = new ColumnProjection(null, "order_id", null, mock(DatabaseType.class));
+        columnProjection.setOriginalColumn(new IdentifierValue("order_id"));
+        columnProjection.setOriginalTable(new IdentifierValue("t_order"));
+        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(columnProjection));
+        when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_order"));
         Optional<MaskAlgorithm> actual = new MaskAlgorithmMetaData(database, maskRule, selectStatementContext).findMaskAlgorithmByColumnIndex(1);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getType(), is("MD5"));

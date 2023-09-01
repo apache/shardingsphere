@@ -20,7 +20,7 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.migration.distsql.statement.RollbackMigrationStatement;
 
 import java.sql.SQLException;
@@ -36,7 +36,7 @@ public final class RollbackMigrationUpdater implements RALUpdater<RollbackMigrat
     }
     
     @Override
-    public String getType() {
-        return RollbackMigrationStatement.class.getName();
+    public Class<RollbackMigrationStatement> getType() {
+        return RollbackMigrationStatement.class;
     }
 }

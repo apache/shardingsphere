@@ -20,24 +20,27 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.cdc;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.TableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
-import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.client.config.CDCClientConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoggerExceptionHandler;
+import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.CDCLoginParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartStreamingParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.SingleTableInventoryDataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryCheckParameter;
+import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
@@ -63,12 +66,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TimeZone;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -91,8 +94,6 @@ class CDCE2EIT {
             + ")", PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1);
     
     private static final String SOURCE_TABLE_NAME = "t_order";
-    
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
@@ -121,28 +122,29 @@ class CDCE2EIT {
                             containerComposer.getUsername(), containerComposer.getPassword())) {
                 initSchemaAndTable(containerComposer, connection, 0);
             }
-            startCDCClient(containerComposer);
+            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(containerComposer.getDatabaseType()).getDialectDatabaseMetaData();
+            startCDCClient(containerComposer, dialectDatabaseMetaData);
             Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW STREAMING LIST").isEmpty());
             String jobId = containerComposer.queryForListWithLog("SHOW STREAMING LIST").get(0).get("id").toString();
             containerComposer.waitIncrementTaskFinished(String.format("SHOW STREAMING STATUS '%s'", jobId));
-            String tableName = containerComposer.getDatabaseType().isSchemaAvailable() ? String.join(".", "test", SOURCE_TABLE_NAME) : SOURCE_TABLE_NAME;
+            String tableName = dialectDatabaseMetaData.isSchemaAvailable() ? String.join(".", "test", SOURCE_TABLE_NAME) : SOURCE_TABLE_NAME;
             containerComposer.startIncrementTask(new E2EIncrementalTask(jdbcDataSource, tableName, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20));
             containerComposer.getIncreaseTaskThread().join(10000L);
             List<Map<String, Object>> actualProxyList;
             try (Connection connection = jdbcDataSource.getConnection()) {
-                ResultSet resultSet = connection.createStatement().executeQuery(String.format("SELECT * FROM %s ORDER BY order_id ASC", getOrderTableNameWithSchema(containerComposer)));
+                ResultSet resultSet = connection.createStatement().executeQuery(String.format("SELECT * FROM %s ORDER BY order_id ASC", getOrderTableNameWithSchema(dialectDatabaseMetaData)));
                 actualProxyList = containerComposer.transformResultSetToList(resultSet);
             }
             Awaitility.await().atMost(20L, TimeUnit.SECONDS).pollInterval(2L, TimeUnit.SECONDS)
-                    .until(() -> listOrderRecords(containerComposer, getOrderTableNameWithSchema(containerComposer)).size() == actualProxyList.size());
-            SchemaTableName orderSchemaTableName = containerComposer.getDatabaseType().isSchemaAvailable()
-                    ? new SchemaTableName(new SchemaName(PipelineContainerComposer.SCHEMA_NAME), new TableName(SOURCE_TABLE_NAME))
-                    : new SchemaTableName(new SchemaName(null), new TableName(SOURCE_TABLE_NAME));
+                    .until(() -> listOrderRecords(containerComposer, getOrderTableNameWithSchema(dialectDatabaseMetaData)).size() == actualProxyList.size());
+            SchemaTableName orderSchemaTableName = dialectDatabaseMetaData.isSchemaAvailable()
+                    ? new SchemaTableName(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME)
+                    : new SchemaTableName(null, SOURCE_TABLE_NAME);
             PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(jdbcDataSource, containerComposer.getDatabaseType());
             PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(createStandardDataSource(containerComposer, PipelineContainerComposer.DS_4),
                     containerComposer.getDatabaseType());
             assertDataMatched(sourceDataSource, targetDataSource, orderSchemaTableName);
-            assertDataMatched(sourceDataSource, targetDataSource, new SchemaTableName(new SchemaName(null), new TableName("t_address")));
+            assertDataMatched(sourceDataSource, targetDataSource, new SchemaTableName(null, "t_address"));
             containerComposer.proxyExecuteWithLog(String.format("DROP STREAMING '%s'", jobId), 0);
             assertTrue(containerComposer.queryForListWithLog("SHOW STREAMING LIST").isEmpty());
         }
@@ -169,24 +171,17 @@ class CDCE2EIT {
                 containerComposer.getUsername(), containerComposer.getPassword()));
     }
     
-    private void startCDCClient(final PipelineContainerComposer containerComposer) {
+    private void startCDCClient(final PipelineContainerComposer containerComposer, final DialectDatabaseMetaData dialectDatabaseMetaData) {
         DataSource dataSource = createStandardDataSource(containerComposer, PipelineContainerComposer.DS_4);
-        StartCDCClientParameter parameter = new StartCDCClientParameter();
-        parameter.setAddress("localhost");
-        parameter.setPort(containerComposer.getContainerComposer().getProxyCDCPort());
-        parameter.setUsername(ProxyContainerConstants.USERNAME);
-        parameter.setPassword(ProxyContainerConstants.PASSWORD);
-        parameter.setDatabase("sharding_db");
-        // TODO add full=false test case later
-        parameter.setFull(true);
-        String schema = containerComposer.getDatabaseType().isSchemaAvailable() ? "test" : "";
-        parameter.setSchemaTables(Arrays.asList(SchemaTable.newBuilder().setTable(SOURCE_TABLE_NAME).setSchema(schema).build(), SchemaTable.newBuilder().setTable("t_address").build()));
         DataSourceRecordConsumer recordConsumer = new DataSourceRecordConsumer(dataSource, containerComposer.getDatabaseType());
-        CompletableFuture.runAsync(() -> new CDCClient(parameter, recordConsumer).start(), executor).whenComplete((unused, throwable) -> {
-            if (null != throwable) {
-                log.error("cdc client sync failed", throwable);
-            }
-        });
+        CDCClientConfiguration cdcConfig = new CDCClientConfiguration("localhost", containerComposer.getContainerComposer().getProxyCDCPort(), recordConsumer, new LoggerExceptionHandler());
+        String schema = dialectDatabaseMetaData.isSchemaAvailable() ? "test" : "";
+        CDCClient cdcClient = new CDCClient(cdcConfig);
+        cdcClient.connect();
+        cdcClient.login(new CDCLoginParameter(ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD));
+        // TODO add full=false test case later
+        cdcClient.startStreaming(new StartStreamingParameter("sharding_db", new HashSet<>(Arrays.asList(SchemaTable.newBuilder().setTable(SOURCE_TABLE_NAME).setSchema(schema).build(),
+                SchemaTable.newBuilder().setTable("t_address").build())), true));
     }
     
     private List<Map<String, Object>> listOrderRecords(final PipelineContainerComposer containerComposer, final String tableNameWithSchema) throws SQLException {
@@ -198,18 +193,19 @@ class CDCE2EIT {
         }
     }
     
-    private String getOrderTableNameWithSchema(final PipelineContainerComposer containerComposer) {
-        return containerComposer.getDatabaseType().isSchemaAvailable() ? String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME) : SOURCE_TABLE_NAME;
+    private String getOrderTableNameWithSchema(final DialectDatabaseMetaData dialectDatabaseMetaData) {
+        return dialectDatabaseMetaData.isSchemaAvailable() ? String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME) : SOURCE_TABLE_NAME;
     }
     
     private void assertDataMatched(final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource, final SchemaTableName schemaTableName) {
         StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaTableName.getSchemaName().getOriginal(), schemaTableName.getTableName().getOriginal());
-        PipelineColumnMetaData primaryKeyMetaData = tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
+        List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0)));
         ConsistencyCheckJobItemProgressContext progressContext = new ConsistencyCheckJobItemProgressContext("", 0);
-        SingleTableInventoryDataConsistencyChecker checker = new SingleTableInventoryDataConsistencyChecker("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
-                tableMetaData.getColumnNames(), primaryKeyMetaData, null, progressContext);
-        DataConsistencyCheckResult checkResult = checker.check(new DataMatchDataConsistencyCalculateAlgorithm());
+        TableInventoryCheckParameter param = new TableInventoryCheckParameter("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
+                tableMetaData.getColumnNames(), uniqueKeys, null, progressContext);
+        TableDataConsistencyChecker tableChecker = TypedSPILoader.getService(TableDataConsistencyChecker.class, "DATA_MATCH", new Properties());
+        TableDataConsistencyCheckResult checkResult = tableChecker.buildTableInventoryChecker(param).checkSingleTableInventoryData();
         assertTrue(checkResult.isMatched());
     }
     

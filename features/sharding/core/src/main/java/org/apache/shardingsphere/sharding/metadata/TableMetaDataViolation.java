@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 
 /**
  * Table meta data violation.

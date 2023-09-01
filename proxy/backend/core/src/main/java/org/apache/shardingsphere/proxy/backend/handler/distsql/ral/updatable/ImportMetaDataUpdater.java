@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
 
 import java.io.File;
@@ -61,7 +61,7 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
         } else {
             jsonMetaDataConfig = new String(Base64.decodeBase64(sqlStatement.getMetaDataValue()));
         }
-        ExportedClusterInfo exportedClusterInfo = JsonUtils.readValue(jsonMetaDataConfig, ExportedClusterInfo.class);
+        ExportedClusterInfo exportedClusterInfo = JsonUtils.fromJsonString(jsonMetaDataConfig, ExportedClusterInfo.class);
         ExportedMetaData exportedMetaData = exportedClusterInfo.getMetaData();
         importServerConfig(exportedMetaData);
         importDatabase(exportedMetaData);
@@ -78,14 +78,14 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
     }
     
     private void importDatabase(final ExportedMetaData exportedMetaData) {
-        for (final String each : exportedMetaData.getDatabases().values()) {
+        for (String each : exportedMetaData.getDatabases().values()) {
             YamlProxyDatabaseConfiguration yamlDatabaseConfig = YamlEngine.unmarshal(each, YamlProxyDatabaseConfiguration.class);
             databaseConfigImportExecutor.importDatabaseConfiguration(yamlDatabaseConfig);
         }
     }
     
     @Override
-    public String getType() {
-        return ImportMetaDataStatement.class.getName();
+    public Class<ImportMetaDataStatement> getType() {
+        return ImportMetaDataStatement.class;
     }
 }

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -537,7 +537,7 @@ class ShardingSphereResultSetTest {
     
     @Test
     void assertGetObjectWithFloat() throws SQLException {
-        float result = 0.0f;
+        float result = 0.0F;
         when(mergeResultSet.getValue(1, float.class)).thenReturn(result);
         assertThat(shardingSphereResultSet.getObject(1, float.class), is(result));
         when(mergeResultSet.getValue(1, Float.class)).thenReturn(result);

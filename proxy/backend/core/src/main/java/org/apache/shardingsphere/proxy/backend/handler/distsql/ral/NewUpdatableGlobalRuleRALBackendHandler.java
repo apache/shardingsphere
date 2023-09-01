@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.handler.ral.update.GlobalRuleRALUpdater
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
@@ -43,13 +43,13 @@ public final class NewUpdatableGlobalRuleRALBackendHandler implements DistSQLBac
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ResponseHeader execute() {
-        GlobalRuleRALUpdater globalRuleUpdater = TypedSPILoader.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getName());
+        GlobalRuleRALUpdater globalRuleUpdater = TypedSPILoader.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass());
         Class<? extends RuleConfiguration> ruleConfigClass = globalRuleUpdater.getRuleConfigurationClass();
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        Collection<RuleConfiguration> ruleConfigurations = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
-        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigurations, ruleConfigClass);
+        Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
+        RuleConfiguration currentRuleConfig = findCurrentRuleConfiguration(ruleConfigs, ruleConfigClass);
         globalRuleUpdater.checkSQLStatement(currentRuleConfig, sqlStatement);
-        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigurations, sqlStatement, globalRuleUpdater, currentRuleConfig));
+        contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(processUpdate(ruleConfigs, sqlStatement, globalRuleUpdater, currentRuleConfig));
         return new UpdateResponseHeader(sqlStatement);
     }
     
