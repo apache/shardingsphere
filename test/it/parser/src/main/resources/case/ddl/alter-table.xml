@@ -17,6 +17,42 @@
   -->
 
 <sql-parser-test-cases>
+    <alter-table sql-case-id="alter_table_drop_partition_for_to_date_function">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_constraint_unique_disable_validate">
+        <table name="sales" start-index="12" stop-index="16" />
+        <add-constraint constraint-name="sales_uk" start-index="22" stop-index="114">
+            <index-column name="prod_id" start-index="50" stop-index="56" />
+            <index-column name="cust_id" start-index="59" stop-index="65" />
+            <index-column name="promo_id" start-index="68" stop-index="75" />
+            <index-column name="channel_id" start-index="78" stop-index="87" />
+            <index-column name="time_id" start-index="90" stop-index="96" />
+        </add-constraint>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_constraint_foreign_key_references_rely_disable_novalidate">
+        <table name="sales" start-index="12" stop-index="16" />
+        <add-constraint constraint-name="sales_time_fk" start-index="22" stop-index="118">
+            <referenced-table name="times" start-index="80" stop-index="84" />
+        </add-constraint>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_constraint_foreign_key_references_enable_novalidate">
+        <table name="sales" start-index="12" stop-index="16" />
+        <add-constraint constraint-name="sales_time_fk" start-index="22" stop-index="112">
+            <referenced-table name="times" start-index="80" stop-index="84" />
+        </add-constraint>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_constraint_foreign_key_references_enable_validate">
+        <table name="sales" start-index="12" stop-index="16" />
+        <add-constraint constraint-name="sales_time_fk" start-index="22" stop-index="110">
+            <referenced-table name="times" start-index="80" stop-index="84" />
+        </add-constraint>
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_modify_lob_shrink_space">
         <table name="employees" start-index="12" stop-index="20" />
         <modify-column>
@@ -851,6 +887,10 @@
         <table name="t1" start-index="12" stop-index="13" />
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_add_partition_nested_table_col_properties">
+        <table name="print_media_part" start-index="12" stop-index="27" />
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_partition">
         <table name="t1" start-index="12" stop-index="13" />
     </alter-table>
@@ -1590,7 +1630,46 @@
         <table name="sales" start-index="12" stop-index="16" />
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_add_partition_values_less_than3">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_modify_subpartition_drop_values">
         <table name="quarterly_regional_sales" start-index="12" stop-index="35" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_nested_table_return_as_value">
+        <table name="print_media" start-index="12" stop-index="22" />
+        <modify-collection-retrieval>
+            <table name="ad_textdocs_ntab" start-index="44" stop-index="59" />
+        </modify-collection-retrieval>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_nested_owner_table_return_as_value">
+        <table name="print_media" start-index="12" stop-index="22" />
+        <modify-collection-retrieval>
+            <table name="ad_textdocs_ntab" start-index="44" stop-index="67">
+                <owner start-index="44" stop-index="50" name="mytable" />
+            </table>
+        </modify-collection-retrieval>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_partition_storage">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_rename_partition">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_set_interval_expr">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_constraint_primary_key_disable_validate">
+        <table name="sales_01_2001" start-index="12" stop-index="24" />
+        <add-constraint constraint-name="sales_pk_jan01" start-index="30" stop-index="106">
+            <primary-key-column name="sales_transaction_id" start-index="69" stop-index="88" />
+        </add-constraint>
     </alter-table>
 </sql-parser-test-cases>

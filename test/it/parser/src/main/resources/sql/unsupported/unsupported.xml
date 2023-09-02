@@ -242,8 +242,6 @@
     <sql-case id="unsupported_select_case_for_opengauss_247" value="select int4range(10,10) &lt;&gt; '(10,11)'::int4range as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_248" value="select int8range(15,25) &lt;&gt; int8range(15,25) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_249" value="select tsrange('[2021-01-01,2021-03-01)') &lt;&gt; ('[2021-01-01,2021-03-01)') as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_250" value="select elem_contained_by_range('abc', int8range(15,25)) as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_251" value="select elem_contained_by_range(2, numrange(1.1,2.2)) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_252" value="select int4range(1,5) &gt;= '[1,4]'::int4range as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_253" value="select int8range(15,26) &gt;= int8range(15,26) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_254" value="select numrange(8.1,10.2,'[]') &gt;= numrange(5.1,6.7,'()') as result;" db-types="openGauss" />
@@ -299,11 +297,6 @@
     <sql-case id="unsupported_select_case_for_opengauss_304" value="select int4range(10,16) &amp;&lt; '(10,11)'::int4range as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_305" value="select int4range(1,3) - int8range(25,35) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_306" value="select tsrange('[2021-01-01,2021-03-01)') - '[3,4]'::int4range  as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_307" value="select elem_contained_by_range('2', numrange(1.1,2.2));" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_308" value="select elem_contained_by_range('10', int4range(10,80)) as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_309" value="select elem_contained_by_range('20', int8range(15,25)) as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_310" value="select elem_contained_by_range('2021-02-05', tsrange('[2021-01-01,2021-03-01)')) as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_311" value="select elem_contained_by_range('2025-12-11 pst', tsrange('[2013-12-11 pst,2021-03-01 pst)')) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_312" value="select lower(int4range(10,80)) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_313" value="select lower(int8range(15,25)) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_314" value="select lower(numrange(1.1,2.2)) as result;" db-types="openGauss" />
@@ -394,29 +387,16 @@
     <sql-case id="unsupported_select_case_for_opengauss_399" value="select trim(leading'2' from );" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_400" value="select trim(trailing '2' from );" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_401" value="select substring(from 4 for 4) as text1;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_403" value="select ||/ clo1 from data_01;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_404" value="select  clo1! from data_01;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_405" value="select  clo2! from data_01;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_406" value="select @clo1, @clo2 from data_01;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_407" value="select @ clo1, @clo2 from data_01;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_408" value="select ||/ clo2 from data_01;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_410" value="select @ clo1, @ clo2 from data_01;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_411" value="select  ||/clo1 from data_01;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_412" value="select  ||/clo2 from data_01;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_415" value="select ||/clo1,||/clo2 from data_01;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_416" value="select @clo1 from data_01;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_417" value="select cos(2*pi(),2*pi()));" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_418" value="select ||/ clo1,||/clo2 from data_01;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_420" value="select |/clo1 from data_01;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_423" value="select |/clo2 from data_01;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_424" value="select |/clo1,|/clo2 from data_01;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_425" value="select  |/clo1 from data_01;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_426" value="select  |/clo2 from data_01;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_427" value="select  !!clo1 from data_01;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_428" value="select  !!clo2 from data_01;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_430" value="select ~ clo1 , ~ clo2 from data_01;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_431" value="select ~ (clo1+clo2) from data_01;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_432" value="select ~clo1, ~clo2 from data_01;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_433" value="select atan2(,) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_434" value="select atan2('11+11',) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_435" value="select atan2(11 11) from sys_dummy;" db-types="openGauss" />

@@ -47,16 +47,18 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Matching table data consistency checker.
+ * Matching table inventory checker.
  */
 @Slf4j
 @RequiredArgsConstructor
-public abstract class MatchingTableDataConsistencyChecker implements TableDataConsistencyChecker {
+public abstract class MatchingTableInventoryChecker implements TableInventoryChecker {
+    
+    private final TableInventoryCheckParameter param;
     
     private final Set<SingleTableInventoryCalculator> calculators = new HashSet<>();
     
     @Override
-    public TableDataConsistencyCheckResult checkSingleTableInventoryData(final TableInventoryCheckParameter param) {
+    public TableDataConsistencyCheckResult checkSingleTableInventoryData() {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(param.getJobId()) + "-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         try {

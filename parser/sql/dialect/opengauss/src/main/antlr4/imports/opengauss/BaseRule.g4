@@ -440,6 +440,13 @@ unreservedWord
     | JSON
     | POSITION
     | INET
+    | INT1
+    | INT2
+    | INT4
+    | INT16
+    | FLOAT4
+    | ELEM_CONTAINED_BY_RANGE
+
     ;
 
 typeFuncNameKeyword
@@ -579,6 +586,11 @@ aExpr
     | aExpr MOD_ aExpr
     | aExpr CARET_ aExpr
     | aExpr AMPERSAND_ aExpr
+    | DN_ aExpr
+    | aExpr NOT_
+    | aExpr POUND_ aExpr
+    | TILDE_ aExpr
+    | CUBE_ROOT_ aExpr
     | aExpr VERTICAL_BAR_ aExpr
     | aExpr qualOp aExpr
     | qualOp aExpr
@@ -1085,6 +1097,8 @@ functionExprCommonSubexpr
     | XMLROOT LP_ aExpr COMMA_ xmlRootVersion xmlRootStandalone? RP_
     | XMLSERIALIZE LP_ documentOrContent aExpr AS simpleTypeName RP_
     | PREDICT BY modelName LP_ FEATURES name (COMMA_ name)* RP_
+    | TS_REWRITE LP_ aExpr (TYPE_CAST_ TSQUERY)? (COMMA_ aExpr (TYPE_CAST_ TSQUERY)?)* RP_
+    | ELEM_CONTAINED_BY_RANGE LP_ aExpr COMMA_ dataType RP_
     ;
 
 typeName

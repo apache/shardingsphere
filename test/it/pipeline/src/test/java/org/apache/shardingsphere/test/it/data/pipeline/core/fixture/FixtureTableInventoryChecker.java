@@ -20,21 +20,9 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCountCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryCheckParameter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryChecker;
 
-import java.util.Collection;
-
-@SPIDescription("Fixture description.")
-public final class TableDataConsistencyCheckerFixture implements TableDataConsistencyChecker {
-    
-    @Override
-    public TableDataConsistencyCheckResult checkSingleTableInventoryData(final TableInventoryCheckParameter param) {
-        return new TableDataConsistencyCheckResult(new TableDataConsistencyCountCheckResult(2, 2), new TableDataConsistencyContentCheckResult(true));
-    }
+public final class FixtureTableInventoryChecker implements TableInventoryChecker {
     
     @Override
     public void cancel() {
@@ -46,12 +34,7 @@ public final class TableDataConsistencyCheckerFixture implements TableDataConsis
     }
     
     @Override
-    public Collection<DatabaseType> getSupportedDatabaseTypes() {
-        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
+    public TableDataConsistencyCheckResult checkSingleTableInventoryData() {
+        return new TableDataConsistencyCheckResult(new TableDataConsistencyCountCheckResult(2, 2), new TableDataConsistencyContentCheckResult(true));
     }
 }

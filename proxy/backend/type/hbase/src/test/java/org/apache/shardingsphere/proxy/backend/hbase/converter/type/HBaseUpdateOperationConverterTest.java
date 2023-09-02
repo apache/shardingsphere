@@ -77,6 +77,8 @@ class HBaseUpdateOperationConverterTest {
         ShardingSphereTable table = new ShardingSphereTable("t_test_order", Arrays.asList(new ShardingSphereColumn("rowKey", Types.VARCHAR, true, false, false, false, true, false),
                 new ShardingSphereColumn("age", Types.INTEGER, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         when(database.getSchema(DefaultDatabase.LOGIC_NAME).getTable("t_test_order")).thenReturn(table);
+        when(database.containsSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
+        when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_test_order")).thenReturn(true);
         Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
         return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         

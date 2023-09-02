@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="insert_into_values" value="insert into test_nested values(1)" db-types="MySQL" />
+    <sql-case id="insert_into_values" value="INSERT INTO test_nested VALUES(1)" db-types="MySQL" />
     <sql-case id="insert_with_all_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" />
     <sql-case id="insert_with_historical_type_cast_syntax" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?::int4, ?::text)" db-types="PostgreSQL,openGauss" />
     <sql-case id="insert_with_now_function" value="INSERT INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())" db-types="MySQL" />

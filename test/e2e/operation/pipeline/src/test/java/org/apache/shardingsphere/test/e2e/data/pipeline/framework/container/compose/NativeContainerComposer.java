@@ -79,6 +79,12 @@ public final class NativeContainerComposer extends BaseContainerComposer {
                     connection.createStatement().execute("DROP SCHEMA IF EXISTS test;");
                 }
                 break;
+            case "Oracle":
+                jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", actualDatabasePort, "");
+                try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
+                    dropTableWithOracle(connection, databaseName);
+                }
+                break;
             default:
         }
     }
@@ -97,6 +103,16 @@ public final class NativeContainerComposer extends BaseContainerComposer {
             List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
             for (String each : actualTableNames) {
                 connection.createStatement().executeUpdate(String.format("drop table %s.%s", schema, each));
+            }
+        }
+    }
+    
+    private void dropTableWithOracle(final Connection connection, final String schema) throws SQLException {
+        String queryAllTables = String.format("SELECT TABLE_NAME FROM ALL_TABLES WHERE OWNER = '%s'", schema);
+        try (ResultSet resultSet = connection.createStatement().executeQuery(String.format(queryAllTables, schema))) {
+            List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
+            for (String each : actualTableNames) {
+                connection.createStatement().executeUpdate(String.format("DROP TABLE %s.%s", schema, each));
             }
         }
     }

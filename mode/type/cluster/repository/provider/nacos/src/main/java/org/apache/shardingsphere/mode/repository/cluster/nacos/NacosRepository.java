@@ -22,7 +22,6 @@ import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.PreservedMetadataKeys;
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
@@ -336,9 +335,9 @@ public final class NacosRepository implements ClusterPersistRepository {
             ServiceMetaData service = serviceController.getService(entry.getKey());
             Map<String, List<Instance>> instanceMap = client.getAllInstances(service.getServiceName(), false).stream().collect(Collectors.groupingBy(NacosMetaDataUtils::getKey));
             keyValues.removeIf(keyValue -> {
-                Collection<Instance> instances = instanceMap.get(keyValue.getKey());
+                String key = keyValue.getKey();
                 String value = keyValue.getValue();
-                return CollectionUtils.isNotEmpty(instances) ? instances.stream().anyMatch(instance -> Objects.equals(NacosMetaDataUtils.getValue(instance), value)) : null == value;
+                return instanceMap.containsKey(key) ? instanceMap.get(key).stream().anyMatch(each -> Objects.equals(NacosMetaDataUtils.getValue(each), value)) : null == value;
             });
         }
         return keyValues.isEmpty();

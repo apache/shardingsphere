@@ -36,10 +36,8 @@ class ReadwriteSplittingRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBuild() {
-        ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(
-                Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("name", "writeDataSourceName",
-                        Collections.singletonList("readDataSourceName"), "loadBalancerName")),
-                Collections.emptyMap());
+        ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(
+                new ReadwriteSplittingDataSourceRuleConfiguration("name", "writeDataSourceName", Collections.singletonList("readDataSourceName"), "loadBalancerName")), Collections.emptyMap());
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(ReadwriteSplittingRule.class));
     }

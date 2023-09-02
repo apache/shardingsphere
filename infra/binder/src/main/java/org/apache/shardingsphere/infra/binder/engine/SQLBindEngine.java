@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementBinder;
+import org.apache.shardingsphere.infra.binder.statement.dml.MergeStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementBinder;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
@@ -97,6 +99,9 @@ public final class SQLBindEngine {
         }
         if (statement instanceof DeleteStatement) {
             return new DeleteStatementBinder().bind((DeleteStatement) statement, metaData, defaultDatabaseName);
+        }
+        if (statement instanceof MergeStatement) {
+            return new MergeStatementBinder().bind((MergeStatement) statement, metaData, defaultDatabaseName);
         }
         return statement;
     }

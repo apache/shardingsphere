@@ -159,7 +159,7 @@ class AlterShardingTableRuleStatementUpdaterTest {
     
     private TableRuleSegment createCompleteTableRule(final String logicTableName) {
         KeyGenerateStrategySegment keyGenerator = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        TableRuleSegment result = new TableRuleSegment(logicTableName, Collections.singletonList("ds_${0..1}.t_order${0..1}"), keyGenerator, null);
+        TableRuleSegment result = new TableRuleSegment(logicTableName, Collections.singleton("ds_${0..1}.t_order${0..1}"), keyGenerator, null);
         result.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", new AlgorithmSegment("CORE.STANDARD.FIXTURE", new Properties())));
         AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}")));
         result.setDatabaseStrategySegment(new ShardingStrategySegment("standard", "product_id", databaseAlgorithmSegment));
