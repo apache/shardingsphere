@@ -15,31 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.expr.purelist;
+package org.apache.shardingsphere.infra.expr.core.fixture;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-/**
- * Pure List inline expression parser.
- */
-public final class PureListInlineExpressionParser implements InlineExpressionParser {
-    
-    private static final char SPLITTER = ',';
+public final class CustomInlineExpressionParserFixture implements InlineExpressionParser {
     
     private String inlineExpression;
     
-    /**
-     * Initialize SPI.
-     *
-     * @param props A Properties instance that carries inlineExpression.
-     *              And for compatibility reasons, inlineExpression allows to be null.
-     */
     @Override
     public void init(final Properties props) {
         this.inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
@@ -52,29 +39,25 @@ public final class PureListInlineExpressionParser implements InlineExpressionPar
     
     @Override
     public List<String> splitAndEvaluate() {
-        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : split(inlineExpression);
-    }
-    
-    private List<String> split(final String inlineExpression) {
-        List<String> result = new ArrayList<>();
-        StringBuilder segment = new StringBuilder();
-        for (int i = 0; i < inlineExpression.length(); i++) {
-            char each = inlineExpression.charAt(i);
-            if (each == SPLITTER) {
-                result.add(segment.toString().trim());
-                segment.setLength(0);
-            } else {
-                segment.append(each);
-            }
+        switch (inlineExpression) {
+            case "spring":
+                return Arrays.asList("t_order_2023_03", "t_order_2023_04", "t_order_2023_05");
+            case "summer":
+                return Arrays.asList("t_order_2023_06", "t_order_2023_07", "t_order_2023_08");
+            case "autumn":
+                return Arrays.asList("t_order_2023_09", "t_order_2023_10", "t_order_2023_11");
+            case "winter":
+                return Arrays.asList("t_order_2023_12", "t_order_2024_01", "t_order_2024_02");
+            default:
+                return Arrays.asList("t_order_2023_03", "t_order_2023_04", "t_order_2023_05",
+                        "t_order_2023_06", "t_order_2023_07", "t_order_2023_08",
+                        "t_order_2023_09", "t_order_2023_10", "t_order_2023_11",
+                        "t_order_2023_12", "t_order_2024_01", "t_order_2024_02");
         }
-        if (segment.length() > 0) {
-            result.add(segment.toString().trim());
-        }
-        return result;
     }
     
     @Override
-    public String getType() {
-        return "PURELIST";
+    public Object getType() {
+        return "CUSTOM.FIXTURE";
     }
 }

@@ -82,7 +82,6 @@
         <jaxb.version>2.3.0</jaxb.version>
         <annotation-api.version>1.3.2</annotation-api.version>
         <activation-api.version>1.2.0</activation-api.version>
-        <truffle-api.version>21.2.0</truffle-api.version>
         
         <calcite.version>1.35.0</calcite.version>
         <immutables.version>2.9.3</immutables.version>
@@ -626,12 +625,6 @@
                 <artifactId>awaitility</artifactId>
                 <version>${awaitility.version}</version>
                 <scope>test</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.graalvm.truffle</groupId>
-                <artifactId>truffle-api</artifactId>
-                <version>${truffle-api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -1209,7 +1202,6 @@
         <profile>
             <id>generateStandardMetadata</id>
             <properties>
-                <truffle-api.version>23.0.1</truffle-api.version>
                 <jacoco.skip>true</jacoco.skip>
                 <maven.javadoc.skip>true</maven.javadoc.skip>
                 <checkstyle.skip>true</checkstyle.skip>
