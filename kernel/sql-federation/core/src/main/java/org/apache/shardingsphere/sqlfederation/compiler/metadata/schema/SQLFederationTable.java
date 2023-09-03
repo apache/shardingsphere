@@ -20,17 +20,23 @@ package org.apache.shardingsphere.sqlfederation.compiler.metadata.schema;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.calcite.DataContext;
+import org.apache.calcite.adapter.enumerable.EnumerableTableModify;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.linq4j.Queryable;
 import org.apache.calcite.linq4j.tree.Expression;
+import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptTable.ToRelContext;
+import org.apache.calcite.prepare.Prepare.CatalogReader;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.core.TableModify;
+import org.apache.calcite.rel.core.TableModify.Operation;
 import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.schema.QueryableTable;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.schema.ModifiableTable;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Schemas;
 import org.apache.calcite.schema.Statistic;
@@ -43,15 +49,18 @@ import org.apache.shardingsphere.sqlfederation.compiler.metadata.util.SQLFederat
 import org.apache.shardingsphere.sqlfederation.compiler.statistic.SQLFederationStatistic;
 import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerableScanExecutorContext;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * SQL federation table.
  */
 @RequiredArgsConstructor
-public final class SQLFederationTable extends AbstractTable implements QueryableTable, TranslatableTable {
+public final class SQLFederationTable extends AbstractTable implements ModifiableTable, TranslatableTable {
     
     private final ShardingSphereTable table;
     
@@ -107,5 +116,16 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
     @Override
     public Statistic getStatistic() {
         return statistic;
+    }
+    
+    @Override
+    public @Nullable Collection<Object> getModifiableCollection() {
+        return null;
+    }
+    
+    @Override
+    public TableModify toModificationRel(final RelOptCluster relOptCluster, final RelOptTable relOptTable, final CatalogReader catalogReader, final RelNode relNode,
+                                         final Operation operation, @Nullable final List<String> updateColumnList, @Nullable final List<RexNode> express, final boolean flattened) {
+        return new EnumerableTableModify(relOptCluster, relNode.getTraitSet(), relOptTable, catalogReader, relNode, operation, updateColumnList, express, flattened);
     }
 }
