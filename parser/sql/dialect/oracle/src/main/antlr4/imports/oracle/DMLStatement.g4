@@ -443,15 +443,7 @@ fromClauseOption
     | LP_ joinClause RP_
     | selectTableReference
     | inlineAnalyticView
-    | xmlTable
-    ;
-
-xmlTable
-    : xmlTableFunction xmlTableFunctionAlias?
-    ;
-
-xmlTableFunctionAlias
-    : alias
+    | (regularFunction | xmlTableFunction) alias?
     ;
 
 selectTableReference

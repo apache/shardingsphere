@@ -5702,7 +5702,7 @@
 
     <select sql-case-id="select_from_xmltable_function">
         <projections start-index="7" stop-index="65">
-            <column-projection name="warehouse_name" alias="warehouse" start-index="7" stop-index="30" />
+            <column-projection alias="warehouse" name="warehouse_name" start-index="7" stop-index="30" />
             <column-projection name="Water" start-index="33" stop-index="48">
                 <owner name="warehouse2" start-index="33" stop-index="42" />
             </column-projection>
@@ -5716,9 +5716,10 @@
                     <simple-table name="warehouses" start-index="72" stop-index="81" />
                 </left>
                 <right>
-                    <xml-table xml-table-function-alias="warehouse2" start-index="76" stop-index="238">
-                        <xml-table-function function-name="XMLTABLE" text="XMLTABLE('/Warehouse' PASSING warehouses.warehouse_spec COLUMNS &quot;Water&quot; varchar2(6) PATH 'WaterAccess',&quot;Rail&quot; varchar2(6) PATH 'RailAccess')" start-index="88" stop-index="227" />
-                    </xml-table>
+                    <function-table table-alias="warehouse2">
+                        <table-function function-name="XMLTABLE"
+                                        text="XMLTABLE('/Warehouse' PASSING warehouses.warehouse_spec COLUMNS &quot;Water&quot; varchar2(6) PATH 'WaterAccess',&quot;Rail&quot; varchar2(6) PATH 'RailAccess')"/>
+                    </function-table>
                 </right>
             </join-table>
         </from>
@@ -6908,5 +6909,52 @@
         <from>
             <simple-table alias="aWHERE" name="employee" start-index="88" stop-index="102" literal-start-index="88" literal-stop-index="102" />
         </from>
+    </select>
+    <select sql-case-id="select_with_custom_table_function">
+        <projections start-index="7" stop-index="18" literal-start-index="7" literal-stop-index="18">
+            <aggregation-projection type="COUNT" expression="COUNT(empid)" start-index="7" stop-index="18"
+                                    literal-start-index="7" literal-stop-index="18"/>
+        </projections>
+        <from>
+            <join-table join-type="COMMA" natural="false">
+                <left>
+                    <simple-table alias="b" name="EMPLOYEE" start-index="25" stop-index="34" literal-start-index="25"
+                                  literal-stop-index="34"/>
+                </left>
+                <right>
+                    <function-table table-alias="a">
+                        <table-function function-name="custom_function" text="custom_function(b.orgid)"/>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <where start-index="64" stop-index="88" literal-start-index="64" literal-stop-index="88">
+            <expr>
+                <binary-operation-expression start-index="70" stop-index="88" literal-start-index="70"
+                                             literal-stop-index="88">
+                    <left>
+                        <column name="postid" start-index="70" stop-index="77" literal-start-index="70"
+                                literal-stop-index="77">
+                            <owner name="a" start-index="70" stop-index="70" literal-start-index="70"
+                                   literal-stop-index="70"/>
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="postid" start-index="81" stop-index="88" literal-start-index="81"
+                                literal-stop-index="88">
+                            <owner name="b" start-index="81" stop-index="81" literal-start-index="81"
+                                   literal-stop-index="81"/>
+                        </column>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_numeric_operator">
+        <projections start-index="7" stop-index="18">
+            <expression-projection start-index="7" stop-index="18" text="5!" alias="RESULT" />
+        </projections>
     </select>
 </sql-parser-test-cases>

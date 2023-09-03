@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
+package org.apache.shardingsphere.infra.exception;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlAttribute;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Expected xml table function.
+ * Table not exists exception.
  */
-@Getter
-@Setter
-public final class ExpectedXmlTableFunction extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+public final class TableNotExistsException extends MetaDataSQLException {
     
-    @XmlAttribute(name = "function-name")
-    private String functionName;
+    private static final long serialVersionUID = -2507596759730534895L;
     
-    @XmlAttribute
-    private String text;
+    public TableNotExistsException(final String tableName) {
+        super(XOpenSQLState.NOT_FOUND, 7, "Table or view `%s` does not exist.", tableName);
+    }
 }
