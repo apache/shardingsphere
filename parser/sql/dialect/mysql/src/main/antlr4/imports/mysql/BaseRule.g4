@@ -947,7 +947,7 @@ columnRefList
     ;
     
 functionCall
-    : aggregationFunction | specialFunction | regularFunction | jsonFunction | udfFunction
+    : aggregationFunction | specialFunction | jsonFunction | regularFunction | udfFunction
     ;
 
 udfFunction

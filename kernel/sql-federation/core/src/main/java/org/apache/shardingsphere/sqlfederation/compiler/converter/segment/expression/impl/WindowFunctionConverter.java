@@ -17,20 +17,19 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlBasicCall;
-import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSyntax;
-import org.apache.calcite.sql.SqlUnresolvedFunction;
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlWindow;
+import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.validate.SqlNameMatchers;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.ExpressionConverter;
 
 import java.util.Collection;
@@ -38,44 +37,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Function converter.
- */
-public class FunctionConverter implements SQLSegmentConverter<FunctionSegment, SqlNode> {
+public final class WindowFunctionConverter extends FunctionConverter {
     
     @Override
     public Optional<SqlNode> convert(final FunctionSegment segment) {
         SqlIdentifier functionName = new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO);
-        // TODO optimize sql parse logic for select current_user.
-        if ("CURRENT_USER".equalsIgnoreCase(functionName.getSimple())) {
-            return Optional.of(functionName);
-        }
-        if ("TRIM".equalsIgnoreCase(functionName.getSimple())) {
-            return new TrimFunctionConverter().convert(segment);
-        }
-        if ("OVER".equalsIgnoreCase(functionName.getSimple())) {
-            return new WindowFunctionConverter().convert(segment);
-        }
         List<SqlOperator> functions = new LinkedList<>();
-        SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));
-        return Optional.of(functions.isEmpty()
-                ? new SqlBasicCall(
-                        new SqlUnresolvedFunction(functionName, null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION), getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO)
-                : new SqlBasicCall(functions.iterator().next(), getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
+        SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.BINARY, functions, SqlNameMatchers.withCaseSensitive(false));
+        return Optional.of(new SqlBasicCall(functions.iterator().next(), getWindowFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
     }
     
-    private List<SqlNode> getFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {
+    private List<SqlNode> getWindowFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {
         List<SqlNode> result = new LinkedList<>();
-        ExpressionConverter expressionConverter = new ExpressionConverter();
         for (ExpressionSegment each : sqlSegments) {
-            if (expressionConverter.convert(each).isPresent()) {
-                SqlNode sqlNode = expressionConverter.convert(each).get();
-                if (sqlNode instanceof SqlNodeList) {
-                    result.addAll(((SqlNodeList) sqlNode).getList());
-                } else {
-                    result.add(expressionConverter.convert(each).get());
-                }
-            }
+            new ExpressionConverter().convert(each).ifPresent(result::add);
+        }
+        if (1 == result.size()) {
+            result.add(new SqlWindow(SqlParserPos.ZERO, null, null, new SqlNodeList(SqlParserPos.ZERO), new SqlNodeList(SqlParserPos.ZERO), SqlLiteral.createBoolean(false, SqlParserPos.ZERO), null,
+                    null, null));
         }
         return result;
     }
