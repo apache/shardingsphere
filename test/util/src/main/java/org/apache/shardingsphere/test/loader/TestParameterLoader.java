@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.test.loader;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.env.EnvironmentContext;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
 import org.apache.shardingsphere.test.loader.summary.FileSummary;
 
@@ -28,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URLConnection;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +48,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public final class TestParameterLoader {
+    
+    private static final String TOKEN_KEY = "it.github.token";
     
     private static final int DEFAULT_DOWNLOAD_THREADS = 4;
     
@@ -87,10 +92,15 @@ public final class TestParameterLoader {
     }
     
     private List<String> loadContent(final URI uri) {
-        try (
-                InputStreamReader in = new InputStreamReader(uri.toURL().openStream());
-                BufferedReader reader = new BufferedReader(in)) {
-            return reader.lines().collect(Collectors.toList());
+        try {
+            URLConnection urlConnection = uri.toURL().openConnection();
+            String githubToken = EnvironmentContext.getInstance().getValue(TOKEN_KEY);
+            if (!Strings.isNullOrEmpty(githubToken)) {
+                urlConnection.setRequestProperty("Authorization", "Bearer " + githubToken);
+            }
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+                return reader.lines().collect(Collectors.toList());
+            }
         } catch (final IOException ex) {
             log.warn("Load failed, reason is: ", ex);
             return Lists.newArrayList();

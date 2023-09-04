@@ -85,7 +85,7 @@ CREATE TABLE write_ds_0.t_product (product_id INT PRIMARY KEY, product_name VARC
 CREATE TABLE write_ds_0.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE write_ds_0.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
 CREATE TABLE write_ds_0.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE write_ds_0.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
+CREATE TABLE write_ds_0.t_single_table (single_id INT NOT NULL AUTO_INCREMENT, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
 CREATE INDEX order_index_t_order_0 ON write_ds_0.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON write_ds_0.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON write_ds_0.t_order_2 (order_id);
@@ -430,7 +430,7 @@ CREATE TABLE read_ds_0.t_product (product_id INT PRIMARY KEY, product_name VARCH
 CREATE TABLE read_ds_0.t_product_category( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE read_ds_0.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
 CREATE TABLE read_ds_0.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE read_ds_0.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
+CREATE TABLE read_ds_0.t_single_table (single_id INT NOT NULL AUTO_INCREMENT, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
 CREATE INDEX order_index_t_order_0 ON read_ds_0.t_order_0 (order_id);
 CREATE INDEX order_index_t_order_1 ON read_ds_0.t_order_1 (order_id);
 CREATE INDEX order_index_t_order_2 ON read_ds_0.t_order_2 (order_id);

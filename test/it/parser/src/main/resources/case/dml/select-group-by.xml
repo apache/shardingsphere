@@ -583,7 +583,14 @@
                 <in-expression start-index="90" stop-index="219">
                     <not>false</not>
                     <left>
-                        <common-expression text="(department_id,manager_id)" start-index="90" stop-index="116" />
+                        <list-expression start-index="90" stop-index="116" literal-start-index="90" literal-stop-index="116">
+                            <items>
+                                <column name="department_id" start-index="91" stop-index="103" literal-start-index="91" literal-stop-index="103" />
+                            </items>
+                            <items>
+                                <column name="manager_id" start-index="106" stop-index="115" literal-start-index="106" literal-stop-index="115" />
+                            </items>
+                        </list-expression>
                     </left>
                     <right>
                         <subquery start-index="121" stop-index="219">
