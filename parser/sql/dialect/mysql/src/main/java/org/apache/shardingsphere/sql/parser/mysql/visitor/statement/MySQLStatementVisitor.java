@@ -177,8 +177,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.RowExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -1186,6 +1187,13 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (null != ctx.variable()) {
             return visit(ctx.variable());
+        }
+        if (null != ctx.LP_()) {
+            RowExpression result = new RowExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
+            for (ExprContext each : ctx.expr()) {
+                result.getItems().add((ExpressionSegment) visit(each));
+            }
+            return result;
         }
         if (null != ctx.RETURNING()) {
             ListExpression result = new ListExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex());

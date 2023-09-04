@@ -46,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.IntervalExpressionProjection;
@@ -78,6 +79,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedUnaryOperationExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedValuesExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedVariableSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedRowExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
@@ -520,6 +522,29 @@ public final class ExpressionAssert {
     }
     
     /**
+     * Assert row expression.
+     *
+     * @param assertContext assert context
+     * @param actual actual row expression
+     * @param expected expected row expression
+     */
+    private static void assertRowExpression(final SQLCaseAssertContext assertContext, final RowExpression actual, final ExpectedRowExpression expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Row expression should not exist."));
+        } else {
+            assertNotNull(actual, assertContext.getText("Actual list expression should not exist."));
+            assertThat(assertContext.getText("Row expression item size assert error."),
+                    actual.getItems().size(), is(expected.getItems().size()));
+            Iterator<ExpressionSegment> actualItems = actual.getItems().iterator();
+            Iterator<ExpectedExpression> expectedItems = expected.getItems().iterator();
+            while (actualItems.hasNext()) {
+                assertExpression(assertContext, actualItems.next(), expectedItems.next());
+            }
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
+    }
+    
+    /**
      * Assert unary operation expression.
      * 
      * @param assertContext assert context
@@ -603,6 +628,8 @@ public final class ExpressionAssert {
             assertIntervalExpression(assertContext, (IntervalExpressionProjection) actual, expected.getIntervalExpression());
         } else if (actual instanceof MultisetExpression) {
             assertMultisetExpression(assertContext, (MultisetExpression) actual, expected.getMultisetExpression());
+        } else if (actual instanceof RowExpression) {
+            assertRowExpression(assertContext, (RowExpression) actual, expected.getRowExpression());
         } else if (actual instanceof UnaryOperationExpression) {
             assertUnaryOperationExpression(assertContext, (UnaryOperationExpression) actual, expected.getUnaryOperationExpression());
         } else {
