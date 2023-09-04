@@ -137,7 +137,7 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         }
         if (segment instanceof RowExpression) {
             return new RowExpressionConverter().convert((RowExpression) segment);
-        }          
+        }
         if (segment instanceof VariableSegment) {
             return new VariableSegmentConverter().convert((VariableSegment) segment);
         }
