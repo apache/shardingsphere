@@ -567,4 +567,24 @@
             <column-item name="customer_id" order-direction="ASC" start-index="80" stop-index="90" literal-start-index="80" literal-stop-index="90" />
         </order-by>
     </select>
+    
+    <select sql-case-id="select_pivot">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from>
+            <subquery-table>
+                <subquery>
+                    <select>
+                        <projections start-index="22" stop-index="22">
+                            <shorthand-projection start-index="22" stop-index="22"/>
+                        </projections>
+                        <from start-index="29" stop-index="33">
+                            <simple-table name="sales" start-index="29" stop-index="33"/>
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

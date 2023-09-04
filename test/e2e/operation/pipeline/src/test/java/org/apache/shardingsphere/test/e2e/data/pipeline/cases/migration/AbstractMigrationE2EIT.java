@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -150,7 +151,11 @@ public abstract class AbstractMigrationE2EIT {
     }
     
     protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType) throws SQLException {
-        containerComposer.proxyExecuteWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType), 0);
+        assertCheckMigrationSuccess(containerComposer, jobId, algorithmType, new Properties());
+    }
+    
+    protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType, final Properties algorithmProps) throws SQLException {
+        containerComposer.proxyExecuteWithLog(buildConsistencyCheckDistSQL(jobId, algorithmType, algorithmProps), 0);
         // TODO Need to add after the stop then to start, can continue the consistency check from the previous progress
         List<Map<String, Object>> resultList = Collections.emptyList();
         for (int i = 0; i < 30; i++) {
@@ -173,5 +178,15 @@ public abstract class AbstractMigrationE2EIT {
             assertTrue(Boolean.parseBoolean(each.get("result").toString()), String.format("%s check result is false", each.get("tables")));
             assertThat("finished_percentage is not 100", each.get("finished_percentage").toString(), is("100"));
         }
+    }
+    
+    private String buildConsistencyCheckDistSQL(final String jobId, final String algorithmType, final Properties algorithmProps) {
+        if (null == algorithmProps || algorithmProps.isEmpty()) {
+            return String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType);
+        }
+        String sql = "CHECK MIGRATION '%s' BY TYPE (NAME='%s', PROPERTIES("
+                + algorithmProps.entrySet().stream().map(entry -> String.format("'%s'='%s'", entry.getKey(), entry.getValue())).collect(Collectors.joining(","))
+                + "))";
+        return String.format(sql, jobId, algorithmType);
     }
 }
