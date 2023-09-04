@@ -64,6 +64,8 @@ class SQLNodeConverterEngineIT {
     
     private static final String UPDATE_STATEMENT_PREFIX = "UPDATE";
     
+    private static final String INSERT_STATEMENT_PREFIX = "INSERT";
+    
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertConvert(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
@@ -108,7 +110,8 @@ class SQLNodeConverterEngineIT {
             return testParam.getSqlCaseId().toUpperCase().startsWith(SELECT_STATEMENT_PREFIX)
                     || testParam.getSqlCaseId().toUpperCase().startsWith(DELETE_STATEMENT_PREFIX)
                     || testParam.getSqlCaseId().toUpperCase().startsWith(EXPLAIN_STATEMENT_PREFIX)
-                    || testParam.getSqlCaseId().toUpperCase().startsWith(UPDATE_STATEMENT_PREFIX);
+                    || testParam.getSqlCaseId().toUpperCase().startsWith(UPDATE_STATEMENT_PREFIX)
+                    || testParam.getSqlCaseId().toUpperCase().startsWith(INSERT_STATEMENT_PREFIX);
         }
     }
 }

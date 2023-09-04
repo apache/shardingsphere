@@ -29,7 +29,7 @@
     <modules>
         <module>shardingsphere-proxy-example</module>
         <module>shardingsphere-parser-example</module>
-        <module>shardingsphere-example-generator</module>
+        <module>shardingsphere-jdbc-example-generator</module>
     </modules>
     
     <properties>

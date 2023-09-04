@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.env.EnvironmentContext;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
 import org.apache.shardingsphere.test.loader.summary.FileSummary;
 
@@ -40,6 +41,8 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public final class GitHubTestParameterLoadStrategy implements TestParameterLoadStrategy {
+    
+    private static final String TOKEN_KEY = "it.github.token";
     
     @Override
     public Collection<FileSummary> loadSQLCaseFileSummaries(final URI uri) {
@@ -82,8 +85,9 @@ public final class GitHubTestParameterLoadStrategy implements TestParameterLoadS
     private String loadContent(final URI casesURI) {
         try {
             URLConnection urlConnection = casesURI.toURL().openConnection();
-            if (!Strings.isNullOrEmpty(GitHubEnvironment.getInstance().getGithubToken())) {
-                urlConnection.setRequestProperty("Authorization", "Bearer " + GitHubEnvironment.getInstance().getGithubToken());
+            String githubToken = EnvironmentContext.getInstance().getValue(TOKEN_KEY);
+            if (!Strings.isNullOrEmpty(githubToken)) {
+                urlConnection.setRequestProperty("Authorization", "Bearer " + githubToken);
             }
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
                 return reader.lines().collect(Collectors.joining(System.lineSeparator()));
