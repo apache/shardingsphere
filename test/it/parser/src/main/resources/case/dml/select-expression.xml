@@ -1809,7 +1809,14 @@
         </projections>
         <where start-index="22" stop-index="44">
             <expr>
-                <common-expression text="~t_order.order_id" start-index="28" stop-index="44" />
+                <unary-operation-expression text="~t_order.order_id" start-index="28" stop-index="44">
+                    <operator>~</operator>
+                    <expr>
+                        <column name="order_id" start-index="29" stop-index="44">
+                            <owner name="t_order" start-index="29" stop-index="35" />
+                        </column>
+                    </expr>
+                </unary-operation-expression>
             </expr>
         </where>
     </select>
@@ -1983,7 +1990,8 @@
         </projections>
         <where start-index="22" stop-index="33" literal-stop-index="53">
             <expr>
-                <common-expression text="{ts ?}" literal-text="{ts '1994-02-04 12:23:00'}" start-index="28" stop-index="33" literal-stop-index="53" />
+                <parameter-marker-expression start-index="32" stop-index="32" parameter-index="0" />
+                <literal-expression start-index="32" stop-index="52" value="1994-02-04 12:23:00" />
             </expr>
         </where>
     </select>
@@ -2985,6 +2993,46 @@
                     <operator>&lt;&lt;=</operator>
                     <right>
                         <function function-name="inet" start-index="32" stop-index="49" text="inet '192.168.1.5'" />
+                    </right>
+                </binary-operation-expression>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_ts_rewrite_function">
+        <projections start-index="7" stop-index="62">
+            <expression-projection start-index="7" stop-index="62" text="ts_rewrite('a &amp; b'::tsquery, 'a'::tsquery, 'c'::tsquery)">
+                <function start-index="7" stop-index="62" function-name="ts_rewrite" text="ts_rewrite('a &amp; b'::tsquery, 'a'::tsquery, 'c'::tsquery)" />
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_int_2_function">
+        <projections start-index="7" stop-index="16">
+            <expression-projection start-index="7" stop-index="16" text="int2(25.3)">
+                <function start-index="7" stop-index="16" text="int2(25.3);" function-name="int2" />
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_elem_contained_by_range_function">
+        <projections start-index="7" stop-index="53">
+            <expression-projection start-index="7" stop-index="53" text="elem_contained_by_range('2', numrange(1.1,2.2))">
+                <function start-index="7" stop-index="53" function-name="elem_contained_by_range" text="elem_contained_by_range('2', numrange(1.1,2.2))" />
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_int8range">
+        <projections start-index="7" stop-index="50">
+            <expression-projection start-index="7" stop-index="50" text="int8range(5,15) * int8range(10,20)" alias="RESULT">
+                <binary-operation-expression start-index="7" stop-index="40">
+                    <left>
+                        <function start-index="7" stop-index="22" function-name="int8range" text="int8range(5,15)" />
+                    </left>
+                    <operator>*</operator>
+                    <right>
+                        <function start-index="23" stop-index="40" function-name="int8range" text="int8range(10,20)" />
                     </right>
                 </binary-operation-expression>
             </expression-projection>

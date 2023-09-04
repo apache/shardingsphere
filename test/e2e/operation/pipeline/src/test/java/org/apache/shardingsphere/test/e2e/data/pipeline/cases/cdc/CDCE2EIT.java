@@ -205,7 +205,7 @@ class CDCE2EIT {
         TableInventoryCheckParameter param = new TableInventoryCheckParameter("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
                 tableMetaData.getColumnNames(), uniqueKeys, null, progressContext);
         TableDataConsistencyChecker tableChecker = TypedSPILoader.getService(TableDataConsistencyChecker.class, "DATA_MATCH", new Properties());
-        TableDataConsistencyCheckResult checkResult = tableChecker.checkSingleTableInventoryData(param);
+        TableDataConsistencyCheckResult checkResult = tableChecker.buildTableInventoryChecker(param).checkSingleTableInventoryData();
         assertTrue(checkResult.isMatched());
     }
     

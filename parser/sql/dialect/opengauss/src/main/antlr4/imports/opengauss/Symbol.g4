@@ -90,3 +90,5 @@ GEOMETRIC_PERPENDICULAR_:       '?-|';
 GEOMETRIC_SAME_AS_:             '~=';
 SIGNED_LEFT_SHIFT_E_:           '<<=';
 SIGNED_RIGHT_SHIFT_E_:          '>>=';
+DN_:                            '!!';
+CUBE_ROOT_:                     '||/';

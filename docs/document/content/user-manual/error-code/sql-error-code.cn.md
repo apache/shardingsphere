@@ -21,6 +21,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42000     | 10004       | Unsupported SQL node conversion for SQL statement \`%s\`.                      |
 | HY000     | 10005       | Column '%s' in %s is ambiguous.                                                |
 | 42S02     | 10006       | Unknown column '%s' in '%s'.                                                   |
+| 42S02     | 10007       | Table or view \`%s\` does not exist.                                           |
 | 42000     | 10010       | Rule does not exist.                                                           |
 | 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
