@@ -995,7 +995,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     @Override
     public final ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
         super.visitWindowFunction(ctx);
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.windowingClause().OVER().getText(), getOriginalText(ctx));
+        result.getParameters().add(new FunctionSegment(ctx.funcName.getStartIndex(), ctx.funcName.getStopIndex(), ctx.funcName.getText(), ctx.funcName.getText() + "()"));
+        result.getParameters().addAll(getWindowSpecification(ctx.windowingClause().windowSpecification()));
+        return result;
     }
     
     @Override
