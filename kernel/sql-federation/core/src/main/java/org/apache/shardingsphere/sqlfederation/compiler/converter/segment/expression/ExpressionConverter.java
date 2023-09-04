@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAga
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
@@ -61,6 +62,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projec
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.impl.DataTypeConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.NotExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.MatchExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.RowExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.VariableSegmentConverter;
 
 import java.util.Optional;
@@ -132,6 +134,9 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         }
         if (segment instanceof CollateExpression) {
             return new CollateExpressionConverter().convert((CollateExpression) segment);
+        }
+        if (segment instanceof RowExpression) {
+            return new RowExpressionConverter().convert((RowExpression) segment);
         }
         if (segment instanceof VariableSegment) {
             return new VariableSegmentConverter().convert((VariableSegment) segment);
