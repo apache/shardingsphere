@@ -238,6 +238,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Arrays;
 
 /**
  * Statement visitor for MySQL.
@@ -896,17 +897,21 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public final ASTNode visitJsonFunction(final JsonFunctionContext ctx) {
         JsonFunctionNameContext functionNameContext = ctx.jsonFunctionName();
         String functionName;
+        FunctionSegment result;
         if (null != functionNameContext) {
             functionName = functionNameContext.getText();
+            result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
             for (ExprContext each : ctx.expr()) {
-                visit(each);
+                result.getParameters().add((ExpressionSegment) visit(each));
             }
         } else if (null != ctx.JSON_SEPARATOR()) {
             functionName = ctx.JSON_SEPARATOR().getText();
+            result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
         } else {
             functionName = ctx.JSON_UNQUOTED_SEPARATOR().getText();
+            result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
         }
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
+        return result;
     }
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
@@ -1177,6 +1182,14 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (null != ctx.variable()) {
             return visit(ctx.variable());
+        }
+        if (null != ctx.RETURNING()) {
+            ListExpression list = new ListExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+            list.getItems()
+                    .addAll(Arrays.asList(new LiteralExpressionSegment(ctx.path().start.getStartIndex(), ctx.path().stop.getStopIndex(), ctx.path().getText()),
+                            new LiteralExpressionSegment(ctx.RETURNING().getSymbol().getStartIndex(), ctx.RETURNING().getSymbol().getStopIndex(), ctx.RETURNING().getSymbol().getText()),
+                            (ExpressionSegment) visit(ctx.dataType())));
+            return list;
         }
         if (null != ctx.LBE_()) {
             return visit(ctx.expr(0));
