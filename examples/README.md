@@ -34,28 +34,14 @@ mvn clean install -Prelease
 
 ```
 shardingsphere-example
-  ├── example-core
-  │   ├── config-utility
-  │   ├── example-api
-  │   ├── example-raw-jdbc
-  │   ├── example-spring-jpa
-  │   └── example-spring-mybatis
-  ├── shardingsphere-example-generator
+  ├── shardingsphere-jdbc-example-generator
   ├── shardingsphere-parser-example
-  ├── shardingsphere-proxy-example
-  │   ├── shardingsphere-proxy-boot-mybatis-example
-  │   ├── shardingsphere-proxy-distsql-example
-  │   └── shardingsphere-proxy-hint-example
   └── src/resources
-        └── manual_schema.sql
+          └── manual_schema.sql
 ```
 
 ## Available Examples
 
-| Example                                                                      | Description                                                                    |
-|------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| [ShardingSphere-JDBC Examples](shardingsphere-example-generator/README.md)   | Generate the examples by configuration and show how to use ShardingSphere-JDBC |
-| [DistSQL](shardingsphere-proxy-example/shardingsphere-proxy-distsql-example) | show how to use DistSQL in ShardingSphere-Proxy                                |
-| APM(Pending)                                                                 | show how to use APM in ShardingSphere                                          |
-| proxy(Pending)                                                               | show how to use ShardingSphere-Proxy                                           |
-| [docker](./docker/docker-compose.md)                                         | show how to use docker to setup the environment for ShardingSphere             |
+| Example                                                                         | Description                                                                    |
+|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| [ShardingSphere-JDBC Examples](shardingsphere-jdbc-example-generator/README.md) | Generate the examples by configuration and show how to use ShardingSphere-JDBC |
