@@ -2994,4 +2994,20 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_int8range">
+        <projections start-index="7" stop-index="50">
+            <expression-projection start-index="7" stop-index="50" text="int8range(5,15) * int8range(10,20)" alias="RESULT">
+                <binary-operation-expression start-index="7" stop-index="40">
+                    <left>
+                        <function start-index="7" stop-index="22" function-name="int8range" text="int8range(5,15)" />
+                    </left>
+                    <operator>*</operator>
+                    <right>
+                        <function start-index="23" stop-index="40" function-name="int8range" text="int8range(10,20)" />
+                    </right>
+                </binary-operation-expression>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
