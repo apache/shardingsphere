@@ -24,6 +24,7 @@
     <test-cases sql-case-id="select_with_schema_name_in_shorthand_projection" expected-sql="SELECT `sharding_db`.`t_order`.* FROM `t_order` WHERE `user_id` = 1 AND `order_id` = 1" db-types="MySQL" sql-case-types="LITERAL" />
     <test-cases sql-case-id="select_with_schema_name_in_column_projection" expected-sql="SELECT `sharding_db`.`t_order`.`order_id` FROM `t_order` WHERE `user_id` = ? AND `order_id` = ?" db-types="MySQL" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="select_with_schema_name_in_column_projection" expected-sql="SELECT `sharding_db`.`t_order`.`order_id` FROM `t_order` WHERE `user_id` = 1 AND `order_id` = 1" db-types="MySQL" sql-case-types="LITERAL" />
+    <test-cases sql-case-id="select_with_dollar_parameter_for_postgresql" expected-sql="SELECT &quot;order_id&quot; FROM &quot;t_order&quot; WHERE &quot;user_id&quot; = ? AND &quot;order_id&quot; = ? OR &quot;user_id&quot; = ?" db-types="PostgreSQL, openGauss" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="select_with_assignment_operator" expected-sql="SELECT `rn` := 1, `now_code` := '' FROM `t_order`" db-types="MySQL" />
     <test-cases sql-case-id="select_with_assignment_operator_and_keyword" expected-sql="SELECT `KEY` := '', `num` := 123 FROM `t_order`" db-types="MySQL" />
     <test-cases sql-case-id="select_with_json_value_return_type" expected-sql="SELECT * FROM `t_order` WHERE JSON_VALUE(`items`, '''$.name''' 'RETURNING' VARCHAR(100)) = 'jack'" db-types="MySQL" />
