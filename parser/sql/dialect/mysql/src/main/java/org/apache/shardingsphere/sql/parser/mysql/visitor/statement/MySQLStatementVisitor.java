@@ -176,8 +176,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.UnaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -238,7 +238,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.Arrays;
 
 /**
  * Statement visitor for MySQL.
@@ -1184,12 +1183,11 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             return visit(ctx.variable());
         }
         if (null != ctx.RETURNING()) {
-            ListExpression list = new ListExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-            list.getItems()
-                    .addAll(Arrays.asList(new LiteralExpressionSegment(ctx.path().start.getStartIndex(), ctx.path().stop.getStopIndex(), ctx.path().getText()),
-                            new LiteralExpressionSegment(ctx.RETURNING().getSymbol().getStartIndex(), ctx.RETURNING().getSymbol().getStopIndex(), ctx.RETURNING().getSymbol().getText()),
-                            (ExpressionSegment) visit(ctx.dataType())));
-            return list;
+            ListExpression result = new ListExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+            result.getItems().add(new LiteralExpressionSegment(ctx.path().start.getStartIndex(), ctx.path().stop.getStopIndex(), ctx.path().getText()));
+            result.getItems().add(new LiteralExpressionSegment(ctx.RETURNING().getSymbol().getStartIndex(), ctx.RETURNING().getSymbol().getStopIndex(), ctx.RETURNING().getSymbol().getText()));
+            result.getItems().add((ExpressionSegment) visit(ctx.dataType()));
+            return result;
         }
         if (null != ctx.LBE_()) {
             return visit(ctx.expr(0));
