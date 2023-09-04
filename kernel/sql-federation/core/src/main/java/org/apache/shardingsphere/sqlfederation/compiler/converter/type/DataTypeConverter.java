@@ -25,10 +25,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Datatype converter.
+ * Data type converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DataTypeConverter {
+public final class DataTypeConverter {
     
     private static final Map<String, SqlTypeName> REGISTRY = new HashMap<>();
     
