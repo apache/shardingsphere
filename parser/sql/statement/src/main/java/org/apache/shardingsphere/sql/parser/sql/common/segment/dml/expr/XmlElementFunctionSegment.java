@@ -15,40 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Column definition segment.
+ * Xml element function segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
+public class XmlElementFunctionSegment implements ComplexExpressionSegment, ProjectionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final ColumnSegment columnName;
+    private final String functionName;
     
-    private final DataTypeSegment dataType;
+    private final IdentifierValue identifier;
     
-    private final boolean primaryKey;
+    private final Collection<ExpressionSegment> xmlAttributes = new LinkedList<>();
     
-    private final boolean notNull;
+    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
     
-    private final Collection<SimpleTableSegment> referencedTables = new LinkedList<>();
+    private final String text;
     
-    @Setter
-    private boolean isRef;
+    @Override
+    public String getColumnLabel() {
+        return text;
+    }
 }

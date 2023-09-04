@@ -24,10 +24,10 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlTypeNameSpec;
 import org.apache.calcite.sql.fun.SqlCastFunction;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.type.DataTypeConverter;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -43,7 +43,7 @@ public final class TypeCastExpressionConverter implements SQLSegmentConverter<Ty
         if (!expression.isPresent()) {
             return Optional.empty();
         }
-        SqlTypeNameSpec sqlTypeName = new SqlBasicTypeNameSpec(SqlTypeName.valueOf(segment.getDataType().toUpperCase()), SqlParserPos.ZERO);
+        SqlTypeNameSpec sqlTypeName = new SqlBasicTypeNameSpec(DataTypeConverter.convert(segment.getDataType().toUpperCase()), SqlParserPos.ZERO);
         return Optional.of(new SqlBasicCall(new SqlCastFunction(), Arrays.asList(expression.get(), new SqlDataTypeSpec(sqlTypeName, SqlParserPos.ZERO)), SqlParserPos.ZERO));
     }
 }
