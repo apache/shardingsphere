@@ -446,7 +446,8 @@ unreservedWord
     | INT16
     | FLOAT4
     | ELEM_CONTAINED_BY_RANGE
-
+    | INT8RANGE
+    | NUMRANGE
     ;
 
 typeFuncNameKeyword
