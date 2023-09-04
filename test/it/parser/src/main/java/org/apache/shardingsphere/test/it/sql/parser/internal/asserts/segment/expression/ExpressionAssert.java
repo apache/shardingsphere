@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAga
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MultisetExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
@@ -74,6 +75,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedMultisetExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedNotExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedTypeCastExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedUnaryOperationExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedValuesExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedVariableSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
@@ -211,6 +213,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert binary operation expression.
+     * 
      * @param assertContext assert context
      * @param actual actual binary operation expression
      * @param expected expected binary operation expression
@@ -231,6 +234,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert in operation expression.
+     * 
      * @param assertContext assert context
      * @param actual actual in operation expression
      * @param expected expected in operation expression
@@ -251,6 +255,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert not operation expression.
+     * 
      * @param assertContext assert context
      * @param actual actual not operation expression
      * @param expected expected not operation expression
@@ -268,6 +273,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert list operation expression.
+     * 
      * @param assertContext assert context
      * @param actual actual list operation expression
      * @param expected expected list operation expression
@@ -291,6 +297,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert between operation expression.
+     * 
      * @param assertContext assert context
      * @param actual actual between operation expression
      * @param expected expected between operation expression
@@ -513,6 +520,25 @@ public final class ExpressionAssert {
     }
     
     /**
+     * Assert unary operation expression.
+     * 
+     * @param assertContext assert context
+     * @param actual actual unary operation expression
+     * @param expected expected unary operation expression
+     */
+    private static void assertUnaryOperationExpression(final SQLCaseAssertContext assertContext, final UnaryOperationExpression actual, final ExpectedUnaryOperationExpression expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Actual unary operation expression should not exist."));
+        } else {
+            assertNotNull(actual, assertContext.getText("Actual unary operation expression should exist."));
+            assertExpression(assertContext, actual.getExpression(), expected.getExpr());
+            assertThat(assertContext.getText("Unary operation expression operator assert error."),
+                    actual.getOperator(), is(expected.getOperator()));
+            SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        }
+    }
+    
+    /**
      * Assert expression by actual expression segment class type.
      *
      * @param assertContext assert context
@@ -577,6 +603,8 @@ public final class ExpressionAssert {
             assertIntervalExpression(assertContext, (IntervalExpressionProjection) actual, expected.getIntervalExpression());
         } else if (actual instanceof MultisetExpression) {
             assertMultisetExpression(assertContext, (MultisetExpression) actual, expected.getMultisetExpression());
+        } else if (actual instanceof UnaryOperationExpression) {
+            assertUnaryOperationExpression(assertContext, (UnaryOperationExpression) actual, expected.getUnaryOperationExpression());
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported expression: %s", actual.getClass().getName()));
         }

@@ -164,6 +164,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             QueryContext queryContext = createQueryContext(sql);
             databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
+            connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
             checkSameDatabaseNameInTransaction(queryContext.getSqlStatementContext(), databaseName);
             trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
@@ -313,6 +314,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private int executeUpdate0(final String sql, final ExecuteUpdateCallback updateCallback, final TrafficExecutorCallback<Integer> trafficCallback) throws SQLException {
         QueryContext queryContext = createQueryContext(sql);
         databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
+        connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
         checkSameDatabaseNameInTransaction(queryContext.getSqlStatementContext(), databaseName);
         trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
         if (null != trafficInstanceId) {
@@ -431,6 +433,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             QueryContext queryContext = createQueryContext(sql);
             databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
+            connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
             checkSameDatabaseNameInTransaction(queryContext.getSqlStatementContext(), databaseName);
             trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
