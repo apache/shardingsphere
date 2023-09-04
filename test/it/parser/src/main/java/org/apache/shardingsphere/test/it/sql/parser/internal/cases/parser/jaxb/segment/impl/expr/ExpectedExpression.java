@@ -116,7 +116,7 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "row-expression")
     private ExpectedRowExpression rowExpression;
-  
+    
     @XmlElement(name = "unary-operation-expression")
     private ExpectedUnaryOperationExpression unaryOperationExpression;
 }
