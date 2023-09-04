@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSeg
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.ExpressionConverter;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -68,14 +69,7 @@ public class FunctionConverter implements SQLSegmentConverter<FunctionSegment, S
         List<SqlNode> result = new LinkedList<>();
         ExpressionConverter expressionConverter = new ExpressionConverter();
         for (ExpressionSegment each : sqlSegments) {
-            if (expressionConverter.convert(each).isPresent()) {
-                SqlNode sqlNode = expressionConverter.convert(each).get();
-                if (sqlNode instanceof SqlNodeList) {
-                    result.addAll(((SqlNodeList) sqlNode).getList());
-                } else {
-                    result.add(expressionConverter.convert(each).get());
-                }
-            }
+            expressionConverter.convert(each).ifPresent(optional -> result.addAll(optional instanceof SqlNodeList ? ((SqlNodeList) optional).getList() : Collections.singleton(optional)));
         }
         return result;
     }
