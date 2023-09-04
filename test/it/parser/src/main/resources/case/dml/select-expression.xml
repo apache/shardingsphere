@@ -3010,4 +3010,20 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_int4range">
+        <projections start-index="7" stop-index="48">
+            <expression-projection start-index="7" stop-index="48" text="int4range(2,4) &lt;@ int4range(1,7)" alias="RESULT">
+                <binary-operation-expression start-index="7" stop-index="38">
+                    <left>
+                        <function start-index="7" stop-index="21" function-name="int4range" text="int4range(2,4)" />
+                    </left>
+                    <operator>&lt;@</operator>
+                    <right>
+                        <function start-index="23" stop-index="37" function-name="int4range" text="int4range(1,7)" />
+                    </right>
+                </binary-operation-expression>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
