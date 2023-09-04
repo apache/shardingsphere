@@ -143,7 +143,7 @@ jobs:
     name: Check - CodeQL
     needs: global-environment
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 100
     permissions:
       actions: read
       contents: read
