@@ -21,5 +21,7 @@
     <test-cases sql-case-id="select_with_database_name_and_schema_name_in_table" expected-sql="SELECT &quot;order_id&quot; FROM &quot;sharding_db&quot;.&quot;public&quot;.&quot;t_order&quot; WHERE &quot;user_id&quot; = ? AND &quot;order_id&quot; = ?" db-types="PostgreSQL,openGauss" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="select_with_database_name_and_schema_name_in_table" expected-sql="SELECT &quot;order_id&quot; FROM &quot;sharding_db&quot;.&quot;public&quot;.&quot;t_order&quot; WHERE &quot;user_id&quot; = 1 AND &quot;order_id&quot; = 1" db-types="PostgreSQL,openGauss" sql-case-types="LITERAL" />
     <test-cases sql-case-id="select_with_dollar_parameter_for_postgresql" expected-sql="SELECT &quot;order_id&quot; FROM &quot;t_order&quot; WHERE &quot;user_id&quot; = ? AND &quot;order_id&quot; = ? OR &quot;user_id&quot; = ?" db-types="PostgreSQL, openGauss" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="select_with_assignment_operator" expected-sql="SELECT `rn` := 1, `now_code` := '' FROM `t_order`" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_assignment_operator_and_keyword" expected-sql="SELECT `KEY` := '', `num` := 123 FROM `t_order`" db-types="MySQL" />
     <test-cases sql-case-id="select_with_json_value_return_type" expected-sql="SELECT * FROM `t_order` WHERE JSON_VALUE(`items`, '''$.name''' 'RETURNING' VARCHAR(100)) = 'jack'" db-types="MySQL" />
 </sql-node-converter-test-cases>
