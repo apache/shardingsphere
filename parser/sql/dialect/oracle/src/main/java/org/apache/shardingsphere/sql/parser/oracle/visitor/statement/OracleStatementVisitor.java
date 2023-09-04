@@ -79,7 +79,9 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNa
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlAggFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlCdataFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlColattvalFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlElementFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlExistsFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlForestFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFunctionContext;
@@ -116,6 +118,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Interval
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MultisetExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlElementFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlNameSpaceStringAsIdentifierSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlNameSpacesClauseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
@@ -731,8 +734,31 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.xmlTableFunction()) {
             return visit(ctx.xmlTableFunction());
         }
+        if (null != ctx.xmlElementFunction()) {
+            return visit(ctx.xmlElementFunction());
+        }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.specifiedFunctionName.getText(), getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx.exprList()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitXmlElementFunction(final XmlElementFunctionContext ctx) {
+        XmlElementFunctionSegment result =
+                new XmlElementFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLELEMENT().getText(), (IdentifierValue) visit(ctx.identifier()), getOriginalText(ctx));
+        Collection<ExpressionSegment> expressionSegments = ctx.exprWithAlias().stream().map(each -> (ExpressionSegment) visit(each.expr())).collect(Collectors.toList());
+        result.getParameters().addAll(expressionSegments);
+        if (null != ctx.xmlAttributes()) {
+            Collection<ExpressionSegment> xmlAttributes = ctx.xmlAttributes().exprWithAlias().stream().map(each -> (ExpressionSegment) visit(each.expr())).collect(Collectors.toList());
+            result.getXmlAttributes().addAll(xmlAttributes);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitXmlCdataFunction(final XmlCdataFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLCDATA().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.stringLiterals()));
         return result;
     }
     

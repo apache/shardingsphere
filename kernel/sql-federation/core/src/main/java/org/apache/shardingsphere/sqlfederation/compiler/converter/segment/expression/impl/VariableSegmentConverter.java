@@ -15,30 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.impl;
+package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl;
 
-import org.apache.calcite.sql.SqlDataTypeSpec;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlBasicTypeNameSpec;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 
-import java.util.Objects;
 import java.util.Optional;
 
-/**
- * Data type converter. 
- */
-public final class DataTypeConverter implements SQLSegmentConverter<DataTypeSegment, SqlNode> {
+public final class VariableSegmentConverter implements SQLSegmentConverter<VariableSegment, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final DataTypeSegment segment) {
-        if (null == segment) {
-            return Optional.empty();
-        }
-        return Optional.of(new SqlDataTypeSpec(new SqlBasicTypeNameSpec(Objects.requireNonNull(SqlTypeName.get(segment.getDataTypeName())), segment.getDataLength().getPrecision(), SqlParserPos.ZERO),
-                SqlParserPos.ZERO));
+    public Optional<SqlNode> convert(final VariableSegment segment) {
+        return Optional.of(new SqlIdentifier(segment.getText(), SqlParserPos.ZERO));
     }
 }
