@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineCancellable;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
@@ -27,15 +25,15 @@ import java.util.Collection;
 /**
  * Table data consistency checker.
  */
-public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm, PipelineCancellable {
+public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm {
     
     /**
-     * Data consistency check for single table inventory data.
+     * Build table inventory checker.
      *
      * @param param check parameter
-     * @return check result
+     * @return table inventory checker
      */
-    TableDataConsistencyCheckResult checkSingleTableInventoryData(TableInventoryCheckParameter param);
+    TableInventoryChecker buildTableInventoryChecker(TableInventoryCheckParameter param);
     
     /**
      * Is break on inventory check not matched.

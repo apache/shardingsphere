@@ -123,6 +123,9 @@ class MySQLMultiStatementsHandlerTest {
         ShardingSphereTable table = new ShardingSphereTable("t", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
                 new ShardingSphereColumn("v", Types.INTEGER, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getSchema("foo_db").getTable("t")).thenReturn(table);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").containsSchema("foo_db")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getSchema("foo_db").containsTable("t")).thenReturn(true);
         return result;
     }
 }

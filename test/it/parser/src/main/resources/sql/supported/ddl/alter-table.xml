@@ -17,6 +17,11 @@
   -->
 
 <sql-cases>
+    <sql-case id="alter_table_drop_partition_for_to_date_function" value="ALTER TABLE sales DROP PARTITION FOR(TO_DATE('01-SEP-2007','dd-MON-yyyy'))" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_unique_disable_validate" value="ALTER TABLE sales ADD CONSTRAINT sales_uk UNIQUE (prod_id, cust_id, promo_id, channel_id, time_id) DISABLE VALIDATE" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_foreign_key_references_rely_disable_novalidate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) RELY DISABLE NOVALIDATE" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_foreign_key_references_enable_novalidate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) ENABLE NOVALIDATE" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_foreign_key_references_enable_validate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) ENABLE VALIDATE" db-types="Oracle" />
     <sql-case id="alter_table_modify_lob_shrink_space" value="ALTER TABLE employees MODIFY LOB (perf_review) (SHRINK SPACE)" db-types="Oracle" />
     <sql-case id="alter_table_set_unused" value="ALTER TABLE hr.admin_emp SET UNUSED (hiredate, mgr)" db-types="Oracle" />
     <sql-case id="alter_table_modify_lob_cache" value="ALTER TABLE employees MODIFY LOB (resume) (CACHE)" db-types="Oracle" />
@@ -50,6 +55,7 @@
     <sql-case id="alter_table_modify_unsigned_zerofill_not_null" value="alter table t1 modify c1 real unsigned zerofill not null" db-types="MySQL" />
     <sql-case id="alter_table_change_unsigned_zerofill_not_null" value="alter table t1 change c1 c2 real unsigned zerofill not null" db-types="MySQL" />
     <sql-case id="alter_table_add_partition" value="alter table t1 add partition partitions 10" db-types="MySQL" />
+    <sql-case id="alter_table_add_partition_nested_table_col_properties" value="ALTER TABLE print_media_part ADD PARTITION p4 VALUES LESS THAN (400) LOB(ad_photo, ad_composite) STORE AS (TABLESPACE omf_ts1) LOB(ad_sourcetext, ad_finaltext) STORE AS (TABLESPACE omf_ts1) NESTED TABLE ad_textdocs_ntab STORE AS nt_p3" db-types="Oracle" />
     <sql-case id="alter_table_partition" value="alter table t1 partition by key(c1) partitions 5" db-types="MySQL" />
     <sql-case id="alter_table_if_exists_only" value="ALTER TABLE IF EXISTS ONLY t_log ADD name varchar" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_table_with_force" value="ALTER TABLE t_order FORCE" db-types="MySQL" />
@@ -208,5 +214,12 @@
     <sql-case id="alter_table_modify_subpartition_add_values" value="ALTER TABLE quarterly_regional_sales MODIFY SUBPARTITION q1_1999_southeast ADD VALUES ('KS')" db-types="Oracle" />
     <sql-case id="alter_table_add_partition_values_less_than1" value="ALTER TABLE quarterly_regional_sales ADD PARTITION q1_2000 VALUES LESS THAN (TO_DATE('1-APR-2000','DD-MON-YYYY')) STORAGE (INITIAL 20K NEXT 20K) TABLESPACE ts3 NOLOGGING(SUBPARTITION q1_2000_northwest VALUES ('OR', 'WA'), SUBPARTITION q1_2000_southwest VALUES ('AZ', 'UT', 'NM'), SUBPARTITION q1_2000_northeast VALUES ('NY', 'VM', 'NJ'), SUBPARTITION q1_2000_southeast VALUES ('FL', 'GA'), SUBPARTITION q1_2000_northcentral VALUES ('SD', 'WI'), SUBPARTITION q1_2000_southcentral VALUES ('OK', 'TX'))" db-types="Oracle" />
     <sql-case id="alter_table_add_partition_values_less_than2" value="ALTER TABLE sales ADD PARTITION jan99 VALUES LESS THAN ('01-FEB-1999') TABLESPACE tsx" db-types="Oracle" />
+    <sql-case id="alter_table_add_partition_values_less_than3" value="ALTER TABLE sales ADD PARTITION sales_01_2001  VALUES LESS THAN (TO_DATE('01-FEB-2001', 'DD-MON-YYYY'))" db-types="Oracle" />
     <sql-case id="alter_table_modify_subpartition_drop_values" value="ALTER TABLE quarterly_regional_sales MODIFY SUBPARTITION q1_1999_southeast DROP VALUES ('KS')" db-types="Oracle" />
+    <sql-case id="alter_table_modify_nested_table_return_as_value" value="ALTER TABLE print_media MODIFY NESTED TABLE ad_textdocs_ntab RETURN AS VALUE" db-types="Oracle" />
+    <sql-case id="alter_table_modify_nested_owner_table_return_as_value" value="ALTER TABLE print_media MODIFY NESTED TABLE mytable.ad_textdocs_ntab RETURN AS VALUE" db-types="Oracle" />
+    <sql-case id="alter_table_modify_partition_storage" value="ALTER TABLE sales MODIFY PARTITION sales_q1 STORAGE (MAXEXTENTS 10)" db-types="Oracle" />
+    <sql-case id="alter_table_rename_partition" value="ALTER TABLE sales RENAME PARTITION sales_q4_2003 TO sales_currentq" db-types="Oracle" />
+    <sql-case id="alter_table_set_interval_expr" value="ALTER TABLE sales SET INTERVAL (NUMTOYMINTERVAL(1,'MONTH'))" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_primary_key_disable_validate" value="ALTER TABLE sales_01_2001 ADD CONSTRAINT sales_pk_jan01 PRIMARY KEY (sales_transaction_id) DISABLE VALIDATE" db-types="Oracle" />
 </sql-cases>

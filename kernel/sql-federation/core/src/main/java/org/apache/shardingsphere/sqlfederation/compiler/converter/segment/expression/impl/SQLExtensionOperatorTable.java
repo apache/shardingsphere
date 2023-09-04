@@ -55,4 +55,6 @@ public final class SQLExtensionOperatorTable {
     public static final MySQLMatchAgainstFunction MATCH_AGAINST = new MySQLMatchAgainstFunction();
     
     public static final SqlBinaryOperator COLLATE = new SqlBinaryOperator("COLLATE", SqlKind.OTHER, 30, true, null, null, null);
+    
+    public static final SqlPrefixOperator TILDE = new SqlPrefixOperator("~", SqlKind.OTHER, 26, null, null, null);
 }

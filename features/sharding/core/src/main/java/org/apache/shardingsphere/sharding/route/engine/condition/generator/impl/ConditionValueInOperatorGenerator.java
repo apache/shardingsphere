@@ -44,6 +44,11 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
         for (ExpressionSegment each : predicate.getExpressionList()) {
             ConditionValue conditionValue = new ConditionValue(each, params);
             Optional<Comparable<?>> value = conditionValue.getValue();
+            if (conditionValue.isNull()) {
+                shardingConditionValues.add(null);
+                conditionValue.getParameterMarkerIndex().ifPresent(parameterMarkerIndexes::add);
+                continue;
+            }
             if (value.isPresent()) {
                 shardingConditionValues.add(value.get());
                 conditionValue.getParameterMarkerIndex().ifPresent(parameterMarkerIndexes::add);

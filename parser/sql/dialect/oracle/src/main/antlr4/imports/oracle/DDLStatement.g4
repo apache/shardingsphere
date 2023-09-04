@@ -440,7 +440,7 @@ dropSynonym
     ;
 
 columnClauses
-    : operateColumnClause+ | renameColumnClause
+    : operateColumnClause+ | renameColumnClause | modifyCollectionRetrieval
     ;
 
 operateColumnClause
@@ -509,6 +509,10 @@ checkpointNumber
 
 renameColumnClause
     : RENAME COLUMN columnName TO columnName
+    ;
+
+modifyCollectionRetrieval
+    : MODIFY NESTED TABLE tableName RETURN AS (LOCATOR | VALUE)
     ;
 
 moveTableClause
@@ -716,9 +720,7 @@ commitClause
     ;
 
 physicalProperties
-    : deferredSegmentCreation? segmentAttributesClause? tableCompression? inmemoryTableClause? ilmClause?
-    | deferredSegmentCreation? (organizationClause?|externalPartitionClause?)
-    | clusterClause
+    : (deferredSegmentCreation? segmentAttributesClause tableCompression? inmemoryTableClause? ilmClause? | deferredSegmentCreation? (organizationClause | externalPartitionClause) | clusterClause)
     ;
 
 deferredSegmentCreation
@@ -950,10 +952,8 @@ varrayColProperties
     ;
 
 nestedTableColProperties
-    : NESTED TABLE 
-    (nestedItem | COLUMN_VALUE) substitutableColumnClause? (LOCAL | GLOBAL)? STORE AS storageTable 
-    LP_ (LP_ objectProperties RP_ | physicalProperties | columnProperties) RP_ 
-    (RETURN AS? (LOCATOR | VALUE))?
+    : NESTED TABLE (nestedItem | COLUMN_VALUE) substitutableColumnClause? (LOCAL | GLOBAL)? STORE AS storageTable
+    ( LP_ (LP_ objectProperties RP_ | physicalProperties | columnProperties)+ RP_)? (RETURN AS? (LOCATOR | VALUE))?
     ;
 
 lobStorageClause
@@ -1269,6 +1269,8 @@ alterTablePartitioning
     | addTablePartition
     | coalesceTablePartition
     | dropTablePartition
+    | renamePartitionSubpart
+    | alterIntervalPartitioning
     ;
 
 modifyTableDefaultAttrs
@@ -1439,6 +1441,14 @@ addHashPartitionClause
 
 dropTablePartition
     : DROP partitionExtendedNames (updateIndexClauses parallelClause?)?
+    ;
+
+renamePartitionSubpart
+    : RENAME (partitionExtendedName | subpartitionExtendedName) TO newName
+    ;
+
+alterIntervalPartitioning
+    : SET INTERVAL LP_ expr? RP_ | SET STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_
     ;
 
 partitionExtendedNames

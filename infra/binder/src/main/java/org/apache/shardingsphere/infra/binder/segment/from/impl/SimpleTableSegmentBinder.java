@@ -26,6 +26,9 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.exception.TableNotExistsException;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -74,7 +77,7 @@ public final class SimpleTableSegmentBinder {
     public static SimpleTableSegment bind(final SimpleTableSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         IdentifierValue originalDatabase = getDatabaseName(segment, statementBinderContext);
         IdentifierValue originalSchema = getSchemaName(segment, statementBinderContext);
-        // TODO check database and schema
+        checkTableExists(segment.getTableName().getIdentifier().getValue(), statementBinderContext, originalDatabase.getValue(), originalSchema.getValue());
         ShardingSphereSchema schema = statementBinderContext.getMetaData().getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
         tableBinderContexts.put(segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue()),
                 createSimpleTableBinderContext(segment, schema, originalDatabase, originalSchema, statementBinderContext.getDatabaseType()));
@@ -121,5 +124,18 @@ public final class SimpleTableSegmentBinder {
             projectionSegments.add(columnProjectionSegment);
         }
         return new TableSegmentBinderContext(projectionSegments);
+    }
+    
+    private static void checkTableExists(final String tableName, final SQLStatementBinderContext statementBinderContext, final String databaseName, final String schemaName) {
+        if ("dual".equalsIgnoreCase(tableName)) {
+            return;
+        }
+        if (SystemSchemaBuilderRule.isSystemTable(schemaName, tableName)) {
+            return;
+        }
+        ShardingSpherePreconditions.checkState(statementBinderContext.getMetaData().containsDatabase(databaseName)
+                && statementBinderContext.getMetaData().getDatabase(databaseName).containsSchema(schemaName)
+                && statementBinderContext.getMetaData().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName),
+                () -> new TableNotExistsException(tableName));
     }
 }
