@@ -23,9 +23,9 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.select.SelectStatementConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,17 +45,17 @@ public final class SubqueryProjectionConverter implements SQLSegmentConverter<Su
         }
         SqlNode sqlNode = new SelectStatementConverter().convert(segment.getSubquery().getSelect());
         if (segment.getAliasName().isPresent()) {
-            sqlNode = convertToSQLStatement(sqlNode, segment.getAliasName().get()).get();
+            sqlNode = convertWithAlias(sqlNode, segment.getAliasName().get());
         }
-        return segment.getSubquery().getSubqueryType().equals(SubqueryType.EXISTS_SUBQUERY)
+        return SubqueryType.EXISTS_SUBQUERY == segment.getSubquery().getSubqueryType()
                 ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.EXISTS, Collections.singletonList(sqlNode), SqlParserPos.ZERO))
                 : Optional.of(sqlNode);
     }
     
-    private Optional<SqlNode> convertToSQLStatement(final SqlNode sqlNode, final String alias) {
+    private SqlNode convertWithAlias(final SqlNode sqlNode, final String alias) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         sqlNodes.add(sqlNode);
         sqlNodes.add(new SqlIdentifier(alias, SqlParserPos.ZERO));
-        return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new ArrayList<>(sqlNodes), SqlParserPos.ZERO));
+        return new SqlBasicCall(SqlStdOperatorTable.AS, new ArrayList<>(sqlNodes), SqlParserPos.ZERO);
     }
 }
