@@ -1416,3 +1416,7 @@ INT16
 INT1
     : I N T [1]
     ;
+
+ELEM_CONTAINED_BY_RANGE
+    : E L E M UL_ C O N T A I N E D UL_ B Y UL_ R A N G E
+    ;

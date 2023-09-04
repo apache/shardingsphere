@@ -2986,4 +2986,12 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_elem_contained_by_range_function">
+        <projections start-index="7" stop-index="53">
+            <expression-projection start-index="7" stop-index="53" text="elem_contained_by_range('2', numrange(1.1,2.2))">
+                <function start-index="7" stop-index="53" function-name="elem_contained_by_range" text="elem_contained_by_range('2', numrange(1.1,2.2))" />
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
