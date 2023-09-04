@@ -42,7 +42,7 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
     public UpdateStatement bind(final UpdateStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
         UpdateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType());
+        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
         TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getTable(), statementBinderContext, tableBinderContexts);
         result.setTable(boundedTableSegment);
         result.setSetAssignment(sqlStatement.getSetAssignment());

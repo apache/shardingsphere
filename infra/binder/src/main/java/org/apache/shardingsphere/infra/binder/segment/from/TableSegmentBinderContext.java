@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.from;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
@@ -32,6 +33,9 @@ import java.util.Map;
 public final class TableSegmentBinderContext {
     
     private final Map<String, ProjectionSegment> columnLabelProjectionSegments;
+    
+    @Getter
+    private final Map<String, ProjectionSegment> variableLabelProjectionSegments = new LinkedHashMap<>();
     
     public TableSegmentBinderContext(final Collection<ProjectionSegment> projectionSegments) {
         columnLabelProjectionSegments = new LinkedHashMap<>(projectionSegments.size(), 1F);
@@ -63,5 +67,24 @@ public final class TableSegmentBinderContext {
      */
     public Collection<ProjectionSegment> getProjectionSegments() {
         return columnLabelProjectionSegments.values();
+    }
+    
+    /**
+     * Put projection segment by variable label.
+     * 
+     * @param projectionSegment projection segment
+     */
+    public void putVariableLabelProjectionSegments(final ProjectionSegment projectionSegment) {
+        variableLabelProjectionSegments.put(projectionSegment.getColumnLabel().toLowerCase(), projectionSegment);
+    }
+    
+    /**
+     * Get projection segment by variable label.
+     *
+     * @param variableLabel variable label
+     * @return projection segment
+     */
+    public ProjectionSegment getProjectionSegmentByVariableLabel(final String variableLabel) {
+        return variableLabelProjectionSegments.get(variableLabel.toLowerCase());
     }
 }

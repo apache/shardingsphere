@@ -55,7 +55,7 @@ class ColumnSegmentBinderTest {
         tableBinderContexts.put("t_order_item", new TableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundedItemIdColumn))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         SQLStatementBinderContext statementBinderContext =
-                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
         ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.JOIN_ON, statementBinderContext, tableBinderContexts, Collections.emptyMap());
         assertNotNull(actual.getColumnBoundedInfo());
         assertNull(actual.getOtherUsingColumnBoundedInfo());
