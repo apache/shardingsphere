@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.loader.strategy.impl;
+package org.apache.shardingsphere.test.env;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -25,20 +24,16 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * GitHub environment.
+ * environment context.
  */
-@Getter
-public final class GitHubEnvironment {
+public final class EnvironmentContext {
     
-    private static final String TOKEN_KEY = "it.github.token";
+    private static final EnvironmentContext INSTANCE = new EnvironmentContext();
     
-    private static final GitHubEnvironment INSTANCE = new GitHubEnvironment();
+    private final Properties props;
     
-    private final String githubToken;
-    
-    private GitHubEnvironment() {
-        Properties props = loadProperties();
-        githubToken = props.getProperty(TOKEN_KEY);
+    private EnvironmentContext() {
+        props = loadProperties();
     }
     
     /**
@@ -46,14 +41,24 @@ public final class GitHubEnvironment {
      *
      * @return got instance
      */
-    public static GitHubEnvironment getInstance() {
+    public static EnvironmentContext getInstance() {
         return INSTANCE;
+    }
+    
+    /**
+     * Get value by key.
+     *
+     * @param key key
+     * @return value
+     */
+    public String getValue(final String key) {
+        return props.getProperty(key);
     }
     
     @SneakyThrows(IOException.class)
     private Properties loadProperties() {
         Properties result = new Properties();
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/github-env.properties")) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/env.properties")) {
             result.load(inputStream);
         }
         for (String each : System.getProperties().stringPropertyNames()) {
