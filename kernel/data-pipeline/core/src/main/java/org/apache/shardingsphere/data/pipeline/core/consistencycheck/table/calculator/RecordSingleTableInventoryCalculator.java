@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.query.JDBCStreamQueryBuilder;
@@ -43,7 +42,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Record single table inventory calculator.
@@ -109,7 +107,8 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
     
     private CalculationContext createCalculationContext(final SingleTableInventoryCalculateParameter param) throws SQLException {
         Connection connection = param.getDataSource().getConnection();
-        CalculationContext result = new CalculationContext(connection);
+        CalculationContext result = new CalculationContext();
+        result.setConnection(connection);
         param.setCalculationContext(result);
         return result;
     }
@@ -141,51 +140,6 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         Object tableCheckPosition = param.getTableCheckPosition();
         if (null != tableCheckPosition) {
             preparedStatement.setObject(1, tableCheckPosition);
-        }
-    }
-    
-    @RequiredArgsConstructor
-    private static final class CalculationContext implements AutoCloseable {
-        
-        @Getter
-        private final Connection connection;
-        
-        private final AtomicReference<PreparedStatement> preparedStatement = new AtomicReference<>();
-        
-        private final AtomicReference<ResultSet> resultSet = new AtomicReference<>();
-        
-        /**
-         * Get result set.
-         *
-         * @return result set
-         */
-        public ResultSet getResultSet() {
-            return resultSet.get();
-        }
-        
-        /**
-         * Set prepared statement.
-         *
-         * @param preparedStatement prepared statement
-         */
-        public void setPreparedStatement(final PreparedStatement preparedStatement) {
-            this.preparedStatement.set(preparedStatement);
-        }
-        
-        /**
-         * Set result set.
-         *
-         * @param resultSet result set
-         */
-        public void setResultSet(final ResultSet resultSet) {
-            this.resultSet.set(resultSet);
-        }
-        
-        @Override
-        public void close() {
-            QuietlyCloser.close(resultSet.get());
-            QuietlyCloser.close(preparedStatement.get());
-            QuietlyCloser.close(connection);
         }
     }
 }

@@ -106,6 +106,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
@@ -548,7 +549,50 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.privateExprOfDb()) {
             return visit(ctx.privateExprOfDb());
         }
+        if (null != ctx.LP_()) {
+            if (1 == ctx.expr().size()) {
+                return visit(ctx.expr(0));
+            } else {
+                ListExpression result = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
+                for (ExprContext each : ctx.expr()) {
+                    result.getItems().add((ExpressionSegment) visit(each));
+                }
+                return result;
+            }
+        }
+        return visitRemainSimpleExpr(ctx, startIndex, stopIndex);
+    }
+    
+    private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx, final int startIndex, final int stopIndex) {
+        if (null != ctx.OR_()) {
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.simpleExpr(0));
+            ExpressionSegment right = (ExpressionSegment) visit(ctx.simpleExpr(1));
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, ctx.OR_().getText(), text);
+        }
+        if (null != ctx.caseExpression()) {
+            return visit(ctx.caseExpression());
+        }
+        if (null != ctx.BINARY()) {
+            return visit(ctx.simpleExpr(0));
+        }
+        for (SimpleExprContext each : ctx.simpleExpr()) {
+            visit(each);
+        }
         return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitCaseExpression(final OracleStatementParser.CaseExpressionContext ctx) {
+        ExpressionSegment caseExpr = null == ctx.simpleExpr() ? null : (ExpressionSegment) visit(ctx.simpleExpr());
+        Collection<ExpressionSegment> whenExprs = new ArrayList<>(ctx.caseWhen().size());
+        Collection<ExpressionSegment> thenExprs = new ArrayList<>(ctx.caseWhen().size());
+        for (OracleStatementParser.CaseWhenContext each : ctx.caseWhen()) {
+            whenExprs.add((ExpressionSegment) visit(each.expr(0)));
+            thenExprs.add((ExpressionSegment) visit(each.expr(1)));
+        }
+        ExpressionSegment elseExpr = null == ctx.caseElse() ? null : (ExpressionSegment) visit(ctx.caseElse().expr());
+        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr);
     }
     
     @Override

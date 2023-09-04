@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAga
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.BetweenExpressionConverter;
@@ -55,6 +56,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expres
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ParameterMarkerExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.SubqueryExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.TypeCastExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.UnaryOperationExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.impl.AggregationProjectionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.projection.impl.DataTypeConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.NotExpressionConverter;
@@ -133,6 +135,9 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         }
         if (segment instanceof VariableSegment) {
             return new VariableSegmentConverter().convert((VariableSegment) segment);
+        }
+        if (segment instanceof UnaryOperationExpression) {
+            return new UnaryOperationExpressionConverter().convert((UnaryOperationExpression) segment);
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }

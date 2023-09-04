@@ -1269,6 +1269,8 @@ alterTablePartitioning
     | addTablePartition
     | coalesceTablePartition
     | dropTablePartition
+    | renamePartitionSubpart
+    | alterIntervalPartitioning
     ;
 
 modifyTableDefaultAttrs
@@ -1439,6 +1441,14 @@ addHashPartitionClause
 
 dropTablePartition
     : DROP partitionExtendedNames (updateIndexClauses parallelClause?)?
+    ;
+
+renamePartitionSubpart
+    : RENAME (partitionExtendedName | subpartitionExtendedName) TO newName
+    ;
+
+alterIntervalPartitioning
+    : SET INTERVAL LP_ expr? RP_ | SET STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_
     ;
 
 partitionExtendedNames
