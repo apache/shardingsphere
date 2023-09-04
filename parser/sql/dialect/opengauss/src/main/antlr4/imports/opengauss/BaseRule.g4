@@ -447,6 +447,7 @@ unreservedWord
     | FLOAT4
     | ELEM_CONTAINED_BY_RANGE
     | INT8RANGE
+    | INT4RANGE
     | NUMRANGE
     ;
 

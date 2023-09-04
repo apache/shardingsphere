@@ -129,4 +129,5 @@
     <sql-case id="select_int_2_function" value="select int2(25.3);" db-types="openGauss" />
     <sql-case id="select_elem_contained_by_range_function" value="SELECT elem_contained_by_range('2', numrange(1.1,2.2));" db-types="openGauss" />
     <sql-case id="select_int8range" value="SELECT int8range(5,15) * int8range(10,20) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_int4range" value="SELECT int4range(2,4) &lt;@ int4range(1,7) AS RESULT;" db-types="openGauss" />
 </sql-cases>
