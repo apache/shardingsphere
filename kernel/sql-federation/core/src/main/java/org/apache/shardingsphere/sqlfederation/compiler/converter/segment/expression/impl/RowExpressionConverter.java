@@ -38,8 +38,8 @@ public final class RowExpressionConverter implements SQLSegmentConverter<RowExpr
     public Optional<SqlNode> convert(final RowExpression segment) {
         List<SqlNode> sqlNodes = new ArrayList<>();
         ExpressionConverter expressionConverter = new ExpressionConverter();
-        for (ExpressionSegment expressionSegment : segment.getItems()) {
-            sqlNodes.add(expressionConverter.convert(expressionSegment).get());
+        for (ExpressionSegment each : segment.getItems()) {
+            expressionConverter.convert(each).ifPresent(sqlNodes::add);
         }
         return Optional.of(SqlStdOperatorTable.ROW.createCall(SqlParserPos.ZERO, sqlNodes));
     }

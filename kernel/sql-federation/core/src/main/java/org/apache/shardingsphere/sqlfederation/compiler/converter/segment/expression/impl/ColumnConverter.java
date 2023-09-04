@@ -36,17 +36,13 @@ public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment,
     @Override
     public Optional<SqlNode> convert(final ColumnSegment segment) {
         List<String> names = new ArrayList<>();
-        if (segment.getOwner().isPresent()) {
-            addOwnerNames(names, segment.getOwner().get());
-        }
+        segment.getOwner().ifPresent(optional -> addOwnerNames(names, optional));
         names.add(segment.getIdentifier().getValue());
         return Optional.of(new SqlIdentifier(names, SqlParserPos.ZERO));
     }
     
     private void addOwnerNames(final List<String> names, final OwnerSegment owner) {
-        if (null != owner) {
-            addOwnerNames(names, owner.getOwner().orElse(null));
-            names.add(owner.getIdentifier().getValue());
-        }
+        owner.getOwner().ifPresent(optional -> addOwnerNames(names, optional));
+        names.add(owner.getIdentifier().getValue());
     }
 }

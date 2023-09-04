@@ -50,9 +50,7 @@ public final class ShorthandProjectionConverter implements SQLSegmentConverter<S
     }
     
     private void addOwnerNames(final List<String> names, final OwnerSegment owner) {
-        if (null != owner) {
-            addOwnerNames(names, owner.getOwner().orElse(null));
-            names.add(owner.getIdentifier().getValue());
-        }
+        owner.getOwner().ifPresent(optional -> addOwnerNames(names, optional));
+        names.add(owner.getIdentifier().getValue());
     }
 }
