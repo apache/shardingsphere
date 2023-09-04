@@ -447,7 +447,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             result = useDriverToExecute();
             connection.commit();
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
             connection.rollback();
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
