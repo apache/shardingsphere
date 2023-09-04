@@ -37,8 +37,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAga
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MultisetExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.UnaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ColumnWithJoinOperatorSegment;
@@ -75,9 +75,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedMultisetExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedNotExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedTypeCastExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedUnaryOperationExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedValuesExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedVariableSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedUnaryOperationExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
@@ -213,6 +213,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert binary operation expression.
+     * 
      * @param assertContext assert context
      * @param actual actual binary operation expression
      * @param expected expected binary operation expression
@@ -233,6 +234,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert in operation expression.
+     * 
      * @param assertContext assert context
      * @param actual actual in operation expression
      * @param expected expected in operation expression
@@ -253,6 +255,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert not operation expression.
+     * 
      * @param assertContext assert context
      * @param actual actual not operation expression
      * @param expected expected not operation expression
@@ -270,6 +273,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert list operation expression.
+     * 
      * @param assertContext assert context
      * @param actual actual list operation expression
      * @param expected expected list operation expression
@@ -293,6 +297,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert between operation expression.
+     * 
      * @param assertContext assert context
      * @param actual actual between operation expression
      * @param expected expected between operation expression
@@ -516,6 +521,7 @@ public final class ExpressionAssert {
     
     /**
      * Assert unary operation expression.
+     * 
      * @param assertContext assert context
      * @param actual actual unary operation expression
      * @param expected expected unary operation expression

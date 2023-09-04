@@ -27,16 +27,16 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.UnaryOpe
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.ExpressionConverter;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.List;
-import java.util.LinkedList;
 
 /**
  * Unary operation expression converter.
  */
-public class UnaryOperationExpressionConverter implements SQLSegmentConverter<UnaryOperationExpression, SqlNode> {
+public final class UnaryOperationExpressionConverter implements SQLSegmentConverter<UnaryOperationExpression, SqlNode> {
     
     private static final Map<String, SqlOperator> REGISTRY = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     
