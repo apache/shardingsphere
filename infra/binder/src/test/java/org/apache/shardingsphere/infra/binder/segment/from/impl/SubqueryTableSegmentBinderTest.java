@@ -43,6 +43,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -70,7 +71,8 @@ class SubqueryTableSegmentBinderTest {
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("temp")));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SubqueryTableSegment actual = SubqueryTableSegmentBinder.bind(subqueryTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType), tableBinderContexts);
+        SubqueryTableSegment actual =
+                SubqueryTableSegmentBinder.bind(subqueryTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts);
         assertTrue(actual.getAlias().isPresent());
         assertTrue(tableBinderContexts.containsKey("temp"));
         List<ProjectionSegment> projectionSegments = new ArrayList<>(tableBinderContexts.get("temp").getProjectionSegments());
@@ -103,7 +105,8 @@ class SubqueryTableSegmentBinderTest {
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("temp")));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SubqueryTableSegment actual = SubqueryTableSegmentBinder.bind(subqueryTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType), tableBinderContexts);
+        SubqueryTableSegment actual =
+                SubqueryTableSegmentBinder.bind(subqueryTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts);
         assertTrue(actual.getAlias().isPresent());
         assertTrue(tableBinderContexts.containsKey("temp"));
         List<ProjectionSegment> projectionSegments = new ArrayList<>(tableBinderContexts.get("temp").getProjectionSegments());
@@ -125,7 +128,8 @@ class SubqueryTableSegmentBinderTest {
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, selectStatement));
         ShardingSphereMetaData metaData = createMetaData();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SubqueryTableSegment actual = SubqueryTableSegmentBinder.bind(subqueryTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType), tableBinderContexts);
+        SubqueryTableSegment actual =
+                SubqueryTableSegmentBinder.bind(subqueryTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()), tableBinderContexts);
         assertFalse(actual.getAlias().isPresent());
         assertTrue(tableBinderContexts.containsKey(""));
     }
