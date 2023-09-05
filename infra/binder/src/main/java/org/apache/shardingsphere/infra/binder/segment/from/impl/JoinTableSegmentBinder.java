@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegm
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -59,21 +58,18 @@ public final class JoinTableSegmentBinder {
      * @param segment join table segment
      * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
-     * @param cursorRecordTableBinderContext cursor record table binder context
      * @return bounded join table segment
      */
-    public static JoinTableSegment bind(final JoinTableSegment segment, final SQLStatementBinderContext statementBinderContext,
-                                        final Map<String, TableSegmentBinderContext> tableBinderContexts, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
+    public static JoinTableSegment bind(final JoinTableSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
         JoinTableSegment result = new JoinTableSegment();
         result.setStartIndex(segment.getStartIndex());
         result.setStopIndex(segment.getStopIndex());
         segment.getAliasSegment().ifPresent(result::setAlias);
-        result.setLeft(TableSegmentBinder.bind(segment.getLeft(), statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext));
+        result.setLeft(TableSegmentBinder.bind(segment.getLeft(), statementBinderContext, tableBinderContexts));
         result.setNatural(segment.isNatural());
         result.setJoinType(segment.getJoinType());
-        result.setRight(TableSegmentBinder.bind(segment.getRight(), statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext));
-        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN_ON, statementBinderContext, tableBinderContexts, Collections.emptyMap(),
-                cursorRecordTableBinderContext));
+        result.setRight(TableSegmentBinder.bind(segment.getRight(), statementBinderContext, tableBinderContexts));
+        result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN_ON, statementBinderContext, tableBinderContexts, Collections.emptyMap()));
         result.setUsing(bindUsingColumns(segment.getUsing(), tableBinderContexts));
         result.getUsing().forEach(each -> statementBinderContext.getUsingColumnNames().add(each.getIdentifier().getValue().toLowerCase()));
         Map<String, ProjectionSegment> usingColumnsByNaturalJoin = Collections.emptyMap();

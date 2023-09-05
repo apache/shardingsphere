@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.binder.enums.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 
@@ -42,13 +41,11 @@ public final class ColumnProjectionSegmentBinder {
      * @param segment table segment
      * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
-     * @param cursorRecordTableBinderContext cursor record table binder context
      * @return bounded column projection segment
      */
     public static ColumnProjectionSegment bind(final ColumnProjectionSegment segment, final SQLStatementBinderContext statementBinderContext,
-                                               final Map<String, TableSegmentBinderContext> tableBinderContexts, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
-        ColumnSegment boundedColumn = ColumnSegmentBinder.bind(segment.getColumn(), SegmentType.PROJECTION, statementBinderContext, tableBinderContexts, Collections.emptyMap(),
-                cursorRecordTableBinderContext);
+                                               final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        ColumnSegment boundedColumn = ColumnSegmentBinder.bind(segment.getColumn(), SegmentType.PROJECTION, statementBinderContext, tableBinderContexts, Collections.emptyMap());
         ColumnProjectionSegment result = new ColumnProjectionSegment(boundedColumn);
         segment.getAliasSegment().ifPresent(result::setAlias);
         result.setVisible(segment.isVisible());

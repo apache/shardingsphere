@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.binder.engine;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementBinder;
@@ -64,20 +63,19 @@ public final class SQLBindEngine {
      * @return SQL statement context
      */
     public SQLStatementContext bind(final SQLStatement sqlStatement, final List<Object> params) {
-        SQLStatement buoundedSQLStatement = bind(sqlStatement, metaData, defaultDatabaseName, new CursorRecordTableBinderContext());
+        SQLStatement buoundedSQLStatement = bind(sqlStatement, metaData, defaultDatabaseName);
         return SQLStatementContextFactory.newInstance(metaData, params, buoundedSQLStatement, defaultDatabaseName);
     }
     
-    private SQLStatement bind(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                              final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
+    private SQLStatement bind(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
         if (containsDataSourceNameSQLHint(statement)) {
             return statement;
         }
         if (statement instanceof DMLStatement) {
-            return bindDMLStatement(statement, metaData, defaultDatabaseName, cursorRecordTableBinderContext);
+            return bindDMLStatement(statement, metaData, defaultDatabaseName);
         }
         if (statement instanceof DDLStatement) {
-            return bindDDLStatement(statement, metaData, defaultDatabaseName, cursorRecordTableBinderContext);
+            return bindDDLStatement(statement, metaData, defaultDatabaseName);
         }
         return statement;
     }
@@ -89,30 +87,28 @@ public final class SQLBindEngine {
         return false;
     }
     
-    private static SQLStatement bindDMLStatement(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                                                 final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
+    private static SQLStatement bindDMLStatement(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
         if (statement instanceof SelectStatement) {
-            return new SelectStatementBinder().bind((SelectStatement) statement, metaData, defaultDatabaseName, cursorRecordTableBinderContext);
+            return new SelectStatementBinder().bind((SelectStatement) statement, metaData, defaultDatabaseName);
         }
         if (statement instanceof InsertStatement) {
-            return new InsertStatementBinder().bind((InsertStatement) statement, metaData, defaultDatabaseName, cursorRecordTableBinderContext);
+            return new InsertStatementBinder().bind((InsertStatement) statement, metaData, defaultDatabaseName);
         }
         if (statement instanceof UpdateStatement) {
-            return new UpdateStatementBinder().bind((UpdateStatement) statement, metaData, defaultDatabaseName, cursorRecordTableBinderContext);
+            return new UpdateStatementBinder().bind((UpdateStatement) statement, metaData, defaultDatabaseName);
         }
         if (statement instanceof DeleteStatement) {
-            return new DeleteStatementBinder().bind((DeleteStatement) statement, metaData, defaultDatabaseName, cursorRecordTableBinderContext);
+            return new DeleteStatementBinder().bind((DeleteStatement) statement, metaData, defaultDatabaseName);
         }
         if (statement instanceof MergeStatement) {
-            return new MergeStatementBinder().bind((MergeStatement) statement, metaData, defaultDatabaseName, cursorRecordTableBinderContext);
+            return new MergeStatementBinder().bind((MergeStatement) statement, metaData, defaultDatabaseName);
         }
         return statement;
     }
     
-    private static SQLStatement bindDDLStatement(final SQLStatement statement, final ShardingSphereMetaData metaData,
-                                                 final String defaultDatabaseName, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
+    private static SQLStatement bindDDLStatement(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
         if (statement instanceof OpenGaussCursorStatement) {
-            return new CursorStatementBinder().bind((OpenGaussCursorStatement) statement, metaData, defaultDatabaseName, cursorRecordTableBinderContext);
+            return new CursorStatementBinder().bind((OpenGaussCursorStatement) statement, metaData, defaultDatabaseName);
         }
         return statement;
     }

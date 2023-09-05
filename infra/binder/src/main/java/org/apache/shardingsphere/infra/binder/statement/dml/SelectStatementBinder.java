@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.binder.segment.projection.ProjectionsSegm
 import org.apache.shardingsphere.infra.binder.segment.where.WhereSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -43,27 +42,25 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     
     @SneakyThrows
     @Override
-    public SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData,
-                                final String defaultDatabaseName, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
-        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap(), cursorRecordTableBinderContext);
+    public SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap());
     }
     
     @SneakyThrows
     private SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                                 final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
+                                 final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         SelectStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
-        TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getFrom(), statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext);
+        TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getFrom(), statementBinderContext, tableBinderContexts);
         result.setFrom(boundedTableSegment);
-        result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), statementBinderContext, boundedTableSegment, tableBinderContexts, cursorRecordTableBinderContext));
-        sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, outerTableBinderContexts,
-                cursorRecordTableBinderContext)));
+        result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), statementBinderContext, boundedTableSegment, tableBinderContexts));
+        sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
         // TODO support other segment bind in select statement
         sqlStatement.getGroupBy().ifPresent(result::setGroupBy);
         sqlStatement.getHaving().ifPresent(result::setHaving);
         sqlStatement.getOrderBy().ifPresent(result::setOrderBy);
-        sqlStatement.getCombine().ifPresent(optional -> result.setCombine(CombineSegmentBinder.bind(optional, statementBinderContext, cursorRecordTableBinderContext)));
+        sqlStatement.getCombine().ifPresent(optional -> result.setCombine(CombineSegmentBinder.bind(optional, statementBinderContext)));
         SelectStatementHandler.getLimitSegment(sqlStatement).ifPresent(optional -> SelectStatementHandler.setLimitSegment(result, optional));
         SelectStatementHandler.getLockSegment(sqlStatement)
                 .ifPresent(optional -> SelectStatementHandler.setLockSegment(result, LockSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
@@ -77,17 +74,16 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     
     /**
      * Bind correlate subquery select statement.
-     *
+     * 
      * @param sqlStatement subquery select statement
      * @param metaData meta data
      * @param defaultDatabaseName default database name
      * @param outerTableBinderContexts outer select statement table binder contexts
-     * @param cursorRecordTableBinderContext cursor record table binder context
      * @return bounded correlate subquery select statement
      */
     @SneakyThrows
     public SelectStatement bindCorrelateSubquery(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                                                 final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
-        return bind(sqlStatement, metaData, defaultDatabaseName, outerTableBinderContexts, cursorRecordTableBinderContext);
+                                                 final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        return bind(sqlStatement, metaData, defaultDatabaseName, outerTableBinderContexts);
     }
 }

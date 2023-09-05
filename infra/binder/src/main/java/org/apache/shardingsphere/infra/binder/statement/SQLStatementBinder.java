@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.statement;
 
-import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -34,8 +33,7 @@ public interface SQLStatementBinder<T extends SQLStatement> {
      * @param sqlStatement sql statement
      * @param metaData meta data
      * @param defaultDatabaseName default database name
-     * @param cursorRecordTableBinderContext cursor record table binder context
      * @return bounded sql statement
      */
-    T bind(T sqlStatement, ShardingSphereMetaData metaData, String defaultDatabaseName, CursorRecordTableBinderContext cursorRecordTableBinderContext);
+    T bind(T sqlStatement, ShardingSphereMetaData metaData, String defaultDatabaseName);
 }

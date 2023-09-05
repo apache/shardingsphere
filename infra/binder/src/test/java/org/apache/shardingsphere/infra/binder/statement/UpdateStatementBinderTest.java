@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.statement;
 
-import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementBinder;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -55,7 +54,7 @@ class UpdateStatementBinderTest {
         updateStatement.setTable(simpleTableSegment);
         updateStatement.setWhere(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),
                 new LiteralExpressionSegment(0, 0, 0), "=", "status = 1")));
-        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, createMetaData(), DefaultDatabase.LOGIC_NAME, new CursorRecordTableBinderContext());
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
         assertThat(actual, not(updateStatement));
         assertThat(actual.getTable(), not(updateStatement.getTable()));
         assertThat(actual.getTable(), instanceOf(SimpleTableSegment.class));

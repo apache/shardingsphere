@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.statement;
 
-import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.MergeStatementBinder;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -73,7 +72,7 @@ class MergeStatementBinderTest {
                 Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(targetTableColumn), sourceTableColumn)));
         updateStatement.setSetAssignment(setAssignmentSegment);
         mergeStatement.setUpdate(updateStatement);
-        MergeStatement actual = new MergeStatementBinder().bind(mergeStatement, createMetaData(), DefaultDatabase.LOGIC_NAME, new CursorRecordTableBinderContext());
+        MergeStatement actual = new MergeStatementBinder().bind(mergeStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
         assertThat(actual, not(mergeStatement));
         assertThat(actual.getSource(), not(mergeStatement.getSource()));
         assertThat(actual.getSource(), instanceOf(SimpleTableSegment.class));

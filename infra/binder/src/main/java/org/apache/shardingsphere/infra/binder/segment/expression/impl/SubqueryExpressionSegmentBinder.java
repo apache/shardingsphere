@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 
@@ -39,12 +38,11 @@ public final class SubqueryExpressionSegmentBinder {
      * @param segment subquery expression segment
      * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
-     * @param cursorRecordTableBinderContext cursor record table binder context
      * @return bounded subquery expression segment
      */
     public static SubqueryExpressionSegment bind(final SubqueryExpressionSegment segment, final SQLStatementBinderContext statementBinderContext,
-                                                 final Map<String, TableSegmentBinderContext> tableBinderContexts, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
-        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext);
+                                                 final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), statementBinderContext, tableBinderContexts);
         return new SubqueryExpressionSegment(boundedSubquery);
     }
 }

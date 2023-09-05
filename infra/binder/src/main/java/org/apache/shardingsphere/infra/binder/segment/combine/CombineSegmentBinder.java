@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.binder.segment.combine;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
@@ -37,14 +36,13 @@ public final class CombineSegmentBinder {
      *
      * @param segment table segment
      * @param statementBinderContext statement binder context
-     * @param cursorRecordTableBinderContext cursor record table binder context
      * @return bounded combine segment
      */
-    public static CombineSegment bind(final CombineSegment segment, final SQLStatementBinderContext statementBinderContext, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
+    public static CombineSegment bind(final CombineSegment segment, final SQLStatementBinderContext statementBinderContext) {
         ShardingSphereMetaData metaData = statementBinderContext.getMetaData();
         String defaultDatabaseName = statementBinderContext.getDefaultDatabaseName();
-        SelectStatement boundedLeftSelect = new SelectStatementBinder().bind(segment.getLeft(), metaData, defaultDatabaseName, cursorRecordTableBinderContext);
-        SelectStatement boundedRightSelect = new SelectStatementBinder().bind(segment.getRight(), metaData, defaultDatabaseName, cursorRecordTableBinderContext);
+        SelectStatement boundedLeftSelect = new SelectStatementBinder().bind(segment.getLeft(), metaData, defaultDatabaseName);
+        SelectStatement boundedRightSelect = new SelectStatementBinder().bind(segment.getRight(), metaData, defaultDatabaseName);
         return new CombineSegment(segment.getStartIndex(), segment.getStopIndex(), boundedLeftSelect, segment.getCombineType(), boundedRightSelect);
     }
 }
