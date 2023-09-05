@@ -541,7 +541,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             result = useDriverToExecute(callback);
             connection.commit();
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
             connection.rollback();
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());

@@ -27,6 +27,8 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -47,16 +49,16 @@ public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     }
     
     private void assertSetReadOnly() throws SQLException {
-        try (Connection connection1 = getDataSource().getConnection()) {
-            executeUpdateWithLog(connection1, "insert into account(id, balance) values (1, 0), (2, 100);");
+        try (Connection connection = getDataSource().getConnection()) {
+            executeUpdateWithLog(connection, "insert into account(id, balance) values (1, 0), (2, 100);");
         }
-        try (Connection connection2 = getDataSource().getConnection()) {
-            connection2.setReadOnly(true);
-            assertQueryBalance(connection2);
-            executeWithLog(connection2, "update account set balance = 100 where id = 2;");
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setReadOnly(true);
+            assertQueryBalance(connection);
+            executeWithLog(connection, "update account set balance = 100 where id = 2;");
             fail("Update ran successfully, should failed.");
         } catch (final SQLException ex) {
-            log.info("Update failed for expect.");
+            assertThat(ex.getMessage(), is("Connection is read-only. Queries leading to data modification are not allowed."));
         }
     }
 }

@@ -203,7 +203,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
             result = doExecute(executionContexts);
             transactionManager.commit();
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
             transactionManager.rollback();
             String databaseName = databaseConnectionManager.getConnectionSession().getDatabaseName();
