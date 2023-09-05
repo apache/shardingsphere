@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
@@ -37,10 +37,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Use default insert columns token generator for encrypt.
+ * Insert default columns token generator for encrypt.
  */
 @Setter
-public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext>, PreviousSQLTokensAware, EncryptRuleAware {
+public final class EncryptInsertDefaultColumnsTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext>, PreviousSQLTokensAware, EncryptRuleAware {
     
     private List<SQLToken> previousSQLTokens;
     
