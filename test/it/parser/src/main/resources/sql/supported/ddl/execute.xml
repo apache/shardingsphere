@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="execute_with_expected_db_table" value="EXECUTE ps1 USING @expected, @db, @table" db-types="MySQL" />
+    <sql-case id="execute_without_parameter" value="EXECUTE q" db-types="PostgreSQL" />
 </sql-cases>
