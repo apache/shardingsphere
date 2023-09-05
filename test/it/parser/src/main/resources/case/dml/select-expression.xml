@@ -3069,4 +3069,12 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_lower_inf_function">
+        <projections start-index="7" stop-index="43">
+            <expression-projection start-index="7" stop-index="43" text="lower_inf('(,)'::daterange)" alias="RESULT">
+                <function start-index="7" stop-index="35" function-name="lower_inf" text="lower_inf('(,)'::daterange)" />
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

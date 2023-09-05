@@ -1420,3 +1420,11 @@ INT1
 ELEM_CONTAINED_BY_RANGE
     : E L E M UL_ C O N T A I N E D UL_ B Y UL_ R A N G E
     ;
+
+LOWER_INF
+    : L O W E R UL_ I N F
+    ;
+
+UPPER_INF
+    : U P P E R UL_ I N F
+    ;
