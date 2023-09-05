@@ -21,7 +21,7 @@ import freemarker.template.TemplateException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.example.generator.core.ExampleGeneratorFactory;
+import org.apache.shardingsphere.example.generator.core.JDBCExampleGenerator;
 
 import java.io.IOException;
 
@@ -40,12 +40,12 @@ public final class ExampleGeneratorMain {
      * @throws TemplateException template exception
      */
     public static void main(final String[] args) throws IOException, TemplateException {
-        new ExampleGeneratorFactory().generate();
+        new JDBCExampleGenerator().generate();
         printMessages();
     }
     
     private static void printMessages() {
         log.info("Example codes are generated successful!");
-        log.info("Please find them in folder `shardingsphere-${product}-sample`.");
+        log.info("Please find them in folder `shardingsphere-jdbc-sample`.");
     }
 }
