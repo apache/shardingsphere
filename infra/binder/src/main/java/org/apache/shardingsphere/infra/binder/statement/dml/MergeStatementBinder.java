@@ -55,12 +55,18 @@ import java.util.Optional;
  */
 public final class MergeStatementBinder implements SQLStatementBinder<MergeStatement> {
     
-    @SneakyThrows
     @Override
     public MergeStatement bind(final MergeStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap());
+    }
+    
+    @SneakyThrows
+    private MergeStatement bind(final MergeStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         MergeStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
+        statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         TableSegment boundedTargetTableSegment = TableSegmentBinder.bind(sqlStatement.getTarget(), statementBinderContext, tableBinderContexts);
         TableSegment boundedSourceTableSegment = TableSegmentBinder.bind(sqlStatement.getSource(), statementBinderContext, tableBinderContexts);
         result.setTarget(boundedTargetTableSegment);

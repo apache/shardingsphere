@@ -37,12 +37,18 @@ import java.util.Map;
  */
 public final class UpdateStatementBinder implements SQLStatementBinder<UpdateStatement> {
     
-    @SneakyThrows
     @Override
     public UpdateStatement bind(final UpdateStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap());
+    }
+    
+    @SneakyThrows
+    private UpdateStatement bind(final UpdateStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                 final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         UpdateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
+        statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getTable(), statementBinderContext, tableBinderContexts);
         result.setTable(boundedTableSegment);
         result.setSetAssignment(sqlStatement.getSetAssignment());

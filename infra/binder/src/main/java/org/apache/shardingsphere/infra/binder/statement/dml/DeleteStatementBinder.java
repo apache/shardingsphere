@@ -37,12 +37,18 @@ import java.util.Map;
  */
 public final class DeleteStatementBinder implements SQLStatementBinder<DeleteStatement> {
     
-    @SneakyThrows
     @Override
     public DeleteStatement bind(final DeleteStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap());
+    }
+    
+    @SneakyThrows
+    private DeleteStatement bind(final DeleteStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                 final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         DeleteStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
+        statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getTable(), statementBinderContext, tableBinderContexts);
         result.setTable(boundedTableSegment);
         sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, Collections.emptyMap())));

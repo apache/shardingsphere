@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.binder.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -26,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * SQL statement binder context.
@@ -45,4 +48,6 @@ public final class SQLStatementBinderContext {
     private final Collection<String> usingColumnNames = new HashSet<>();
     
     private final Collection<ProjectionSegment> joinTableProjectionSegments = new LinkedList<>();
+    
+    private final Map<String, TableSegmentBinderContext> externalTableBinderContexts = new CaseInsensitiveMap<>();
 }
