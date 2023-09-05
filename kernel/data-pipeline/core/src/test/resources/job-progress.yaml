@@ -23,10 +23,10 @@ incremental:
   position: ''
 inventory:
   finished:
-  - ds0.t_2
-  - ds0.t_1
+  - ds0.t_2#2
+  - ds0.t_1#1
   unfinished:
-    ds1.t_2: i,1,2
-    ds1.t_1: ''
+    ds1.t_1#1: ''
+    ds1.t_2#2: i,1,2
 sourceDatabaseType: H2
 status: RUNNING
