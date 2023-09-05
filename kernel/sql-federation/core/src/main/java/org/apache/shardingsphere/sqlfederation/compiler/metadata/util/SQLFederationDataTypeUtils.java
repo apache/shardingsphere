@@ -25,6 +25,8 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeFactory.Builder;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
@@ -69,6 +71,11 @@ public final class SQLFederationDataTypeUtils {
             }
             if (Types.BIGINT == column.getDataType()) {
                 return column.isUnsigned() ? BigInteger.class : Long.class;
+            }
+        }
+        if (protocolType instanceof PostgreSQLDatabaseType || protocolType instanceof OpenGaussDatabaseType) {
+            if (Types.SMALLINT == column.getDataType()) {
+                return Integer.class;
             }
         }
         return SqlType.valueOf(column.getDataType()).clazz;
