@@ -141,32 +141,6 @@
     <sql-case id="unsupported_select_case_for_opengauss_139" value="select array_lower([1,2,3], 1) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_140" value="select array_lower(array[1,2,3], @) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_141" value="select array_lower(array[1,2,3], ) as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_145" value="select daterange('2000-05-06','2000-08-08','(]');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_146" value="select daterange('2000-05-06 00:01:09','2000-08-08 19:59:00','(]');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_147" value="select daterange('2000-05-06 12:01:09','2000-08-08 19:59:00','(]');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_148" value="select daterange('2000-05-06 00:01:09','2000-08-08 09:59:00','(]');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_149" value="select daterange('2000-05-06 17:01:09','2000-08-08 09:59:00','(]');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_150" value="select daterange('2000-05-06','2000-08-08','()');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_151" value="select daterange('2000-05-06 00:01:09','2000-08-08 19:59:00','()');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_152" value="select daterange('2000-05-06 12:01:09','2000-08-08 19:59:00','()');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_153" value="select daterange('2000-05-06 00:01:09','2000-08-08 09:59:00','()');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_154" value="select daterange('2000-05-06 17:01:09','2000-08-08 09:59:00','()');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_155" value="select daterange('2000-05-06','2000-08-08','abc');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_156" value="select daterange('2001-05-06','2000-08-08');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_157" value="select daterange('2001-05-06','2001-05-06');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_158" value="select daterange('2000-05-06','2000-08-08','[)');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_159" value="select daterange('2000-05-06 00:01:09','2000-08-08 19:59:00','[)');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_160" value="select daterange('2000-05-06 12:01:09','2000-08-08 19:59:00','[)');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_161" value="select daterange('2000-05-06 00:01:09','2000-08-08 09:59:00','[)');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_162" value="select daterange('2000-05-06 17:01:09','2000-08-08 09:59:00','[)');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_163" value="select daterange('2000-05-06','2000-08-08','[]');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_164" value="select daterange('2000-05-06 00:01:09','2000-08-08 19:59:00','[]');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_165" value="select daterange('2000-05-06 12:01:09','2000-08-08 19:59:00','[]');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_166" value="select daterange('2000-05-06 00:01:09','2000-08-08 09:59:00','[]');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_167" value="select daterange('2000-05-06 17:01:09','2000-08-08 09:59:00','[]');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_169" value="select daterange('2001-02-16 20:38:40','2001-02-16 20:38:41');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_170" value="select daterange('2018-05-14 14:09:04.127444+08','2018-05-16 14:09:04.127444+08');" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_171" value="select daterange('2000-05-06','2000-08-08');" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_174" value="select bitand(6,) as result from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_175" value="select bitand(,6) as result from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_176" value="select first(s_name) as name, first(s_id nulls first ) from first06;" db-types="openGauss" />
@@ -234,7 +208,6 @@
     <sql-case id="unsupported_select_case_for_opengauss_325" value="select '2026-09-09'::timestamp &lt;@ tsrange('[2021-01-01,2028-03-01)') as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_330" value="select tsrange('[2021-01-01,2021-03-01)') &amp;&amp; ('[2021-01-01,2021-03-01)') as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_331" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') &amp;&amp; ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_334" value="select upper_inf('(,)'::daterange) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_338" value="select upper_inf(tsrange('(2021-01-01,]')) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_339" value="select upper_inf(tsrange('[,2021-03-01 pst]')) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_347" value="select tsrange('[2021-01-01,2021-03-01)') -('[2021-03-01,2021-10-01)') as result;" db-types="openGauss" />
@@ -255,7 +228,6 @@
     <sql-case id="unsupported_select_case_for_opengauss_371" value="select upper(bugstatus (create, closed)) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_375" value="select isempty(tsrange('[2021-01-01,2021-03-01)')) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_376" value="select isempty(tsrange('[2013-12-11 pst,2021-03-01 pst)')) as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_377" value="select lower_inf('(,)'::daterange) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_381" value="select lower_inf(tsrange('(2021-01-01,2021-03-01]')) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_382" value="select lower_inf(tsrange('[,2021-03-01 pst]')) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_383" value="select hll_hash_boolean(@,10);" db-types="openGauss" />

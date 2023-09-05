@@ -449,6 +449,7 @@ unreservedWord
     | INT8RANGE
     | INT4RANGE
     | NUMRANGE
+    | DATERANGE
     ;
 
 typeFuncNameKeyword
@@ -1101,6 +1102,7 @@ functionExprCommonSubexpr
     | PREDICT BY modelName LP_ FEATURES name (COMMA_ name)* RP_
     | TS_REWRITE LP_ aExpr (TYPE_CAST_ TSQUERY)? (COMMA_ aExpr (TYPE_CAST_ TSQUERY)?)* RP_
     | ELEM_CONTAINED_BY_RANGE LP_ aExpr COMMA_ dataType RP_
+    | (LOWER_INF | UPPER_INF) LP_ aExpr TYPE_CAST_ identifier RP_
     ;
 
 typeName
