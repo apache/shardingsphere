@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,9 +27,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class EncryptForUseDefaultInsertColumnsTokenGeneratorTest {
+class EncryptInsertDefaultColumnsTokenGeneratorTest {
     
-    private final EncryptForUseDefaultInsertColumnsTokenGenerator generator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
+    private final EncryptInsertDefaultColumnsTokenGenerator generator = new EncryptInsertDefaultColumnsTokenGenerator();
     
     @BeforeEach
     void setup() {
