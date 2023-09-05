@@ -85,7 +85,8 @@ public final class ColumnSegmentBinder {
                                                                                        final Map<String, TableSegmentBinderContext> tableBinderContexts,
                                                                                        final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (segment.getOwner().isPresent()) {
-            return getTableBinderContextByOwner(segment.getOwner().get().getIdentifier().getValue(), tableBinderContexts, outerTableBinderContexts);
+            return getTableBinderContextByOwner(segment.getOwner().get().getIdentifier().getValue(), tableBinderContexts, outerTableBinderContexts,
+                    statementBinderContext.getExternalTableBinderContexts());
         }
         if (!statementBinderContext.getJoinTableProjectionSegments().isEmpty() && isNeedUseJoinTableProjectionBind(segment, parentSegmentType, statementBinderContext)) {
             return Collections.singleton(new TableSegmentBinderContext(statementBinderContext.getJoinTableProjectionSegments()));
@@ -99,12 +100,16 @@ public final class ColumnSegmentBinder {
     }
     
     private static Collection<TableSegmentBinderContext> getTableBinderContextByOwner(final String owner, final Map<String, TableSegmentBinderContext> tableBinderContexts,
-                                                                                      final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+                                                                                      final Map<String, TableSegmentBinderContext> outerTableBinderContexts,
+                                                                                      final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         if (tableBinderContexts.containsKey(owner)) {
             return Collections.singleton(tableBinderContexts.get(owner));
         }
         if (outerTableBinderContexts.containsKey(owner)) {
             return Collections.singleton(outerTableBinderContexts.get(owner));
+        }
+        if (externalTableBinderContexts.containsKey(owner)) {
+            return Collections.singleton(externalTableBinderContexts.get(owner));
         }
         return Collections.emptyList();
     }
