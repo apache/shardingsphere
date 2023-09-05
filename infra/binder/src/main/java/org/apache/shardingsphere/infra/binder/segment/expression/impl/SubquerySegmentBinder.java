@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -39,11 +40,13 @@ public final class SubquerySegmentBinder {
      * @param segment subquery segment
      * @param statementBinderContext statement binder context
      * @param outerTableBinderContexts outer table binder contexts
+     * @param cursorRecordTableBinderContext cursor record table binder context
      * @return bounded subquery segment
      */
-    public static SubquerySegment bind(final SubquerySegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        SelectStatement boundedSelectStatement =
-                new SelectStatementBinder().bindCorrelateSubquery(segment.getSelect(), statementBinderContext.getMetaData(), statementBinderContext.getDefaultDatabaseName(), outerTableBinderContexts);
+    public static SubquerySegment bind(final SubquerySegment segment, final SQLStatementBinderContext statementBinderContext,
+                                       final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
+        SelectStatement boundedSelectStatement = new SelectStatementBinder().bindCorrelateSubquery(segment.getSelect(), statementBinderContext.getMetaData(),
+                statementBinderContext.getDefaultDatabaseName(), outerTableBinderContexts, cursorRecordTableBinderContext);
         SubquerySegment result = new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundedSelectStatement);
         result.setSubqueryType(segment.getSubqueryType());
         return result;

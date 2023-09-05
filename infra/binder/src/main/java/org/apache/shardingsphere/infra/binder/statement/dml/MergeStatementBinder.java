@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderCon
 import org.apache.shardingsphere.infra.binder.segment.where.WhereSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
@@ -57,19 +58,20 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
     
     @SneakyThrows
     @Override
-    public MergeStatement bind(final MergeStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+    public MergeStatement bind(final MergeStatement sqlStatement, final ShardingSphereMetaData metaData,
+                               final String defaultDatabaseName, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
         MergeStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
-        TableSegment boundedTargetTableSegment = TableSegmentBinder.bind(sqlStatement.getTarget(), statementBinderContext, tableBinderContexts);
-        TableSegment boundedSourceTableSegment = TableSegmentBinder.bind(sqlStatement.getSource(), statementBinderContext, tableBinderContexts);
+        TableSegment boundedTargetTableSegment = TableSegmentBinder.bind(sqlStatement.getTarget(), statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext);
+        TableSegment boundedSourceTableSegment = TableSegmentBinder.bind(sqlStatement.getSource(), statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext);
         result.setTarget(boundedTargetTableSegment);
         result.setSource(boundedSourceTableSegment);
-        result.setExpr(ExpressionSegmentBinder.bind(sqlStatement.getExpr(), SegmentType.JOIN_ON, statementBinderContext, tableBinderContexts, Collections.emptyMap()));
+        result.setExpr(ExpressionSegmentBinder.bind(sqlStatement.getExpr(), SegmentType.JOIN_ON, statementBinderContext, tableBinderContexts, Collections.emptyMap(), cursorRecordTableBinderContext));
         result.setInsert(Optional.ofNullable(sqlStatement.getInsert()).map(optional -> bindMergeInsert(optional,
-                (SimpleTableSegment) boundedTargetTableSegment, statementBinderContext, tableBinderContexts)).orElse(null));
+                (SimpleTableSegment) boundedTargetTableSegment, statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext)).orElse(null));
         result.setUpdate(Optional.ofNullable(sqlStatement.getUpdate()).map(optional -> bindMergeUpdate(optional,
-                (SimpleTableSegment) boundedTargetTableSegment, statementBinderContext, tableBinderContexts)).orElse(null));
+                (SimpleTableSegment) boundedTargetTableSegment, statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext)).orElse(null));
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;
@@ -77,7 +79,7 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
     
     @SneakyThrows
     private InsertStatement bindMergeInsert(final InsertStatement sqlStatement, final SimpleTableSegment tableSegment, final SQLStatementBinderContext statementBinderContext,
-                                            final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+                                            final Map<String, TableSegmentBinderContext> tableBinderContexts, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
         InsertStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.setTable(tableSegment);
         sqlStatement.getInsertColumns().ifPresent(result::setInsertColumns);
@@ -86,7 +88,7 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
         for (InsertValuesSegment each : sqlStatement.getValues()) {
             List<ExpressionSegment> values = new LinkedList<>();
             for (ExpressionSegment value : each.getValues()) {
-                values.add(ExpressionSegmentBinder.bind(value, SegmentType.VALUES, statementBinderContext, tableBinderContexts, Collections.emptyMap()));
+                values.add(ExpressionSegmentBinder.bind(value, SegmentType.VALUES, statementBinderContext, tableBinderContexts, Collections.emptyMap(), cursorRecordTableBinderContext));
             }
             insertValues.add(new InsertValuesSegment(each.getStartIndex(), each.getStopIndex(), values));
         }
@@ -98,7 +100,7 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
         InsertStatementHandler.getInsertMultiTableElementSegment(sqlStatement).ifPresent(optional -> InsertStatementHandler.setInsertMultiTableElementSegment(result, optional));
         InsertStatementHandler.getReturningSegment(sqlStatement).ifPresent(optional -> InsertStatementHandler.setReturningSegment(result, optional));
         InsertStatementHandler.getWhereSegment(sqlStatement).ifPresent(optional -> InsertStatementHandler.setWhereSegment(result,
-                WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, Collections.emptyMap())));
+                WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, Collections.emptyMap(), cursorRecordTableBinderContext)));
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;
@@ -106,20 +108,23 @@ public final class MergeStatementBinder implements SQLStatementBinder<MergeState
     
     @SneakyThrows
     private UpdateStatement bindMergeUpdate(final UpdateStatement sqlStatement, final SimpleTableSegment tableSegment, final SQLStatementBinderContext statementBinderContext,
-                                            final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+                                            final Map<String, TableSegmentBinderContext> tableBinderContexts, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
         UpdateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.setTable(tableSegment);
         Collection<AssignmentSegment> assignments = new LinkedList<>();
         for (AssignmentSegment each : sqlStatement.getSetAssignment().getAssignments()) {
             List<ColumnSegment> columnSegments = new ArrayList<>(each.getColumns().size());
-            each.getColumns().forEach(column -> columnSegments.add(ColumnSegmentBinder.bind(column, SegmentType.SET_ASSIGNMENT, statementBinderContext, tableBinderContexts, Collections.emptyMap())));
-            ExpressionSegment value = ExpressionSegmentBinder.bind(each.getValue(), SegmentType.SET_ASSIGNMENT, statementBinderContext, tableBinderContexts, Collections.emptyMap());
+            each.getColumns().forEach(column -> columnSegments.add(ColumnSegmentBinder.bind(column, SegmentType.SET_ASSIGNMENT, statementBinderContext, tableBinderContexts, Collections.emptyMap(),
+                    cursorRecordTableBinderContext)));
+            ExpressionSegment value = ExpressionSegmentBinder.bind(each.getValue(), SegmentType.SET_ASSIGNMENT, statementBinderContext, tableBinderContexts, Collections.emptyMap(),
+                    cursorRecordTableBinderContext);
             ColumnAssignmentSegment columnAssignmentSegment = new ColumnAssignmentSegment(each.getStartIndex(), each.getStopIndex(), columnSegments, value);
             assignments.add(columnAssignmentSegment);
         }
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(sqlStatement.getSetAssignment().getStartIndex(), sqlStatement.getSetAssignment().getStopIndex(), assignments);
         result.setSetAssignment(setAssignmentSegment);
-        sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, Collections.emptyMap())));
+        sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, Collections.emptyMap(),
+                cursorRecordTableBinderContext)));
         UpdateStatementHandler.getOrderBySegment(sqlStatement).ifPresent(optional -> UpdateStatementHandler.setOrderBySegment(result, optional));
         UpdateStatementHandler.getLimitSegment(sqlStatement).ifPresent(optional -> UpdateStatementHandler.setLimitSegment(result, optional));
         UpdateStatementHandler.getWithSegment(sqlStatement).ifPresent(optional -> UpdateStatementHandler.setWithSegment(result, optional));

@@ -30,10 +30,11 @@ public final class CursorStatementBinder implements SQLStatementBinder<OpenGauss
     
     @SneakyThrows
     @Override
-    public OpenGaussCursorStatement bind(final OpenGaussCursorStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+    public OpenGaussCursorStatement bind(final OpenGaussCursorStatement sqlStatement, final ShardingSphereMetaData metaData,
+                                         final String defaultDatabaseName, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
         OpenGaussCursorStatement result = new OpenGaussCursorStatement();
         result.setCursorName(sqlStatement.getCursorName());
-        result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), metaData, defaultDatabaseName));
+        result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), metaData, defaultDatabaseName, cursorRecordTableBinderContext));
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         return result;

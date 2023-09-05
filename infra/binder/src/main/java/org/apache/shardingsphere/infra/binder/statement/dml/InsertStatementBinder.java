@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubquerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
@@ -34,12 +35,14 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
     
     @SneakyThrows
     @Override
-    public InsertStatement bind(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
+    public InsertStatement bind(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData,
+                                final String defaultDatabaseName, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
         InsertStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.setTable(sqlStatement.getTable());
         sqlStatement.getInsertColumns().ifPresent(result::setInsertColumns);
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
-        sqlStatement.getInsertSelect().ifPresent(optional -> result.setInsertSelect(SubquerySegmentBinder.bind(optional, statementBinderContext, Collections.emptyMap())));
+        sqlStatement.getInsertSelect()
+                .ifPresent(optional -> result.setInsertSelect(SubquerySegmentBinder.bind(optional, statementBinderContext, Collections.emptyMap(), cursorRecordTableBinderContext)));
         result.getValues().addAll(sqlStatement.getValues());
         InsertStatementHandler.getOnDuplicateKeyColumnsSegment(sqlStatement).ifPresent(optional -> InsertStatementHandler.setOnDuplicateKeyColumnsSegment(result, optional));
         InsertStatementHandler.getSetAssignmentSegment(sqlStatement).ifPresent(optional -> InsertStatementHandler.setSetAssignmentSegment(result, optional));

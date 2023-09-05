@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.enums.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 
@@ -42,11 +43,13 @@ public final class NotExpressionBinder {
      * @param parentSegmentType parent segment type
      * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
+     * @param cursorRecordTableBinderContext cursor record table binder context
      * @return bounded not expression
      */
     public static NotExpression bind(final NotExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext,
-                                     final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        ExpressionSegment boundedExpression = ExpressionSegmentBinder.bind(segment.getExpression(), parentSegmentType, statementBinderContext, tableBinderContexts, Collections.emptyMap());
+                                     final Map<String, TableSegmentBinderContext> tableBinderContexts, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
+        ExpressionSegment boundedExpression = ExpressionSegmentBinder.bind(segment.getExpression(), parentSegmentType, statementBinderContext, tableBinderContexts, Collections.emptyMap(),
+                cursorRecordTableBinderContext);
         return new NotExpression(segment.getStartIndex(), segment.getStopIndex(), boundedExpression, segment.getNotSign());
     }
 }

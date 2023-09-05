@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 
 import java.util.Map;
@@ -46,7 +47,7 @@ public final class DeleteMultiTableSegmentBinder {
         result.setStartIndex(segment.getStartIndex());
         result.setStopIndex(segment.getStopIndex());
         result.getActualDeleteTables().addAll(segment.getActualDeleteTables());
-        result.setRelationTable(TableSegmentBinder.bind(segment.getRelationTable(), statementBinderContext, tableBinderContexts));
+        result.setRelationTable(TableSegmentBinder.bind(segment.getRelationTable(), statementBinderContext, tableBinderContexts, new CursorRecordTableBinderContext()));
         return result;
     }
 }

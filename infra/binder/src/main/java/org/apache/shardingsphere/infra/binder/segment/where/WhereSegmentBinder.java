@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.enums.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
 import java.util.Map;
@@ -40,11 +41,13 @@ public final class WhereSegmentBinder {
      * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
+     * @param cursorRecordTableBinderContext cursor record table binder context
      * @return bounded where segment
      */
     public static WhereSegment bind(final WhereSegment segment, final SQLStatementBinderContext statementBinderContext,
-                                    final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+                                    final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts,
+                                    final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
         return new WhereSegment(segment.getStartIndex(), segment.getStopIndex(),
-                ExpressionSegmentBinder.bind(segment.getExpr(), SegmentType.PREDICATE, statementBinderContext, tableBinderContexts, outerTableBinderContexts));
+                ExpressionSegmentBinder.bind(segment.getExpr(), SegmentType.PREDICATE, statementBinderContext, tableBinderContexts, outerTableBinderContexts, cursorRecordTableBinderContext));
     }
 }

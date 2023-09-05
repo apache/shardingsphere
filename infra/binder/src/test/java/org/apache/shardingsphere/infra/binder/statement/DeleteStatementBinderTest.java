@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.statement;
 
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementBinder;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -54,7 +55,7 @@ class DeleteStatementBinderTest {
         deleteStatement.setTable(simpleTableSegment);
         deleteStatement.setWhere(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),
                 new LiteralExpressionSegment(0, 0, 0), "=", "status = 1")));
-        DeleteStatement actual = new DeleteStatementBinder().bind(deleteStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
+        DeleteStatement actual = new DeleteStatementBinder().bind(deleteStatement, createMetaData(), DefaultDatabase.LOGIC_NAME, new CursorRecordTableBinderContext());
         assertThat(actual, not(deleteStatement));
         assertThat(actual.getTable(), not(deleteStatement.getTable()));
         assertThat(actual.getTable(), instanceOf(SimpleTableSegment.class));

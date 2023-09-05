@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.segment.expression.impl.NotExpress
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubqueryExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
@@ -54,30 +55,34 @@ public final class ExpressionSegmentBinder {
      * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
      * @param outerTableBinderContexts outer table binder contexts
+     * @param cursorRecordTableBinderContext cursor record table binder context
      * @return bounded expression segment
      */
     public static ExpressionSegment bind(final ExpressionSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext,
-                                         final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+                                         final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts,
+                                         final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
         if (segment instanceof BinaryOperationExpression) {
-            return BinaryOperationExpressionBinder.bind((BinaryOperationExpression) segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
+            return BinaryOperationExpressionBinder.bind((BinaryOperationExpression) segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts,
+                    cursorRecordTableBinderContext);
         }
         if (segment instanceof ExistsSubqueryExpression) {
-            return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, statementBinderContext, tableBinderContexts);
+            return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext);
         }
         if (segment instanceof SubqueryExpressionSegment) {
-            return SubqueryExpressionSegmentBinder.bind((SubqueryExpressionSegment) segment, statementBinderContext, tableBinderContexts);
+            return SubqueryExpressionSegmentBinder.bind((SubqueryExpressionSegment) segment, statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext);
         }
         if (segment instanceof InExpression) {
-            return InExpressionBinder.bind((InExpression) segment, parentSegmentType, statementBinderContext, tableBinderContexts);
+            return InExpressionBinder.bind((InExpression) segment, parentSegmentType, statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext);
         }
         if (segment instanceof NotExpression) {
-            return NotExpressionBinder.bind((NotExpression) segment, parentSegmentType, statementBinderContext, tableBinderContexts);
+            return NotExpressionBinder.bind((NotExpression) segment, parentSegmentType, statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext);
         }
         if (segment instanceof ColumnSegment) {
-            return ColumnSegmentBinder.bind((ColumnSegment) segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
+            return ColumnSegmentBinder.bind((ColumnSegment) segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts, cursorRecordTableBinderContext);
         }
         if (segment instanceof FunctionSegment) {
-            return FunctionExpressionSegmentBinder.bind((FunctionSegment) segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
+            return FunctionExpressionSegmentBinder.bind((FunctionSegment) segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts,
+                    cursorRecordTableBinderContext);
         }
         // TODO support more ExpressionSegment bind
         return segment;

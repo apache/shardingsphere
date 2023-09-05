@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.statement;
 
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -67,7 +68,7 @@ class SelectStatementBinderTest {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         selectStatement.setFrom(simpleTableSegment);
         selectStatement.setWhere(mockWhereSegment());
-        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, createMetaData(), DefaultDatabase.LOGIC_NAME, new CursorRecordTableBinderContext());
         assertThat(actual, not(selectStatement));
         assertThat(actual.getFrom(), not(selectStatement.getFrom()));
         assertThat(actual.getFrom(), instanceOf(SimpleTableSegment.class));

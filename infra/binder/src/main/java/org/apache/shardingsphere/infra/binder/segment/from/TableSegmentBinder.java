@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.segment.from.impl.JoinTableSegment
 import org.apache.shardingsphere.infra.binder.segment.from.impl.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.impl.SubqueryTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorRecordTableBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -44,17 +45,19 @@ public final class TableSegmentBinder {
      * @param segment table segment
      * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
+     * @param cursorRecordTableBinderContext cursor record table binder context
      * @return bounded table segment
      */
-    public static TableSegment bind(final TableSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static TableSegment bind(final TableSegment segment, final SQLStatementBinderContext statementBinderContext,
+                                    final Map<String, TableSegmentBinderContext> tableBinderContexts, final CursorRecordTableBinderContext cursorRecordTableBinderContext) {
         if (segment instanceof SimpleTableSegment) {
             return SimpleTableSegmentBinder.bind((SimpleTableSegment) segment, statementBinderContext, tableBinderContexts);
         }
         if (segment instanceof JoinTableSegment) {
-            return JoinTableSegmentBinder.bind((JoinTableSegment) segment, statementBinderContext, tableBinderContexts);
+            return JoinTableSegmentBinder.bind((JoinTableSegment) segment, statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext);
         }
         if (segment instanceof SubqueryTableSegment) {
-            return SubqueryTableSegmentBinder.bind((SubqueryTableSegment) segment, statementBinderContext, tableBinderContexts);
+            return SubqueryTableSegmentBinder.bind((SubqueryTableSegment) segment, statementBinderContext, tableBinderContexts, cursorRecordTableBinderContext);
         }
         if (segment instanceof DeleteMultiTableSegment) {
             return DeleteMultiTableSegmentBinder.bind((DeleteMultiTableSegment) segment, statementBinderContext, tableBinderContexts);
