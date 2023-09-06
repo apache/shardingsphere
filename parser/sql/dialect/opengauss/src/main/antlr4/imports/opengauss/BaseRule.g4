@@ -450,6 +450,7 @@ unreservedWord
     | INT4RANGE
     | NUMRANGE
     | DATERANGE
+    | TSQUERY
     ;
 
 typeFuncNameKeyword

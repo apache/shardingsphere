@@ -3077,4 +3077,20 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_tsquery">
+        <projections start-index="7" stop-index="24">
+            <expression-projection start-index="7" stop-index="24" text="'super:*'::tsquery">
+                <binary-operation-expression start-index="7" stop-index="24">
+                    <left>
+                        <literal-expression start-index="7" stop-index="15" value="super:*" />
+                    </left>
+                    <operator>::</operator>
+                    <right>
+                        <column start-index="17" stop-index="24" name="tsquery" />
+                    </right>
+                </binary-operation-expression>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
