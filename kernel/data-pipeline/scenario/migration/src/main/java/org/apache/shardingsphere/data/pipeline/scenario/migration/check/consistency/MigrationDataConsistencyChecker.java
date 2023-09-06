@@ -86,14 +86,14 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         progressContext.setRecordsCount(getRecordsCount());
         progressContext.getTableNames().addAll(sourceTableNames);
         progressContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
-        Map<DataNode, TableDataConsistencyCheckResult> result = new LinkedHashMap<>();
+        Map<SchemaTableName, TableDataConsistencyCheckResult> result = new LinkedHashMap<>();
         TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps);
         try (PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager()) {
             for (JobDataNodeLine each : jobConfig.getJobShardingDataNodes()) {
                 checkTableInventoryData(each, tableChecker, result, dataSourceManager);
             }
         }
-        return result.entrySet().stream().collect(Collectors.toMap(entry -> DataNodeUtils.formatWithSchema(entry.getKey()), Entry::getValue));
+        return result.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().marshal(), Entry::getValue));
     }
     
     private long getRecordsCount() {
@@ -102,11 +102,11 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     }
     
     private void checkTableInventoryData(final JobDataNodeLine jobDataNodeLine, final TableDataConsistencyChecker tableChecker,
-                                         final Map<DataNode, TableDataConsistencyCheckResult> checkResultMap, final PipelineDataSourceManager dataSourceManager) {
+                                         final Map<SchemaTableName, TableDataConsistencyCheckResult> checkResultMap, final PipelineDataSourceManager dataSourceManager) {
         for (JobDataNodeEntry entry : jobDataNodeLine.getEntries()) {
             for (DataNode each : entry.getDataNodes()) {
                 TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(entry.getLogicTableName(), each, tableChecker, dataSourceManager);
-                checkResultMap.put(each, checkResult);
+                checkResultMap.put(new SchemaTableName(each.getSchemaName(), each.getTableName()), checkResult);
                 if (!checkResult.isMatched() && tableChecker.isBreakOnInventoryCheckNotMatched()) {
                     log.info("Unmatched on table '{}', ignore left tables", DataNodeUtils.formatWithSchema(each));
                     return;

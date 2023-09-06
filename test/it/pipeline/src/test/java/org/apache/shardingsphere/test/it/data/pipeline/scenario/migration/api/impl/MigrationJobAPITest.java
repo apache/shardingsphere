@@ -179,7 +179,7 @@ class MigrationJobAPITest {
         Map<String, TableDataConsistencyCheckResult> checkResultMap = jobAPI.buildPipelineDataConsistencyChecker(
                 jobConfig, jobAPI.buildPipelineProcessContext(jobConfig), new ConsistencyCheckJobItemProgressContext(jobId.get(), 0)).check("FIXTURE", null);
         assertThat(checkResultMap.size(), is(1));
-        String checkKey = "ds_0.t_order";
+        String checkKey = "t_order";
         assertTrue(checkResultMap.get(checkKey).getCountCheckResult().isMatched());
         assertThat(checkResultMap.get(checkKey).getCountCheckResult().getTargetRecordsCount(), is(2L));
         assertTrue(checkResultMap.get(checkKey).getContentCheckResult().isMatched());
