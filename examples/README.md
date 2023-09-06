@@ -40,7 +40,7 @@ shardingsphere-example
   │   ├── example-raw-jdbc
   │   ├── example-spring-jpa
   │   └── example-spring-mybatis
-  ├── shardingsphere-example-generator
+  ├── shardingsphere-jdbc-example-generator
   ├── shardingsphere-parser-example
   ├── shardingsphere-proxy-example
   │   ├── shardingsphere-proxy-boot-mybatis-example
@@ -54,7 +54,7 @@ shardingsphere-example
 
 | Example                                                                      | Description                                                                    |
 |------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| [ShardingSphere-JDBC Examples](shardingsphere-example-generator/README.md)   | Generate the examples by configuration and show how to use ShardingSphere-JDBC |
+| [ShardingSphere-JDBC Examples](shardingsphere-jdbc-example-generator/README.md)   | Generate the examples by configuration and show how to use ShardingSphere-JDBC |
 | [DistSQL](shardingsphere-proxy-example/shardingsphere-proxy-distsql-example) | show how to use DistSQL in ShardingSphere-Proxy                                |
 | APM(Pending)                                                                 | show how to use APM in ShardingSphere                                          |
 | proxy(Pending)                                                               | show how to use ShardingSphere-Proxy                                           |
