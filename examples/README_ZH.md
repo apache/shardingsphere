@@ -55,7 +55,7 @@ shardingsphere-example
 
 | 例子                                                                           | 描述                                   |
 |------------------------------------------------------------------------------|--------------------------------------|
-| [ShardingSphere-JDBC示例](shardingsphere-jdbc-example-generator/README_ZH.md)       | 通过配置生成ShardingSphere-JDBC的演示示例       |
+| [ShardingSphere-JDBC示例](shardingsphere-jdbc-example-generator/README.md)       | 通过配置生成ShardingSphere-JDBC的演示示例       |
 | [DistSQL](shardingsphere-proxy-example/shardingsphere-proxy-distsql-example) | 演示在 ShardingSphere-Proxy 中使用 DistSQL |
 | APM 监控(Pending)                                                              | 演示在 ShardingSphere 中使用 APM 监控        |
 | proxy(Pending)                                                               | 演示使用 ShardingSphere-Proxy            |
