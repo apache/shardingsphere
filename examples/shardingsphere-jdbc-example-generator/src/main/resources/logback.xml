@@ -17,7 +17,7 @@
   -->
 
 <configuration>
-    <property name="log.context.name" value="shardingsphere-example-generator" />
+    <property name="log.context.name" value="shardingsphere-jdbc-example-generator" />
     <property name="log.charset" value="UTF-8" />
     <property name="log.pattern" value="%msg %n" />
     <contextName>${log.context.name}</contextName>
