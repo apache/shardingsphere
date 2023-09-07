@@ -131,4 +131,5 @@
     <sql-case id="select_int8range" value="SELECT int8range(5,15) * int8range(10,20) AS RESULT;" db-types="openGauss" />
     <sql-case id="select_int4range" value="SELECT int4range(2,4) &lt;@ int4range(1,7) AS RESULT;" db-types="openGauss" />
     <sql-case id="select_lower_inf_function" value="SELECT lower_inf('(,)'::daterange) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_tsquery" value="SELECT 'super:*'::tsquery;" db-types="openGauss" />
 </sql-cases>
