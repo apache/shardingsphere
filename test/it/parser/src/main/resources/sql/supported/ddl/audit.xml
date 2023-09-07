@@ -156,4 +156,8 @@
     <sql-case id="audit_update_on_default" value="AUDIT UPDATE ON DEFAULT" db-types="Oracle" />
     <sql-case id="audit_execute_on_default" value="AUDIT EXECUTE ON DEFAULT" db-types="Oracle" />
     <sql-case id="audit_read_on_default" value="AUDIT READ ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_all_by_by_access" value="AUDIT ALL BY jward BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_all_on_default_by_access" value="AUDIT ALL ON DEFAULT BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_all_statements_by_by_access_whenever_successful" value="AUDIT ALL STATEMENTS BY jward, jsmith BY ACCESS WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_all_statements_in_session_current" value="AUDIT ALL STATEMENTS IN SESSION CURRENT" db-types="Oracle" />
 </sql-cases>

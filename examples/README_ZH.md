@@ -6,7 +6,7 @@
 
 **注意事项**
 
-- *`shardingsphere-example-generator`模块是一个全新的示例体验模块*
+- *`shardingsphere-jdbc-example-generator`模块是一个全新的示例体验模块*
 
 -
 *如果采用手动模式，请在首次运行示例之前执行[初始化脚本](https://github.com/apache/shardingsphere/blob/master/examples/src/resources/manual_schema.sql)。*
@@ -41,7 +41,7 @@ shardingsphere-example
   │   ├── example-raw-jdbc
   │   ├── example-spring-jpa
   │   └── example-spring-mybatis
-  ├── shardingsphere-example-generator
+  ├── shardingsphere-jdbc-example-generator
   ├── shardingsphere-parser-example
   ├── shardingsphere-proxy-example
   │   ├── shardingsphere-proxy-boot-mybatis-example
@@ -55,7 +55,7 @@ shardingsphere-example
 
 | 例子                                                                           | 描述                                   |
 |------------------------------------------------------------------------------|--------------------------------------|
-| [ShardingSphere-JDBC示例](shardingsphere-example-generator/README_ZH.md)       | 通过配置生成ShardingSphere-JDBC的演示示例       |
+| [ShardingSphere-JDBC示例](shardingsphere-jdbc-example-generator/README.md)       | 通过配置生成ShardingSphere-JDBC的演示示例       |
 | [DistSQL](shardingsphere-proxy-example/shardingsphere-proxy-distsql-example) | 演示在 ShardingSphere-Proxy 中使用 DistSQL |
 | APM 监控(Pending)                                                              | 演示在 ShardingSphere 中使用 APM 监控        |
 | proxy(Pending)                                                               | 演示使用 ShardingSphere-Proxy            |

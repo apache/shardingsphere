@@ -44,7 +44,7 @@ public final class PipelineTaskUtils {
      */
     public static String generateInventoryTaskId(final InventoryDumperConfiguration inventoryDumperConfig) {
         String result = String.format("%s.%s", inventoryDumperConfig.getDataSourceName(), inventoryDumperConfig.getActualTableName());
-        return null == inventoryDumperConfig.getShardingItem() ? result : result + "#" + inventoryDumperConfig.getShardingItem();
+        return result + "#" + inventoryDumperConfig.getShardingItem();
     }
     
     /**

@@ -106,11 +106,6 @@
     <sql-case id="unsupported_select_case_for_opengauss_96" value="select '[138,0.58,-369,1.25e+6]'::jsonb -&gt;&gt; 192.168.100.128/25;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_97" value="select '{&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: {&amp;quot;a&amp;quot;: 2, &amp;quot;b&amp;quot;: null}}'::json  -&gt;&gt; 2021-05-31 12:59:08;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_98" value="select '{&amp;quot;foo&amp;quot;: [true, &amp;quot;bar&amp;quot;], &amp;quot;tags&amp;quot;: {&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: null}}'::json -&gt;&gt; 192.168.100.128/25;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_100" value="select 'fat:ab &amp; cat'::tsquery;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_101" value="select 'super:*'::tsquery;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_102" value="select 'fat &amp; rat'::tsquery;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_103" value="select 'fat &amp; (rat | cat)'::tsquery;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_104" value="select 'fat &amp; rat &amp; ! cat'::tsquery;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_105" value="select 'a fat cat sat on a mat and ate a fat rat'::tsvector;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_106" value="select $$the lexeme '    ' contains spaces$$::tsvector;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_107" value="select 'a:1 fat:2 cat:3 sat:4 on:5 a:6 mat:7 and:8 ate:9 a:10 fat:11 rat:12'::tsvector;" db-types="openGauss" />
@@ -271,59 +266,29 @@
     <sql-case id="unsupported_select_case_for_opengauss_444" value="select extract(week from timestamp '2001-02-16 20:38:40') from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_447" value="select atan(11 11) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_448" value="select atan(,) from sys_dummy;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_449" value="select to_tsvector('fat cats ate fat rats') @@ 'fa:*'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_450" value="select to_tsvector('fat cats ate rats') @@(!!'rat'::tsquery) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_451" value="select $$the lexeme '    '  , contains spaces$$::tsvector@@ ','::tsquery  as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_452" value="select setweight(body :: tsvector, 'a') from ts_zhparser;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_453" value="select to_tsvector('english', 'the fat rats')@@ 'the'::tsquery  as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_454" value="select to_tsvector('fat cats ate rats') @@(!!'ratt'::tsquery) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_455" value="select 'fat cats ate'::tsvector || 'a b c'::tsvector;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_456" value="select 'fat | rat'::tsquery &amp;&amp; 'cat'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_457" value="select to_tsvector('fat cats ate rats') @@('rat'::tsquery &amp;&amp; 'cat'::tsquery) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_458" value="select 'a:1 b:2'::tsvector || 'c:1 d:2 b:3'::tsvector as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_459" value="select 'a b'::tsvector || 'c:1 d:2 b:3'::tsvector as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_460" value="select setweight('fat:2,4 cat:3 rat:5b'::tsvector, 1);" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_461" value="select setweight('fat:2,4 cat:3 rat:5b'::tsvector, '');" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_462" value="select $$the lexeme '    '  , contains spaces$$::tsvector || 'c:1 d:2 b:3'::tsvector as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_463" value="select numnode('(fat &amp; rat) | cat'::tsquery);" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_464" value="select length(1::tsvector);" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_465" value="select strip(body :: tsvector) from ts_zhparser;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_466" value="select length('a b c'::tsvector  || 'd e f'::tsvector);" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_467" value="select length('fat:2,4 cat:3 rat:5a'::tsvector);" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_468" value="select length($$the lexeme '    ' contains spaces$$::tsvector);" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_469" value="select length('fat:2,4 cat:3'::tsvector);" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_470" value="select numnode(body :: tsquery) from ts_zhparser;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_471" value="select 'fat'::tsquery  = 'fat'::tsquery as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_472" value="select length('fat rat'::tsvector);" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_473" value="select numnode(bodyy :: tsquery) from ts_zhparser;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_474" value="select 'cat &amp; rat'::tsquery &lt;@ 'cat'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_475" value="select 'fat'::tsquery  = 'fatt'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_476" value="select 'cat'::tsquery &lt;@ 'cat &amp; rat'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_477" value="select 'cat &amp; rat'::tsquery &lt;@ 'cat&amp; rat'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_478" value="select 'cat'::tsquery @&gt; 'cat'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_479" value="select 'cat&amp;fat'::tsquery @&gt; 'cat'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_480" value="select 'fat'::tsquery  &gt; 'fat'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_481" value="select 'fat'::tsquery  &gt; 'fat &amp; rat'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_482" value="select 'fat &amp; rat'::tsquery  &gt; 'fat'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_483" value="select 'cat'::tsquery @&gt; 'cat &amp; rat'::tsquery as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_484" value="select 'fat cats ate fat rats'::tsvector @@ ('fat'::tsquery  &amp;&amp; 'ate'::tsquery)  as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_485" value="select 'fat &amp; rat'::tsquery || 'cat'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_486" value="select to_tsvector('fat cats ate rats') @@('rat'::tsquery || 'cat'::tsquery) as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_487" value="select 'fat cats ate fat rats'::tsvector @@ ('fat'::tsquery  &amp;&amp; 'ateee'::tsquery)  as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_488" value="select 'fat | rat'::tsquery || 'cat'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_489" value="select 'fat:ab'::tsquery  &amp;&amp; 'fa:ab'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_490" value="select 'fat &amp; rat'::tsquery &amp;&amp; 'cat'::tsquery as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_491" value="select  to_tsvector('fat cats ate ate' )|| 'a b c'::tsvector  || 'd e f'::tsvector as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_492" value="select 'fat cats ate fat rats'::tsvector @@ ('fat'::tsquery ||  'ateee'::tsquery)  as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_493" value="select  'a:1a '::tsvector|| 'b:1a '::tsvector as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_494" value="select 'fat cats ate fat rats'::tsvector @@ to_tsquery('fat &amp; rat')as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_495" value="select 'a:1 fat:2 cat:3 sat:4 on:5'::tsvector @@ 'fat'::tsquery  as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_496" value="select 'rat'::tsquery &amp;&amp; 'cat'::tsquery as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_497" value="select 'fat cats ate fat rats'::tsvector @@ ('fat11'::tsquery ||  'ateee'::tsquery)  as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_498" value="select 'rat'::tsquery &amp;&amp; 'cat'::tsquery &amp;&amp; '' ::tsquery  as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_499" value="select !! 'cat'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_500" value="select 'fat:ab'::tsquery  || 'fa:ab'::tsquery as result;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_501" value="select 'rat'::tsquery &amp;&amp; 'cat'::tsquery &amp;&amp; ',' ::tsquery  as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_503" value="select to_char(interval '2' year ,'yyyy','yyyy');" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_504" value="select to_char(interval 2 year);" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_505" value="select to_char(current_timestamp, 0x5d);" db-types="openGauss" />

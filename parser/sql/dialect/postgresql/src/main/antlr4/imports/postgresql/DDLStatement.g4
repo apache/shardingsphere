@@ -975,7 +975,7 @@ alterMaterializedViewClauses
     ;
 
 executeStmt
-    : EXECUTE name executeParamClause
+    : EXECUTE name executeParamClause?
     ;
 
 createMaterializedView
