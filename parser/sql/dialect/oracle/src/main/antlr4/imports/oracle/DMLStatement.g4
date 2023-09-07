@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Comments, DDLStatement;
+import Comments, BaseRule;
 
 insert
     : INSERT hint? (insertSingleTable | insertMultiTable)
@@ -478,8 +478,7 @@ queryTableExprSampleClause
     : (queryTableExprTableClause
     | queryTableExprViewClause
     | hierarchyName
-    | queryTableExprAnalyticClause
-    | (owner DOT_)? inlineExternalTable) sampleClause?
+    | queryTableExprAnalyticClause) sampleClause?
     ;
 
 queryTableExprTableClause
@@ -492,10 +491,6 @@ queryTableExprViewClause
 
 queryTableExprAnalyticClause
     : analyticViewName (HIERARCHIES LP_ ((attrDim DOT_)? hierarchyName (COMMA_ (attrDim DOT_)? hierarchyName)*)? RP_)?
-    ;
-
-inlineExternalTable
-    : EXTERNAL LP_ LP_ columnDefinition (COMMA_ columnDefinition)* RP_ inlineExternalTableProperties RP_
     ;
 
 inlineExternalTableProperties

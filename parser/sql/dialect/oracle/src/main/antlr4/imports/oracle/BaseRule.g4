@@ -884,10 +884,6 @@ caseElse
     : ELSE expr
     ;
 
-subquery
-    : matchNone
-    ;
-
 orderByClause
     : ORDER SIBLINGS? BY orderByItem (COMMA_ orderByItem)*
     ;
@@ -998,10 +994,6 @@ ignoredIdentifier
 
 ignoredIdentifiers
     : ignoredIdentifier (COMMA_ ignoredIdentifier)*
-    ;
-
-matchNone
-    : 'Default does not match anything'
     ;
 
 hashSubpartitionQuantity
@@ -1699,7 +1691,7 @@ existsCondition
     ;
 
 inCondition
-    : (expr NOT? IN LP_ (expressionList | subquery) RP_) 
+    : (expr NOT? IN LP_ (expressionList | subquery) RP_)
     | (exprList NOT? IN LP_ ((expressionList (COMMA_ expressionList)*) | subquery) RP_)
     ;
 
