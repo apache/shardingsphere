@@ -74,7 +74,7 @@ public final class ColumnSegmentBinder {
         segment.getOwner().ifPresent(result::setOwner);
         Collection<TableSegmentBinderContext> tableBinderContextValues =
                 getTableSegmentBinderContexts(segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
-        Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment, parentSegmentType, tableBinderContextValues);
+        Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment, parentSegmentType, tableBinderContextValues, statementBinderContext);
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
         result.setColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, inputColumnSegment.orElse(null)));
         return result;
@@ -114,7 +114,8 @@ public final class ColumnSegmentBinder {
         return Collections.emptyList();
     }
     
-    private static Optional<ColumnSegment> findInputColumnSegment(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts) {
+    private static Optional<ColumnSegment> findInputColumnSegment(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts,
+                                                                  final SQLStatementBinderContext statementBinderContext) {
         ColumnSegment result = null;
         boolean isFindInputColumn = false;
         for (TableSegmentBinderContext each : tableBinderContexts) {
@@ -129,12 +130,26 @@ public final class ColumnSegmentBinder {
             }
         }
         if (!isFindInputColumn) {
+            result = findInputColumnSegmentFromExternalTables(segment, statementBinderContext.getExternalTableBinderContexts()).orElse(null);
+            isFindInputColumn = result != null;
+        }
+        if (!isFindInputColumn) {
             result = findInputColumnSegmentByVariables(segment, tableBinderContexts).orElse(null);
             isFindInputColumn = result != null;
         }
         ShardingSpherePreconditions.checkState(isFindInputColumn,
                 () -> new UnknownColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         return Optional.ofNullable(result);
+    }
+    
+    private static Optional<ColumnSegment> findInputColumnSegmentFromExternalTables(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
+        for (TableSegmentBinderContext each : externalTableBinderContexts.values()) {
+            ProjectionSegment projectionSegment = each.getProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
+            if (projectionSegment instanceof ColumnProjectionSegment) {
+                return Optional.of(((ColumnProjectionSegment) projectionSegment).getColumn());
+            }
+        }
+        return Optional.empty();
     }
     
     private static Optional<ColumnSegment> findInputColumnSegmentByVariables(final ColumnSegment segment, final Collection<TableSegmentBinderContext> tableBinderContexts) {
