@@ -42,7 +42,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -125,22 +124,7 @@ public final class SimpleTableSegmentBinder {
             columnProjectionSegment.setVisible(each.isVisible());
             projectionSegments.add(columnProjectionSegment);
         }
-        TableSegmentBinderContext result = new TableSegmentBinderContext(projectionSegments);
-        getVariableProjectionSegments(segment, originalDatabase, originalSchema, statementBinderContext, dialectDatabaseMetaData).forEach(result::putVariableLabelProjectionSegments);
-        return result;
-    }
-    
-    private static Collection<ProjectionSegment> getVariableProjectionSegments(final SimpleTableSegment segment, final IdentifierValue originalDatabase, final IdentifierValue originalSchema,
-                                                                               final SQLStatementBinderContext statementBinderContext, final DialectDatabaseMetaData dialectDatabaseMetaData) {
-        Collection<ProjectionSegment> result = new ArrayList<>(statementBinderContext.getVariableNames().size());
-        statementBinderContext.getVariableNames().forEach(each -> {
-            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each, dialectDatabaseMetaData.getQuoteCharacter()));
-            columnSegment.setVariable(true);
-            columnSegment.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(originalDatabase, originalSchema, segment.getTableName().getIdentifier(),
-                    new IdentifierValue(each, dialectDatabaseMetaData.getQuoteCharacter())));
-            result.add(new ColumnProjectionSegment(columnSegment));
-        });
-        return result;
+        return new TableSegmentBinderContext(projectionSegments);
     }
     
     private static void checkTableExists(final String tableName, final SQLStatementBinderContext statementBinderContext, final String databaseName, final String schemaName) {

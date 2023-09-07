@@ -74,7 +74,7 @@ public final class ColumnSegmentBinder {
         segment.getOwner().ifPresent(result::setOwner);
         Collection<TableSegmentBinderContext> tableBinderContextValues =
                 getTableSegmentBinderContexts(segment, parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
-        Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment, parentSegmentType, tableBinderContextValues);
+        Optional<ColumnSegment> inputColumnSegment = findInputColumnSegment(segment, parentSegmentType, tableBinderContextValues, statementBinderContext);
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
         result.setColumnBoundedInfo(createColumnSegmentBoundedInfo(segment, inputColumnSegment.orElse(null)));
         return result;
@@ -114,7 +114,8 @@ public final class ColumnSegmentBinder {
         return Collections.emptyList();
     }
     
-    private static Optional<ColumnSegment> findInputColumnSegment(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts) {
+    private static Optional<ColumnSegment> findInputColumnSegment(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts,
+                                                                  final SQLStatementBinderContext statementBinderContext) {
         ColumnSegment result = null;
         boolean isFindInputColumn = false;
         for (TableSegmentBinderContext each : tableBinderContexts) {
@@ -129,7 +130,7 @@ public final class ColumnSegmentBinder {
             }
         }
         if (!isFindInputColumn) {
-            result = findInputColumnSegmentByVariables(segment, tableBinderContexts).orElse(null);
+            result = findInputColumnSegmentByVariables(segment, statementBinderContext.getVariableNames()).orElse(null);
             isFindInputColumn = result != null;
         }
         ShardingSpherePreconditions.checkState(isFindInputColumn,
@@ -137,16 +138,13 @@ public final class ColumnSegmentBinder {
         return Optional.ofNullable(result);
     }
     
-    private static Optional<ColumnSegment> findInputColumnSegmentByVariables(final ColumnSegment segment, final Collection<TableSegmentBinderContext> tableBinderContexts) {
-        ColumnSegment result = null;
-        for (TableSegmentBinderContext each : tableBinderContexts) {
-            ProjectionSegment variableSegment = each.getProjectionSegmentByVariableLabel(segment.getIdentifier().getValue());
-            if (variableSegment instanceof ColumnProjectionSegment) {
-                result = ((ColumnProjectionSegment) variableSegment).getColumn();
-                break;
-            }
+    private static Optional<ColumnSegment> findInputColumnSegmentByVariables(final ColumnSegment segment, final Collection<String> variableNames) {
+        if (variableNames.contains(segment.getIdentifier().getValue().toLowerCase())) {
+            ColumnSegment result = new ColumnSegment(0, 0, segment.getIdentifier());
+            result.setVariable(true);
+            return Optional.of(result);
         }
-        return Optional.ofNullable(result);
+        return Optional.empty();
     }
     
     private static ColumnSegmentBoundedInfo createColumnSegmentBoundedInfo(final ColumnSegment segment, final ColumnSegment inputColumnSegment) {
