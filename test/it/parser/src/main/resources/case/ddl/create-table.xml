@@ -2032,4 +2032,8 @@
             <referenced-table name="warehouse_table" start-index="89" stop-index="103" />
         </column-definition>
     </create-table>
+    
+    <create-table sql-case-id="create_table_with_select">
+        <table name="t_order_new" start-index="13" stop-index="23"/>
+    </create-table>
 </sql-parser-test-cases>

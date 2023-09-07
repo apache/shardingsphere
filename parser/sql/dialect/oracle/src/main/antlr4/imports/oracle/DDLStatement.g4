@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import BaseRule, DCLStatement;
+import BaseRule, DCLStatement, DMLStatement;
 
 createTable
     : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
@@ -178,7 +178,11 @@ createSharingClause
     ;
 
 createDefinitionClause
-    : createRelationalTableClause | createObjectTableClause | createXMLTypeTableClause
+    : createRelationalTableClause | createObjectTableClause | createTableAsSelectClause | createXMLTypeTableClause
+    ;
+
+createTableAsSelectClause
+    : AS selectSubquery
     ;
 
 createXMLTypeTableClause
@@ -296,7 +300,7 @@ identityOption
     ;
 
 encryptionSpecification
-    : (USING STRING_)? (IDENTIFIED BY STRING_)? (integrityAlgorithm? (NO? SALT)? | (NO? SALT)? integrityAlgorithm?)   
+    : (USING STRING_)? (IDENTIFIED BY STRING_)? (integrityAlgorithm? (NO? SALT)? | (NO? SALT)? integrityAlgorithm?)
     ;
 
 inlineConstraint
@@ -2160,7 +2164,7 @@ scopeClause
 
 analyze
     : (ANALYZE ((TABLE tableName| INDEX indexName) partitionExtensionClause? | CLUSTER clusterName))
-    (validationClauses | LIST CHAINED ROWS intoClause? | DELETE SYSTEM? STATISTICS)
+    (validationClauses | LIST CHAINED ROWS intoTableClause? | DELETE SYSTEM? STATISTICS)
     ;
 
 partitionExtensionClause
@@ -2170,10 +2174,10 @@ partitionExtensionClause
 
 validationClauses
     : VALIDATE REF UPDATE (SET DANGLING TO NULL)?
-    | VALIDATE STRUCTURE (CASCADE (FAST | COMPLETE? (OFFLINE | ONLINE) intoClause?)?)?
+    | VALIDATE STRUCTURE (CASCADE (FAST | COMPLETE? (OFFLINE | ONLINE) intoTableClause?)?)?
     ;
 
-intoClause
+intoTableClause
     : INTO tableName
     ;
 
@@ -3641,7 +3645,7 @@ pdbUnplugEncrypt
 
 pdbSettingsClauses
     : pdbName? pdbSettingClause
-    | CONTAINERS containersClause
+    | CONTAINERS (DEFAULT TARGET EQ_ ((LP_ containerName RP_) | NONE) | HOST EQ_ hostName | PORT EQ_ NUMBER_)
     ;
 
 pdbSettingClause
@@ -3658,12 +3662,6 @@ pdbSettingClause
     | pdbRefreshModeClause
     | REFRESH pdbRefreshSwitchoverClause?
     | SET CONTAINER_MAP EQ_ mapObject
-    ;
-
-containersClause
-    : DEFAULT TARGET EQ_ ((LP_ containerName RP_) | NONE)
-    | HOST EQ_ hostName
-    | PORT EQ_ NUMBER_
     ;
 
 pdbStorageClause
