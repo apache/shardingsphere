@@ -78,7 +78,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
             return;
         }
         TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType()).persistJobItemProgress(jobItemContext);
-        if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
+        if (PipelineJobProgressDetector.isAllInventoryTasksFinished(inventoryTasks)) {
             log.info("All inventory tasks finished.");
             executeIncrementalTask();
         } else {
@@ -124,7 +124,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     }
     
     protected void inventorySuccessCallback() {
-        if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
+        if (PipelineJobProgressDetector.isAllInventoryTasksFinished(inventoryTasks)) {
             log.info("onSuccess, all inventory tasks finished.");
             executeIncrementalTask();
         } else {
