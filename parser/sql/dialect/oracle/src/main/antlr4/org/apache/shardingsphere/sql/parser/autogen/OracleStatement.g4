@@ -17,7 +17,7 @@
 
 grammar OracleStatement;
 
-import DDLStatement, TCLStatement, DCLStatement, DALStatement, PLSQL;
+import DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, PLSQL;
 
 execute
     : (select
