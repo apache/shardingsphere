@@ -27,15 +27,20 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.Se
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleUpdateStatement;
 import org.junit.jupiter.api.Test;
 
@@ -104,5 +109,34 @@ class MergeStatementBinderTest {
         when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order")).thenReturn(true);
         when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order_item")).thenReturn(true);
         return result;
+    }
+    
+    @Test
+    void assertBindWithSubQuery() {
+        MergeStatement mergeStatement = new OracleMergeStatement();
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        targetTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
+        mergeStatement.setTarget(targetTable);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 0, "status + 1",new BinaryOperationExpression(0, 0,
+                new ColumnSegment(0, 0, new IdentifierValue("status")), new LiteralExpressionSegment(0, 0, 1), "+", "status + 1"));
+        expressionProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("new_status")));
+        projectionsSegment.getProjections().add(expressionProjectionSegment);
+        OracleSelectStatement oracleSelectStatement = new OracleSelectStatement();
+        oracleSelectStatement.setProjections(projectionsSegment);
+        oracleSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, oracleSelectStatement));
+        subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("b")));
+        mergeStatement.setSource(subqueryTableSegment);
+        UpdateStatement updateStatement = new OracleUpdateStatement();
+        ColumnSegment targetTableColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
+        targetTableColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
+        ColumnSegment sourceTableColumn = new ColumnSegment(0, 0, new IdentifierValue("new_status"));
+        SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0,
+                Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(targetTableColumn), sourceTableColumn)));
+        updateStatement.setSetAssignment(setAssignmentSegment);
+        mergeStatement.setUpdate(updateStatement);
+        MergeStatement actual = new MergeStatementBinder().bind(mergeStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
+        assertThat(actual, not(mergeStatement));
     }
 }

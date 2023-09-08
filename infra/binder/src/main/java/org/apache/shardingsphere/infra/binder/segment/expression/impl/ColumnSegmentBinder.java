@@ -130,8 +130,11 @@ public final class ColumnSegmentBinder {
             }
         }
         if (!isFindInputColumn) {
-            result = findInputColumnSegmentFromExternalTables(segment, statementBinderContext.getExternalTableBinderContexts()).orElse(null);
-            isFindInputColumn = result != null;
+            Optional<ProjectionSegment> projectionSegment = findInputColumnSegmentFromExternalTables(segment, statementBinderContext.getExternalTableBinderContexts());
+            isFindInputColumn = projectionSegment.isPresent();
+            if (projectionSegment.isPresent() && projectionSegment.get() instanceof ColumnProjectionSegment) {
+                result = ((ColumnProjectionSegment) projectionSegment.get()).getColumn();
+            }
         }
         if (!isFindInputColumn) {
             result = findInputColumnSegmentByVariables(segment, statementBinderContext.getVariableNames()).orElse(null);
@@ -142,11 +145,11 @@ public final class ColumnSegmentBinder {
         return Optional.ofNullable(result);
     }
     
-    private static Optional<ColumnSegment> findInputColumnSegmentFromExternalTables(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
+    private static Optional<ProjectionSegment> findInputColumnSegmentFromExternalTables(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         for (TableSegmentBinderContext each : externalTableBinderContexts.values()) {
             ProjectionSegment projectionSegment = each.getProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
-            if (projectionSegment instanceof ColumnProjectionSegment) {
-                return Optional.of(((ColumnProjectionSegment) projectionSegment).getColumn());
+            if (null != projectionSegment) {
+                return Optional.of(projectionSegment);
             }
         }
         return Optional.empty();
