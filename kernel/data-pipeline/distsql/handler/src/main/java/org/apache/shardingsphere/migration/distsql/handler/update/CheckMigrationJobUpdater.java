@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.pojo.CreateConsistencyCheckJobParameter;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
 
 import java.sql.SQLException;
@@ -44,7 +47,13 @@ public final class CheckMigrationJobUpdater implements RALUpdater<CheckMigration
         Properties algorithmProps = null == typeStrategy ? null : typeStrategy.getProps();
         String jobId = sqlStatement.getJobId();
         MigrationJobConfiguration jobConfig = migrationJobAPI.getJobConfiguration(jobId);
+        verifyInventoryFinished(jobConfig);
         checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(jobId, algorithmTypeName, algorithmProps, jobConfig.getSourceDatabaseType(), jobConfig.getTargetDatabaseType()));
+    }
+    
+    private void verifyInventoryFinished(final MigrationJobConfiguration jobConfig) {
+        ShardingSpherePreconditions.checkState(PipelineJobProgressDetector.isInventoryFinished(jobConfig.getJobShardingCount(), migrationJobAPI.getJobProgress(jobConfig).values()),
+                () -> new PipelineInvalidParameterException("Inventory is not finished."));
     }
     
     @Override
