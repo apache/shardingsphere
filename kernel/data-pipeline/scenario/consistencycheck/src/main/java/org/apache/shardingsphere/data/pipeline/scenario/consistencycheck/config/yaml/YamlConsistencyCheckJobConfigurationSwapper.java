@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml;
 
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
@@ -33,12 +35,14 @@ public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlCo
         result.setParentJobId(data.getParentJobId());
         result.setAlgorithmTypeName(data.getAlgorithmTypeName());
         result.setAlgorithmProps(data.getAlgorithmProps());
+        result.setSourceDatabaseType(null == data.getSourceDatabaseType() ? null : data.getSourceDatabaseType().getType());
         return result;
     }
     
     @Override
     public ConsistencyCheckJobConfiguration swapToObject(final YamlConsistencyCheckJobConfiguration yamlConfig) {
-        return new ConsistencyCheckJobConfiguration(yamlConfig.getJobId(), yamlConfig.getParentJobId(), yamlConfig.getAlgorithmTypeName(), yamlConfig.getAlgorithmProps());
+        DatabaseType databaseType = null == yamlConfig.getSourceDatabaseType() ? null : TypedSPILoader.getService(DatabaseType.class, yamlConfig.getSourceDatabaseType());
+        return new ConsistencyCheckJobConfiguration(yamlConfig.getJobId(), yamlConfig.getParentJobId(), yamlConfig.getAlgorithmTypeName(), yamlConfig.getAlgorithmProps(), databaseType);
     }
     
     /**
