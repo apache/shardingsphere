@@ -130,6 +130,10 @@ public final class ColumnSegmentBinder {
             }
         }
         if (!isFindInputColumn) {
+            result = findInputColumnSegmentFromExternalTables(segment, statementBinderContext.getExternalTableBinderContexts()).orElse(null);
+            isFindInputColumn = result != null;
+        }
+        if (!isFindInputColumn) {
             result = findInputColumnSegmentByVariables(segment, statementBinderContext.getVariableNames()).orElse(null);
             isFindInputColumn = result != null;
         }
@@ -137,12 +141,25 @@ public final class ColumnSegmentBinder {
                 () -> new UnknownColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         return Optional.ofNullable(result);
     }
+
+    private static Optional<ColumnSegment> findInputColumnSegmentFromExternalTables(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
+        for (TableSegmentBinderContext each : externalTableBinderContexts.values()) {
+            ProjectionSegment projectionSegment = each.getProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
+            if (projectionSegment instanceof ColumnProjectionSegment) {
+                return Optional.of(((ColumnProjectionSegment) projectionSegment).getColumn());
+            }
+        }
+        return Optional.empty();
+    }
     
-    private static Optional<ColumnSegment> findInputColumnSegmentByVariables(final ColumnSegment segment, final Collection<String> variableNames) {
-        if (variableNames.contains(segment.getIdentifier().getValue().toLowerCase())) {
-            ColumnSegment result = new ColumnSegment(0, 0, segment.getIdentifier());
-            result.setVariable(true);
-            return Optional.of(result);
+    private static Optional<ColumnSegment> findInputColumnSegmentByVariables(final ColumnSegment segment, final Collection<TableSegmentBinderContext> tableBinderContexts) {
+        ColumnSegment result = null;
+        for (TableSegmentBinderContext each : tableBinderContexts) {
+            ProjectionSegment variableSegment = each.getProjectionSegmentByVariableLabel(segment.getIdentifier().getValue());
+            if (variableSegment instanceof ColumnProjectionSegment) {
+                result = ((ColumnProjectionSegment) variableSegment).getColumn();
+                break;
+            }
         }
         return Optional.empty();
     }

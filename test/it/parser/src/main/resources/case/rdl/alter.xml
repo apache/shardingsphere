@@ -209,7 +209,9 @@
             </column>
             <column name="order_id">
                 <cipher name="order_cipher">
-                    <encryptor algorithm-name="MD5" />
+                    <encryptor algorithm-name="RC4">
+                        <property key="rc4-key-value" value="123456abc" />
+                    </encryptor>
                 </cipher>
             </column>
         </rule>
@@ -229,7 +231,9 @@
             </column>
             <column name="order_id">
                 <cipher name="order_cipher">
-                    <encryptor algorithm-name="MD5" />
+                    <encryptor algorithm-name="RC4">
+                        <property key="rc4-key-value" value="123456abc" />
+                    </encryptor>
                 </cipher>
             </column>
         </rule>
@@ -249,7 +253,9 @@
             </column>
             <column name="order_id">
                 <cipher name="order_cipher">
-                    <encryptor algorithm-name="MD5" />
+                    <encryptor algorithm-name="RC4">
+                        <property key="rc4-key-value" value="123456abc" />
+                    </encryptor>
                 </cipher>
             </column>
         </rule>
@@ -266,7 +272,9 @@
             </column>
             <column name="order_id">
                 <cipher name="order_cipher">
-                    <encryptor algorithm-name="MD5" />
+                    <encryptor algorithm-name="RC4">
+                        <property key="rc4-key-value" value="123456abc" />
+                    </encryptor>
                 </cipher>
             </column>
         </rule>

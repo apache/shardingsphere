@@ -68,6 +68,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AuditU
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnOrVirtualDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnClausesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CommentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConstraintClausesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateClusterContext;
@@ -483,34 +484,50 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
         CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
         if (null != ctx.columnClauses()) {
-            for (OperateColumnClauseContext each : ctx.columnClauses().operateColumnClause()) {
-                if (null != each.addColumnSpecification()) {
-                    result.getValue().addAll(((CollectionValue<AddColumnDefinitionSegment>) visit(each.addColumnSpecification())).getValue());
-                }
-                if (null != each.modifyColumnSpecification()) {
-                    result.getValue().add((ModifyColumnDefinitionSegment) visit(each.modifyColumnSpecification()));
-                }
-                if (null != each.dropColumnClause()) {
-                    result.getValue().add((DropColumnDefinitionSegment) visit(each.dropColumnClause()));
-                }
-            }
-            if (null != ctx.columnClauses().modifyCollectionRetrieval()) {
-                result.getValue().add((ModifyCollectionRetrievalSegment) visit(ctx.columnClauses().modifyCollectionRetrieval()));
-            }
+            result.getValue().addAll(((CollectionValue<AddColumnDefinitionSegment>) visit(ctx.columnClauses())).getValue());
         }
         if (null != ctx.constraintClauses()) {
-            // TODO Support rename constraint
-            ConstraintClausesContext constraintClausesContext = ctx.constraintClauses();
-            if (null != constraintClausesContext.addConstraintSpecification()) {
-                result.combine((CollectionValue<AlterDefinitionSegment>) visit(constraintClausesContext.addConstraintSpecification()));
+            result.getValue().addAll(((CollectionValue<AddColumnDefinitionSegment>) visit(ctx.constraintClauses())).getValue());
+        }
+        // TODO More alter definition parse
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitColumnClauses(final ColumnClausesContext ctx) {
+        CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
+        for (OperateColumnClauseContext each : ctx.operateColumnClause()) {
+            if (null != each.addColumnSpecification()) {
+                result.getValue().addAll(((CollectionValue<AddColumnDefinitionSegment>) visit(each.addColumnSpecification())).getValue());
             }
-            if (null != constraintClausesContext.modifyConstraintClause()) {
-                result.getValue().add((AlterDefinitionSegment) visit(constraintClausesContext.modifyConstraintClause()));
+            if (null != each.modifyColumnSpecification()) {
+                result.getValue().add((ModifyColumnDefinitionSegment) visit(each.modifyColumnSpecification()));
             }
-            for (DropConstraintClauseContext each : constraintClausesContext.dropConstraintClause()) {
-                if (null != each.constraintName()) {
-                    result.getValue().add((AlterDefinitionSegment) visit(each));
-                }
+            if (null != each.dropColumnClause()) {
+                result.getValue().add((DropColumnDefinitionSegment) visit(each.dropColumnClause()));
+            }
+        }
+        if (null != ctx.modifyCollectionRetrieval()) {
+            result.getValue().add((ModifyCollectionRetrievalSegment) visit(ctx.modifyCollectionRetrieval()));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitConstraintClauses(final ConstraintClausesContext ctx) {
+        // TODO Support rename constraint
+        CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
+        if (null != ctx.addConstraintSpecification()) {
+            result.combine((CollectionValue<AlterDefinitionSegment>) visit(ctx.addConstraintSpecification()));
+        }
+        if (null != ctx.modifyConstraintClause()) {
+            result.getValue().add((AlterDefinitionSegment) visit(ctx.modifyConstraintClause()));
+        }
+        for (DropConstraintClauseContext each : ctx.dropConstraintClause()) {
+            if (null != each.constraintName()) {
+                result.getValue().add((AlterDefinitionSegment) visit(each));
             }
         }
         return result;
