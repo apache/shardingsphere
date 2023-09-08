@@ -234,7 +234,6 @@ The text of each license is the standard Apache 2.0 license.
     curator-client 5.4.0:  https://github.com/apache/curator, Apache 2.0
     curator-framework 5.4.0:  https://github.com/apache/curator, Apache 2.0
     curator-recipes 5.4.0:  https://github.com/apache/curator, Apache 2.0
-    cosid-core 1.18.5: https://github.com/Ahoo-Wang/CosId, Apache 2.0
     error_prone_annotations 2.11.0: https://github.com/google/error-prone, Apache 2.0
     failsafe 2.4.4: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0
@@ -324,7 +323,7 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     antlr4-runtime 4.10.1: https://github.com/antlr/antlr4, BSD-3-Clause
     asm 9.1: https://github.com/llbit/ow2-asm, BSD-3-Clause
     commons-compiler 3.1.8: https://github.com/janino-compiler/janino, BSD-3-Clause
-    janino 3.1.8: https://github.com/janino-compiler/janino, BSD-3-Clause
+    janino 3.1.9: https://github.com/janino-compiler/janino, BSD-3-Clause
     opengauss-jdbc 3.1.0-og: https://gitee.com/opengauss/openGauss-connector-jdbc, BSD-2-Clause
     postgresql 42.4.1: https://github.com/pgjdbc/pgjdbc, BSD-2-Clause
     protobuf-java 3.21.12: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
@@ -371,4 +370,3 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     checker-qual 3.5.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
     jul-to-slf4j 1.7.36: https://www.slf4j.org, MIT
     slf4j-api 1.7.36: https://www.slf4j.org, MIT
-    jnanoid 2.0.0: https://github.com/aventrix/jnanoid, MIT
