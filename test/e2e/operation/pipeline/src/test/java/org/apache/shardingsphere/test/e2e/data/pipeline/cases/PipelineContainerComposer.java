@@ -393,7 +393,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
             Set<String> statusSet = jobStatus.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
             if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name())) {
                 Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+                continue;
             }
+            break;
         }
     }
     
