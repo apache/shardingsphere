@@ -6967,4 +6967,30 @@
             <expression-projection start-index="7" stop-index="18" text="5!" alias="RESULT" />
         </projections>
     </select>
+
+    <select sql-case-id="select_with_custom_distinct_function">
+        <projections start-index="7" stop-index="34" literal-start-index="7" literal-stop-index="34">
+            <expression-projection text="custom_concat(distinct a.P1)" start-index="7" stop-index="34"
+                                   literal-start-index="7" literal-stop-index="34">
+                <literalText>custom_concat(distinct a.P1)</literalText>
+                <expr>
+                    <function function-name="custom_concat" text="custom_concat(distinct a.P1)" start-index="7"
+                              stop-index="34" literal-start-index="7" literal-stop-index="34">
+                        <parameter>
+                            <column name="P1" start-index="30" stop-index="33" literal-start-index="30"
+                                    literal-stop-index="33">
+                                <owner name="a" start-index="30" stop-index="30" literal-start-index="30"
+                                       literal-stop-index="30"/>
+                            </column>
+                        </parameter>
+                        <literalText>custom_concat(distinct a.P1)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table alias="a" name="TEST" start-index="41" stop-index="46" literal-start-index="41"
+                          literal-stop-index="46"/>
+        </from>
+    </select>
 </sql-parser-test-cases>
