@@ -118,7 +118,7 @@ class MergeStatementBinderTest {
         targetTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
         mergeStatement.setTarget(targetTable);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 0, "status + 1",new BinaryOperationExpression(0, 0,
+        ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 0, "status + 1", new BinaryOperationExpression(0, 0,
                 new ColumnSegment(0, 0, new IdentifierValue("status")), new LiteralExpressionSegment(0, 0, 1), "+", "status + 1"));
         expressionProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("new_status")));
         projectionsSegment.getProjections().add(expressionProjectionSegment);
