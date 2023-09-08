@@ -87,7 +87,7 @@ unreservedWord1
     : TRUNCATE | FUNCTION | PROCEDURE | CASE | WHEN | CAST | TRIM | SUBSTRING
     | NATURAL | JOIN | FULL | INNER | OUTER | LEFT | RIGHT
     | CROSS | USING | IF | TRUE | FALSE | LIMIT | OFFSET
-    | BEGIN | COMMIT | ROLLBACK | SAVEPOINT
+    | COMMIT | ROLLBACK | SAVEPOINT
     | ARRAY | INTERVAL | TIME | TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | YEAR
     | QUARTER | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND
     | MICROSECOND | MAX | MIN | SUM | COUNT | AVG | ENABLE
@@ -664,7 +664,7 @@ notOperator
 
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-    | PRIOR predicate
+    | (PRIOR | DISTINCT) predicate
     | CONNECT_BY_ROOT predicate
     | booleanPrimary SAFE_EQ_ predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
