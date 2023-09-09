@@ -132,4 +132,8 @@
     <sql-case id="select_int4range" value="SELECT int4range(2,4) &lt;@ int4range(1,7) AS RESULT;" db-types="openGauss" />
     <sql-case id="select_lower_inf_function" value="SELECT lower_inf('(,)'::daterange) AS RESULT;" db-types="openGauss" />
     <sql-case id="select_tsquery" value="SELECT 'super:*'::tsquery;" db-types="openGauss" />
+    <sql-case id="select_abbrev_function" value="SELECT abbrev(cidr '10.1.0.0/16') AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_set_masklen_function" value="SELECT set_masklen('192.168.1.0/24'::cidr, 16) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_text_inet_function" value="SELECT text(inet '192.168.1.5') AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_trunc_function" value="SELECT trunc(macaddr '12:34:56:78:90:ab') AS RESULT;" db-types="openGauss" />
 </sql-cases>

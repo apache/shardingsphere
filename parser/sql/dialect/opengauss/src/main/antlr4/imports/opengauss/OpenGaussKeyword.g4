@@ -1428,3 +1428,15 @@ LOWER_INF
 UPPER_INF
     : U P P E R UL_ I N F
     ;
+
+ABBREV
+    : A B B R E V
+    ;
+
+SET_MASKLEN
+    : S E T UL_ M A S K L E N
+    ;
+
+TRUNC
+    : T R U N C
+    ;

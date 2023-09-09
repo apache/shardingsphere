@@ -3093,4 +3093,36 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_abbrev_function">
+        <projections start-index="7" stop-index="42">
+            <expression-projection start-index="7" stop-index="42" text="abbrev(cidr '10.1.0.0/16')" alias="RESULT">
+                <function start-index="7" stop-index="42" function-name="abbrev" text="abbrev(cidr '10.1.0.0/16')" alias="RESULT" />
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_set_masklen_function">
+        <projections start-index="7" stop-index="55">
+            <expression-projection start-index="7" stop-index="55" text="set_masklen('192.168.1.0/24'::cidr, 16)" alias="RESULT">
+                <function start-index="7" stop-index="55" function-name="set_masklen" text="set_masklen('192.168.1.0/24'::cidr, 16)" alias="RESULT" />
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_text_inet_function">
+        <projections start-index="7" stop-index="40">
+            <expression-projection start-index="7" stop-index="40" text="text(inet '192.168.1.5')" alias="RESULT">
+                <function start-index="7" stop-index="40" function-name="text" text="text(inet '192.168.1.5')" alias="RESULT" />
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_trunc_function">
+        <projections start-index="7" stop-index="50">
+            <expression-projection start-index="7" stop-index="50" text="trunc(macaddr '12:34:56:78:90:ab')" alias="RESULT">
+                <function start-index="7" stop-index="50" function-name="trunc" text="trunc(macaddr '12:34:56:78:90:ab')" alias="RESULT" />
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

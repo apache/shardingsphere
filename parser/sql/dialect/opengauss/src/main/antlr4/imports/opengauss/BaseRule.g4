@@ -1104,6 +1104,10 @@ functionExprCommonSubexpr
     | TS_REWRITE LP_ aExpr (TYPE_CAST_ TSQUERY)? (COMMA_ aExpr (TYPE_CAST_ TSQUERY)?)* RP_
     | ELEM_CONTAINED_BY_RANGE LP_ aExpr COMMA_ dataType RP_
     | (LOWER_INF | UPPER_INF) LP_ aExpr TYPE_CAST_ identifier RP_
+    | ABBREV LP_ (INET | CIDR) STRING_ RP_
+    | SET_MASKLEN LP_ STRING_ (TYPE_CAST_ CIDR)? COMMA_ numberLiterals RP_
+    | TEXT LP_ INET STRING_ RP_
+    | TRUNC LP_ MACADDR STRING_ RP_
     ;
 
 typeName
