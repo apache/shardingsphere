@@ -84,10 +84,12 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
                     new E2EIncrementalTask(containerComposer.getSourceDataSource(), SOURCE_TABLE_NAME, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 30));
             TimeUnit.SECONDS.timedJoin(containerComposer.getIncreaseTaskThread(), 30);
             containerComposer.sourceExecuteWithLog(String.format("INSERT INTO %s (order_id, user_id, status) VALUES (10000, 1, 'OK')", SOURCE_TABLE_NAME));
+            containerComposer.sourceExecuteWithLog("INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (10000, 10000, 1, 'OK')");
             stopMigrationByJobId(containerComposer, orderJobId);
             startMigrationByJobId(containerComposer, orderJobId);
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
             containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order", 10000);
+            containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order_item", 10000);
             Properties algorithmProps = new Properties();
             algorithmProps.setProperty("chunk-size", "300");
             assertMigrationSuccessById(containerComposer, orderJobId, "DATA_MATCH", algorithmProps);
@@ -98,8 +100,7 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             for (String each : listJobId(containerComposer)) {
                 commitMigrationByJobId(containerComposer, each);
             }
-            List<String> lastJobIds = listJobId(containerComposer);
-            assertTrue(lastJobIds.isEmpty());
+            assertTrue(listJobId(containerComposer).isEmpty());
             containerComposer.assertGreaterThanOrderTableInitRows(jdbcDataSource, PipelineContainerComposer.TABLE_INIT_ROW_COUNT, "");
         }
     }

@@ -51,14 +51,14 @@ public final class PipelineTaskUtils {
      * Create incremental task progress.
      *
      * @param position ingest position
-     * @param jobItemProgress job item progress
+     * @param initProgress initial job item progress
      * @return incremental task progress
      */
-    public static IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition position, final InventoryIncrementalJobItemProgress jobItemProgress) {
+    public static IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition position, final InventoryIncrementalJobItemProgress initProgress) {
         IncrementalTaskProgress result = new IncrementalTaskProgress(position);
-        if (null != jobItemProgress && null != jobItemProgress.getIncremental()) {
-            Optional.ofNullable(jobItemProgress.getIncremental().getIncrementalTaskProgress())
-                    .ifPresent(optional -> result.setIncrementalTaskDelay(jobItemProgress.getIncremental().getIncrementalTaskProgress().getIncrementalTaskDelay()));
+        if (null != initProgress && null != initProgress.getIncremental()) {
+            Optional.ofNullable(initProgress.getIncremental().getIncrementalTaskProgress())
+                    .ifPresent(optional -> result.setIncrementalTaskDelay(initProgress.getIncremental().getIncrementalTaskProgress().getIncrementalTaskDelay()));
         }
         return result;
     }
