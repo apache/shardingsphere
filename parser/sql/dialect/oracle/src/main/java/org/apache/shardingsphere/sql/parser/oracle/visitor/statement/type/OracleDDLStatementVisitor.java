@@ -1008,7 +1008,9 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
-        return new OracleCreateSequenceStatement();
+        OracleCreateSequenceStatement result = new OracleCreateSequenceStatement();
+        result.setSequenceName(ctx.sequenceName().getText());
+        return result;
     }
     
     @Override

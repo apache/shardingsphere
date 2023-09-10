@@ -2600,29 +2600,20 @@ alterAttributeDimension
     ;
 
 createSequence
-    : CREATE SEQUENCE (schemaName DOT_)? sequenceName (SHARING EQ_ (METADATA | DATA | NONE))? createSequenceClause+
+    : CREATE SEQUENCE (schemaName DOT_)? sequenceName (SHARING EQ_ (METADATA | DATA | NONE))? createSequenceClause*
     ;
 
 createSequenceClause
     : (INCREMENT BY | START WITH) INTEGER_
-    | MAXVALUE INTEGER_
-    | NOMAXVALUE
-    | MINVALUE INTEGER_
-    | NOMINVALUE
-    | CYCLE
-    | NOCYCLE
-    | CACHE INTEGER_
-    | NOCACHE
-    | ORDER
-    | NOORDER
-    | KEEP
-    | NOKEEP
-    | SCALE (EXTEND | NOEXTEND)
-    | NOSCALE
-    | SHARD (EXTEND | NOEXTEND)
-    | NOSHARD
-    | SESSION
-    | GLOBAL
+    | (MAXVALUE INTEGER_ | NOMAXVALUE)
+    | (MINVALUE INTEGER_ | NOMINVALUE)
+    | (CYCLE | NOCYCLE)
+    | (CACHE INTEGER_ | NOCACHE)
+    | (ORDER | NOORDER)
+    | (KEEP | NOKEEP)
+    | (SCALE (EXTEND | NOEXTEND) | NOSCALE)
+    | (SHARD (EXTEND | NOEXTEND) | NOSHARD)
+    | (SESSION | GLOBAL)
     ;
 
 alterSequence
