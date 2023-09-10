@@ -32,7 +32,7 @@ class ShowMigrationCheckStatusExecutorTest {
     @Test
     void assertGetColumnNames() {
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(9));
+        assertThat(columns.size(), is(11));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("tables"));
         assertThat(iterator.next(), is("result"));
@@ -42,6 +42,8 @@ class ShowMigrationCheckStatusExecutorTest {
         assertThat(iterator.next(), is("check_begin_time"));
         assertThat(iterator.next(), is("check_end_time"));
         assertThat(iterator.next(), is("duration_seconds"));
+        assertThat(iterator.next(), is("algorithm_type"));
+        assertThat(iterator.next(), is("algorithm_props"));
         assertThat(iterator.next(), is("error_message"));
     }
 }

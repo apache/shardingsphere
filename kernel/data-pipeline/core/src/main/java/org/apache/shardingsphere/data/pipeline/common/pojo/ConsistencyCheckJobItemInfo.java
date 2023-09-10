@@ -45,5 +45,9 @@ public final class ConsistencyCheckJobItemInfo {
     
     private long durationSeconds;
     
+    private String algorithmType;
+    
+    private String algorithmProps;
+    
     private String errorMessage;
 }
