@@ -15,22 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.sequence;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.sequence.ExpectedSequenceNameClause;
-
-import javax.xml.bind.annotation.XmlElement;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
 
 /**
- * Create sequence statement test case.
+ * Excepted sequence name clause.
  */
 @Getter
-@Setter
-public final class CreateSequenceStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement(name = "sequence-name")
-    private ExpectedSequenceNameClause sequenceName;
+public final class ExpectedSequenceNameClause extends AbstractExpectedIdentifierSQLSegment {
 }

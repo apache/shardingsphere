@@ -394,7 +394,9 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
-        return new SQLServerCreateSequenceStatement();
+        SQLServerCreateSequenceStatement result = new SQLServerCreateSequenceStatement();
+        result.setSequenceName(ctx.sequenceName().name().getText());
+        return result;
     }
     
     @Override
