@@ -31,13 +31,11 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.EmptySQLException;
-import org.apache.shardingsphere.driver.jdbc.exception.transaction.JDBCTransactionAcrossDatabasesException;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -165,7 +163,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             QueryContext queryContext = createQueryContext(sql);
             databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
             connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
-            checkSameDatabaseNameInTransaction(queryContext.getSqlStatementContext(), databaseName);
             trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
@@ -315,7 +312,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         QueryContext queryContext = createQueryContext(sql);
         databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
-        checkSameDatabaseNameInTransaction(queryContext.getSqlStatementContext(), databaseName);
         trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
         if (null != trafficInstanceId) {
             JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
@@ -434,7 +430,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             QueryContext queryContext = createQueryContext(sql);
             databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
             connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
-            checkSameDatabaseNameInTransaction(queryContext.getSqlStatementContext(), databaseName);
             trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
@@ -454,19 +449,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             return isNeedImplicitCommitTransaction(connection, executionContext) ? executeWithImplicitCommitTransaction(executeCallback) : useDriverToExecute(executeCallback);
         } finally {
             currentResultSet = null;
-        }
-    }
-    
-    private void checkSameDatabaseNameInTransaction(final SQLStatementContext sqlStatementContext, final String connectionDatabaseName) {
-        if (!connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
-            return;
-        }
-        if (sqlStatementContext instanceof TableAvailable) {
-            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(optional -> {
-                if (!optional.equals(connectionDatabaseName)) {
-                    throw new JDBCTransactionAcrossDatabasesException();
-                }
-            });
         }
     }
     
