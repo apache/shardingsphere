@@ -32,12 +32,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 
@@ -153,7 +155,9 @@ public final class ColumnSegmentBinder {
     }
     
     private static Optional<ProjectionSegment> findInputColumnSegmentFromOuterTable(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        for (TableSegmentBinderContext each : outerTableBinderContexts.values()) {
+        ListIterator<TableSegmentBinderContext> listIterator = new ArrayList<>(outerTableBinderContexts.values()).listIterator(outerTableBinderContexts.size());
+        while (listIterator.hasPrevious()) {
+            TableSegmentBinderContext each = listIterator.previous();
             ProjectionSegment projectionSegment = each.getProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
             if (null != projectionSegment) {
                 return Optional.of(projectionSegment);

@@ -69,8 +69,8 @@ public final class ProjectionsSegmentBinder {
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
             Map<String, TableSegmentBinderContext> newOuterTableBinderContexts = new LinkedHashMap<>();
-            newOuterTableBinderContexts.putAll(tableBinderContexts);
             newOuterTableBinderContexts.putAll(outerTableBinderContexts);
+            newOuterTableBinderContexts.putAll(tableBinderContexts);
             return SubqueryProjectionSegmentBinder.bind((SubqueryProjectionSegment) projectionSegment, statementBinderContext, newOuterTableBinderContexts);
         }
         // TODO support more ProjectionSegment bind

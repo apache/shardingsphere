@@ -64,4 +64,27 @@ class ColumnSegmentBinderTest {
         assertThat(actual.getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(actual.getColumnBoundedInfo().getOriginalColumn().getValue(), is("order_id"));
     }
+    
+    @Test
+    void assertBindFromOuterTable() {
+        Map<String, TableSegmentBinderContext> outerTableBinderContexts = new LinkedHashMap<>();
+        ColumnSegment boundedOrderStatusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
+        boundedOrderStatusColumn.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+                new IdentifierValue("t_order"), new IdentifierValue("status")));
+        outerTableBinderContexts.put("t_order", new TableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundedOrderStatusColumn))));
+        ColumnSegment boundedOrderItemStatusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
+        boundedOrderItemStatusColumn.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
+                new IdentifierValue("t_order_item"), new IdentifierValue("status")));
+        outerTableBinderContexts.put("t_order_item", new TableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundedOrderItemStatusColumn))));
+        SQLStatementBinderContext statementBinderContext =
+                new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), Collections.emptySet());
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, statementBinderContext, Collections.emptyMap(), outerTableBinderContexts);
+        assertNotNull(actual.getColumnBoundedInfo());
+        assertNull(actual.getOtherUsingColumnBoundedInfo());
+        assertThat(actual.getColumnBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getColumnBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
+        assertThat(actual.getColumnBoundedInfo().getOriginalColumn().getValue(), is("status"));
+    }
 }

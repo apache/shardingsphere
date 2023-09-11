@@ -67,8 +67,8 @@ public final class ExpressionSegmentBinder {
         }
         if (segment instanceof SubqueryExpressionSegment) {
             Map<String, TableSegmentBinderContext> newOuterTableBinderContexts = new LinkedHashMap<>();
-            newOuterTableBinderContexts.putAll(tableBinderContexts);
             newOuterTableBinderContexts.putAll(outerTableBinderContexts);
+            newOuterTableBinderContexts.putAll(tableBinderContexts);
             return SubqueryExpressionSegmentBinder.bind((SubqueryExpressionSegment) segment, statementBinderContext, newOuterTableBinderContexts);
         }
         if (segment instanceof InExpression) {
