@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.segment.projection.impl;
 
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
@@ -37,6 +36,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -50,7 +50,7 @@ class ShorthandProjectionSegmentBinderTest {
     void assertBindWithOwner() {
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
         shorthandProjectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("o")));
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
         tableBinderContexts.put("o", new TableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
@@ -63,7 +63,7 @@ class ShorthandProjectionSegmentBinderTest {
     
     @Test
     void assertBindWithoutOwnerForSimpleTableSegment() {
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
         tableBinderContexts.put("o", new TableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));
@@ -78,7 +78,7 @@ class ShorthandProjectionSegmentBinderTest {
     
     @Test
     void assertBindWithoutOwnerForSubqueryTableSegment() {
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
         tableBinderContexts.put("o", new TableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn)));

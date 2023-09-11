@@ -44,17 +44,19 @@ public final class TableSegmentBinder {
      * @param segment table segment
      * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
+     * @param outerTableBinderContexts outer table binder contexts
      * @return bounded table segment
      */
-    public static TableSegment bind(final TableSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static TableSegment bind(final TableSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
+                                    final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         if (segment instanceof SimpleTableSegment) {
             return SimpleTableSegmentBinder.bind((SimpleTableSegment) segment, statementBinderContext, tableBinderContexts);
         }
         if (segment instanceof JoinTableSegment) {
-            return JoinTableSegmentBinder.bind((JoinTableSegment) segment, statementBinderContext, tableBinderContexts);
+            return JoinTableSegmentBinder.bind((JoinTableSegment) segment, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof SubqueryTableSegment) {
-            return SubqueryTableSegmentBinder.bind((SubqueryTableSegment) segment, statementBinderContext, tableBinderContexts);
+            return SubqueryTableSegmentBinder.bind((SubqueryTableSegment) segment, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof DeleteMultiTableSegment) {
             return DeleteMultiTableSegmentBinder.bind((DeleteMultiTableSegment) segment, statementBinderContext, tableBinderContexts);

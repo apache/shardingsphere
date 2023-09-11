@@ -59,9 +59,9 @@ public final class ShorthandProjectionSegmentBinder {
     }
     
     private static Collection<ProjectionSegment> getProjectionSegmentsByTableAliasOrName(final Map<String, TableSegmentBinderContext> tableBinderContexts, final String tableAliasOrName) {
-        ShardingSpherePreconditions.checkState(tableBinderContexts.containsKey(tableAliasOrName),
+        ShardingSpherePreconditions.checkState(tableBinderContexts.containsKey(tableAliasOrName.toLowerCase()),
                 () -> new IllegalStateException(String.format("Can not find table binder context by table alias or name %s.", tableAliasOrName)));
-        return tableBinderContexts.get(tableAliasOrName).getProjectionSegments();
+        return tableBinderContexts.get(tableAliasOrName.toLowerCase()).getProjectionSegments();
     }
     
     private static void expandVisibleColumn(final Collection<ProjectionSegment> projectionSegments, final ShorthandProjectionSegment segment) {

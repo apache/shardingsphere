@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.enums.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
@@ -32,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -44,7 +44,7 @@ class ColumnSegmentBinderTest {
     
     @Test
     void assertBindWithMultiTablesJoinAndNoOwner() {
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         ColumnSegment boundedOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         boundedOrderIdColumn.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
                 new IdentifierValue("t_order"), new IdentifierValue("order_id")));
