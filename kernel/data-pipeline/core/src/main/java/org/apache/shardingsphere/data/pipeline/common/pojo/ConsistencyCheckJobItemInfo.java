@@ -39,6 +39,8 @@ public final class ConsistencyCheckJobItemInfo {
     
     private long inventoryRemainingSeconds;
     
+    private String incrementalIdleSeconds = "";
+    
     private String checkBeginTime;
     
     private String checkEndTime;
