@@ -160,7 +160,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         String ignoredTableNames = String.join(",", progressContext.getIgnoredTableNames());
         ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(tableNames, ignoredTableNames, progressContext.getCheckedRecordsCount().get(),
                 progressContext.getRecordsCount(), progressContext.getCheckBeginTimeMillis(), progressContext.getCheckEndTimeMillis(),
-                progressContext.getSourceTableCheckPositions(), progressContext.getTargetTableCheckPositions());
+                progressContext.getSourceTableCheckPositions(), progressContext.getTargetTableCheckPositions(), progressContext.getSourceDatabaseType());
         jobItemProgress.setStatus(context.getStatus());
         return YamlEngine.marshal(swapper.swapToYamlConfiguration(jobItemProgress));
     }

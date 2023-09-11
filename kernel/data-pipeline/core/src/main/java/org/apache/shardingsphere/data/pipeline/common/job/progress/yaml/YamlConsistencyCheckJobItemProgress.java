@@ -48,4 +48,6 @@ public final class YamlConsistencyCheckJobItemProgress implements YamlConfigurat
     private Map<String, Object> sourceTableCheckPositions = new LinkedHashMap<>();
     
     private Map<String, Object> targetTableCheckPositions = new LinkedHashMap<>();
+    
+    private String sourceDatabaseType;
 }

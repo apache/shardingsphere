@@ -56,7 +56,7 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
         jobId = jobConfig.getJobId();
         this.shardingItem = shardingItem;
         this.status = status;
-        progressContext = new ConsistencyCheckJobItemProgressContext(jobId, shardingItem);
+        progressContext = new ConsistencyCheckJobItemProgressContext(jobId, shardingItem, jobConfig.getSourceDatabaseType().getType());
         if (null != jobItemProgress) {
             progressContext.getCheckedRecordsCount().set(Optional.ofNullable(jobItemProgress.getCheckedRecordsCount()).orElse(0L));
             Optional.ofNullable(jobItemProgress.getSourceTableCheckPositions()).ifPresent(progressContext.getSourceTableCheckPositions()::putAll);
