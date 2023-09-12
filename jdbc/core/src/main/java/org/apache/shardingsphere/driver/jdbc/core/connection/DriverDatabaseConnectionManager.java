@@ -313,9 +313,13 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @return random physical data source name
      */
     public String getRandomPhysicalDataSourceName() {
+        return getRandomPhysicalDatabaseAndDataSourceName()[1];
+    }
+    
+    private String[] getRandomPhysicalDatabaseAndDataSourceName() {
         Collection<String> cachedPhysicalDataSourceNames = Sets.intersection(physicalDataSourceMap.keySet(), cachedConnections.keySet());
         Collection<String> databaseAndDatasourceNames = cachedPhysicalDataSourceNames.isEmpty() ? physicalDataSourceMap.keySet() : cachedPhysicalDataSourceNames;
-        return new ArrayList<>(databaseAndDatasourceNames).get(random.nextInt(databaseAndDatasourceNames.size())).split("\\.")[1];
+        return new ArrayList<>(databaseAndDatasourceNames).get(random.nextInt(databaseAndDatasourceNames.size())).split("\\.");
     }
     
     /**
@@ -325,12 +329,17 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
      * @throws SQLException SQL exception
      */
     public Connection getRandomConnection() throws SQLException {
-        return getConnections(getRandomPhysicalDataSourceName(), 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        String[] databaseAndDataSourceName = getRandomPhysicalDatabaseAndDataSourceName();
+        return getConnections(databaseAndDataSourceName[0], databaseAndDataSourceName[1], 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
     }
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionOffset, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        String currentDatabaseName = connectionContext.getDatabaseName().orElse(databaseName);
+        return getConnections(connectionContext.getDatabaseName().orElse(databaseName), dataSourceName, connectionOffset, connectionSize, connectionMode);
+    }
+    
+    private List<Connection> getConnections(final String currentDatabaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
+                                            final ConnectionMode connectionMode) throws SQLException {
         String cacheKey = getKey(currentDatabaseName, dataSourceName);
         DataSource dataSource = databaseName.equals(currentDatabaseName) ? dataSourceMap.get(cacheKey) : contextManager.getStorageUnits(currentDatabaseName).get(dataSourceName).getDataSource();
         Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
