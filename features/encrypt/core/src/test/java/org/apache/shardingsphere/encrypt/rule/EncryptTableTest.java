@@ -72,7 +72,7 @@ class EncryptTableTest {
     void assertIsNotCipherColumn() {
         assertFalse(encryptTable.isCipherColumn("logicColumn"));
     }
-
+    
     @Test
     void assertIsEncryptColumn() {
         assertTrue(encryptTable.isEncryptColumn("logicColumn"));
@@ -82,7 +82,7 @@ class EncryptTableTest {
     void assertGetLogicColumnByCipherColumn() {
         assertNotNull(encryptTable.getLogicColumnByCipherColumn("cipherColumn"));
     }
-
+    
     @Test
     void assertGetEncryptColumn() {
         assertNotNull(encryptTable.getEncryptColumn("logicColumn"));
