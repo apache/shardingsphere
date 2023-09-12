@@ -20,25 +20,21 @@ package org.apache.shardingsphere.infra.binder.segment.from;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Table segment binder context.
+ * Function table segment binder context.
  */
-public interface TableSegmentBinderContext {
+public final class FunctionTableSegmentBinderContext implements TableSegmentBinderContext {
     
-    /**
-     * Find projection segment by column label.
-     *
-     * @param columnLabel column label
-     * @return projection segment
-     */
-    Optional<ProjectionSegment> findProjectionSegmentByColumnLabel(String columnLabel);
+    @Override
+    public Optional<ProjectionSegment> findProjectionSegmentByColumnLabel(final String columnLabel) {
+        return Optional.empty();
+    }
     
-    /**
-     * Get projection segments.
-     *
-     * @return projection segments
-     */
-    Collection<ProjectionSegment> getProjectionSegments();
+    @Override
+    public Collection<ProjectionSegment> getProjectionSegments() {
+        return Collections.emptyList();
+    }
 }
