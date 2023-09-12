@@ -2310,13 +2310,13 @@
         <values>
             <value>
                 <assignment-value>
-                    <literal-expression value="1999-12-01 10:00:00" start-index="30" stop-index="59" />
+                    <common-expression text="TIMESTAMP'1999-12-01 10:00:00'" start-index="30" stop-index="59" />
                 </assignment-value>
                 <assignment-value>
-                    <literal-expression value="1999-12-01 10:00:00" start-index="62" stop-index="91" />
+                    <common-expression text="TIMESTAMP'1999-12-01 10:00:00'" start-index="62" stop-index="91" />
                 </assignment-value>
                 <assignment-value>
-                    <literal-expression value="1999-12-01 10:00:00" start-index="94" stop-index="123" />
+                    <common-expression text="TIMESTAMP'1999-12-01 10:00:00'" start-index="94" stop-index="123" />
                 </assignment-value>
             </value>
         </values>

@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Cursor
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DateTimeLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DatetimeExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExtractFunctionContext;
@@ -153,6 +154,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.collection.Collecti
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.keyword.KeywordValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.DateTimeLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NullLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
@@ -207,6 +209,22 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return visit(ctx.intervalLiterals());
         }
         throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, interval, boolean or null.");
+    }
+    
+    @Override
+    public ASTNode visitDateTimeLiterals(final DateTimeLiteralsContext ctx) {
+        if (null != ctx.LBE_()) {
+            return new DateTimeLiteralValue(ctx.identifier().getText(), ((StringLiteralValue) visit(ctx.stringLiterals())).getValue(), true);
+        }
+        String dateTimeType;
+        if (null != ctx.DATE()) {
+            dateTimeType = ctx.DATE().getText();
+        } else if (null != ctx.TIME()) {
+            dateTimeType = ctx.TIME().getText();
+        } else {
+            dateTimeType = ctx.TIMESTAMP().getText();
+        }
+        return new DateTimeLiteralValue(dateTimeType, ((StringLiteralValue) visit(ctx.stringLiterals())).getValue(), false);
     }
     
     @Override
