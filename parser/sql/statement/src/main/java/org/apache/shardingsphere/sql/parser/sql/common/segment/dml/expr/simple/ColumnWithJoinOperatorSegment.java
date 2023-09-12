@@ -20,13 +20,14 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
  * Column with join operator segment.
  */
 @RequiredArgsConstructor
 @Getter
-public class ColumnWithJoinOperatorSegment implements SimpleExpressionSegment {
+public class ColumnWithJoinOperatorSegment implements ExpressionSegment {
     
     private final int startIndex;
     
