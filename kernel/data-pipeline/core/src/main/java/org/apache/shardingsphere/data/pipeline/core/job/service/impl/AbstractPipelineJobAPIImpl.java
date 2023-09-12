@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBarrier;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobAlreadyExistsException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyStartedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
@@ -89,8 +90,8 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId));
         String jobConfigKey = PipelineMetaDataNode.getJobConfigPath(jobId);
         if (repositoryAPI.isExisted(jobConfigKey)) {
-            log.warn("jobId already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
-            return Optional.of(jobId);
+            log.error("jobId already exists in registry center, jobConfigKey={}", jobConfigKey);
+            throw new PipelineJobAlreadyExistsException(jobId);
         }
         repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), getJobClassName());
         repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(convertJobConfiguration(jobConfig)));
