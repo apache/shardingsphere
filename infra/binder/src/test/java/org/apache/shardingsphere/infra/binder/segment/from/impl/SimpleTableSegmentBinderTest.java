@@ -62,32 +62,35 @@ class SimpleTableSegmentBinderTest {
         assertThat(actual.getTableName().getTableBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertTrue(tableBinderContexts.containsKey("t_order"));
         assertThat(tableBinderContexts.get("t_order").getProjectionSegments().size(), is(3));
-        assertTrue(tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("user_id") instanceof ColumnProjectionSegment);
-        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("user_id")).getColumn().getColumnBoundedInfo().getOriginalDatabase().getValue(),
+        assertTrue(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("user_id").isPresent());
+        assertTrue(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("user_id").get() instanceof ColumnProjectionSegment);
+        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("user_id").get()).getColumn().getColumnBoundedInfo().getOriginalDatabase()
+                .getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("user_id").get()).getColumn().getColumnBoundedInfo().getOriginalSchema().getValue(),
                 is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("user_id")).getColumn().getColumnBoundedInfo().getOriginalSchema().getValue(),
-                is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("user_id")).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(),
+        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("user_id").get()).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(),
                 is("t_order"));
-        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("user_id")).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(),
+        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("user_id").get()).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(),
                 is("user_id"));
-        assertTrue(tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("order_id") instanceof ColumnProjectionSegment);
-        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("order_id")).getColumn().getColumnBoundedInfo().getOriginalDatabase().getValue(),
-                is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("order_id")).getColumn().getColumnBoundedInfo().getOriginalSchema().getValue(),
-                is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("order_id")).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(),
+        assertTrue(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("order_id").isPresent());
+        assertTrue(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("order_id").get() instanceof ColumnProjectionSegment);
+        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("order_id").get()).getColumn().getColumnBoundedInfo().getOriginalDatabase()
+                .getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("order_id").get()).getColumn().getColumnBoundedInfo().getOriginalSchema()
+                .getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("order_id").get()).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(),
                 is("t_order"));
-        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("order_id")).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(),
-                is("order_id"));
-        assertTrue(tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("status") instanceof ColumnProjectionSegment);
-        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("status")).getColumn().getColumnBoundedInfo().getOriginalDatabase().getValue(),
+        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("order_id").get()).getColumn().getColumnBoundedInfo().getOriginalColumn()
+                .getValue(), is("order_id"));
+        assertTrue(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("status").isPresent());
+        assertTrue(tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("status").get() instanceof ColumnProjectionSegment);
+        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("status").get()).getColumn().getColumnBoundedInfo().getOriginalDatabase()
+                .getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("status").get()).getColumn().getColumnBoundedInfo().getOriginalSchema().getValue(),
                 is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("status")).getColumn().getColumnBoundedInfo().getOriginalSchema().getValue(),
-                is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("status")).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(),
+        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("status").get()).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(),
                 is("t_order"));
-        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").getProjectionSegmentByColumnLabel("status")).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(),
+        assertThat(((ColumnProjectionSegment) tableBinderContexts.get("t_order").findProjectionSegmentByColumnLabel("status").get()).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(),
                 is("status"));
     }
     

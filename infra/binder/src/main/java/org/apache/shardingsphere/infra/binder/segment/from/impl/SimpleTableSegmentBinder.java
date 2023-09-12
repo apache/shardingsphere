@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
@@ -108,9 +109,9 @@ public final class SimpleTableSegmentBinder {
         return new IdentifierValue(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(statementBinderContext.getDefaultDatabaseName()));
     }
     
-    private static TableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema,
-                                                                            final IdentifierValue originalDatabase, final IdentifierValue originalSchema,
-                                                                            final SQLStatementBinderContext statementBinderContext) {
+    private static SimpleTableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema,
+                                                                                  final IdentifierValue originalDatabase, final IdentifierValue originalSchema,
+                                                                                  final SQLStatementBinderContext statementBinderContext) {
         Collection<ShardingSphereColumn> columnNames =
                 Optional.ofNullable(schema.getTable(segment.getTableName().getIdentifier().getValue())).map(ShardingSphereTable::getColumnValues).orElseGet(Collections::emptyList);
         Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
@@ -124,7 +125,7 @@ public final class SimpleTableSegmentBinder {
             columnProjectionSegment.setVisible(each.isVisible());
             projectionSegments.add(columnProjectionSegment);
         }
-        return new TableSegmentBinderContext(projectionSegments);
+        return new SimpleTableSegmentBinderContext(projectionSegments);
     }
     
     private static void checkTableExists(final String tableName, final SQLStatementBinderContext statementBinderContext, final String databaseName, final String schemaName) {

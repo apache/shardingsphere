@@ -21,6 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.enums.SegmentType;
+import org.apache.shardingsphere.infra.binder.segment.from.FunctionTableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.exception.AmbiguousColumnException;
@@ -91,7 +93,7 @@ public final class ColumnSegmentBinder {
                     statementBinderContext.getExternalTableBinderContexts());
         }
         if (!statementBinderContext.getJoinTableProjectionSegments().isEmpty() && isNeedUseJoinTableProjectionBind(segment, parentSegmentType, statementBinderContext)) {
-            return Collections.singleton(new TableSegmentBinderContext(statementBinderContext.getJoinTableProjectionSegments()));
+            return Collections.singleton(new SimpleTableSegmentBinderContext(statementBinderContext.getJoinTableProjectionSegments()));
         }
         return tableBinderContexts.values();
     }
@@ -121,13 +123,13 @@ public final class ColumnSegmentBinder {
         ColumnSegment result = null;
         boolean isFindInputColumn = false;
         for (TableSegmentBinderContext each : tableBinderContexts) {
-            ProjectionSegment projectionSegment = each.getProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
-            if (projectionSegment instanceof ColumnProjectionSegment) {
+            Optional<ProjectionSegment> projectionSegment = each.findProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
+            if (projectionSegment.isPresent() && projectionSegment.get() instanceof ColumnProjectionSegment) {
                 ShardingSpherePreconditions.checkState(null == result,
                         () -> new AmbiguousColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
-                result = ((ColumnProjectionSegment) projectionSegment).getColumn();
+                result = ((ColumnProjectionSegment) projectionSegment.get()).getColumn();
             }
-            if (!isFindInputColumn && null != projectionSegment) {
+            if (!isFindInputColumn && projectionSegment.isPresent()) {
                 isFindInputColumn = true;
             }
         }
@@ -149,7 +151,7 @@ public final class ColumnSegmentBinder {
             result = findInputColumnSegmentByVariables(segment, statementBinderContext.getVariableNames()).orElse(null);
             isFindInputColumn = result != null;
         }
-        ShardingSpherePreconditions.checkState(isFindInputColumn,
+        ShardingSpherePreconditions.checkState(isFindInputColumn || containsFunctionTable(tableBinderContexts, outerTableBinderContexts.values()),
                 () -> new UnknownColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         return Optional.ofNullable(result);
     }
@@ -158,9 +160,9 @@ public final class ColumnSegmentBinder {
         ListIterator<TableSegmentBinderContext> listIterator = new ArrayList<>(outerTableBinderContexts.values()).listIterator(outerTableBinderContexts.size());
         while (listIterator.hasPrevious()) {
             TableSegmentBinderContext each = listIterator.previous();
-            ProjectionSegment projectionSegment = each.getProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
-            if (null != projectionSegment) {
-                return Optional.of(projectionSegment);
+            Optional<ProjectionSegment> result = each.findProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
+            if (result.isPresent()) {
+                return result;
             }
         }
         return Optional.empty();
@@ -168,9 +170,9 @@ public final class ColumnSegmentBinder {
     
     private static Optional<ProjectionSegment> findInputColumnSegmentFromExternalTables(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         for (TableSegmentBinderContext each : externalTableBinderContexts.values()) {
-            ProjectionSegment projectionSegment = each.getProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
-            if (null != projectionSegment) {
-                return Optional.of(projectionSegment);
+            Optional<ProjectionSegment> result = each.findProjectionSegmentByColumnLabel(segment.getIdentifier().getValue());
+            if (result.isPresent()) {
+                return result;
             }
         }
         return Optional.empty();
@@ -183,6 +185,20 @@ public final class ColumnSegmentBinder {
             return Optional.of(result);
         }
         return Optional.empty();
+    }
+    
+    private static boolean containsFunctionTable(final Collection<TableSegmentBinderContext> tableBinderContexts, final Collection<TableSegmentBinderContext> outerBinderContexts) {
+        for (TableSegmentBinderContext each : tableBinderContexts) {
+            if (each instanceof FunctionTableSegmentBinderContext) {
+                return true;
+            }
+        }
+        for (TableSegmentBinderContext each : outerBinderContexts) {
+            if (each instanceof FunctionTableSegmentBinderContext) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private static ColumnSegmentBoundedInfo createColumnSegmentBoundedInfo(final ColumnSegment segment, final ColumnSegment inputColumnSegment) {
@@ -219,12 +235,11 @@ public final class ColumnSegmentBinder {
     }
     
     private static Collection<ColumnSegment> findUsingInputColumnSegments(final String columnName, final Collection<TableSegmentBinderContext> tableBinderContexts) {
-        ProjectionSegment projectionSegment;
         Collection<ColumnSegment> result = new LinkedList<>();
         for (TableSegmentBinderContext each : tableBinderContexts) {
-            projectionSegment = each.getProjectionSegmentByColumnLabel(columnName);
-            if (projectionSegment instanceof ColumnProjectionSegment) {
-                result.add(((ColumnProjectionSegment) projectionSegment).getColumn());
+            Optional<ProjectionSegment> projectionSegment = each.findProjectionSegmentByColumnLabel(columnName);
+            if (projectionSegment.isPresent() && projectionSegment.get() instanceof ColumnProjectionSegment) {
+                result.add(((ColumnProjectionSegment) projectionSegment.get()).getColumn());
             }
         }
         return result;
