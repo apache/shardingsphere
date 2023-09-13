@@ -25,7 +25,7 @@ import java.util.Collection;
 /**
  * Table data consistency checker.
  */
-public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm {
+public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm, AutoCloseable {
     
     /**
      * Build table inventory checker.
@@ -50,4 +50,7 @@ public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm {
      * @return supported database types
      */
     Collection<DatabaseType> getSupportedDatabaseTypes();
+    
+    @Override
+    void close();
 }

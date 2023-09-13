@@ -40,6 +40,10 @@ public final class FixtureTableDataConsistencyChecker implements TableDataConsis
     }
     
     @Override
+    public void close() {
+    }
+    
+    @Override
     public String getType() {
         return "FIXTURE";
     }

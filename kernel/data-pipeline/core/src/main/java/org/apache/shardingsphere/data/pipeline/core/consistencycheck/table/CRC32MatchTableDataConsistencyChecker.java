@@ -48,6 +48,10 @@ public final class CRC32MatchTableDataConsistencyChecker implements TableDataCon
     }
     
     @Override
+    public void close() {
+    }
+    
+    @Override
     public String getType() {
         return "CRC32_MATCH";
     }
