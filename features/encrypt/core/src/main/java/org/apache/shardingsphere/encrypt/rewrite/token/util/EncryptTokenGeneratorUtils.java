@@ -23,11 +23,15 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Encrypt token generator utils.
@@ -96,5 +100,31 @@ public final class EncryptTokenGeneratorUtils {
             return encryptColumn.getAssistedQuery().get().getEncryptor();
         }
         return encryptColumn.getCipher().getEncryptor();
+    }
+    
+    /**
+     * Judge whether all insert select columns use same encryptor or not.
+     *
+     * @param insertColumns insert columns
+     * @param projections projections
+     * @param encryptRule encrypt rule
+     * @return whether all insert select columns use same encryptor or not 
+     */
+    public static boolean isAllInsertSelectColumnsUseSameEncryptor(final Collection<ColumnSegment> insertColumns, final Collection<Projection> projections, final EncryptRule encryptRule) {
+        Iterator<ColumnSegment> insertColumnsIterator = insertColumns.iterator();
+        Iterator<Projection> projectionIterator = projections.iterator();
+        while (insertColumnsIterator.hasNext()) {
+            ColumnSegment columnSegment = insertColumnsIterator.next();
+            EncryptAlgorithm<?, ?> leftColumnEncryptor = getColumnEncryptor(columnSegment.getColumnBoundedInfo(), encryptRule);
+            Projection projection = projectionIterator.next();
+            ColumnSegmentBoundedInfo columnBoundedInfo = projection instanceof ColumnProjection
+                    ? new ColumnSegmentBoundedInfo(null, null, ((ColumnProjection) projection).getOriginalTable(), ((ColumnProjection) projection).getOriginalColumn())
+                    : new ColumnSegmentBoundedInfo(new IdentifierValue(projection.getColumnLabel()));
+            EncryptAlgorithm<?, ?> rightColumnEncryptor = getColumnEncryptor(columnBoundedInfo, encryptRule);
+            if (!isSameEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

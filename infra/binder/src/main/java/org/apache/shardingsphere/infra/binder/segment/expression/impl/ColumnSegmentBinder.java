@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.groovy.util.Maps;
@@ -55,7 +56,7 @@ public final class ColumnSegmentBinder {
             "LOCALTIMESTAMP", "UID", "USER", "NEXTVAL", "ROWID"));
     
     private static final Map<SegmentType, String> SEGMENT_TYPE_MESSAGES = Maps.of(SegmentType.PROJECTION, "field list", SegmentType.JOIN_ON, "on clause", SegmentType.JOIN_USING, "from clause",
-            SegmentType.PREDICATE, "where clause", SegmentType.ORDER_BY, "order clause", SegmentType.GROUP_BY, "group statement");
+            SegmentType.PREDICATE, "where clause", SegmentType.ORDER_BY, "order clause", SegmentType.GROUP_BY, "group statement", SegmentType.INSERT_COLUMNS, "field list");
     
     private static final String UNKNOWN_SEGMENT_TYPE_MESSAGE = "unknown clause";
     
@@ -204,12 +205,14 @@ public final class ColumnSegmentBinder {
     private static ColumnSegmentBoundedInfo createColumnSegmentBoundedInfo(final ColumnSegment segment, final ColumnSegment inputColumnSegment) {
         IdentifierValue originalDatabase = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundedInfo().getOriginalDatabase();
         IdentifierValue originalSchema = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundedInfo().getOriginalSchema();
-        IdentifierValue originalTable =
-                null == segment.getColumnBoundedInfo().getOriginalTable() ? Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundedInfo().getOriginalTable()).orElse(null)
-                        : segment.getColumnBoundedInfo().getOriginalTable();
-        IdentifierValue originalColumn =
-                null == segment.getColumnBoundedInfo().getOriginalColumn() ? Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundedInfo().getOriginalColumn()).orElse(null)
-                        : segment.getColumnBoundedInfo().getOriginalColumn();
+        IdentifierValue segmentOriginalTable = segment.getColumnBoundedInfo().getOriginalTable();
+        IdentifierValue originalTable = Strings.isNullOrEmpty(segmentOriginalTable.getValue())
+                ? Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundedInfo().getOriginalTable()).orElse(segmentOriginalTable)
+                : segmentOriginalTable;
+        IdentifierValue segmentOriginalColumn = segment.getColumnBoundedInfo().getOriginalColumn();
+        IdentifierValue originalColumn = Strings.isNullOrEmpty(segmentOriginalColumn.getValue())
+                ? Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundedInfo().getOriginalColumn()).orElse(segmentOriginalColumn)
+                : segmentOriginalColumn;
         return new ColumnSegmentBoundedInfo(originalDatabase, originalSchema, originalTable, originalColumn);
     }
     
