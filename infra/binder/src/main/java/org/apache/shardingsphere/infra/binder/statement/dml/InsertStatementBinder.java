@@ -25,11 +25,16 @@ import org.apache.shardingsphere.infra.binder.segment.from.impl.SimpleTableSegme
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -42,6 +47,16 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap());
     }
     
+    private Collection<ColumnSegment> getVisibleColumns(final Collection<ProjectionSegment> projectionSegments) {
+        Collection<ColumnSegment> result = new LinkedList<>();
+        for (ProjectionSegment each : projectionSegments) {
+            if (each instanceof ColumnProjectionSegment && each.isVisible()) {
+                result.add(((ColumnProjectionSegment) each).getColumn());
+            }
+        }
+        return result;
+    }
+    
     @SneakyThrows
     private InsertStatement bind(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
                                  final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
@@ -50,7 +65,12 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
         Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
         result.setTable(SimpleTableSegmentBinder.bind(sqlStatement.getTable(), statementBinderContext, tableBinderContexts));
-        sqlStatement.getInsertColumns().ifPresent(optional -> result.setInsertColumns(InsertColumnsSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts)));
+        if (sqlStatement.getInsertColumns().isPresent() && !sqlStatement.getInsertColumns().get().getColumns().isEmpty()) {
+            result.setInsertColumns(InsertColumnsSegmentBinder.bind(sqlStatement.getInsertColumns().get(), statementBinderContext, tableBinderContexts));
+        } else {
+            sqlStatement.getInsertColumns().ifPresent(result::setInsertColumns);
+            tableBinderContexts.values().forEach(each -> result.getDerivedInsertColumns().addAll(getVisibleColumns(each.getProjectionSegments())));
+        }
         sqlStatement.getInsertSelect().ifPresent(optional -> result.setInsertSelect(SubquerySegmentBinder.bind(optional, statementBinderContext, tableBinderContexts)));
         result.getValues().addAll(sqlStatement.getValues());
         InsertStatementHandler.getOnDuplicateKeyColumnsSegment(sqlStatement).ifPresent(optional -> InsertStatementHandler.setOnDuplicateKeyColumnsSegment(result, optional));

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class EncryptInsertDefaultColumnsTokenGeneratorTest {
     
@@ -53,5 +55,11 @@ class EncryptInsertDefaultColumnsTokenGeneratorTest {
         generator.setPreviousSQLTokens(EncryptGeneratorFixtureBuilder.getPreviousSQLTokens());
         assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())).toString(),
                 is("(id, name, status, pwd_cipher, pwd_assist, pwd_like)"));
+    }
+    
+    @Test
+    void assertGenerateSQLTokensWhenInsertColumnsUseDifferentEncryptorWithSelectProjection() {
+        generator.setPreviousSQLTokens(EncryptGeneratorFixtureBuilder.getPreviousSQLTokens());
+        assertThrows(UnsupportedSQLOperationException.class, () -> generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertSelectStatementContext(Collections.emptyList(), false)));
     }
 }

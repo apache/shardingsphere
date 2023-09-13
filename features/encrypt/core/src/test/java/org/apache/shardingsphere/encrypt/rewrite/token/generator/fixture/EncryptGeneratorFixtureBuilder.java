@@ -129,7 +129,7 @@ public final class EncryptGeneratorFixtureBuilder {
         return result;
     }
     
-    private static InsertStatement createInsertSelectStatement() {
+    private static InsertStatement createInsertSelectStatement(final boolean containsInsertColumns) {
         InsertStatement result = new MySQLInsertStatement();
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         ColumnSegment userIdColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
@@ -138,8 +138,13 @@ public final class EncryptGeneratorFixtureBuilder {
         ColumnSegment userNameColumn = new ColumnSegment(0, 0, new IdentifierValue("user_name"));
         userNameColumn.setColumnBoundedInfo(new ColumnSegmentBoundedInfo(new IdentifierValue(DefaultDatabase.LOGIC_NAME), new IdentifierValue(DefaultDatabase.LOGIC_NAME),
                 new IdentifierValue("t_user"), new IdentifierValue("user_name")));
-        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(userIdColumn, userNameColumn));
-        result.setInsertColumns(insertColumnsSegment);
+        List<ColumnSegment> insertColumns = Arrays.asList(userIdColumn, userNameColumn);
+        if (containsInsertColumns) {
+            result.setInsertColumns(new InsertColumnsSegment(0, 0, insertColumns));
+        } else {
+            result.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.emptyList()));
+            result.getDerivedInsertColumns().addAll(insertColumns);
+        }
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
@@ -220,10 +225,11 @@ public final class EncryptGeneratorFixtureBuilder {
      * Create insert select statement context.
      *
      * @param params parameters
+     * @param containsInsertColumns contains insert columns
      * @return created insert select statement context
      */
-    public static InsertStatementContext createInsertSelectStatementContext(final List<Object> params) {
-        InsertStatement insertStatement = createInsertSelectStatement();
+    public static InsertStatementContext createInsertSelectStatementContext(final List<Object> params, final boolean containsInsertColumns) {
+        InsertStatement insertStatement = createInsertSelectStatement(containsInsertColumns);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
