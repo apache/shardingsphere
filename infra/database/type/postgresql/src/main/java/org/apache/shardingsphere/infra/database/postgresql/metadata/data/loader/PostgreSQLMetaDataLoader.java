@@ -67,9 +67,10 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
     
     private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname, schemaname FROM pg_indexes WHERE schemaname IN (%s)";
     
-    private static final String ADVANCE_INDEX_META_DATA_SQL = "SELECT idx.relname as index_name, insp.nspname as index_schema, tbl.relname as table_name, pgi.indisunique as is_unique"
-            + " FROM pg_index pgi JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
-            + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace WHERE tnsp.nspname IN (%s)";
+    private static final String ADVANCE_INDEX_META_DATA_SQL =
+            "SELECT idx.relname as index_name, insp.nspname as index_schema, tbl.relname as table_name, att.attname AS column_name, pgi.indisunique as is_unique"
+                    + " FROM pg_index pgi JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
+                    + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = ANY(pgi.indkey) WHERE tnsp.nspname IN (%s)";
     
     private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
     
@@ -108,6 +109,7 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
             while (resultSet.next()) {
                 String schemaName = resultSet.getString("index_schema");
                 String tableName = resultSet.getString("table_name");
+                String columnName = resultSet.getString("column_name");
                 String indexName = resultSet.getString("index_name");
                 boolean isUnique = resultSet.getBoolean("is_unique");
                 Collection<IndexMetaData> indexMetaDatas = result.getOrDefault(schemaName, LinkedHashMultimap.create()).get(tableName);
@@ -117,6 +119,7 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
                 Optional<IndexMetaData> indexMetaData = indexMetaDatas.stream().filter(each -> each.getName().equals(indexName)).findFirst();
                 if (indexMetaData.isPresent()) {
                     indexMetaData.get().setUnique(isUnique);
+                    indexMetaData.get().getColumns().add(columnName);
                 }
             }
         }
