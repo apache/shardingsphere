@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseTypeAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
@@ -69,19 +69,26 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getAllTables().isEmpty();
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getAllTables().isEmpty()
+                || sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext();
     }
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        Preconditions.checkState(sqlStatementContext instanceof SelectStatementContext);
         Collection<SQLToken> result = new LinkedHashSet<>();
-        SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-        addGenerateSQLTokens(result, selectStatementContext);
-        for (SelectStatementContext each : selectStatementContext.getSubqueryContexts().values()) {
-            addGenerateSQLTokens(result, each);
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            generateSQLTokens((SelectStatementContext) sqlStatementContext, result);
+        } else if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
+            generateSQLTokens(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext(), result);
         }
         return result;
+    }
+    
+    private void generateSQLTokens(final SelectStatementContext selectStatementContext, final Collection<SQLToken> sqlTokens) {
+        addGenerateSQLTokens(sqlTokens, selectStatementContext);
+        for (SelectStatementContext each : selectStatementContext.getSubqueryContexts().values()) {
+            addGenerateSQLTokens(sqlTokens, each);
+        }
     }
     
     private void addGenerateSQLTokens(final Collection<SQLToken> sqlTokens, final SelectStatementContext selectStatementContext) {
@@ -153,8 +160,11 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
             return generateProjectionsInTableSegmentSubquery(encryptColumn, columnProjection, shorthandProjection, subqueryType);
         } else if (SubqueryType.PREDICATE_SUBQUERY == subqueryType) {
             return Collections.singleton(generateProjectionInPredicateSubquery(encryptColumn, columnProjection, shorthandProjection));
+        } else if (SubqueryType.INSERT_SELECT_SUBQUERY == subqueryType) {
+            return generateProjectionsInInsertSelectSubquery(encryptColumn, columnProjection, shorthandProjection);
         }
-        throw new UnsupportedSQLOperationException("Projections not in simple select, table subquery, join subquery and predicate subquery are not supported in encrypt feature.");
+        throw new UnsupportedSQLOperationException(
+                "Projections not in simple select, table subquery, join subquery, predicate subquery and insert select subquery are not supported in encrypt feature.");
     }
     
     private ColumnProjection generateProjection(final EncryptColumn encryptColumn, final ColumnProjection columnProjection, final boolean shorthandProjection) {
@@ -184,6 +194,18 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         return encryptColumn.getAssistedQuery().map(optional -> new ColumnProjection(owner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType))
                 .orElseGet(() -> new ColumnProjection(owner, new IdentifierValue(encryptColumn.getCipher().getName(), quoteCharacter), columnProjection.getAlias().orElse(columnProjection.getName()),
                         databaseType));
+    }
+    
+    private Collection<Projection> generateProjectionsInInsertSelectSubquery(final EncryptColumn encryptColumn, final ColumnProjection columnProjection, final boolean shorthandProjection) {
+        QuoteCharacter quoteCharacter = columnProjection.getName().getQuoteCharacter();
+        IdentifierValue columnName = new IdentifierValue(encryptColumn.getCipher().getName(), quoteCharacter);
+        Collection<Projection> result = new LinkedList<>();
+        IdentifierValue encryptColumnOwner = shorthandProjection ? columnProjection.getOwner().orElse(null) : null;
+        result.add(new ColumnProjection(encryptColumnOwner, columnName, null, databaseType));
+        IdentifierValue assistedColumOwner = columnProjection.getOwner().orElse(null);
+        encryptColumn.getAssistedQuery().ifPresent(optional -> result.add(new ColumnProjection(assistedColumOwner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType)));
+        encryptColumn.getLikeQuery().ifPresent(optional -> result.add(new ColumnProjection(assistedColumOwner, new IdentifierValue(optional.getName(), quoteCharacter), null, databaseType)));
+        return result;
     }
     
     private ShorthandProjection getShorthandProjection(final ShorthandProjectionSegment segment, final ProjectionsContext projectionsContext) {
