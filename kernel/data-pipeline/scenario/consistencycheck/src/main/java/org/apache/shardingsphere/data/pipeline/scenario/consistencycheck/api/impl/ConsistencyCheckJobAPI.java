@@ -122,6 +122,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         yamlConfig.setParentJobId(parentJobId);
         yamlConfig.setAlgorithmTypeName(param.getAlgorithmTypeName());
         yamlConfig.setAlgorithmProps(param.getAlgorithmProps());
+        yamlConfig.setSourceDatabaseType(param.getSourceDatabaseType().getType());
         start(new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(yamlConfig));
         return result;
     }
