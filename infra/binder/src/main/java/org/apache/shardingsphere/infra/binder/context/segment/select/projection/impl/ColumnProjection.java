@@ -94,7 +94,7 @@ public final class ColumnProjection implements Projection {
      * @return original table
      */
     public IdentifierValue getOriginalTable() {
-        if (Strings.isNullOrEmpty(originalTable.getValue())) {
+        if (null == originalTable || Strings.isNullOrEmpty(originalTable.getValue())) {
             return null == owner ? new IdentifierValue("") : owner;
         }
         return originalTable;
@@ -102,10 +102,10 @@ public final class ColumnProjection implements Projection {
     
     /**
      * Get original column.
-     * 
+     *
      * @return original column
      */
     public IdentifierValue getOriginalColumn() {
-        return Strings.isNullOrEmpty(originalColumn.getValue()) ? name : originalColumn;
+        return null == originalColumn || Strings.isNullOrEmpty(originalColumn.getValue()) ? name : originalColumn;
     }
 }
