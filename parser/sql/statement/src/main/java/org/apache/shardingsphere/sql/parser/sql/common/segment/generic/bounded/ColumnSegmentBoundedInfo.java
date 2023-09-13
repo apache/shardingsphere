@@ -37,9 +37,9 @@ public final class ColumnSegmentBoundedInfo {
     private final IdentifierValue originalColumn;
     
     public ColumnSegmentBoundedInfo(final IdentifierValue originalColumn) {
-        this.originalDatabase = null;
-        this.originalSchema = null;
-        this.originalTable = null;
+        this.originalDatabase = new IdentifierValue("");
+        this.originalSchema = new IdentifierValue("");
+        this.originalTable = new IdentifierValue("");
         this.originalColumn = originalColumn;
     }
 }
