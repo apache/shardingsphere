@@ -62,11 +62,20 @@ public final class SubqueryTableSegmentBinder {
         SubquerySegment boundedSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundedSelect);
         boundedSubquerySegment.setSubqueryType(segment.getSubquery().getSubqueryType());
         SubqueryTableSegment result = new SubqueryTableSegment(boundedSubquerySegment);
+        fillPivotColumnNamesInBinderContext(segment, statementBinderContext);
         segment.getAliasSegment().ifPresent(result::setAlias);
         IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
         tableBinderContexts.put(subqueryTableName.getValue().toLowerCase(),
                 new SimpleTableSegmentBinderContext(createSubqueryProjections(boundedSelect.getProjections().getProjections(), subqueryTableName)));
         return result;
+    }
+    
+    private static void fillPivotColumnNamesInBinderContext(final SubqueryTableSegment segment, final SQLStatementBinderContext statementBinderContext) {
+        segment.getPivot().ifPresent(optional -> {
+            for (ColumnSegment each : optional.getPivotInColumns()) {
+                statementBinderContext.getPivotColumnNames().add(each.getIdentifier().getValue().toLowerCase());
+            }
+        });
     }
     
     private static Collection<ProjectionSegment> createSubqueryProjections(final Collection<ProjectionSegment> projections, final IdentifierValue subqueryTableName) {
