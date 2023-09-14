@@ -50,4 +50,6 @@ public final class SQLStatementBinderContext {
     private final Collection<ProjectionSegment> joinTableProjectionSegments = new LinkedList<>();
     
     private final Map<String, TableSegmentBinderContext> externalTableBinderContexts = new CaseInsensitiveMap<>();
+    
+    private final Collection<String> pivotColumnNames = new HashSet<>();
 }

@@ -521,9 +521,13 @@ pivotForClause
     ;
 
 pivotInClause
-    : IN LP_ ((expr | exprList) (AS? alias)? (COMMA_ (expr | exprList) (AS? alias)?)*
+    : IN LP_ (pivotInClauseExpr (COMMA_ pivotInClauseExpr)*
     | selectSubquery
     | ANY (COMMA_ ANY)*) RP_
+    ;
+
+pivotInClauseExpr
+    : (expr | exprList) (AS? alias)?
     ;
 
 unpivotClause

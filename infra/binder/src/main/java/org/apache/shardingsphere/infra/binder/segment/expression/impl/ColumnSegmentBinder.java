@@ -152,9 +152,24 @@ public final class ColumnSegmentBinder {
             result = findInputColumnSegmentByVariables(segment, statementBinderContext.getVariableNames()).orElse(null);
             isFindInputColumn = result != null;
         }
+        if (!isFindInputColumn) {
+            result = findInputColumnSegmentByPivotColumns(segment, statementBinderContext.getPivotColumnNames()).orElse(null);
+            isFindInputColumn = result != null;
+        }
         ShardingSpherePreconditions.checkState(isFindInputColumn || containsFunctionTable(tableBinderContexts, outerTableBinderContexts.values()),
                 () -> new UnknownColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         return Optional.ofNullable(result);
+    }
+    
+    private static Optional<ColumnSegment> findInputColumnSegmentByPivotColumns(final ColumnSegment segment, final Collection<String> pivotColumnNames) {
+        if (pivotColumnNames.isEmpty()) {
+            return Optional.empty();
+        }
+        if (pivotColumnNames.contains(segment.getIdentifier().getValue().toLowerCase())) {
+            ColumnSegment result = new ColumnSegment(0, 0, segment.getIdentifier());
+            return Optional.of(result);
+        }
+        return Optional.empty();
     }
     
     private static Optional<ProjectionSegment> findInputColumnSegmentFromOuterTable(final ColumnSegment segment, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
@@ -180,6 +195,9 @@ public final class ColumnSegmentBinder {
     }
     
     private static Optional<ColumnSegment> findInputColumnSegmentByVariables(final ColumnSegment segment, final Collection<String> variableNames) {
+        if (variableNames.isEmpty()) {
+            return Optional.empty();
+        }
         if (variableNames.contains(segment.getIdentifier().getValue().toLowerCase())) {
             ColumnSegment result = new ColumnSegment(0, 0, segment.getIdentifier());
             result.setVariable(true);
