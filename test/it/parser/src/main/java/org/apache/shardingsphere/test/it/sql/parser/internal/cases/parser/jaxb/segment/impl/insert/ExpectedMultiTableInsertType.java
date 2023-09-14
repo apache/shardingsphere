@@ -18,19 +18,18 @@
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.InsertStatementTestCase;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Expected insert multi table element.
+ * Expected multi table insert type.
  */
 @Getter
-public final class ExpectedInsertMultiTableElement extends AbstractExpectedSQLSegment {
+@Setter
+public class ExpectedMultiTableInsertType extends AbstractExpectedSQLSegment {
     
-    @XmlElement(name = "table-element")
-    private final List<InsertStatementTestCase> insertTestCases = new LinkedList<>();
+    @XmlAttribute(name = "value")
+    private String multiTableInsertType;
 }

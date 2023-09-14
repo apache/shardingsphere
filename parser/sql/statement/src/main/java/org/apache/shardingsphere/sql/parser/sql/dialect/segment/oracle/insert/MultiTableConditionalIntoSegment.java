@@ -15,26 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.insert;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
- * Insert multi table element segment.
+ * Multi table conditional into segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InsertMultiTableElementSegment implements SQLSegment {
+public final class MultiTableConditionalIntoSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final Collection<InsertStatement> insertStatements = new LinkedList<>();
+    private final Collection<MultiTableConditionalIntoWhenThenSegment> whenThenSegments = new LinkedList<>();
+    
+    @Setter
+    private MultiTableConditionalIntoElseSegment elseSegment;
+    
+    /**
+     * Get else segment.
+     * 
+     * @return else segment
+     */
+    public Optional<MultiTableConditionalIntoElseSegment> getElseSegment() {
+        return Optional.ofNullable(elseSegment);
+    }
 }
