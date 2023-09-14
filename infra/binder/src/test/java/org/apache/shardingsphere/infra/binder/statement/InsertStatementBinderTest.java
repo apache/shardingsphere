@@ -65,13 +65,13 @@ class InsertStatementBinderTest {
         InsertStatement actual = new InsertStatementBinder().bind(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
         assertThat(actual, not(insertStatement));
         assertThat(actual.getTable().getTableName(), not(insertStatement.getTable().getTableName()));
-        assertInsertColumns(actual);
+        assertTrue(actual.getInsertColumns().isPresent());
+        assertInsertColumns(actual.getInsertColumns().get().getColumns());
     }
     
-    private static void assertInsertColumns(final InsertStatement actual) {
-        assertTrue(actual.getInsertColumns().isPresent());
-        assertThat(actual.getInsertColumns().get().getColumns().size(), is(3));
-        Iterator<ColumnSegment> iterator = actual.getInsertColumns().get().getColumns().iterator();
+    private static void assertInsertColumns(final Collection<ColumnSegment> insertColumns) {
+        assertThat(insertColumns.size(), is(3));
+        Iterator<ColumnSegment> iterator = insertColumns.iterator();
         ColumnSegment orderIdColumnSegment = iterator.next();
         assertThat(orderIdColumnSegment.getColumnBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(orderIdColumnSegment.getColumnBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
@@ -90,7 +90,7 @@ class InsertStatementBinderTest {
     }
     
     @Test
-    void assertBindInsertSelect() {
+    void assertBindInsertSelectWithColumns() {
         InsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("order_id")),
@@ -108,7 +108,29 @@ class InsertStatementBinderTest {
         InsertStatement actual = new InsertStatementBinder().bind(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
         assertThat(actual, not(insertStatement));
         assertThat(actual.getTable().getTableName(), not(insertStatement.getTable().getTableName()));
-        assertInsertColumns(actual);
+        assertTrue(actual.getInsertColumns().isPresent());
+        assertInsertColumns(actual.getInsertColumns().get().getColumns());
+        assertInsertSelect(actual);
+    }
+    
+    @Test
+    void assertBindInsertSelectWithoutColumns() {
+        InsertStatement insertStatement = new MySQLInsertStatement();
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        MySQLSelectStatement subSelectStatement = new MySQLSelectStatement();
+        subSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
+        subSelectStatement.setProjections(projections);
+        insertStatement.setInsertSelect(new SubquerySegment(0, 0, subSelectStatement));
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
+                new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK"))));
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
+        assertThat(actual, not(insertStatement));
+        assertThat(actual.getTable().getTableName(), not(insertStatement.getTable().getTableName()));
+        assertInsertColumns(actual.getDerivedInsertColumns());
         assertInsertSelect(actual);
     }
     
