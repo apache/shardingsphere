@@ -413,7 +413,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     }
     
     @Override
-    public ASTNode visitPivotClause(PivotClauseContext ctx) {
+    public ASTNode visitPivotClause(final PivotClauseContext ctx) {
         ColumnSegment pivotForColumn = (ColumnSegment) visitColumnName(ctx.pivotForClause().columnName());
         Collection<ColumnSegment> pivotInColumns = new LinkedList<>();
         if (null != ctx.pivotInClause()) {

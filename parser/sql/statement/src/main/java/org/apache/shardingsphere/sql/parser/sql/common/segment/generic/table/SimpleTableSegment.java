@@ -82,7 +82,7 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     public Optional<AliasSegment> getAliasSegment() {
         return Optional.ofNullable(alias);
     }
-
+    
     /**
      * Get pivot segment.
      * 

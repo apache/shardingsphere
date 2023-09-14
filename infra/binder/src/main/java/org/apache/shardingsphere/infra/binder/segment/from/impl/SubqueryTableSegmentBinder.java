@@ -70,7 +70,7 @@ public final class SubqueryTableSegmentBinder {
         return result;
     }
     
-    private static void fillPivotColumnNamesInBinderContext(SubqueryTableSegment segment, SQLStatementBinderContext statementBinderContext) {
+    private static void fillPivotColumnNamesInBinderContext(final SubqueryTableSegment segment, final SQLStatementBinderContext statementBinderContext) {
         segment.getPivot().ifPresent(optional -> {
             for (ColumnSegment each : optional.getPivotInColumns()) {
                 statementBinderContext.getPivotColumnNames().add(each.getIdentifier().getValue().toLowerCase());

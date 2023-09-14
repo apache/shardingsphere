@@ -51,7 +51,7 @@ public final class SubqueryTableSegment implements TableSegment {
     public Optional<IdentifierValue> getAlias() {
         return Optional.ofNullable(alias).map(AliasSegment::getIdentifier);
     }
-
+    
     /**
      * Get pivot segment.
      * 
