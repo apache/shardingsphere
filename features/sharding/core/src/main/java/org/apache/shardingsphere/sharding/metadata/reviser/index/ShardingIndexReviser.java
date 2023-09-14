@@ -37,19 +37,16 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
     @Override
     public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final ShardingRule rule) {
         for (DataNode each : tableRule.getActualDataNodes()) {
-            Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
-            if (logicIndexName.isPresent()) {
-                IndexMetaData result = new IndexMetaData(logicIndexName.get());
-                result.getColumns().addAll(originalMetaData.getColumns());
-                result.setUnique(originalMetaData.isUnique());
-                return Optional.of(result);
-            }
+            IndexMetaData result = new IndexMetaData(getLogicIndex(originalMetaData.getName(), each.getTableName()));
+            result.getColumns().addAll(originalMetaData.getColumns());
+            result.setUnique(originalMetaData.isUnique());
+            return Optional.of(result);
         }
         return Optional.empty();
     }
     
-    private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
+    private String getLogicIndex(final String actualIndexName, final String actualTableName) {
         String indexNameSuffix = "_" + actualTableName;
-        return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.empty();
+        return actualIndexName.endsWith(indexNameSuffix) ? actualIndexName.replace(indexNameSuffix, "") : actualIndexName;
     }
 }

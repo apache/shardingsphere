@@ -23,11 +23,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.insert.MultiTableConditionalIntoSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.insert.MultiTableInsertIntoSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.insert.MultiTableInsertType;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleInsertStatement;
@@ -164,27 +166,77 @@ public final class InsertStatementHandler implements SQLStatementHandler {
     }
     
     /**
-     * Get insert multi table element segment.
+     * Get multi table insert type.
      *
      * @param insertStatement insert statement
-     * @return insert multi table element segment
+     * @return multi table insert type
      */
-    public static Optional<InsertMultiTableElementSegment> getInsertMultiTableElementSegment(final InsertStatement insertStatement) {
+    public static Optional<MultiTableInsertType> getMultiTableInsertType(final InsertStatement insertStatement) {
         if (insertStatement instanceof OracleInsertStatement) {
-            return ((OracleInsertStatement) insertStatement).getInsertMultiTableElementSegment();
+            return ((OracleInsertStatement) insertStatement).getMultiTableInsertType();
         }
         return Optional.empty();
     }
     
     /**
-     * Set insert multi table element segment.
-     * 
-     * @param insertStatement insert statement
-     * @param insertMultiTableElementSegment insert multi table element segment
+     * Set multi table insert type.
+     *
+     * @param insertStatement insert into statement
+     * @param multiTableInsertType multi table insert type
      */
-    public static void setInsertMultiTableElementSegment(final InsertStatement insertStatement, final InsertMultiTableElementSegment insertMultiTableElementSegment) {
+    public static void setMultiTableInsertType(final InsertStatement insertStatement, final MultiTableInsertType multiTableInsertType) {
         if (insertStatement instanceof OracleInsertStatement) {
-            ((OracleInsertStatement) insertStatement).setInsertMultiTableElementSegment(insertMultiTableElementSegment);
+            ((OracleInsertStatement) insertStatement).setMultiTableInsertType(multiTableInsertType);
+        }
+    }
+    
+    /**
+     * Get multi table insert into segment.
+     *
+     * @param insertStatement insert statement
+     * @return multi table insert into segment
+     */
+    public static Optional<MultiTableInsertIntoSegment> getMultiTableInsertIntoSegment(final InsertStatement insertStatement) {
+        if (insertStatement instanceof OracleInsertStatement) {
+            return ((OracleInsertStatement) insertStatement).getMultiTableInsertIntoSegment();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Set multi table insert into segment.
+     * 
+     * @param insertStatement insert into statement
+     * @param multiTableInsertIntoSegment multi table insert into segment
+     */
+    public static void setMultiTableInsertIntoSegment(final InsertStatement insertStatement, final MultiTableInsertIntoSegment multiTableInsertIntoSegment) {
+        if (insertStatement instanceof OracleInsertStatement) {
+            ((OracleInsertStatement) insertStatement).setMultiTableInsertIntoSegment(multiTableInsertIntoSegment);
+        }
+    }
+    
+    /**
+     * Get multi table conditional into segment.
+     *
+     * @param insertStatement insert statement
+     * @return multi table conditional into segment
+     */
+    public static Optional<MultiTableConditionalIntoSegment> getMultiTableConditionalIntoSegment(final InsertStatement insertStatement) {
+        if (insertStatement instanceof OracleInsertStatement) {
+            return ((OracleInsertStatement) insertStatement).getMultiTableConditionalIntoSegment();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Set multi table conditional into segment.
+     *
+     * @param insertStatement insert into statement
+     * @param multiTableConditionalIntoSegment multi table conditional into segment
+     */
+    public static void setMultiTableConditionalIntoSegment(final InsertStatement insertStatement, final MultiTableConditionalIntoSegment multiTableConditionalIntoSegment) {
+        if (insertStatement instanceof OracleInsertStatement) {
+            ((OracleInsertStatement) insertStatement).setMultiTableConditionalIntoSegment(multiTableConditionalIntoSegment);
         }
     }
     

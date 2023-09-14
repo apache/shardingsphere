@@ -15,12 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.enums;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.insert;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Segment type enum.
+ * Multi table insert into segment.
  */
-public enum SegmentType {
+@RequiredArgsConstructor
+@Getter
+public final class MultiTableInsertIntoSegment implements SQLSegment {
     
-    PROJECTION, PREDICATE, JOIN_ON, JOIN_USING, ORDER_BY, GROUP_BY, LOCK, SET_ASSIGNMENT, VALUES, INSERT_COLUMNS
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final Collection<InsertStatement> insertStatements = new LinkedList<>();
 }

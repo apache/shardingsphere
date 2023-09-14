@@ -150,7 +150,12 @@ class SQLStatementContextFactoryTest {
     }
     
     private ShardingSphereMetaData mockMetaData() {
-        Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.containsSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
+        when(database.containsSchema("public")).thenReturn(true);
+        when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("tbl")).thenReturn(true);
+        when(database.getSchema("public").containsTable("tbl")).thenReturn(true);
+        Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
         return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
 }

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.enums;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.insert;
 
 /**
- * Segment type enum.
+ * Multi table insert type.
  */
-public enum SegmentType {
+public enum MultiTableInsertType {
     
-    PROJECTION, PREDICATE, JOIN_ON, JOIN_USING, ORDER_BY, GROUP_BY, LOCK, SET_ASSIGNMENT, VALUES, INSERT_COLUMNS
+    ALL, FIRST
 }

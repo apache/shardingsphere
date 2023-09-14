@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.enums;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert;
+
+import lombok.Getter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.InsertStatementTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Segment type enum.
+ * Expected multi table conditional into else clause.
  */
-public enum SegmentType {
+@Getter
+public final class ExpectedMultiTableConditionalIntoElseClause extends AbstractExpectedSQLSegment {
     
-    PROJECTION, PREDICATE, JOIN_ON, JOIN_USING, ORDER_BY, GROUP_BY, LOCK, SET_ASSIGNMENT, VALUES, INSERT_COLUMNS
+    @XmlElement(name = "insert-statement")
+    private final List<InsertStatementTestCase> insertTestCases = new LinkedList<>();
 }

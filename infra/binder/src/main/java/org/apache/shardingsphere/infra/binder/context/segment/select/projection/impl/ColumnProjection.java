@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl;
 
+import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -93,7 +94,7 @@ public final class ColumnProjection implements Projection {
      * @return original table
      */
     public IdentifierValue getOriginalTable() {
-        if (null == originalTable) {
+        if (null == originalTable || Strings.isNullOrEmpty(originalTable.getValue())) {
             return null == owner ? new IdentifierValue("") : owner;
         }
         return originalTable;
@@ -101,10 +102,10 @@ public final class ColumnProjection implements Projection {
     
     /**
      * Get original column.
-     * 
+     *
      * @return original column
      */
     public IdentifierValue getOriginalColumn() {
-        return null == originalColumn ? name : originalColumn;
+        return null == originalColumn || Strings.isNullOrEmpty(originalColumn.getValue()) ? name : originalColumn;
     }
 }

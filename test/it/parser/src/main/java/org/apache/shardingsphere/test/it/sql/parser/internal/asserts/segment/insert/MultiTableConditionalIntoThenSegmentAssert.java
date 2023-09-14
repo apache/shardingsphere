@@ -19,31 +19,32 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.in
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.insert.MultiTableConditionalIntoThenSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.InsertStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedInsertMultiTableElement;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedMultiTableConditionalIntoThenClause;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Insert multi table element assert.
+ * Multi table conditional into then segment assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InsertMultiTableElementAssert {
+public final class MultiTableConditionalIntoThenSegmentAssert {
     
     /**
-     * Assert actual insert multi table element segment is correct with expected multi table element.
+     * Assert actual multi table conditional into then segment is correct with expected multi table conditional into then segment.
      *
      * @param assertContext assert context
-     * @param actual actual insert multi table element
-     * @param expected expected insert multi table element
+     * @param actual actual multi table conditional into then segment
+     * @param expected expected multi table conditional into then segment
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final InsertMultiTableElementSegment actual, final ExpectedInsertMultiTableElement expected) {
-        assertThat(assertContext.getText("Insert values size assertion error: "), actual.getInsertStatements().size(), is(expected.getInsertTestCases().size()));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MultiTableConditionalIntoThenSegment actual, final ExpectedMultiTableConditionalIntoThenClause expected) {
+        assertThat(assertContext.getText("Multi table conditional into then segment' insert values size assertion error: "), actual.getInsertStatements().size(),
+                is(expected.getInsertTestCases().size()));
         int count = 0;
         for (InsertStatement each : actual.getInsertStatements()) {
             InsertStatementAssert.assertIs(assertContext, each, expected.getInsertTestCases().get(count));

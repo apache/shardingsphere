@@ -15,12 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.enums;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Segment type enum.
+ * Expected multi table conditional into when then clause.
  */
-public enum SegmentType {
+@Getter
+@Setter
+public final class ExpectedMultiTableConditionalIntoWhenThenClause extends AbstractExpectedSQLSegment {
     
-    PROJECTION, PREDICATE, JOIN_ON, JOIN_USING, ORDER_BY, GROUP_BY, LOCK, SET_ASSIGNMENT, VALUES, INSERT_COLUMNS
+    @XmlElement(name = "when")
+    private ExpectedExpression whenClause;
+    
+    @XmlElement(name = "then")
+    private ExpectedMultiTableConditionalIntoThenClause thenClause;
 }

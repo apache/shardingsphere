@@ -15,12 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.enums;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+
+import java.util.Collection;
 
 /**
- * Segment type enum.
+ * Pivot segment.
  */
-public enum SegmentType {
+@RequiredArgsConstructor
+@Getter
+public final class PivotSegment implements SQLSegment {
     
-    PROJECTION, PREDICATE, JOIN_ON, JOIN_USING, ORDER_BY, GROUP_BY, LOCK, SET_ASSIGNMENT, VALUES, INSERT_COLUMNS
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final ColumnSegment pivotForColumn;
+    
+    private final Collection<ColumnSegment> pivotInColumns;
 }
