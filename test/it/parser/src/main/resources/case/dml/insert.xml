@@ -1362,8 +1362,9 @@
     </insert>
 
     <insert sql-case-id="insert_all_with_all_placeholders" parameters="1, 1, 'init', 2, 2, 'init', 3, 3, 'init'">
-        <multi-table-element start-index="11" stop-index="183" literal-start-index="11" literal-stop-index="198">
-            <table-element>
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="11" stop-index="183" literal-start-index="11" literal-stop-index="198">
+            <insert-statement>
                 <table name="t_order" start-index="16" stop-index="22" />
                 <columns start-index="24" stop-index="50">
                     <column name="order_id" start-index="25" stop-index="32" />
@@ -1386,8 +1387,8 @@
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-            <table-element>
+            </insert-statement>
+            <insert-statement>
                 <table name="t_order" start-index="74" stop-index="80" literal-start-index="79" literal-stop-index="85" />
                 <columns start-index="82" stop-index="108" literal-start-index="87" literal-stop-index="113">
                     <column name="order_id" start-index="83" stop-index="90" literal-start-index="88" literal-stop-index="95" />
@@ -1410,8 +1411,8 @@
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-            <table-element>
+            </insert-statement>
+            <insert-statement>
                 <table name="t_order" start-index="132" stop-index="138" literal-start-index="142" literal-stop-index="148" />
                 <columns start-index="140" stop-index="166" literal-start-index="150" literal-stop-index="176">
                     <column name="order_id" start-index="141" stop-index="148" literal-start-index="151" literal-stop-index="158" />
@@ -1434,8 +1435,8 @@
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-        </multi-table-element>
+            </insert-statement>
+        </multi-table-insert-into>
         <select>
             <from>
                 <simple-table name="dual" start-index="199" stop-index="202" literal-start-index="214" literal-stop-index="217" />
@@ -2045,8 +2046,9 @@
     </insert>
 
     <insert sql-case-id="insert_with_multitable_element">
-        <multi-table-element start-index="11" stop-index="231">
-            <table-element>
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="11" stop-index="231">
+            <insert-statement>
                 <table name="sales" start-index="16" stop-index="20" />
                 <columns start-index="22" stop-index="56">
                     <column name="prod_id" start-index="23" stop-index="29" />
@@ -2070,8 +2072,8 @@
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-            <table-element>
+            </insert-statement>
+            <insert-statement>
                 <table name="sales" start-index="126" stop-index="130" />
                 <columns start-index="132" stop-index="166">
                     <column name="prod_id" start-index="133" stop-index="139" />
@@ -2103,8 +2105,8 @@
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-        </multi-table-element>
+            </insert-statement>
+        </multi-table-insert-into>
         <select>
             <from>
                 <simple-table name="sales_input_table" start-index="310" stop-index="326" />
@@ -2119,21 +2121,83 @@
         </select>
     </insert>
 
-    <insert sql-case-id="insert_all_with_multitable_with_conditional_when">
-        <multi-table-element start-index="7" stop-index="185">
-            <table-element>
-                <table name="small_orders" start-index="48" stop-index="59" />
-                <columns start-index="60" stop-index="60" />
-            </table-element>
-            <table-element>
-                <table name="medium_orders" start-index="124" stop-index="136" />
-                <columns start-index="137" stop-index="137" />
-            </table-element>
-            <table-element>
-                <table name="large_orders" start-index="174" stop-index="185" />
-                <columns start-index="186" stop-index="186" />
-            </table-element>
-        </multi-table-element>
+    <insert sql-case-id="insert_all_with_multi_table_with_conditional_when">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-conditional-into start-index="7" stop-index="185">
+            <conditional-into-when-then start-index="11" stop-index="59">
+                <when start-index="16" stop-index="36">
+                    <binary-operation-expression start-index="16" stop-index="36">
+                        <left>
+                            <column name="order_total" start-index="16" stop-index="26" />
+                        </left>
+                        <operator>&lt;=</operator>
+                        <right>
+                            <literal-expression value="100000" start-index="31" stop-index="36" />
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="43" stop-index="59">
+                    <insert-statement>
+                        <table name="small_orders" start-index="48" stop-index="59" />
+                        <columns start-index="60" stop-index="60" />
+                    </insert-statement>        
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-when-then start-index="61" stop-index="136">
+                <when start-index="66" stop-index="112">
+                    <binary-operation-expression start-index="66" stop-index="112">
+                        <left>
+                            <binary-operation-expression start-index="66" stop-index="86">
+                                <left>
+                                    <column name="order_total" start-index="66" stop-index="76" />
+                                </left>
+                                <operator>&gt;</operator>
+                                <right>
+                                    <literal-expression value="1000000" start-index="80" stop-index="86" />
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <binary-operation-expression start-index="92" stop-index="112">
+                                <left>
+                                    <column name="order_total" start-index="92" stop-index="102" />
+                                </left>
+                                <operator>&lt;=</operator>
+                                <right>
+                                    <literal-expression value="200000" start-index="107" stop-index="112" />
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="119" stop-index="136">
+                    <insert-statement>
+                        <table name="medium_orders" start-index="124" stop-index="136" />
+                        <columns start-index="137" stop-index="137" />
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-when-then start-index="138" stop-index="185">
+                <when start-index="143" stop-index="162">
+                    <binary-operation-expression start-index="143" stop-index="162">
+                        <left>
+                            <column name="order_total" start-index="143" stop-index="153" />
+                        </left>
+                        <operator>&gt;</operator>
+                        <right>
+                            <literal-expression value="200000" start-index="157" stop-index="162" />
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="169" stop-index="185">
+                    <insert-statement>
+                        <table name="large_orders" start-index="174" stop-index="185" />
+                        <columns start-index="186" stop-index="186" />
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+        </multi-table-conditional-into>
         <select>
             <from>
                 <simple-table name="orders" start-index="248" stop-index="253" />
@@ -2147,21 +2211,70 @@
         </select>
     </insert>
 
-    <insert sql-case-id="insert_all_with_multitable_with_conditional_when_with_conditional_else">
-        <multi-table-element start-index="7" stop-index="158">
-            <table-element>
-                <table name="small_orders" start-index="48" stop-index="59" />
-                <columns start-index="60" stop-index="60" />
-            </table-element>
-            <table-element>
-                <table name="medium_orders" start-index="123" stop-index="135" />
-                <columns start-index="136" stop-index="136" />
-            </table-element>
-            <table-element>
-                <table name="large_orders" start-index="147" stop-index="158" />
-                <columns start-index="159" stop-index="159" />
-            </table-element>
-        </multi-table-element>
+    <insert sql-case-id="insert_all_with_multi_table_with_conditional_when_with_conditional_else">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-conditional-into start-index="7" stop-index="158">
+            <conditional-into-when-then start-index="11" stop-index="59">
+                <when start-index="16" stop-index="36">
+                    <binary-operation-expression start-index="16" stop-index="36">
+                        <left>
+                            <column name="order_total" start-index="16" stop-index="26" />
+                        </left>
+                        <operator>&lt;=</operator>
+                        <right>
+                            <literal-expression value="100000" start-index="31" stop-index="36" />
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="43" stop-index="59">
+                    <insert-statement>
+                        <table name="small_orders" start-index="48" stop-index="59" />
+                        <columns start-index="60" stop-index="60" />
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-when-then start-index="61" stop-index="135">
+                <when start-index="66" stop-index="111">
+                    <binary-operation-expression start-index="66" stop-index="111">
+                        <left>
+                            <binary-operation-expression start-index="66" stop-index="85">
+                                <left>
+                                    <column name="order_total" start-index="66" stop-index="76" />
+                                </left>
+                                <operator>&gt;</operator>
+                                <right>
+                                    <literal-expression value="100000" start-index="80" stop-index="85" />
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <binary-operation-expression start-index="91" stop-index="111">
+                                <left>
+                                    <column name="order_total" start-index="91" stop-index="101" />
+                                </left>
+                                <operator>&lt;=</operator>
+                                <right>
+                                    <literal-expression value="200000" start-index="106" stop-index="111" />
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="118" stop-index="135">
+                    <insert-statement>
+                        <table name="medium_orders" start-index="123" stop-index="135" />
+                        <columns start-index="136" stop-index="136" />
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-else start-index="137" stop-index="158">
+                <insert-statement>
+                    <table name="large_orders" start-index="147" stop-index="158" />
+                    <columns start-index="159" stop-index="159" />
+                </insert-statement>
+            </conditional-into-else>
+        </multi-table-conditional-into>
         <select>
             <from>
                 <simple-table name="orders" start-index="221" stop-index="226" />
