@@ -513,7 +513,7 @@ modifyExternalTableProperties
 
 pivotClause
     : PIVOT XML?
-    LP_ aggregationFunctionName LP_ expr RP_ (AS? alias)? (COMMA_ aggregationFunctionName LP_ expr RP_ (AS? alias)?)* pivotForClause pivotInClause RP_
+    LP_ aggregationFunction (AS? alias)? (COMMA_ aggregationFunction (AS? alias)?)* pivotForClause pivotInClause RP_
     ;
 
 pivotForClause
