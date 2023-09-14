@@ -47,16 +47,6 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap());
     }
     
-    private Collection<ColumnSegment> getVisibleColumns(final Collection<ProjectionSegment> projectionSegments) {
-        Collection<ColumnSegment> result = new LinkedList<>();
-        for (ProjectionSegment each : projectionSegments) {
-            if (each instanceof ColumnProjectionSegment && each.isVisible()) {
-                result.add(((ColumnProjectionSegment) each).getColumn());
-            }
-        }
-        return result;
-    }
-    
     @SneakyThrows
     private InsertStatement bind(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
                                  final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
@@ -81,6 +71,16 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         InsertStatementHandler.getReturningSegment(sqlStatement).ifPresent(optional -> InsertStatementHandler.setReturningSegment(result, optional));
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        return result;
+    }
+    
+    private Collection<ColumnSegment> getVisibleColumns(final Collection<ProjectionSegment> projectionSegments) {
+        Collection<ColumnSegment> result = new LinkedList<>();
+        for (ProjectionSegment each : projectionSegments) {
+            if (each instanceof ColumnProjectionSegment && each.isVisible()) {
+                result.add(((ColumnProjectionSegment) each).getColumn());
+            }
+        }
         return result;
     }
 }
