@@ -2058,3 +2058,7 @@ multisetOperator
     | INTERSECT
     | UNION
     ;
+
+superview
+    : identifier
+    ;

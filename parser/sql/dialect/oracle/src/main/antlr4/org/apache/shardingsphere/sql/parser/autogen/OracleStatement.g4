@@ -24,6 +24,7 @@ execute
     | insert
     | update
     | delete
+    | createView
     | createTable
     | alterTable
     | dropTable
