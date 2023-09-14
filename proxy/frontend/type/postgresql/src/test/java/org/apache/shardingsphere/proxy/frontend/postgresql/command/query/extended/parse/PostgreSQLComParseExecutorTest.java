@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDist
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -92,6 +93,7 @@ class PostgreSQLComParseExecutorTest {
         final String statementId = "S_1";
         when(parsePacket.getSQL()).thenReturn(expectedSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
+        when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Collection<DatabasePacket> actualPackets = executor.execute();
@@ -112,6 +114,7 @@ class PostgreSQLComParseExecutorTest {
         when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.INT4));
+        when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
         when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
         Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
         ContextManager contextManager = mockContextManager();
@@ -132,6 +135,7 @@ class PostgreSQLComParseExecutorTest {
         final String expectedSQL = "update t_test set name=? where id=?";
         final String statementId = "S_2";
         when(parsePacket.getSQL()).thenReturn(rawSQL);
+        when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.readParameterTypes()).thenReturn(Arrays.asList(PostgreSQLColumnType.JSON, PostgreSQLColumnType.INT4));
         Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
@@ -151,6 +155,7 @@ class PostgreSQLComParseExecutorTest {
         final String statementId = "S_2";
         when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
+        when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
         Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
