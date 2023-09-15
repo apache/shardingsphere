@@ -32,5 +32,5 @@ public interface EncryptAlgorithm extends ShardingSphereAlgorithm {
      * @param encryptContext encrypt context
      * @return cipher value
      */
-    String encrypt(Object plainValue, EncryptContext encryptContext);
+    Object encrypt(Object plainValue, EncryptContext encryptContext);
 }

@@ -51,8 +51,8 @@ public final class EncryptTokenGeneratorUtils {
             if (!(each.getLeft() instanceof ColumnSegment) || !(each.getRight() instanceof ColumnSegment)) {
                 continue;
             }
-            EncryptAlgorithm<?, ?> leftColumnEncryptor = getColumnEncryptor(((ColumnSegment) each.getLeft()).getColumnBoundedInfo(), encryptRule);
-            EncryptAlgorithm<?, ?> rightColumnEncryptor = getColumnEncryptor(((ColumnSegment) each.getRight()).getColumnBoundedInfo(), encryptRule);
+            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(((ColumnSegment) each.getLeft()).getColumnBoundedInfo(), encryptRule);
+            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(((ColumnSegment) each.getRight()).getColumnBoundedInfo(), encryptRule);
             if (!isSameEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
                 return false;
             }
@@ -69,8 +69,8 @@ public final class EncryptTokenGeneratorUtils {
      */
     public static boolean isAllUsingConditionsUseSameEncryptor(final Collection<ColumnSegment> usingColumns, final EncryptRule encryptRule) {
         for (ColumnSegment each : usingColumns) {
-            EncryptAlgorithm<?, ?> leftColumnEncryptor = getColumnEncryptor(each.getColumnBoundedInfo(), encryptRule);
-            EncryptAlgorithm<?, ?> rightColumnEncryptor = getColumnEncryptor(each.getOtherUsingColumnBoundedInfo(), encryptRule);
+            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(each.getColumnBoundedInfo(), encryptRule);
+            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(each.getOtherUsingColumnBoundedInfo(), encryptRule);
             if (!isSameEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
                 return false;
             }
@@ -78,7 +78,7 @@ public final class EncryptTokenGeneratorUtils {
         return true;
     }
     
-    private static boolean isSameEncryptor(final EncryptAlgorithm<?, ?> leftColumnEncryptor, final EncryptAlgorithm<?, ?> rightColumnEncryptor) {
+    private static boolean isSameEncryptor(final EncryptAlgorithm leftColumnEncryptor, final EncryptAlgorithm rightColumnEncryptor) {
         if (null != leftColumnEncryptor && null != rightColumnEncryptor) {
             if (!leftColumnEncryptor.getType().equals(rightColumnEncryptor.getType())) {
                 return false;
@@ -88,7 +88,7 @@ public final class EncryptTokenGeneratorUtils {
         return null == leftColumnEncryptor && null == rightColumnEncryptor;
     }
     
-    private static EncryptAlgorithm<?, ?> getColumnEncryptor(final ColumnSegmentBoundedInfo columnBoundedInfo, final EncryptRule encryptRule) {
+    private static EncryptAlgorithm getColumnEncryptor(final ColumnSegmentBoundedInfo columnBoundedInfo, final EncryptRule encryptRule) {
         String tableName = columnBoundedInfo.getOriginalTable().getValue();
         String columnName = columnBoundedInfo.getOriginalColumn().getValue();
         if (!encryptRule.findEncryptTable(tableName).isPresent() || !encryptRule.getEncryptTable(tableName).isEncryptColumn(columnName)) {
@@ -115,12 +115,12 @@ public final class EncryptTokenGeneratorUtils {
         Iterator<Projection> projectionIterator = projections.iterator();
         while (insertColumnsIterator.hasNext()) {
             ColumnSegment columnSegment = insertColumnsIterator.next();
-            EncryptAlgorithm<?, ?> leftColumnEncryptor = getColumnEncryptor(columnSegment.getColumnBoundedInfo(), encryptRule);
+            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(columnSegment.getColumnBoundedInfo(), encryptRule);
             Projection projection = projectionIterator.next();
             ColumnSegmentBoundedInfo columnBoundedInfo = projection instanceof ColumnProjection
                     ? new ColumnSegmentBoundedInfo(null, null, ((ColumnProjection) projection).getOriginalTable(), ((ColumnProjection) projection).getOriginalColumn())
                     : new ColumnSegmentBoundedInfo(new IdentifierValue(projection.getColumnLabel()));
-            EncryptAlgorithm<?, ?> rightColumnEncryptor = getColumnEncryptor(columnBoundedInfo, encryptRule);
+            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(columnBoundedInfo, encryptRule);
             if (!isSameEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
                 return false;
             }
