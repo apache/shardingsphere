@@ -57,11 +57,6 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
     
     <build>
@@ -95,14 +90,6 @@
                                 <relocation>
                                     <pattern>org.yaml</pattern>
                                     <shadedPattern>${shade.package}.org.yaml</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.slf4j</pattern>
-                                    <shadedPattern>${shade.package}.org.slf4j</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>ch.qos.logback</pattern>
-                                    <shadedPattern>${shade.package}.ch.qos.logback</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
