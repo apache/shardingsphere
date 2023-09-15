@@ -307,9 +307,12 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         OracleCreateViewStatement result = new OracleCreateViewStatement();
+        OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor();
+        visitor.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setSelect((SelectStatement) new OracleDMLStatementVisitor().visit(ctx.select()));
         result.setViewDefinition(getOriginalText(ctx.select()));
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
