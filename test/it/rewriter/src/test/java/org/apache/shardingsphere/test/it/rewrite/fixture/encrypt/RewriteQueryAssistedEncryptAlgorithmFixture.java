@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 
-public final class RewriteQueryAssistedEncryptAlgorithmFixture implements AssistedEncryptAlgorithm<Object, String> {
+public final class RewriteQueryAssistedEncryptAlgorithmFixture implements AssistedEncryptAlgorithm {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {

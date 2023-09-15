@@ -21,9 +21,6 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 /**
  * Assisted encrypt algorithm.
- * 
- * @param <I> type of plain value
- * @param <O> type of cipher value
  */
-public interface AssistedEncryptAlgorithm<I, O> extends EncryptAlgorithm<I, O> {
+public interface AssistedEncryptAlgorithm extends EncryptAlgorithm {
 }

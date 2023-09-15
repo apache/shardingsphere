@@ -31,11 +31,11 @@ import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnIte
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
@@ -176,8 +176,8 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     }
     
     private void isSameEncryptColumn(final EncryptTable encryptTable, final String previousColumnName, final String columnName) {
-        Optional<StandardEncryptAlgorithm<?, ?>> previousEncryptor = encryptTable.findEncryptor(previousColumnName);
-        Optional<StandardEncryptAlgorithm<?, ?>> currentEncryptor = encryptTable.findEncryptor(columnName);
+        Optional<StandardEncryptAlgorithm> previousEncryptor = encryptTable.findEncryptor(previousColumnName);
+        Optional<StandardEncryptAlgorithm> currentEncryptor = encryptTable.findEncryptor(columnName);
         if (!previousEncryptor.isPresent() && !currentEncryptor.isPresent()) {
             return;
         }

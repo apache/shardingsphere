@@ -28,7 +28,7 @@ import java.util.Properties;
  * MD5 assisted encrypt algorithm.
  */
 @EqualsAndHashCode
-public final class MD5AssistedEncryptAlgorithm implements AssistedEncryptAlgorithm<Object, String> {
+public final class MD5AssistedEncryptAlgorithm implements AssistedEncryptAlgorithm {
     
     private static final String SALT_KEY = "salt";
     
