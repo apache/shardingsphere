@@ -289,6 +289,7 @@ relationalProperty
 columnDefinition
     : columnName REF? dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
     | REF LP_ columnName RP_ WITH ROWID
+    | SCOPE FOR LP_ columnName RP_ IS identifier
     ;
 
 visibleClause
@@ -715,7 +716,7 @@ rebuildClause
     ;
 
 parallelClause
-    : NOPARALLEL | PARALLEL NUMBER_?
+    : NOPARALLEL | PARALLEL (INTEGER_ | LP_ DEGREE INTEGER_ RP_)?
     ;
 
 usableSpecification
@@ -1293,6 +1294,7 @@ alterTablePartitioning
     | modifyTablePartition
     | modifyTableSubpartition
     | moveTablePartition
+    | moveTableSubPartition
     | addTablePartition
     | coalesceTablePartition
     | dropTablePartition
@@ -1422,6 +1424,10 @@ shrinkClause
 moveTablePartition
     : MOVE partitionExtendedName (MAPPING TABLE)? tablePartitionDescription? filterCondition? updateAllIndexesClause? parallelClause? allowDisallowClustering? ONLINE?
     ;
+
+moveTableSubPartition
+	: MOVE subpartitionExtendedName indexingClause? partitioningStorageClause? updateIndexClauses? filterCondition? parallelClause? allowDisallowClustering? ONLINE?
+	;
 
 filterCondition
     : INCLUDING ROWS whereClause

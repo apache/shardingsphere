@@ -1633,6 +1633,10 @@
     <alter-table sql-case-id="alter_table_add_partition_values_less_than3">
         <table name="sales" start-index="12" stop-index="16" />
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_values_less_than4">
+        <table name="shipments" start-index="12" stop-index="20" />
+    </alter-table>
     
     <alter-table sql-case-id="alter_table_modify_subpartition_drop_values">
         <table name="quarterly_regional_sales" start-index="12" stop-index="35" />
@@ -1658,10 +1662,14 @@
         <table name="sales" start-index="12" stop-index="16" />
     </alter-table>
     
-    <alter-table sql-case-id="alter_table_rename_partition">
+    <alter-table sql-case-id="alter_table_rename_partition1">
         <table name="sales" start-index="12" stop-index="16" />
     </alter-table>
-    
+
+    <alter-table sql-case-id="alter_table_rename_partition2">
+        <table name="scubagear" start-index="12" stop-index="20" />
+    </alter-table>
+
     <alter-table sql-case-id="alter_table_set_interval_expr">
         <table name="sales" start-index="12" stop-index="16" />
     </alter-table>
@@ -1671,5 +1679,27 @@
         <add-constraint constraint-name="sales_pk_jan01" start-index="30" stop-index="106">
             <primary-key-column name="sales_transaction_id" start-index="69" stop-index="88" />
         </add-constraint>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_move_subpartition_tablespace_parallel">
+        <table name="scuba_gear" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_ref_with_rowid">
+        <table name="staff" start-index="12" stop-index="16" />
+        <add-column>
+            <column-definition start-index="24" stop-index="43">
+                <column name="dept" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_scope_for_is">
+        <table name="staff" start-index="12" stop-index="16" />
+        <add-column>
+            <column-definition start-index="23" stop-index="49">
+                <column name="dept" />
+            </column-definition>
+        </add-column>
     </alter-table>
 </sql-parser-test-cases>
