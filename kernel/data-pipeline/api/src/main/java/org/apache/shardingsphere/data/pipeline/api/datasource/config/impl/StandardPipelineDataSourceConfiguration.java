@@ -64,8 +64,8 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         this(param, YamlEngine.unmarshal(param, Map.class));
     }
     
-    public StandardPipelineDataSourceConfiguration(final Map<String, Object> yamlDataSourceConfig) {
-        this(YamlEngine.marshal(yamlDataSourceConfig), new HashMap<>(yamlDataSourceConfig));
+    public StandardPipelineDataSourceConfiguration(final Map<String, Object> poolProps) {
+        this(YamlEngine.marshal(poolProps), new HashMap<>(poolProps));
     }
     
     private StandardPipelineDataSourceConfiguration(final String param, final Map<String, Object> yamlConfig) {
