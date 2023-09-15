@@ -166,8 +166,7 @@ public final class ColumnSegmentBinder {
             return Optional.empty();
         }
         if (pivotColumnNames.contains(segment.getIdentifier().getValue().toLowerCase())) {
-            ColumnSegment result = new ColumnSegment(0, 0, segment.getIdentifier());
-            return Optional.of(result);
+            return Optional.of(new ColumnSegment(0, 0, segment.getIdentifier()));
         }
         return Optional.empty();
     }

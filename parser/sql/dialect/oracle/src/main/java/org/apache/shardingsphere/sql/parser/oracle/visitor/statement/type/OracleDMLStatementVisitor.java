@@ -95,6 +95,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Subque
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SubqueryFactoringClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableCollectionExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnpivotClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UpdateSetClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UpdateSetColumnClauseContext;
@@ -435,6 +436,19 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             });
         }
         return new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), pivotForColumn, pivotInColumns);
+    }
+    
+    @Override
+    public ASTNode visitUnpivotClause(final UnpivotClauseContext ctx) {
+        ColumnSegment unpivotColumn = (ColumnSegment) visitColumnName(ctx.columnName());
+        ColumnSegment unpivotForColumn = (ColumnSegment) visitColumnName(ctx.pivotForClause().columnName());
+        Collection<ColumnSegment> unpivotInColumns = new LinkedList<>();
+        if (null != ctx.unpivotInClause()) {
+            ctx.unpivotInClause().unpivotInClauseExpr().forEach(each -> unpivotInColumns.add((ColumnSegment) visit(each.columnName())));
+        }
+        PivotSegment result = new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), unpivotForColumn, unpivotInColumns, true);
+        result.setUnpivotColumn(unpivotColumn);
+        return result;
     }
     
     @Override
@@ -1036,6 +1050,15 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         ASTNode result = visit(ctx.queryTableExpr());
         if (null != ctx.pivotClause()) {
             PivotSegment pivotClause = (PivotSegment) visit(ctx.pivotClause());
+            if (result instanceof SubqueryTableSegment) {
+                ((SubqueryTableSegment) result).setPivot(pivotClause);
+            }
+            if (result instanceof SimpleTableSegment) {
+                ((SimpleTableSegment) result).setPivot(pivotClause);
+            }
+        }
+        if (null != ctx.unpivotClause()) {
+            PivotSegment pivotClause = (PivotSegment) visit(ctx.unpivotClause());
             if (result instanceof SubqueryTableSegment) {
                 ((SubqueryTableSegment) result).setPivot(pivotClause);
             }

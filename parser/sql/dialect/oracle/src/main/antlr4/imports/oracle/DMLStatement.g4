@@ -535,7 +535,11 @@ unpivotClause
     ;
 
 unpivotInClause
-    : IN LP_ (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))? (COMMA_ (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))?)* RP_
+    : IN LP_ unpivotInClauseExpr (COMMA_ unpivotInClauseExpr)* RP_
+    ;
+
+unpivotInClauseExpr
+    : (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))?
     ;
 
 sampleClause

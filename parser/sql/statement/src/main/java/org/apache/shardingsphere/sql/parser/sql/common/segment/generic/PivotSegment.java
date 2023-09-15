@@ -19,10 +19,12 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Pivot segment.
@@ -38,4 +40,31 @@ public final class PivotSegment implements SQLSegment {
     private final ColumnSegment pivotForColumn;
     
     private final Collection<ColumnSegment> pivotInColumns;
+    
+    private final boolean isUnPivot;
+    
+    @Setter
+    private ColumnSegment unpivotColumn;
+    
+    public PivotSegment(final int startIndex, final int stopIndex, final ColumnSegment pivotForColumn, final Collection<ColumnSegment> pivotInColumns) {
+        this.startIndex = startIndex;
+        this.stopIndex = stopIndex;
+        this.pivotForColumn = pivotForColumn;
+        this.pivotInColumns = pivotInColumns;
+        this.isUnPivot = false;
+    }
+
+    /**
+     * Get pivot columns.
+     * 
+     * @return pivot columns
+     */
+    public Collection<ColumnSegment> getPivotColumns() {
+        Collection<ColumnSegment> result = new HashSet<>(pivotInColumns);
+        result.add(pivotForColumn);
+        if (null != unpivotColumn) {
+            result.add(unpivotColumn);
+        }
+        return result;
+    }
 }
