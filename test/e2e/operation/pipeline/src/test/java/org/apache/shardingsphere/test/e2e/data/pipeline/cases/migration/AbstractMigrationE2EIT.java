@@ -165,7 +165,7 @@ public abstract class AbstractMigrationE2EIT {
                 continue;
             }
             List<String> checkEndTimeList = resultList.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
-            Set<String> finishedPercentages = resultList.stream().map(map -> map.get("finished_percentage").toString()).collect(Collectors.toSet());
+            Set<String> finishedPercentages = resultList.stream().map(map -> map.get("inventory_finished_percentage").toString()).collect(Collectors.toSet());
             if (checkEndTimeList.size() == resultList.size() && 1 == finishedPercentages.size() && finishedPercentages.contains("100")) {
                 break;
             } else {
@@ -176,7 +176,7 @@ public abstract class AbstractMigrationE2EIT {
         assertFalse(resultList.isEmpty());
         for (Map<String, Object> each : resultList) {
             assertTrue(Boolean.parseBoolean(each.get("result").toString()), String.format("%s check result is false", each.get("tables")));
-            assertThat("finished_percentage is not 100", each.get("finished_percentage").toString(), is("100"));
+            assertThat("inventory_finished_percentage is not 100", each.get("inventory_finished_percentage").toString(), is("100"));
         }
     }
     

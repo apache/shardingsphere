@@ -72,7 +72,7 @@ class MigrationDataConsistencyCheckerTest {
     }
     
     private ConsistencyCheckJobItemProgressContext createConsistencyCheckJobItemProgressContext() {
-        return new ConsistencyCheckJobItemProgressContext("", 0);
+        return new ConsistencyCheckJobItemProgressContext("", 0, "H2");
     }
     
     private MigrationJobConfiguration createJobConfiguration() throws SQLException {

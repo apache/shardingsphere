@@ -43,7 +43,7 @@ class ConsistencyCheckJobItemContextTest {
     void assertConstructWithoutTableCheckPositions() {
         Map<String, Object> sourceTableCheckPositions = Collections.emptyMap();
         Map<String, Object> targetTableCheckPositions = Collections.emptyMap();
-        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(TABLE, null, 0L, 10L, null, null, sourceTableCheckPositions, targetTableCheckPositions);
+        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(TABLE, null, 0L, 10L, null, null, sourceTableCheckPositions, targetTableCheckPositions, "H2");
         ConsistencyCheckJobItemContext actual = new ConsistencyCheckJobItemContext(new ConsistencyCheckJobConfiguration("", "", "DATA_MATCH", null, databaseType),
                 0, JobStatus.RUNNING, jobItemProgress);
         verifyProgressContext(actual.getProgressContext(), 0, sourceTableCheckPositions, targetTableCheckPositions);
@@ -53,7 +53,7 @@ class ConsistencyCheckJobItemContextTest {
     void assertConstructWithTableCheckPositions() {
         Map<String, Object> sourceTableCheckPositions = ImmutableMap.of(TABLE, 6);
         Map<String, Object> targetTableCheckPositions = ImmutableMap.of(TABLE, 5);
-        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(TABLE, null, 0L, 10L, null, null, sourceTableCheckPositions, targetTableCheckPositions);
+        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(TABLE, null, 0L, 10L, null, null, sourceTableCheckPositions, targetTableCheckPositions, "H2");
         ConsistencyCheckJobItemContext actual = new ConsistencyCheckJobItemContext(new ConsistencyCheckJobConfiguration("", "", "DATA_MATCH", null, databaseType),
                 0, JobStatus.RUNNING, jobItemProgress);
         verifyProgressContext(actual.getProgressContext(), 1, sourceTableCheckPositions, targetTableCheckPositions);

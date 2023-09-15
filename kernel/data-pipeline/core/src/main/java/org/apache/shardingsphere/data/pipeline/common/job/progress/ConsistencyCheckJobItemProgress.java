@@ -52,4 +52,6 @@ public final class ConsistencyCheckJobItemProgress implements PipelineJobItemPro
     private final Map<String, Object> sourceTableCheckPositions;
     
     private final Map<String, Object> targetTableCheckPositions;
+    
+    private final String sourceDatabaseType;
 }

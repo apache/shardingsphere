@@ -87,8 +87,9 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         progressContext.getTableNames().addAll(sourceTableNames);
         progressContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
         Map<SchemaTableName, TableDataConsistencyCheckResult> result = new LinkedHashMap<>();
-        TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps);
-        try (PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager()) {
+        try (
+                PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+                TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps)) {
             for (JobDataNodeLine each : jobConfig.getJobShardingDataNodes()) {
                 checkTableInventoryData(each, tableChecker, result, dataSourceManager);
             }
