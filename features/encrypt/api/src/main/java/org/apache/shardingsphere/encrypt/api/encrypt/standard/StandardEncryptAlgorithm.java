@@ -22,11 +22,8 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 /**
  * Standard encrypt algorithm.
- * 
- * @param <I> type of plain value
- * @param <O> type of cipher value
  */
-public interface StandardEncryptAlgorithm<I, O> extends EncryptAlgorithm<I, O> {
+public interface StandardEncryptAlgorithm extends EncryptAlgorithm {
     
     /**
      * Decrypt.
@@ -35,5 +32,5 @@ public interface StandardEncryptAlgorithm<I, O> extends EncryptAlgorithm<I, O> {
      * @param encryptContext encrypt context
      * @return plain value
      */
-    I decrypt(O cipherValue, EncryptContext encryptContext);
+    Object decrypt(Object cipherValue, EncryptContext encryptContext);
 }
