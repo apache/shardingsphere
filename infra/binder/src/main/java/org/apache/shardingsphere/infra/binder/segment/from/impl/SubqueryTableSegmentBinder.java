@@ -57,12 +57,12 @@ public final class SubqueryTableSegmentBinder {
      */
     public static SubqueryTableSegment bind(final SubqueryTableSegment segment, final SQLStatementBinderContext statementBinderContext,
                                             final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        fillPivotColumnNamesInBinderContext(segment, statementBinderContext);
         SelectStatement boundedSelect = new SelectStatementBinder().bindCorrelateSubquery(segment.getSubquery().getSelect(), statementBinderContext.getMetaData(),
                 statementBinderContext.getDefaultDatabaseName(), outerTableBinderContexts, statementBinderContext.getExternalTableBinderContexts());
         SubquerySegment boundedSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundedSelect);
         boundedSubquerySegment.setSubqueryType(segment.getSubquery().getSubqueryType());
         SubqueryTableSegment result = new SubqueryTableSegment(boundedSubquerySegment);
-        fillPivotColumnNamesInBinderContext(segment, statementBinderContext);
         segment.getAliasSegment().ifPresent(result::setAlias);
         IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
         tableBinderContexts.put(subqueryTableName.getValue().toLowerCase(),
@@ -71,11 +71,7 @@ public final class SubqueryTableSegmentBinder {
     }
     
     private static void fillPivotColumnNamesInBinderContext(final SubqueryTableSegment segment, final SQLStatementBinderContext statementBinderContext) {
-        segment.getPivot().ifPresent(optional -> {
-            for (ColumnSegment each : optional.getPivotInColumns()) {
-                statementBinderContext.getPivotColumnNames().add(each.getIdentifier().getValue().toLowerCase());
-            }
-        });
+        segment.getPivot().ifPresent(optional -> optional.getPivotColumns().forEach(each -> statementBinderContext.getPivotColumnNames().add(each.getIdentifier().getValue().toLowerCase())));
     }
     
     private static Collection<ProjectionSegment> createSubqueryProjections(final Collection<ProjectionSegment> projections, final IdentifierValue subqueryTableName) {
