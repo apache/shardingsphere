@@ -310,7 +310,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor();
         visitor.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
-        result.setSelect((SelectStatement) new OracleDMLStatementVisitor().visit(ctx.select()));
+        result.setSelect((SelectStatement) visitor.visit(ctx.select()));
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
