@@ -19,6 +19,10 @@ lexer grammar OracleKeyword;
 
 import Alphabet;
 
+BEQUEATH
+    : B E Q U E A T H
+    ;
+
 BINARY
     : B I N A R Y
     ;

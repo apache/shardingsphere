@@ -95,6 +95,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSynonymContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTablespaceContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DisassociateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropClusterContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropColumnClauseContext;
@@ -179,6 +180,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAnalyticViewStatement;
@@ -248,6 +250,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateVarrayTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropClusterStatement;
@@ -300,6 +303,18 @@ import java.util.stream.Collectors;
  * DDL statement visitor for Oracle.
  */
 public final class OracleDDLStatementVisitor extends OracleStatementVisitor implements DDLStatementVisitor {
+    
+    @Override
+    public ASTNode visitCreateView(final CreateViewContext ctx) {
+        OracleCreateViewStatement result = new OracleCreateViewStatement();
+        OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor();
+        visitor.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        result.setSelect((SelectStatement) visitor.visit(ctx.select()));
+        result.setViewDefinition(getOriginalText(ctx.select()));
+        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        return result;
+    }
     
     @SuppressWarnings("unchecked")
     @Override
