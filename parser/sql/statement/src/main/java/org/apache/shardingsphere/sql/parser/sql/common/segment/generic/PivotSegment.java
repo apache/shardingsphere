@@ -53,7 +53,7 @@ public final class PivotSegment implements SQLSegment {
         this.pivotInColumns = pivotInColumns;
         this.isUnPivot = false;
     }
-
+    
     /**
      * Get pivot columns.
      * 
