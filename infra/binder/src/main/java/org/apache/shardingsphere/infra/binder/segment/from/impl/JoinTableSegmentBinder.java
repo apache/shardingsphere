@@ -58,17 +58,19 @@ public final class JoinTableSegmentBinder {
      * @param segment join table segment
      * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
+     * @param outerTableBinderContexts outer table binder contexts
      * @return bounded join table segment
      */
-    public static JoinTableSegment bind(final JoinTableSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+    public static JoinTableSegment bind(final JoinTableSegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> tableBinderContexts,
+                                        final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
         JoinTableSegment result = new JoinTableSegment();
         result.setStartIndex(segment.getStartIndex());
         result.setStopIndex(segment.getStopIndex());
         segment.getAliasSegment().ifPresent(result::setAlias);
-        result.setLeft(TableSegmentBinder.bind(segment.getLeft(), statementBinderContext, tableBinderContexts));
+        result.setLeft(TableSegmentBinder.bind(segment.getLeft(), statementBinderContext, tableBinderContexts, outerTableBinderContexts));
         result.setNatural(segment.isNatural());
         result.setJoinType(segment.getJoinType());
-        result.setRight(TableSegmentBinder.bind(segment.getRight(), statementBinderContext, tableBinderContexts));
+        result.setRight(TableSegmentBinder.bind(segment.getRight(), statementBinderContext, tableBinderContexts, outerTableBinderContexts));
         result.setCondition(ExpressionSegmentBinder.bind(segment.getCondition(), SegmentType.JOIN_ON, statementBinderContext, tableBinderContexts, Collections.emptyMap()));
         result.setUsing(bindUsingColumns(segment.getUsing(), tableBinderContexts));
         result.getUsing().forEach(each -> statementBinderContext.getUsingColumnNames().add(each.getIdentifier().getValue().toLowerCase()));
@@ -146,9 +148,9 @@ public final class JoinTableSegmentBinder {
     }
     
     private static Collection<ProjectionSegment> getProjectionSegmentsByTableAliasOrName(final Map<String, TableSegmentBinderContext> tableBinderContexts, final String tableAliasOrName) {
-        ShardingSpherePreconditions.checkState(tableBinderContexts.containsKey(tableAliasOrName),
+        ShardingSpherePreconditions.checkState(tableBinderContexts.containsKey(tableAliasOrName.toLowerCase()),
                 () -> new IllegalStateException(String.format("Can not find table binder context by table alias or name %s.", tableAliasOrName)));
-        return tableBinderContexts.get(tableAliasOrName).getProjectionSegments();
+        return tableBinderContexts.get(tableAliasOrName.toLowerCase()).getProjectionSegments();
     }
     
     private static Map<String, ProjectionSegment> getUsingColumnsByNaturalJoin(final JoinTableSegment segment, final Map<String, TableSegmentBinderContext> tableBinderContexts) {

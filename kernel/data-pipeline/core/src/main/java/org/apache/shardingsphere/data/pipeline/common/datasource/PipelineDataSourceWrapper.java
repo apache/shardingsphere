@@ -21,12 +21,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
@@ -40,6 +42,17 @@ public final class PipelineDataSourceWrapper implements DataSource, AutoCloseabl
     private final DataSource dataSource;
     
     private final DatabaseType databaseType;
+    
+    private final AtomicBoolean closed = new AtomicBoolean(false);
+    
+    /**
+     * Whether underlying data source is closed or not.
+     *
+     * @return true if closed
+     */
+    public boolean isClosed() {
+        return closed.get();
+    }
     
     @Override
     public Connection getConnection() throws SQLException {
@@ -88,21 +101,20 @@ public final class PipelineDataSourceWrapper implements DataSource, AutoCloseabl
     
     @Override
     public void close() throws SQLException {
-        if (null == dataSource) {
+        if (closed.get()) {
             return;
         }
-        if (dataSource instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) dataSource).close();
-            } catch (final SQLException ex) {
-                throw ex;
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                throw new SQLException("data source close failed.", ex);
-            }
-        } else {
-            log.warn("dataSource is not closed, it might cause connection leak, dataSource={}", dataSource);
+        if (!(dataSource instanceof AutoCloseable)) {
+            log.warn("Data source is not closed, it might cause connection leak, data source: {}", dataSource);
+            return;
+        }
+        try {
+            new DataSourcePoolDestroyer(dataSource).asyncDestroy();
+            closed.set(true);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            throw new SQLException("Data source close failed.", ex);
         }
     }
 }

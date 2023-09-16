@@ -34,7 +34,7 @@ import java.util.Properties;
  */
 @SPIDescription("Match raw data of records.")
 @Slf4j
-public final class DataMatchTableDataConsistencyChecker extends MatchingTableDataConsistencyChecker {
+public final class DataMatchTableDataConsistencyChecker implements TableDataConsistencyChecker {
     
     private static final String CHUNK_SIZE_KEY = "chunk-size";
     
@@ -65,8 +65,8 @@ public final class DataMatchTableDataConsistencyChecker extends MatchingTableDat
     }
     
     @Override
-    protected SingleTableInventoryCalculator buildSingleTableInventoryCalculator() {
-        return new RecordSingleTableInventoryCalculator(chunkSize);
+    public TableInventoryChecker buildTableInventoryChecker(final TableInventoryCheckParameter param) {
+        return new DataMatchTableInventoryChecker(param, chunkSize);
     }
     
     @Override
@@ -75,7 +75,26 @@ public final class DataMatchTableDataConsistencyChecker extends MatchingTableDat
     }
     
     @Override
+    public void close() {
+    }
+    
+    @Override
     public String getType() {
         return "DATA_MATCH";
+    }
+    
+    private static final class DataMatchTableInventoryChecker extends MatchingTableInventoryChecker {
+        
+        private final int chunkSize;
+        
+        DataMatchTableInventoryChecker(final TableInventoryCheckParameter param, final int chunkSize) {
+            super(param);
+            this.chunkSize = chunkSize;
+        }
+        
+        @Override
+        protected SingleTableInventoryCalculator buildSingleTableInventoryCalculator() {
+            return new RecordSingleTableInventoryCalculator(chunkSize);
+        }
     }
 }

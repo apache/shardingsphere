@@ -110,16 +110,4 @@ class PipelineDataSourceWrapperTest {
         doThrow(new SQLException("")).when(dataSource).setLogWriter(printWriter);
         assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).setLogWriter(printWriter));
     }
-    
-    @Test
-    void assertCloseExceptionFailure() throws Exception {
-        doThrow(new Exception("")).when((AutoCloseable) dataSource).close();
-        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).close());
-    }
-    
-    @Test
-    void assertCloseSQLExceptionFailure() throws Exception {
-        doThrow(new SQLException("")).when((AutoCloseable) dataSource).close();
-        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).close());
-    }
 }

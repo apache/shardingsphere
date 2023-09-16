@@ -35,15 +35,21 @@ public final class ConsistencyCheckJobItemInfo {
     
     private String checkFailedTableNames;
     
-    private int finishedPercentage;
+    private int inventoryFinishedPercentage;
     
-    private long remainingSeconds;
+    private long inventoryRemainingSeconds;
+    
+    private String incrementalIdleSeconds = "";
     
     private String checkBeginTime;
     
     private String checkEndTime;
     
     private long durationSeconds;
+    
+    private String algorithmType;
+    
+    private String algorithmProps;
     
     private String errorMessage;
 }

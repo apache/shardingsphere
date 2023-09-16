@@ -42,8 +42,8 @@ public final class SubquerySegmentBinder {
      * @return bounded subquery segment
      */
     public static SubquerySegment bind(final SubquerySegment segment, final SQLStatementBinderContext statementBinderContext, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        SelectStatement boundedSelectStatement =
-                new SelectStatementBinder().bindCorrelateSubquery(segment.getSelect(), statementBinderContext.getMetaData(), statementBinderContext.getDefaultDatabaseName(), outerTableBinderContexts);
+        SelectStatement boundedSelectStatement = new SelectStatementBinder().bindCorrelateSubquery(segment.getSelect(), statementBinderContext.getMetaData(),
+                statementBinderContext.getDefaultDatabaseName(), outerTableBinderContexts, statementBinderContext.getExternalTableBinderContexts());
         SubquerySegment result = new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), boundedSelectStatement);
         result.setSubqueryType(segment.getSubqueryType());
         return result;

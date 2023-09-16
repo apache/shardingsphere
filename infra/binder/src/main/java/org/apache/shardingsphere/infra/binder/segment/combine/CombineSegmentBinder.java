@@ -41,8 +41,10 @@ public final class CombineSegmentBinder {
     public static CombineSegment bind(final CombineSegment segment, final SQLStatementBinderContext statementBinderContext) {
         ShardingSphereMetaData metaData = statementBinderContext.getMetaData();
         String defaultDatabaseName = statementBinderContext.getDefaultDatabaseName();
-        SelectStatement boundedLeftSelect = new SelectStatementBinder().bind(segment.getLeft(), metaData, defaultDatabaseName);
-        SelectStatement boundedRightSelect = new SelectStatementBinder().bind(segment.getRight(), metaData, defaultDatabaseName);
+        SelectStatement boundedLeftSelect = new SelectStatementBinder().bindWithExternalTableContexts(segment.getLeft(), metaData, defaultDatabaseName,
+                statementBinderContext.getExternalTableBinderContexts());
+        SelectStatement boundedRightSelect = new SelectStatementBinder().bindWithExternalTableContexts(segment.getRight(), metaData, defaultDatabaseName,
+                statementBinderContext.getExternalTableBinderContexts());
         return new CombineSegment(segment.getStartIndex(), segment.getStopIndex(), boundedLeftSelect, segment.getCombineType(), boundedRightSelect);
     }
 }

@@ -47,7 +47,7 @@ public final class AddResourceTestCase extends BaseTransactionTestCase {
     
     private void assertAddResource(final TransactionContainerComposer containerComposer) throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
-            getBaseTransactionITCase().addResource(connection, "transaction_it_2", containerComposer);
+            getBaseTransactionITCase().addResource(connection, "ds_2", containerComposer);
             createThreeDataSourceAccountTableRule(connection);
             reCreateAccountTable(connection);
             assertRollback();

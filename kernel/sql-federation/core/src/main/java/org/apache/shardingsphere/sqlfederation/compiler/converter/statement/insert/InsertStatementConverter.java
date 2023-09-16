@@ -99,7 +99,7 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
     private SqlNodeList convertColumn(final Collection<ColumnSegment> columnSegments) {
         List<SqlNode> columns = columnSegments.stream().map(each -> new ColumnConverter().convert(each).orElseThrow(IllegalStateException::new)).collect(Collectors.toList());
         if (columns.isEmpty()) {
-            return null;
+            return SqlNodeList.EMPTY;
         }
         return new SqlNodeList(columns, SqlParserPos.ZERO);
     }

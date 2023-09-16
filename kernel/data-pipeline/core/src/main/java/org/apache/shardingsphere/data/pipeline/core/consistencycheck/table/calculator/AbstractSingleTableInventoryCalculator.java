@@ -49,7 +49,6 @@ public abstract class AbstractSingleTableInventoryCalculator implements SingleTa
             log.info("cancel, statement is null or closed");
             return;
         }
-        long startTimeMillis = System.currentTimeMillis();
         try {
             statement.cancel();
         } catch (final SQLFeatureNotSupportedException ex) {
@@ -59,7 +58,6 @@ public abstract class AbstractSingleTableInventoryCalculator implements SingleTa
             // CHECKSTYLE:ON
             log.info("cancel failed: {}", ex.getMessage());
         }
-        log.info("cancel cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     /**

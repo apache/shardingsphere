@@ -17,7 +17,16 @@
 
 grammar DDLStatement;
 
-import BaseRule, DCLStatement;
+import BaseRule, DCLStatement, DMLStatement;
+
+createView
+    : CREATE (OR REPLACE)? (NO? FORCE)? (EDITIONING | EDITIONABLE EDITIONING? | NONEDITIONABLE)? VIEW viewName
+    ( SHARING EQ_ (METADATA | DATA | EXTENDED DATA | NONE))?
+    ( LP_ (alias (VISIBLE | INVISIBLE)? inlineConstraint* (COMMA_ alias (VISIBLE | INVISIBLE)? inlineConstraint*)*
+    | outOfLineConstraint) RP_ | objectViewClause | xmlTypeViewClause)?
+    ( DEFAULT COLLATION collationName)? (BEQUEATH (CURRENT_USER | DEFINER))? AS select subqueryRestrictionClause?
+    ( CONTAINER_MAP | CONTAINERS_DEFAULT)?
+    ;
 
 createTable
     : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
@@ -45,6 +54,11 @@ objectBaseTypeDef
 
 objectTypeDef
     : OBJECT LP_ dataTypeDefinition (COMMA_ dataTypeDefinition)* RP_ finalClause? instantiableClause? persistableClause?
+    ;
+
+objectViewClause
+    : OF typeName (WITH OBJECT (IDENTIFIER | ID) (DEFAULT | LP_ attribute (COMMA_ attribute)* RP_) | UNDER (schemaName DOT_)? superview)
+    ( LP_ outOfLineConstraint | attribute inlineConstraint* (COMMA_ outOfLineConstraint | attribute inlineConstraint*)* RP_)?
     ;
 
 finalClause
@@ -178,7 +192,11 @@ createSharingClause
     ;
 
 createDefinitionClause
-    : createRelationalTableClause | createObjectTableClause | createXMLTypeTableClause
+    : createRelationalTableClause | createObjectTableClause | createTableAsSelectClause | createXMLTypeTableClause
+    ;
+
+createTableAsSelectClause
+    : AS selectSubquery
     ;
 
 createXMLTypeTableClause
@@ -209,6 +227,15 @@ xmlSchemaSpecClause
 
 xmlTypeVirtualColumnsClause
     : VIRTUAL COLUMNS LP_ (columnName AS LP_ expr RP_ (COMMA_ columnName AS LP_ expr RP_)+) RP_
+    ;
+
+xmlTypeViewClause
+    : OF XMLTYPE xmlSchemaSpec? WITH OBJECT (IDENTIFIER | ID) (DEFAULT | LP_ expr (COMMA_ expr)* RL_)
+    ;
+
+xmlSchemaSpec
+    : (XMLSCHEMA xmlSchemaURLName)? ELEMENT (elementName | xmlSchemaURLName POUND_ elementName)
+    ( STORE ALL VARRAYS AS (LOBS | TABLES))? ((ALLOW | DISALLOW) NONSCHEMA)? ((ALLOW | DISALLOW) ANYSCHEMA)?
     ;
 
 oidClause
@@ -260,8 +287,9 @@ relationalProperty
     ;
 
 columnDefinition
-    : columnName dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
+    : columnName REF? dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
     | REF LP_ columnName RP_ WITH ROWID
+    | SCOPE FOR LP_ columnName RP_ IS identifier
     ;
 
 visibleClause
@@ -296,7 +324,7 @@ identityOption
     ;
 
 encryptionSpecification
-    : (USING STRING_)? (IDENTIFIED BY STRING_)? (integrityAlgorithm? (NO? SALT)? | (NO? SALT)? integrityAlgorithm?)   
+    : (USING STRING_)? (IDENTIFIED BY STRING_)? (integrityAlgorithm? (NO? SALT)? | (NO? SALT)? integrityAlgorithm?)
     ;
 
 inlineConstraint
@@ -440,7 +468,7 @@ dropSynonym
     ;
 
 columnClauses
-    : operateColumnClause+ | renameColumnClause
+    : operateColumnClause+ | renameColumnClause | modifyCollectionRetrieval
     ;
 
 operateColumnClause
@@ -509,6 +537,10 @@ checkpointNumber
 
 renameColumnClause
     : RENAME COLUMN columnName TO columnName
+    ;
+
+modifyCollectionRetrieval
+    : MODIFY NESTED TABLE tableName RETURN AS (LOCATOR | VALUE)
     ;
 
 moveTableClause
@@ -684,7 +716,7 @@ rebuildClause
     ;
 
 parallelClause
-    : NOPARALLEL | PARALLEL NUMBER_?
+    : NOPARALLEL | PARALLEL (INTEGER_ | LP_ DEGREE INTEGER_ RP_)?
     ;
 
 usableSpecification
@@ -716,9 +748,7 @@ commitClause
     ;
 
 physicalProperties
-    : deferredSegmentCreation? segmentAttributesClause? tableCompression? inmemoryTableClause? ilmClause?
-    | deferredSegmentCreation? (organizationClause?|externalPartitionClause?)
-    | clusterClause
+    : (deferredSegmentCreation? segmentAttributesClause tableCompression? inmemoryTableClause? ilmClause? | deferredSegmentCreation? (organizationClause | externalPartitionClause) | clusterClause)
     ;
 
 deferredSegmentCreation
@@ -950,10 +980,8 @@ varrayColProperties
     ;
 
 nestedTableColProperties
-    : NESTED TABLE 
-    (nestedItem | COLUMN_VALUE) substitutableColumnClause? (LOCAL | GLOBAL)? STORE AS storageTable 
-    LP_ (LP_ objectProperties RP_ | physicalProperties | columnProperties) RP_ 
-    (RETURN AS? (LOCATOR | VALUE))?
+    : NESTED TABLE (nestedItem | COLUMN_VALUE) substitutableColumnClause? (LOCAL | GLOBAL)? STORE AS storageTable
+    ( LP_ (LP_ objectProperties RP_ | physicalProperties | columnProperties)+ RP_)? (RETURN AS? (LOCATOR | VALUE))?
     ;
 
 lobStorageClause
@@ -1266,9 +1294,12 @@ alterTablePartitioning
     | modifyTablePartition
     | modifyTableSubpartition
     | moveTablePartition
+    | moveTableSubPartition
     | addTablePartition
     | coalesceTablePartition
     | dropTablePartition
+    | renamePartitionSubpart
+    | alterIntervalPartitioning
     ;
 
 modifyTableDefaultAttrs
@@ -1394,6 +1425,10 @@ moveTablePartition
     : MOVE partitionExtendedName (MAPPING TABLE)? tablePartitionDescription? filterCondition? updateAllIndexesClause? parallelClause? allowDisallowClustering? ONLINE?
     ;
 
+moveTableSubPartition
+	: MOVE subpartitionExtendedName indexingClause? partitioningStorageClause? updateIndexClauses? filterCondition? parallelClause? allowDisallowClustering? ONLINE?
+	;
+
 filterCondition
     : INCLUDING ROWS whereClause
     ;
@@ -1439,6 +1474,14 @@ addHashPartitionClause
 
 dropTablePartition
     : DROP partitionExtendedNames (updateIndexClauses parallelClause?)?
+    ;
+
+renamePartitionSubpart
+    : RENAME (partitionExtendedName | subpartitionExtendedName) TO newName
+    ;
+
+alterIntervalPartitioning
+    : SET INTERVAL LP_ expr? RP_ | SET STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_
     ;
 
 partitionExtendedNames
@@ -2150,7 +2193,7 @@ scopeClause
 
 analyze
     : (ANALYZE ((TABLE tableName| INDEX indexName) partitionExtensionClause? | CLUSTER clusterName))
-    (validationClauses | LIST CHAINED ROWS intoClause? | DELETE SYSTEM? STATISTICS)
+    (validationClauses | LIST CHAINED ROWS intoTableClause? | DELETE SYSTEM? STATISTICS)
     ;
 
 partitionExtensionClause
@@ -2160,10 +2203,10 @@ partitionExtensionClause
 
 validationClauses
     : VALIDATE REF UPDATE (SET DANGLING TO NULL)?
-    | VALIDATE STRUCTURE (CASCADE (FAST | COMPLETE? (OFFLINE | ONLINE) intoClause?)?)?
+    | VALIDATE STRUCTURE (CASCADE (FAST | COMPLETE? (OFFLINE | ONLINE) intoTableClause?)?)?
     ;
 
-intoClause
+intoTableClause
     : INTO tableName
     ;
 
@@ -2586,29 +2629,20 @@ alterAttributeDimension
     ;
 
 createSequence
-    : CREATE SEQUENCE (schemaName DOT_)? sequenceName (SHARING EQ_ (METADATA | DATA | NONE))? createSequenceClause+
+    : CREATE SEQUENCE (schemaName DOT_)? sequenceName (SHARING EQ_ (METADATA | DATA | NONE))? createSequenceClause*
     ;
 
 createSequenceClause
     : (INCREMENT BY | START WITH) INTEGER_
-    | MAXVALUE INTEGER_
-    | NOMAXVALUE
-    | MINVALUE INTEGER_
-    | NOMINVALUE
-    | CYCLE
-    | NOCYCLE
-    | CACHE INTEGER_
-    | NOCACHE
-    | ORDER
-    | NOORDER
-    | KEEP
-    | NOKEEP
-    | SCALE (EXTEND | NOEXTEND)
-    | NOSCALE
-    | SHARD (EXTEND | NOEXTEND)
-    | NOSHARD
-    | SESSION
-    | GLOBAL
+    | (MAXVALUE INTEGER_ | NOMAXVALUE)
+    | (MINVALUE INTEGER_ | NOMINVALUE)
+    | (CYCLE | NOCYCLE)
+    | (CACHE INTEGER_ | NOCACHE)
+    | (ORDER | NOORDER)
+    | (KEEP | NOKEEP)
+    | (SCALE (EXTEND | NOEXTEND) | NOSCALE)
+    | (SHARD (EXTEND | NOEXTEND) | NOSHARD)
+    | (SESSION | GLOBAL)
     ;
 
 alterSequence
@@ -3631,7 +3665,7 @@ pdbUnplugEncrypt
 
 pdbSettingsClauses
     : pdbName? pdbSettingClause
-    | CONTAINERS containersClause
+    | CONTAINERS (DEFAULT TARGET EQ_ ((LP_ containerName RP_) | NONE) | HOST EQ_ hostName | PORT EQ_ NUMBER_)
     ;
 
 pdbSettingClause
@@ -3648,12 +3682,6 @@ pdbSettingClause
     | pdbRefreshModeClause
     | REFRESH pdbRefreshSwitchoverClause?
     | SET CONTAINER_MAP EQ_ mapObject
-    ;
-
-containersClause
-    : DEFAULT TARGET EQ_ ((LP_ containerName RP_) | NONE)
-    | HOST EQ_ hostName
-    | PORT EQ_ NUMBER_
     ;
 
 pdbStorageClause

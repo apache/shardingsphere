@@ -60,9 +60,10 @@ class PostgreSQLMetaDataLoaderTest {
     
     private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname, schemaname FROM pg_indexes WHERE schemaname IN ('public')";
     
-    private static final String ADVANCE_INDEX_META_DATA_SQL = "SELECT idx.relname as index_name, insp.nspname as index_schema, tbl.relname as table_name, pgi.indisunique as is_unique"
-            + " FROM pg_index pgi JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
-            + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace WHERE tnsp.nspname IN ('public')";
+    private static final String ADVANCE_INDEX_META_DATA_SQL =
+            "SELECT idx.relname as index_name, insp.nspname as index_schema, tbl.relname as table_name, att.attname AS column_name, pgi.indisunique as is_unique"
+                    + " FROM pg_index pgi JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
+                    + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = ANY(pgi.indkey) WHERE tnsp.nspname IN ('public')";
     
     private static final String BASIC_CONSTRAINT_META_DATA_SQL = "SELECT tc.table_schema,tc.table_name,tc.constraint_name,pgo.relname refer_table_name FROM information_schema.table_constraints tc "
             + "JOIN pg_constraint pgc ON tc.constraint_name = pgc.conname AND contype='f' "
@@ -176,6 +177,7 @@ class PostgreSQLMetaDataLoaderTest {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
         when(result.getString("table_name")).thenReturn("tbl");
+        when(result.getString("column_name")).thenReturn("id");
         when(result.getString("index_name")).thenReturn("id");
         when(result.getString("index_schema")).thenReturn("public");
         when(result.getBoolean("is_unique")).thenReturn(true);
@@ -209,6 +211,7 @@ class PostgreSQLMetaDataLoaderTest {
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
         IndexMetaData indexMetaData = new IndexMetaData("id");
         indexMetaData.setUnique(true);
+        indexMetaData.getColumns().add("id");
         assertThat(indexesIterator.next(), is(indexMetaData));
         assertThat(actualTableMetaData.getConstraints().size(), is(1));
         Iterator<ConstraintMetaData> constrainsIterator = actualTableMetaData.getConstraints().iterator();

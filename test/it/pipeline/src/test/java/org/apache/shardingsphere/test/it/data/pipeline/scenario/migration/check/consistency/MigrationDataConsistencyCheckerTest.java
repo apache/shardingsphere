@@ -65,14 +65,14 @@ class MigrationDataConsistencyCheckerTest {
         governanceRepositoryAPI.persistJobItemProgress(jobConfig.getJobId(), 0, "");
         Map<String, TableDataConsistencyCheckResult> actual = new MigrationDataConsistencyChecker(jobConfig, new MigrationProcessContext(jobConfig.getJobId(), null),
                 createConsistencyCheckJobItemProgressContext()).check("FIXTURE", null);
-        String checkKey = "ds_0.t_order";
+        String checkKey = "t_order";
         assertTrue(actual.get(checkKey).getCountCheckResult().isMatched());
         assertThat(actual.get(checkKey).getCountCheckResult().getSourceRecordsCount(), is(actual.get(checkKey).getCountCheckResult().getTargetRecordsCount()));
         assertTrue(actual.get(checkKey).getContentCheckResult().isMatched());
     }
     
     private ConsistencyCheckJobItemProgressContext createConsistencyCheckJobItemProgressContext() {
-        return new ConsistencyCheckJobItemProgressContext("", 0);
+        return new ConsistencyCheckJobItemProgressContext("", 0, "H2");
     }
     
     private MigrationJobConfiguration createJobConfiguration() throws SQLException {

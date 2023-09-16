@@ -20,9 +20,9 @@ package org.apache.shardingsphere.encrypt.algorithm.like;
 import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ import java.util.stream.IntStream;
  * Char digest like encrypt algorithm.
  */
 @EqualsAndHashCode
-public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorithm<Object, String> {
+public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorithm {
     
     private static final String DELTA_KEY = "delta";
     

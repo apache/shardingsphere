@@ -161,6 +161,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final HintValueContext hintValueContext;
     
+    private ResultSet currentBatchGeneratedKeysResultSet;
+    
     public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql) throws SQLException {
         this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, false, null);
     }
@@ -197,8 +199,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         parameterSets = new ArrayList<>();
         SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(getDatabaseType(connection));
         sqlStatement = sqlParserEngine.parse(this.sql, true);
-        sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), connection.getDatabaseName()).bind(sqlStatement, Collections.emptyList());
+        sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), connection.getDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
         databaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getDatabaseName());
+        connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
@@ -447,7 +450,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             result = useDriverToExecute();
             connection.commit();
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
             connection.rollback();
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
@@ -610,6 +613,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
+        if (null != currentBatchGeneratedKeysResultSet) {
+            return currentBatchGeneratedKeysResultSet;
+        }
         Optional<GeneratedKeyContext> generatedKey = findGeneratedKey(executionContext);
         if (generatedKey.isPresent() && statementOption.isReturnGeneratedKeys() && !generatedValues.isEmpty()) {
             return new GeneratedKeysResultSet(getGeneratedKeysColumnName(generatedKey.get().getColumnName()), generatedValues.iterator(), this);
@@ -649,7 +655,16 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         try {
             // TODO add raw SQL executor
             initBatchPreparedStatementExecutor();
-            return batchPreparedStatementExecutor.executeBatch(executionContext.getSqlStatementContext());
+            int[] results = batchPreparedStatementExecutor.executeBatch(executionContext.getSqlStatementContext());
+            if (statementOption.isReturnGeneratedKeys() && generatedValues.isEmpty()) {
+                List<Statement> batchPreparedStatementExecutorStatements = batchPreparedStatementExecutor.getStatements();
+                for (Statement statement : batchPreparedStatementExecutorStatements) {
+                    statements.add((PreparedStatement) statement);
+                }
+                currentBatchGeneratedKeysResultSet = getGeneratedKeys();
+                statements.clear();
+            }
+            return results;
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON

@@ -33,12 +33,11 @@ import static org.mockito.Mockito.mock;
 
 class MD5AssistedEncryptAlgorithmTest {
     
-    private AssistedEncryptAlgorithm<Object, String> encryptAlgorithm;
+    private AssistedEncryptAlgorithm encryptAlgorithm;
     
-    @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
-        encryptAlgorithm = (AssistedEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "MD5");
+        encryptAlgorithm = (AssistedEncryptAlgorithm) TypedSPILoader.getService(EncryptAlgorithm.class, "MD5");
     }
     
     @Test

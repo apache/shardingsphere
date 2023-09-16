@@ -122,6 +122,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         yamlConfig.setParentJobId(parentJobId);
         yamlConfig.setAlgorithmTypeName(param.getAlgorithmTypeName());
         yamlConfig.setAlgorithmProps(param.getAlgorithmProps());
+        yamlConfig.setSourceDatabaseType(param.getSourceDatabaseType().getType());
         start(new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(yamlConfig));
         return result;
     }
@@ -160,7 +161,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         String ignoredTableNames = String.join(",", progressContext.getIgnoredTableNames());
         ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(tableNames, ignoredTableNames, progressContext.getCheckedRecordsCount().get(),
                 progressContext.getRecordsCount(), progressContext.getCheckBeginTimeMillis(), progressContext.getCheckEndTimeMillis(),
-                progressContext.getSourceTableCheckPositions(), progressContext.getTargetTableCheckPositions());
+                progressContext.getSourceTableCheckPositions(), progressContext.getTargetTableCheckPositions(), progressContext.getSourceDatabaseType());
         jobItemProgress.setStatus(context.getStatus());
         return YamlEngine.marshal(swapper.swapToYamlConfiguration(jobItemProgress));
     }
@@ -304,7 +305,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         }
         ConsistencyCheckJobItemProgress jobItemProgress = progress.get();
         if (null == jobItemProgress.getRecordsCount() || null == jobItemProgress.getCheckedRecordsCount()) {
-            result.setFinishedPercentage(0);
+            result.setInventoryFinishedPercentage(0);
             result.setCheckSuccess(null);
             return result;
         }
@@ -312,14 +313,14 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         long recordsCount = jobItemProgress.getRecordsCount();
         long checkedRecordsCount = Math.min(jobItemProgress.getCheckedRecordsCount(), recordsCount);
         if (JobStatus.FINISHED == jobItemProgress.getStatus()) {
-            result.setFinishedPercentage(100);
+            result.setInventoryFinishedPercentage(100);
             LocalDateTime checkEndTime = new Timestamp(jobItemProgress.getCheckEndTimeMillis()).toLocalDateTime();
             Duration duration = Duration.between(checkBeginTime, checkEndTime);
             result.setDurationSeconds(duration.getSeconds());
             result.setCheckEndTime(DATE_TIME_FORMATTER.format(checkEndTime));
-            result.setRemainingSeconds(0L);
+            result.setInventoryRemainingSeconds(0L);
         } else if (0 != recordsCount && 0 != checkedRecordsCount) {
-            result.setFinishedPercentage((int) (checkedRecordsCount * 100 / recordsCount));
+            result.setInventoryFinishedPercentage((int) (checkedRecordsCount * 100 / recordsCount));
             JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(checkJobId);
             Long stopTimeMillis = jobConfigPOJO.isDisabled() ? Long.parseLong(jobConfigPOJO.getProps().getProperty("stop_time_millis")) : null;
             long durationMillis = (null != stopTimeMillis ? stopTimeMillis : System.currentTimeMillis()) - jobItemProgress.getCheckBeginTimeMillis();
@@ -328,11 +329,16 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
                 result.setCheckEndTime(DATE_TIME_FORMATTER.format(new Timestamp(stopTimeMillis).toLocalDateTime()));
             }
             long remainingMills = Math.max(0, (long) ((recordsCount - checkedRecordsCount) * 1.0D / checkedRecordsCount * durationMillis));
-            result.setRemainingSeconds(remainingMills / 1000);
+            result.setInventoryRemainingSeconds(remainingMills / 1000);
         }
         String tableNames = jobItemProgress.getTableNames();
         result.setTableNames(Optional.ofNullable(tableNames).orElse(""));
         result.setCheckBeginTime(DATE_TIME_FORMATTER.format(checkBeginTime));
+        ConsistencyCheckJobConfiguration jobConfig = getJobConfiguration(checkJobId);
+        result.setAlgorithmType(jobConfig.getAlgorithmTypeName());
+        if (null != jobConfig.getAlgorithmProps()) {
+            result.setAlgorithmProps(jobConfig.getAlgorithmProps().entrySet().stream().map(entry -> String.format("'%s'='%s'", entry.getKey(), entry.getValue())).collect(Collectors.joining(",")));
+        }
         result.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
         Map<String, TableDataConsistencyCheckResult> checkJobResult = governanceRepositoryAPI.getCheckJobResult(parentJobId, checkJobId);
         if (checkJobResult.isEmpty()) {

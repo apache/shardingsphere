@@ -125,4 +125,15 @@
     <sql-case id="select_predict_by_function" value="SELECT PREDICT BY point_kmeans (FEATURES position) as pos FROM (select * from kmeans_2d limit 10);" db-types="openGauss" />
     <sql-case id="select_inet_function" value="SELECT inet '192.168.1.5' = inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
     <sql-case id="select_inet_function_with_inet_operator" value="SELECT inet '192.168.1.5' &lt;&lt;= inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_ts_rewrite_function" value="SELECT ts_rewrite('a &amp; b'::tsquery, 'a'::tsquery, 'c'::tsquery);" db-types="openGauss" />
+    <sql-case id="select_int_2_function" value="select int2(25.3);" db-types="openGauss" />
+    <sql-case id="select_elem_contained_by_range_function" value="SELECT elem_contained_by_range('2', numrange(1.1,2.2));" db-types="openGauss" />
+    <sql-case id="select_int8range" value="SELECT int8range(5,15) * int8range(10,20) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_int4range" value="SELECT int4range(2,4) &lt;@ int4range(1,7) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_lower_inf_function" value="SELECT lower_inf('(,)'::daterange) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_tsquery" value="SELECT 'super:*'::tsquery;" db-types="openGauss" />
+    <sql-case id="select_abbrev_function" value="SELECT abbrev(cidr '10.1.0.0/16') AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_set_masklen_function" value="SELECT set_masklen('192.168.1.0/24'::cidr, 16) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_text_inet_function" value="SELECT text(inet '192.168.1.5') AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_trunc_function" value="SELECT trunc(macaddr '12:34:56:78:90:ab') AS RESULT;" db-types="openGauss" />
 </sql-cases>

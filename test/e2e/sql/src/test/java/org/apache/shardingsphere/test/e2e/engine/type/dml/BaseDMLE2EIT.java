@@ -148,7 +148,11 @@ public abstract class BaseDMLE2EIT {
         } else if (Arrays.asList(Types.TIME, Types.TIME_WITH_TIMEZONE).contains(actual.getMetaData().getColumnType(columnIndex))) {
             assertThat(timeFormatter.format(actual.getTime(columnIndex).toLocalTime()), is(expected));
         } else if (Arrays.asList(Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE).contains(actual.getMetaData().getColumnType(columnIndex))) {
-            assertThat(timestampFormatter.format(actual.getTimestamp(columnIndex).toLocalDateTime()), is(expected));
+            if ("Oracle".equals(testParam.getDatabaseType().getType()) && "DATE".equalsIgnoreCase(actual.getMetaData().getColumnTypeName(columnIndex))) {
+                assertThat(dateFormatter.format(actual.getDate(columnIndex).toLocalDate()), is(expected));
+            } else {
+                assertThat(timestampFormatter.format(actual.getTimestamp(columnIndex).toLocalDateTime()), is(expected));
+            }
         } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
                 && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType())
                         || "Oracle".equals(testParam.getDatabaseType().getType()))) {

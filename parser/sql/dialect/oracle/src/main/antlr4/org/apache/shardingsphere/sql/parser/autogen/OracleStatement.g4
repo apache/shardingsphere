@@ -17,13 +17,14 @@
 
 grammar OracleStatement;
 
-import DMLStatement, TCLStatement, DCLStatement, DALStatement, PLSQL;
+import DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, PLSQL;
 
 execute
     : (select
     | insert
     | update
     | delete
+    | createView
     | createTable
     | alterTable
     | dropTable
