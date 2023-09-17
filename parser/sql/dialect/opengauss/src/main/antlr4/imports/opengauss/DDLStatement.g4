@@ -1933,6 +1933,7 @@ onObjectClause
     | ALL FUNCTIONS IN SCHEMA nameList
     | ALL PROCEDURES IN SCHEMA nameList
     | ALL ROUTINES IN SCHEMA nameList
+    | CLIENT_MASTER_KEY nameList
     ;
     
 numericOnlyList
