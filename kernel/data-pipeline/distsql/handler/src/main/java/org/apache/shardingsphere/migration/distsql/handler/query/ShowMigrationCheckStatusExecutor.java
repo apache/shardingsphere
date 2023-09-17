@@ -49,6 +49,7 @@ public final class ShowMigrationCheckStatusExecutor implements QueryableRALExecu
     private LocalDataQueryResultRow convert(final ConsistencyCheckJobItemInfo info) {
         String checkResult = null == info.getCheckSuccess() ? "" : info.getCheckSuccess().toString();
         return new LocalDataQueryResultRow(Optional.ofNullable(info.getTableNames()).orElse(""), checkResult, Optional.ofNullable(info.getCheckFailedTableNames()).orElse(""),
+                info.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),
                 String.valueOf(info.getInventoryFinishedPercentage()), info.getInventoryRemainingSeconds(), info.getIncrementalIdleSeconds(),
                 Optional.ofNullable(info.getCheckBeginTime()).orElse(""), Optional.ofNullable(info.getCheckEndTime()).orElse(""), info.getDurationSeconds(),
                 info.getAlgorithmType(), Optional.ofNullable(info.getAlgorithmProps()).orElse(""), Optional.ofNullable(info.getErrorMessage()).orElse(""));
@@ -56,7 +57,7 @@ public final class ShowMigrationCheckStatusExecutor implements QueryableRALExecu
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("tables", "result", "check_failed_tables", "inventory_finished_percentage", "inventory_remaining_seconds", "incremental_idle_seconds",
+        return Arrays.asList("tables", "result", "check_failed_tables", "active", "inventory_finished_percentage", "inventory_remaining_seconds", "incremental_idle_seconds",
                 "check_begin_time", "check_end_time", "duration_seconds", "algorithm_type", "algorithm_props", "error_message");
     }
     
