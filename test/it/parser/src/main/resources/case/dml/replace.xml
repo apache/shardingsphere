@@ -867,7 +867,7 @@
             <column name="user_id" start-index="32" stop-index="38" />
             <column name="status" start-index="41" stop-index="46" />
         </columns>
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order" start-index="87" stop-index="93" />
             </from>
@@ -896,7 +896,7 @@
     <insert sql-case-id="replace_select_without_columns" parameters="100">
         <table name="t_order" start-index="13" stop-index="19" />
         <columns start-index="20" stop-index="20" />
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order" start-index="59" stop-index="65" />
             </from>
@@ -931,7 +931,7 @@
             <column name="status" start-index="54" stop-index="59" />
             <column name="creation_date" start-index="62" stop-index="74" />
         </columns>
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order_item" start-index="140" stop-index="151" />
             </from>
@@ -967,7 +967,7 @@
             <column name="status" start-index="45" stop-index="50" />
             <column name="creation_date" start-index="53" stop-index="65" />
         </columns>
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order_item" start-index="122" stop-index="133" />
             </from>

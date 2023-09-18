@@ -86,9 +86,13 @@ public abstract class BaseDMLE2EIT {
     }
     
     protected final void assertDataSet(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer, final int actualUpdateCount) throws SQLException {
-        assertThat("Only support single table for DML.", containerComposer.getDataSet().getMetaDataList().size(), is(1));
         assertThat(actualUpdateCount, is(containerComposer.getDataSet().getUpdateCount()));
-        DataSetMetaData expectedDataSetMetaData = containerComposer.getDataSet().getMetaDataList().get(0);
+        for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
+            assertDataSet(testParam, containerComposer, each);
+        }
+    }
+    
+    private void assertDataSet(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer, final DataSetMetaData expectedDataSetMetaData) throws SQLException {
         for (String each : InlineExpressionParserFactory.newInstance().splitAndEvaluate(expectedDataSetMetaData.getDataNodes())) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = containerComposer.getActualDataSourceMap().get(dataNode.getDataSourceName());

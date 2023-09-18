@@ -36,6 +36,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ins
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.MultiTableInsertIntoClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.OnDuplicateKeyColumnsAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.output.OutputClauseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.parameter.ParameterMarkerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.returning.ReturningClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.set.SetClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
@@ -119,6 +120,7 @@ public final class InsertStatementAssert {
             assertFalse(actual.getInsertSelect().isPresent(), assertContext.getText("Actual insert select segment should not exist."));
         } else {
             assertTrue(actual.getInsertSelect().isPresent(), assertContext.getText("Actual insert select segment should exist."));
+            ParameterMarkerAssert.assertCount(assertContext, actual.getInsertSelect().get().getSelect().getParameterCount(), expected.getSelectTestCase().getParameters().size());
             SelectStatementAssert.assertIs(assertContext, actual.getInsertSelect().get().getSelect(), expected.getSelectTestCase());
         }
     }
