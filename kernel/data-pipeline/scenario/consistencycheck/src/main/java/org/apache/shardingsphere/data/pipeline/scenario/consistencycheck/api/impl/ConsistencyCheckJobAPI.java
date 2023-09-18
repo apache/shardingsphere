@@ -300,6 +300,8 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         String checkJobId = latestCheckJobId.get();
         Optional<ConsistencyCheckJobItemProgress> progress = getJobItemProgress(checkJobId, 0);
         ConsistencyCheckJobItemInfo result = new ConsistencyCheckJobItemInfo();
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(checkJobId);
+        result.setActive(!jobConfigPOJO.isDisabled());
         if (!progress.isPresent()) {
             return result;
         }
@@ -321,7 +323,6 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
             result.setInventoryRemainingSeconds(0L);
         } else if (0 != recordsCount && 0 != checkedRecordsCount) {
             result.setInventoryFinishedPercentage((int) (checkedRecordsCount * 100 / recordsCount));
-            JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(checkJobId);
             Long stopTimeMillis = jobConfigPOJO.isDisabled() ? Long.parseLong(jobConfigPOJO.getProps().getProperty("stop_time_millis")) : null;
             long durationMillis = (null != stopTimeMillis ? stopTimeMillis : System.currentTimeMillis()) - jobItemProgress.getCheckBeginTimeMillis();
             result.setDurationSeconds(TimeUnit.MILLISECONDS.toSeconds(durationMillis));

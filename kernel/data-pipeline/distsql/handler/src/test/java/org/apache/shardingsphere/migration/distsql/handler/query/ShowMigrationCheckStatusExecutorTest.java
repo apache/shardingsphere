@@ -32,11 +32,12 @@ class ShowMigrationCheckStatusExecutorTest {
     @Test
     void assertGetColumnNames() {
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(12));
+        assertThat(columns.size(), is(13));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("tables"));
         assertThat(iterator.next(), is("result"));
         assertThat(iterator.next(), is("check_failed_tables"));
+        assertThat(iterator.next(), is("active"));
         assertThat(iterator.next(), is("inventory_finished_percentage"));
         assertThat(iterator.next(), is("inventory_remaining_seconds"));
         assertThat(iterator.next(), is("incremental_idle_seconds"));

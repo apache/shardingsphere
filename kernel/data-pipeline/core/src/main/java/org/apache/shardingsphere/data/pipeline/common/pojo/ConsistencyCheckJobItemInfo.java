@@ -29,6 +29,8 @@ import lombok.Setter;
 @Setter
 public final class ConsistencyCheckJobItemInfo {
     
+    private boolean active;
+    
     private String tableNames;
     
     private Boolean checkSuccess;
