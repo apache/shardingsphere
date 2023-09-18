@@ -94,7 +94,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
         tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         ShardingSphereSchema schema = getSchema(metaData, defaultDatabaseName);
-        columnNames = containsInsertColumns() ? insertColumnNames : schema.getVisibleColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue().toLowerCase());
+        columnNames = containsInsertColumns() ? insertColumnNames
+                : Optional.ofNullable(sqlStatement.getTable()).map(optional -> schema.getVisibleColumnNames(optional.getTableName().getIdentifier().getValue())).orElseGet(Collections::emptyList);
         generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), params).orElse(null);
     }
     
@@ -166,7 +167,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         for (InsertValueContext each : insertValueContexts) {
             result.add(each.getParameters());
         }
-        if (null != insertSelectContext) {
+        if (null != insertSelectContext && !insertSelectContext.getParameters().isEmpty()) {
             result.add(insertSelectContext.getParameters());
         }
         return result;
