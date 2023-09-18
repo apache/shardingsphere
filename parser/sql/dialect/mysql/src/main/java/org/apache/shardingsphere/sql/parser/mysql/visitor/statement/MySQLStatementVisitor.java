@@ -177,9 +177,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.UnaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ValuesExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -1361,6 +1361,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
         MySQLInsertStatement result = new MySQLInsertStatement();
+        result.setInsertSelect(createInsertSelectSegment(ctx));
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
                 result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
@@ -1370,12 +1371,12 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         } else {
             result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
-        result.setInsertSelect(createInsertSelectSegment(ctx));
         return result;
     }
     
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
         MySQLSelectStatement selectStatement = (MySQLSelectStatement) visit(ctx.select());
+        selectStatement.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement);
     }
     
