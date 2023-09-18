@@ -245,45 +245,6 @@ relationalProperty
     : columnDefinition | virtualColumnDefinition | outOfLineConstraint | outOfLineRefConstraint
     ;
 
-columnDefinition
-    : columnName dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
-    ;
-
-visibleClause
-    : (VISIBLE | INVISIBLE)?
-    ;
-
-defaultNullClause
-    : DEFAULT (ON NULL)?
-    ;
-
-identityClause
-    : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY identifyOptions
-    ;
-
-identifyOptions
-    : LP_? (identityOption+)? RP_?
-    ;
-
-identityOption
-    : START WITH (INTEGER_ | LIMIT VALUE)
-    | INCREMENT BY INTEGER_
-    | MAXVALUE INTEGER_
-    | NOMAXVALUE
-    | MINVALUE INTEGER_
-    | NOMINVALUE
-    | CYCLE
-    | NOCYCLE
-    | CACHE INTEGER_
-    | NOCACHE
-    | ORDER
-    | NOORDER
-    ;
-
-encryptionSpecification
-    : (USING STRING_)? (IDENTIFIED BY STRING_)? STRING_? (NO? SALT)?
-    ;
-
 inlineConstraint
     : (CONSTRAINT ignoredIdentifier)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState?
     ;
