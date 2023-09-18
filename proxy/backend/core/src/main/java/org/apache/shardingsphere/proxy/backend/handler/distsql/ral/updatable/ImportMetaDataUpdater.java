@@ -61,7 +61,7 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
         } else {
             jsonMetaDataConfig = new String(Base64.decodeBase64(sqlStatement.getMetaDataValue()));
         }
-        ExportedClusterInfo exportedClusterInfo = JsonUtils.readValue(jsonMetaDataConfig, ExportedClusterInfo.class);
+        ExportedClusterInfo exportedClusterInfo = JsonUtils.fromJsonString(jsonMetaDataConfig, ExportedClusterInfo.class);
         ExportedMetaData exportedMetaData = exportedClusterInfo.getMetaData();
         importServerConfig(exportedMetaData);
         importDatabase(exportedMetaData);
@@ -78,7 +78,7 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
     }
     
     private void importDatabase(final ExportedMetaData exportedMetaData) {
-        for (final String each : exportedMetaData.getDatabases().values()) {
+        for (String each : exportedMetaData.getDatabases().values()) {
             YamlProxyDatabaseConfiguration yamlDatabaseConfig = YamlEngine.unmarshal(each, YamlProxyDatabaseConfiguration.class);
             databaseConfigImportExecutor.importDatabaseConfiguration(yamlDatabaseConfig);
         }

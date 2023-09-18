@@ -31,10 +31,10 @@ class FlushStatementHandlerTest {
     
     @Test
     void assertGetSimpleTableSegmentForMySQL() {
-        MySQLFlushStatement mySQLFlushStatement = new MySQLFlushStatement();
-        assertTrue(FlushStatementHandler.getSimpleTableSegment(mySQLFlushStatement).isEmpty());
-        mySQLFlushStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 2, new IdentifierValue("foo_table"))));
-        assertThat(FlushStatementHandler.getSimpleTableSegment(mySQLFlushStatement), is(mySQLFlushStatement.getTables()));
+        MySQLFlushStatement flushStatement = new MySQLFlushStatement();
+        assertTrue(FlushStatementHandler.getSimpleTableSegment(flushStatement).isEmpty());
+        flushStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 2, new IdentifierValue("foo_table"))));
+        assertThat(FlushStatementHandler.getSimpleTableSegment(flushStatement), is(flushStatement.getTables()));
     }
     
     @Test

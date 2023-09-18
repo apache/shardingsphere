@@ -32,5 +32,6 @@
         <module>core</module>
         <module>hotsopt</module>
         <module>espresso</module>
+        <module>purelist</module>
     </modules>
 </project>

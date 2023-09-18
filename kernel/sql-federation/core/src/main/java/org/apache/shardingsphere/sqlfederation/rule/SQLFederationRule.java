@@ -62,9 +62,4 @@ public final class SQLFederationRule implements GlobalRule, MetaDataHeldRule {
         optimizerContext.removeParserContext(databaseName);
         optimizerContext.removePlannerContext(databaseName);
     }
-    
-    @Override
-    public String getType() {
-        return SQLFederationRule.class.getSimpleName();
-    }
 }

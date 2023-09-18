@@ -54,7 +54,11 @@ public final class ConsistencyCheckJobItemProgressContext implements PipelineJob
     
     private volatile Long checkEndTimeMillis;
     
-    private final Map<String, Object> tableCheckPositions = new ConcurrentHashMap<>();
+    private final Map<String, Object> sourceTableCheckPositions = new ConcurrentHashMap<>();
+    
+    private final Map<String, Object> targetTableCheckPositions = new ConcurrentHashMap<>();
+    
+    private final String sourceDatabaseType;
     
     @Override
     public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {

@@ -22,10 +22,13 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 /**
  * Shorthand projection converter. 
@@ -38,8 +41,16 @@ public final class ShorthandProjectionConverter implements SQLSegmentConverter<S
             return Optional.empty();
         }
         if (segment.getOwner().isPresent()) {
-            return Optional.of(SqlIdentifier.star(Arrays.asList(segment.getOwner().get().getIdentifier().getValue(), ""), SqlParserPos.ZERO, ImmutableList.of(SqlParserPos.ZERO, SqlParserPos.ZERO)));
+            List<String> names = new ArrayList<>();
+            addOwnerNames(names, segment.getOwner().get());
+            names.add("");
+            return Optional.of(SqlIdentifier.star(names, SqlParserPos.ZERO, IntStream.range(0, names.size()).mapToObj(i -> SqlParserPos.ZERO).collect(ImmutableList.toImmutableList())));
         }
         return Optional.of(SqlIdentifier.star(SqlParserPos.ZERO));
+    }
+    
+    private void addOwnerNames(final List<String> names, final OwnerSegment owner) {
+        owner.getOwner().ifPresent(optional -> addOwnerNames(names, optional));
+        names.add(owner.getIdentifier().getValue());
     }
 }

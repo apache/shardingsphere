@@ -38,10 +38,10 @@ class YamlInventoryIncrementalJobItemProgressSwapperTest {
         assertThat(actual.getSourceDatabaseType(), is("H2"));
         assertThat(actual.getDataSourceName(), is("ds_0"));
         assertThat(actual.getInventory().getFinished().length, is(2));
-        assertThat(actual.getInventory().getFinished(), is(new String[]{"ds0.t_2", "ds0.t_1"}));
+        assertThat(actual.getInventory().getFinished(), is(new String[]{"ds0.t_2#2", "ds0.t_1#1"}));
         assertThat(actual.getInventory().getUnfinished().size(), is(2));
-        assertThat(actual.getInventory().getUnfinished().get("ds1.t_2"), is("i,1,2"));
-        assertThat(actual.getInventory().getUnfinished().get("ds1.t_1"), is(""));
+        assertThat(actual.getInventory().getUnfinished().get("ds1.t_2#2"), is("i,1,2"));
+        assertThat(actual.getInventory().getUnfinished().get("ds1.t_1#1"), is(""));
         assertThat(actual.getIncremental().getPosition().length(), is(0));
     }
     

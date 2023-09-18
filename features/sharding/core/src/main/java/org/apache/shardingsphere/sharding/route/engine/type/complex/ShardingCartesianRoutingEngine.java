@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -112,7 +113,7 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
     private Collection<RouteUnit> getRouteUnits(final String dataSource, final Set<List<RouteMapper>> cartesianRoutingTableGroups) {
         Collection<RouteUnit> result = new LinkedHashSet<>();
         for (List<RouteMapper> each : cartesianRoutingTableGroups) {
-            result.add(new RouteUnit(new RouteMapper(dataSource, dataSource), each));
+            result.add(new RouteUnit(new RouteMapper(dataSource, dataSource), new LinkedList<>(each)));
         }
         return result;
     }

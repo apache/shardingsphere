@@ -56,13 +56,15 @@ class ConsistencyCheckJobTest {
         ConsistencyCheckJob consistencyCheckJob = new ConsistencyCheckJob(checkJobId);
         ConsistencyCheckJobItemContext actual = consistencyCheckJob.buildPipelineJobItemContext(
                 new ShardingContext(checkJobId, "", 1, YamlEngine.marshal(createYamlConsistencyCheckJobConfiguration(checkJobId)), 0, ""));
-        assertThat(actual.getProgressContext().getTableCheckPositions(), is(expectTableCheckPosition));
+        assertThat(actual.getProgressContext().getSourceTableCheckPositions(), is(expectTableCheckPosition));
+        assertThat(actual.getProgressContext().getTargetTableCheckPositions(), is(expectTableCheckPosition));
     }
     
     private YamlConsistencyCheckJobItemProgress createYamlConsistencyCheckJobItemProgress(final Map<String, Object> expectTableCheckPosition) {
         YamlConsistencyCheckJobItemProgress result = new YamlConsistencyCheckJobItemProgress();
         result.setStatus(JobStatus.RUNNING.name());
-        result.setTableCheckPositions(expectTableCheckPosition);
+        result.setSourceTableCheckPositions(expectTableCheckPosition);
+        result.setTargetTableCheckPositions(expectTableCheckPosition);
         return result;
     }
     
@@ -70,6 +72,8 @@ class ConsistencyCheckJobTest {
         YamlConsistencyCheckJobConfiguration result = new YamlConsistencyCheckJobConfiguration();
         result.setJobId(checkJobId);
         result.setParentJobId("");
+        result.setAlgorithmTypeName("DATA_MATCH");
+        result.setSourceDatabaseType("H2");
         return result;
     }
 }

@@ -20,14 +20,14 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.converter.DataSourceSegmentsConverter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.migration.distsql.statement.RegisterMigrationSourceStorageUnitStatement;
@@ -43,7 +43,7 @@ public final class RegisterMigrationSourceStorageUnitUpdater implements RALUpdat
     
     private final MigrationJobAPI jobAPI = new MigrationJobAPI();
     
-    private final DataSourcePropertiesValidateHandler validateHandler = new DataSourcePropertiesValidateHandler();
+    private final DataSourcePoolPropertiesValidateHandler validateHandler = new DataSourcePoolPropertiesValidateHandler();
     
     @Override
     public void executeUpdate(final String databaseName, final RegisterMigrationSourceStorageUnitStatement sqlStatement) {
@@ -52,9 +52,9 @@ public final class RegisterMigrationSourceStorageUnitUpdater implements RALUpdat
                 () -> new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));
         URLBasedDataSourceSegment urlBasedDataSourceSegment = (URLBasedDataSourceSegment) dataSources.get(0);
         DatabaseType databaseType = DatabaseTypeFactory.get(urlBasedDataSourceSegment.getUrl());
-        Map<String, DataSourceProperties> sourcePropertiesMap = DataSourceSegmentsConverter.convert(databaseType, dataSources);
-        validateHandler.validate(sourcePropertiesMap);
-        jobAPI.addMigrationSourceResources(PipelineContextKey.buildForProxy(), sourcePropertiesMap);
+        Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, dataSources);
+        validateHandler.validate(propsMap);
+        jobAPI.addMigrationSourceResources(PipelineContextKey.buildForProxy(), propsMap);
     }
     
     @Override

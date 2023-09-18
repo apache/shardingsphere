@@ -19,9 +19,13 @@ package org.apache.shardingsphere.infra.binder.segment.where;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.enums.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+
+import java.util.Map;
 
 /**
  * Where segment binder.
@@ -33,11 +37,14 @@ public final class WhereSegmentBinder {
      * Bind where segment with metadata.
      *
      * @param segment where segment
-     * @param metaData meta data
-     * @param defaultDatabaseName default database name
+     * @param statementBinderContext statement binder context
+     * @param tableBinderContexts table binder contexts
+     * @param outerTableBinderContexts outer table binder contexts
      * @return bounded where segment
      */
-    public static WhereSegment bind(final WhereSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        return new WhereSegment(segment.getStartIndex(), segment.getStopIndex(), ExpressionSegmentBinder.bind(segment.getExpr(), metaData, defaultDatabaseName));
+    public static WhereSegment bind(final WhereSegment segment, final SQLStatementBinderContext statementBinderContext,
+                                    final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        return new WhereSegment(segment.getStartIndex(), segment.getStopIndex(),
+                ExpressionSegmentBinder.bind(segment.getExpr(), SegmentType.PREDICATE, statementBinderContext, tableBinderContexts, outerTableBinderContexts));
     }
 }

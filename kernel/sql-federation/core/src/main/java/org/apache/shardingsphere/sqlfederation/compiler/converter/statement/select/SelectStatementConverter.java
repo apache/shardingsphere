@@ -69,7 +69,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         SqlNodeList groupBy = selectStatement.getGroupBy().flatMap(optional -> new GroupByConverter().convert(optional)).orElse(null);
         SqlNode having = selectStatement.getHaving().flatMap(optional -> new HavingConverter().convert(optional)).orElse(null);
         SqlNodeList window = SelectStatementHandler.getWindowSegment(selectStatement).flatMap(new WindowConverter()::convert).orElse(SqlNodeList.EMPTY);
-        return new SqlSelect(SqlParserPos.ZERO, distinct, projection, from, where, groupBy, having, window, null, null, null, SqlNodeList.EMPTY);
+        return new SqlSelect(SqlParserPos.ZERO, distinct, projection, from, where, groupBy, having, window, null, null, null, null, SqlNodeList.EMPTY);
     }
     
     private SqlNode convertCombine(final SqlNode sqlNode, final SelectStatement selectStatement) {

@@ -43,21 +43,21 @@ import static org.mockito.Mockito.when;
 class OpenGaussAdminExecutorFactoryTest {
     
     @Mock
-    private PostgreSQLAdminExecutorCreator postgreSQLAdminExecutorFactory;
+    private PostgreSQLAdminExecutorCreator postgresqlAdminExecutorFactory;
     
     private OpenGaussAdminExecutorCreator openGaussAdminExecutorFactory;
     
     @BeforeEach
     void setup() throws ReflectiveOperationException {
         openGaussAdminExecutorFactory = new OpenGaussAdminExecutorCreator();
-        Plugins.getMemberAccessor().set(OpenGaussAdminExecutorCreator.class.getDeclaredField("delegated"), openGaussAdminExecutorFactory, postgreSQLAdminExecutorFactory);
+        Plugins.getMemberAccessor().set(OpenGaussAdminExecutorCreator.class.getDeclaredField("delegated"), openGaussAdminExecutorFactory, postgresqlAdminExecutorFactory);
     }
     
     @Test
     void assertNewInstanceWithSQLStatementContextOnly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         DatabaseAdminExecutor expected = mock(DatabaseAdminExecutor.class);
-        when(postgreSQLAdminExecutorFactory.create(sqlStatementContext)).thenReturn(Optional.of(expected));
+        when(postgresqlAdminExecutorFactory.create(sqlStatementContext)).thenReturn(Optional.of(expected));
         Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(expected));
@@ -80,7 +80,7 @@ class OpenGaussAdminExecutorFactoryTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
         DatabaseAdminExecutor expected = mock(DatabaseAdminExecutor.class);
-        when(postgreSQLAdminExecutorFactory.create(sqlStatementContext, "", "", Collections.emptyList())).thenReturn(Optional.of(expected));
+        when(postgresqlAdminExecutorFactory.create(sqlStatementContext, "", "", Collections.emptyList())).thenReturn(Optional.of(expected));
         Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(expected));

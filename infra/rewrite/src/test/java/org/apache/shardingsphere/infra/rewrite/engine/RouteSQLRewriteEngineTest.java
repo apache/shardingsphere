@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
@@ -39,6 +40,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -57,8 +59,8 @@ class RouteSQLRewriteEngineTest {
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(routeUnit);
         DatabaseType databaseType = mock(DatabaseType.class);
-        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, Collections.singletonMap("ds_0", databaseType))
-                .rewrite(sqlRewriteContext, routeContext);
+        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnits(databaseType)).rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("SELECT ?"));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getParameters(), is(Collections.singletonList(1)));
@@ -76,8 +78,8 @@ class RouteSQLRewriteEngineTest {
         routeContext.getRouteUnits().add(firstRouteUnit);
         routeContext.getRouteUnits().add(secondRouteUnit);
         DatabaseType databaseType = mock(DatabaseType.class);
-        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, Collections.singletonMap("ds_0", databaseType))
-                .rewrite(sqlRewriteContext, routeContext);
+        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnits(databaseType)).rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(firstRouteUnit).getSql(), is("SELECT ? UNION ALL SELECT ?"));
         assertThat(actual.getSqlRewriteUnits().get(firstRouteUnit).getParameters(), is(Arrays.asList(1, 1)));
@@ -87,15 +89,17 @@ class RouteSQLRewriteEngineTest {
     void assertRewriteWithGroupedParameterBuilderForBroadcast() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
+        when(statementContext.getInsertSelectContext()).thenReturn(null);
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
+        when(statementContext.getOnDuplicateKeyUpdateParameters()).thenReturn(Collections.emptyList());
         SQLRewriteContext sqlRewriteContext =
                 new SQLRewriteContext(mockDatabase(), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1), mock(ConnectionContext.class), new HintValueContext());
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(routeUnit);
         DatabaseType databaseType = mock(DatabaseType.class);
-        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, Collections.singletonMap("ds_0", databaseType))
-                .rewrite(sqlRewriteContext, routeContext);
+        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnits(databaseType)).rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getParameters(), is(Collections.singletonList(1)));
@@ -105,7 +109,9 @@ class RouteSQLRewriteEngineTest {
     void assertRewriteWithGroupedParameterBuilderForRouteWithSameDataNode() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
+        when(statementContext.getInsertSelectContext()).thenReturn(null);
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
+        when(statementContext.getOnDuplicateKeyUpdateParameters()).thenReturn(Collections.emptyList());
         SQLRewriteContext sqlRewriteContext =
                 new SQLRewriteContext(mockDatabase(), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1), mock(ConnectionContext.class), new HintValueContext());
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
@@ -114,8 +120,8 @@ class RouteSQLRewriteEngineTest {
         // TODO check why data node is "ds.tbl_0", not "ds_0.tbl_0"
         routeContext.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds.tbl_0")));
         DatabaseType databaseType = mock(DatabaseType.class);
-        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, Collections.singletonMap("ds_0", databaseType))
-                .rewrite(sqlRewriteContext, routeContext);
+        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnits(databaseType)).rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getParameters(), is(Collections.singletonList(1)));
@@ -125,7 +131,9 @@ class RouteSQLRewriteEngineTest {
     void assertRewriteWithGroupedParameterBuilderForRouteWithEmptyDataNode() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
+        when(statementContext.getInsertSelectContext()).thenReturn(null);
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
+        when(statementContext.getOnDuplicateKeyUpdateParameters()).thenReturn(Collections.emptyList());
         SQLRewriteContext sqlRewriteContext =
                 new SQLRewriteContext(mockDatabase(), statementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1), mock(ConnectionContext.class), new HintValueContext());
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
@@ -133,8 +141,8 @@ class RouteSQLRewriteEngineTest {
         routeContext.getRouteUnits().add(routeUnit);
         routeContext.getOriginalDataNodes().add(Collections.emptyList());
         DatabaseType databaseType = mock(DatabaseType.class);
-        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, Collections.singletonMap("ds_0", databaseType))
-                .rewrite(sqlRewriteContext, routeContext);
+        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnits(databaseType)).rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getParameters(), is(Collections.singletonList(1)));
@@ -154,8 +162,8 @@ class RouteSQLRewriteEngineTest {
         routeContext.getRouteUnits().add(routeUnit);
         routeContext.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_1.tbl_1")));
         DatabaseType databaseType = mock(DatabaseType.class);
-        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, Collections.singletonMap("ds_0", databaseType))
-                .rewrite(sqlRewriteContext, routeContext);
+        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnits(databaseType)).rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
         assertTrue(actual.getSqlRewriteUnits().get(routeUnit).getParameters().isEmpty());
@@ -166,5 +174,11 @@ class RouteSQLRewriteEngineTest {
         when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(result.getSchemas()).thenReturn(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         return result;
+    }
+    
+    private Map<String, StorageUnit> mockStorageUnits(final DatabaseType databaseType) {
+        StorageUnit result = mock(StorageUnit.class);
+        when(result.getStorageType()).thenReturn(databaseType);
+        return Collections.singletonMap("ds_0", result);
     }
 }

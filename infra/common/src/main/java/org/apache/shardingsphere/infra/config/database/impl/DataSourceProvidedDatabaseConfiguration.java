@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
-import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResourceUtils;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Data source provided database configuration.
  */
+@RequiredArgsConstructor
 @Getter
 public final class DataSourceProvidedDatabaseConfiguration implements DatabaseConfiguration {
     
@@ -42,24 +44,17 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
     
     private final Collection<RuleConfiguration> ruleConfigurations;
     
-    private final Map<String, DataSourceProperties> dataSourcePropsMap;
+    private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
     
-    public DataSourceProvidedDatabaseConfiguration(final Map<String, DataSource> dataSources, final Collection<RuleConfiguration> ruleConfigurations) {
-        this.ruleConfigurations = ruleConfigurations;
-        this.storageResource = new StorageResource(dataSources, StorageUtils.getStorageUnits(dataSources));
-        dataSourcePropsMap = createDataSourcePropertiesMap(dataSources);
+    public DataSourceProvidedDatabaseConfiguration(final Map<String, DataSource> dataSources, final Collection<RuleConfiguration> ruleConfigs) {
+        this.ruleConfigurations = ruleConfigs;
+        this.storageResource = new StorageResource(StorageResourceUtils.getStorageNodeDataSources(dataSources), StorageResourceUtils.getStorageUnitNodeMappers(dataSources));
+        dataSourcePoolPropertiesMap = createDataSourcePoolPropertiesMap(dataSources);
     }
     
-    public DataSourceProvidedDatabaseConfiguration(final StorageResource storageResource, final Collection<RuleConfiguration> ruleConfigurations,
-                                                   final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        this.ruleConfigurations = ruleConfigurations;
-        this.storageResource = storageResource;
-        this.dataSourcePropsMap = dataSourcePropsMap;
-    }
-    
-    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSource> dataSources) {
+    private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final Map<String, DataSource> dataSources) {
         return dataSources.entrySet().stream().collect(Collectors
-                .toMap(Entry::getKey, entry -> DataSourcePropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override

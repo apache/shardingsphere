@@ -43,7 +43,7 @@ public final class PipelineProxyClusterContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType), AdapterContainerUtils.getAdapterContainerImage());
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType), AdapterContainerUtils.getAdapterContainerImage(), "");
     }
     
     private static String getProxyDatasourceName(final DatabaseType databaseType) {

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -63,6 +64,8 @@ public final class TablesContext {
     
     private final Map<String, Collection<SubqueryTableContext>> subqueryTables = new HashMap<>();
     
+    private final Map<String, IdentifierValue> tableNameAliasMap = new HashMap<>();
+    
     public TablesContext(final SimpleTableSegment tableSegment, final DatabaseType databaseType) {
         this(Collections.singletonList(tableSegment), databaseType);
     }
@@ -83,6 +86,7 @@ public final class TablesContext {
                 tableNames.add(simpleTableSegment.getTableName().getIdentifier().getValue());
                 simpleTableSegment.getOwner().ifPresent(optional -> schemaNames.add(optional.getIdentifier().getValue()));
                 findDatabaseName(simpleTableSegment, databaseType).ifPresent(databaseNames::add);
+                tableNameAliasMap.put(simpleTableSegment.getTableName().getIdentifier().getValue().toLowerCase(), each.getAlias().orElse(simpleTableSegment.getTableName().getIdentifier()));
             }
             if (each instanceof SubqueryTableSegment) {
                 subqueryTables.putAll(createSubqueryTables(subqueryContexts, (SubqueryTableSegment) each));

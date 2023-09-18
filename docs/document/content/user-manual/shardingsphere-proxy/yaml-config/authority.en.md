@@ -119,4 +119,4 @@ Explanation:
 
 ## Related References
 
-Please refer to [Authority Provider](/en/dev-manual/proxy) for the specific implementation of authority provider.
+Please refer to [Authority Provider](/en/user-manual/shardingsphere-proxy/yaml-config/authority/) for the specific implementation of authority provider.

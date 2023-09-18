@@ -19,13 +19,14 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.TableContainedFixtureRule;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.TableContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,8 +58,9 @@ class GenericSchemaBuilderTest {
     
     @BeforeEach
     void setUp() {
-        DatabaseType databaseType = mock(DatabaseType.class);
-        material = new GenericSchemaBuilderMaterial(databaseType, Collections.emptyMap(), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(DataSource.class)),
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+        material = new GenericSchemaBuilderMaterial(databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, databaseType),
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(DataSource.class)),
                 Collections.singleton(new TableContainedFixtureRule()), new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME);
     }
     

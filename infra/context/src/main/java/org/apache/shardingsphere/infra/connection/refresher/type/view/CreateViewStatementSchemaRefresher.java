@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.connection.refresher.type.view;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.refresher.MetaDataRefresher;
+import org.apache.shardingsphere.infra.connection.refresher.util.TableRefreshUtils;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -29,7 +31,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 
 import java.sql.SQLException;
@@ -46,14 +47,14 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public void refresh(final ModeContextManager modeContextManager, final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
-                        final String schemaName, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
+                        final String schemaName, final DatabaseType databaseType, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+        String viewName = TableRefreshUtils.getTableName(databaseType, sqlStatement.getView().getTableName().getIdentifier());
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
-        if (isSingleTable(viewName, database)) {
+        if (TableRefreshUtils.isSingleTable(viewName, database)) {
             ruleMetaData.findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
         }
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
-                database.getResourceMetaData().getStorageTypes(), database.getResourceMetaData().getDataSources(), ruleMetaData.getRules(), props, schemaName);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
+                database.getProtocolType(), database.getResourceMetaData().getStorageUnitMetaData(), ruleMetaData.getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), material);
         Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(viewName));
         if (actualTableMetaData.isPresent()) {
@@ -62,10 +63,6 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
             alterSchemaMetaDataPOJO.getAlteredViews().add(new ShardingSphereView(viewName, sqlStatement.getViewDefinition()));
             modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         }
-    }
-    
-    private boolean isSingleTable(final String tableName, final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findRules(TableContainedRule.class).stream().noneMatch(each -> each.getDistributedTableMapper().contains(tableName));
     }
     
     @Override

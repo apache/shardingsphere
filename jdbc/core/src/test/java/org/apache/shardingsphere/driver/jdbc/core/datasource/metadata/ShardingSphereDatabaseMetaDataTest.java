@@ -43,8 +43,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -80,20 +78,16 @@ class ShardingSphereDatabaseMetaDataTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataContexts metaDataContexts;
     
-    private final Map<String, DataSource> dataSourceMap = new HashMap<>();
-    
     private ShardingSphereDatabaseMetaData shardingSphereDatabaseMetaData;
     
     @BeforeEach
     void setUp() throws SQLException {
-        dataSourceMap.put(DATA_SOURCE_NAME, dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
         when(shardingSphereConnection.getDatabaseConnectionManager().getRandomPhysicalDataSourceName()).thenReturn(DATA_SOURCE_NAME);
         when(shardingSphereConnection.getDatabaseConnectionManager().getRandomConnection()).thenReturn(connection);
         when(shardingSphereConnection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(shardingSphereConnection.getContextManager().getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
         when(shardingSphereConnection.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getDatabase(shardingSphereConnection.getDatabaseName())).thenReturn(database);
@@ -105,8 +99,8 @@ class ShardingSphereDatabaseMetaDataTest {
     private ShardingRule mockShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, DATA_SOURCE_NAME + "." + TABLE_NAME);
-        ruleConfig.setTables(Collections.singletonList(shardingTableRuleConfig));
-        return new ShardingRule(ruleConfig, Collections.singletonList(DATA_SOURCE_NAME), mock(InstanceContext.class));
+        ruleConfig.setTables(Collections.singleton(shardingTableRuleConfig));
+        return new ShardingRule(ruleConfig, Collections.singleton(DATA_SOURCE_NAME), mock(InstanceContext.class));
     }
     
     @Test

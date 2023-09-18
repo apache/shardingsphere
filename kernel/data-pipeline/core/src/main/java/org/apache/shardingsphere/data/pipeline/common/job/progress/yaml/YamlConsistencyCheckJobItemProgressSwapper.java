@@ -21,9 +21,6 @@ import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.ConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
  * YAML data check job item progress swapper.
  */
@@ -39,18 +36,17 @@ public final class YamlConsistencyCheckJobItemProgressSwapper implements YamlCon
         result.setRecordsCount(data.getRecordsCount());
         result.setCheckBeginTimeMillis(data.getCheckBeginTimeMillis());
         result.setCheckEndTimeMillis(data.getCheckEndTimeMillis());
-        result.setTableCheckPositions(data.getTableCheckPositions());
+        result.setSourceTableCheckPositions(data.getSourceTableCheckPositions());
+        result.setTargetTableCheckPositions(data.getTargetTableCheckPositions());
+        result.setSourceDatabaseType(data.getSourceDatabaseType());
         return result;
     }
     
     @Override
     public ConsistencyCheckJobItemProgress swapToObject(final YamlConsistencyCheckJobItemProgress yamlConfig) {
-        Map<String, Object> tableCheckPositions = new LinkedHashMap<>();
-        if (null != yamlConfig.getTableCheckPositions()) {
-            tableCheckPositions.putAll(yamlConfig.getTableCheckPositions());
-        }
         ConsistencyCheckJobItemProgress result = new ConsistencyCheckJobItemProgress(yamlConfig.getTableNames(), yamlConfig.getIgnoredTableNames(), yamlConfig.getCheckedRecordsCount(),
-                yamlConfig.getRecordsCount(), yamlConfig.getCheckBeginTimeMillis(), yamlConfig.getCheckEndTimeMillis(), tableCheckPositions);
+                yamlConfig.getRecordsCount(), yamlConfig.getCheckBeginTimeMillis(), yamlConfig.getCheckEndTimeMillis(),
+                yamlConfig.getSourceTableCheckPositions(), yamlConfig.getTargetTableCheckPositions(), yamlConfig.getSourceDatabaseType());
         result.setStatus(JobStatus.valueOf(yamlConfig.getStatus()));
         return result;
     }

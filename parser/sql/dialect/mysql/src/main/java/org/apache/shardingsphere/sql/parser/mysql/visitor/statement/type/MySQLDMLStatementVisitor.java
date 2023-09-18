@@ -70,7 +70,7 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitLoadStatement(final LoadStatementContext ctx) {
-        return null != ctx.loadDataStatement() ? visit(ctx.loadDataStatement()) : visit(ctx.loadXmlStatement());
+        return null == ctx.loadDataStatement() ? visit(ctx.loadXmlStatement()) : visit(ctx.loadDataStatement());
     }
     
     @Override

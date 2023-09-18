@@ -20,9 +20,12 @@ package org.apache.shardingsphere.infra.binder.segment.projection.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.SubquerySegmentBinder;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
+
+import java.util.Map;
 
 /**
  * Subquery projection segment binder.
@@ -34,12 +37,13 @@ public final class SubqueryProjectionSegmentBinder {
      * Bind subquery projection segment with metadata.
      *
      * @param segment subquery projection segment
-     * @param metaData meta data
-     * @param defaultDatabaseName default database name
+     * @param statementBinderContext statement binder context
+     * @param tableBinderContexts table binder contexts
      * @return bounded subquery projection segment
      */
-    public static SubqueryProjectionSegment bind(final SubqueryProjectionSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        SubquerySegment boundedSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), metaData, defaultDatabaseName);
+    public static SubqueryProjectionSegment bind(final SubqueryProjectionSegment segment, final SQLStatementBinderContext statementBinderContext,
+                                                 final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        SubquerySegment boundedSubquerySegment = SubquerySegmentBinder.bind(segment.getSubquery(), statementBinderContext, tableBinderContexts);
         SubqueryProjectionSegment result = new SubqueryProjectionSegment(boundedSubquerySegment, segment.getText());
         segment.getAliasSegment().ifPresent(result::setAlias);
         return result;

@@ -71,8 +71,11 @@ class SQLServerMetaDataLoaderTest {
             + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id"
             + " WHERE obj.name IN ('tbl') ORDER BY col.column_id";
     
-    private static final String LOAD_INDEX_META_DATA = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sys.indexes a"
-            + " JOIN sys.objects c ON a.object_id = c.object_id WHERE a.index_id NOT IN (0, 255) AND c.name IN ('tbl')";
+    private static final String LOAD_INDEX_META_DATA = "SELECT idx.name AS INDEX_NAME, obj.name AS TABLE_NAME, col.name AS COLUMN_NAME,"
+            + " idx.is_unique AS IS_UNIQUE FROM sys.indexes idx"
+            + " LEFT JOIN sys.objects obj ON idx.object_id = obj.object_id"
+            + " LEFT JOIN sys.columns col ON obj.object_id = col.object_id"
+            + " WHERE idx.index_id NOT IN (0, 255) AND obj.name IN ('tbl') ORDER BY idx.index_id";
     
     @Test
     void assertLoadWithoutTablesWithHighVersion() throws SQLException {
@@ -178,6 +181,8 @@ class SQLServerMetaDataLoaderTest {
         when(result.next()).thenReturn(true, false);
         when(result.getString("INDEX_NAME")).thenReturn("id");
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
+        when(result.getString("COLUMN_NAME")).thenReturn("id");
+        when(result.getString("IS_UNIQUE")).thenReturn("1");
         return result;
     }
     
@@ -193,6 +198,9 @@ class SQLServerMetaDataLoaderTest {
         assertThat(actualTableMetaData.getColumns().size(), is(2));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
-        assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
+        IndexMetaData expected = new IndexMetaData("id");
+        expected.getColumns().add("id");
+        expected.setUnique(true);
+        assertThat(indexesIterator.next(), is(expected));
     }
 }

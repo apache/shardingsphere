@@ -241,6 +241,11 @@
         <assertion parameters="$122.00:String, 1001:int" expected-data-source-name="expected_dataset" />
         <assertion parameters="$124.00:String, 1001:int" expected-data-source-name="expected_dataset" />
     </test-case>
+
+    <test-case sql="SELECT * FROM t_data_type_date WHERE id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="passthrough"
+               scenario-comments="Test ShardingSphere-Proxy compatibility for MySQL/PostgreSQL/openGauss date type">
+        <assertion parameters="1:int" expected-data-source-name="expected_dataset" />
+    </test-case>
     
     <test-case sql="select * from shardingsphere.cluster_information;" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-file="select_cluster_information.xml" />

@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.encrypt.algorithm.standard;
 
 import com.google.common.base.Strings;
+import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.crypto.Cipher;
@@ -40,7 +41,8 @@ import java.util.Properties;
 /**
  * AES encrypt algorithm.
  */
-public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
+@EqualsAndHashCode
+public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm {
     
     private static final String AES_KEY = "aes-key-value";
     
@@ -73,11 +75,11 @@ public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
+    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
         if (null == cipherValue) {
             return null;
         }
-        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.getDecoder().decode(cipherValue.trim()));
+        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.getDecoder().decode(cipherValue.toString().trim()));
         return new String(result, StandardCharsets.UTF_8);
     }
     

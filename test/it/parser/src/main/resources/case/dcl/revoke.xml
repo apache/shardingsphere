@@ -228,4 +228,6 @@
     <revoke sql-case-id="revoke_execute_on_system_object" />
     <revoke sql-case-id="revoke_view_definition_on_type" />
     <revoke sql-case-id="revoke_execute_on_xml_schema_collection" />
+    <revoke sql-case-id="revoke_usage_on_column_encryption_key" />
+    <revoke sql-case-id="revoke_usage_on_client_master_key" />
 </sql-parser-test-cases>

@@ -20,9 +20,10 @@ package org.apache.shardingsphere.infra.binder.segment.from.impl;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.segment.from.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -48,21 +50,28 @@ public final class SubqueryTableSegmentBinder {
      * Bind subquery table segment with metadata.
      *
      * @param segment join table segment
-     * @param metaData meta data
-     * @param defaultDatabaseName default database name
+     * @param statementBinderContext statement binder context
      * @param tableBinderContexts table binder contexts
+     * @param outerTableBinderContexts outer table binder contexts
      * @return bounded subquery table segment
      */
-    public static SubqueryTableSegment bind(final SubqueryTableSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                                            final Map<String, TableSegmentBinderContext> tableBinderContexts) {
-        SelectStatement boundedSelect = new SelectStatementBinder().bind(segment.getSubquery().getSelect(), metaData, defaultDatabaseName);
+    public static SubqueryTableSegment bind(final SubqueryTableSegment segment, final SQLStatementBinderContext statementBinderContext,
+                                            final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        fillPivotColumnNamesInBinderContext(segment, statementBinderContext);
+        SelectStatement boundedSelect = new SelectStatementBinder().bindCorrelateSubquery(segment.getSubquery().getSelect(), statementBinderContext.getMetaData(),
+                statementBinderContext.getDefaultDatabaseName(), outerTableBinderContexts, statementBinderContext.getExternalTableBinderContexts());
         SubquerySegment boundedSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundedSelect);
         boundedSubquerySegment.setSubqueryType(segment.getSubquery().getSubqueryType());
         SubqueryTableSegment result = new SubqueryTableSegment(boundedSubquerySegment);
         segment.getAliasSegment().ifPresent(result::setAlias);
         IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));
-        tableBinderContexts.put(subqueryTableName.getValue(), new TableSegmentBinderContext(createSubqueryProjections(boundedSelect.getProjections().getProjections(), subqueryTableName)));
+        tableBinderContexts.put(subqueryTableName.getValue().toLowerCase(),
+                new SimpleTableSegmentBinderContext(createSubqueryProjections(boundedSelect.getProjections().getProjections(), subqueryTableName)));
         return result;
+    }
+    
+    private static void fillPivotColumnNamesInBinderContext(final SubqueryTableSegment segment, final SQLStatementBinderContext statementBinderContext) {
+        segment.getPivot().ifPresent(optional -> optional.getPivotColumns().forEach(each -> statementBinderContext.getPivotColumnNames().add(each.getIdentifier().getValue().toLowerCase())));
     }
     
     private static Collection<ProjectionSegment> createSubqueryProjections(final Collection<ProjectionSegment> projections, final IdentifierValue subqueryTableName) {
@@ -84,10 +93,9 @@ public final class SubqueryTableSegmentBinder {
         if (!Strings.isNullOrEmpty(subqueryTableName.getValue())) {
             newColumnSegment.setOwner(new OwnerSegment(0, 0, subqueryTableName));
         }
-        newColumnSegment.setOriginalColumn(originalColumn.getColumn().getOriginalColumn());
-        newColumnSegment.setOriginalTable(originalColumn.getColumn().getOriginalTable());
-        newColumnSegment.setOriginalSchema(originalColumn.getColumn().getOriginalSchema());
-        newColumnSegment.setOriginalDatabase(originalColumn.getColumn().getOriginalDatabase());
+        newColumnSegment.setColumnBoundedInfo(
+                new ColumnSegmentBoundedInfo(originalColumn.getColumn().getColumnBoundedInfo().getOriginalDatabase(), originalColumn.getColumn().getColumnBoundedInfo().getOriginalSchema(),
+                        originalColumn.getColumn().getColumnBoundedInfo().getOriginalTable(), originalColumn.getColumn().getColumnBoundedInfo().getOriginalColumn()));
         ColumnProjectionSegment result = new ColumnProjectionSegment(newColumnSegment);
         result.setVisible(originalColumn.isVisible());
         return result;

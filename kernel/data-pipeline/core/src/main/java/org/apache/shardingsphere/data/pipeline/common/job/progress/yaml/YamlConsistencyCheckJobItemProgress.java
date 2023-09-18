@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -44,5 +45,9 @@ public final class YamlConsistencyCheckJobItemProgress implements YamlConfigurat
     
     private Long checkEndTimeMillis;
     
-    private Map<String, Object> tableCheckPositions;
+    private Map<String, Object> sourceTableCheckPositions = new LinkedHashMap<>();
+    
+    private Map<String, Object> targetTableCheckPositions = new LinkedHashMap<>();
+    
+    private String sourceDatabaseType;
 }

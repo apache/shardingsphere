@@ -39,10 +39,6 @@ public final class DataSourceEnvironment {
                 return "com.mysql.jdbc.Driver";
             case "PostgreSQL":
                 return "org.postgresql.Driver";
-            case "SQLServer":
-                return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-            case "Oracle":
-                return "oracle.jdbc.driver.OracleDriver";
             case "openGauss":
                 return "org.opengauss.Driver";
             default:
@@ -68,10 +64,6 @@ public final class DataSourceEnvironment {
                         + "&useServerPrepStmts=true&serverTimezone=UTC&useLocalSessionState=true&characterEncoding=utf-8", host, port);
             case "PostgreSQL":
                 return String.format("jdbc:postgresql://%s:%s/?ssl=on&sslmode=prefer", host, port);
-            case "SQLServer":
-                return String.format("jdbc:sqlserver://%s:%s", host, port);
-            case "Oracle":
-                return String.format("jdbc:oracle:thin:@%s:%s", host, port);
             case "openGauss":
                 return String.format("jdbc:opengauss://%s:%s/", host, port);
             default:
@@ -100,10 +92,6 @@ public final class DataSourceEnvironment {
                         host, port, dataSourceName);
             case "PostgreSQL":
                 return String.format("jdbc:postgresql://%s:%s/%s?ssl=on&sslmode=prefer", host, port, dataSourceName);
-            case "SQLServer":
-                return String.format("jdbc:sqlserver://%s:%s;DatabaseName=%s", host, port, dataSourceName);
-            case "Oracle":
-                return String.format("jdbc:oracle:thin:@%s:%s/%s", host, port, dataSourceName);
             case "openGauss":
                 return String.format("jdbc:opengauss://%s:%s/%s?batchMode=OFF", host, port, dataSourceName);
             default:

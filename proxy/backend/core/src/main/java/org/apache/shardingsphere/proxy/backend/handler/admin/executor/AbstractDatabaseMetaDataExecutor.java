@@ -31,11 +31,11 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.me
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -49,7 +49,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -161,12 +160,12 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         @Override
         protected void processMetaData(final String databaseName, final Consumer<ResultSet> callback) throws SQLException {
             ResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
-            Optional<Entry<String, DataSource>> dataSourceEntry = resourceMetaData.getDataSources().entrySet().stream().findFirst();
-            if (!dataSourceEntry.isPresent()) {
+            Optional<StorageUnit> storageUnit = resourceMetaData.getStorageUnitMetaData().getStorageUnits().values().stream().findFirst();
+            if (!storageUnit.isPresent()) {
                 return;
             }
             try (
-                    Connection connection = dataSourceEntry.get().getValue().getConnection();
+                    Connection connection = storageUnit.get().getDataSource().getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 for (int i = 0; i < parameters.size(); i++) {
                     preparedStatement.setObject(i + 1, parameters.get(i));

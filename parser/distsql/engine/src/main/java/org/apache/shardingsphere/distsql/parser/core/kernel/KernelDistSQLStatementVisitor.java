@@ -137,9 +137,10 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
         String user = getIdentifierValue(ctx.user());
         String password = null == ctx.password() ? "" : getPassword(ctx.password());
         Properties props = getProperties(ctx.propertiesDefinition());
-        return null != ctx.urlSource() ? new URLBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.urlSource().url()), user, password, props)
-                : new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.simpleSource().hostname()),
-                        ctx.simpleSource().port().getText(), getIdentifierValue(ctx.simpleSource().dbName()), user, password, props);
+        return null == ctx.urlSource()
+                ? new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()),
+                        getIdentifierValue(ctx.simpleSource().hostname()), ctx.simpleSource().port().getText(), getIdentifierValue(ctx.simpleSource().dbName()), user, password, props)
+                : new URLBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.urlSource().url()), user, password, props);
     }
     
     private String getPassword(final PasswordContext ctx) {
@@ -174,7 +175,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitLabelComputeNode(final LabelComputeNodeContext ctx) {
         Collection<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
-        return new LabelComputeNodeStatement(ctx.RELABEL() != null, getIdentifierValue(ctx.instanceId()), labels);
+        return new LabelComputeNodeStatement(null != ctx.RELABEL(), getIdentifierValue(ctx.instanceId()), labels);
     }
     
     @Override
@@ -206,7 +207,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitUnregisterStorageUnit(final UnregisterStorageUnitContext ctx) {
         boolean ignoreSingleTables = null != ctx.ignoreSingleTables();
-        return new UnregisterStorageUnitStatement(ctx.ifExists() != null,
+        return new UnregisterStorageUnitStatement(null != ctx.ifExists(),
                 ctx.storageUnitName().stream().map(ParseTree::getText).map(each -> new IdentifierValue(each).getValue()).collect(Collectors.toList()), ignoreSingleTables);
     }
     

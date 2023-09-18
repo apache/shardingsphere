@@ -119,11 +119,16 @@ jobs:
           ref: ${{ inputs.commit-id }}
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.3.1'
-          java-version: '17'
-          components: 'espresso,native-image'
+          java-version: '17.0.8'
+          distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          cache: 'maven'
+      - uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
+          restore-keys: |
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - uses: docker/login-action@v2
         with:
           registry: ${{ env.HUB }}
@@ -217,17 +222,17 @@ jobs:
       - name: Build with Maven
         run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
       - name: Generate Examples
-        run: ./mvnw -B clean install -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator -Dproducts=${{ matrix.product }} -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
+        run: ./mvnw -B clean install -f examples/shardingsphere-jdbc-example-generator/pom.xml -Pexample-generator -Dproducts=${{ matrix.product }} -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
       - name: Test Examples
-        run : ./mvnw -B test -f examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/pom.xml -Pexample-generator -Dexec.cleanupDaemonThreads=false
+        run : ./mvnw -B test -f examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/pom.xml -Pexample-generator -Dexec.cleanupDaemonThreads=false
       - name: Package Examples
         run: |
-          cd examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-jdbc-sample/
+          cd examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/
           tar -czvf ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}
       - uses: burnett01/rsync-deployments@5.2
         with:
           switches: -avzr
-          path: examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
+          path: examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
           remote_path: ${{ secrets.NIGHTLIES_RSYNC_PATH }}/shardingsphere/examples
           remote_host: ${{ secrets.NIGHTLIES_RSYNC_HOST }}
           remote_port: ${{ secrets.NIGHTLIES_RSYNC_PORT }}

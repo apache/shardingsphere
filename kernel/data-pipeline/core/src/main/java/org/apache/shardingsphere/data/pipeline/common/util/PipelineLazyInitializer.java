@@ -38,6 +38,11 @@ public abstract class PipelineLazyInitializer<T> extends LazyInitializer<T> {
         return result;
     }
     
+    /**
+     * Is initialized.
+     *
+     * @return initialized or not
+     */
     public boolean isInitialized() {
         return initialized.get();
     }

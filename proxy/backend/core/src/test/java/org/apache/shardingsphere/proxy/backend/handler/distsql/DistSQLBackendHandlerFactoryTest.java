@@ -92,7 +92,6 @@ class DistSQLBackendHandlerFactoryTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
         when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         return result;
@@ -135,25 +134,25 @@ class DistSQLBackendHandlerFactoryTest {
     
     @Test
     void assertExecuteAlterShadowRuleContext() throws SQLException {
-        mockShardingSphereRuleMetaData();
+        mockRuleMetaData();
         assertThat(RDLBackendHandlerFactory.newInstance(mock(AlterShadowRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteCreateShadowRuleContext() throws SQLException {
-        mockShardingSphereRuleMetaData();
+        mockRuleMetaData();
         assertThat(RDLBackendHandlerFactory.newInstance(mock(CreateShadowRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropShadowRuleContext() throws SQLException {
-        mockShardingSphereRuleMetaData();
+        mockRuleMetaData();
         assertThat(RDLBackendHandlerFactory.newInstance(mock(DropShadowRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteAlterDefaultShadowAlgorithm() throws SQLException {
-        mockShardingSphereRuleMetaData();
+        mockRuleMetaData();
         AlterDefaultShadowAlgorithmStatement statement = new AlterDefaultShadowAlgorithmStatement(
                 new ShadowAlgorithmSegment("foo", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
         assertThat(RDLBackendHandlerFactory.newInstance(statement, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
@@ -161,25 +160,25 @@ class DistSQLBackendHandlerFactoryTest {
     
     @Test
     void assertExecuteShowShadowRulesContext() throws SQLException {
-        mockShardingSphereRuleMetaData();
+        mockRuleMetaData();
         assertThat(RQLBackendHandlerFactory.newInstance(mock(ShowShadowRulesStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
     @Test
     void assertExecuteShowShadowTableRulesContext() throws SQLException {
-        mockShardingSphereRuleMetaData();
+        mockRuleMetaData();
         assertThat(RQLBackendHandlerFactory.newInstance(mock(ShowShadowTableRulesStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
     @Test
     void assertExecuteShowShadowAlgorithmsContext() throws SQLException {
-        mockShardingSphereRuleMetaData();
+        mockRuleMetaData();
         assertThat(RQLBackendHandlerFactory.newInstance(mock(ShowShadowAlgorithmsStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropShadowAlgorithmContext() throws SQLException {
-        mockShardingSphereRuleMetaData();
+        mockRuleMetaData();
         assertThat(RDLBackendHandlerFactory.newInstance(mock(DropShadowAlgorithmStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
@@ -208,7 +207,7 @@ class DistSQLBackendHandlerFactoryTest {
         assertThat(RQLBackendHandlerFactory.newInstance(mock(ShowStorageUnitsStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
-    private void mockShardingSphereRuleMetaData() {
+    private void mockRuleMetaData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getResourceMetaData()).thenReturn(mock(ResourceMetaData.class));

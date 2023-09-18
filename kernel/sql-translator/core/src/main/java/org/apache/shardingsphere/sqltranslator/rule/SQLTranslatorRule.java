@@ -66,9 +66,4 @@ public final class SQLTranslatorRule implements GlobalRule {
             throw ex;
         }
     }
-    
-    @Override
-    public String getType() {
-        return SQLTranslatorRule.class.getSimpleName();
-    }
 }

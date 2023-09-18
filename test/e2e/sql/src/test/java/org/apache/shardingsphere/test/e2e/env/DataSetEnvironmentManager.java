@@ -60,7 +60,7 @@ import java.util.concurrent.Future;
 public final class DataSetEnvironmentManager {
     
     // TODO ExecutorEngine.execute and callback
-    private static final ExecutorServiceManager EXECUTOR_SERVICE_MANAGER = ExecutorEngine.createExecutorEngineWithCPU().getExecutorServiceManager();
+    private static final ExecutorServiceManager EXECUTOR_SERVICE_MANAGER = ExecutorEngine.createExecutorEngineWithSize(Runtime.getRuntime().availableProcessors() * 2 - 1).getExecutorServiceManager();
     
     private static final String DATA_COLUMN_DELIMITER = ", ";
     
@@ -98,7 +98,7 @@ public final class DataSetEnvironmentManager {
             fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
         }
         final List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
-        for (final Future<Void> future : futures) {
+        for (Future<Void> future : futures) {
             future.get();
         }
     }
@@ -146,8 +146,8 @@ public final class DataSetEnvironmentManager {
         for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
             deleteTasks.add(new DeleteTask(dataSourceMap.get(entry.getKey()), entry.getValue()));
         }
-        final List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(deleteTasks);
-        for (final Future<Void> future : futures) {
+        List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(deleteTasks);
+        for (Future<Void> future : futures) {
             future.get();
         }
     }
@@ -220,7 +220,7 @@ public final class DataSetEnvironmentManager {
                 for (String each : tableNames) {
                     DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
                     DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", dialectDatabaseMetaData.getQuoteCharacter().wrap(each)))) {
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", dialectDatabaseMetaData.getQuoteCharacter().wrap(each)))) {
                         preparedStatement.execute();
                     }
                 }

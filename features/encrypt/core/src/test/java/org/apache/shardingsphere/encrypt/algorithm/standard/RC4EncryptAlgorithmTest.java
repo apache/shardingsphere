@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.standard;
 
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -38,12 +38,11 @@ import static org.mockito.Mockito.mock;
 
 class RC4EncryptAlgorithmTest {
     
-    private StandardEncryptAlgorithm<Object, String> encryptAlgorithm;
+    private StandardEncryptAlgorithm encryptAlgorithm;
     
-    @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
-        encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "RC4", PropertiesBuilder.build(new Property("rc4-key-value", "test-sharding")));
+        encryptAlgorithm = (StandardEncryptAlgorithm) TypedSPILoader.getService(EncryptAlgorithm.class, "RC4", PropertiesBuilder.build(new Property("rc4-key-value", "test-sharding")));
     }
     
     @Test

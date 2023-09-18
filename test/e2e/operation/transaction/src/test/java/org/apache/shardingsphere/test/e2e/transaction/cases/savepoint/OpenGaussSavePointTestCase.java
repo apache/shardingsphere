@@ -44,7 +44,7 @@ public final class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
     
     @Override
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
-        assertRollback2Savepoint();
+        assertRollbackToSavepoint();
         assertReleaseSavepoint();
         assertErrors();
     }

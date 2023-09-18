@@ -109,7 +109,7 @@ class ProxyBackendHandlerFactoryTest {
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(
-                new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build(), Collections.emptyMap()),
+                new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build()),
                 new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()),
                 new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build(), Collections.emptyMap())));
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);

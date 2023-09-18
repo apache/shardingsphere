@@ -41,10 +41,7 @@ public final class ConsistencyCheckJobConfiguration implements PipelineJobConfig
     
     private final Properties algorithmProps;
     
-    @Override
-    public DatabaseType getSourceDatabaseType() {
-        throw new UnsupportedOperationException("");
-    }
+    private final DatabaseType sourceDatabaseType;
     
     /**
      * Get job sharding count.

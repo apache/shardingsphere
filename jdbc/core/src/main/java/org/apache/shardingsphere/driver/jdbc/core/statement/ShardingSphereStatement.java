@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.executor.batch.BatchStatementExecutor;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteCallback;
@@ -31,17 +30,16 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.EmptySQLException;
-import org.apache.shardingsphere.driver.jdbc.exception.transaction.JDBCTransactionAcrossDatabasesException;
-import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -164,7 +162,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             QueryContext queryContext = createQueryContext(sql);
             databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
-            checkSameDatabaseNameInTransaction(queryContext.getSqlStatementContext(), databaseName);
+            connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
             trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
@@ -240,7 +238,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connection.getDatabaseConnectionManager(), statementManager, statementOption,
                 metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageTypes());
+                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData());
     }
     
     @Override
@@ -313,7 +311,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private int executeUpdate0(final String sql, final ExecuteUpdateCallback updateCallback, final TrafficExecutorCallback<Integer> trafficCallback) throws SQLException {
         QueryContext queryContext = createQueryContext(sql);
         databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
-        checkSameDatabaseNameInTransaction(queryContext.getSqlStatementContext(), databaseName);
+        connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
         trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
         if (null != trafficInstanceId) {
             JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
@@ -431,7 +429,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             QueryContext queryContext = createQueryContext(sql);
             databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
-            checkSameDatabaseNameInTransaction(queryContext.getSqlStatementContext(), databaseName);
+            connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
             trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
@@ -451,19 +449,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             return isNeedImplicitCommitTransaction(connection, executionContext) ? executeWithImplicitCommitTransaction(executeCallback) : useDriverToExecute(executeCallback);
         } finally {
             currentResultSet = null;
-        }
-    }
-    
-    private void checkSameDatabaseNameInTransaction(final SQLStatementContext sqlStatementContext, final String connectionDatabaseName) {
-        if (!connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
-            return;
-        }
-        if (sqlStatementContext instanceof TableAvailable) {
-            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(optional -> {
-                if (!optional.equals(connectionDatabaseName)) {
-                    throw new JDBCTransactionAcrossDatabasesException();
-                }
-            });
         }
     }
     
@@ -500,11 +485,15 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private QueryContext createQueryContext(final String originSQL) {
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         String sql = sqlParserRule.isSqlCommentParseEnabled() ? originSQL : SQLHintUtils.removeHint(originSQL);
-        DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType();
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(protocolType.getTrunkDatabaseType().orElse(protocolType)).parse(sql, false);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), databaseName).bind(sqlStatement, Collections.emptyList());
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(getDatabaseType()).parse(sql, false);
         HintValueContext hintValueContext = sqlParserRule.isSqlCommentParseEnabled() ? new HintValueContext() : SQLHintUtils.extractHint(originSQL).orElseGet(HintValueContext::new);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
+    }
+    
+    private DatabaseType getDatabaseType() {
+        DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType();
+        return protocolType.getTrunkDatabaseType().orElse(protocolType);
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) throws SQLException {
@@ -534,7 +523,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             result = useDriverToExecute(callback);
             connection.commit();
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
             connection.rollback();
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());

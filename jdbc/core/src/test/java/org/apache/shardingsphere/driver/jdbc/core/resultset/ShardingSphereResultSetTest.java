@@ -537,7 +537,7 @@ class ShardingSphereResultSetTest {
     
     @Test
     void assertGetObjectWithFloat() throws SQLException {
-        float result = 0.0f;
+        float result = 0.0F;
         when(mergeResultSet.getValue(1, float.class)).thenReturn(result);
         assertThat(shardingSphereResultSet.getObject(1, float.class), is(result));
         when(mergeResultSet.getValue(1, Float.class)).thenReturn(result);

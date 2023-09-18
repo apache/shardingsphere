@@ -41,9 +41,9 @@ public final class H2Container extends EmbeddedStorageContainer {
     
     private final ScenarioDataPath scenarioDataPath;
     
-    public H2Container(final StorageContainerConfiguration storageContainerConfiguration) {
-        super(TypedSPILoader.getService(DatabaseType.class, "H2"), storageContainerConfiguration.getScenario());
-        scenarioDataPath = new ScenarioDataPath(storageContainerConfiguration.getScenario());
+    public H2Container(final StorageContainerConfiguration storageContainerConfig) {
+        super(TypedSPILoader.getService(DatabaseType.class, "H2"), storageContainerConfig.getScenario());
+        scenarioDataPath = new ScenarioDataPath(storageContainerConfig.getScenario());
     }
     
     @Override

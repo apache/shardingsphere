@@ -35,7 +35,9 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -60,6 +62,7 @@ import org.mockito.quality.Strictness;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -150,14 +153,21 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(result.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
-                new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
+        RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(
+                new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()), new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("foo_ds"));
-        when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        when(database.containsSchema("public")).thenReturn(true);
+        when(database.getSchema("public").containsTable("t_order")).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(database.getSchema("public").getTable("t_order").getColumnValues())
+                .thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false)));
         return result;
     }
 }

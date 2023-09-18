@@ -27,7 +27,7 @@ public final class UnknownColumnException extends MetaDataSQLException {
     
     private static final long serialVersionUID = -1305402273592303335L;
     
-    public UnknownColumnException(final String columnName) {
-        super(XOpenSQLState.NOT_FOUND, 6, "Unknown column '%s' in 'field list'.", columnName);
+    public UnknownColumnException(final String columnExpression, final String segmentTypeMessage) {
+        super(XOpenSQLState.NOT_FOUND, 6, "Unknown column '%s' in '%s'.", columnExpression, segmentTypeMessage);
     }
 }

@@ -76,18 +76,18 @@ nullValueLiterals
     ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord | STRING_
+    : IDENTIFIER_ | unreservedWord | DOUBLE_QUOTED_TEXT
     ;
 
 unreservedWord
-    : unreservedWord1 | unreservedWord2 | unreservedWord3
+    : unreservedWord1 | unreservedWord2 | unreservedWord3 | capacityUnit
     ;
 
 unreservedWord1
     : TRUNCATE | FUNCTION | PROCEDURE | CASE | WHEN | CAST | TRIM | SUBSTRING
     | NATURAL | JOIN | FULL | INNER | OUTER | LEFT | RIGHT
     | CROSS | USING | IF | TRUE | FALSE | LIMIT | OFFSET
-    | BEGIN | COMMIT | ROLLBACK | SAVEPOINT | BOOLEAN | DOUBLE | CHARACTER
+    | COMMIT | ROLLBACK | SAVEPOINT
     | ARRAY | INTERVAL | TIME | TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | YEAR
     | QUARTER | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND
     | MICROSECOND | MAX | MIN | SUM | COUNT | AVG | ENABLE
@@ -97,7 +97,7 @@ unreservedWord1
     | FLASHBACK | ARCHIVE | REFRESH | QUERY | REWRITE | KEEP | SEQUENCE
     | INHERIT | TRANSLATE | SQL | MERGE | AT | BITMAP | CACHE | CHECKPOINT
     | CONSTRAINTS | CYCLE | DBTIMEZONE | ENCRYPT | DECRYPT | DEFERRABLE
-    | DEFERRED | EDITION | ELEMENT | END | EXCEPTIONS | FORCE | GLOBAL
+    | DEFERRED | EDITION | ELEMENT | EXCEPTIONS | FORCE | GLOBAL
     | IDENTITY | INITIALLY | INVALIDATE | JAVA | LEVELS | LOCAL | MAXVALUE
     | MINVALUE | NOMAXVALUE | NOMINVALUE | MINING | MODEL | NATIONAL | NEW
     | NOCACHE | NOCYCLE | NOORDER | NORELY | NOVALIDATE | ONLY | PRESERVE
@@ -114,11 +114,11 @@ unreservedWord1
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
     | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | MINUTE | ANY 
-    | LENGTH | SINGLE_C | capacityUnit | TIME_UNIT | TARGET | PUBLIC | ID | STATE | PRIORITY
+    | LENGTH | SINGLE_C | TIME_UNIT | TARGET | PUBLIC | ID | STATE | PRIORITY
     | CONSTRAINT | PRIMARY | FOREIGN | KEY | POSITION | PRECISION | FUNCTION | PROCEDURE | SPECIFICATION | CASE
     | WHEN | CAST | TRIM | SUBSTRING | FULL | INNER | OUTER | LEFT | RIGHT | CROSS
     | USING | FALSE | SAVEPOINT | BODY | CHARACTER | ARRAY | TIME | TIMEOUT | TIMESTAMP | LOCALTIME
-    | DAY | ENABLE | DISABLE | CALL | INSTANCE | CLOSE | NEXT | NAME | INT | NUMERIC
+    | DAY | ENABLE | DISABLE | CALL | INSTANCE | CLOSE | NEXT | NAME | NUMERIC
     | TRIGGERS | GLOBAL_NAME | BINARY | MOD | XOR | UNKNOWN | ALWAYS | CASCADE | GENERATED | PRIVILEGES
     | READ | WRITE | ROLE | VISIBLE | INVISIBLE | EXECUTE | USE | DEBUG | UNDER | FLASHBACK
     | ARCHIVE | REFRESH | QUERY | REWRITE | CHECKPOINT | ENCRYPT | DIRECTORY | CREDENTIALS | EXCEPT | NOFORCE
@@ -328,7 +328,7 @@ unreservedWord3
     | WIDTH_BUCKET | WRAPPED | XID | XMLAGG | XMLATTRIBUTES | XMLCAST | XMLCDATA | XMLCOLATTVAL | XMLCOMMENT | XMLCONCAT | XMLDIFF
     | XMLEXISTS | XMLEXISTS2 | XMLFOREST | XMLINDEX_REWRITE | XMLINDEX_REWRITE_IN_SELECT | XMLINDEX_SEL_IDX_TBL | XMLISNODE
     | XMLISVALID | XMLNAMESPACES | XMLPARSE | XMLPATCH | XMLPI | XMLQUERY | XMLROOT | XMLSERIALIZE | XMLTABLE | XMLTOOBJECT
-    | XMLTRANSFORM | XMLTRANSFORMBLOB | XML_DML_RWT_STMT | XPATHTABLE | XS_SYS_CONTEXT | X_DYN_PRUNE | RESULT | TABLE
+    | XMLTRANSFORM | XMLTRANSFORMBLOB | XML_DML_RWT_STMT | XPATHTABLE | XS_SYS_CONTEXT | X_DYN_PRUNE | RESULT | TABLE | NUMBER | CHAR
     ;
 
 schemaName
@@ -560,7 +560,7 @@ partitionSetName
     ;
 
 partitionKeyValue
-    : INTEGER_ | dateTimeLiterals
+    : INTEGER_ | dateTimeLiterals | toDateFunction
     ;
 
 subpartitionKeyValue
@@ -568,6 +568,10 @@ subpartitionKeyValue
     ;
 
 encryptAlgorithmName
+    : STRING_
+    ;
+
+integrityAlgorithm
     : STRING_
     ;
 
@@ -584,7 +588,7 @@ roleName
     ;
 
 username
-    : identifier
+    : identifier | STRING_
     ;
 
 password
@@ -624,7 +628,7 @@ dataTypeLength
     ;
 
 primaryKey
-    : PRIMARY? KEY
+    : PRIMARY KEY
     ;
 
 exprs
@@ -660,11 +664,11 @@ notOperator
 
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-    | PRIOR predicate
+    | (PRIOR | DISTINCT) predicate
     | CONNECT_BY_ROOT predicate
     | booleanPrimary SAFE_EQ_ predicate
-    | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
+    | booleanPrimary comparisonOperator predicate
     | predicate
     ;
 
@@ -771,7 +775,15 @@ leadLagInfo
 
 specialFunction
     : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
-    | setFunction | translateFunction
+    | setFunction | translateFunction | cursorFunction | toDateFunction
+    ;
+
+toDateFunction
+    : TO_DATE LP_ char=STRING_ (DEFAULT returnValue=STRING_ ON CONVERSION ERROR)? (COMMA_ fmt=STRING_ (COMMA_ STRING_)?)? RP_
+    ;
+
+cursorFunction
+    : CURSOR subquery
     ;
 
 translateFunction
@@ -784,15 +796,20 @@ setFunction
 
 featureFunction
     : featureFunctionName LP_ (schemaName DOT_)? modelName (COMMA_ featureId)? (COMMA_ numberLiterals (COMMA_ numberLiterals)?)?
-    (DESC | ASC | ABS)? miningAttributeClause (AND miningAttributeClause)? RP_
+    (DESC | ASC | ABS)? cost_matrix_clause? miningAttributeClause (AND miningAttributeClause)? RP_
     ;
 
 featureFunctionName
-    : FEATURE_COMPARE | FEATURE_DETAILS | FEATURE_SET | FEATURE_ID | FEATURE_VALUE | CLUSTER_DETAILS | CLUSTER_DISTANCE | CLUSTER_ID | CLUSTER_PROBABILITY | CLUSTER_SET | PREDICTION_PROBABILITY
+    : FEATURE_COMPARE | FEATURE_DETAILS | FEATURE_SET | FEATURE_ID | FEATURE_VALUE | CLUSTER_DETAILS | CLUSTER_DISTANCE | CLUSTER_ID | CLUSTER_PROBABILITY | CLUSTER_SET
+    | PREDICTION_PROBABILITY | PREDICTION_SET | PREDICTION_BOUNDS | PREDICTION | PREDICTION_DETAILS
+    ;
+
+cost_matrix_clause
+    : COST (MODEL (AUTO)?)? | LP_ literals RP_ (COMMA_ LP_ literals RP_)* VALUES LP_ LP_ literals (COMMA_ literals)* RP_ (COMMA_ LP_ literals (COMMA_ literals)* RP_) RP_
     ;
 
 miningAttributeClause
-    : USING (ASTERISK_ | (schemaName DOT_)? tableName DOT_ ASTERISK_ | expr (AS? alias)?)
+    : USING (ASTERISK_ | ((schemaName DOT_)? tableName DOT_ ASTERISK_ | expr (AS? alias)?) (COMMA_ ((schemaName DOT_)? tableName DOT_ ASTERISK_ | expr (AS? alias)?))*)
     ;
 
 trimFunction
@@ -992,7 +1009,7 @@ hashSubpartitionQuantity
     ;
 
 odciParameters
-    : identifier
+    : STRING_
     ;
 
 databaseName
@@ -1004,7 +1021,7 @@ locationName
     ;
 
 fileName
-    : STRING_
+    : identifier | STRING_
     ;
 
 asmFileName
@@ -1116,7 +1133,7 @@ logminerSessionName
     ;
 
 tablespaceGroupName
-    : identifier
+    : identifier | STRING_
     ;
 
 copyName
@@ -1775,7 +1792,7 @@ searchString
     ;
 
 attributeValue
-    : identifier
+    : STRING_
     ;
 
 joinGroupName
@@ -1795,7 +1812,7 @@ matchString
     ;
 
 parameterType
-    : identifier
+    : (owner DOT_)? identifier
     ;
 
 returnType
@@ -1924,7 +1941,9 @@ datetimeExpr
     ;
 
 xmlFunction
-    : xmlAggFunction
+    : xmlElementFunction
+    | xmlCdataFunction
+    | xmlAggFunction
     | xmlColattvalFunction
     | xmlExistsFunction
     | xmlForestFunction
@@ -1940,6 +1959,22 @@ xmlFunction
         | SYS_DBURIGEN | UPDATEXML | XMLCONCAT | XMLDIFF | XMLEXISTS | XMLISVALID | XMLPATCH | XMLSEQUENCE | XMLTRANSFORM) exprList
     | specifiedFunctionName = (DEPTH | PATH) LP_ correlationInteger RP_
     | specifiedFunctionName = XMLCOMMENT LP_ stringLiterals RP_
+    ;
+
+xmlElementFunction
+    : XMLELEMENT LP_ identifier (COMMA_ xmlAttributes)? (COMMA_ exprWithAlias)* RP_
+    ;
+
+exprWithAlias
+    : expr (AS alias)?
+    ;
+
+xmlAttributes
+    : XMLATTRIBUTES LP_ exprWithAlias (COMMA_ exprWithAlias)* RP_
+    ;
+
+xmlCdataFunction
+    : XMLCDATA LP_ stringLiterals RP_
     ;
 
 xmlAggFunction
@@ -2024,41 +2059,6 @@ multisetOperator
     | UNION
     ;
 
-columnDefinition
-    : columnName dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
-    ;
-
-visibleClause
-    : (VISIBLE | INVISIBLE)?
-    ;
-
-defaultNullClause
-    : DEFAULT (ON NULL)?
-    ;
-
-identityClause
-    : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY identifyOptions
-    ;
-
-identifyOptions
-    : LP_? (identityOption+)? RP_?
-    ;
-
-identityOption
-    : START WITH (INTEGER_ | LIMIT VALUE)
-    | INCREMENT BY INTEGER_
-    | MAXVALUE INTEGER_
-    | NOMAXVALUE
-    | MINVALUE INTEGER_
-    | NOMINVALUE
-    | CYCLE
-    | NOCYCLE
-    | CACHE INTEGER_
-    | NOCACHE
-    | ORDER
-    | NOORDER
-    ;
-
-encryptionSpecification
-    : (USING STRING_)? (IDENTIFIED BY STRING_)? STRING_? (NO? SALT)?
+superview
+    : identifier
     ;

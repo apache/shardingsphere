@@ -45,7 +45,8 @@ public final class RALBackendHandlerFactory {
             return new QueryableRALBackendHandler<>((QueryableRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
-            if ("Cluster".equals(ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType())) {
+            String modeType = ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType();
+            if ("Cluster".equals(modeType) || "Standalone".equals(modeType)) {
                 return new NewUpdatableGlobalRuleRALBackendHandler((UpdatableGlobalRuleRALStatement) sqlStatement);
             }
             return new UpdatableGlobalRuleRALBackendHandler((UpdatableGlobalRuleRALStatement) sqlStatement);

@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.api.metadata.model;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Pipeline table meta data.
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 @EqualsAndHashCode(of = "name")
 @ToString

@@ -64,7 +64,6 @@ public final class EncryptTable {
         return result;
     }
     
-    @SuppressWarnings("rawtypes")
     private EncryptColumn createEncryptColumn(final EncryptColumnRuleConfiguration config, final Map<String, StandardEncryptAlgorithm> standardEncryptors,
                                               final Map<String, AssistedEncryptAlgorithm> assistedEncryptors, final Map<String, LikeEncryptAlgorithm> likeEncryptors) {
         EncryptColumn result = new EncryptColumn(config.getName(), new CipherColumnItem(config.getCipher().getName(), standardEncryptors.get(config.getCipher().getEncryptorName())));
@@ -83,8 +82,8 @@ public final class EncryptTable {
      * @param logicColumnName logic column name
      * @return found encryptor
      */
-    public Optional<StandardEncryptAlgorithm<?, ?>> findEncryptor(final String logicColumnName) {
-        return columns.containsKey(logicColumnName) ? Optional.of((StandardEncryptAlgorithm<?, ?>) columns.get(logicColumnName).getCipher().getEncryptor()) : Optional.empty();
+    public Optional<StandardEncryptAlgorithm> findEncryptor(final String logicColumnName) {
+        return columns.containsKey(logicColumnName) ? Optional.of(columns.get(logicColumnName).getCipher().getEncryptor()) : Optional.empty();
     }
     
     /**

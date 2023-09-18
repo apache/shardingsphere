@@ -181,14 +181,14 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
         if (expressionSegment instanceof BetweenExpression) {
             result.append(((BetweenExpression) expressionSegment).getBetweenExpr());
         } else if (expressionSegment instanceof BinaryOperationExpression) {
-            result.append(((BinaryOperationExpression) expressionSegment).getText());
+            result.append(expressionSegment.getText());
         }
         return result.toString();
     }
     
     @Override
     public boolean next() {
-        return resultNum < maxLimitResultSize && (rows.hasNext() || compensateResult != null);
+        return resultNum < maxLimitResultSize && (rows.hasNext() || null != compensateResult);
     }
     
     @Override

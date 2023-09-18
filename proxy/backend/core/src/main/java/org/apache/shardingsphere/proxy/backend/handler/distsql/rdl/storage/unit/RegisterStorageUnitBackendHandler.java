@@ -20,12 +20,12 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
+import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.converter.DataSourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
@@ -50,30 +50,30 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
     
     private final DatabaseType databaseType;
     
-    private final DataSourcePropertiesValidateHandler validateHandler;
+    private final DataSourcePoolPropertiesValidateHandler validateHandler;
     
     public RegisterStorageUnitBackendHandler(final RegisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
         databaseType = connectionSession.getProtocolType();
-        validateHandler = new DataSourcePropertiesValidateHandler();
+        validateHandler = new DataSourcePoolPropertiesValidateHandler();
     }
     
     @Override
     public ResponseHeader execute(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
-        Map<String, DataSourceProperties> dataSourcePropsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
+        Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
         if (sqlStatement.isIfNotExists()) {
             Collection<String> currentStorageUnits = getCurrentStorageUnitNames(databaseName);
             Collection<String> logicalDataSourceNames = getLogicalDataSourceNames(databaseName);
-            dataSourcePropsMap.keySet().removeIf(currentStorageUnits::contains);
-            dataSourcePropsMap.keySet().removeIf(logicalDataSourceNames::contains);
+            propsMap.keySet().removeIf(currentStorageUnits::contains);
+            propsMap.keySet().removeIf(logicalDataSourceNames::contains);
         }
-        if (dataSourcePropsMap.isEmpty()) {
+        if (propsMap.isEmpty()) {
             return new UpdateResponseHeader(sqlStatement);
         }
-        validateHandler.validate(dataSourcePropsMap);
+        validateHandler.validate(propsMap);
         try {
-            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, propsMap);
         } catch (final SQLException | ShardingSphereExternalException ex) {
             log.error("Register storage unit failed", ex);
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
@@ -112,7 +112,7 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
     }
     
     private Collection<String> getCurrentStorageUnitNames(final String databaseName) {
-        return ProxyContext.getInstance().getContextManager().getDataSourceMap(databaseName).keySet();
+        return ProxyContext.getInstance().getContextManager().getStorageUnits(databaseName).keySet();
     }
     
     private Collection<String> getLogicalDataSourceNames(final String databaseName) {

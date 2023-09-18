@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.switcher;
 
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
@@ -33,8 +34,8 @@ class SwitchingResourceTest {
     void assertCloseStaleDataSources() {
         MockedDataSource staleDataSource = new MockedDataSource();
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
-        StorageResource newStorageResource = new StorageResource(Collections.singletonMap("new_ds", new MockedDataSource()), Collections.emptyMap());
-        StorageResource staleStorageResource = new StorageResource(Collections.singletonMap("stale_ds", staleDataSource), Collections.emptyMap());
+        StorageResource newStorageResource = new StorageResource(Collections.singletonMap(new StorageNode("new_ds"), new MockedDataSource()), Collections.emptyMap());
+        StorageResource staleStorageResource = new StorageResource(Collections.singletonMap(new StorageNode("stale_ds"), staleDataSource), Collections.emptyMap());
         new SwitchingResource(resourceMetaData, newStorageResource, staleStorageResource, Collections.emptyMap()).closeStaleDataSources();
         verify(resourceMetaData).close(staleDataSource);
     }

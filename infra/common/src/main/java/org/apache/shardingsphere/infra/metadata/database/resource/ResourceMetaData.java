@@ -20,17 +20,17 @@ package org.apache.shardingsphere.infra.metadata.database.resource;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
-import org.apache.shardingsphere.infra.datasource.storage.StorageResource;
-import org.apache.shardingsphere.infra.datasource.storage.StorageUtils;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResourceUtils;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnitMetaData;
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -43,57 +43,25 @@ import java.util.stream.Collectors;
 @Getter
 public final class ResourceMetaData {
     
-    private final StorageNodeMetaData storageNodeMetaData;
+    private final Map<StorageNode, DataSource> storageNodeDataSources;
     
     private final StorageUnitMetaData storageUnitMetaData;
-    
-    private final Map<String, DataSourceProperties> dataSourcePropsMap;
     
     public ResourceMetaData(final Map<String, DataSource> dataSources) {
         this(null, dataSources);
     }
     
     public ResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, dataSources);
-        Map<String, DatabaseType> storageTypes = createStorageTypes(dataSources, enabledDataSources);
-        dataSourcePropsMap = DataSourcePropertiesCreator.create(dataSources);
-        storageNodeMetaData = new StorageNodeMetaData(dataSources);
-        storageUnitMetaData = new StorageUnitMetaData(dataSources, storageTypes, StorageUtils.getStorageUnits(dataSources), enabledDataSources);
-        
+        storageNodeDataSources = StorageResourceUtils.getStorageNodeDataSources(dataSources);
+        storageUnitMetaData = new StorageUnitMetaData(databaseName, storageNodeDataSources,
+                dataSources.entrySet().stream()
+                        .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+                StorageResourceUtils.getStorageUnitNodeMappers(dataSources));
     }
     
-    public ResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, storageResource.getStorageNodes());
-        Map<String, DatabaseType> storageTypes = createStorageTypes(storageResource.getStorageNodes(), enabledDataSources);
-        storageNodeMetaData = new StorageNodeMetaData(storageResource.getStorageNodes());
-        storageUnitMetaData = new StorageUnitMetaData(storageResource.getStorageNodes(), storageTypes, storageResource.getStorageUnits(), enabledDataSources);
-        this.dataSourcePropsMap = dataSourcePropsMap;
-    }
-    
-    private Map<String, DatabaseType> createStorageTypes(final Map<String, DataSource> dataSources, final Map<String, DataSource> enabledDataSources) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(dataSources.size(), 1F);
-        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            result.put(entry.getKey(), DatabaseTypeEngine.getStorageType(enabledDataSources.containsKey(entry.getKey()) ? Collections.singleton(entry.getValue()) : Collections.emptyList()));
-        }
-        return result;
-    }
-    
-    /**
-     * Get data sources.
-     *
-     * @return data sources
-     */
-    public Map<String, DataSource> getDataSources() {
-        return storageUnitMetaData.getDataSources();
-    }
-    
-    /**
-     * Get storage types.
-     *
-     * @return storage types
-     */
-    public Map<String, DatabaseType> getStorageTypes() {
-        return storageUnitMetaData.getStorageTypes();
+    public ResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourcePoolProperties> propsMap) {
+        storageNodeDataSources = storageResource.getStorageNodeDataSources();
+        storageUnitMetaData = new StorageUnitMetaData(databaseName, storageNodeDataSources, propsMap, storageResource.getStorageUnitNodeMappers());
     }
     
     /**
@@ -103,7 +71,7 @@ public final class ResourceMetaData {
      */
     public Collection<String> getAllInstanceDataSourceNames() {
         Collection<String> result = new LinkedList<>();
-        for (Entry<String, ConnectionProperties> entry : storageUnitMetaData.getConnectionPropsMap().entrySet()) {
+        for (Entry<String, StorageUnit> entry : storageUnitMetaData.getStorageUnits().entrySet()) {
             if (!isExisted(entry.getKey(), result)) {
                 result.add(entry.getKey());
             }
@@ -112,8 +80,8 @@ public final class ResourceMetaData {
     }
     
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
-        return existedDataSourceNames.stream().anyMatch(each -> storageUnitMetaData.getConnectionPropsMap().get(dataSourceName)
-                .isInSameDatabaseInstance(storageUnitMetaData.getConnectionPropsMap().get(each)));
+        return existedDataSourceNames.stream().anyMatch(each -> storageUnitMetaData.getStorageUnits().get(dataSourceName).getConnectionProperties()
+                .isInSameDatabaseInstance(storageUnitMetaData.getStorageUnits().get(each).getConnectionProperties()));
     }
     
     /**
@@ -123,7 +91,7 @@ public final class ResourceMetaData {
      * @return connection properties
      */
     public ConnectionProperties getConnectionProperties(final String dataSourceName) {
-        return storageUnitMetaData.getConnectionPropsMap().get(dataSourceName);
+        return storageUnitMetaData.getStorageUnits().get(dataSourceName).getConnectionProperties();
     }
     
     /**
@@ -133,7 +101,7 @@ public final class ResourceMetaData {
      * @return storage type
      */
     public DatabaseType getStorageType(final String dataSourceName) {
-        return storageUnitMetaData.getStorageTypes().get(dataSourceName);
+        return storageUnitMetaData.getStorageUnits().get(dataSourceName).getStorageType();
     }
     
     /**
@@ -143,7 +111,7 @@ public final class ResourceMetaData {
      * @return not existed resource names
      */
     public Collection<String> getNotExistedDataSources(final Collection<String> resourceNames) {
-        return resourceNames.stream().filter(each -> !storageUnitMetaData.getDataSources().containsKey(each)).collect(Collectors.toSet());
+        return resourceNames.stream().filter(each -> !storageUnitMetaData.getStorageUnits().containsKey(each)).collect(Collectors.toSet());
     }
     
     /**

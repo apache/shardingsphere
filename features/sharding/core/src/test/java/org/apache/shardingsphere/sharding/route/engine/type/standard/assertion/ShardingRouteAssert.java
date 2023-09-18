@@ -53,7 +53,6 @@ import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Sharding route assert.
@@ -71,17 +70,14 @@ public final class ShardingRouteAssert {
     public static RouteContext assertRoute(final String sql, final List<Object> params) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         ShardingRule shardingRule = ShardingRoutingEngineFixtureBuilder.createAllShardingRule();
-        SingleRule singleRule = ShardingRoutingEngineFixtureBuilder.createSingleRule(Collections.singletonList(shardingRule));
+        SingleRule singleRule = ShardingRoutingEngineFixtureBuilder.createSingleRule(Collections.singleton(shardingRule));
         TimestampServiceRule timestampServiceRule = ShardingRoutingEngineFixtureBuilder.createTimeServiceRule();
         Map<String, ShardingSphereSchema> schemas = buildSchemas();
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType,
                 new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
         RuleMetaData ruleMetaData = new RuleMetaData(Arrays.asList(shardingRule, singleRule, timestampServiceRule));
-        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(resourceMetaData.getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", databaseType));
-        ShardingSphereDatabase database = new ShardingSphereDatabase(
-                DefaultDatabase.LOGIC_NAME, databaseType, resourceMetaData, ruleMetaData, schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, schemas);
         SQLStatementContext sqlStatementContext =
                 new SQLBindEngine(createShardingSphereMetaData(database), DefaultDatabase.LOGIC_NAME).bind(sqlStatementParserEngine.parse(sql, false), params);
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, params);
@@ -97,17 +93,22 @@ public final class ShardingRouteAssert {
         Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1F);
         tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("product_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("product_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("c_date", Types.TIMESTAMP, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_other", new ShardingSphereTable("t_other", Collections.singletonList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_category", new ShardingSphereTable("t_category", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_product", new ShardingSphereTable("t_product", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_user", new ShardingSphereTable("t_user", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_category", new ShardingSphereTable("t_category", Collections.singleton(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false)),
+                Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_product", new ShardingSphereTable("t_product", Collections.singleton(new ShardingSphereColumn("product_id", Types.INTEGER, true, false, false, true, false, false)),
+                Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_user", new ShardingSphereTable("t_user", Collections.singleton(new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false)),
+                Collections.emptyList(), Collections.emptyList()));
         tables.put("t_hint_test", new ShardingSphereTable("t_hint_test", Collections.singleton(new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tables, Collections.emptyMap()));

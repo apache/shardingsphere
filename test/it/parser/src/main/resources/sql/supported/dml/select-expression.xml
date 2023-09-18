@@ -70,7 +70,7 @@
     <sql-case id="select_where_with_simple_expr_with_literals" value="SELECT * FROM t_order WHERE ? &lt; order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_column" value="SELECT * FROM t_order WHERE t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_function_call" value="SELECT * FROM t_order WHERE now() &lt; order_id" db-types="MySQL" />
-    <sql-case id="select_where_with_simple_expr_with_collate" value="SELECT * FROM t_order WHERE order_id collate 'utf8mb4_0900_ai_ci'" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_collate" value="SELECT * FROM t_order WHERE order_id collate utf8mb4_0900_ai_ci" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_variable" value="SELECT * FROM t_order WHERE @@max_connections &lt; order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_plus" value="SELECT * FROM t_order WHERE ? + t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_minus" value="SELECT * FROM t_order WHERE ? - t_order.order_id" db-types="MySQL" />
@@ -117,4 +117,23 @@
     <sql-case id="select_expr_dot_expr" value="SELECT DBURIType('/HR/DEPARTMENTS').getXML() FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_arrow_symbol_in_function" value="SELECT DECODE(DBMS_COMPRESSION.GET_COMPRESSION_TYPE(ownname => 'HR'), 'No Compression') compression_type FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_prediction_probability_function" value="SELECT PREDICTION_PROBABILITY(dt_sh_clas_sample, 1 USING *) cust_card_prob FROM mining_data_apply_v WHERE cust_id = 101488;" db-types="Oracle" />
+    <sql-case id="select_prediction_set_function" value="SELECT PREDICTION_SET(dt_sh_clas_sample COST MODEL USING *) pset FROM mining_data_apply_v WHERE cust_id = 100011" db-types="Oracle" />
+    <sql-case id="select_cursor_function" value="SELECT CURSOR(SELECT salary, commission_pct FROM employees e WHERE e.department_id = d.department_id) FROM departments d;" db-types="Oracle" />
+    <sql-case id="select_prediction_bounds_function" value="SELECT cust_id FROM mining_data_apply_v WHERE PREDICTION_BOUNDS(glmr_sh_regr_sample,0.98 USING *).LOWER = 24;" db-types="Oracle" />
+    <sql-case id="select_prediction_function" value="SELECT cust_gender FROM mining_data_apply_v WHERE PREDICTION (nb_sh_clas_sample COST MODEL AUTO USING cust_marital_status, aeducation, household_size) = 1;" db-types="Oracle" />
+    <sql-case id="select_prediction_details_function" value="SELECT PREDICTION_DETAILS(DT_SH_Clas_sample using *) FROM mining_data_apply_v WHERE occupation = 'TechSup'" db-types="Oracle" />
+    <sql-case id="select_predict_by_function" value="SELECT PREDICT BY point_kmeans (FEATURES position) as pos FROM (select * from kmeans_2d limit 10);" db-types="openGauss" />
+    <sql-case id="select_inet_function" value="SELECT inet '192.168.1.5' = inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_inet_function_with_inet_operator" value="SELECT inet '192.168.1.5' &lt;&lt;= inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_ts_rewrite_function" value="SELECT ts_rewrite('a &amp; b'::tsquery, 'a'::tsquery, 'c'::tsquery);" db-types="openGauss" />
+    <sql-case id="select_int_2_function" value="select int2(25.3);" db-types="openGauss" />
+    <sql-case id="select_elem_contained_by_range_function" value="SELECT elem_contained_by_range('2', numrange(1.1,2.2));" db-types="openGauss" />
+    <sql-case id="select_int8range" value="SELECT int8range(5,15) * int8range(10,20) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_int4range" value="SELECT int4range(2,4) &lt;@ int4range(1,7) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_lower_inf_function" value="SELECT lower_inf('(,)'::daterange) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_tsquery" value="SELECT 'super:*'::tsquery;" db-types="openGauss" />
+    <sql-case id="select_abbrev_function" value="SELECT abbrev(cidr '10.1.0.0/16') AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_set_masklen_function" value="SELECT set_masklen('192.168.1.0/24'::cidr, 16) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_text_inet_function" value="SELECT text(inet '192.168.1.5') AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_trunc_function" value="SELECT trunc(macaddr '12:34:56:78:90:ab') AS RESULT;" db-types="openGauss" />
 </sql-cases>

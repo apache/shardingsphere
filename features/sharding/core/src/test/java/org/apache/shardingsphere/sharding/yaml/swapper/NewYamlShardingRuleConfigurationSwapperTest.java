@@ -84,11 +84,11 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
         subTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "auto_increment"));
         result.getTables().add(subTableRuleConfig);
-        ShardingAutoTableRuleConfiguration autoTableRuleConfiguration = new ShardingAutoTableRuleConfiguration("auto_table", "ds_1,ds_2");
-        autoTableRuleConfiguration.setShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "hash_mod"));
-        autoTableRuleConfiguration.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "auto_increment"));
-        autoTableRuleConfiguration.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("audit_algorithm"), true));
-        result.getAutoTables().add(autoTableRuleConfiguration);
+        ShardingAutoTableRuleConfiguration autoTableRuleConfig = new ShardingAutoTableRuleConfiguration("auto_table", "ds_1,ds_2");
+        autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "hash_mod"));
+        autoTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "auto_increment"));
+        autoTableRuleConfig.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("audit_algorithm"), true));
+        result.getAutoTables().add(autoTableRuleConfig);
         result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable()));
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("ds_id", "standard"));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "standard"));

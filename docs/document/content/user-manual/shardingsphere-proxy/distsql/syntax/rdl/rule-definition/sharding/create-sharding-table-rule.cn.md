@@ -83,7 +83,7 @@ strategyType ::=
     - 只能使用自动分片算法，可参考[自动分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/#自动分片算法)。
 - `algorithmType` 为分片算法类型，分片算法类型请参考[分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/)；
 - 自动生成的算法命名规则为  `tableName` _ `strategyType` _ `algorithmType`；
-- 自动生成的主键策略命名规则为 `tableName` _ `strategyType；
+- 自动生成的主键策略命名规则为 `tableName` _ `strategyType`；
 - `KEY_GENERATE_STRATEGY`
   用于指定主键生成策略，为可选项，关于主键生成策略可参考[分布式主键](/cn/user-manual/common-config/builtin-algorithm/keygen/)；
 - `AUDIT_STRATEGY`

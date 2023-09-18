@@ -50,7 +50,7 @@ public final class ShowDefaultShadowAlgorithmExecutor implements RQLExecutor<Sho
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) rule.get().getConfiguration();
         String defaultAlgorithm = config.getDefaultShadowAlgorithmName();
         Iterator<Entry<String, AlgorithmConfiguration>> data = config.getShadowAlgorithms().entrySet().stream().filter(each -> each.getKey().equals(defaultAlgorithm))
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> currentValue)).entrySet().iterator();
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue)).entrySet().iterator();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         while (data.hasNext()) {
             Entry<String, AlgorithmConfiguration> entry = data.next();

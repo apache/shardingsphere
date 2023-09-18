@@ -19,9 +19,12 @@ package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+
+import java.util.Map;
 
 /**
  * Subquery expression segment binder.
@@ -33,12 +36,13 @@ public final class SubqueryExpressionSegmentBinder {
      * Bind subquery expression segment with metadata.
      *
      * @param segment subquery expression segment
-     * @param metaData metaData
-     * @param defaultDatabaseName default database name
+     * @param statementBinderContext statement binder context
+     * @param tableBinderContexts table binder contexts
      * @return bounded subquery expression segment
      */
-    public static SubqueryExpressionSegment bind(final SubqueryExpressionSegment segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), metaData, defaultDatabaseName);
+    public static SubqueryExpressionSegment bind(final SubqueryExpressionSegment segment, final SQLStatementBinderContext statementBinderContext,
+                                                 final Map<String, TableSegmentBinderContext> tableBinderContexts) {
+        SubquerySegment boundedSubquery = SubquerySegmentBinder.bind(segment.getSubquery(), statementBinderContext, tableBinderContexts);
         return new SubqueryExpressionSegment(boundedSubquery);
     }
 }

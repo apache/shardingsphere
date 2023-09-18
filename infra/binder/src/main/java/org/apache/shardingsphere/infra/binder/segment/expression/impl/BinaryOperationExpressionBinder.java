@@ -19,10 +19,14 @@ package org.apache.shardingsphere.infra.binder.segment.expression.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.enums.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+
+import java.util.Map;
 
 /**
  * Binary operation expression binder.
@@ -34,13 +38,16 @@ public final class BinaryOperationExpressionBinder {
      * Bind binary operation expression with metadata.
      *
      * @param segment binary operation expression segment
-     * @param metaData metaData
-     * @param defaultDatabaseName default database name
+     * @param parentSegmentType parent segment type
+     * @param statementBinderContext statement binder context
+     * @param tableBinderContexts table binder contexts
+     * @param outerTableBinderContexts outer table binder contexts
      * @return bounded binary operation expression segment
      */
-    public static BinaryOperationExpression bind(final BinaryOperationExpression segment, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        ExpressionSegment boundedLeft = ExpressionSegmentBinder.bind(segment.getLeft(), metaData, defaultDatabaseName);
-        ExpressionSegment boundedRight = ExpressionSegmentBinder.bind(segment.getRight(), metaData, defaultDatabaseName);
+    public static BinaryOperationExpression bind(final BinaryOperationExpression segment, final SegmentType parentSegmentType, final SQLStatementBinderContext statementBinderContext,
+                                                 final Map<String, TableSegmentBinderContext> tableBinderContexts, final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+        ExpressionSegment boundedLeft = ExpressionSegmentBinder.bind(segment.getLeft(), parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
+        ExpressionSegment boundedRight = ExpressionSegmentBinder.bind(segment.getRight(), parentSegmentType, statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         return new BinaryOperationExpression(segment.getStartIndex(), segment.getStopIndex(), boundedLeft, boundedRight, segment.getOperator(), segment.getText());
     }
 }

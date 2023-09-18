@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.segment.from.impl;
 
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -40,6 +40,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,15 +66,16 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getLeft()).thenReturn(leftTable);
         when(joinTableSegment.getRight()).thenReturn(rightTable);
         ShardingSphereMetaData metaData = createMetaData();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
+                tableBinderContexts, Collections.emptyMap());
         assertTrue(actual.getLeft() instanceof SimpleTableSegment);
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertTrue(actual.getRight() instanceof SimpleTableSegment);
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertJoinTableProjectionSegments(actual.getJoinTableProjectionSegments());
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertJoinTableProjectionSegments(actual.getDerivedJoinTableProjectionSegments());
         assertTrue(tableBinderContexts.containsKey("o"));
         assertTrue(tableBinderContexts.containsKey("i"));
     }
@@ -81,20 +84,20 @@ class JoinTableSegmentBinderTest {
         List<ProjectionSegment> actual = new ArrayList<>(joinTableProjectionSegments);
         assertThat(actual.size(), is(7));
         assertTrue(actual.get(0) instanceof ColumnProjectionSegment);
-        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getOriginalColumn().getValue(), is("order_id"));
-        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getOriginalColumn().getValue(), is("user_id"));
-        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getOriginalColumn().getValue(), is("status"));
-        assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnProjectionSegment) actual.get(3)).getColumn().getOriginalColumn().getValue(), is("item_id"));
-        assertThat(((ColumnProjectionSegment) actual.get(3)).getColumn().getOriginalTable().getValue(), is("t_order_item"));
-        assertThat(((ColumnProjectionSegment) actual.get(4)).getColumn().getOriginalColumn().getValue(), is("order_id"));
-        assertThat(((ColumnProjectionSegment) actual.get(4)).getColumn().getOriginalTable().getValue(), is("t_order_item"));
-        assertThat(((ColumnProjectionSegment) actual.get(5)).getColumn().getOriginalColumn().getValue(), is("user_id"));
-        assertThat(((ColumnProjectionSegment) actual.get(5)).getColumn().getOriginalTable().getValue(), is("t_order_item"));
-        assertThat(((ColumnProjectionSegment) actual.get(6)).getColumn().getOriginalColumn().getValue(), is("status"));
-        assertThat(((ColumnProjectionSegment) actual.get(6)).getColumn().getOriginalTable().getValue(), is("t_order_item"));
+        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("order_id"));
+        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("status"));
+        assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnProjectionSegment) actual.get(3)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("item_id"));
+        assertThat(((ColumnProjectionSegment) actual.get(3)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
+        assertThat(((ColumnProjectionSegment) actual.get(4)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("order_id"));
+        assertThat(((ColumnProjectionSegment) actual.get(4)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
+        assertThat(((ColumnProjectionSegment) actual.get(5)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertThat(((ColumnProjectionSegment) actual.get(5)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
+        assertThat(((ColumnProjectionSegment) actual.get(6)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("status"));
+        assertThat(((ColumnProjectionSegment) actual.get(6)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
     }
     
     @Test
@@ -105,15 +108,16 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getLeft()).thenReturn(leftTable);
         when(joinTableSegment.getRight()).thenReturn(rightTable);
         ShardingSphereMetaData metaData = createMetaData();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
+                tableBinderContexts, Collections.emptyMap());
         assertTrue(actual.getLeft() instanceof SimpleTableSegment);
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertTrue(actual.getRight() instanceof SimpleTableSegment);
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertJoinTableProjectionSegments(actual.getJoinTableProjectionSegments());
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertJoinTableProjectionSegments(actual.getDerivedJoinTableProjectionSegments());
         assertTrue(tableBinderContexts.containsKey("t_order"));
         assertTrue(tableBinderContexts.containsKey("t_order_item"));
     }
@@ -130,15 +134,16 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.isNatural()).thenReturn(true);
         when(joinTableSegment.getJoinType()).thenReturn(JoinType.RIGHT.name());
         ShardingSphereMetaData metaData = createMetaData();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
+                tableBinderContexts, Collections.emptyMap());
         assertTrue(actual.getLeft() instanceof SimpleTableSegment);
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertTrue(actual.getRight() instanceof SimpleTableSegment);
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertJoinTableProjectionSegmentsWithNaturalJoin(actual.getJoinTableProjectionSegments());
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertJoinTableProjectionSegmentsWithNaturalJoin(actual.getDerivedJoinTableProjectionSegments());
         assertTrue(tableBinderContexts.containsKey("o"));
         assertTrue(tableBinderContexts.containsKey("i"));
     }
@@ -147,14 +152,14 @@ class JoinTableSegmentBinderTest {
         List<ProjectionSegment> actual = new ArrayList<>(joinTableProjectionSegments);
         assertThat(actual.size(), is(4));
         assertTrue(actual.get(0) instanceof ColumnProjectionSegment);
-        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getOriginalColumn().getValue(), is("order_id"));
-        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getOriginalColumn().getValue(), is("user_id"));
-        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getOriginalColumn().getValue(), is("status"));
-        assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnProjectionSegment) actual.get(3)).getColumn().getOriginalColumn().getValue(), is("item_id"));
-        assertThat(((ColumnProjectionSegment) actual.get(3)).getColumn().getOriginalTable().getValue(), is("t_order_item"));
+        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("order_id"));
+        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("status"));
+        assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnProjectionSegment) actual.get(3)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("item_id"));
+        assertThat(((ColumnProjectionSegment) actual.get(3)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
     }
     
     @Test
@@ -169,15 +174,16 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getJoinType()).thenReturn(JoinType.RIGHT.name());
         when(joinTableSegment.getUsing()).thenReturn(Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("status")), new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         ShardingSphereMetaData metaData = createMetaData();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
+                tableBinderContexts, Collections.emptyMap());
         assertTrue(actual.getLeft() instanceof SimpleTableSegment);
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getLeft()).getTableName().getTableBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertTrue(actual.getRight() instanceof SimpleTableSegment);
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertJoinTableProjectionSegmentsWithUsing(actual.getJoinTableProjectionSegments());
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertJoinTableProjectionSegmentsWithUsing(actual.getDerivedJoinTableProjectionSegments());
         assertTrue(tableBinderContexts.containsKey("o"));
         assertTrue(tableBinderContexts.containsKey("i"));
     }
@@ -186,16 +192,16 @@ class JoinTableSegmentBinderTest {
         List<ProjectionSegment> actual = new ArrayList<>(joinTableProjectionSegments);
         assertThat(actual.size(), is(5));
         assertTrue(actual.get(0) instanceof ColumnProjectionSegment);
-        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getOriginalColumn().getValue(), is("status"));
-        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getOriginalColumn().getValue(), is("order_id"));
-        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getOriginalColumn().getValue(), is("user_id"));
-        assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getOriginalTable().getValue(), is("t_order"));
-        assertThat(((ColumnProjectionSegment) actual.get(3)).getColumn().getOriginalColumn().getValue(), is("item_id"));
-        assertThat(((ColumnProjectionSegment) actual.get(3)).getColumn().getOriginalTable().getValue(), is("t_order_item"));
-        assertThat(((ColumnProjectionSegment) actual.get(4)).getColumn().getOriginalColumn().getValue(), is("user_id"));
-        assertThat(((ColumnProjectionSegment) actual.get(4)).getColumn().getOriginalTable().getValue(), is("t_order_item"));
+        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("status"));
+        assertThat(((ColumnProjectionSegment) actual.get(0)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
+        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("order_id"));
+        assertThat(((ColumnProjectionSegment) actual.get(1)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
+        assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertThat(((ColumnProjectionSegment) actual.get(2)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(((ColumnProjectionSegment) actual.get(3)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("item_id"));
+        assertThat(((ColumnProjectionSegment) actual.get(3)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
+        assertThat(((ColumnProjectionSegment) actual.get(4)).getColumn().getColumnBoundedInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertThat(((ColumnProjectionSegment) actual.get(4)).getColumn().getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
     }
     
     @Test
@@ -207,19 +213,20 @@ class JoinTableSegmentBinderTest {
         when(joinTableSegment.getLeft()).thenReturn(leftTable);
         when(joinTableSegment.getRight()).thenReturn(rightTable);
         ShardingSphereMetaData metaData = createMetaData();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, metaData, DefaultDatabase.LOGIC_NAME, databaseType, tableBinderContexts);
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment, new SQLStatementBinderContext(metaData, DefaultDatabase.LOGIC_NAME, databaseType, Collections.emptySet()),
+                tableBinderContexts, Collections.emptyMap());
         assertTrue(actual.getLeft() instanceof JoinTableSegment);
         assertTrue(((JoinTableSegment) actual.getLeft()).getLeft() instanceof SimpleTableSegment);
-        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getLeft()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getLeft()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getLeft()).getTableName().getTableBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getLeft()).getTableName().getTableBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertTrue(((JoinTableSegment) actual.getLeft()).getRight() instanceof SimpleTableSegment);
-        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getRight()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getRight()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getRight()).getTableName().getTableBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) ((JoinTableSegment) actual.getLeft()).getRight()).getTableName().getTableBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
         assertTrue(actual.getRight() instanceof SimpleTableSegment);
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
-        assertThat(actual.getJoinTableProjectionSegments().size(), is(10));
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundedInfo().getOriginalDatabase().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(((SimpleTableSegment) actual.getRight()).getTableName().getTableBoundedInfo().getOriginalSchema().getValue(), is(DefaultDatabase.LOGIC_NAME));
+        assertThat(actual.getDerivedJoinTableProjectionSegments().size(), is(10));
         assertTrue(tableBinderContexts.containsKey("o"));
         assertTrue(tableBinderContexts.containsKey("o2"));
         assertTrue(tableBinderContexts.containsKey("i"));
@@ -249,6 +256,10 @@ class JoinTableSegmentBinderTest {
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
+        when(result.containsDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
+        when(result.getDatabase(DefaultDatabase.LOGIC_NAME).containsSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(true);
+        when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order")).thenReturn(true);
+        when(result.getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order_item")).thenReturn(true);
         return result;
     }
 }

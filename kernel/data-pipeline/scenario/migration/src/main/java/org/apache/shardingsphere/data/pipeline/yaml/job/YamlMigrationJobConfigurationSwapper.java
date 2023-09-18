@@ -44,7 +44,7 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
         result.setSourceDatabaseType(data.getSourceDatabaseType().getType());
         result.setTargetDatabaseType(data.getTargetDatabaseType().getType());
         result.setSources(data.getSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-                entry -> dataSourceConfigSwapper.swapToYamlConfiguration(entry.getValue()), (key, value) -> value, LinkedHashMap::new)));
+                entry -> dataSourceConfigSwapper.swapToYamlConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         result.setTarget(dataSourceConfigSwapper.swapToYamlConfiguration(data.getTarget()));
         result.setTargetTableNames(data.getTargetTableNames());
         result.setTargetTableSchemaMap(data.getTargetTableSchemaMap());
@@ -60,7 +60,7 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
         return new MigrationJobConfiguration(yamlConfig.getJobId(), yamlConfig.getDatabaseName(),
                 TypedSPILoader.getService(DatabaseType.class, yamlConfig.getSourceDatabaseType()), TypedSPILoader.getService(DatabaseType.class, yamlConfig.getTargetDatabaseType()),
                 yamlConfig.getSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-                        entry -> dataSourceConfigSwapper.swapToObject(entry.getValue()), (key, value) -> value, LinkedHashMap::new)),
+                        entry -> dataSourceConfigSwapper.swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 dataSourceConfigSwapper.swapToObject(yamlConfig.getTarget()),
                 yamlConfig.getTargetTableNames(), yamlConfig.getTargetTableSchemaMap(),
                 JobDataNodeLine.unmarshal(yamlConfig.getTablesFirstDataNodes()), yamlConfig.getJobShardingDataNodes().stream().map(JobDataNodeLine::unmarshal).collect(Collectors.toList()),

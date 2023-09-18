@@ -38,6 +38,8 @@ public final class YamlConsistencyCheckJobConfiguration implements YamlPipelineJ
     
     private Properties algorithmProps;
     
+    private String sourceDatabaseType;
+    
     @Override
     public String getDatabaseName() {
         throw new UnsupportedOperationException("");

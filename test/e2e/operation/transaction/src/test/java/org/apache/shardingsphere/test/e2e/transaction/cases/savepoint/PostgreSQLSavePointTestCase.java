@@ -45,7 +45,7 @@ public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
     
     @Override
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
-        assertRollback2Savepoint();
+        assertRollbackToSavepoint();
         assertReleaseSavepoint();
         assertErrors();
     }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -45,6 +46,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,7 +59,7 @@ class ShardingSphereMetaDataTest {
     @Test
     void assertAddDatabase() {
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
-        ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class), new MockedDataSource(), mock(ResourceHeldRule.class));
+        ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new MockedDataSource(), mock(ResourceHeldRule.class));
         DatabaseType databaseType = mock(DatabaseType.class);
         ConfigurationProperties configProps = new ConfigurationProperties(new Properties());
         when(ShardingSphereDatabase.create("foo_db", databaseType, configProps)).thenReturn(database);
@@ -71,7 +73,7 @@ class ShardingSphereMetaDataTest {
     
     @Test
     void assertDropDatabase() {
-        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         DataSource dataSource = new MockedDataSource();
         ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class);
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
@@ -88,7 +90,9 @@ class ShardingSphereMetaDataTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn("foo_db");
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(result.getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_db", dataSource));
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(dataSource);
+        when(result.getResourceMetaData().getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_db", storageUnit));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(databaseResourceHeldRule)));
         return result;
     }

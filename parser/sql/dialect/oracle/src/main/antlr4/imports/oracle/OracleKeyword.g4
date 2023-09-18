@@ -19,6 +19,10 @@ lexer grammar OracleKeyword;
 
 import Alphabet;
 
+BEQUEATH
+    : B E Q U E A T H
+    ;
+
 BINARY
     : B I N A R Y
     ;
@@ -57,6 +61,10 @@ CASCADE
 
 CHECK
     : C H E C K
+    ;
+
+CONVERSION
+    : C O N V E R S I O N
     ;
 
 GENERATED
@@ -217,6 +225,10 @@ DEFERRED
 
 DIRECTORY
     : D I R E C T O R Y
+    ;
+
+DIRECT_PATH
+    : D I R E C T UL_ P A T H
     ;
 
 CREDENTIALS

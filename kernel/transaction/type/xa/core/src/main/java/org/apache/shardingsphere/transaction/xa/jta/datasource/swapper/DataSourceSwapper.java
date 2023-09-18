@@ -20,8 +20,8 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 import com.google.common.base.CaseFormat;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.datasource.ShardingSphereStorageDataSourceWrapper;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XADataSourceInitializeException;
 
@@ -52,8 +52,7 @@ public final class DataSourceSwapper {
      */
     public XADataSource swap(final DataSource dataSource) {
         XADataSource result = createXADataSource();
-        DataSource readDataSource = dataSource instanceof ShardingSphereStorageDataSourceWrapper ? (ShardingSphereStorageDataSourceWrapper) dataSource : dataSource;
-        setProperties(result, getDatabaseAccessConfiguration(readDataSource));
+        setProperties(result, getDatabaseAccessConfiguration(dataSource));
         return result;
     }
     
@@ -79,8 +78,9 @@ public final class DataSourceSwapper {
     
     private Map<String, Object> getDatabaseAccessConfiguration(final DataSource dataSource) {
         Map<String, Object> result = new HashMap<>(3, 1F);
-        Map<String, Object> standardProps = DataSourcePropertiesCreator.create(dataSource).getAllStandardProperties();
-        result.put("url", standardProps.get("url"));
+        Map<String, Object> standardProps = DataSourcePoolPropertiesCreator.create(
+                dataSource instanceof CatalogSwitchableDataSource ? ((CatalogSwitchableDataSource) dataSource).getDataSource() : dataSource).getAllStandardProperties();
+        result.put("url", dataSource instanceof CatalogSwitchableDataSource ? ((CatalogSwitchableDataSource) dataSource).getUrl() : standardProps.get("url"));
         result.put("user", standardProps.get("username"));
         result.put("password", standardProps.get("password"));
         return result;

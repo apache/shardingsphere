@@ -61,41 +61,41 @@ class PrepareStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        PostgreSQLPrepareStatement postgreSQLPrepare = mock(PostgreSQLPrepareStatement.class);
-        when(postgreSQLPrepare.getSelect()).thenReturn(Optional.of(getSelect()));
-        when(postgreSQLPrepare.getInsert()).thenReturn(Optional.of(getInsert()));
-        when(postgreSQLPrepare.getUpdate()).thenReturn(Optional.of(getUpdate()));
-        when(postgreSQLPrepare.getDelete()).thenReturn(Optional.of(getDelete()));
-        PrepareStatementContext actual = new PrepareStatementContext(postgreSQLPrepare);
+        PostgreSQLPrepareStatement prepareStatement = mock(PostgreSQLPrepareStatement.class);
+        when(prepareStatement.getSelect()).thenReturn(Optional.of(getSelect()));
+        when(prepareStatement.getInsert()).thenReturn(Optional.of(getInsert()));
+        when(prepareStatement.getUpdate()).thenReturn(Optional.of(getUpdate()));
+        when(prepareStatement.getDelete()).thenReturn(Optional.of(getDelete()));
+        PrepareStatementContext actual = new PrepareStatementContext(prepareStatement);
         assertThat(actual, instanceOf(CommonSQLStatementContext.class));
-        assertThat(actual.getSqlStatement(), is(postgreSQLPrepare));
+        assertThat(actual.getSqlStatement(), is(prepareStatement));
         assertThat(actual.getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("tbl_1", "tbl_1", "tbl_1", "tbl_1")));
     }
     
     private SelectStatement getSelect() {
-        SelectStatement select = new PostgreSQLSelectStatement();
-        select.setFrom(table);
-        return select;
+        SelectStatement result = new PostgreSQLSelectStatement();
+        result.setFrom(table);
+        return result;
     }
     
     private InsertStatement getInsert() {
-        InsertStatement insert = new PostgreSQLInsertStatement();
-        insert.setTable(table);
-        return insert;
+        InsertStatement result = new PostgreSQLInsertStatement();
+        result.setTable(table);
+        return result;
     }
     
     private UpdateStatement getUpdate() {
-        UpdateStatement update = new PostgreSQLUpdateStatement();
-        update.setTable(table);
+        UpdateStatement result = new PostgreSQLUpdateStatement();
+        result.setTable(table);
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(column), column)));
-        update.setSetAssignment(setAssignmentSegment);
-        return update;
+        result.setSetAssignment(setAssignmentSegment);
+        return result;
     }
     
     private DeleteStatement getDelete() {
-        DeleteStatement delete = new PostgreSQLDeleteStatement();
-        delete.setTable(table);
-        return delete;
+        DeleteStatement result = new PostgreSQLDeleteStatement();
+        result.setTable(table);
+        return result;
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -110,8 +110,7 @@ public final class MetaDataContextsFactory {
     
     private static Map<String, DatabaseConfiguration> createEffectiveDatabaseConfigurations(final Collection<String> databaseNames,
                                                                                             final Map<String, DatabaseConfiguration> databaseConfigs, final MetaDataPersistService persistService) {
-        return databaseNames.stream().collect(
-                Collectors.toMap(each -> each, each -> createEffectiveDatabaseConfiguration(each, databaseConfigs, persistService), (a, b) -> b, () -> new HashMap<>(databaseNames.size(), 1F)));
+        return databaseNames.stream().collect(Collectors.toMap(each -> each, each -> createEffectiveDatabaseConfiguration(each, databaseConfigs, persistService)));
     }
     
     private static DatabaseConfiguration createEffectiveDatabaseConfiguration(final String databaseName,
@@ -147,7 +146,7 @@ public final class MetaDataContextsFactory {
         for (Entry<String, ? extends DatabaseConfiguration> entry : param.getDatabaseConfigs().entrySet()) {
             String databaseName = entry.getKey();
             metadataContexts.getPersistService().persistConfigurations(entry.getKey(), entry.getValue(),
-                    metadataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources(),
+                    metadataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getDataSources(),
                     metadataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
         }
     }

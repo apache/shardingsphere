@@ -247,9 +247,4 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
         result.add(shadowDataSourceRule.getShadowDataSource());
         return result;
     }
-    
-    @Override
-    public String getType() {
-        return ShadowRule.class.getSimpleName();
-    }
 }

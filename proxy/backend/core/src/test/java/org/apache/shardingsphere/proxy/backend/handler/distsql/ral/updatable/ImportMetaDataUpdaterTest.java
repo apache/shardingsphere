@@ -105,10 +105,10 @@ class ImportMetaDataUpdaterTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().getProps())
                 .thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "MySQL"))));
-        if (feature != null) {
+        if (null != feature) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));
-            when(database.getResourceMetaData().getDataSources()).thenReturn(createDataSourceMap());
+            when(database.getResourceMetaData().getStorageUnitMetaData().getDataSources()).thenReturn(createDataSourceMap());
             when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(feature, database));
             when(result.getMetaDataContexts().getMetaData().getDatabase(feature)).thenReturn(database);
         }

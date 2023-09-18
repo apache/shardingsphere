@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedConstraintDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.SelectStatementTestCase;
@@ -44,4 +45,7 @@ public final class AlterViewStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "select")
     private SelectStatementTestCase selectStatement;
+    
+    @XmlElement(name = "constraint-definition")
+    private ExpectedConstraintDefinition constraintDefinition;
 }

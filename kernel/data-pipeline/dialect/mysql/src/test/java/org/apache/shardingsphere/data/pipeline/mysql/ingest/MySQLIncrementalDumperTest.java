@@ -31,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumn
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.common.ingest.channel.EmptyAckCallback;
 import org.apache.shardingsphere.data.pipeline.common.ingest.channel.memory.SimpleMemoryPipelineChannel;
@@ -40,7 +41,6 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +49,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import javax.sql.DataSource;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -75,8 +74,6 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @SuppressWarnings("unchecked")
 class MySQLIncrementalDumperTest {
-    
-    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     
     private DumperConfiguration dumperConfig;
     
@@ -107,8 +104,9 @@ class MySQLIncrementalDumperTest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final DumperConfiguration dumperConfig) {
-        DataSource dataSource = new DefaultPipelineDataSourceManager().getDataSource(dumperConfig.getDataSourceConfig());
         try (
+                PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -127,11 +125,6 @@ class MySQLIncrementalDumperTest {
         result.add(new PipelineColumnMetaData(1, "user_id", Types.INTEGER, "INT", false, false, false));
         result.add(new PipelineColumnMetaData(1, "status", Types.VARCHAR, "VARCHAR", false, false, false));
         return result;
-    }
-    
-    @AfterEach
-    void tearDown() {
-        dataSourceManager.close();
     }
     
     @Test

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintDataSourceNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -34,7 +35,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,10 +65,10 @@ class PartialSQLRouteExecutorTest {
     
     @BeforeEach
     void setup() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds_0", null);
-        dataSourceMap.put("ds_1", null);
-        when(database.getResourceMetaData().getDataSources()).thenReturn(dataSourceMap);
+        Map<String, StorageUnit> storageUnits = new HashMap<>();
+        storageUnits.put("ds_0", null);
+        storageUnits.put("ds_1", null);
+        when(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
     }
     
     @Test

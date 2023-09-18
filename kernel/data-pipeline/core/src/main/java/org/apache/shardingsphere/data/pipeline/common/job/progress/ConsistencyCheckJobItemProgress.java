@@ -28,10 +28,10 @@ import java.util.Map;
 /**
  * Data consistency check job item progress.
  */
-// TODO move package
-@Getter
 @RequiredArgsConstructor
+@Getter
 @ToString
+// TODO Refactor structure, List<TableProgress>
 public final class ConsistencyCheckJobItemProgress implements PipelineJobItemProgress {
     
     @Setter
@@ -49,5 +49,9 @@ public final class ConsistencyCheckJobItemProgress implements PipelineJobItemPro
     
     private final Long checkEndTimeMillis;
     
-    private final Map<String, Object> tableCheckPositions;
+    private final Map<String, Object> sourceTableCheckPositions;
+    
+    private final Map<String, Object> targetTableCheckPositions;
+    
+    private final String sourceDatabaseType;
 }

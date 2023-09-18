@@ -22,9 +22,10 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidSt
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.StorageUnitUtils;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -71,14 +71,15 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
     }
     
     private void checkExisted(final String databaseName, final Collection<String> storageUnitNames) {
-        Map<String, DataSource> dataSources = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources();
-        Collection<String> notExistedStorageUnits = storageUnitNames.stream().filter(each -> !dataSources.containsKey(each)).collect(Collectors.toList());
+        Map<String, StorageUnit> storageUnits = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getStorageUnits();
+        Collection<String> notExistedStorageUnits = storageUnitNames.stream().filter(each -> !storageUnits.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedStorageUnits));
     }
     
     private void checkInUsed(final String databaseName, final UnregisterStorageUnitStatement sqlStatement) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
-        Map<String, Collection<String>> inUsedStorageUnits = StorageUnitUtils.getInUsedStorageUnits(database.getRuleMetaData(), database.getResourceMetaData().getDataSources().size());
+        Map<String, Collection<String>> inUsedStorageUnits = StorageUnitUtils.getInUsedStorageUnits(
+                database.getRuleMetaData(), database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().size());
         Collection<String> inUsedStorageUnitNames = inUsedStorageUnits.keySet();
         inUsedStorageUnitNames.retainAll(sqlStatement.getStorageUnitNames());
         if (!inUsedStorageUnitNames.isEmpty()) {

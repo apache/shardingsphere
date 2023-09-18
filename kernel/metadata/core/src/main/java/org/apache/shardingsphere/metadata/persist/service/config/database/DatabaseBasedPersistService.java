@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.version.MetaDataVersion;
 
 import java.util.Collection;
@@ -92,8 +92,8 @@ public interface DatabaseBasedPersistService<T> {
      * Append data source properties map.
      *
      * @param databaseName database name
-     * @param toBeAppendedDataSourcePropsMap data source properties map to be appended
+     * @param toBeAppendedPropsMap data source pool properties map to be appended
      */
-    default void append(final String databaseName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
+    default void append(final String databaseName, final Map<String, DataSourcePoolProperties> toBeAppendedPropsMap) {
     }
 }

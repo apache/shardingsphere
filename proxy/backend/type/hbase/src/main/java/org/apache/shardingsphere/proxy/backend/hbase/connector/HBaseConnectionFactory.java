@@ -44,12 +44,12 @@ public final class HBaseConnectionFactory {
     /**
      * Create HBase connection.
      * 
-     * @param yamlProxyHBaseConfiguration HBase configuration
+     * @param yamlProxyHBaseConfig YAML HBase configuration
      * @return A connection for per HBase cluster
      */
-    public static Map<String, Connection> createHBaseConnections(final YamlHBaseConfiguration yamlProxyHBaseConfiguration) {
-        Map<String, Connection> result = new LinkedHashMap<>(yamlProxyHBaseConfiguration.getDataSources().size(), 1F);
-        for (Entry<String, YamlHBaseParameter> entry : yamlProxyHBaseConfiguration.getDataSources().entrySet()) {
+    public static Map<String, Connection> createHBaseConnections(final YamlHBaseConfiguration yamlProxyHBaseConfig) {
+        Map<String, Connection> result = new LinkedHashMap<>(yamlProxyHBaseConfig.getDataSources().size(), 1F);
+        for (Entry<String, YamlHBaseParameter> entry : yamlProxyHBaseConfig.getDataSources().entrySet()) {
             result.put(entry.getKey(), createConnection(entry.getValue()));
         }
         return result;

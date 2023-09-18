@@ -21,12 +21,10 @@ import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.provider.database.builder.DatabasePrivilegeBuilder;
 import org.apache.shardingsphere.authority.registry.UserPrivilegeMapAuthorityRegistry;
 import org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -44,7 +42,7 @@ public final class DatabasePermittedAuthorityRegistryProvider implements Authori
     }
     
     @Override
-    public AuthorityRegistry build(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
+    public AuthorityRegistry build(final Collection<ShardingSphereUser> users) {
         return new UserPrivilegeMapAuthorityRegistry(DatabasePrivilegeBuilder.build(users, props));
     }
     

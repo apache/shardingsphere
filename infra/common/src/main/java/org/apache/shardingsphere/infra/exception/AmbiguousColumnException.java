@@ -27,7 +27,7 @@ public final class AmbiguousColumnException extends MetaDataSQLException {
     
     private static final long serialVersionUID = -9002743483594729164L;
     
-    public AmbiguousColumnException(final String columnName) {
-        super(XOpenSQLState.GENERAL_ERROR, 5, "Column '%s' in field list is ambiguous.", columnName);
+    public AmbiguousColumnException(final String columnExpression, final String segmentTypeMessage) {
+        super(XOpenSQLState.GENERAL_ERROR, 5, "Column '%s' in %s is ambiguous.", columnExpression, segmentTypeMessage);
     }
 }

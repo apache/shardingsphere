@@ -35,7 +35,7 @@ public final class AssistedQueryColumnItem {
     @Getter
     private final String name;
     
-    @SuppressWarnings("rawtypes")
+    @Getter
     private final AssistedEncryptAlgorithm encryptor;
     
     /**
@@ -48,7 +48,6 @@ public final class AssistedQueryColumnItem {
      * @param originalValue original value
      * @return assisted query values
      */
-    @SuppressWarnings("unchecked")
     public Object encrypt(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final Object originalValue) {
         if (null == originalValue) {
             return null;
@@ -67,7 +66,6 @@ public final class AssistedQueryColumnItem {
      * @param originalValues original values
      * @return assisted query values
      */
-    @SuppressWarnings("unchecked")
     public List<Object> encrypt(final String databaseName, final String schemaName, final String tableName, final String logicColumnName, final List<Object> originalValues) {
         EncryptContext context = EncryptContextBuilder.build(databaseName, schemaName, tableName, logicColumnName);
         List<Object> result = new LinkedList<>();

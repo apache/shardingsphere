@@ -58,12 +58,14 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     
     private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_SQL_NO_ORDER + " AND TABLE_NAME IN (%s)" + ORDER_BY_COLUMN_ID;
     
-    private static final String INDEX_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN (%s)";
+    private static final String INDEX_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME, UNIQUENESS FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN (%s)";
     
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A INNER JOIN"
             + " ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = '%s'";
     
     private static final String PRIMARY_KEY_META_DATA_SQL_IN_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND A.TABLE_NAME IN (%s)";
+    
+    private static final String INDEX_COLUMN_META_DATA_SQL = "SELECT COLUMN_NAME FROM ALL_IND_COLUMNS WHERE INDEX_OWNER = ? AND TABLE_NAME = ? AND INDEX_NAME = ?";
     
     private static final int COLLATION_START_MAJOR_VERSION = 12;
     
@@ -118,8 +120,8 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
         boolean primaryKey = primaryKeys.contains(columnName);
         boolean generated = versionContainsIdentityColumn(databaseMetaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
         // TODO need to support caseSensitive when version < 12.2.
-        String collation = resultSet.getString("COLLATION");
-        boolean caseSensitive = versionContainsCollation(databaseMetaData) && null != collation && collation.endsWith("_CS");
+        String collation = versionContainsCollation(databaseMetaData) ? resultSet.getString("COLLATION") : null;
+        boolean caseSensitive = null != collation && collation.endsWith("_CS");
         boolean isVisible = "NO".equals(resultSet.getString("HIDDEN_COLUMN"));
         boolean nullable = "Y".equals(resultSet.getString("NULLABLE"));
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible, false, nullable);
@@ -162,17 +164,36 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
                 while (resultSet.next()) {
                     String indexName = resultSet.getString("INDEX_NAME");
                     String tableName = resultSet.getString("TABLE_NAME");
+                    boolean isUnique = "UNIQUE".equals(resultSet.getString("UNIQUENESS"));
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
-                    result.get(tableName).add(new IndexMetaData(indexName));
+                    IndexMetaData indexMetaData = new IndexMetaData(indexName);
+                    indexMetaData.setUnique(isUnique);
+                    indexMetaData.getColumns().addAll(loadIndexColumnNames(connection, tableName, indexName));
+                    result.get(tableName).add(indexMetaData);
                 }
             }
         }
         return result;
     }
     
+    private List<String> loadIndexColumnNames(final Connection connection, final String tableName, final String indexName) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(INDEX_COLUMN_META_DATA_SQL)) {
+            preparedStatement.setString(1, connection.getSchema());
+            preparedStatement.setString(2, tableName);
+            preparedStatement.setString(3, indexName);
+            List<String> result = new LinkedList<>();
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                result.add(resultSet.getString("COLUMN_NAME"));
+            }
+            return result;
+        }
+    }
+    
     private String getIndexMetaDataSQL(final Collection<String> tableNames) {
+        // TODO The table name needs to be in uppercase, otherwise the index cannot be found.
         return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     

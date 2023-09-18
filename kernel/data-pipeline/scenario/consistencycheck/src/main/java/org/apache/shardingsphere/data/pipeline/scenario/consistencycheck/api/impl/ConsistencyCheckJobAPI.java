@@ -31,13 +31,15 @@ import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.ConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlConsistencyCheckJobItemProgressSwapper;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobCodeRegistry;
+import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.common.pojo.ConsistencyCheckJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckerFactory;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineDatabaseTypeException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.ConsistencyCheckJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.UncompletedConsistencyCheckJobExistsException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
@@ -55,6 +57,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -108,6 +111,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
                 throw new UncompletedConsistencyCheckJobExistsException(latestCheckJobId.get());
             }
         }
+        verifyPipelineDatabaseType(param);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(parentJobId);
         String result = marshalJobId(latestCheckJobId.map(s -> new ConsistencyCheckJobId(contextKey, parentJobId, s)).orElseGet(() -> new ConsistencyCheckJobId(contextKey, parentJobId)));
         repositoryAPI.persistLatestCheckJobId(parentJobId, result);
@@ -118,8 +122,15 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         yamlConfig.setParentJobId(parentJobId);
         yamlConfig.setAlgorithmTypeName(param.getAlgorithmTypeName());
         yamlConfig.setAlgorithmProps(param.getAlgorithmProps());
+        yamlConfig.setSourceDatabaseType(param.getSourceDatabaseType().getType());
         start(new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(yamlConfig));
         return result;
+    }
+    
+    private void verifyPipelineDatabaseType(final CreateConsistencyCheckJobParameter param) {
+        Collection<DatabaseType> supportedDatabaseTypes = TableDataConsistencyCheckerFactory.newInstance(param.getAlgorithmTypeName(), param.getAlgorithmProps()).getSupportedDatabaseTypes();
+        ShardingSpherePreconditions.checkState(supportedDatabaseTypes.contains(param.getSourceDatabaseType()), () -> new UnsupportedPipelineDatabaseTypeException(param.getSourceDatabaseType()));
+        ShardingSpherePreconditions.checkState(supportedDatabaseTypes.contains(param.getTargetDatabaseType()), () -> new UnsupportedPipelineDatabaseTypeException(param.getTargetDatabaseType()));
     }
     
     /**
@@ -128,7 +139,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
      * @param parentJobId parent job id
      * @return latest data consistency check result
      */
-    public Map<String, DataConsistencyCheckResult> getLatestDataConsistencyCheckResult(final String parentJobId) {
+    public Map<String, TableDataConsistencyCheckResult> getLatestDataConsistencyCheckResult(final String parentJobId) {
         GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(parentJobId));
         Optional<String> latestCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
         if (!latestCheckJobId.isPresent()) {
@@ -149,7 +160,8 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         String tableNames = String.join(",", progressContext.getTableNames());
         String ignoredTableNames = String.join(",", progressContext.getIgnoredTableNames());
         ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(tableNames, ignoredTableNames, progressContext.getCheckedRecordsCount().get(),
-                progressContext.getRecordsCount(), progressContext.getCheckBeginTimeMillis(), progressContext.getCheckEndTimeMillis(), progressContext.getTableCheckPositions());
+                progressContext.getRecordsCount(), progressContext.getCheckBeginTimeMillis(), progressContext.getCheckEndTimeMillis(),
+                progressContext.getSourceTableCheckPositions(), progressContext.getTargetTableCheckPositions(), progressContext.getSourceDatabaseType());
         jobItemProgress.setStatus(context.getStatus());
         return YamlEngine.marshal(swapper.swapToYamlConfiguration(jobItemProgress));
     }
@@ -246,14 +258,14 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         Optional<String> latestCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
         String checkJobId = latestCheckJobId.get();
-        Optional<ConsistencyCheckJobItemProgress> progressOptional = getJobItemProgress(checkJobId, 0);
-        if (!progressOptional.isPresent()) {
+        Optional<ConsistencyCheckJobItemProgress> progress = getJobItemProgress(checkJobId, 0);
+        if (!progress.isPresent()) {
             return Collections.emptyList();
         }
         List<ConsistencyCheckJobItemInfo> result = new LinkedList<>();
-        ConsistencyCheckJobItemProgress jobItemProgress = progressOptional.get();
+        ConsistencyCheckJobItemProgress jobItemProgress = progress.get();
         if (!Strings.isNullOrEmpty(jobItemProgress.getIgnoredTableNames())) {
-            Map<String, DataConsistencyCheckResult> checkJobResult = governanceRepositoryAPI.getCheckJobResult(parentJobId, latestCheckJobId.get());
+            Map<String, TableDataConsistencyCheckResult> checkJobResult = governanceRepositoryAPI.getCheckJobResult(parentJobId, latestCheckJobId.get());
             result.addAll(buildIgnoredTableInfo(jobItemProgress.getIgnoredTableNames().split(","), checkJobResult));
         }
         if (Objects.equals(jobItemProgress.getIgnoredTableNames(), jobItemProgress.getTableNames())) {
@@ -263,7 +275,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         return result;
     }
     
-    private List<ConsistencyCheckJobItemInfo> buildIgnoredTableInfo(final String[] ignoredTables, final Map<String, DataConsistencyCheckResult> checkJobResult) {
+    private List<ConsistencyCheckJobItemInfo> buildIgnoredTableInfo(final String[] ignoredTables, final Map<String, TableDataConsistencyCheckResult> checkJobResult) {
         if (null == ignoredTables) {
             return Collections.emptyList();
         }
@@ -272,7 +284,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
             ConsistencyCheckJobItemInfo info = new ConsistencyCheckJobItemInfo();
             info.setTableNames(each);
             info.setCheckSuccess(null);
-            DataConsistencyCheckResult checkResult = checkJobResult.get(each);
+            TableDataConsistencyCheckResult checkResult = checkJobResult.get(each);
             if (null != checkResult && checkResult.isIgnored()) {
                 info.setErrorMessage(checkResult.getIgnoredType().getMessage());
             }
@@ -286,14 +298,16 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         Optional<String> latestCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
         String checkJobId = latestCheckJobId.get();
-        Optional<ConsistencyCheckJobItemProgress> progressOptional = getJobItemProgress(checkJobId, 0);
+        Optional<ConsistencyCheckJobItemProgress> progress = getJobItemProgress(checkJobId, 0);
         ConsistencyCheckJobItemInfo result = new ConsistencyCheckJobItemInfo();
-        if (!progressOptional.isPresent()) {
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(checkJobId);
+        result.setActive(!jobConfigPOJO.isDisabled());
+        if (!progress.isPresent()) {
             return result;
         }
-        ConsistencyCheckJobItemProgress jobItemProgress = progressOptional.get();
+        ConsistencyCheckJobItemProgress jobItemProgress = progress.get();
         if (null == jobItemProgress.getRecordsCount() || null == jobItemProgress.getCheckedRecordsCount()) {
-            result.setFinishedPercentage(0);
+            result.setInventoryFinishedPercentage(0);
             result.setCheckSuccess(null);
             return result;
         }
@@ -301,15 +315,14 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         long recordsCount = jobItemProgress.getRecordsCount();
         long checkedRecordsCount = Math.min(jobItemProgress.getCheckedRecordsCount(), recordsCount);
         if (JobStatus.FINISHED == jobItemProgress.getStatus()) {
-            result.setFinishedPercentage(100);
+            result.setInventoryFinishedPercentage(100);
             LocalDateTime checkEndTime = new Timestamp(jobItemProgress.getCheckEndTimeMillis()).toLocalDateTime();
             Duration duration = Duration.between(checkBeginTime, checkEndTime);
             result.setDurationSeconds(duration.getSeconds());
             result.setCheckEndTime(DATE_TIME_FORMATTER.format(checkEndTime));
-            result.setRemainingSeconds(0L);
+            result.setInventoryRemainingSeconds(0L);
         } else if (0 != recordsCount && 0 != checkedRecordsCount) {
-            result.setFinishedPercentage((int) (checkedRecordsCount * 100 / recordsCount));
-            JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(checkJobId);
+            result.setInventoryFinishedPercentage((int) (checkedRecordsCount * 100 / recordsCount));
             Long stopTimeMillis = jobConfigPOJO.isDisabled() ? Long.parseLong(jobConfigPOJO.getProps().getProperty("stop_time_millis")) : null;
             long durationMillis = (null != stopTimeMillis ? stopTimeMillis : System.currentTimeMillis()) - jobItemProgress.getCheckBeginTimeMillis();
             result.setDurationSeconds(TimeUnit.MILLISECONDS.toSeconds(durationMillis));
@@ -317,13 +330,18 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
                 result.setCheckEndTime(DATE_TIME_FORMATTER.format(new Timestamp(stopTimeMillis).toLocalDateTime()));
             }
             long remainingMills = Math.max(0, (long) ((recordsCount - checkedRecordsCount) * 1.0D / checkedRecordsCount * durationMillis));
-            result.setRemainingSeconds(remainingMills / 1000);
+            result.setInventoryRemainingSeconds(remainingMills / 1000);
         }
         String tableNames = jobItemProgress.getTableNames();
         result.setTableNames(Optional.ofNullable(tableNames).orElse(""));
         result.setCheckBeginTime(DATE_TIME_FORMATTER.format(checkBeginTime));
+        ConsistencyCheckJobConfiguration jobConfig = getJobConfiguration(checkJobId);
+        result.setAlgorithmType(jobConfig.getAlgorithmTypeName());
+        if (null != jobConfig.getAlgorithmProps()) {
+            result.setAlgorithmProps(jobConfig.getAlgorithmProps().entrySet().stream().map(entry -> String.format("'%s'='%s'", entry.getKey(), entry.getValue())).collect(Collectors.joining(",")));
+        }
         result.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
-        Map<String, DataConsistencyCheckResult> checkJobResult = governanceRepositoryAPI.getCheckJobResult(parentJobId, checkJobId);
+        Map<String, TableDataConsistencyCheckResult> checkJobResult = governanceRepositoryAPI.getCheckJobResult(parentJobId, checkJobId);
         if (checkJobResult.isEmpty()) {
             result.setCheckSuccess(null);
         } else {

@@ -67,12 +67,12 @@ class ShowCurrentUserExecutorTest {
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(new HashMap<>(), mock(ResourceMetaData.class), mockShardingSphereRuleMetaData(), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(new HashMap<>(), mock(ResourceMetaData.class), mockRuleMetaData(), new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }
     
-    private RuleMetaData mockShardingSphereRuleMetaData() {
+    private RuleMetaData mockRuleMetaData() {
         AuthorityRule authorityRule = mock(AuthorityRule.class);
         ShardingSphereUser shardingSphereUser = mock(ShardingSphereUser.class);
         when(shardingSphereUser.getGrantee()).thenReturn(new Grantee("root", "%"));

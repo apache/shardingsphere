@@ -167,4 +167,79 @@
             </from>
         </select>
     </create-view>
+
+    <create-view sql-case-id="create_or_replace_view_with_select" view-definition="select p.name planet, p.class, m.name moon, m.radius from planets p, moons m where p.name = m.planet_name(+) and m.name(+) not like 'S/%'">
+        <view name="named_moons" start-index="23" stop-index="33" />
+        <select>
+            <projections start-index="45" stop-index="89">
+                <column-projection name="name" alias="planet" start-index="45" stop-index="57">
+                    <owner name="p" start-index="45" stop-index="45" />
+                </column-projection>
+                <column-projection name="class" start-index="60" stop-index="66">
+                    <owner name="p" start-index="60" stop-index="60" />
+                </column-projection>
+                <column-projection name="name" alias="moon" start-index="69" stop-index="79">
+                    <owner name="m" start-index="69" stop-index="69" />
+                </column-projection>
+                <column-projection name="radius" start-index="82" stop-index="89">
+                    <owner name="m" start-index="82" stop-index="82" />
+                </column-projection>
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <simple-table name="planets" alias="p" start-index="96" stop-index="104" />
+                    </left>
+                    <right>
+                        <simple-table name="moons" alias="m" start-index="107" stop-index="113" />
+                    </right>
+                </join-table>
+            </from>
+            <where start-index="115" stop-index="174">
+                <expr>
+                    <binary-operation-expression start-index="121" stop-index="174">
+                        <left>
+                            <binary-operation-expression start-index="121" stop-index="145">
+                                <left>
+                                    <column name="name" start-index="121" stop-index="126">
+                                        <owner name="p" start-index="121" stop-index="121" />
+                                    </column>
+                                </left>
+                                <right>
+                                    <colum-with-join-operator-segment>
+                                        <column name="planet_name" start-index="130" stop-index="142">
+                                            <owner name="m" start-index="130" stop-index="130" />
+                                        </column>
+                                        <join-operator>(+)</join-operator>
+                                    </colum-with-join-operator-segment>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <binary-operation-expression start-index="151" stop-index="174">
+                                <left>
+                                    <colum-with-join-operator-segment>
+                                        <column name="name" start-index="151" stop-index="156">
+                                            <owner name="m" start-index="151" stop-index="151" />
+                                        </column>
+                                        <join-operator>(+)</join-operator>
+                                    </colum-with-join-operator-segment>
+                                </left>
+                                <right>
+                                    <list-expression start-index="170" stop-index="174">
+                                        <items>
+                                            <literal-expression value="S/%" start-index="170" stop-index="174" />
+                                        </items>
+                                    </list-expression>
+                                </right>
+                                <operator>NOT LIKE</operator>
+                            </binary-operation-expression>
+                        </right>
+                        <operator>and</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-view>
 </sql-parser-test-cases>
