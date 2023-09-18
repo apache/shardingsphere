@@ -68,8 +68,8 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
         } else {
             source = convertValues(insertStatement.getValues());
         }
-        SqlNodeList columns = convertColumn(insertStatement.getColumns());
-        return new SqlInsert(SqlParserPos.ZERO, keywords, table, source, columns);
+        SqlNodeList columnList = convertColumn(insertStatement.getColumns());
+        return new SqlInsert(SqlParserPos.ZERO, keywords, table, source, columnList);
     }
     
     private SqlNode convertSelect(final SubquerySegment subquerySegment) {
@@ -87,7 +87,9 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
     private SqlNode convertValues(final Collection<InsertValuesSegment> insertValuesSegments) {
         List<SqlNode> values = new ArrayList<>();
         for (InsertValuesSegment each : insertValuesSegments) {
-            values.add(convertExpression(each.getValues().get(0)));
+            for (ExpressionSegment value : each.getValues()) {
+                values.add(convertExpression(value));
+            }
         }
         List<SqlNode> operands = new ArrayList<>();
         operands.add(new SqlBasicCall(new SqlRowOperator("ROW"), values, SqlParserPos.ZERO));
