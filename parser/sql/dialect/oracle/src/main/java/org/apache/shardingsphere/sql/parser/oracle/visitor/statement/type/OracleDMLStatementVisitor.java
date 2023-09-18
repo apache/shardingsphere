@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssignmentValuesContext;
@@ -64,6 +63,9 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockTa
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeAssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeAssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeColumnValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeInsertClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeInsertColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeSetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeUpdateClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModelClauseContext;
@@ -1225,7 +1227,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @SuppressWarnings("unchecked")
     @Override
-    public ASTNode visitMergeInsertClause(final OracleStatementParser.MergeInsertClauseContext ctx) {
+    public ASTNode visitMergeInsertClause(final MergeInsertClauseContext ctx) {
         OracleInsertStatement result = new OracleInsertStatement();
         if (null != ctx.mergeInsertColumn()) {
             result.setInsertColumns((InsertColumnsSegment) visit(ctx.mergeInsertColumn()));
@@ -1240,7 +1242,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     }
     
     @Override
-    public ASTNode visitMergeInsertColumn(final OracleStatementParser.MergeInsertColumnContext ctx) {
+    public ASTNode visitMergeInsertColumn(final MergeInsertColumnContext ctx) {
         Collection<ColumnSegment> columnSegments = new ArrayList<>(ctx.columnName().size());
         for (ColumnNameContext each : ctx.columnName()) {
             if (null != each.name()) {
@@ -1251,7 +1253,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     }
     
     @Override
-    public ASTNode visitMergeColumnValue(final OracleStatementParser.MergeColumnValueContext ctx) {
+    public ASTNode visitMergeColumnValue(final MergeColumnValueContext ctx) {
         CollectionValue<InsertValuesSegment> result = new CollectionValue<>();
         List<ExpressionSegment> segments = new LinkedList<>();
         for (ExprContext each : ctx.expr()) {
