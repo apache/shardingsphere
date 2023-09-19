@@ -218,12 +218,4 @@ public interface GovernanceRepositoryAPI {
      * @return error msg
      */
     String getJobItemErrorMessage(String jobId, int shardingItem);
-    
-    /**
-     * Clean job item error message.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     */
-    void cleanJobItemErrorMessage(String jobId, int shardingItem);
 }

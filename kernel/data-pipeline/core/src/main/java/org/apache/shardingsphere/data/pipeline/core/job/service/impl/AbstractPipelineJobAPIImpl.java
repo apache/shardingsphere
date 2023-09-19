@@ -182,6 +182,6 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     @Override
     public void cleanJobItemErrorMessage(final String jobId, final int shardingItem) {
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).cleanJobItemErrorMessage(jobId, shardingItem);
+        persistJobItemErrorMessage(jobId, shardingItem, "");
     }
 }
