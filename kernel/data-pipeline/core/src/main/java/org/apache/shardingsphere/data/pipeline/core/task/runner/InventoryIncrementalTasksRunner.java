@@ -105,6 +105,10 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     }
     
     private synchronized void executeIncrementalTask() {
+        if (jobItemContext.isStopping()) {
+            log.info("Stopping is true, ignore incremental task");
+            return;
+        }
         if (incrementalTasks.isEmpty()) {
             log.info("incrementalTasks empty, ignore");
             return;
