@@ -136,7 +136,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
                 return;
             }
             log.info("onFailure, check job id: {}, parent job id: {}", checkJobId, parentJobId, throwable);
-            checkJobAPI.persistJobItemErrorMessage(checkJobId, 0, throwable);
+            checkJobAPI.updateJobItemErrorMessage(checkJobId, 0, throwable);
             checkJobAPI.stop(checkJobId);
         }
     }

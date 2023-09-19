@@ -171,17 +171,18 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void persistJobItemErrorMessage(final String jobId, final int shardingItem, final Object error) {
+    public void updateJobItemErrorMessage(final String jobId, final int shardingItem, final Object error) {
         String key = PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem);
         String value = "";
         if (null != error) {
             value = error instanceof Throwable ? ExceptionUtils.getStackTrace((Throwable) error) : error.toString();
         }
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persist(key, value);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).update(key, value);
     }
     
     @Override
     public void cleanJobItemErrorMessage(final String jobId, final int shardingItem) {
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).cleanJobItemErrorMessage(jobId, shardingItem);
+        String key = PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persist(key, "");
     }
 }
