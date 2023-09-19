@@ -54,17 +54,21 @@ public final class YamlTableDataConsistencyCheckResult implements YamlConfigurat
         private long targetRecordsCount;
         
         /**
-         * Add records count.
+         * Add source records count.
          *
          * @param delta delta count
-         * @param onSource add on source or target
          */
-        public void addRecordsCount(final long delta, final boolean onSource) {
-            if (onSource) {
-                sourceRecordsCount += delta;
-            } else {
-                targetRecordsCount += delta;
-            }
+        public void addSourceRecordsCount(final long delta) {
+            sourceRecordsCount += delta;
+        }
+        
+        /**
+         * Add target records count.
+         *
+         * @param delta delta count
+         */
+        public void addTargetRecordsCount(final long delta) {
+            targetRecordsCount += delta;
         }
     }
     

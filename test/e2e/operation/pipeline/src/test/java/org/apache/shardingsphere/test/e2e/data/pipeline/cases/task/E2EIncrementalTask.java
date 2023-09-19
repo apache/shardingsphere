@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.task;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -45,7 +44,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -72,7 +70,6 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
     
     private final int loopCount;
     
-    @SneakyThrows(InterruptedException.class)
     @Override
     public void run() {
         List<Object[]> orderInsertData = PipelineCaseHelper.generateOrderInsertData(databaseType, primaryKeyGenerateAlgorithm, loopCount);
@@ -80,19 +77,16 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
         for (Object[] each : orderInsertData) {
             primaryKeys.add(each[0]);
             insertOrder(each);
-            TimeUnit.MILLISECONDS.sleep(100L);
         }
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < Math.max(1, loopCount / 3); i++) {
             // TODO 0000-00-00 00:00:00 now will cause consistency check failed of MySQL.
             // DataSourceUtil.execute(dataSource, String.format("UPDATE %s SET t_datetime='0000-00-00 00:00:00' WHERE order_id = ?", orderTableName)
             updateOrderById(primaryKeys.get(random.nextInt(0, primaryKeys.size())));
-            TimeUnit.MILLISECONDS.sleep(500L);
         }
         for (int i = 0; i < Math.max(1, loopCount / 3); i++) {
             setNullToAllFields(primaryKeys.get(random.nextInt(0, primaryKeys.size())));
             deleteOrderById(primaryKeys.remove(random.nextInt(0, primaryKeys.size())));
-            TimeUnit.MILLISECONDS.sleep(500L);
         }
         log.info("increment task runnable execute successfully.");
     }
