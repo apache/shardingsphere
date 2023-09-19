@@ -313,16 +313,10 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         }
         fillInJobItemInfoWithTimes(result, jobItemProgress, jobConfigPOJO);
         result.setTableNames(Optional.ofNullable(jobItemProgress.getTableNames()).orElse(""));
-        fillInJobItemInfoWithAlgorithm(result, checkJobId);
+        fillInJobItemInfoWithCheckAlgorithm(result, checkJobId);
         result.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
         Map<String, TableDataConsistencyCheckResult> checkJobResult = governanceRepositoryAPI.getCheckJobResult(parentJobId, checkJobId);
-        if (checkJobResult.isEmpty()) {
-            result.setCheckSuccess(null);
-        } else {
-            InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(
-                    PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(parentJobId).getType());
-            result.setCheckSuccess(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
-        }
+        fillInJobItemInfoWithCheckResult(result, checkJobResult, parentJobId);
         result.setCheckFailedTableNames(checkJobResult.entrySet().stream().filter(each -> !each.getValue().isIgnored() && !each.getValue().isMatched())
                 .map(Entry::getKey).collect(Collectors.joining(",")));
         return result;
@@ -353,11 +347,21 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         }
     }
     
-    private void fillInJobItemInfoWithAlgorithm(final ConsistencyCheckJobItemInfo result, final String checkJobId) {
+    private void fillInJobItemInfoWithCheckAlgorithm(final ConsistencyCheckJobItemInfo result, final String checkJobId) {
         ConsistencyCheckJobConfiguration jobConfig = getJobConfiguration(checkJobId);
         result.setAlgorithmType(jobConfig.getAlgorithmTypeName());
         if (null != jobConfig.getAlgorithmProps()) {
             result.setAlgorithmProps(jobConfig.getAlgorithmProps().entrySet().stream().map(entry -> String.format("'%s'='%s'", entry.getKey(), entry.getValue())).collect(Collectors.joining(",")));
+        }
+    }
+    
+    private void fillInJobItemInfoWithCheckResult(final ConsistencyCheckJobItemInfo result, final Map<String, TableDataConsistencyCheckResult> checkJobResult, final String parentJobId) {
+        if (checkJobResult.isEmpty()) {
+            result.setCheckSuccess(null);
+        } else {
+            InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(
+                    PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(parentJobId).getType());
+            result.setCheckSuccess(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
         }
     }
     
