@@ -30,7 +30,6 @@ import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnItemSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -96,15 +95,8 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     }
     
     private boolean isColumnNameNotConflicts(final EncryptRuleSegment rule) {
-        for (EncryptColumnSegment each : rule.getColumns()) {
-            if (null != each.getLikeQuery() && each.getName().equals(each.getLikeQuery().getName())) {
-                return false;
-            }
-            if (null != each.getAssistedQuery() && each.getName().equals(each.getAssistedQuery().getName())) {
-                return false;
-            }
-        }
-        return true;
+        return rule.getColumns().stream().noneMatch(each -> null != each.getLikeQuery() && each.getName().equals(each.getLikeQuery().getName())
+                || null != each.getAssistedQuery() && each.getName().equals(each.getAssistedQuery().getName()));
     }
     
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) {
