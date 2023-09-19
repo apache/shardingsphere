@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.infra.database.sqlserver.metadata.data.loader;
 
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader;
+import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.sqlserver.type.SQLServerDatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -87,7 +89,7 @@ class SQLServerMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
                 .executeQuery()).thenReturn(indexResultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(15);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db");
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.emptyList(), dataSource, new SQLServerDatabaseType(), "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -105,7 +107,7 @@ class SQLServerMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
                 .executeQuery()).thenReturn(indexResultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(14);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db");
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.emptyList(), dataSource, new SQLServerDatabaseType(), "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -122,7 +124,7 @@ class SQLServerMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
                 .executeQuery()).thenReturn(indexResultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(15);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db");
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), dataSource, new SQLServerDatabaseType(), "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -139,7 +141,7 @@ class SQLServerMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
                 .executeQuery()).thenReturn(indexResultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(14);
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db");
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), dataSource, new SQLServerDatabaseType(), "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
