@@ -171,6 +171,14 @@ public interface GovernanceRepositoryAPI {
     void persist(String key, String value);
     
     /**
+     * Update data.
+     *
+     * @param key key of data
+     * @param value value of data
+     */
+    void update(String key, String value);
+    
+    /**
      * Get sharding items of job.
      *
      * @param jobId job id

@@ -137,7 +137,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     protected void inventoryFailureCallback(final Throwable throwable) {
         log.error("onFailure, inventory task execute failed.", throwable);
         String jobId = jobItemContext.getJobId();
-        jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+        jobAPI.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
         jobAPI.stop(jobId);
     }
     
@@ -165,7 +165,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         public void onFailure(final Throwable throwable) {
             log.error("onFailure, incremental task execute failed.", throwable);
             String jobId = jobItemContext.getJobId();
-            jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+            jobAPI.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
             jobAPI.stop(jobId);
         }
     }
