@@ -1364,7 +1364,7 @@
     <insert sql-case-id="insert_all_with_all_placeholders" parameters="1, 1, 'init', 2, 2, 'init', 3, 3, 'init'">
         <multi-table-insert-type value="ALL" />
         <multi-table-insert-into start-index="11" stop-index="183" literal-start-index="11" literal-stop-index="198">
-            <insert-statement>
+            <insert-statement parameters="1, 1, 'init'">
                 <table name="t_order" start-index="16" stop-index="22" />
                 <columns start-index="24" stop-index="50">
                     <column name="order_id" start-index="25" stop-index="32" />
@@ -1388,7 +1388,7 @@
                     </value>
                 </values>
             </insert-statement>
-            <insert-statement>
+            <insert-statement parameters="2, 2, 'init'">
                 <table name="t_order" start-index="74" stop-index="80" literal-start-index="79" literal-stop-index="85" />
                 <columns start-index="82" stop-index="108" literal-start-index="87" literal-stop-index="113">
                     <column name="order_id" start-index="83" stop-index="90" literal-start-index="88" literal-stop-index="95" />
@@ -1412,7 +1412,7 @@
                     </value>
                 </values>
             </insert-statement>
-            <insert-statement>
+            <insert-statement parameters="2, 2, 'init'">
                 <table name="t_order" start-index="132" stop-index="138" literal-start-index="142" literal-stop-index="148" />
                 <columns start-index="140" stop-index="166" literal-start-index="150" literal-stop-index="176">
                     <column name="order_id" start-index="141" stop-index="148" literal-start-index="151" literal-stop-index="158" />
