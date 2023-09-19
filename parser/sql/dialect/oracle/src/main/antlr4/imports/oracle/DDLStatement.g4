@@ -476,7 +476,7 @@ operateColumnClause
     ;
 
 addColumnSpecification
-    : ADD LP_? columnOrVirtualDefinitions RP_? columnProperties?
+    : ADD (LP_ columnOrVirtualDefinitions RP_ | columnOrVirtualDefinitions) columnProperties?
     ;
 
 columnOrVirtualDefinitions
