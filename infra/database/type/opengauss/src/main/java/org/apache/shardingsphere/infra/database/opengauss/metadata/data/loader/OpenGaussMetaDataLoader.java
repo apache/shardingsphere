@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -59,6 +60,11 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
             + " WHERE tc.constraint_type = 'PRIMARY KEY' AND kc.ordinal_position IS NOT NULL AND kc.table_schema IN (%s)";
     
     private static final String BASIC_INDEX_META_DATA_SQL = "SELECT tablename, indexname, schemaname FROM pg_indexes WHERE schemaname IN (%s)";
+    
+    private static final String ADVANCE_INDEX_META_DATA_SQL =
+            "SELECT idx.relname as index_name, insp.nspname as index_schema, tbl.relname as table_name, att.attname AS column_name, pgi.indisunique as is_unique"
+                    + " FROM pg_index pgi JOIN pg_class idx ON idx.oid = pgi.indexrelid JOIN pg_namespace insp ON insp.oid = idx.relnamespace JOIN pg_class tbl ON tbl.oid = pgi.indrelid"
+                    + " JOIN pg_namespace tnsp ON tnsp.oid = tbl.relnamespace JOIN pg_attribute att ON att.attrelid = tbl.oid AND att.attnum = ANY(pgi.indkey) WHERE tnsp.nspname IN (%s)";
     
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
@@ -87,11 +93,33 @@ public final class OpenGaussMetaDataLoader implements DialectMetaDataLoader {
                 indexMetaDataMap.put(tableName, new IndexMetaData(indexName));
             }
         }
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getAdvanceIndexMetaDataSQL(schemaNames)); ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                String schemaName = resultSet.getString("index_schema");
+                String tableName = resultSet.getString("table_name");
+                String columnName = resultSet.getString("column_name");
+                String indexName = resultSet.getString("index_name");
+                boolean isUnique = resultSet.getBoolean("is_unique");
+                Collection<IndexMetaData> indexMetaDatas = result.getOrDefault(schemaName, LinkedHashMultimap.create()).get(tableName);
+                if (null == indexMetaDatas || indexMetaDatas.isEmpty()) {
+                    continue;
+                }
+                Optional<IndexMetaData> indexMetaData = indexMetaDatas.stream().filter(each -> each.getName().equals(indexName)).findFirst();
+                if (indexMetaData.isPresent()) {
+                    indexMetaData.get().setUnique(isUnique);
+                    indexMetaData.get().getColumns().add(columnName);
+                }
+            }
+        }
         return result;
     }
     
     private String getIndexMetaDataSQL(final Collection<String> schemaNames) {
         return String.format(BASIC_INDEX_META_DATA_SQL, schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    }
+    
+    private String getAdvanceIndexMetaDataSQL(final Collection<String> schemaNames) {
+        return String.format(ADVANCE_INDEX_META_DATA_SQL, schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private Map<String, Multimap<String, ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables,
