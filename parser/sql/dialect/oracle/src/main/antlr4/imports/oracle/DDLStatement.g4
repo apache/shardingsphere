@@ -3397,6 +3397,56 @@ arryDMLSubClause
     : LP_ typeName (COMMA_ varrayType)? RP_
     ;
 
+createMaterializedView
+    : CREATE MATERIALIZED VIEW materializedViewName (OF typeName )? materializedViewColumnClause? materializedViewPrebuiltClause materializedViewUsingClause? createMvRefresh? (FOR UPDATE)? ( (DISABLE | ENABLE) QUERY REWRITE )? AS selectSubquery
+    ;
+
+materializedViewColumnClause
+    : ( LP_ (scopedTableRefConstraint | mvColumnAlias) (COMMA_ (scopedTableRefConstraint | mvColumnAlias))* RP_ )
+    ;
+
+materializedViewPrebuiltClause
+    : ( ON PREBUILT TABLE ( (WITH | WITHOUT) REDUCED PRECISION)? | physicalProperties?  (CACHE | NOCACHE)? parallelClause? buildClause?)
+    ;
+
+materializedViewUsingClause
+    : ( USING INDEX ( (physicalAttributesClause | TABLESPACE tablespaceName)+ )* | USING NO INDEX)
+    ;
+
+mvColumnAlias
+    : (identifier | quotedString) (ENCRYPT encryptionSpecification)?
+    ;
+
+createMvRefresh
+    : ( NEVER REFRESH | REFRESH createMvRefreshOptions+)
+    ;
+
+createMvRefreshOptions
+    : ( (FAST | COMPLETE | FORCE) | ON (DEMAND | COMMIT) | (START WITH | NEXT) | WITH (PRIMARY KEY | ROWID) | USING ( DEFAULT (MASTER LOCAL)? ROLLBACK SEGMENT | (MASTER | LOCAL)? ROLLBACK SEGMENT rb_segment=REGULAR_ID ) | USING (ENFORCED | TRUSTED) CONSTRAINTS)
+    ;
+
+quotedString
+    : variableName
+    | CHAR_STRING
+    | NATIONAL_CHAR_STRING_LIT
+    ;
+
+buildClause
+    : BUILD (IMMEDIATE | DEFERRED)
+    ;
+
+createMaterializedViewLog
+    : CREATE MATERIALIZED VIEW LOG ON tableName materializedViewLogAttribute? parallelClause? ( WITH ( COMMA_? ( OBJECT ID | PRIMARY KEY | ROWID | SEQUENCE | COMMIT SCN ) )* (LP_ ( COMMA_? identifier )+ RP_ newViewValuesClause? )? mvLogPurgeClause? )*
+    ;
+
+materializedViewLogAttribute
+    : ( ( physicalAttributesClause | TABLESPACE tablespaceName | loggingClause | (CACHE | NOCACHE))+ )
+    ;
+
+newViewValuesClause
+    : (INCLUDING | EXCLUDING ) NEW VALUES
+    ;
+
 alterMaterializedView
     : ALTER MATERIALIZED VIEW materializedViewName materializedViewAttribute? alterIotClauses? (USING INDEX physicalAttributesClause)?
     ((MODIFY scopedTableRefConstraint) | alterMvRefresh)? evaluationEditionClause?
