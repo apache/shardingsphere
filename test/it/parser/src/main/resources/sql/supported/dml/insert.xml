@@ -95,4 +95,5 @@
     <sql-case id="insert_with_content_keyword" value="INSERT INTO SYS_MQ_MSG (ID, CONTENT) VALUES (1, 'test');" db-types="Oracle" />
     <sql-case id="insert_with_connect_by_and_prior" value="Insert Into t (c1,c2,c3,c4,c5) select c1,c2,regexp_substr(c3, '[^,]+', 1, l) c3,c4,c5 from t where id=1 connect by l &lt;= regexp_count(c3, ',') + 1 and ID = prior ID and prior dbms_random.value is not null;" db-types="Oracle" />
     <sql-case id="insert_with_national_character_set" value="INSERT INTO customers VALUES (1000, TO_NCHAR('John Smith'),N'500 Oracle Parkway',sysdate);" db-types="Oracle" />
+    <sql-case id="insert_all_into" value="INSERT ALL INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (1,'2','3','4','5') INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (2,'2','3','4','5') INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (3,'2','3','4','5') SELECT 1 FROM DUAL" db-types="Oracle" />
 </sql-cases>

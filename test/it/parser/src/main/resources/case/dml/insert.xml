@@ -2563,4 +2563,109 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_all_into">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="11" stop-index="213">
+            <insert-statement>
+                <table name="T_MASK" start-index="16" stop-index="21" />
+                <columns start-index="22" stop-index="50">
+                    <column name="ID" start-index="23" stop-index="24" />
+                    <column name="EMAIL" start-index="26" stop-index="30" />
+                    <column name="NAME" start-index="32" stop-index="35" />
+                    <column name="PHONE" start-index="37" stop-index="41" />
+                    <column name="ADDRESS" start-index="43" stop-index="49" />
+                </columns>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <literal-expression value="1" start-index="60" stop-index="60" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="62" stop-index="64" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="3" start-index="66" stop-index="68" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="4" start-index="70" stop-index="72" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="5" start-index="74" stop-index="76" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert-statement>
+            <insert-statement>
+                <table name="T_MASK" start-index="84" stop-index="89" />
+                <columns start-index="90" stop-index="118">
+                    <column name="ID" start-index="91" stop-index="92" />
+                    <column name="EMAIL" start-index="94" stop-index="98" />
+                    <column name="NAME" start-index="100" stop-index="103" />
+                    <column name="PHONE" start-index="105" stop-index="109" />
+                    <column name="ADDRESS" start-index="111" stop-index="117" />
+                </columns>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="128" stop-index="128" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="130" stop-index="132" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="3" start-index="134" stop-index="136" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="4" start-index="138" stop-index="140" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="5" start-index="142" stop-index="144" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert-statement>
+            <insert-statement>
+                <table name="T_MASK" start-index="152" stop-index="157" />
+                <columns start-index="158" stop-index="186">
+                    <column name="ID" start-index="159" stop-index="160" />
+                    <column name="EMAIL" start-index="162" stop-index="166" />
+                    <column name="NAME" start-index="168" stop-index="171" />
+                    <column name="PHONE" start-index="173" stop-index="177" />
+                    <column name="ADDRESS" start-index="179" stop-index="185" />
+                </columns>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <literal-expression value="3" start-index="196" stop-index="196" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="198" stop-index="200" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="3" start-index="202" stop-index="204" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="4" start-index="206" stop-index="208" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="5" start-index="210" stop-index="212" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert-statement>
+        </multi-table-insert-into>
+        <select>
+            <projections start-index="222" stop-index="222">
+                <expression-projection start-index="222" stop-index="222" text="1">
+                    <expr>
+                        <literal-expression start-index="222" stop-index="222" value="1" />
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <simple-table name="DUAL" start-index="229" stop-index="232" />
+            </from>
+        </select>
+    </insert>
 </sql-parser-test-cases>
