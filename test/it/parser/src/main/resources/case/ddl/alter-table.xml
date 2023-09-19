@@ -141,6 +141,7 @@
     
     <alter-table sql-case-id="alter_table_modify7">
         <table name="locations" start-index="12" stop-index="20" />
+        <modify-constraint start-index="22" stop-index="55" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_modify8">
