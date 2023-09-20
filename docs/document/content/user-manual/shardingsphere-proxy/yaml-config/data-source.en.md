@@ -6,7 +6,7 @@ chapter = true
 
 ## Background
 
-ShardingSphere-PROXY supports common database connection pools: HikariCP, C3P0, DBCP.
+ShardingSphere-Proxy supports common database connection pools: HikariCP, C3P0, DBCP.
 
 The connection pool can be specified through the parameter `dataSourceClassName`. When not specified, the default database connection pool is HikariCP.
 

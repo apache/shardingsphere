@@ -6,7 +6,7 @@ chapter = true
 
 ## 背景信息
 
-ShardingSphere-PROXY 支持常见的数据库连接池: HikariCP、C3P0、DBCP。
+ShardingSphere-Proxy 支持常见的数据库连接池: HikariCP、C3P0、DBCP。
 
 可以通过参数 `dataSourceClassName` 指定连接池，当不指定时，默认的的数据库连接池为 HikariCP。
 
