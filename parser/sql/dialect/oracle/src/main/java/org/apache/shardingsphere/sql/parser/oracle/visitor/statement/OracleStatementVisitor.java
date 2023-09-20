@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyticFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ApproxRankContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BooleanLiteralsContext;
@@ -976,8 +977,17 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.toDateFunction()) {
             return visit(ctx.toDateFunction());
         }
+        if (null != ctx.approxRank()) {
+            return visit(ctx.approxRank());
+        }
         throw new IllegalStateException(
-                "SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, trimFunction, toDateFunction or featureFunction.");
+                "SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, trimFunction, toDateFunction, approxCount"
+                        + " or featureFunction.");
+    }
+    
+    @Override
+    public ASTNode visitApproxRank(final ApproxRankContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.APPROX_RANK().getText(), getOriginalText(ctx));
     }
     
     @Override
