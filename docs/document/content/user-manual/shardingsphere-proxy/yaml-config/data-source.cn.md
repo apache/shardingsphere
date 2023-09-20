@@ -16,8 +16,7 @@ ShardingSphere-Proxy 支持常见的数据库连接池: HikariCP、C3P0、DBCP�
 dataSources: # 数据源配置，可配置多个 <data-source-name>
   <data_source_name>: # 数据源名称
     dataSourceClassName: # 数据源连接池完整类名
-    driverClassName: # 数据库驱动类名，以数据库连接池自身配置为准
-    jdbcUrl: # 数据库 URL 连接，以数据库连接池自身配置为准
+    url: # 数据库 URL 连接，以数据库连接池自身配置为准
     username: # 数据库用户名，以数据库连接池自身配置为准
     password: # 数据库密码，以数据库连接池自身配置为准
     # ... 数据库连接池的其它属性
