@@ -27,21 +27,17 @@ dataSources: # 数据源配置，可配置多个 <data-source-name>
 ```yaml
 dataSources:
   ds_1:
-    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/ds_1
+    url: jdbc:mysql://localhost:3306/ds_1
     username: root
     password:
   ds_2:
     dataSourceClassName: com.mchange.v2.c3p0.ComboPooledDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/ds_2
+    url: jdbc:mysql://localhost:3306/ds_2
     username: root
     password:
   ds_3:
     dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/ds_3
+    url: jdbc:mysql://localhost:3306/ds_3
     username: root
     password:
   
