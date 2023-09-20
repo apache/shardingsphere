@@ -149,6 +149,10 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         
         @Override
         public void onSuccess() {
+            if (jobItemContext.isStopping()) {
+                log.info("Inventory task onSuccess, stopping true, ignore");
+                return;
+            }
             inventorySuccessCallback();
         }
         
