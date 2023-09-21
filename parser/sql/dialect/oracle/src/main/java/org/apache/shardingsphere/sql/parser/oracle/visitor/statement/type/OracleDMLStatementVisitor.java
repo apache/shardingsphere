@@ -123,6 +123,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhen
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MultisetExpression;
@@ -1215,7 +1216,10 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         OracleMergeStatement result = new OracleMergeStatement();
         result.setTarget((TableSegment) visit(ctx.intoClause()));
         result.setSource((TableSegment) visit(ctx.usingClause()));
-        result.setExpr((ExpressionSegment) visit(ctx.usingClause().expr()));
+        ExpressionWithParamsSegment onExpression = new ExpressionWithParamsSegment(ctx.usingClause().expr().start.getStartIndex(), ctx.usingClause().expr().stop.getStopIndex(),
+                (ExpressionSegment) visit(ctx.usingClause().expr()));
+        onExpression.getParameterMarkerSegments().addAll(popAllStatementParameterMarkerSegments());
+        result.setExpression(onExpression);
         if (null != ctx.mergeUpdateClause()) {
             result.setUpdate((UpdateStatement) visitMergeUpdateClause(ctx.mergeUpdateClause()));
         }
@@ -1238,6 +1242,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
+        result.getParameterMarkerSegments().addAll(popAllStatementParameterMarkerSegments());
         return result;
     }
     
@@ -1259,7 +1264,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         for (ExprContext each : ctx.expr()) {
             segments.add(null == each ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText()) : (ExpressionSegment) visit(each));
         }
-        result.getValue().add(new InsertValuesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), segments));
+        result.getValue().add(new InsertValuesSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), segments));
         return result;
     }
     
@@ -1306,6 +1311,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         }
         OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.subquery());
         SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery);
+        subquerySegment.getSelect().getParameterMarkerSegments().addAll(popAllStatementParameterMarkerSegments());
         SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
         if (null != ctx.alias()) {
             result.setAlias((AliasSegment) visit(ctx.alias()));
@@ -1323,6 +1329,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.deleteWhereClause()) {
             result.setDeleteWhere((WhereSegment) visit(ctx.deleteWhereClause()));
         }
+        result.getParameterMarkerSegments().addAll(popAllStatementParameterMarkerSegments());
         return result;
     }
     

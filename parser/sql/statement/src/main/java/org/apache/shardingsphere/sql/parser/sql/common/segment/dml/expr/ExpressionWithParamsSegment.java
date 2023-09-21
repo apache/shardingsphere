@@ -15,19 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.statement.dml;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Merge statement context.
+ * Expression with parameters segment.
  */
+@RequiredArgsConstructor
 @Getter
-public final class MergeStatementContext extends CommonSQLStatementContext {
+public final class ExpressionWithParamsSegment implements SQLSegment {
     
-    public MergeStatementContext(final OracleMergeStatement sqlStatement) {
-        super(sqlStatement);
-    }
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final ExpressionSegment expr;
+    
+    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
 }
