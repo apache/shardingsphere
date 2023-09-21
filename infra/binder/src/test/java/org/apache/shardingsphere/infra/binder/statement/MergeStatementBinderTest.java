@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
@@ -67,8 +68,8 @@ class MergeStatementBinderTest {
         SimpleTableSegment sourceTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item")));
         sourceTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("b")));
         mergeStatement.setSource(sourceTable);
-        mergeStatement.setExpr(new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")),
-                new ColumnSegment(0, 0, new IdentifierValue("order_id")), "=", "id = order_id"));
+        mergeStatement.setExpression(new ExpressionWithParamsSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("id")),
+                new ColumnSegment(0, 0, new IdentifierValue("order_id")), "=", "id = order_id")));
         UpdateStatement updateStatement = new OracleUpdateStatement();
         updateStatement.setTable(targetTable);
         ColumnSegment targetTableColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
@@ -138,5 +139,34 @@ class MergeStatementBinderTest {
         mergeStatement.setUpdate(updateStatement);
         MergeStatement actual = new MergeStatementBinder().bind(mergeStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
         assertThat(actual, not(mergeStatement));
+    }
+    
+    @Test
+    void assertBindUpdateDeleteWhere() {
+        MergeStatement mergeStatement = new OracleMergeStatement();
+        SimpleTableSegment targetTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        targetTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
+        mergeStatement.setTarget(targetTable);
+        SimpleTableSegment sourceTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item")));
+        sourceTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("b")));
+        mergeStatement.setSource(sourceTable);
+        OracleUpdateStatement updateStatement = new OracleUpdateStatement();
+        updateStatement.setTable(targetTable);
+        ColumnSegment targetTableColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
+        targetTableColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
+        ColumnSegment sourceTableColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
+        sourceTableColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("b")));
+        SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0,
+                Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(targetTableColumn), sourceTableColumn)));
+        updateStatement.setSetAssignment(setAssignmentSegment);
+        updateStatement.setDeleteWhere(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("item_id")),
+                new LiteralExpressionSegment(0, 0, 1), "=", "item_id = 1")));
+        mergeStatement.setUpdate(updateStatement);
+        MergeStatement actual = new MergeStatementBinder().bind(mergeStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
+        assertThat(actual.getUpdate(), instanceOf(OracleUpdateStatement.class));
+        assertThat(((OracleUpdateStatement) actual.getUpdate()).getDeleteWhere().getExpr(), instanceOf(BinaryOperationExpression.class));
+        assertThat(((BinaryOperationExpression) ((OracleUpdateStatement) actual.getUpdate()).getDeleteWhere().getExpr()).getLeft(), instanceOf(ColumnSegment.class));
+        assertThat(((ColumnSegment) ((BinaryOperationExpression) ((OracleUpdateStatement) actual.getUpdate()).getDeleteWhere().getExpr()).getLeft())
+                .getColumnBoundedInfo().getOriginalTable().getValue(), is("t_order_item"));
     }
 }
