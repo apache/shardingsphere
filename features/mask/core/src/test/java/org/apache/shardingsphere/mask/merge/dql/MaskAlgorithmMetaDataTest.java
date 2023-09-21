@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mask.merge.dql;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
@@ -43,9 +42,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class MaskAlgorithmMetaDataTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
-    
     @Mock
     private MaskRule maskRule;
     
@@ -61,7 +57,7 @@ class MaskAlgorithmMetaDataTest {
         columnProjection.setOriginalTable(new IdentifierValue("t_order"));
         when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(columnProjection));
         when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_order"));
-        Optional<MaskAlgorithm> actual = new MaskAlgorithmMetaData(database, maskRule, selectStatementContext).findMaskAlgorithmByColumnIndex(1);
+        Optional<MaskAlgorithm> actual = new MaskAlgorithmMetaData(maskRule, selectStatementContext).findMaskAlgorithmByColumnIndex(1);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getType(), is("MD5"));
     }
