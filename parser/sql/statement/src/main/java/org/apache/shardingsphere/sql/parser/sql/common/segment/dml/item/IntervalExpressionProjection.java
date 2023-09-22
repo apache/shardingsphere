@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Interval
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class IntervalExpressionProjection implements ExpressionSegment, ProjectionSegment {
     
     private final int startIndex;
@@ -42,6 +41,8 @@ public final class IntervalExpressionProjection implements ExpressionSegment, Pr
     
     private final ExpressionSegment right;
     
+    private final String expression;
+    
     @Setter
     private IntervalDayToSecondExpression dayToSecondExpression;
     
@@ -50,7 +51,7 @@ public final class IntervalExpressionProjection implements ExpressionSegment, Pr
     
     @Override
     public String getText() {
-        return minus.getText();
+        return expression;
     }
     
     @Override

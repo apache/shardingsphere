@@ -842,7 +842,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (projection instanceof IntervalExpressionProjection) {
             IntervalExpressionProjection intervalExpressionProjection = (IntervalExpressionProjection) projection;
             IntervalExpressionProjection result = new IntervalExpressionProjection(intervalExpressionProjection.getStartIndex(), intervalExpressionProjection.getStopIndex(),
-                    intervalExpressionProjection.getLeft(), intervalExpressionProjection.getMinus(), intervalExpressionProjection.getRight());
+                    intervalExpressionProjection.getLeft(), intervalExpressionProjection.getMinus(), intervalExpressionProjection.getRight(), intervalExpressionProjection.getText());
             if (null != intervalExpressionProjection.getDayToSecondExpression()) {
                 result.setDayToSecondExpression(intervalExpressionProjection.getDayToSecondExpression());
             } else {
