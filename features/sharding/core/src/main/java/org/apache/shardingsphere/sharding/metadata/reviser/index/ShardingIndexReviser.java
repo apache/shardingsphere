@@ -36,7 +36,7 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
     @Override
     public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final ShardingRule rule) {
         if (tableRule.getActualDataNodes().isEmpty()) {
-            return Optional.empty(); 
+            return Optional.empty();
         }
         IndexMetaData result = new IndexMetaData(getLogicIndex(originalMetaData.getName(), tableRule.getActualDataNodes().iterator().next().getTableName()));
         result.getColumns().addAll(originalMetaData.getColumns());
