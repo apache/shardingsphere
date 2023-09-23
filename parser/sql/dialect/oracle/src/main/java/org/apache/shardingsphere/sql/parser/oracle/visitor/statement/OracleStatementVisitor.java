@@ -25,13 +25,15 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyticFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ApproxRankContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BooleanPrimaryContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CaseExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CaseWhenContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CastFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
@@ -41,8 +43,10 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Cursor
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DateTimeLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DatetimeExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExtractFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FeatureFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FirstOrLastValueFunctionContext;
@@ -68,18 +72,23 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Predic
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PrivateExprOfDbContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SimpleExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SpecialFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SynonymNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ToDateFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TranslateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TrimFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlAggFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlCdataFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlColattvalFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlElementFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlExistsFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlForestFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFunctionContext;
@@ -116,6 +125,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Interval
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MultisetExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlElementFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlNameSpaceStringAsIdentifierSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlNameSpacesClauseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
@@ -150,6 +160,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.collection.Collecti
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.keyword.KeywordValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.DateTimeLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NullLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
@@ -170,11 +181,13 @@ import java.util.stream.Collectors;
 @Getter
 public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<ASTNode> {
     
-    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
+    private final Collection<ParameterMarkerSegment> globalParameterMarkerSegments = new LinkedList<>();
+    
+    private final Collection<ParameterMarkerSegment> statementParameterMarkerSegments = new LinkedList<>();
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterMarkerValue(parameterMarkerSegments.size(), ParameterMarkerType.QUESTION);
+        return new ParameterMarkerValue(globalParameterMarkerSegments.size(), ParameterMarkerType.QUESTION);
     }
     
     @Override
@@ -204,6 +217,22 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return visit(ctx.intervalLiterals());
         }
         throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, interval, boolean or null.");
+    }
+    
+    @Override
+    public ASTNode visitDateTimeLiterals(final DateTimeLiteralsContext ctx) {
+        if (null != ctx.LBE_()) {
+            return new DateTimeLiteralValue(ctx.identifier().getText(), ((StringLiteralValue) visit(ctx.stringLiterals())).getValue(), true);
+        }
+        String dateTimeType;
+        if (null != ctx.DATE()) {
+            dateTimeType = ctx.DATE().getText();
+        } else if (null != ctx.TIME()) {
+            dateTimeType = ctx.TIME().getText();
+        } else {
+            dateTimeType = ctx.TIMESTAMP().getText();
+        }
+        return new DateTimeLiteralValue(dateTimeType, ((StringLiteralValue) visit(ctx.stringLiterals())).getValue(), false);
     }
     
     @Override
@@ -511,7 +540,8 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) astNode;
             ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(context.start.getStartIndex(), context.stop.getStopIndex(),
                     parameterMarker.getValue(), parameterMarker.getType());
-            parameterMarkerSegments.add(segment);
+            globalParameterMarkerSegments.add(segment);
+            statementParameterMarkerSegments.add(segment);
             return segment;
         }
         if (astNode instanceof SubquerySegment) {
@@ -533,7 +563,8 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
             ParameterMarkerExpressionSegment segment = new ParameterMarkerExpressionSegment(startIndex, stopIndex, parameterMarker.getValue(), parameterMarker.getType());
-            parameterMarkerSegments.add(segment);
+            globalParameterMarkerSegments.add(segment);
+            statementParameterMarkerSegments.add(segment);
             return segment;
         }
         if (null != ctx.literals()) {
@@ -583,11 +614,11 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     }
     
     @Override
-    public ASTNode visitCaseExpression(final OracleStatementParser.CaseExpressionContext ctx) {
+    public ASTNode visitCaseExpression(final CaseExpressionContext ctx) {
         ExpressionSegment caseExpr = null == ctx.simpleExpr() ? null : (ExpressionSegment) visit(ctx.simpleExpr());
         Collection<ExpressionSegment> whenExprs = new ArrayList<>(ctx.caseWhen().size());
         Collection<ExpressionSegment> thenExprs = new ArrayList<>(ctx.caseWhen().size());
-        for (OracleStatementParser.CaseWhenContext each : ctx.caseWhen()) {
+        for (CaseWhenContext each : ctx.caseWhen()) {
             whenExprs.add((ExpressionSegment) visit(each.expr(0)));
             thenExprs.add((ExpressionSegment) visit(each.expr(1)));
         }
@@ -606,7 +637,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     @Override
     public ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
         IntervalExpressionProjection result = new IntervalExpressionProjection(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)),
-                (ExpressionSegment) visit(ctx.MINUS_()), (ExpressionSegment) visit(ctx.expr(1)));
+                (ExpressionSegment) visit(ctx.MINUS_()), (ExpressionSegment) visit(ctx.expr(1)), getOriginalText(ctx));
         if (null != ctx.intervalDayToSecondExpression()) {
             result.setDayToSecondExpression((IntervalDayToSecondExpression) visit(ctx.intervalDayToSecondExpression()));
         } else {
@@ -731,8 +762,31 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.xmlTableFunction()) {
             return visit(ctx.xmlTableFunction());
         }
+        if (null != ctx.xmlElementFunction()) {
+            return visit(ctx.xmlElementFunction());
+        }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.specifiedFunctionName.getText(), getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx.exprList()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitXmlElementFunction(final XmlElementFunctionContext ctx) {
+        XmlElementFunctionSegment result =
+                new XmlElementFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLELEMENT().getText(), (IdentifierValue) visit(ctx.identifier()), getOriginalText(ctx));
+        Collection<ExpressionSegment> expressionSegments = ctx.exprWithAlias().stream().map(each -> (ExpressionSegment) visit(each.expr())).collect(Collectors.toList());
+        result.getParameters().addAll(expressionSegments);
+        if (null != ctx.xmlAttributes()) {
+            Collection<ExpressionSegment> xmlAttributes = ctx.xmlAttributes().exprWithAlias().stream().map(each -> (ExpressionSegment) visit(each.expr())).collect(Collectors.toList());
+            result.getXmlAttributes().addAll(xmlAttributes);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitXmlCdataFunction(final XmlCdataFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLCDATA().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.stringLiterals()));
         return result;
     }
     
@@ -862,7 +916,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         return result;
     }
     
-    private Collection<ExpressionSegment> getExpressions(final OracleStatementParser.ExprListContext exprList) {
+    private Collection<ExpressionSegment> getExpressions(final ExprListContext exprList) {
         if (null == exprList) {
             return Collections.emptyList();
         }
@@ -923,8 +977,17 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.toDateFunction()) {
             return visit(ctx.toDateFunction());
         }
+        if (null != ctx.approxRank()) {
+            return visit(ctx.approxRank());
+        }
         throw new IllegalStateException(
-                "SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, trimFunction, toDateFunction or featureFunction.");
+                "SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, trimFunction, toDateFunction, approxCount"
+                        + " or featureFunction.");
+    }
+    
+    @Override
+    public ASTNode visitApproxRank(final ApproxRankContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.APPROX_RANK().getText(), getOriginalText(ctx));
     }
     
     @Override
@@ -936,12 +999,12 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     }
     
     @Override
-    public ASTNode visitToDateFunction(final OracleStatementParser.ToDateFunctionContext ctx) {
+    public ASTNode visitToDateFunction(final ToDateFunctionContext ctx) {
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TO_DATE().getText(), getOriginalText(ctx));
     }
     
     @Override
-    public final ASTNode visitTranslateFunction(final OracleStatementParser.TranslateFunctionContext ctx) {
+    public final ASTNode visitTranslateFunction(final TranslateFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRANSLATE().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         TerminalNode charSet = null == ctx.NCHAR_CS() ? ctx.CHAR_CS() : ctx.NCHAR_CS();
@@ -950,7 +1013,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     }
     
     @Override
-    public final ASTNode visitSetFunction(final OracleStatementParser.SetFunctionContext ctx) {
+    public final ASTNode visitSetFunction(final SetFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.SET().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
@@ -1122,5 +1185,16 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
      */
     protected String getOriginalText(final ParserRuleContext ctx) {
         return ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+    }
+    
+    /**
+     * Pop all statement parameter marker segments.
+     *
+     * @return all statement parameter marker segments
+     */
+    protected Collection<ParameterMarkerSegment> popAllStatementParameterMarkerSegments() {
+        Collection<ParameterMarkerSegment> result = new LinkedList<>(statementParameterMarkerSegments);
+        statementParameterMarkerSegments.clear();
+        return result;
     }
 }

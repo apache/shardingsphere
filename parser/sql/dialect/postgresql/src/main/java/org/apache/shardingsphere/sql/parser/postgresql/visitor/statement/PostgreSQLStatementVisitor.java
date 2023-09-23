@@ -116,6 +116,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -413,7 +414,11 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     private ExpressionSegment createSubqueryExpressionSegment(final CExprContext ctx) {
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(),
                 ctx.selectWithParens().getStop().getStopIndex(), (PostgreSQLSelectStatement) visit(ctx.selectWithParens()));
-        return null == ctx.EXISTS() ? new SubqueryExpressionSegment(subquerySegment) : new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
+        if (null != ctx.EXISTS()) {
+            subquerySegment.setSubqueryType(SubqueryType.EXISTS_SUBQUERY);
+            return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
+        }
+        return new SubqueryExpressionSegment(subquerySegment);
     }
     
     @Override
@@ -751,6 +756,13 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitInsertRest(final InsertRestContext ctx) {
         PostgreSQLInsertStatement result = new PostgreSQLInsertStatement();
+        ValuesClauseContext valuesClause = ctx.select().selectNoParens().selectClauseN().simpleSelect().valuesClause();
+        if (null == valuesClause) {
+            PostgreSQLSelectStatement selectStatement = (PostgreSQLSelectStatement) visit(ctx.select());
+            result.setInsertSelect(new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement));
+        } else {
+            result.getValues().addAll(createInsertValuesSegments(valuesClause));
+        }
         if (null == ctx.insertColumnList()) {
             result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         } else {
@@ -758,13 +770,6 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(insertColumns);
             InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(insertColumns.start.getStartIndex() - 1, insertColumns.stop.getStopIndex() + 1, columns.getValue());
             result.setInsertColumns(insertColumnsSegment);
-        }
-        ValuesClauseContext valuesClause = ctx.select().selectNoParens().selectClauseN().simpleSelect().valuesClause();
-        if (null == valuesClause) {
-            PostgreSQLSelectStatement selectStatement = (PostgreSQLSelectStatement) visit(ctx.select());
-            result.setInsertSelect(new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement));
-        } else {
-            result.getValues().addAll(createInsertValuesSegments(valuesClause));
         }
         return result;
     }

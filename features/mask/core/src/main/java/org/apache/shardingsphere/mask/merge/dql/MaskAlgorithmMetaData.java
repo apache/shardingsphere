@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -34,8 +33,6 @@ import java.util.Optional;
 @SuppressWarnings("rawtypes")
 @RequiredArgsConstructor
 public final class MaskAlgorithmMetaData {
-    
-    private final ShardingSphereDatabase database;
     
     private final MaskRule maskRule;
     

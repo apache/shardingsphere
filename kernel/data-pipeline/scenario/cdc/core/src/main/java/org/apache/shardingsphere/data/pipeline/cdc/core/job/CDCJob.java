@@ -124,7 +124,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     protected void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
         String jobId = jobItemContext.getJobId();
         log.error("job prepare failed, {}-{}", jobId, jobItemContext.getShardingItem(), ex);
-        jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
+        jobAPI.updateJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
         PipelineJobCenter.stop(jobId);
         jobAPI.updateJobConfigurationDisabled(jobId, true);
     }
@@ -190,6 +190,10 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
         
         @Override
         public void onSuccess() {
+            if (jobItemContext.isStopping()) {
+                log.info("onSuccess, stopping true, ignore");
+                return;
+            }
             log.info("onSuccess, all {} tasks finished.", identifier);
         }
         
@@ -197,7 +201,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
         public void onFailure(final Throwable throwable) {
             log.error("onFailure, {} task execute failed.", identifier, throwable);
             String jobId = jobItemContext.getJobId();
-            jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+            jobAPI.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
             PipelineJobCenter.stop(jobId);
             jobAPI.updateJobConfigurationDisabled(jobId, true);
         }

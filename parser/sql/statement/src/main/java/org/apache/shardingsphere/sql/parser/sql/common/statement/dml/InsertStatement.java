@@ -46,6 +46,8 @@ public abstract class InsertStatement extends AbstractSQLStatement implements DM
     
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
     
+    private final Collection<ColumnSegment> derivedInsertColumns = new LinkedList<>();
+    
     /**
      * Get insert columns segment.
      * 

@@ -26,6 +26,10 @@
     <artifactId>shardingsphere-infra-expr-espresso</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <truffle-api.version>21.2.0</truffle-api.version>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -46,6 +50,14 @@
         <dependency>
             <groupId>org.graalvm.truffle</groupId>
             <artifactId>truffle-api</artifactId>
+            <version>${truffle-api.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-util</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     

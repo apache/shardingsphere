@@ -107,7 +107,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     protected void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
         String jobId = jobItemContext.getJobId();
         log.error("job prepare failed, {}-{}", jobId, jobItemContext.getShardingItem(), ex);
-        jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
+        jobAPI.updateJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
         jobAPI.stop(jobId);
     }
     

@@ -1933,6 +1933,8 @@ onObjectClause
     | ALL FUNCTIONS IN SCHEMA nameList
     | ALL PROCEDURES IN SCHEMA nameList
     | ALL ROUTINES IN SCHEMA nameList
+    | CLIENT_MASTER_KEY nameList
+    | COLUMN_ENCRYPTION_KEY nameList
     ;
     
 numericOnlyList

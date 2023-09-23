@@ -75,6 +75,10 @@ public final class DataMatchTableDataConsistencyChecker implements TableDataCons
     }
     
     @Override
+    public void close() {
+    }
+    
+    @Override
     public String getType() {
         return "DATA_MATCH";
     }

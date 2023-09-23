@@ -3748,7 +3748,17 @@
                                 <column name="items" start-index="39" stop-index="43" />
                             </parameter>
                             <parameter>
-                                <common-expression text="'$.name' RETURNING VARCHAR(100)" start-index="46" stop-index="76" />
+                                <list-expression start-index="46" stop-index="76" >
+                                    <items>
+                                        <literal-expression start-index="46" stop-index="53" value="'$.name'" />
+                                    </items>
+                                    <items>
+                                        <literal-expression start-index="55" stop-index="63" value="RETURNING" />
+                                    </items>
+                                    <items>
+                                        <data-type value="VARCHAR" start-index="65" stop-index="76" />
+                                    </items>
+                                </list-expression>
                             </parameter>
                         </function>
                     </left>
@@ -6956,5 +6966,56 @@
         <projections start-index="7" stop-index="18">
             <expression-projection start-index="7" stop-index="18" text="5!" alias="RESULT" />
         </projections>
+    </select>
+
+    <select sql-case-id="select_with_custom_distinct_function">
+        <projections start-index="7" stop-index="34" literal-start-index="7" literal-stop-index="34">
+            <expression-projection text="custom_concat(distinct a.P1)" start-index="7" stop-index="34"
+                                   literal-start-index="7" literal-stop-index="34">
+                <literalText>custom_concat(distinct a.P1)</literalText>
+                <expr>
+                    <function function-name="custom_concat" text="custom_concat(distinct a.P1)" start-index="7"
+                              stop-index="34" literal-start-index="7" literal-stop-index="34">
+                        <parameter>
+                            <column name="P1" start-index="30" stop-index="33" literal-start-index="30"
+                                    literal-stop-index="33">
+                                <owner name="a" start-index="30" stop-index="30" literal-start-index="30"
+                                       literal-stop-index="30"/>
+                            </column>
+                        </parameter>
+                        <literalText>custom_concat(distinct a.P1)</literalText>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table alias="a" name="TEST" start-index="41" stop-index="46" literal-start-index="41"
+                          literal-stop-index="46"/>
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_unicode_string">
+        <projections start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
+            <expression-projection text="'test" start-index="7" stop-index="13" literal-start-index="7"
+                                   literal-stop-index="13">
+                <literalText>'test</literalText>
+                <expr>
+                    <literal-expression value="'test" start-index="7" stop-index="13" literal-start-index="7"
+                                        literal-stop-index="13"/>
+                </expr>
+            </expression-projection>
+            <expression-projection text="'test" start-index="16" stop-index="22" literal-start-index="16"
+                                   literal-stop-index="22">
+                <literalText>'test</literalText>
+                <expr>
+                    <literal-expression value="'test" start-index="16" stop-index="22" literal-start-index="16"
+                                        literal-stop-index="22"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="29" stop-index="32" literal-start-index="29"
+                          literal-stop-index="32"/>
+        </from>
     </select>
 </sql-parser-test-cases>

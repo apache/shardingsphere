@@ -43,6 +43,8 @@ public final class ExecuteEngine {
     
     private static final String THREAD_SUFFIX = "-%d";
     
+    private static final ExecutorService CALLBACK_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build(THREAD_PREFIX + "callback" + THREAD_SUFFIX));
+    
     private final ExecutorService executorService;
     
     /**
@@ -83,7 +85,7 @@ public final class ExecuteEngine {
                 Throwable cause = throwable.getCause();
                 executeCallback.onFailure(null != cause ? cause : throwable);
             }
-        }, executorService);
+        }, CALLBACK_EXECUTOR);
     }
     
     /**
@@ -118,14 +120,14 @@ public final class ExecuteEngine {
     public static void trigger(final Collection<CompletableFuture<?>> futures, final ExecuteCallback executeCallback) {
         BlockingQueue<CompletableFuture<?>> futureQueue = new LinkedBlockingQueue<>();
         for (CompletableFuture<?> each : futures) {
-            each.whenComplete(new BiConsumer<Object, Throwable>() {
+            each.whenCompleteAsync(new BiConsumer<Object, Throwable>() {
                 
                 @SneakyThrows(InterruptedException.class)
                 @Override
                 public void accept(final Object unused, final Throwable throwable) {
                     futureQueue.put(each);
                 }
-            });
+            }, CALLBACK_EXECUTOR);
         }
         for (int i = 1, count = futures.size(); i <= count; i++) {
             CompletableFuture<?> future = futureQueue.take();

@@ -23,11 +23,15 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Encrypt token generator utils.
@@ -47,8 +51,8 @@ public final class EncryptTokenGeneratorUtils {
             if (!(each.getLeft() instanceof ColumnSegment) || !(each.getRight() instanceof ColumnSegment)) {
                 continue;
             }
-            EncryptAlgorithm<?, ?> leftColumnEncryptor = getColumnEncryptor(((ColumnSegment) each.getLeft()).getColumnBoundedInfo(), encryptRule);
-            EncryptAlgorithm<?, ?> rightColumnEncryptor = getColumnEncryptor(((ColumnSegment) each.getRight()).getColumnBoundedInfo(), encryptRule);
+            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(((ColumnSegment) each.getLeft()).getColumnBoundedInfo(), encryptRule);
+            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(((ColumnSegment) each.getRight()).getColumnBoundedInfo(), encryptRule);
             if (!isSameEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
                 return false;
             }
@@ -65,8 +69,8 @@ public final class EncryptTokenGeneratorUtils {
      */
     public static boolean isAllUsingConditionsUseSameEncryptor(final Collection<ColumnSegment> usingColumns, final EncryptRule encryptRule) {
         for (ColumnSegment each : usingColumns) {
-            EncryptAlgorithm<?, ?> leftColumnEncryptor = getColumnEncryptor(each.getColumnBoundedInfo(), encryptRule);
-            EncryptAlgorithm<?, ?> rightColumnEncryptor = getColumnEncryptor(each.getOtherUsingColumnBoundedInfo(), encryptRule);
+            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(each.getColumnBoundedInfo(), encryptRule);
+            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(each.getOtherUsingColumnBoundedInfo(), encryptRule);
             if (!isSameEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
                 return false;
             }
@@ -74,7 +78,7 @@ public final class EncryptTokenGeneratorUtils {
         return true;
     }
     
-    private static boolean isSameEncryptor(final EncryptAlgorithm<?, ?> leftColumnEncryptor, final EncryptAlgorithm<?, ?> rightColumnEncryptor) {
+    private static boolean isSameEncryptor(final EncryptAlgorithm leftColumnEncryptor, final EncryptAlgorithm rightColumnEncryptor) {
         if (null != leftColumnEncryptor && null != rightColumnEncryptor) {
             if (!leftColumnEncryptor.getType().equals(rightColumnEncryptor.getType())) {
                 return false;
@@ -84,7 +88,7 @@ public final class EncryptTokenGeneratorUtils {
         return null == leftColumnEncryptor && null == rightColumnEncryptor;
     }
     
-    private static EncryptAlgorithm<?, ?> getColumnEncryptor(final ColumnSegmentBoundedInfo columnBoundedInfo, final EncryptRule encryptRule) {
+    private static EncryptAlgorithm getColumnEncryptor(final ColumnSegmentBoundedInfo columnBoundedInfo, final EncryptRule encryptRule) {
         String tableName = columnBoundedInfo.getOriginalTable().getValue();
         String columnName = columnBoundedInfo.getOriginalColumn().getValue();
         if (!encryptRule.findEncryptTable(tableName).isPresent() || !encryptRule.getEncryptTable(tableName).isEncryptColumn(columnName)) {
@@ -96,5 +100,31 @@ public final class EncryptTokenGeneratorUtils {
             return encryptColumn.getAssistedQuery().get().getEncryptor();
         }
         return encryptColumn.getCipher().getEncryptor();
+    }
+    
+    /**
+     * Judge whether all insert select columns use same encryptor or not.
+     *
+     * @param insertColumns insert columns
+     * @param projections projections
+     * @param encryptRule encrypt rule
+     * @return whether all insert select columns use same encryptor or not 
+     */
+    public static boolean isAllInsertSelectColumnsUseSameEncryptor(final Collection<ColumnSegment> insertColumns, final Collection<Projection> projections, final EncryptRule encryptRule) {
+        Iterator<ColumnSegment> insertColumnsIterator = insertColumns.iterator();
+        Iterator<Projection> projectionIterator = projections.iterator();
+        while (insertColumnsIterator.hasNext()) {
+            ColumnSegment columnSegment = insertColumnsIterator.next();
+            EncryptAlgorithm leftColumnEncryptor = getColumnEncryptor(columnSegment.getColumnBoundedInfo(), encryptRule);
+            Projection projection = projectionIterator.next();
+            ColumnSegmentBoundedInfo columnBoundedInfo = projection instanceof ColumnProjection
+                    ? new ColumnSegmentBoundedInfo(null, null, ((ColumnProjection) projection).getOriginalTable(), ((ColumnProjection) projection).getOriginalColumn())
+                    : new ColumnSegmentBoundedInfo(new IdentifierValue(projection.getColumnLabel()));
+            EncryptAlgorithm rightColumnEncryptor = getColumnEncryptor(columnBoundedInfo, encryptRule);
+            if (!isSameEncryptor(leftColumnEncryptor, rightColumnEncryptor)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

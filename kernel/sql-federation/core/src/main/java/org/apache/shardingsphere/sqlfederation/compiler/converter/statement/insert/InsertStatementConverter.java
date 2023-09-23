@@ -87,7 +87,9 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
     private SqlNode convertValues(final Collection<InsertValuesSegment> insertValuesSegments) {
         List<SqlNode> values = new ArrayList<>();
         for (InsertValuesSegment each : insertValuesSegments) {
-            values.add(convertExpression(each.getValues().get(0)));
+            for (ExpressionSegment value : each.getValues()) {
+                values.add(convertExpression(value));
+            }
         }
         List<SqlNode> operands = new ArrayList<>();
         operands.add(new SqlBasicCall(new SqlRowOperator("ROW"), values, SqlParserPos.ZERO));
@@ -97,7 +99,7 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
     private SqlNodeList convertColumn(final Collection<ColumnSegment> columnSegments) {
         List<SqlNode> columns = columnSegments.stream().map(each -> new ColumnConverter().convert(each).orElseThrow(IllegalStateException::new)).collect(Collectors.toList());
         if (columns.isEmpty()) {
-            return null;
+            return SqlNodeList.EMPTY;
         }
         return new SqlNodeList(columns, SqlParserPos.ZERO);
     }

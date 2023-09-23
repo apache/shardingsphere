@@ -31,7 +31,7 @@ import java.util.Properties;
  * RC4 encrypt algorithm.
  */
 @EqualsAndHashCode
-public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
+public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm {
     
     private static final String RC4_KEY = "rc4-key-value";
     
@@ -59,8 +59,8 @@ public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     }
     
     @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return null == cipherValue ? null : new String(crypt(Base64.decodeBase64(cipherValue)), StandardCharsets.UTF_8);
+    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+        return null == cipherValue ? null : new String(crypt(Base64.decodeBase64(cipherValue.toString())), StandardCharsets.UTF_8);
     }
     
     /*

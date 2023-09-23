@@ -52,7 +52,7 @@ public final class GeneratedKeyContextEngine {
      * @return generate key context
      */
     public Optional<GeneratedKeyContext> createGenerateKeyContext(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions, final List<Object> params) {
-        String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
+        String tableName = Optional.ofNullable(insertStatement.getTable()).map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         return findGenerateKeyColumn(tableName).map(optional -> containsGenerateKey(insertColumnNames, optional)
                 ? findGeneratedKey(insertColumnNames, valueExpressions, params, optional)
                 : new GeneratedKeyContext(optional, true));

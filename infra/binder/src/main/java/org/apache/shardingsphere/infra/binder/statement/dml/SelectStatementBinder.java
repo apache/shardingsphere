@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
 import lombok.SneakyThrows;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.segment.combine.CombineSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.from.TableSegmentBinderContext;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -43,18 +43,19 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     @SneakyThrows
     @Override
     public SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap());
+        return bind(sqlStatement, metaData, defaultDatabaseName, Collections.emptyMap(), Collections.emptyMap());
     }
     
     @SneakyThrows
     private SelectStatement bind(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                                 final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
+                                 final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
         SelectStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        Map<String, TableSegmentBinderContext> tableBinderContexts = new CaseInsensitiveMap<>();
-        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType());
-        TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getFrom(), statementBinderContext, tableBinderContexts);
+        Map<String, TableSegmentBinderContext> tableBinderContexts = new LinkedHashMap<>();
+        SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(metaData, defaultDatabaseName, sqlStatement.getDatabaseType(), sqlStatement.getVariableNames());
+        statementBinderContext.getExternalTableBinderContexts().putAll(externalTableBinderContexts);
+        TableSegment boundedTableSegment = TableSegmentBinder.bind(sqlStatement.getFrom(), statementBinderContext, tableBinderContexts, outerTableBinderContexts);
         result.setFrom(boundedTableSegment);
-        result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), statementBinderContext, boundedTableSegment, tableBinderContexts));
+        result.setProjections(ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), statementBinderContext, boundedTableSegment, tableBinderContexts, outerTableBinderContexts));
         sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, statementBinderContext, tableBinderContexts, outerTableBinderContexts)));
         // TODO support other segment bind in select statement
         sqlStatement.getGroupBy().ifPresent(result::setGroupBy);
@@ -74,16 +75,31 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     
     /**
      * Bind correlate subquery select statement.
-     * 
+     *
      * @param sqlStatement subquery select statement
      * @param metaData meta data
      * @param defaultDatabaseName default database name
      * @param outerTableBinderContexts outer select statement table binder contexts
+     * @param externalTableBinderContexts external table binder contexts
      * @return bounded correlate subquery select statement
      */
     @SneakyThrows
     public SelectStatement bindCorrelateSubquery(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
-                                                 final Map<String, TableSegmentBinderContext> outerTableBinderContexts) {
-        return bind(sqlStatement, metaData, defaultDatabaseName, outerTableBinderContexts);
+                                                 final Map<String, TableSegmentBinderContext> outerTableBinderContexts, final Map<String, TableSegmentBinderContext> externalTableBinderContexts) {
+        return bind(sqlStatement, metaData, defaultDatabaseName, outerTableBinderContexts, externalTableBinderContexts);
+    }
+    
+    /**
+     * Bind with external table contexts.
+     *
+     * @param statement select statement
+     * @param metaData meta data
+     * @param defaultDatabaseName default database name
+     * @param externalTableContexts external table contexts
+     * @return select statement
+     */
+    public SelectStatement bindWithExternalTableContexts(final SelectStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName,
+                                                         final Map<String, TableSegmentBinderContext> externalTableContexts) {
+        return bind(statement, metaData, defaultDatabaseName, Collections.emptyMap(), externalTableContexts);
     }
 }

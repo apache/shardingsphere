@@ -21,9 +21,6 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
 /**
  * Like encrypt algorithm.
- * 
- * @param <I> type of plain value
- * @param <O> type of cipher value
  */
-public interface LikeEncryptAlgorithm<I, O> extends EncryptAlgorithm<I, O> {
+public interface LikeEncryptAlgorithm extends EncryptAlgorithm {
 }

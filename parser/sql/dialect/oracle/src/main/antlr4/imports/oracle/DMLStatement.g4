@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Comments, DDLStatement;
+import Comments, BaseRule;
 
 insert
     : INSERT hint? (insertSingleTable | insertMultiTable)
@@ -478,8 +478,7 @@ queryTableExprSampleClause
     : (queryTableExprTableClause
     | queryTableExprViewClause
     | hierarchyName
-    | queryTableExprAnalyticClause
-    | (owner DOT_)? inlineExternalTable) sampleClause?
+    | queryTableExprAnalyticClause) sampleClause?
     ;
 
 queryTableExprTableClause
@@ -492,10 +491,6 @@ queryTableExprViewClause
 
 queryTableExprAnalyticClause
     : analyticViewName (HIERARCHIES LP_ ((attrDim DOT_)? hierarchyName (COMMA_ (attrDim DOT_)? hierarchyName)*)? RP_)?
-    ;
-
-inlineExternalTable
-    : EXTERNAL LP_ LP_ columnDefinition (COMMA_ columnDefinition)* RP_ inlineExternalTableProperties RP_
     ;
 
 inlineExternalTableProperties
@@ -518,7 +513,7 @@ modifyExternalTableProperties
 
 pivotClause
     : PIVOT XML?
-    LP_ aggregationFunctionName LP_ expr RP_ (AS? alias)? (COMMA_ aggregationFunctionName LP_ expr RP_ (AS? alias)?)* pivotForClause pivotInClause RP_
+    LP_ aggregationFunction (AS? alias)? (COMMA_ aggregationFunction (AS? alias)?)* pivotForClause pivotInClause RP_
     ;
 
 pivotForClause
@@ -526,9 +521,13 @@ pivotForClause
     ;
 
 pivotInClause
-    : IN LP_ ((expr | exprList) (AS? alias)? (COMMA_ (expr | exprList) (AS? alias)?)*
+    : IN LP_ (pivotInClauseExpr (COMMA_ pivotInClauseExpr)*
     | selectSubquery
     | ANY (COMMA_ ANY)*) RP_
+    ;
+
+pivotInClauseExpr
+    : (expr | exprList) (AS? alias)?
     ;
 
 unpivotClause
@@ -536,7 +535,11 @@ unpivotClause
     ;
 
 unpivotInClause
-    : IN LP_ (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))? (COMMA_ (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))?)* RP_
+    : IN LP_ unpivotInClauseExpr (COMMA_ unpivotInClauseExpr)* RP_
+    ;
+
+unpivotInClauseExpr
+    : (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))?
     ;
 
 sampleClause

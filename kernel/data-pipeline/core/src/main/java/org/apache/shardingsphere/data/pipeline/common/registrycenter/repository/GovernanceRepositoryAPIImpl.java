@@ -156,6 +156,11 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
+    public void update(final String key, final String value) {
+        repository.update(key, value);
+    }
+    
+    @Override
     public List<Integer> getShardingItems(final String jobId) {
         List<String> result = getChildrenKeys(PipelineMetaDataNode.getJobOffsetPath(jobId));
         return result.stream().map(Integer::parseInt).collect(Collectors.toList());
@@ -184,10 +189,5 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public String getJobItemErrorMessage(final String jobId, final int shardingItem) {
         return repository.getDirectly(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem));
-    }
-    
-    @Override
-    public void cleanJobItemErrorMessage(final String jobId, final int shardingItem) {
-        repository.delete(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem));
     }
 }

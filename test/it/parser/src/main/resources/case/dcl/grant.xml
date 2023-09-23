@@ -274,4 +274,6 @@
     <grant sql-case-id="grant_view_server_state_to_sqlserver_login" />
     <grant sql-case-id="grant_view_definition_on_type" />
     <grant sql-case-id="grant_execute_on_xml_schema_collection" />
+    <grant sql-case-id="grant_usage_on_client_master_key" />
+    <grant sql-case-id="grant_usage_on_column_encryption_key" />
 </sql-parser-test-cases>

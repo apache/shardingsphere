@@ -83,7 +83,7 @@ public final class MetaDataLoader {
         Optional<DialectMetaDataLoader> dialectLoader = DatabaseTypedSPILoader.findService(DialectMetaDataLoader.class, material.getStorageType());
         if (dialectLoader.isPresent()) {
             try {
-                return dialectLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());
+                return dialectLoader.get().load(material);
             } catch (final SQLException ex) {
                 log.debug("Dialect load schema meta data error.", ex);
             }

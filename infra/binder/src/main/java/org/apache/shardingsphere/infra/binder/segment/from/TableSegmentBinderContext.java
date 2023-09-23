@@ -17,51 +17,28 @@
 
 package org.apache.shardingsphere.infra.binder.segment.from;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * Table segment binder context.
  */
-@RequiredArgsConstructor
-public final class TableSegmentBinderContext {
-    
-    private final Map<String, ProjectionSegment> columnLabelProjectionSegments;
-    
-    public TableSegmentBinderContext(final Collection<ProjectionSegment> projectionSegments) {
-        columnLabelProjectionSegments = new LinkedHashMap<>(projectionSegments.size(), 1F);
-        projectionSegments.forEach(each -> putColumnLabelProjectionSegments(each, columnLabelProjectionSegments));
-    }
-    
-    private void putColumnLabelProjectionSegments(final ProjectionSegment projectionSegment, final Map<String, ProjectionSegment> columnLabelProjectionSegments) {
-        if (projectionSegment instanceof ShorthandProjectionSegment) {
-            ((ShorthandProjectionSegment) projectionSegment).getActualProjectionSegments().forEach(each -> columnLabelProjectionSegments.put(each.getColumnLabel().toLowerCase(), each));
-        } else {
-            columnLabelProjectionSegments.put(projectionSegment.getColumnLabel().toLowerCase(), projectionSegment);
-        }
-    }
+public interface TableSegmentBinderContext {
     
     /**
-     * Get projection segment by column label.
-     * 
+     * Find projection segment by column label.
+     *
      * @param columnLabel column label
      * @return projection segment
      */
-    public ProjectionSegment getProjectionSegmentByColumnLabel(final String columnLabel) {
-        return columnLabelProjectionSegments.get(columnLabel.toLowerCase());
-    }
+    Optional<ProjectionSegment> findProjectionSegmentByColumnLabel(String columnLabel);
     
     /**
      * Get projection segments.
      *
      * @return projection segments
      */
-    public Collection<ProjectionSegment> getProjectionSegments() {
-        return columnLabelProjectionSegments.values();
-    }
+    Collection<ProjectionSegment> getProjectionSegments();
 }

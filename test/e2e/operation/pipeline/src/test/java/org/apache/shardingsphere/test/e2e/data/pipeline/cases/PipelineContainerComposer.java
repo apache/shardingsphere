@@ -372,7 +372,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public void proxyExecuteWithLog(final String sql, final int sleepSeconds) throws SQLException {
-        log.info("proxy execute :{}", sql);
+        log.info("proxy execute: {}", sql);
         List<String> sqlList = Splitter.on(";").trimResults().omitEmptyStrings().splitToList(sql);
         try (Connection connection = proxyDataSource.getConnection()) {
             for (String each : sqlList) {
@@ -393,7 +393,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
             Set<String> statusSet = jobStatus.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
             if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name())) {
                 Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
+                continue;
             }
+            break;
         }
     }
     

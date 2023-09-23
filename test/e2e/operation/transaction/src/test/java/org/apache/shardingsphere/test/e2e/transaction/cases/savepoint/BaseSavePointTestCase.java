@@ -34,7 +34,7 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
         super(baseTransactionITCase, dataSource);
     }
     
-    void assertRollback2Savepoint() throws SQLException {
+    void assertRollbackToSavepoint() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
             assertAccountRowCount(connection, 0);

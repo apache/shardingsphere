@@ -24,7 +24,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -34,10 +35,14 @@ public final class ColumnConverter implements SQLSegmentConverter<ColumnSegment,
     
     @Override
     public Optional<SqlNode> convert(final ColumnSegment segment) {
-        Optional<OwnerSegment> owner = segment.getOwner();
-        String columnName = segment.getIdentifier().getValue();
-        SqlIdentifier sqlIdentifier = owner.map(optional -> new SqlIdentifier(Arrays.asList(optional.getIdentifier().getValue(), columnName), SqlParserPos.ZERO))
-                .orElseGet(() -> new SqlIdentifier(columnName, SqlParserPos.ZERO));
-        return Optional.of(sqlIdentifier);
+        List<String> names = new ArrayList<>();
+        segment.getOwner().ifPresent(optional -> addOwnerNames(names, optional));
+        names.add(segment.getIdentifier().getValue());
+        return Optional.of(new SqlIdentifier(names, SqlParserPos.ZERO));
+    }
+    
+    private void addOwnerNames(final List<String> names, final OwnerSegment owner) {
+        owner.getOwner().ifPresent(optional -> addOwnerNames(names, optional));
+        names.add(owner.getIdentifier().getValue());
     }
 }

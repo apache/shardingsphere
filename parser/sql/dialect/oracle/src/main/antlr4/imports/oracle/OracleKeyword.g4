@@ -19,6 +19,10 @@ lexer grammar OracleKeyword;
 
 import Alphabet;
 
+BEQUEATH
+    : B E Q U E A T H
+    ;
+
 BINARY
     : B I N A R Y
     ;
@@ -1745,6 +1749,10 @@ ACTIVATE
 
 APPLY
     : A P P L Y
+    ;
+
+APPROX_RANK
+    : A P P R O X UL_ R A N K
     ;
 
 MAXIMIZE

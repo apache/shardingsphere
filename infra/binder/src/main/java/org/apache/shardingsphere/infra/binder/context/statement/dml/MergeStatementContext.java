@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStateme
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
 
 /**
- * Load xml statement context.
+ * Merge statement context.
  */
 @Getter
 public final class MergeStatementContext extends CommonSQLStatementContext {

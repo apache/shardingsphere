@@ -59,7 +59,7 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
     
     @Override
     public TableDataConsistencyCheckResult checkSingleTableInventoryData() {
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(param.getJobId()) + "-check-%d");
+        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(param.getJobId()) + "-matching-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         try {
             return checkSingleTableInventoryData(param, executor);
@@ -100,8 +100,8 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
             }
             SingleTableInventoryCalculatedResult sourceCalculatedResult = waitFuture(executor.submit(sourceCalculatedResults::next));
             SingleTableInventoryCalculatedResult targetCalculatedResult = waitFuture(executor.submit(targetCalculatedResults::next));
-            checkResult.getCountCheckResult().addRecordsCount(sourceCalculatedResult.getRecordsCount(), true);
-            checkResult.getCountCheckResult().addRecordsCount(targetCalculatedResult.getRecordsCount(), false);
+            checkResult.getCountCheckResult().addSourceRecordsCount(sourceCalculatedResult.getRecordsCount());
+            checkResult.getCountCheckResult().addTargetRecordsCount(targetCalculatedResult.getRecordsCount());
             if (!Objects.equals(sourceCalculatedResult, targetCalculatedResult)) {
                 checkResult.getContentCheckResult().setMatched(false);
                 log.info("content matched false, jobId={}, sourceTable={}, targetTable={}, uniqueKeys={}", param.getJobId(), param.getSourceTable(), param.getTargetTable(), param.getUniqueKeys());
@@ -117,12 +117,12 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
         }
         if (sourceCalculatedResults.hasNext()) {
             // TODO Refactor SingleTableInventoryCalculatedResult to represent inaccurate number
-            checkResult.getCountCheckResult().addRecordsCount(1, true);
+            checkResult.getCountCheckResult().addSourceRecordsCount(1);
             checkResult.getContentCheckResult().setMatched(false);
             return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
         }
         if (targetCalculatedResults.hasNext()) {
-            checkResult.getCountCheckResult().addRecordsCount(1, false);
+            checkResult.getCountCheckResult().addTargetRecordsCount(1);
             checkResult.getContentCheckResult().setMatched(false);
             return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
         }

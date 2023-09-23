@@ -39,9 +39,6 @@ buildInShardingAlgorithmType
     | AUTO_INTERVAL
     | INLINE
     | INTERVAL
-    | COSID_MOD
-    | COSID_INTERVAL
-    | COSID_INTERVAL_SNOWFLAKE
     | COMPLEX_INLINE
     | HINT_INLINE
     | CLASS_BASED
@@ -49,10 +46,7 @@ buildInShardingAlgorithmType
 
 buildInKeyGenerateAlgorithmType
     : SNOWFLAKE
-    | NANOID
     | UUID
-    | COSID
-    | COSID_SNOWFLAKE
     ;
 
 buildInShardingAuditAlgorithmType

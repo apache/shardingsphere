@@ -1627,7 +1627,7 @@
         <from>
             <subquery-table alias="tt">
                 <subquery start-index="14" stop_index="363">
-                    <select>
+                    <select parameters="7">
                         <projections start-index="22" stop-index="43">
                             <shorthand-projection start-index="22" stop-index="27">
                                 <owner start-index="22" stop-index="25" name="row_" />
@@ -1637,7 +1637,7 @@
                         <from>
                             <subquery-table start-index="50" stop-index="339" alias="row_">
                                 <subquery>
-                                    <select>
+                                    <select parameters="1, 2, 9">
                                         <projections start-index="58" stop-index="139" >
                                             <column-projection start-index="58" stop-index="85" name="order_id" alias="order_id">
                                                 <owner start-index="58" stop-index="64" name="order0_" />

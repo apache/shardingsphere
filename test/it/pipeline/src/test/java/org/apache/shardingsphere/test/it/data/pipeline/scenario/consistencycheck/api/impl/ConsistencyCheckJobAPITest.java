@@ -32,6 +32,8 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -99,7 +101,7 @@ class ConsistencyCheckJobAPITest {
             String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
                     parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
             ConsistencyCheckJobItemContext checkJobItemContext = new ConsistencyCheckJobItemContext(
-                    new ConsistencyCheckJobConfiguration(checkJobId, parentJobId, null, null), 0, JobStatus.FINISHED, null);
+                    new ConsistencyCheckJobConfiguration(checkJobId, parentJobId, null, null, TypedSPILoader.getService(DatabaseType.class, "H2")), 0, JobStatus.FINISHED, null);
             checkJobAPI.persistJobItemProgress(checkJobItemContext);
             Map<String, TableDataConsistencyCheckResult> dataConsistencyCheckResult = Collections.singletonMap("t_order",
                     new TableDataConsistencyCheckResult(new TableDataConsistencyCountCheckResult(0, 0), new TableDataConsistencyContentCheckResult(true)));

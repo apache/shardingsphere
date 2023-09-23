@@ -87,7 +87,7 @@ unreservedWord1
     : TRUNCATE | FUNCTION | PROCEDURE | CASE | WHEN | CAST | TRIM | SUBSTRING
     | NATURAL | JOIN | FULL | INNER | OUTER | LEFT | RIGHT
     | CROSS | USING | IF | TRUE | FALSE | LIMIT | OFFSET
-    | BEGIN | COMMIT | ROLLBACK | SAVEPOINT
+    | COMMIT | ROLLBACK | SAVEPOINT
     | ARRAY | INTERVAL | TIME | TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | YEAR
     | QUARTER | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND
     | MICROSECOND | MAX | MIN | SUM | COUNT | AVG | ENABLE
@@ -664,7 +664,7 @@ notOperator
 
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-    | PRIOR predicate
+    | (PRIOR | DISTINCT) predicate
     | CONNECT_BY_ROOT predicate
     | booleanPrimary SAFE_EQ_ predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
@@ -775,7 +775,11 @@ leadLagInfo
 
 specialFunction
     : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
-    | setFunction | translateFunction | cursorFunction | toDateFunction
+    | setFunction | translateFunction | cursorFunction | toDateFunction | approxRank
+    ;
+
+approxRank
+    : APPROX_RANK LP_ queryPartitionClause? orderByClause RP_
     ;
 
 toDateFunction
@@ -1941,7 +1945,9 @@ datetimeExpr
     ;
 
 xmlFunction
-    : xmlAggFunction
+    : xmlElementFunction
+    | xmlCdataFunction
+    | xmlAggFunction
     | xmlColattvalFunction
     | xmlExistsFunction
     | xmlForestFunction
@@ -1957,6 +1963,22 @@ xmlFunction
         | SYS_DBURIGEN | UPDATEXML | XMLCONCAT | XMLDIFF | XMLEXISTS | XMLISVALID | XMLPATCH | XMLSEQUENCE | XMLTRANSFORM) exprList
     | specifiedFunctionName = (DEPTH | PATH) LP_ correlationInteger RP_
     | specifiedFunctionName = XMLCOMMENT LP_ stringLiterals RP_
+    ;
+
+xmlElementFunction
+    : XMLELEMENT LP_ identifier (COMMA_ xmlAttributes)? (COMMA_ exprWithAlias)* RP_
+    ;
+
+exprWithAlias
+    : expr (AS alias)?
+    ;
+
+xmlAttributes
+    : XMLATTRIBUTES LP_ exprWithAlias (COMMA_ exprWithAlias)* RP_
+    ;
+
+xmlCdataFunction
+    : XMLCDATA LP_ stringLiterals RP_
     ;
 
 xmlAggFunction
@@ -2039,4 +2061,8 @@ multisetOperator
     : EXCEPT
     | INTERSECT
     | UNION
+    ;
+
+superview
+    : identifier
     ;
