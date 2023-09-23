@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.expr.espresso;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.graalvm.polyglot.Context;
@@ -32,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,31 +44,53 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     private static final char SPLITTER = ',';
     
+    private String inlineExpression;
+    
     static {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("espresso-need-libs");
         String dir = null == resource ? null : resource.getPath();
         JAVA_CLASSPATH = dir + File.separator + "groovy.jar";
     }
     
+    /**
+     * Initialize SPI.
+     *
+     * @param props A Properties instance that carries inlineExpression.
+     *              And for compatibility reasons, inlineExpression allows to be null.
+     */
     @Override
-    public String handlePlaceHolder(final String inlineExpression) {
+    public void init(final Properties props) {
+        this.inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
+    }
+    
+    @Override
+    public String handlePlaceHolder() {
+        return handlePlaceHolder(inlineExpression);
+    }
+    
+    /**
+     * Replace all inline expression placeholders.
+     *
+     * @param inlineExpression inline expression with {@code $->}
+     * @return result inline expression with {@code $}
+     */
+    private String handlePlaceHolder(final String inlineExpression) {
         return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\$\\{") : inlineExpression;
     }
     
     @Override
-    public List<String> splitAndEvaluate(final String inlineExpression) {
+    public List<String> splitAndEvaluate() {
         try (Context context = createContext()) {
-            return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split(inlineExpression), context));
+            return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split(handlePlaceHolder(inlineExpression)), context));
         }
     }
     
-    @Override
-    public Closure<?> evaluateClosure(final String inlineExpression) {
-        throw new UnsupportedOperationException("GraalVM Truffle's Espresso implementation cannot return an instance of `groovy.lang.Closure` to the Host JVM.");
-    }
-    
+    /**
+     * TODO <a href="https://github.com/oracle/graal/issues/4555">espressoHome not defined</a> not yet closed.
+     *
+     * @return the Truffle Context Instance.
+     */
     private Context createContext() {
-        // TODO https://github.com/oracle/graal/issues/4555 not yet closed
         return Context.newBuilder()
                 .allowAllAccess(true)
                 .option("java.Properties.org.graalvm.home", System.getenv("JAVA_HOME"))

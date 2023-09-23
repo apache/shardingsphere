@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.expr.hotsopt;
+package org.apache.shardingsphere.infra.expr.groovy;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -31,34 +31,70 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Hotspot inline expression parser.
+ * Groovy inline expression parser.
  */
-public final class HotspotInlineExpressionParser implements InlineExpressionParser {
+public final class GroovyInlineExpressionParser implements InlineExpressionParser {
     
     private static final char SPLITTER = ',';
+    
+    private static final String INLINE_EXPRESSION_KEY = "inlineExpression";
     
     private static final Map<String, Script> SCRIPTS = new ConcurrentHashMap<>();
     
     private static final GroovyShell SHELL = new GroovyShell();
     
+    private String inlineExpression;
+    
+    /**
+     * Initialize SPI.
+     *
+     * @param props A Properties instance that carries inlineExpression.
+     *              And for compatibility reasons, inlineExpression allows to be null.
+     */
     @Override
-    public String handlePlaceHolder(final String inlineExpression) {
+    public void init(final Properties props) {
+        this.inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
+    }
+    
+    @Override
+    public String handlePlaceHolder() {
+        return handlePlaceHolder(inlineExpression);
+    }
+    
+    /**
+     * Replace all inline expression placeholders.
+     *
+     * @param inlineExpression inline expression with {@code $->}
+     * @return result inline expression with {@code $}
+     */
+    private String handlePlaceHolder(final String inlineExpression) {
         return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\$\\{") : inlineExpression;
     }
     
+    /**
+     * Split and Evaluate inline expression. This function will replace all inline expression placeholders.
+     *
+     * @return result inline expression with {@code $}
+     */
     @Override
-    public List<String> splitAndEvaluate(final String inlineExpression) {
-        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split(inlineExpression)));
+    public List<String> splitAndEvaluate() {
+        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split(handlePlaceHolder(inlineExpression))));
     }
     
+    /**
+     * Turn inline expression into Groovy Closure. This function will replace all inline expression placeholders.
+     *
+     * @return The result of the Groovy Closure pattern.
+     */
     @Override
-    public Closure<?> evaluateClosure(final String inlineExpression) {
-        return (Closure<?>) evaluate("{it -> \"" + inlineExpression + "\"}");
+    public Closure<?> evaluateClosure() {
+        return (Closure<?>) evaluate("{it -> \"" + handlePlaceHolder(inlineExpression) + "\"}");
     }
     
     private List<Object> evaluate(final List<String> inlineExpressions) {
@@ -178,7 +214,7 @@ public final class HotspotInlineExpressionParser implements InlineExpressionPars
     
     @Override
     public String getType() {
-        return "HOTSPOT";
+        return "GROOVY";
     }
     
     @Override

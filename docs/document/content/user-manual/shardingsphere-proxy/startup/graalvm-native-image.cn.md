@@ -37,9 +37,10 @@ services:
     - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.ComplexInlineShardingAlgorithm`
     - `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
 
-- 当前阶段，GraalVM Native Image 形态的 ShardingSphere Proxy 不支持使用带 Groovy
-  语法的 `行表达式`， 这首先导致 `数据分片` 功能的`actualDataNodes`属性只能使用纯列表来配置， 例如 `ds_0.t_order_0, ds_0.t_order_1`
-  或 `ds_0.t_user_0, ds_15.t_user_1023`。此问题在 https://github.com/oracle/graal/issues/5522 追踪。
+- 当前阶段，GraalVM Native Image 形态的 ShardingSphere Proxy 不支持使用 `InlineExpressionParser` SPI 的默认实现的 `行表达式`， 
+  这首先导致 `数据分片` 功能的`actualDataNodes` 属性只能使用其他 `InlineExpressionParser` SPI 的实现来配置， 例如使用
+ `InlineExpressionParser` SPI 实现为 `PURELIST` 的 `行表达式`, 即 `<PURELIST>ds_0.t_order_0, ds_0.t_order_1`
+  或 `<PURELIST>ds_0.t_user_0, ds_15.t_user_1023`。
 
 - 本节假定处于 Linux（amd64，aarch64）， MacOS（amd64）或 Windows（amd64）环境。
   如果你位于 MacOS（aarch64/M1） 环境，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/2666 。

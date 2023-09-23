@@ -23,7 +23,7 @@
         <artifactId>shardingsphere-infra-expr</artifactId>
         <version>5.4.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-expr-hotsopt</artifactId>
+    <artifactId>shardingsphere-infra-expr-groovy</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -34,8 +34,10 @@
         </dependency>
         
         <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy</artifactId>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-util</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
