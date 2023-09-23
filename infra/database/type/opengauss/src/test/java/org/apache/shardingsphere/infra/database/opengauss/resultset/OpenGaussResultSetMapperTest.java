@@ -57,5 +57,4 @@ class OpenGaussResultSetMapperTest {
         when(resultSet.getDate(1)).thenReturn(new Date(0L));
         assertThat(dialectResultSetMapper.getDateValue(resultSet, 1), is(new Date(0L)));
     }
-    
 }
