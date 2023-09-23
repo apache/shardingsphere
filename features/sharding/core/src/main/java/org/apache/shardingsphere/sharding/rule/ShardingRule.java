@@ -692,6 +692,15 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
                 .orElseGet(Collections::emptyMap);
     }
     
+    /**
+     * Is sharding cache enabled.
+     *
+     * @return is sharding cache enabled
+     */
+    public boolean isShardingCacheEnabled() {
+        return null != shardingCache;
+    }
+    
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
         return shardingTableDataNodes;
@@ -783,14 +792,5 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         }
         BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expression;
         return binaryExpression.getLeft() instanceof ColumnSegment && binaryExpression.getRight() instanceof ColumnSegment && "=".equals(binaryExpression.getOperator());
-    }
-    
-    /**
-     * Is sharding cache enabled.
-     *
-     * @return is sharding cache enabled
-     */
-    public boolean isShardingCacheEnabled() {
-        return null != shardingCache;
     }
 }
