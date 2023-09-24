@@ -36,10 +36,9 @@ public interface InlineExpressionParser extends TypedSPI {
     
     /**
      * This method is used to return the inlineExpression String itself. In some cases, you may want to do
-     * additional processing on inlineExpression to return a specific value, in which case you need to override this
-     * method.
+     * additional processing on inlineExpression to return a specific value, in which case you need to override this method.
      *
-     * @return result processed inline expression defined by the SPI implementation.
+     * @return result processed inline expression defined by the SPI implementation
      */
     String handlePlaceHolder();
     
@@ -54,8 +53,7 @@ public interface InlineExpressionParser extends TypedSPI {
      * Evaluate closure.
      *
      * @return closure
-     * @throws UnsupportedOperationException In most cases, users should not implement this method, and the return value
-     *                                       of this method can only be a Groovy Closure.
+     * @throws UnsupportedOperationException In most cases, users should not implement this method, and the return value of this method can only be a Groovy closure
      */
     default Closure<?> evaluateClosure() {
         throw new UnsupportedOperationException("This SPI implementation does not support the use of this method.");
