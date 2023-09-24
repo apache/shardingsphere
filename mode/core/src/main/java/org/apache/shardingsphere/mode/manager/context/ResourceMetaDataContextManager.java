@@ -84,7 +84,7 @@ public final class ResourceMetaDataContextManager {
         if (database.containsSchema(schemaName)) {
             return;
         }
-        database.putSchema(schemaName, new ShardingSphereSchema());
+        database.addSchema(schemaName, new ShardingSphereSchema());
         alterMetaDataHeldRule(database);
     }
     
@@ -102,7 +102,7 @@ public final class ResourceMetaDataContextManager {
         if (!database.containsSchema(schemaName)) {
             return;
         }
-        database.removeSchema(schemaName);
+        database.dropSchema(schemaName);
         alterMetaDataHeldRule(database);
     }
     

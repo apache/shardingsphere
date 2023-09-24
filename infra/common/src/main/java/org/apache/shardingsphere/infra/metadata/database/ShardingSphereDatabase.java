@@ -128,6 +128,16 @@ public final class ShardingSphereDatabase {
     }
     
     /**
+     * Judge contains schema from database or not.
+     *
+     * @param schemaName schema name
+     * @return contains schema from database or not
+     */
+    public boolean containsSchema(final String schemaName) {
+        return schemas.containsKey(schemaName.toLowerCase());
+    }
+    
+    /**
      * Get schema.
      *
      * @param schemaName schema name
@@ -138,32 +148,22 @@ public final class ShardingSphereDatabase {
     }
     
     /**
-     * Put schema.
+     * Add schema.
      *
      * @param schemaName schema name
      * @param schema schema
      */
-    public void putSchema(final String schemaName, final ShardingSphereSchema schema) {
+    public void addSchema(final String schemaName, final ShardingSphereSchema schema) {
         schemas.put(schemaName.toLowerCase(), schema);
     }
     
     /**
-     * Remove schema.
+     * Drop schema.
      *
      * @param schemaName schema name
      */
-    public void removeSchema(final String schemaName) {
+    public void dropSchema(final String schemaName) {
         schemas.remove(schemaName.toLowerCase());
-    }
-    
-    /**
-     * Judge contains schema from database or not.
-     *
-     * @param schemaName schema name
-     * @return contains schema from database or not
-     */
-    public boolean containsSchema(final String schemaName) {
-        return schemas.containsKey(schemaName.toLowerCase());
     }
     
     /**
