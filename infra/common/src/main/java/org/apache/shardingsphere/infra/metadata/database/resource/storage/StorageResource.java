@@ -31,14 +31,14 @@ import java.util.Map.Entry;
 @Getter
 public class StorageResource {
     
-    private final Map<StorageNode, DataSource> storageNodeDataSources;
+    private final Map<StorageNode, DataSource> dataSourceMap;
     
     private final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers;
     
     private final Map<String, DataSource> wrappedDataSources;
     
-    public StorageResource(final Map<StorageNode, DataSource> storageNodeDataSources, final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers) {
-        this.storageNodeDataSources = storageNodeDataSources;
+    public StorageResource(final Map<StorageNode, DataSource> dataSourceMap, final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers) {
+        this.dataSourceMap = dataSourceMap;
         this.storageUnitNodeMappers = storageUnitNodeMappers;
         wrappedDataSources = createWrappedDataSources();
     }
@@ -46,7 +46,7 @@ public class StorageResource {
     private Map<String, DataSource> createWrappedDataSources() {
         Map<String, DataSource> result = new LinkedHashMap<>(storageUnitNodeMappers.size(), 1F);
         for (Entry<String, StorageUnitNodeMapper> entry : storageUnitNodeMappers.entrySet()) {
-            DataSource dataSource = storageNodeDataSources.get(entry.getValue().getStorageNode());
+            DataSource dataSource = dataSourceMap.get(entry.getValue().getStorageNode());
             if (null != dataSource) {
                 result.put(entry.getKey(), new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));
             }

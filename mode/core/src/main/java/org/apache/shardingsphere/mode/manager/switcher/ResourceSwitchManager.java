@@ -85,8 +85,8 @@ public final class ResourceSwitchManager {
         mergedDataSourcePoolPropertiesMap.putAll(toBeChangedPropsMap);
         StorageResourceWithProperties toBeChangedStorageResource = StorageResourceCreator.createStorageResourceWithoutDataSource(toBeChangedPropsMap);
         StorageResource staleStorageResource = getStaleDataSources(resourceMetaData, toBeChangedStorageResource);
-        staleStorageResource.getStorageNodeDataSources()
-                .putAll(getToBeDeletedDataSources(resourceMetaData.getStorageNodeDataSources(), toBeChangedStorageResource.getStorageNodeDataSources().keySet()));
+        staleStorageResource.getDataSourceMap()
+                .putAll(getToBeDeletedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageResource.getDataSourceMap().keySet()));
         staleStorageResource.getStorageUnitNodeMappers().putAll(
                 getToBeDeletedStorageUnitNodeMappers(resourceMetaData.getStorageUnitMetaData().getStorageUnits(), toBeChangedStorageResource.getStorageUnitNodeMappers().keySet()));
         return new SwitchingResource(resourceMetaData, createNewStorageResource(resourceMetaData, toBeChangedStorageResource), staleStorageResource, mergedDataSourcePoolPropertiesMap);
@@ -94,17 +94,17 @@ public final class ResourceSwitchManager {
     
     private StorageResource createNewStorageResource(final ResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeChangedStorageResource) {
         Map<StorageNode, DataSource> storageNodes =
-                getNewStorageNodes(resourceMetaData, toBeChangedStorageResource.getStorageNodeDataSources(), toBeChangedStorageResource.getDataSourcePoolPropertiesMap());
+                getNewStorageNodes(resourceMetaData, toBeChangedStorageResource.getDataSourceMap(), toBeChangedStorageResource.getDataSourcePoolPropertiesMap());
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = getNewStorageUnitNodeMappers(resourceMetaData, toBeChangedStorageResource.getStorageUnitNodeMappers());
         return new StorageResource(storageNodes, storageUnitNodeMappers);
     }
     
     private Map<StorageNode, DataSource> getNewStorageNodes(final ResourceMetaData resourceMetaData,
                                                             final Map<StorageNode, DataSource> toBeChangedStorageNodes, final Map<String, DataSourcePoolProperties> propsMap) {
-        Map<StorageNode, DataSource> result = new LinkedHashMap<>(resourceMetaData.getStorageNodeDataSources());
-        result.keySet().removeAll(getToBeDeletedDataSources(resourceMetaData.getStorageNodeDataSources(), toBeChangedStorageNodes.keySet()).keySet());
-        result.putAll(getChangedDataSources(resourceMetaData.getStorageNodeDataSources(), toBeChangedStorageNodes, propsMap));
-        result.putAll(getToBeAddedDataSources(resourceMetaData.getStorageNodeDataSources(), toBeChangedStorageNodes, propsMap));
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>(resourceMetaData.getDataSourceMap());
+        result.keySet().removeAll(getToBeDeletedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageNodes.keySet()).keySet());
+        result.putAll(getChangedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageNodes, propsMap));
+        result.putAll(getToBeAddedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageNodes, propsMap));
         return result;
     }
     
@@ -146,8 +146,8 @@ public final class ResourceSwitchManager {
                 .filter(entry -> !toBeRemovedStorageResource.getStorageUnitNodeMappers().containsKey(entry.getKey()))
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getUnitNodeMapper()));
         Collection<StorageNode> inUsedDataSourceNames = reservedStorageUnitNodeMappers.values().stream().map(StorageUnitNodeMapper::getStorageNode).collect(Collectors.toSet());
-        Map<StorageNode, DataSource> staleStorageNodes = resourceMetaData.getStorageNodeDataSources().entrySet().stream()
-                .filter(entry -> toBeRemovedStorageResource.getStorageNodeDataSources().containsKey(entry.getKey()) && !inUsedDataSourceNames.contains(entry.getKey()))
+        Map<StorageNode, DataSource> staleStorageNodes = resourceMetaData.getDataSourceMap().entrySet().stream()
+                .filter(entry -> toBeRemovedStorageResource.getDataSourceMap().containsKey(entry.getKey()) && !inUsedDataSourceNames.contains(entry.getKey()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
         Map<String, StorageUnitNodeMapper> staleStorageUnitNodeMappers = resourceMetaData.getStorageUnitMetaData().getStorageUnits().entrySet().stream()
                 .filter(entry -> !reservedStorageUnitNodeMappers.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getUnitNodeMapper()));
@@ -155,9 +155,9 @@ public final class ResourceSwitchManager {
     }
     
     private StorageResource getStaleDataSources(final ResourceMetaData resourceMetaData, final StorageResourceWithProperties toBeChangedStorageResource) {
-        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(resourceMetaData.getStorageNodeDataSources().size(), 1F);
+        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(resourceMetaData.getDataSourceMap().size(), 1F);
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers().size(), 1F);
-        storageNodes.putAll(getToBeChangedDataSources(resourceMetaData.getStorageNodeDataSources(), toBeChangedStorageResource.getDataSourcePoolPropertiesMap()));
+        storageNodes.putAll(getToBeChangedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageResource.getDataSourcePoolPropertiesMap()));
         storageUnitNodeMappers.putAll(getChangedStorageUnitNodeMappers(resourceMetaData.getStorageUnitMetaData().getStorageUnits(), toBeChangedStorageResource.getStorageUnitNodeMappers()));
         return new StorageResource(storageNodes, storageUnitNodeMappers);
     }
