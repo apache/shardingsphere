@@ -37,7 +37,7 @@ public final class PureListInlineExpressionParser implements InlineExpressionPar
     /**
      * Initialize SPI.
      *
-     * @param props A Properties instance that carries inlineExpression, and for compatibility reasons, inlineExpression allows to be null.
+     * @param props A properties instance that carries inlineExpression, and for compatibility reasons, inlineExpression allows to be null.
      */
     @Override
     public void init(final Properties props) {
