@@ -25,15 +25,12 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * Fixture distributed rule builder.
- */
-public final class FixtureDistributedRuleBuilder implements DatabaseRuleBuilder<FixtureDistributedRuleConfiguration> {
+public final class ModeRuleBuilderFixture implements DatabaseRuleBuilder<ModeRuleConfigurationFixture> {
     
     @Override
-    public FixtureDatabaseRule build(final FixtureDistributedRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources,
-                                     final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new FixtureDatabaseRule();
+    public ModeRuleFixture build(final ModeRuleConfigurationFixture config, final String databaseName, final Map<String, DataSource> dataSources,
+                                 final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
+        return new ModeRuleFixture();
     }
     
     @Override
@@ -42,7 +39,7 @@ public final class FixtureDistributedRuleBuilder implements DatabaseRuleBuilder<
     }
     
     @Override
-    public Class<FixtureDistributedRuleConfiguration> getTypeClass() {
-        return FixtureDistributedRuleConfiguration.class;
+    public Class<ModeRuleConfigurationFixture> getTypeClass() {
+        return ModeRuleConfigurationFixture.class;
     }
 }
