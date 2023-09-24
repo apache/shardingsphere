@@ -153,5 +153,6 @@ execute
     | alterType
     | createType
     | createCluster
+    | createJava
     ) SEMI_?
     ;
