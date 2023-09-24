@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.resource.storage;
+package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 
 import javax.sql.DataSource;
