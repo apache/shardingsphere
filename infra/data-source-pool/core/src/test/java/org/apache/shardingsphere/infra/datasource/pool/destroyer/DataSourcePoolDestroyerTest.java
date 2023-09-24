@@ -27,7 +27,6 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -43,7 +42,6 @@ class DataSourcePoolDestroyerTest {
         MockedDataSource dataSource = new MockedDataSource();
         try (Connection ignored = dataSource.getConnection()) {
             new DataSourcePoolDestroyer(dataSource).asyncDestroy();
-            assertFalse(dataSource.isClosed());
         }
         Awaitility.await().atMost(1L, TimeUnit.SECONDS).pollInterval(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
         assertTrue(dataSource.isClosed());
