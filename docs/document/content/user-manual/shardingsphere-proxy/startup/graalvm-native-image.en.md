@@ -42,16 +42,18 @@ services:
     - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.ComplexInlineShardingAlgorithm`
     - `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
 
-- At this stage, ShardingSphere Proxy in the form of GraalVM Native Image does not support the use
-  of `Row Value Expressions` with Groovy syntax, which first results in the `actualDataNodes` property of the `Sharding`
-  feature being only configurable using a pure list, such as `ds_0.t_order_0, ds_0.t_order_1`
-  or `ds_0.t_user_0, ds_15.t_user_1023`. This issue is tracked in https://github.com/oracle/graal/issues/5522 .
+- At this stage, ShardingSphere Proxy in the form of GraalVM Native Image does not support `row expressions` using the 
+  default implementation of the `InlineExpressionParser` SPI.
+  This first results in the `actualDataNodes` property of the `data sharding` feature that can only be configured using 
+  other implementations of the `InlineExpressionParser` SPI, for example using `PURELIST` implemented 
+  `InlineExpressionParser` SPI for `row expression`, i.e. `<PURELIST>ds_0.t_order_0, ds_0.t_order_1`
+  or `<PURELIST>ds_0.t_user_0, ds_15.t_user_1023`.
 
 - This section assumes a Linux (amd64, aarch64), MacOS (amd64) or Windows (amd64) environment.
   If you are on MacOS (aarch64/M1) environment, you need to follow https://github.com/oracle/graal/issues/2666 which is
   not closed yet.
 
-- 'org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd' is affected by
+- `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd` is affected by
   https://github.com/micronaut-projects/micronaut-gcp/issues/532 and cannot be used.
 
 ## Premise

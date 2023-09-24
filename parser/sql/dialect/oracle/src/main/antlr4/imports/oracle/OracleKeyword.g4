@@ -1751,6 +1751,10 @@ APPLY
     : A P P L Y
     ;
 
+APPROX_RANK
+    : A P P R O X UL_ R A N K
+    ;
+
 MAXIMIZE
     : M A X I M I Z E
     ;

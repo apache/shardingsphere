@@ -107,6 +107,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         String createTimeFormat = LocalDateTime.now().format(DATE_TIME_FORMATTER);
         result.getProps().setProperty("create_time", createTimeFormat);
         result.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
+        result.getProps().setProperty("run_count", "1");
         result.setJobListenerTypes(Collections.singletonList(PipelineElasticJobListener.class.getName()));
         return result;
     }
@@ -125,6 +126,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         jobConfigPOJO.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
         jobConfigPOJO.getProps().remove("stop_time");
         jobConfigPOJO.getProps().remove("stop_time_millis");
+        jobConfigPOJO.getProps().setProperty("run_count", String.valueOf(Integer.parseInt(jobConfigPOJO.getProps().getProperty("run_count", "0")) + 1));
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         pipelineDistributedBarrier.register(barrierEnablePath, jobConfigPOJO.getShardingTotalCount());
         PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId)).updateJobConfiguration(jobConfigPOJO);
@@ -154,7 +156,13 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).deleteJob(jobId);
     }
     
-    protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
+    /**
+     * Get ElasticJob configuration POJO.
+     *
+     * @param jobId job id
+     * @return ElasticJob configuration POJO
+     */
+    public final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
         JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobConfiguration(jobId);
         ShardingSpherePreconditions.checkNotNull(result, () -> new PipelineJobNotFoundException(jobId));
         return result;
@@ -171,17 +179,18 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public void persistJobItemErrorMessage(final String jobId, final int shardingItem, final Object error) {
+    public void updateJobItemErrorMessage(final String jobId, final int shardingItem, final Object error) {
         String key = PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem);
         String value = "";
         if (null != error) {
             value = error instanceof Throwable ? ExceptionUtils.getStackTrace((Throwable) error) : error.toString();
         }
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persist(key, value);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).update(key, value);
     }
     
     @Override
     public void cleanJobItemErrorMessage(final String jobId, final int shardingItem) {
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).cleanJobItemErrorMessage(jobId, shardingItem);
+        String key = PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persist(key, "");
     }
 }

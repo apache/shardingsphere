@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.infra.expr.purelist;
 
 import com.google.common.base.Strings;
-import groovy.lang.Closure;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Pure List inline expression parser.
@@ -32,19 +32,27 @@ public final class PureListInlineExpressionParser implements InlineExpressionPar
     
     private static final char SPLITTER = ',';
     
+    private String inlineExpression;
+    
+    /**
+     * Initialize SPI.
+     *
+     * @param props A Properties instance that carries inlineExpression.
+     *              And for compatibility reasons, inlineExpression allows to be null.
+     */
     @Override
-    public String handlePlaceHolder(final String inlineExpression) {
-        return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\$\\{") : inlineExpression;
+    public void init(final Properties props) {
+        this.inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
     }
     
     @Override
-    public List<String> splitAndEvaluate(final String inlineExpression) {
+    public String handlePlaceHolder() {
+        return inlineExpression;
+    }
+    
+    @Override
+    public List<String> splitAndEvaluate() {
         return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : split(inlineExpression);
-    }
-    
-    @Override
-    public Closure<?> evaluateClosure(final String inlineExpression) {
-        throw new UnsupportedOperationException("Groovy classes cannot be used directly within GraalVM Native Image.");
     }
     
     private List<String> split(final String inlineExpression) {

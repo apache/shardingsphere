@@ -775,7 +775,11 @@ leadLagInfo
 
 specialFunction
     : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
-    | setFunction | translateFunction | cursorFunction | toDateFunction
+    | setFunction | translateFunction | cursorFunction | toDateFunction | approxRank
+    ;
+
+approxRank
+    : APPROX_RANK LP_ queryPartitionClause? orderByClause RP_
     ;
 
 toDateFunction

@@ -30,8 +30,8 @@
     <modules>
         <module>spi</module>
         <module>core</module>
-        <module>hotsopt</module>
-        <module>espresso</module>
+        <module>groovy</module>
         <module>purelist</module>
+        <module>espresso</module>
     </modules>
 </project>

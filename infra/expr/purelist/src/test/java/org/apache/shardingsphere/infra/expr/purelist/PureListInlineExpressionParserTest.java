@@ -17,26 +17,33 @@
 
 package org.apache.shardingsphere.infra.expr.purelist;
 
+import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PureListInlineExpressionParserTest {
     
     @Test
     void assertEvaluateForExpressionIsNull() {
-        List<String> expected = new PureListInlineExpressionParser().splitAndEvaluate(null);
+        InlineExpressionParser parser = TypedSPILoader.getService(InlineExpressionParser.class, "PURELIST", new Properties());
+        List<String> expected = parser.splitAndEvaluate();
         assertThat(expected, is(Collections.<String>emptyList()));
     }
     
     @Test
     void assertEvaluateForSimpleString() {
-        List<String> expected = new PureListInlineExpressionParser().splitAndEvaluate(" t_order_0, t_order_1 ");
+        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "PURELIST", PropertiesBuilder.build(
+                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, " t_order_0, t_order_1 "))).splitAndEvaluate();
         assertThat(expected.size(), is(2));
         assertThat(expected, hasItems("t_order_0", "t_order_1"));
     }
@@ -53,8 +60,23 @@ class PureListInlineExpressionParserTest {
                 expression.append(",");
             }
         }
-        List<String> expected = new PureListInlineExpressionParser().splitAndEvaluate(expression.toString());
+        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "PURELIST", PropertiesBuilder.build(
+                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression.toString()))).splitAndEvaluate();
         assertThat(expected.size(), is(1024));
         assertThat(expected, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
+    }
+    
+    @Test
+    void assertHandlePlaceHolder() {
+        assertThat(TypedSPILoader.getService(InlineExpressionParser.class, "PURELIST", PropertiesBuilder.build(
+                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_$->{[\"new$->{1+2}\"]}"))).handlePlaceHolder(), is("t_$->{[\"new$->{1+2}\"]}"));
+        assertThat(TypedSPILoader.getService(InlineExpressionParser.class, "PURELIST", PropertiesBuilder.build(
+                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_${[\"new$->{1+2}\"]}"))).handlePlaceHolder(), is("t_${[\"new$->{1+2}\"]}"));
+    }
+    
+    @Test
+    void assertEvaluateClosure() {
+        assertThrows(UnsupportedOperationException.class, () -> TypedSPILoader.getService(InlineExpressionParser.class, "PURELIST", PropertiesBuilder.build(
+                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateClosure().call().toString());
     }
 }

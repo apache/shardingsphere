@@ -79,7 +79,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     
     private void checkWriteDataSourceNames(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> addedWriteDataSourceNames,
                                            final ReadwriteSplittingDataSourceRuleConfiguration config, final Collection<ShardingSphereRule> rules) {
-        for (String each : InlineExpressionParserFactory.newInstance().splitAndEvaluate(config.getWriteDataSourceName())) {
+        for (String each : InlineExpressionParserFactory.newInstance(config.getWriteDataSourceName()).splitAndEvaluate()) {
             ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each) || containsInOtherRules(each, rules),
                     () -> new DataSourceNameExistedException(String.format("Write data source name `%s` not in database `%s`.", each, databaseName)));
             ShardingSpherePreconditions.checkState(addedWriteDataSourceNames.add(each),
@@ -97,7 +97,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     }
     
     private void checkReadeDataSourceNames(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> addedReadDataSourceNames, final String readDataSourceName) {
-        for (String each : InlineExpressionParserFactory.newInstance().splitAndEvaluate(readDataSourceName)) {
+        for (String each : InlineExpressionParserFactory.newInstance(readDataSourceName).splitAndEvaluate()) {
             ShardingSpherePreconditions.checkState(dataSourceMap.containsKey(each),
                     () -> new DataSourceNameExistedException(String.format("Read data source name `%s` not in database `%s`.", each, databaseName)));
             ShardingSpherePreconditions.checkState(addedReadDataSourceNames.add(each),

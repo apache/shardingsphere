@@ -105,6 +105,10 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     }
     
     private synchronized void executeIncrementalTask() {
+        if (jobItemContext.isStopping()) {
+            log.info("Stopping is true, ignore incremental task");
+            return;
+        }
         if (incrementalTasks.isEmpty()) {
             log.info("incrementalTasks empty, ignore");
             return;
@@ -137,7 +141,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     protected void inventoryFailureCallback(final Throwable throwable) {
         log.error("onFailure, inventory task execute failed.", throwable);
         String jobId = jobItemContext.getJobId();
-        jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+        jobAPI.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
         jobAPI.stop(jobId);
     }
     
@@ -145,6 +149,10 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         
         @Override
         public void onSuccess() {
+            if (jobItemContext.isStopping()) {
+                log.info("Inventory task onSuccess, stopping true, ignore");
+                return;
+            }
             inventorySuccessCallback();
         }
         
@@ -165,7 +173,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         public void onFailure(final Throwable throwable) {
             log.error("onFailure, incremental task execute failed.", throwable);
             String jobId = jobItemContext.getJobId();
-            jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+            jobAPI.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
             jobAPI.stop(jobId);
         }
     }

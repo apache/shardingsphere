@@ -43,13 +43,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Pipeline data source sink.
@@ -274,10 +272,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
                 }
                 preparedStatement.addBatch();
             }
-            int[] counts = preparedStatement.executeBatch();
-            if (IntStream.of(counts).anyMatch(value -> 1 != value)) {
-                log.warn("batchDelete failed, counts={}, sql={}, dataRecords={}", Arrays.toString(counts), deleteSQL, dataRecords);
-            }
+            preparedStatement.executeBatch();
         } finally {
             batchDeleteStatement.set(null);
         }

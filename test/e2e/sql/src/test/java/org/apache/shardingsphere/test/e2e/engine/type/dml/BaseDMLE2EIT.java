@@ -93,7 +93,7 @@ public abstract class BaseDMLE2EIT {
     }
     
     private void assertDataSet(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer, final DataSetMetaData expectedDataSetMetaData) throws SQLException {
-        for (String each : InlineExpressionParserFactory.newInstance().splitAndEvaluate(expectedDataSetMetaData.getDataNodes())) {
+        for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = containerComposer.getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (

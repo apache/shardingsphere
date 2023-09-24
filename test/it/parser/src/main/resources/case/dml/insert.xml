@@ -1364,7 +1364,7 @@
     <insert sql-case-id="insert_all_with_all_placeholders" parameters="1, 1, 'init', 2, 2, 'init', 3, 3, 'init'">
         <multi-table-insert-type value="ALL" />
         <multi-table-insert-into start-index="11" stop-index="183" literal-start-index="11" literal-stop-index="198">
-            <insert-statement>
+            <insert-statement parameters="1, 1, 'init'">
                 <table name="t_order" start-index="16" stop-index="22" />
                 <columns start-index="24" stop-index="50">
                     <column name="order_id" start-index="25" stop-index="32" />
@@ -1388,7 +1388,7 @@
                     </value>
                 </values>
             </insert-statement>
-            <insert-statement>
+            <insert-statement parameters="2, 2, 'init'">
                 <table name="t_order" start-index="74" stop-index="80" literal-start-index="79" literal-stop-index="85" />
                 <columns start-index="82" stop-index="108" literal-start-index="87" literal-stop-index="113">
                     <column name="order_id" start-index="83" stop-index="90" literal-start-index="88" literal-stop-index="95" />
@@ -1412,7 +1412,7 @@
                     </value>
                 </values>
             </insert-statement>
-            <insert-statement>
+            <insert-statement parameters="2, 2, 'init'">
                 <table name="t_order" start-index="132" stop-index="138" literal-start-index="142" literal-stop-index="148" />
                 <columns start-index="140" stop-index="166" literal-start-index="150" literal-stop-index="176">
                     <column name="order_id" start-index="141" stop-index="148" literal-start-index="151" literal-stop-index="158" />
@@ -2559,6 +2559,58 @@
                 </assignment-value>
                 <assignment-value>
                     <column name="sysdate" start-index="81" stop-index="87" literal-start-index="81" literal-stop-index="87" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_oracle_datetime_type">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="93">
+            <column name="create_date" start-index="21" stop-index="31" />
+            <column name="create_timestamp" start-index="34" stop-index="49" />
+            <column name="create_interval_year" start-index="52" stop-index="71" />
+            <column name="create_interval_day" start-index="74" stop-index="92" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="103" stop-index="125" />
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="128" stop-index="150" />
+                </assignment-value>
+                <assignment-value>
+                    <interval-expression start-index="153" stop-index="217" text="(TO_DATE('2009', 'YYYY') - TO_DATE('2009', 'YYYY')) year to MONTH">
+                        <left>
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="154" stop-index="176" />
+                        </left>
+                        <operator>-</operator>
+                        <right>
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="180" stop-index="202" />
+                        </right>
+                        <interval-year-to-month-expr start-index="205" stop-index="217">
+                            <year>year</year>
+                            <to>to</to>
+                            <month>MONTH</month>
+                        </interval-year-to-month-expr>
+                    </interval-expression>
+                </assignment-value>
+                <assignment-value>
+                    <interval-expression start-index="220" stop-index="284" text="(TO_DATE('2009', 'YYYY') - TO_DATE('2009', 'YYYY')) DAY TO SECOND">
+                        <left>
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="221" stop-index="243" />
+                        </left>
+                        <operator>-</operator>
+                        <right>
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="247" stop-index="269" />
+                        </right>
+                        <interval-day-to-second-expr start-index="272" stop-index="284">
+                            <day>DAY</day>
+                            <to>TO</to>
+                            <second>SECOND</second>
+                        </interval-day-to-second-expr>
+                    </interval-expression>
                 </assignment-value>
             </value>
         </values>

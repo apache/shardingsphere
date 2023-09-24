@@ -296,6 +296,26 @@
             </binary-operation-expression>
         </expr>
         <insert>
+            <values>
+                <value>
+                    <assignment-value>
+                        <column name="employee_id" start-index="331" stop-index="343">
+                            <owner name="S" start-index="331" stop-index="331" />
+                        </column>
+                        <binary-operation-expression start-index="67" stop-index="74">
+                            <left>
+                                <column name="salary" start-index="346" stop-index="353">
+                                    <owner name="S" start-index="346" stop-index="346" />
+                                </column>
+                            </left>
+                            <operator>*</operator>
+                            <right>
+                                <literal-expression value=".01" start-index="355" stop-index="357" />
+                            </right>
+                        </binary-operation-expression>
+                    </assignment-value>
+                </value>
+            </values>
             <where start-index="365" stop-index="388" literal-start-index="365" literal-stop-index="388">
                 <expr>
                     <binary-operation-expression start-index="372" stop-index="387" literal-start-index="372" literal-stop-index="387">
