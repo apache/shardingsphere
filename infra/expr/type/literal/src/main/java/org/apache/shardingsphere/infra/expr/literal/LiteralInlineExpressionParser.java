@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.expr.purelist;
+package org.apache.shardingsphere.infra.expr.literal;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Pure List inline expression parser.
+ * literal inline expression parser.
  */
-public final class PureListInlineExpressionParser implements InlineExpressionParser {
+public final class LiteralInlineExpressionParser implements InlineExpressionParser {
     
     private static final char SPLITTER = ',';
     
@@ -69,6 +69,6 @@ public final class PureListInlineExpressionParser implements InlineExpressionPar
     
     @Override
     public String getType() {
-        return "PURELIST";
+        return "LITERAL";
     }
 }

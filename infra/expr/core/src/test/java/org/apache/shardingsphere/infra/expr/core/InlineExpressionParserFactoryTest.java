@@ -36,8 +36,8 @@ class InlineExpressionParserFactoryTest {
         assertThat(InlineExpressionParserFactory.newInstance("t_order_0, t_order_1").handlePlaceHolder(), is("t_order_0, t_order_1"));
         assertThat(InlineExpressionParserFactory.newInstance("<GROOVY>t_order_0, t_order_1").getType(), is("GROOVY"));
         assertThat(InlineExpressionParserFactory.newInstance("<GROOVY>t_order_0, t_order_1").handlePlaceHolder(), is("t_order_0, t_order_1"));
-        assertThat(InlineExpressionParserFactory.newInstance("<PURELIST>t_order_0, t_order_1").getType(), is("PURELIST"));
-        assertThat(InlineExpressionParserFactory.newInstance("<PURELIST>t_order_0, t_order_1").handlePlaceHolder(), is("t_order_0, t_order_1"));
+        assertThat(InlineExpressionParserFactory.newInstance("<LITERAL>t_order_0, t_order_1").getType(), is("LITERAL"));
+        assertThat(InlineExpressionParserFactory.newInstance("<LITERAL>t_order_0, t_order_1").handlePlaceHolder(), is("t_order_0, t_order_1"));
     }
     
     @Test

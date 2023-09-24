@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.expr.purelist.PureListInlineExpressionParser
+org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser

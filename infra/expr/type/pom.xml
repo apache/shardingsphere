@@ -29,7 +29,7 @@
     
     <modules>
         <module>groovy</module>
-        <module>purelist</module>
+        <module>literal</module>
         <module>espresso</module>
     </modules>
 </project>
