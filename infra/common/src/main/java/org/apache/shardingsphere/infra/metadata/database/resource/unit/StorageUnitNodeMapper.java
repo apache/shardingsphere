@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.resource.storage;
+package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
 import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 
 /**
  * Storage unit and node mapper.
