@@ -156,14 +156,14 @@ class ContextManagerTest {
     @Test
     void assertAddSchema() {
         contextManager.getResourceMetaDataContextManager().addSchema("foo_db", "bar_schema");
-        verify(metaDataContexts.getMetaData().getDatabase("foo_db")).putSchema(anyString(), any(ShardingSphereSchema.class));
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db")).addSchema(anyString(), any(ShardingSphereSchema.class));
     }
     
     @Test
     void assertAddExistedSchema() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(true);
         contextManager.getResourceMetaDataContextManager().addSchema("foo_db", "foo_schema");
-        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).putSchema(anyString(), any(ShardingSphereSchema.class));
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).addSchema(anyString(), any(ShardingSphereSchema.class));
     }
     
     @Test

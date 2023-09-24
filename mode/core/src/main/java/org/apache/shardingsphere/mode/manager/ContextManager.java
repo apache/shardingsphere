@@ -165,11 +165,11 @@ public final class ContextManager implements AutoCloseable {
         try {
             ShardingSphereSchema reloadedSchema = loadSchema(databaseName, schemaName, dataSourceName);
             if (reloadedSchema.getTables().isEmpty()) {
-                metaDataContexts.get().getMetaData().getDatabase(databaseName).removeSchema(schemaName);
+                metaDataContexts.get().getMetaData().getDatabase(databaseName).dropSchema(schemaName);
                 metaDataContexts.get().getPersistService().getDatabaseMetaDataService().dropSchema(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(),
                         schemaName);
             } else {
-                metaDataContexts.get().getMetaData().getDatabase(databaseName).putSchema(schemaName, reloadedSchema);
+                metaDataContexts.get().getMetaData().getDatabase(databaseName).addSchema(schemaName, reloadedSchema);
                 metaDataContexts.get().getPersistService().getDatabaseMetaDataService()
                         .compareAndPersist(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(), schemaName, reloadedSchema);
             }
