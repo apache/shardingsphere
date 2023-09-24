@@ -1128,6 +1128,10 @@
     
     <alter-table sql-case-id="alter_table_rename_column">
         <table name="t_order" start-index="12" stop-index="18" />
+        <rename-column start-index="20" stop-index="52">
+            <old-column-name name="user_id" start-index="34" stop-index="40" />
+            <column-name name="user_id1" start-index="45" stop-index="52" />
+        </rename-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_with_exist_index">

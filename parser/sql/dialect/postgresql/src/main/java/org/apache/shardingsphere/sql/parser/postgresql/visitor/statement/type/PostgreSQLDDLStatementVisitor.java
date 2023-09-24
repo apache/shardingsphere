@@ -387,6 +387,8 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
                     result.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) each);
                 } else if (each instanceof RenameTableDefinitionSegment) {
                     result.setRenameTable(((RenameTableDefinitionSegment) each).getRenameTable());
+                } else if (each instanceof RenameColumnSegment) {
+                    result.getRenameColumnDefinitions().add((RenameColumnSegment) each);
                 }
             }
         }
@@ -418,6 +420,9 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
         if (null != ctx.alterTableActions()) {
             result.getValue().addAll(ctx.alterTableActions().alterTableAction().stream().flatMap(each -> getAlterDefinitionSegments(each).stream()).collect(Collectors.toList()));
+        }
+        if (null != ctx.renameColumnSpecification()) {
+            result.getValue().add((RenameColumnSegment) visit(ctx.renameColumnSpecification()));
         }
         if (null != ctx.renameTableSpecification()) {
             result.getValue().add((RenameTableDefinitionSegment) visit(ctx.renameTableSpecification()));
