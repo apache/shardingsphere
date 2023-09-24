@@ -51,12 +51,6 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
     
     private String inlineExpression;
     
-    /**
-     * Initialize SPI.
-     *
-     * @param props A Properties instance that carries inlineExpression.
-     *              And for compatibility reasons, inlineExpression allows to be null.
-     */
     @Override
     public void init(final Properties props) {
         this.inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
