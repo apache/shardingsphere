@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -58,7 +57,7 @@ public final class RuleMetaData {
      * @return found rules
      */
     public <T extends ShardingSphereRule> Collection<T> findRules(final Class<T> clazz) {
-        List<T> result = new LinkedList<>();
+        Collection<T> result = new LinkedList<>();
         for (ShardingSphereRule each : rules) {
             if (clazz.isAssignableFrom(each.getClass())) {
                 result.add(clazz.cast(each));
