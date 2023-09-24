@@ -17,14 +17,7 @@
 
 package org.apache.shardingsphere.mode.fixture;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 
-/**
- * Fixture distributed rule configuration.
- */
-@RequiredArgsConstructor
-@Getter
-public final class FixtureDistributedRuleConfiguration implements DistributedRuleConfiguration {
+public final class ModeRuleConfigurationFixture implements DistributedRuleConfiguration {
 }

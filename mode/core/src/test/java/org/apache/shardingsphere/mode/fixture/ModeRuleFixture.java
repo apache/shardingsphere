@@ -22,10 +22,7 @@ import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 
 import static org.mockito.Mockito.mock;
 
-/**
- * Fixture database rule.
- */
-public final class FixtureDatabaseRule implements DatabaseRule {
+public final class ModeRuleFixture implements DatabaseRule {
     
     @Override
     public RuleConfiguration getConfiguration() {
