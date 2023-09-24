@@ -20,16 +20,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra</artifactId>
+        <artifactId>shardingsphere-infra-expr</artifactId>
         <version>5.4.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-expr</artifactId>
+    <artifactId>shardingsphere-infra-expr-type</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>spi</module>
-        <module>core</module>
-        <module>type</module>
+        <module>groovy</module>
+        <module>purelist</module>
+        <module>espresso</module>
     </modules>
 </project>
