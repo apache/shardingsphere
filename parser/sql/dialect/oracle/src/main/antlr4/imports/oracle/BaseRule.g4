@@ -2086,3 +2086,23 @@ keyForBlob
 sourceText
     : identifier
     ;
+
+primaryName
+    : identifier
+    ;
+
+directoryObjectName
+    : identifier
+    ;
+
+serverFileName
+    : identifier
+    ;
+
+keyForBlob
+    : identifier
+    ;
+
+sourceText
+    : identifier
+    ;
