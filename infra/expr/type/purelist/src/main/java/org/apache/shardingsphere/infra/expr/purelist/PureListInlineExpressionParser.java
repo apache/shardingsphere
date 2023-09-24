@@ -59,7 +59,7 @@ public final class PureListInlineExpressionParser implements InlineExpressionPar
         StringBuilder segment = new StringBuilder();
         for (int i = 0; i < inlineExpression.length(); i++) {
             char each = inlineExpression.charAt(i);
-            if (each == SPLITTER) {
+            if (SPLITTER == each) {
                 result.add(segment.toString().trim());
                 segment.setLength(0);
             } else {
