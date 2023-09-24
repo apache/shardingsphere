@@ -29,7 +29,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Storage utility class.
+ * Storage resource utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StorageResourceUtils {
@@ -41,11 +41,8 @@ public final class StorageResourceUtils {
      * @return storage node data sources
      */
     public static Map<StorageNode, DataSource> getStorageNodeDataSources(final Map<String, DataSource> dataSources) {
-        Map<StorageNode, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1F);
-        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            result.put(new StorageNode(entry.getKey()), entry.getValue());
-        }
-        return result;
+        return dataSources.entrySet().stream()
+                .collect(Collectors.toMap(entry -> new StorageNode(entry.getKey()), Entry::getValue, (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(dataSources.size(), 1F)));
     }
     
     /**
