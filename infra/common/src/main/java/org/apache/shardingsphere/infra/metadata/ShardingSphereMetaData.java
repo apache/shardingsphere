@@ -103,8 +103,7 @@ public final class ShardingSphereMetaData {
      * @param databaseName database name
      */
     public void dropDatabase(final String databaseName) {
-        ShardingSphereDatabase toBeRemovedDatabase = databases.remove(databaseName.toLowerCase());
-        closeResources(toBeRemovedDatabase);
+        closeResources(databases.remove(databaseName.toLowerCase()));
     }
     
     private void closeResources(final ShardingSphereDatabase database) {
