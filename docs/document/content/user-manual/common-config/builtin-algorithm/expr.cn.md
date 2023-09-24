@@ -13,7 +13,7 @@ weight = 7
 
 ## 使用标准列表的行表达式
 
-类型：PURELIST
+类型：LITERAL
 
 可配置属性：
 
@@ -32,7 +32,7 @@ rules:
 - !SHARDING
   tables:
     t_order: 
-      actualDataNodes: <PURELIST>ds_0.t_order_0, ds_0.t_order_1, ds_1.t_order_0, ds_1.t_order_1
+      actualDataNodes: <LITERAL>ds_0.t_order_0, ds_0.t_order_1, ds_1.t_order_0, ds_1.t_order_1
       tableStrategy: 
         standard:
           shardingColumn: order_id

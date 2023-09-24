@@ -13,7 +13,7 @@ None
 
 ## Row Value Expressions that uses a standard list
 
-Type: PURELIST
+Type: LITERAL
 
 Attributes:
 
@@ -34,7 +34,7 @@ rules:
 - !SHARDING
   tables:
     t_order: 
-      actualDataNodes: <PURELIST>ds_0.t_order_0, ds_0.t_order_1, ds_1.t_order_0, ds_1.t_order_1
+      actualDataNodes: <LITERAL>ds_0.t_order_0, ds_0.t_order_1, ds_1.t_order_0, ds_1.t_order_1
       tableStrategy: 
         standard:
           shardingColumn: order_id

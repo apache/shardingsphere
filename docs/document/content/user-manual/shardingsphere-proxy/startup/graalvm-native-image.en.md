@@ -45,9 +45,9 @@ services:
 - At this stage, ShardingSphere Proxy in the form of GraalVM Native Image does not support `row expressions` using the 
   default implementation of the `InlineExpressionParser` SPI.
   This first results in the `actualDataNodes` property of the `data sharding` feature that can only be configured using 
-  other implementations of the `InlineExpressionParser` SPI, for example using `PURELIST` implemented 
-  `InlineExpressionParser` SPI for `row expression`, i.e. `<PURELIST>ds_0.t_order_0, ds_0.t_order_1`
-  or `<PURELIST>ds_0.t_user_0, ds_15.t_user_1023`.
+  other implementations of the `InlineExpressionParser` SPI, for example using `LITERAL` implemented 
+  `InlineExpressionParser` SPI for `row expression`, i.e. `<LITERAL>ds_0.t_order_0, ds_0.t_order_1`
+  or `<LITERAL>ds_0.t_user_0, ds_15.t_user_1023`.
 
 - This section assumes a Linux (amd64, aarch64), MacOS (amd64) or Windows (amd64) environment.
   If you are on MacOS (aarch64/M1) environment, you need to follow https://github.com/oracle/graal/issues/2666 which is

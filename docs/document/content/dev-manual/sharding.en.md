@@ -92,7 +92,7 @@ Row Value Expressions definition
 
 ### Implementation classes
 
-| *Configuration Type* | *Description*                                     | *Fully-qualified class name*                                                   |
-|----------------------|---------------------------------------------------|--------------------------------------------------------------------------------|
-| GROOVY               | Row Value Expressions that uses the Groovy syntax | `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`     |
-| PURELIST             | Row Value Expressions that uses a standard list   | `org.apache.shardingsphere.infra.expr.purelist.PureListInlineExpressionParser` |
+| *Configuration Type* | *Description*                                     | *Fully-qualified class name*                                                 |
+|----------------------|---------------------------------------------------|------------------------------------------------------------------------------|
+| GROOVY               | Row Value Expressions that uses the Groovy syntax | `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`   |
+| LITERAL              | Row Value Expressions that uses a standard list   | `org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser` |
