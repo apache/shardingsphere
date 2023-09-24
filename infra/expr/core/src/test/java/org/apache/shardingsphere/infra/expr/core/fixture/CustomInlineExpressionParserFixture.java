@@ -29,7 +29,7 @@ public final class CustomInlineExpressionParserFixture implements InlineExpressi
     
     @Override
     public void init(final Properties props) {
-        this.inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
+        inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
     }
     
     @Override

@@ -54,7 +54,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     @Override
     public void init(final Properties props) {
-        this.inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
+        inlineExpression = props.getProperty(INLINE_EXPRESSION_KEY);
     }
     
     @Override
