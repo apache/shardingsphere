@@ -104,13 +104,11 @@ public final class StorageResourceCreator {
         Map<String, DataSourcePoolProperties> newPropsMap = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             StorageNode storageNode = new StorageNode(getStorageNodeName(entry.getKey(), entry.getValue()));
-            if (storageNodes.containsKey(storageNode)) {
-                appendStorageUnitNodeMapper(mappers, storageNode, entry.getKey(), entry.getValue());
-                continue;
+            if (!storageNodes.containsKey(storageNode)) {
+                storageNodes.put(storageNode, null);
+                newPropsMap.put(storageNode.getName(), entry.getValue());
             }
-            storageNodes.put(storageNode, null);
             appendStorageUnitNodeMapper(mappers, storageNode, entry.getKey(), entry.getValue());
-            newPropsMap.put(storageNode.getName(), entry.getValue());
         }
         return new StorageResource(storageNodes, mappers, newPropsMap);
     }
