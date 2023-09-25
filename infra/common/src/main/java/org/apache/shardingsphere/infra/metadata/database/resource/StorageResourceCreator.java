@@ -79,17 +79,17 @@ public final class StorageResourceCreator {
         return String.format("%s_%s_%s", hostname, port, username);
     }
     
-    private static void appendStorageUnitNodeMapper(final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final StorageNode storageNode,
+    private static void appendStorageUnitNodeMapper(final Map<String, StorageUnitNodeMapper> mappers, final StorageNode storageNode,
                                                     final String storageUnitName, final DataSourcePoolProperties props) {
         String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        storageUnitNodeMappers.put(storageUnitName, getStorageUnitNodeMapper(storageNode, DatabaseTypeFactory.get(url), storageUnitName, url));
+        mappers.put(storageUnitName, getStorageUnitNodeMapper(storageNode, DatabaseTypeFactory.get(url), storageUnitName, url));
     }
     
-    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNode storageNode, final DatabaseType databaseType, final String unitName, final String url) {
+    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNode storageNode, final DatabaseType databaseType, final String storageUnitName, final String url) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         return dialectDatabaseMetaData.isInstanceConnectionAvailable()
-                ? new StorageUnitNodeMapper(unitName, storageNode, new StandardJdbcUrlParser().parse(url).getDatabase(), url)
-                : new StorageUnitNodeMapper(unitName, storageNode, url);
+                ? new StorageUnitNodeMapper(storageUnitName, storageNode, new StandardJdbcUrlParser().parse(url).getDatabase(), url)
+                : new StorageUnitNodeMapper(storageUnitName, storageNode, url);
     }
     
     /**
