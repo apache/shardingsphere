@@ -19,10 +19,12 @@ package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
 
 import javax.sql.DataSource;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,7 +33,7 @@ import java.util.Map.Entry;
  * Storage resource.
  */
 @Getter
-public class StorageResource {
+public final class StorageResource {
     
     private final Map<StorageNode, DataSource> dataSourceMap;
     
@@ -39,10 +41,18 @@ public class StorageResource {
     
     private final Map<String, DataSource> wrappedDataSources;
     
+    private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
+    
     public StorageResource(final Map<StorageNode, DataSource> dataSourceMap, final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers) {
+        this(dataSourceMap, storageUnitNodeMappers, Collections.emptyMap());
+    }
+    
+    public StorageResource(final Map<StorageNode, DataSource> dataSourceMap,
+                           final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap) {
         this.dataSourceMap = dataSourceMap;
         this.storageUnitNodeMappers = storageUnitNodeMappers;
         wrappedDataSources = createWrappedDataSources();
+        this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
     }
     
     private Map<String, DataSource> createWrappedDataSources() {

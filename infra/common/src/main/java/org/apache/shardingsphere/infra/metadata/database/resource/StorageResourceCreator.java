@@ -69,7 +69,7 @@ public final class StorageResourceCreator {
      * @param propsMap data source pool properties map
      * @return created storage resource
      */
-    public static StorageResourceWithProperties createStorageResourceWithoutDataSource(final Map<String, DataSourcePoolProperties> propsMap) {
+    public static StorageResource createStorageResourceWithoutDataSource(final Map<String, DataSourcePoolProperties> propsMap) {
         Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = new LinkedHashMap<>();
         Map<String, DataSourcePoolProperties> newPropsMap = new LinkedHashMap<>();
@@ -84,7 +84,7 @@ public final class StorageResourceCreator {
             appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProps, entry.getKey(), entry.getValue());
             newPropsMap.put(storageNodeProps.getName(), entry.getValue());
         }
-        return new StorageResourceWithProperties(storageNodes, storageUnitNodeMappers, newPropsMap);
+        return new StorageResource(storageNodes, storageUnitNodeMappers, newPropsMap);
     }
     
     private static void appendStorageUnitNodeMapper(final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final StorageNodeProperties storageNodeProps,
