@@ -25,9 +25,9 @@ docker pull apache/shardingsphere-proxy
 * Method 3: Build your own image
 ```bash
 git clone https://github.com/apache/shardingsphere
-mvn clean install
+./mvnw clean install
 cd shardingsphere-distribution/shardingsphere-proxy-distribution
-mvn clean package -Prelease,docker
+./mvnw clean package -Prelease,docker
 ```
 
 If the following problems emerge, please make sure Docker daemon Process is running.
