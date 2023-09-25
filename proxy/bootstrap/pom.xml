@@ -147,11 +147,6 @@
             <artifactId>commons-dbcp2</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>com.mchange</groupId>
-            <artifactId>c3p0</artifactId>
-            <scope>runtime</scope>
-        </dependency>
         
         <dependency>
             <groupId>ch.qos.logback</groupId>
