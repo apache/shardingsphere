@@ -52,20 +52,21 @@ public final class StorageResourceCreator {
         Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
         Map<String, StorageUnitNodeMapper> mappers = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            StorageNode storageNode = new StorageNode(getStorageNodeName(entry.getKey(), entry.getValue()));
+            String storageUnitName = entry.getKey();
+            Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
+            String url = standardProps.get("url").toString();
+            String username = standardProps.get("username").toString();
+            DatabaseType databaseType = DatabaseTypeFactory.get(url);
+            StorageNode storageNode = new StorageNode(getStorageNodeName(storageUnitName, url, username, databaseType));
             if (!storageNodes.containsKey(storageNode)) {
-                storageNodes.put(storageNode, DataSourcePoolCreator.create(entry.getKey(), entry.getValue(), true, storageNodes.values()));
+                storageNodes.put(storageNode, DataSourcePoolCreator.create(storageUnitName, entry.getValue(), true, storageNodes.values()));
             }
-            appendStorageUnitNodeMapper(mappers, storageNode, entry.getKey(), entry.getValue());
+            mappers.put(storageUnitName, getStorageUnitNodeMapper(storageNode, databaseType, storageUnitName, url));
         }
         return new StorageResource(storageNodes, mappers);
     }
     
-    private static String getStorageNodeName(final String dataSourceName, final DataSourcePoolProperties storageNodeProps) {
-        Map<String, Object> standardProps = storageNodeProps.getConnectionPropertySynonyms().getStandardProperties();
-        String url = standardProps.get("url").toString();
-        String username = standardProps.get("username").toString();
-        DatabaseType databaseType = DatabaseTypeFactory.get(url);
+    private static String getStorageNodeName(final String dataSourceName, final String url, final String username, final DatabaseType databaseType) {
         try {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
@@ -77,12 +78,6 @@ public final class StorageResourceCreator {
     
     private static String generateStorageNodeName(final String hostname, final int port, final String username) {
         return String.format("%s_%s_%s", hostname, port, username);
-    }
-    
-    private static void appendStorageUnitNodeMapper(final Map<String, StorageUnitNodeMapper> mappers, final StorageNode storageNode,
-                                                    final String storageUnitName, final DataSourcePoolProperties props) {
-        String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        mappers.put(storageUnitName, getStorageUnitNodeMapper(storageNode, DatabaseTypeFactory.get(url), storageUnitName, url));
     }
     
     private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNode storageNode, final DatabaseType databaseType, final String storageUnitName, final String url) {
@@ -103,12 +98,17 @@ public final class StorageResourceCreator {
         Map<String, StorageUnitNodeMapper> mappers = new LinkedHashMap<>();
         Map<String, DataSourcePoolProperties> newPropsMap = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            StorageNode storageNode = new StorageNode(getStorageNodeName(entry.getKey(), entry.getValue()));
+            String storageUnitName = entry.getKey();
+            Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
+            String url = standardProps.get("url").toString();
+            String username = standardProps.get("username").toString();
+            DatabaseType databaseType = DatabaseTypeFactory.get(url);
+            StorageNode storageNode = new StorageNode(getStorageNodeName(entry.getKey(), url, username, databaseType));
             if (!storageNodes.containsKey(storageNode)) {
                 storageNodes.put(storageNode, null);
                 newPropsMap.put(storageNode.getName(), entry.getValue());
             }
-            appendStorageUnitNodeMapper(mappers, storageNode, entry.getKey(), entry.getValue());
+            mappers.put(storageUnitName, getStorageUnitNodeMapper(storageNode, databaseType, storageUnitName, url));
         }
         return new StorageResource(storageNodes, mappers, newPropsMap);
     }
