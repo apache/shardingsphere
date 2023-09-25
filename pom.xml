@@ -15,7 +15,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -55,8 +54,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
-        <checkstyle.skip>true</checkstyle.skip>
-        <rat.skip>true</rat.skip>
         <shade.package>org.apache.shardingsphere.shade</shade.package>
         <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
         
