@@ -91,7 +91,7 @@ class ShardingSphereMetaDataTest {
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(databaseResourceHeldRule)));
         return result;
     }
-
+    
     @Test
     void assertContainsDatabase() {
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
@@ -102,7 +102,7 @@ class ShardingSphereMetaDataTest {
                 new RuleMetaData(Collections.singleton(globalResourceHeldRule)), configProps);
         assertTrue(metaData.containsDatabase("foo_db"));
     }
-
+    
     @Test
     void assertGetDatabase() {
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
@@ -111,6 +111,6 @@ class ShardingSphereMetaDataTest {
         ConfigurationProperties configProps = new ConfigurationProperties(new Properties());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class),
                 new RuleMetaData(Collections.singleton(globalResourceHeldRule)), configProps);
-        assertThat(metaData.getDatabase("foo_db"),is(database));
+        assertThat(metaData.getDatabase("foo_db"), is(database));
     }
 }
