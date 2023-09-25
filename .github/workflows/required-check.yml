@@ -51,7 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run Spotless
-        run: ./mvnw spotless:check -Pcheck -T1C
+        run: ./mvnw spotless:apply spotless:check -Pcheck -T1C
 
   check-license:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
