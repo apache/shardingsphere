@@ -90,11 +90,11 @@ public final class StorageResourceCreator {
     private static void appendStorageUnitNodeMapper(final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final StorageNodeProperties storageNodeProps,
                                                     final String unitName, final DataSourcePoolProperties props) {
         String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        storageUnitNodeMappers.put(unitName, getStorageUnitNodeMapper(storageNodeProps, unitName, url));
+        storageUnitNodeMappers.put(unitName, getStorageUnitNodeMapper(storageNodeProps, DatabaseTypeFactory.get(url), unitName, url));
     }
     
-    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNodeProperties storageNodeProps, final String unitName, final String url) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(storageNodeProps.getDatabaseType()).getDialectDatabaseMetaData();
+    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNodeProperties storageNodeProps, final DatabaseType databaseType, final String unitName, final String url) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         return dialectDatabaseMetaData.isInstanceConnectionAvailable()
                 ? new StorageUnitNodeMapper(unitName, new StorageNode(storageNodeProps.getName()), storageNodeProps.getCatalog(), url)
                 : new StorageUnitNodeMapper(unitName, new StorageNode(storageNodeProps.getName()), url);
@@ -113,9 +113,9 @@ public final class StorageResourceCreator {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
             String nodeName = dialectDatabaseMetaData.isInstanceConnectionAvailable() ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
-            return new StorageNodeProperties(nodeName, databaseType, jdbcUrl.getDatabase());
+            return new StorageNodeProperties(nodeName, jdbcUrl.getDatabase());
         } catch (final UnrecognizedDatabaseURLException ex) {
-            return new StorageNodeProperties(dataSourceName, databaseType, null);
+            return new StorageNodeProperties(dataSourceName, null);
         }
     }
     

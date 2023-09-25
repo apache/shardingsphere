@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.metadata.database.resource.node;
 import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
  * Storage node properties.
@@ -30,8 +29,6 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 public final class StorageNodeProperties {
     
     private final String name;
-    
-    private final DatabaseType databaseType;
     
     private final String catalog;
     
