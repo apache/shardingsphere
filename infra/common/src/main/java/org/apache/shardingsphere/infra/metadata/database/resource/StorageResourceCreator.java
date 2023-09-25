@@ -52,14 +52,45 @@ public final class StorageResourceCreator {
         Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            StorageNode storageNodeProps = getStorageNode(entry.getKey(), entry.getValue());
-            StorageNode storageNode = new StorageNode(storageNodeProps.getName());
+            StorageNode storageNode = getStorageNode(entry.getKey(), entry.getValue());
             if (!storageNodes.containsKey(storageNode)) {
                 storageNodes.put(storageNode, DataSourcePoolCreator.create(entry.getKey(), entry.getValue(), true, storageNodes.values()));
             }
-            appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNodeProps, entry.getKey(), entry.getValue());
+            appendStorageUnitNodeMapper(storageUnitNodeMappers, storageNode, entry.getKey(), entry.getValue());
         }
         return new StorageResource(storageNodes, storageUnitNodeMappers);
+    }
+    
+    private static StorageNode getStorageNode(final String dataSourceName, final DataSourcePoolProperties storageNodeProps) {
+        Map<String, Object> standardProps = storageNodeProps.getConnectionPropertySynonyms().getStandardProperties();
+        String url = standardProps.get("url").toString();
+        String username = standardProps.get("username").toString();
+        DatabaseType databaseType = DatabaseTypeFactory.get(url);
+        try {
+            JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
+            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+            String nodeName = dialectDatabaseMetaData.isInstanceConnectionAvailable() ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
+            return new StorageNode(nodeName);
+        } catch (final UnrecognizedDatabaseURLException ex) {
+            return new StorageNode(dataSourceName);
+        }
+    }
+    
+    private static String generateStorageNodeName(final String hostname, final int port, final String username) {
+        return String.format("%s_%s_%s", hostname, port, username);
+    }
+    
+    private static void appendStorageUnitNodeMapper(final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final StorageNode storageNode,
+                                                    final String unitName, final DataSourcePoolProperties props) {
+        String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
+        storageUnitNodeMappers.put(unitName, getStorageUnitNodeMapper(storageNode, DatabaseTypeFactory.get(url), unitName, url));
+    }
+    
+    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNode storageNode, final DatabaseType databaseType, final String unitName, final String url) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        return dialectDatabaseMetaData.isInstanceConnectionAvailable()
+                ? new StorageUnitNodeMapper(unitName, new StorageNode(storageNode.getName()), new StandardJdbcUrlParser().parse(url).getDatabase(), url)
+                : new StorageUnitNodeMapper(unitName, new StorageNode(storageNode.getName()), url);
     }
     
     /**
@@ -84,41 +115,5 @@ public final class StorageResourceCreator {
             newPropsMap.put(storageNodeProps.getName(), entry.getValue());
         }
         return new StorageResource(storageNodes, storageUnitNodeMappers, newPropsMap);
-    }
-    
-    private static void appendStorageUnitNodeMapper(final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final StorageNode storageNode,
-                                                    final String unitName, final DataSourcePoolProperties props) {
-        String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        storageUnitNodeMappers.put(unitName, getStorageUnitNodeMapper(storageNode, DatabaseTypeFactory.get(url), unitName, url));
-    }
-    
-    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNode storageNode, final DatabaseType databaseType, final String unitName, final String url) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.isInstanceConnectionAvailable()
-                ? new StorageUnitNodeMapper(unitName, new StorageNode(storageNode.getName()), new StandardJdbcUrlParser().parse(url).getDatabase(), url)
-                : new StorageUnitNodeMapper(unitName, new StorageNode(storageNode.getName()), url);
-    }
-    
-    private static StorageNode getStorageNode(final String dataSourceName, final DataSourcePoolProperties storageNodeProps) {
-        Map<String, Object> standardProps = storageNodeProps.getConnectionPropertySynonyms().getStandardProperties();
-        String url = standardProps.get("url").toString();
-        String username = standardProps.get("username").toString();
-        DatabaseType databaseType = DatabaseTypeFactory.get(url);
-        return getStorageNode(dataSourceName, url, username, databaseType);
-    }
-    
-    private static StorageNode getStorageNode(final String dataSourceName, final String url, final String username, final DatabaseType databaseType) {
-        try {
-            JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-            String nodeName = dialectDatabaseMetaData.isInstanceConnectionAvailable() ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
-            return new StorageNode(nodeName);
-        } catch (final UnrecognizedDatabaseURLException ex) {
-            return new StorageNode(dataSourceName);
-        }
-    }
-    
-    private static String generateStorageNodeName(final String hostname, final int port, final String username) {
-        return String.format("%s_%s_%s", hostname, port, username);
     }
 }
