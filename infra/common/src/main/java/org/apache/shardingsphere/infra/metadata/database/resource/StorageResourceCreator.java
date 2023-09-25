@@ -96,7 +96,7 @@ public final class StorageResourceCreator {
     private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNodeProperties storageNodeProps, final DatabaseType databaseType, final String unitName, final String url) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         return dialectDatabaseMetaData.isInstanceConnectionAvailable()
-                ? new StorageUnitNodeMapper(unitName, new StorageNode(storageNodeProps.getName()), storageNodeProps.getCatalog(), url)
+                ? new StorageUnitNodeMapper(unitName, new StorageNode(storageNodeProps.getName()), new StandardJdbcUrlParser().parse(url).getDatabase(), url)
                 : new StorageUnitNodeMapper(unitName, new StorageNode(storageNodeProps.getName()), url);
     }
     
@@ -113,9 +113,9 @@ public final class StorageResourceCreator {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
             String nodeName = dialectDatabaseMetaData.isInstanceConnectionAvailable() ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
-            return new StorageNodeProperties(nodeName, jdbcUrl.getDatabase());
+            return new StorageNodeProperties(nodeName);
         } catch (final UnrecognizedDatabaseURLException ex) {
-            return new StorageNodeProperties(dataSourceName, null);
+            return new StorageNodeProperties(dataSourceName);
         }
     }
     

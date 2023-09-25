@@ -30,8 +30,6 @@ public final class StorageNodeProperties {
     
     private final String name;
     
-    private final String catalog;
-    
     @Override
     public boolean equals(final Object obj) {
         return obj instanceof StorageNodeProperties && ((StorageNodeProperties) obj).name.equalsIgnoreCase(name);
