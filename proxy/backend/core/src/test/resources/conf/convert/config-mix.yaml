@@ -132,8 +132,6 @@ rules:
       type: RC4
       props:
         rc4-key-value: 123456abc
-    like_encryptor:
-      type: CHAR_DIGEST_LIKE
   tables:
     t_encrypt:
       columns:

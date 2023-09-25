@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.algorithm.standard.AESEncryptAlgorithm
-org.apache.shardingsphere.encrypt.algorithm.assisted.MD5AssistedEncryptAlgorithm
+org.apache.shardingsphere.test.e2e.fixture.ITEncryptLikeAlgorithmFixture

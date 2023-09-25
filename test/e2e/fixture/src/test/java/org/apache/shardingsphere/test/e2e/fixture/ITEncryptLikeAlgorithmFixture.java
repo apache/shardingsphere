@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm.like;
+package org.apache.shardingsphere.test.e2e.fixture;
 
 import com.google.common.base.Strings;
-import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
@@ -33,11 +32,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-/**
- * Char digest like encrypt algorithm.
- */
-@EqualsAndHashCode
-public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorithm {
+public final class ITEncryptLikeAlgorithmFixture implements LikeEncryptAlgorithm {
     
     private static final String DELTA_KEY = "delta";
     
@@ -158,6 +153,6 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     @Override
     public String getType() {
-        return "CHAR_DIGEST_LIKE";
+        return "IT.ENCRYPT.LIKE.FIXTURE";
     }
 }
