@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -54,10 +53,8 @@ public final class StorageResourceCreator {
             String storageUnitName = entry.getKey();
             Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
             String url = standardProps.get("url").toString();
-            String username = standardProps.get("username").toString();
-            DatabaseType databaseType = DatabaseTypeFactory.get(url);
-            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-            StorageNode storageNode = new StorageNode(getStorageNodeName(storageUnitName, url, username, isInstanceConnectionAvailable));
+            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
+            StorageNode storageNode = new StorageNode(getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable));
             if (!storageNodes.containsKey(storageNode)) {
                 storageNodes.put(storageNode, DataSourcePoolCreator.create(storageUnitName, entry.getValue(), true, storageNodes.values()));
             }
@@ -99,10 +96,8 @@ public final class StorageResourceCreator {
             String storageUnitName = entry.getKey();
             Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
             String url = standardProps.get("url").toString();
-            String username = standardProps.get("username").toString();
-            DatabaseType databaseType = DatabaseTypeFactory.get(url);
-            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-            StorageNode storageNode = new StorageNode(getStorageNodeName(entry.getKey(), url, username, isInstanceConnectionAvailable));
+            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
+            StorageNode storageNode = new StorageNode(getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable));
             if (!storageNodes.containsKey(storageNode)) {
                 storageNodes.put(storageNode, null);
                 newPropsMap.put(storageNode.getName(), entry.getValue());
