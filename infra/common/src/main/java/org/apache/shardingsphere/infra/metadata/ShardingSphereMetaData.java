@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -51,8 +51,7 @@ public final class ShardingSphereMetaData {
     private final TemporaryConfigurationProperties temporaryProps;
     
     public ShardingSphereMetaData() {
-        this(new LinkedHashMap<>(), new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
-                new ConfigurationProperties(new Properties()));
+        this(new HashMap<>(), new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
     
     public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ResourceMetaData globalResourceMetaData,
@@ -63,19 +62,6 @@ public final class ShardingSphereMetaData {
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
         temporaryProps = new TemporaryConfigurationProperties(props.getProps());
-    }
-    
-    /**
-     * Add database.
-     *
-     * @param databaseName database name
-     * @param protocolType protocol database type
-     * @param props configuration properties
-     */
-    public void addDatabase(final String databaseName, final DatabaseType protocolType, final ConfigurationProperties props) {
-        ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType, props);
-        putDatabase(database);
-        globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
     }
     
     /**
@@ -99,12 +85,16 @@ public final class ShardingSphereMetaData {
     }
     
     /**
-     * Put database.
+     * Add database.
      *
-     * @param database database
+     * @param databaseName database name
+     * @param protocolType protocol database type
+     * @param props configuration properties
      */
-    public void putDatabase(final ShardingSphereDatabase database) {
+    public void addDatabase(final String databaseName, final DatabaseType protocolType, final ConfigurationProperties props) {
+        ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType, props);
         databases.put(database.getName().toLowerCase(), database);
+        globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
     }
     
     /**
@@ -113,8 +103,7 @@ public final class ShardingSphereMetaData {
      * @param databaseName database name
      */
     public void dropDatabase(final String databaseName) {
-        ShardingSphereDatabase toBeRemovedDatabase = databases.remove(databaseName.toLowerCase());
-        closeResources(toBeRemovedDatabase);
+        closeResources(databases.remove(databaseName.toLowerCase()));
     }
     
     private void closeResources(final ShardingSphereDatabase database) {

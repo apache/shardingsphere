@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -98,7 +98,7 @@ public final class ShardingSphereDatabase {
      * 
      * @param name system database name
      * @param protocolType protocol database type
-     * @param props configuration properties                    
+     * @param props configuration properties
      * @return system database meta data
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final ConfigurationProperties props) {
@@ -128,6 +128,16 @@ public final class ShardingSphereDatabase {
     }
     
     /**
+     * Judge contains schema from database or not.
+     *
+     * @param schemaName schema name
+     * @return contains schema from database or not
+     */
+    public boolean containsSchema(final String schemaName) {
+        return schemas.containsKey(schemaName.toLowerCase());
+    }
+    
+    /**
      * Get schema.
      *
      * @param schemaName schema name
@@ -138,32 +148,22 @@ public final class ShardingSphereDatabase {
     }
     
     /**
-     * Put schema.
+     * Add schema.
      *
      * @param schemaName schema name
      * @param schema schema
      */
-    public void putSchema(final String schemaName, final ShardingSphereSchema schema) {
+    public void addSchema(final String schemaName, final ShardingSphereSchema schema) {
         schemas.put(schemaName.toLowerCase(), schema);
     }
     
     /**
-     * Remove schema.
+     * Drop schema.
      *
      * @param schemaName schema name
      */
-    public void removeSchema(final String schemaName) {
+    public void dropSchema(final String schemaName) {
         schemas.remove(schemaName.toLowerCase());
-    }
-    
-    /**
-     * Judge contains schema from database or not.
-     *
-     * @param schemaName schema name
-     * @return contains schema from database or not
-     */
-    public boolean containsSchema(final String schemaName) {
-        return schemas.containsKey(schemaName.toLowerCase());
     }
     
     /**

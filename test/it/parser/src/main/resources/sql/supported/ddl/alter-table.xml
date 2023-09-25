@@ -227,4 +227,5 @@
     <sql-case id="alter_table_move_subpartition_tablespace_parallel" value="ALTER TABLE scuba_gear MOVE SUBPARTITION bcd_types TABLESPACE tbs23 PARALLEL (DEGREE 2)" db-types="Oracle" />
     <sql-case id="alter_table_add_ref_with_rowid" value="ALTER TABLE staff  ADD (REF(dept) WITH ROWID)" db-types="Oracle" />
     <sql-case id="alter_table_add_scope_for_is" value="ALTER TABLE staff ADD (SCOPE FOR (dept) IS offices)" db-types="Oracle" />
+    <sql-case id="alter_table_add_column_no_parentheses" value="ALTER TABLE T_MASK ADD new_column VARCHAR2(100)" db-types="Oracle" />
 </sql-cases>

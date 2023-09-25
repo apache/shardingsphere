@@ -130,7 +130,8 @@ Answer:
 
 Answer:
 
-`${...}` or `$->{...}` can be used in inline expression identifiers, but the former one clashes with place holders in Spring property files, so `$->{...}` is recommended to be used in Spring as inline expression identifiers.
+`${...}` or `$->{...}` can be used in inline expression identifiers using the default implementation of the 
+`InlineExpressionParser` SPI, but the former one clashes with place holders in Spring property files, so `$->{...}` is recommended to be used in Spring as inline expression identifiers.
 
 ### [Sharding] Why does float number appear in the return result of inline expression?
 

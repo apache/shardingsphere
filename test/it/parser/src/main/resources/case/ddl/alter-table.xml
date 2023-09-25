@@ -141,6 +141,7 @@
     
     <alter-table sql-case-id="alter_table_modify7">
         <table name="locations" start-index="12" stop-index="20" />
+        <modify-constraint start-index="22" stop-index="55" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_modify8">
@@ -154,11 +155,7 @@
     
     <alter-table sql-case-id="alter_table_modify9">
         <table name="sales" start-index="12" stop-index="16" />
-        <modify-column>
-            <column-definition type="time_view_fk" start-index="25" stop-index="52">
-                <column name="CONSTRAINT" />
-            </column-definition>
-        </modify-column>
+        <modify-constraint start-index="18" stop-index="52" constraint-name="time_view_fk" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_modify10">
@@ -1131,6 +1128,10 @@
     
     <alter-table sql-case-id="alter_table_rename_column">
         <table name="t_order" start-index="12" stop-index="18" />
+        <rename-column start-index="20" stop-index="52">
+            <old-column-name name="user_id" start-index="34" stop-index="40" />
+            <column-name name="user_id1" start-index="45" stop-index="52" />
+        </rename-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_with_exist_index">
@@ -1699,6 +1700,15 @@
         <add-column>
             <column-definition start-index="23" stop-index="49">
                 <column name="dept" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_column_no_parentheses">
+        <table name="T_MASK" start-index="12" stop-index="17" />
+        <add-column>
+            <column-definition type="VARCHAR2" start-index="23" stop-index="46">
+                <column name="new_column" />
             </column-definition>
         </add-column>
     </alter-table>

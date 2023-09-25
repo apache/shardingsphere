@@ -23,11 +23,9 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResource;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResourceUtils;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -43,7 +41,7 @@ import java.util.stream.Collectors;
 @Getter
 public final class ResourceMetaData {
     
-    private final Map<StorageNode, DataSource> storageNodeDataSources;
+    private final Map<StorageNode, DataSource> dataSourceMap;
     
     private final StorageUnitMetaData storageUnitMetaData;
     
@@ -52,16 +50,15 @@ public final class ResourceMetaData {
     }
     
     public ResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
-        storageNodeDataSources = StorageResourceUtils.getStorageNodeDataSources(dataSources);
-        storageUnitMetaData = new StorageUnitMetaData(databaseName, storageNodeDataSources,
-                dataSources.entrySet().stream()
-                        .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+        dataSourceMap = StorageResourceUtils.getStorageNodeDataSources(dataSources);
+        storageUnitMetaData = new StorageUnitMetaData(databaseName, dataSourceMap, dataSources.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 StorageResourceUtils.getStorageUnitNodeMappers(dataSources));
     }
     
     public ResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourcePoolProperties> propsMap) {
-        storageNodeDataSources = storageResource.getStorageNodeDataSources();
-        storageUnitMetaData = new StorageUnitMetaData(databaseName, storageNodeDataSources, propsMap, storageResource.getStorageUnitNodeMappers());
+        dataSourceMap = storageResource.getDataSourceMap();
+        storageUnitMetaData = new StorageUnitMetaData(databaseName, dataSourceMap, propsMap, storageResource.getStorageUnitNodeMappers());
     }
     
     /**

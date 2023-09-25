@@ -67,7 +67,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
         String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
         ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(algorithmExpression),
                 () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression can not be null."));
-        return InlineExpressionParserFactory.newInstance().handlePlaceHolder(algorithmExpression.trim());
+        return InlineExpressionParserFactory.newInstance(algorithmExpression.trim()).handlePlaceHolder();
     }
     
     private Collection<String> getShardingColumns(final Properties props) {
@@ -132,7 +132,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     }
     
     private Closure<?> createClosure() {
-        Closure<?> result = InlineExpressionParserFactory.newInstance().evaluateClosure(algorithmExpression).rehydrate(new Expando(), null, null);
+        Closure<?> result = InlineExpressionParserFactory.newInstance(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }

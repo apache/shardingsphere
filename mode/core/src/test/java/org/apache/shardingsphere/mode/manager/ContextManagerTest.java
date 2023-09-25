@@ -28,11 +28,11 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResourceUtils;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnitMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnitNodeMapper;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.StorageResourceUtils;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -43,7 +43,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
-import org.apache.shardingsphere.mode.fixture.FixtureDistributedRuleConfiguration;
+import org.apache.shardingsphere.mode.fixture.ModeRuleConfigurationFixture;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -156,14 +156,14 @@ class ContextManagerTest {
     @Test
     void assertAddSchema() {
         contextManager.getResourceMetaDataContextManager().addSchema("foo_db", "bar_schema");
-        verify(metaDataContexts.getMetaData().getDatabase("foo_db")).putSchema(anyString(), any(ShardingSphereSchema.class));
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db")).addSchema(anyString(), any(ShardingSphereSchema.class));
     }
     
     @Test
     void assertAddExistedSchema() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(true);
         contextManager.getResourceMetaDataContextManager().addSchema("foo_db", "foo_schema");
-        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).putSchema(anyString(), any(ShardingSphereSchema.class));
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).addSchema(anyString(), any(ShardingSphereSchema.class));
     }
     
     @Test
@@ -221,7 +221,7 @@ class ContextManagerTest {
     void assertAlterRuleConfiguration() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", new MockedDataSource());
-        when(resourceMetaData.getStorageNodeDataSources()).thenReturn(StorageResourceUtils.getStorageNodeDataSources(dataSources));
+        when(resourceMetaData.getDataSourceMap()).thenReturn(StorageResourceUtils.getStorageNodeDataSources(dataSources));
         StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
         when(resourceMetaData.getStorageUnitMetaData()).thenReturn(storageUnitMetaData);
         when(storageUnitMetaData.getStorageUnits()).thenReturn(Collections.emptyMap());
@@ -230,7 +230,7 @@ class ContextManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(metaDataContexts.getPersistService()).thenReturn(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS));
-        contextManager.getConfigurationContextManager().alterRuleConfiguration("foo_db", Collections.singleton(new FixtureDistributedRuleConfiguration()));
+        contextManager.getConfigurationContextManager().alterRuleConfiguration("foo_db", Collections.singleton(new ModeRuleConfigurationFixture()));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getConfigurations().size(), is(1));
     }
     
@@ -244,7 +244,7 @@ class ContextManagerTest {
                 Collections.singletonMap("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), createProperties("test", "test"))));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnitMetaData().getStorageUnits().size(), is(3));
         assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")
-                .getResourceMetaData().getStorageNodeDataSources().get(new StorageNode("foo_ds")));
+                .getResourceMetaData().getDataSourceMap().get(new StorageNode("foo_ds")));
     }
     
     private ResourceMetaData createOriginalResource() {
@@ -261,7 +261,7 @@ class ContextManagerTest {
         }
         when(result.getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(result.getStorageUnitMetaData().getUnitNodeMappers()).thenReturn(storageUnitNodeMappers);
-        when(result.getStorageNodeDataSources()).thenReturn(storageNodeDataSourceMap);
+        when(result.getDataSourceMap()).thenReturn(storageNodeDataSourceMap);
         return result;
     }
     

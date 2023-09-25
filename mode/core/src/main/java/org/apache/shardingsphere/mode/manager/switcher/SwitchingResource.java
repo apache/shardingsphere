@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 
 import java.util.Map;
 import java.util.Objects;
@@ -47,6 +47,6 @@ public final class SwitchingResource {
      * Close stale data sources.
      */
     public void closeStaleDataSources() {
-        staleStorageResource.getStorageNodeDataSources().values().stream().filter(Objects::nonNull).forEach(resourceMetaData::close);
+        staleStorageResource.getDataSourceMap().values().stream().filter(Objects::nonNull).forEach(resourceMetaData::close);
     }
 }

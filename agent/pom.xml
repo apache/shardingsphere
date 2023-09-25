@@ -33,17 +33,8 @@
         <module>plugins</module>
     </modules>
     
-    <properties>
-        <bytebuddy.version>1.14.4</bytebuddy.version>
-    </properties>
-    
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>net.bytebuddy</groupId>
-                <artifactId>byte-buddy</artifactId>
-                <version>${bytebuddy.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-test-util</artifactId>
