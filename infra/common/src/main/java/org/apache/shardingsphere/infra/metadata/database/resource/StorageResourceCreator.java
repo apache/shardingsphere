@@ -22,8 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -52,24 +50,23 @@ public final class StorageResourceCreator {
         Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
         Map<String, StorageUnitNodeMapper> mappers = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            StorageNode storageNode = new StorageNode(getStorageNodeName(entry.getKey(), entry.getValue()));
+            String storageUnitName = entry.getKey();
+            Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
+            String url = standardProps.get("url").toString();
+            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
+            StorageNode storageNode = new StorageNode(getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable));
             if (!storageNodes.containsKey(storageNode)) {
-                storageNodes.put(storageNode, DataSourcePoolCreator.create(entry.getKey(), entry.getValue(), true, storageNodes.values()));
+                storageNodes.put(storageNode, DataSourcePoolCreator.create(storageUnitName, entry.getValue(), true, storageNodes.values()));
             }
-            appendStorageUnitNodeMapper(mappers, storageNode, entry.getKey(), entry.getValue());
+            mappers.put(storageUnitName, getStorageUnitNodeMapper(storageNode, storageUnitName, url, isInstanceConnectionAvailable));
         }
         return new StorageResource(storageNodes, mappers);
     }
     
-    private static String getStorageNodeName(final String dataSourceName, final DataSourcePoolProperties storageNodeProps) {
-        Map<String, Object> standardProps = storageNodeProps.getConnectionPropertySynonyms().getStandardProperties();
-        String url = standardProps.get("url").toString();
-        String username = standardProps.get("username").toString();
-        DatabaseType databaseType = DatabaseTypeFactory.get(url);
+    private static String getStorageNodeName(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
         try {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-            return dialectDatabaseMetaData.isInstanceConnectionAvailable() ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
+            return isInstanceConnectionAvailable ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
         } catch (final UnrecognizedDatabaseURLException ex) {
             return dataSourceName;
         }
@@ -79,17 +76,10 @@ public final class StorageResourceCreator {
         return String.format("%s_%s_%s", hostname, port, username);
     }
     
-    private static void appendStorageUnitNodeMapper(final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final StorageNode storageNode,
-                                                    final String storageUnitName, final DataSourcePoolProperties props) {
-        String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        storageUnitNodeMappers.put(storageUnitName, getStorageUnitNodeMapper(storageNode, DatabaseTypeFactory.get(url), storageUnitName, url));
-    }
-    
-    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNode storageNode, final DatabaseType databaseType, final String unitName, final String url) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.isInstanceConnectionAvailable()
-                ? new StorageUnitNodeMapper(unitName, storageNode, new StandardJdbcUrlParser().parse(url).getDatabase(), url)
-                : new StorageUnitNodeMapper(unitName, storageNode, url);
+    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNode storageNode, final String storageUnitName, final String url, final boolean isInstanceConnectionAvailable) {
+        return isInstanceConnectionAvailable
+                ? new StorageUnitNodeMapper(storageUnitName, storageNode, new StandardJdbcUrlParser().parse(url).getDatabase(), url)
+                : new StorageUnitNodeMapper(storageUnitName, storageNode, url);
     }
     
     /**
@@ -103,14 +93,16 @@ public final class StorageResourceCreator {
         Map<String, StorageUnitNodeMapper> mappers = new LinkedHashMap<>();
         Map<String, DataSourcePoolProperties> newPropsMap = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            StorageNode storageNode = new StorageNode(getStorageNodeName(entry.getKey(), entry.getValue()));
-            if (storageNodes.containsKey(storageNode)) {
-                appendStorageUnitNodeMapper(mappers, storageNode, entry.getKey(), entry.getValue());
-                continue;
+            String storageUnitName = entry.getKey();
+            Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
+            String url = standardProps.get("url").toString();
+            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
+            StorageNode storageNode = new StorageNode(getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable));
+            if (!storageNodes.containsKey(storageNode)) {
+                storageNodes.put(storageNode, null);
+                newPropsMap.put(storageNode.getName(), entry.getValue());
             }
-            storageNodes.put(storageNode, null);
-            appendStorageUnitNodeMapper(mappers, storageNode, entry.getKey(), entry.getValue());
-            newPropsMap.put(storageNode.getName(), entry.getValue());
+            mappers.put(storageUnitName, getStorageUnitNodeMapper(storageNode, storageUnitName, url, isInstanceConnectionAvailable));
         }
         return new StorageResource(storageNodes, mappers, newPropsMap);
     }
