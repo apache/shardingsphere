@@ -6839,7 +6839,21 @@
             <expression-projection text="TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.')" start-index="7" stop-index="133" literal-start-index="7" literal-stop-index="133">
                 <literalText>TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.')</literalText>
                 <expr>
-                    <function function-name="TO_DATE" text="TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.')" start-index="7" stop-index="133" literal-start-index="7" literal-stop-index="133">
+                    <function function-name="TO_DATE"
+                              text="TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.')"
+                              start-index="7" stop-index="133" literal-start-index="7" literal-stop-index="133">
+                        <parameter>
+                            <literal-expression value="'Febuary 15, 2016, 11:00 A.M.'" start-index="15" stop-index="44"
+                                                literal-start-index="15" literal-stop-index="44"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="'January 01, 2016 12:00 A.M.'" start-index="54" stop-index="82"
+                                                literal-start-index="54" literal-stop-index="82"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="'Month dd, YYYY, HH:MI A.M.'" start-index="105" stop-index="132"
+                                                literal-start-index="105" literal-stop-index="132"/>
+                        </parameter>
                         <literalText>TO_DATE('Febuary 15, 2016, 11:00 A.M.' DEFAULT 'January 01, 2016 12:00 A.M.' ON CONVERSION ERROR, 'Month dd, YYYY, HH:MI A.M.')</literalText>
                     </function>
                 </expr>
@@ -6851,7 +6865,7 @@
     </select>
     <select sql-case-id="select_with_expressions_in_projection">
         <projections start-index="7" stop-index="81" literal-start-index="7" literal-stop-index="81">
-            <column-projection name="empid" start-index="75" stop-index="81" literal-start-index="75" literal-stop-index="81">
+            <column-projection name="empid" start-index="75" stop-index="81" literal-start-index="75" literal-stop-index="81">`
                 <owner name="a" start-index="75" stop-index="75" literal-start-index="75" literal-stop-index="75" />
             </column-projection>
             <expression-projection text="a.enddate - term + term2 + 1) / (last_day(term) - term + 1" alias="cnt" start-index="8" stop-index="72" literal-start-index="8" literal-stop-index="72">

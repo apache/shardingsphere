@@ -2575,41 +2575,77 @@
         <values>
             <value>
                 <assignment-value>
-                    <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="103" stop-index="125" />
+                    <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="103" stop-index="125" literal-start-index="103" literal-stop-index="125">
+                        <parameter>
+                            <literal-expression value="'2009'" start-index="111" stop-index="116" literal-start-index="111" literal-stop-index="116" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="'YYYY'" start-index="119" stop-index="124" literal-start-index="119" literal-stop-index="124" />
+                        </parameter>
+                        <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                    </function>
                 </assignment-value>
                 <assignment-value>
-                    <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="128" stop-index="150" />
+                    <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="128" stop-index="150" literal-start-index="128" literal-stop-index="150">
+                        <parameter>
+                            <literal-expression value="'2009'" start-index="136" stop-index="141" literal-start-index="136" literal-stop-index="141" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="'YYYY'" start-index="144" stop-index="149" literal-start-index="144" literal-stop-index="149" />
+                        </parameter>
+                        <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                    </function>
                 </assignment-value>
                 <assignment-value>
-                    <interval-expression start-index="153" stop-index="217" text="(TO_DATE('2009', 'YYYY') - TO_DATE('2009', 'YYYY')) year to MONTH">
+                    <interval-expression>
                         <left>
-                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="154" stop-index="176" />
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="154" stop-index="176" literal-start-index="154" literal-stop-index="176">
+                                <parameter>
+                                    <literal-expression value="'2009'" start-index="162" stop-index="167" literal-start-index="162" literal-stop-index="167" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'YYYY'" start-index="170" stop-index="175" literal-start-index="170" literal-stop-index="175" />
+                                </parameter>
+                                <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                            </function>
                         </left>
-                        <operator>-</operator>
                         <right>
-                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="180" stop-index="202" />
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="180" stop-index="202" literal-start-index="180" literal-stop-index="202">
+                                <parameter>
+                                    <literal-expression value="'2009'" start-index="188" stop-index="193" literal-start-index="188" literal-stop-index="193" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'YYYY'" start-index="196" stop-index="201" literal-start-index="196" literal-stop-index="201" />
+                                </parameter>
+                                <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                            </function>
                         </right>
-                        <interval-year-to-month-expr start-index="205" stop-index="217">
-                            <year>year</year>
-                            <to>to</to>
-                            <month>MONTH</month>
-                        </interval-year-to-month-expr>
                     </interval-expression>
                 </assignment-value>
                 <assignment-value>
-                    <interval-expression start-index="220" stop-index="284" text="(TO_DATE('2009', 'YYYY') - TO_DATE('2009', 'YYYY')) DAY TO SECOND">
+                    <interval-expression>
                         <left>
-                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="221" stop-index="243" />
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="221" stop-index="243" literal-start-index="221" literal-stop-index="243">
+                                <parameter>
+                                    <literal-expression value="'2009'" start-index="229" stop-index="234" literal-start-index="229" literal-stop-index="234" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'YYYY'" start-index="237" stop-index="242" literal-start-index="237" literal-stop-index="242" />
+                                </parameter>
+                                <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                            </function>
                         </left>
-                        <operator>-</operator>
                         <right>
-                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="247" stop-index="269" />
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="247" stop-index="269" literal-start-index="247" literal-stop-index="269">
+                                <parameter>
+                                    <literal-expression value="'2009'" start-index="255" stop-index="260" literal-start-index="255" literal-stop-index="260" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'YYYY'" start-index="263" stop-index="268" literal-start-index="263" literal-stop-index="268" />
+                                </parameter>
+                                <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                            </function>
                         </right>
-                        <interval-day-to-second-expr start-index="272" stop-index="284">
-                            <day>DAY</day>
-                            <to>TO</to>
-                            <second>SECOND</second>
-                        </interval-day-to-second-expr>
                     </interval-expression>
                 </assignment-value>
             </value>
