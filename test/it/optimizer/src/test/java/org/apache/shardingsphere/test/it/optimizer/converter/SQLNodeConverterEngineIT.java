@@ -89,7 +89,7 @@ class SQLNodeConverterEngineIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return getTestParameters("MySQL", "PostgreSQL", "openGauss", "Oracle").stream();
+            return getTestParameters("MySQL", "PostgreSQL", "openGauss", "Oracle", "SQLServer").stream();
         }
         
         private Collection<Arguments> getTestParameters(final String... databaseTypes) {
