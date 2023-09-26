@@ -48,6 +48,8 @@ rules:
       type: RC4
       props:
         rc4-key-value: 123456abc
+    like_encryptor:
+      type: CORE.QUERY_LIKE.FIXTURE
   tables:
     t_encrypt:
       columns:
