@@ -82,7 +82,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryT
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryTableExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ReferenceModelContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RollupCubeClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectCombineClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectFromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectJoinOptionContext;
@@ -530,8 +529,6 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         OracleSelectStatement result;
         if (null != ctx.queryBlock()) {
             result = (OracleSelectStatement) visit(ctx.queryBlock());
-        } else if (null != ctx.selectCombineClause()) {
-            result = (OracleSelectStatement) visit(ctx.selectCombineClause());
         } else {
             result = (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
         }
@@ -641,23 +638,6 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitReferenceModel(final ReferenceModelContext ctx) {
         OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
         return new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
-    }
-    
-    @Override
-    public ASTNode visitSelectCombineClause(final SelectCombineClauseContext ctx) {
-        OracleSelectStatement result;
-        if (null != ctx.queryBlock()) {
-            result = (OracleSelectStatement) visit(ctx.queryBlock());
-        } else {
-            result = (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
-        }
-        if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
-        }
-        for (SelectSubqueryContext each : ctx.selectSubquery()) {
-            visit(each);
-        }
-        return result;
     }
     
     @Override

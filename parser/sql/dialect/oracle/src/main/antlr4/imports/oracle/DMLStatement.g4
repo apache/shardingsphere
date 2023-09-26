@@ -136,11 +136,7 @@ select
     ;
 
 selectSubquery
-    : (queryBlock | selectCombineClause | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause
-    ;
-
-selectCombineClause
-    : ((queryBlock | parenthesisSelectSubquery) orderByClause? rowLimitingClause) ((UNION ALL? | INTERSECT | MINUS) selectSubquery)+
+    : (queryBlock | parenthesisSelectSubquery) ((UNION ALL? | INTERSECT | MINUS) selectSubquery)? orderByClause?
     ;
 
 parenthesisSelectSubquery
