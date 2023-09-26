@@ -22,31 +22,6 @@ weight = 5
 | aes-key-value         | String | AES 使用的 KEY                  |
 | digest-algorithm-name | String | AES KEY 的摘要算法 (可选，默认值：SHA-1) |
 
-#### RC4 加密算法
-
-类型：RC4
-
-可配置属性：
-
-| *名称*          | *数据类型* | *说明*        |
-|---------------|--------|-------------|
-| rc4-key-value | String | RC4 使用的 KEY |
-
-### 模糊加密算法
-
-#### 单字符摘要模糊加密算法
-
-类型：CHAR_DIGEST_LIKE
-
-可配置属性：
-
-| *名称*  | *数据类型* | *说明*               |
-|-------|--------|--------------------|
-| delta | int    | 字符Unicode码偏移量（十进制） |
-| mask  | int    | 字符加密掩码（十进制）        |
-| start | int    | 密文Unicode初始码（十进制）  |
-| dict  | String | 常见字                |
-
 ### 辅助查询加密算法
 
 #### MD5 辅助查询加密算法
