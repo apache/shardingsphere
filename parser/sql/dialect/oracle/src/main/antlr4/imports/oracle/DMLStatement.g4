@@ -136,7 +136,7 @@ select
     ;
 
 selectSubquery
-    : (queryBlock | parenthesisSelectSubquery) ((UNION ALL? | INTERSECT | MINUS) selectSubquery)? orderByClause?
+    : (queryBlock | parenthesisSelectSubquery) orderByClause? ((UNION ALL? | INTERSECT | MINUS) selectSubquery)*
     ;
 
 parenthesisSelectSubquery
