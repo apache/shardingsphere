@@ -65,25 +65,6 @@ public final class StorageResourceCreator {
         return new StorageResource(storageNodes, mappers);
     }
     
-    private static String getStorageNodeName(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
-        try {
-            JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-            return isInstanceConnectionAvailable ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
-        } catch (final UnrecognizedDatabaseURLException ex) {
-            return dataSourceName;
-        }
-    }
-    
-    private static String generateStorageNodeName(final String hostname, final int port, final String username) {
-        return String.format("%s_%s_%s", hostname, port, username);
-    }
-    
-    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNode storageNode, final String storageUnitName, final String url, final boolean isInstanceConnectionAvailable) {
-        return isInstanceConnectionAvailable
-                ? new StorageUnitNodeMapper(storageUnitName, storageNode, new StandardJdbcUrlParser().parse(url).getDatabase(), url)
-                : new StorageUnitNodeMapper(storageUnitName, storageNode, url);
-    }
-    
     /**
      * Create storage resource without data source.
      *
@@ -105,6 +86,25 @@ public final class StorageResourceCreator {
             mappers.put(storageUnitName, getStorageUnitNodeMapper(storageNode, storageUnitName, url, isInstanceConnectionAvailable));
         }
         return new StorageResource(storageNodes, mappers);
+    }
+    
+    private static String getStorageNodeName(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
+        try {
+            JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
+            return isInstanceConnectionAvailable ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
+        } catch (final UnrecognizedDatabaseURLException ex) {
+            return dataSourceName;
+        }
+    }
+    
+    private static String generateStorageNodeName(final String hostname, final int port, final String username) {
+        return String.format("%s_%s_%s", hostname, port, username);
+    }
+    
+    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNode storageNode, final String storageUnitName, final String url, final boolean isInstanceConnectionAvailable) {
+        return isInstanceConnectionAvailable
+                ? new StorageUnitNodeMapper(storageUnitName, storageNode, new StandardJdbcUrlParser().parse(url).getDatabase(), url)
+                : new StorageUnitNodeMapper(storageUnitName, storageNode, url);
     }
     
     /**
