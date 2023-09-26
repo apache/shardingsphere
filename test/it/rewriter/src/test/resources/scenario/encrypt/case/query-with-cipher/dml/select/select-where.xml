@@ -59,6 +59,11 @@
         <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.assisted_query_password in    (?, ?) AND a.cipher_amount in (?, ?)" parameters="assisted_query_aaa, assisted_query_aaa, encrypt_1000, encrypt_1000" />
     </rewrite-assertion>
     
+    <rewrite-assertion id="select_for_parameters_or_operator" db-types="MySQL">
+        <input sql="SELECT account_id, password FROM t_account WHERE account_id = ? AND password = ? || password = ?" parameters="1, abc, def" />
+        <output sql="SELECT account_id, cipher_password AS password FROM t_account WHERE account_id = ? AND assisted_query_password = ? || assisted_query_password = ?" parameters="1, assisted_query_abc, assisted_query_def" />
+    </rewrite-assertion>
+    
     <rewrite-assertion id="select_where_with_predicate_with_in_expr_for_literals" db-types="PostgreSQL,openGauss">
         <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.amount in ('1000', '2000')" />
         <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.cipher_amount in ('encrypt_1000', 'encrypt_2000')" />
