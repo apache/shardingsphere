@@ -16,14 +16,9 @@
 #
 
 registry {
-  # file 、nacos 、eureka、redis、zk
+  # file 、eureka、redis、zk
   type = "file"
 
-  nacos {
-    serverAddr = "localhost"
-    namespace = "public"
-    cluster = "default"
-  }
   eureka {
     serviceUrl = "http://localhost:1001/eureka"
     application = "default"
@@ -45,14 +40,9 @@ registry {
 }
 
 config {
-  # file、nacos 、apollo、zk
+  # file、apollo、zk
   type = "file"
 
-  nacos {
-    serverAddr = "localhost"
-    namespace = "public"
-    cluster = "default"
-  }
   apollo {
     app.id = "fescar-server"
     apollo.meta = "http://192.168.1.204:8801"
