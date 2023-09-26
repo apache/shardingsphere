@@ -55,11 +55,11 @@ public final class NewResourceSwitchManager {
     
     private StorageResource getRegisterNewStorageResource(final ResourceMetaData resourceMetaData,
                                                           final StorageResource toBeCreatedStorageResource, final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
-        Map<String, DataSourcePoolProperties> storageNodeDataSourcePoolProps = StorageResourceCreator.getStorageNodeDataSourcePoolProperties(storageUnitDataSourcePoolProps);
+        Map<StorageNode, DataSourcePoolProperties> storageNodeDataSourcePoolProps = StorageResourceCreator.getStorageNodeDataSourcePoolProperties(storageUnitDataSourcePoolProps);
         Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(toBeCreatedStorageResource.getDataSourceMap().size(), 1F);
         for (StorageNode each : toBeCreatedStorageResource.getDataSourceMap().keySet()) {
             if (!resourceMetaData.getDataSourceMap().containsKey(each)) {
-                storageNodes.put(each, DataSourcePoolCreator.create(storageNodeDataSourcePoolProps.get(each.getName())));
+                storageNodes.put(each, DataSourcePoolCreator.create(storageNodeDataSourcePoolProps.get(each)));
             }
         }
         return new StorageResource(storageNodes, toBeCreatedStorageResource.getStorageUnitNodeMappers());
@@ -81,10 +81,10 @@ public final class NewResourceSwitchManager {
     }
     
     private StorageResource getAlterNewStorageResource(final StorageResource toBeAlteredStorageResource, final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
-        Map<String, DataSourcePoolProperties> storageNodeDataSourcePoolProps = StorageResourceCreator.getStorageNodeDataSourcePoolProperties(storageUnitDataSourcePoolProps);
+        Map<StorageNode, DataSourcePoolProperties> storageNodeDataSourcePoolProps = StorageResourceCreator.getStorageNodeDataSourcePoolProperties(storageUnitDataSourcePoolProps);
         Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(toBeAlteredStorageResource.getDataSourceMap().size(), 1F);
         for (StorageNode each : toBeAlteredStorageResource.getDataSourceMap().keySet()) {
-            storageNodes.put(each, DataSourcePoolCreator.create(storageNodeDataSourcePoolProps.get(each.getName())));
+            storageNodes.put(each, DataSourcePoolCreator.create(storageNodeDataSourcePoolProps.get(each)));
         }
         return new StorageResource(storageNodes, toBeAlteredStorageResource.getStorageUnitNodeMappers());
     }
