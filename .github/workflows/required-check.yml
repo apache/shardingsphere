@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run CheckStyle
-        run: ./mvnw checkstyle:check -Dcheckstyle.skip=false -T1C
+        run: ./mvnw checkstyle:check -Pcheck -T1C
 
   check-spotless:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
@@ -51,7 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run Spotless
-        run: ./mvnw spotless:check -T1C
+        run: ./mvnw spotless:check -Pcheck -T1C
 
   check-license:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
@@ -62,4 +62,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run Apache Rat
-        run: ./mvnw apache-rat:check -Drat.skip=false -T1C
+        run: ./mvnw apache-rat:check -Pcheck -T1C

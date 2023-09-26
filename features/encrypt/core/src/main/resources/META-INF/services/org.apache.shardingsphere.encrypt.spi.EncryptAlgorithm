@@ -16,6 +16,4 @@
 #
 
 org.apache.shardingsphere.encrypt.algorithm.standard.AESEncryptAlgorithm
-org.apache.shardingsphere.encrypt.algorithm.standard.RC4EncryptAlgorithm
-org.apache.shardingsphere.encrypt.algorithm.like.CharDigestLikeEncryptAlgorithm
 org.apache.shardingsphere.encrypt.algorithm.assisted.MD5AssistedEncryptAlgorithm

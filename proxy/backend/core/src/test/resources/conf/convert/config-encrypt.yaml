@@ -49,7 +49,7 @@ rules:
       props:
         rc4-key-value: 123456abc
     like_encryptor:
-      type: CHAR_DIGEST_LIKE
+      type: CORE.QUERY_LIKE.FIXTURE
   tables:
     t_encrypt:
       columns:
