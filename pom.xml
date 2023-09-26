@@ -93,7 +93,6 @@
         <curator.version>5.4.0</curator.version>
         <jetcd.version>0.7.5</jetcd.version>
         <grpc.version>1.51.0</grpc.version>
-        <apollo-client.version>1.9.0</apollo-client.version>
         
         <elasticjob.version>3.0.3</elasticjob.version>
         
@@ -111,7 +110,6 @@
         <hbase.client.version>1.7.1</hbase.client.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
-        <commons-dbcp2.version>2.9.0</commons-dbcp2.version>
         
         <junit.version>5.9.2</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
@@ -412,12 +410,6 @@
                 <artifactId>grpc-all</artifactId>
                 <version>${grpc.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.ctrip.framework.apollo</groupId>
-                <artifactId>apollo-client</artifactId>
-                <version>${apollo-client.version}</version>
-                <scope>provided</scope>
-            </dependency>
             
             <dependency>
                 <groupId>org.apache.shardingsphere.elasticjob</groupId>
@@ -528,12 +520,6 @@
                 <groupId>com.zaxxer</groupId>
                 <artifactId>HikariCP</artifactId>
                 <version>${hikari-cp.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-dbcp2</artifactId>
-                <version>${commons-dbcp2.version}</version>
                 <scope>test</scope>
             </dependency>
             

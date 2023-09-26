@@ -40,13 +40,9 @@ registry {
 }
 
 config {
-  # file、apollo、zk
+  # file、zk
   type = "file"
 
-  apollo {
-    app.id = "fescar-server"
-    apollo.meta = "http://192.168.1.204:8801"
-  }
   zk {
     serverAddr = "127.0.0.1:2181"
     session.timeout = 6000
