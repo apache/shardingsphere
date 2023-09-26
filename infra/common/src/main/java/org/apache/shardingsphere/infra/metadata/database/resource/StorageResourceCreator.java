@@ -113,8 +113,8 @@ public final class StorageResourceCreator {
      * @param storageUnitDataSourcePoolProps storage unit grouped data source pool properties map
      * @return storage node grouped data source pool properties map
      */
-    public static Map<String, DataSourcePoolProperties> getStorageNodeDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>();
+    public static Map<StorageNode, DataSourcePoolProperties> getStorageNodeDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
+        Map<StorageNode, DataSourcePoolProperties> result = new LinkedHashMap<>();
         Collection<StorageNode> storageNodes = new HashSet<>();
         for (Entry<String, DataSourcePoolProperties> entry : storageUnitDataSourcePoolProps.entrySet()) {
             Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
@@ -122,7 +122,7 @@ public final class StorageResourceCreator {
             boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
             StorageNode storageNode = new StorageNode(getStorageNodeName(entry.getKey(), url, standardProps.get("username").toString(), isInstanceConnectionAvailable));
             if (storageNodes.add(storageNode)) {
-                result.put(storageNode.getName(), entry.getValue());
+                result.put(storageNode, entry.getValue());
             }
         }
         return result;
