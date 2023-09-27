@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.database.datatype;
 
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
@@ -24,7 +25,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Data type loader.
@@ -46,7 +46,7 @@ public final class DataTypeLoader {
     }
     
     private Map<String, Integer> loadStandardDataTypes(final DatabaseMetaData databaseMetaData) throws SQLException {
-        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, Integer> result = new CaseInsensitiveMap<>();
         try (ResultSet resultSet = databaseMetaData.getTypeInfo()) {
             while (resultSet.next()) {
                 result.put(resultSet.getString("TYPE_NAME"), resultSet.getInt("DATA_TYPE"));

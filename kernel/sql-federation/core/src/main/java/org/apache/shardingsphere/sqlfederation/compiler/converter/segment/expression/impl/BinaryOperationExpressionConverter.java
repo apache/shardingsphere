@@ -24,6 +24,7 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
@@ -34,14 +35,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 
 /**
  * Binary operation expression converter.
  */
 public final class BinaryOperationExpressionConverter implements SQLSegmentConverter<BinaryOperationExpression, SqlNode> {
     
-    private static final Map<String, SqlOperator> REGISTRY = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private static final Map<String, SqlOperator> REGISTRY = new CaseInsensitiveMap<>();
     
     static {
         register();

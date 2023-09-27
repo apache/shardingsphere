@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.dql;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -45,7 +46,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 
 /**
  * DQL result merger for Sharding.
@@ -73,7 +73,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
-        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, Integer> result = new CaseInsensitiveMap<>();
         for (int i = queryResult.getMetaData().getColumnCount(); i > 0; i--) {
             result.put(SQLUtils.getExactlyValue(queryResult.getMetaData().getColumnLabel(i)), i);
         }
