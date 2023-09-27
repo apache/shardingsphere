@@ -50,7 +50,7 @@ public final class NewResourceSwitchManager {
     public SwitchingResource registerStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
         Map<String, DataSourcePoolProperties> mergedPropsMap = new HashMap<>(resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap());
         mergedPropsMap.putAll(storageUnitDataSourcePoolProps);
-        Map<String, StorageUnitNodeMapper> toBeCreatedMappers = StorageUnitNodeMapperUtils.getStorageUnitNodeMappers(storageUnitDataSourcePoolProps);
+        Map<String, StorageUnitNodeMapper> toBeCreatedMappers = StorageUnitNodeMapperUtils.fromDataSourcePoolProperties(storageUnitDataSourcePoolProps);
         return new SwitchingResource(resourceMetaData, getRegisterNewStorageResource(resourceMetaData, toBeCreatedMappers, storageUnitDataSourcePoolProps),
                 new StorageResource(Collections.emptyMap(), Collections.emptyMap()), mergedPropsMap);
     }
@@ -78,7 +78,7 @@ public final class NewResourceSwitchManager {
     public SwitchingResource alterStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> propsMap) {
         Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new HashMap<>(resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap());
         mergedDataSourcePoolPropertiesMap.putAll(propsMap);
-        Map<String, StorageUnitNodeMapper> toBeAlteredMappers = StorageUnitNodeMapperUtils.getStorageUnitNodeMappers(mergedDataSourcePoolPropertiesMap);
+        Map<String, StorageUnitNodeMapper> toBeAlteredMappers = StorageUnitNodeMapperUtils.fromDataSourcePoolProperties(mergedDataSourcePoolPropertiesMap);
         return new SwitchingResource(resourceMetaData, getAlterNewStorageResource(toBeAlteredMappers, mergedDataSourcePoolPropertiesMap),
                 getStaleStorageResource(resourceMetaData, toBeAlteredMappers), mergedDataSourcePoolPropertiesMap);
     }

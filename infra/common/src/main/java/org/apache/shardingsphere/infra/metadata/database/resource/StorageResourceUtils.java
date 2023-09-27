@@ -19,10 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -45,22 +42,5 @@ public final class StorageResourceUtils {
     public static Map<StorageNode, DataSource> getStorageNodeDataSources(final Map<String, DataSource> dataSources) {
         return dataSources.entrySet().stream()
                 .collect(Collectors.toMap(entry -> new StorageNode(entry.getKey()), Entry::getValue, (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(dataSources.size(), 1F)));
-    }
-    
-    /**
-     * Get storage unit node mappers from provided data sources.
-     *
-     * @param dataSources data sources
-     * @return storage unit node mappers
-     */
-    public static Map<String, StorageUnitNodeMapper> getStorageUnitNodeMappers(final Map<String, DataSource> dataSources) {
-        return dataSources.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> getStorageUnitNodeMapper(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
-    }
-    
-    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final String dataSourceName, final DataSource dataSource) {
-        DataSourcePoolProperties props = DataSourcePoolPropertiesCreator.create(dataSource);
-        String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        return new StorageUnitNodeMapper(dataSourceName, new StorageNode(dataSourceName), url);
     }
 }
