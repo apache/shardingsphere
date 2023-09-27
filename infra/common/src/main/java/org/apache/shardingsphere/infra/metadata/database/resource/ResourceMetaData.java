@@ -48,12 +48,8 @@ public final class ResourceMetaData {
     private final StorageUnitMetaData storageUnitMetaData;
     
     public ResourceMetaData(final Map<String, DataSource> dataSources) {
-        this(null, dataSources);
-    }
-    
-    public ResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
         dataSourceMap = StorageNodeUtils.getStorageNodeDataSources(dataSources);
-        storageUnitMetaData = new StorageUnitMetaData(databaseName, dataSourceMap, dataSources.entrySet().stream()
+        storageUnitMetaData = new StorageUnitMetaData(null, dataSourceMap, dataSources.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 StorageUnitNodeMapperUtils.fromDataSources(dataSources));
     }
