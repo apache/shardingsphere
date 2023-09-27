@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 /**
  * The background for this class comes from <a href="https://github.com/oracle/graal/issues/7682">oracle/graal#7682</a>
- * and <a href="https://github.com/oracle/graal/blob/vm-ce-23.0.2/docs/reference-manual/native-image/Resources.md">Accessing Resources in Native Image</a>.
+ * and <a href="https://github.com/oracle/graal/blob/vm-ce-23.1.1/docs/reference-manual/native-image/Resources.md">Accessing Resources in Native Image</a>.
  * GraalVM Native Image has special features in its handling of file systems.
  * This means we are better off reading the file via `java.io.InputStream` instead of `java.net.URL` to avoid extra code
  * processing.

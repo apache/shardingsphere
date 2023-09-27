@@ -84,7 +84,7 @@ public final class JDBCRepositorySQLLoader {
     }
     
     /**
-     * Under the GraalVM Native Image corresponding to GraalVM CE 23.0.2 For JDK 17.0.9, although there is
+     * Under the GraalVM Native Image corresponding to GraalVM CE 23.1.1 For JDK 21.0.1, although there is
      * `com.oracle.svm.core.jdk.resources.NativeImageResourceFileSystemProvider`, the corresponding
      * `com.oracle.svm.core.jdk.resources.NativeImageResourceFileSystem` does not autoload. This is mainly to align the
      * behavior of `ZipFileSystemProvider`, so ShardingSphere need to manually open and close the FileSystem

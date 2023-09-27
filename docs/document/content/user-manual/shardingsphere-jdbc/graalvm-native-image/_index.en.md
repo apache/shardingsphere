@@ -16,7 +16,6 @@ ShardingSphere JDBC requires GraalVM Native Image to be built with GraalVM CE as
 JDK through `SDKMAN!`. Same reason applicable to downstream distributions of `GraalVM CE` such as `Oracle GraalVM`, `Liberica Native Image Kit` 
 and `Mandrel`.
 
-- GraalVM CE 23.0.2 For JDK 17.0.9, corresponding to `17.0.9-graalce` of SDKMAN!
 - GraalVM CE 23.1.1 For JDK 21.0.1, corresponding to `21.0.1-graalce` of SDKMAN!
 
 ### Maven Ecology
@@ -251,8 +250,8 @@ You must install Docker Engine to execute `testcontainers-java` related unit tes
 sudo apt install unzip zip curl sed -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 17.0.9-graalce
-sdk use java 17.0.9-graalce
+sdk install java 21.0.1-graalce
+sdk use java 21.0.1-graalce
 sudo apt-get install build-essential libz-dev zlib1g-dev -y
 
 git clone git@github.com:apache/shardingsphere.git

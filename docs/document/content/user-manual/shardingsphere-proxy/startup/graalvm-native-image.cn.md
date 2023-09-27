@@ -34,7 +34,7 @@ services:
    或 `GraalVM Community Edition` 的下游发行版。若使用 `SDKMAN!`，
 
 ```shell
-sdk install java 17.0.9-graalce
+sdk install java 21.0.1-graalce
 ```
 
 2. 根据 https://www.graalvm.org/jdk17/reference-manual/native-image/#prerequisites 的要求安装本地工具链。
@@ -82,7 +82,7 @@ sdk install java 17.0.9-graalce
 - 通过命令行构建 GraalVM Native Image。
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native -DskipTests clean package
 ```
 
 3. 通过命令行启动 Native Image, 需要带上 4 个参数。
@@ -97,7 +97,7 @@ sdk install java 17.0.9-graalce
 4. 如果需要构建 Docker Image, 在添加存在 SPI 实现的依赖或第三方依赖后, 在命令行执行如下命令。
 
 ```shell
-./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native,docker.native -DskipTests clean package
+./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,docker.native -DskipTests clean package
 ```
 
 - 假设存在包含`server.yaml` 的 `conf` 文件夹为 `./custom/conf`，可通过如下的 `docker-compose.yml` 文件启动 GraalVM Native

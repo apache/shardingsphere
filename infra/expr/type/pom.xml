@@ -30,7 +30,6 @@
     <modules>
         <module>groovy</module>
         <module>literal</module>
-        <module>espresso</module>
         <module>interval</module>
     </modules>
 </project>
