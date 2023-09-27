@@ -14,7 +14,6 @@ All the built-in plugins for ShardingSphere-JDBC are listed below in the form of
 - `org.apache.shardingsphere:shardingsphere-cluster-mode-core`, the persistent definition core of cluster mode configuration information
 - `org.apache.shardingsphere:shardingsphere-db-discovery-core`, high availability core
 - `org.apache.shardingsphere:shardingsphere-encrypt-core`, data encryption core
-- `org.apache.shardingsphere:shardingsphere-encrypt-sm`, the SM encrypt algorithm.
 - `org.apache.shardingsphere:shardingsphere-infra-context`, the kernel operation and metadata refresh mechanism of Context
 - `org.apache.shardingsphere:shardingsphere-logging-core`, logging core
 - `org.apache.shardingsphere:shardingsphere-mask-core`, data masking core
@@ -51,3 +50,5 @@ All optional plugins are listed below in the form of `groupId:artifactId`.
   - `org.apache.shardingsphere:shardingsphere-transaction-xa-narayana`, XA distributed transaction manager based on Narayana
 - SQL translator
   - `org.apache.shardingsphere:shardingsphere-sql-translator-jooq-provider`, JooQ SQL translator
+
+In addition to the above optional plugins, ShardingSphere community developers have contributed a number of plugin implementations. These plugins can be found in [ShardingSphere Plugins] (https://github.com/apache/shardingsphere-plugin) repository. Plugins in ShardingSphere Plugin repository would remain the same release plan with ShardingSphere, they can be retrieved at https://central.sonatype.com/, and install into ShardingSphere.

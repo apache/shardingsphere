@@ -38,3 +38,5 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
   - `org.apache.shardingsphere:shardingsphere-transaction-xa-narayana`，基于 Narayana 的 XA 分布式事务管理器
 - SQL 翻译
   - `org.apache.shardingsphere:shardingsphere-sql-translator-jooq-provider`，使用 JooQ 的 SQL 翻译器
+
+除了以上可选插件外，ShardingSphere 社区开发者还贡献了大量的插件实现，可以在 [ShardingSphere Plugin](https://github.com/apache/shardingsphere-plugin) 仓库中查看插件的使用说明，ShardingSphere Plugin 仓库中的插件会和 ShardingSphere 保持相同的发布节奏，可以在 https://central.sonatype.com/ 进行检索，并安装到 ShardingSphere 中。
