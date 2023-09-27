@@ -276,11 +276,10 @@ public final class ConfigurationContextManager {
     public Map<String, ShardingSphereDatabase> renewDatabase(final ShardingSphereDatabase database, final SwitchingResource resource) {
         Map<StorageNode, DataSource> newStorageNodes = getNewStorageNodes(database.getResourceMetaData().getDataSourceMap(), resource);
         Map<String, StorageUnitNodeMapper> newStorageUnitNodeMappers = getNewStorageUnitNodeMappers(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits(), resource);
-        StorageResource newStorageResource = new StorageResource(newStorageNodes, newStorageUnitNodeMappers);
         Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
-        return Collections.singletonMap(database.getName().toLowerCase(), new ShardingSphereDatabase(
-                database.getName(), database.getProtocolType(), new ResourceMetaData(database.getName(), newStorageResource, propsMap), database.getRuleMetaData(), database.getSchemas()));
+        return Collections.singletonMap(database.getName().toLowerCase(), new ShardingSphereDatabase(database.getName(), database.getProtocolType(),
+                new ResourceMetaData(database.getName(), newStorageNodes, newStorageUnitNodeMappers, propsMap), database.getRuleMetaData(), database.getSchemas()));
     }
     
     private Map<StorageNode, DataSource> getNewStorageNodes(final Map<StorageNode, DataSource> currentStorageNodes, final SwitchingResource resource) {

@@ -53,16 +53,34 @@ public final class StorageResourceCreator {
         Map<String, StorageUnitNodeMapper> mappers = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             String storageUnitName = entry.getKey();
-            Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
-            String url = standardProps.get("url").toString();
-            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-            StorageNode storageNode = new StorageNode(getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable));
-            if (!storageNodes.containsKey(storageNode)) {
-                storageNodes.put(storageNode, DataSourcePoolCreator.create(storageUnitName, entry.getValue(), true, storageNodes.values()));
-            }
-            mappers.put(storageUnitName, getStorageUnitNodeMapper(storageNode, storageUnitName, url, isInstanceConnectionAvailable));
+            StorageUnitNodeMapper mapper = getStorageUnitNodeMapper(storageUnitName, entry.getValue());
+            mappers.put(storageUnitName, mapper);
+            storageNodes.computeIfAbsent(mapper.getStorageNode(), key -> DataSourcePoolCreator.create(storageUnitName, entry.getValue(), true, storageNodes.values()));
         }
         return new StorageResource(storageNodes, mappers);
+    }
+    
+    /**
+     * Get storage unit node mappers.
+     *
+     * @param propsMap data source pool properties map
+     * @return storage unit node mappers
+     */
+    public static Map<String, StorageUnitNodeMapper> getStorageUnitNodeMappers(final Map<String, DataSourcePoolProperties> propsMap) {
+        Map<String, StorageUnitNodeMapper> result = new LinkedHashMap<>();
+        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
+            String storageUnitName = entry.getKey();
+            result.put(storageUnitName, getStorageUnitNodeMapper(storageUnitName, entry.getValue()));
+        }
+        return result;
+    }
+    
+    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final String storageUnitName, final DataSourcePoolProperties props) {
+        Map<String, Object> standardProps = props.getConnectionPropertySynonyms().getStandardProperties();
+        String url = standardProps.get("url").toString();
+        boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
+        StorageNode storageNode = new StorageNode(getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable));
+        return createStorageUnitNodeMapper(storageNode, storageUnitName, url, isInstanceConnectionAvailable);
     }
     
     private static String getStorageNodeName(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
@@ -78,33 +96,10 @@ public final class StorageResourceCreator {
         return String.format("%s_%s_%s", hostname, port, username);
     }
     
-    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final StorageNode storageNode, final String storageUnitName, final String url, final boolean isInstanceConnectionAvailable) {
+    private static StorageUnitNodeMapper createStorageUnitNodeMapper(final StorageNode storageNode, final String storageUnitName, final String url, final boolean isInstanceConnectionAvailable) {
         return isInstanceConnectionAvailable
                 ? new StorageUnitNodeMapper(storageUnitName, storageNode, new StandardJdbcUrlParser().parse(url).getDatabase(), url)
                 : new StorageUnitNodeMapper(storageUnitName, storageNode, url);
-    }
-    
-    /**
-     * Create storage resource without data source.
-     *
-     * @param propsMap data source pool properties map
-     * @return created storage resource
-     */
-    public static StorageResource createStorageResourceWithoutDataSource(final Map<String, DataSourcePoolProperties> propsMap) {
-        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
-        Map<String, StorageUnitNodeMapper> mappers = new LinkedHashMap<>();
-        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            String storageUnitName = entry.getKey();
-            Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
-            String url = standardProps.get("url").toString();
-            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-            StorageNode storageNode = new StorageNode(getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable));
-            if (!storageNodes.containsKey(storageNode)) {
-                storageNodes.put(storageNode, null);
-            }
-            mappers.put(storageUnitName, getStorageUnitNodeMapper(storageNode, storageUnitName, url, isInstanceConnectionAvailable));
-        }
-        return new StorageResource(storageNodes, mappers);
     }
     
     /**
