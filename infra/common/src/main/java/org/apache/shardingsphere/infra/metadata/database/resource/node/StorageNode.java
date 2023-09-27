@@ -25,7 +25,7 @@ import lombok.Getter;
 @Getter
 public final class StorageNode {
     
-    private final StorageNodeIdentifier name;
+    private final StorageNodeName name;
     
     private final String url;
     
@@ -36,7 +36,7 @@ public final class StorageNode {
     }
     
     public StorageNode(final String name, final String url, final String catalog) {
-        this.name = new StorageNodeIdentifier(name);
+        this.name = new StorageNodeName(name);
         this.url = url;
         this.catalog = catalog;
     }

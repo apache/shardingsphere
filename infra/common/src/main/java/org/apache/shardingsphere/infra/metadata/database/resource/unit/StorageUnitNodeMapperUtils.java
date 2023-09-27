@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeIdentifier;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -106,14 +106,14 @@ public final class StorageUnitNodeMapperUtils {
      * @param storageUnitDataSourcePoolProps storage unit grouped data source pool properties map
      * @return storage node grouped data source pool properties map
      */
-    public static Map<StorageNodeIdentifier, DataSourcePoolProperties> getStorageNodeDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
-        Map<StorageNodeIdentifier, DataSourcePoolProperties> result = new LinkedHashMap<>();
+    public static Map<StorageNodeName, DataSourcePoolProperties> getStorageNodeDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
+        Map<StorageNodeName, DataSourcePoolProperties> result = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : storageUnitDataSourcePoolProps.entrySet()) {
             Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
             String url = standardProps.get("url").toString();
             boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-            StorageNodeIdentifier storageNodeIdentifier = new StorageNodeIdentifier(getStorageNodeName(entry.getKey(), url, standardProps.get("username").toString(), isInstanceConnectionAvailable));
-            result.putIfAbsent(storageNodeIdentifier, entry.getValue());
+            StorageNodeName storageNodeName = new StorageNodeName(getStorageNodeName(entry.getKey(), url, standardProps.get("username").toString(), isInstanceConnectionAvailable));
+            result.putIfAbsent(storageNodeName, entry.getValue());
         }
         return result;
     }

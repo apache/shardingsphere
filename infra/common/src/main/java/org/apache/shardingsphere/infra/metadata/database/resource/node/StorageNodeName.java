@@ -22,17 +22,17 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Storage node identifier.
+ * Storage node name.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StorageNodeIdentifier {
+public final class StorageNodeName {
     
     private final String name;
     
     @Override
     public boolean equals(final Object obj) {
-        return obj instanceof StorageNodeIdentifier && ((StorageNodeIdentifier) obj).name.equalsIgnoreCase(name);
+        return obj instanceof StorageNodeName && ((StorageNodeName) obj).name.equalsIgnoreCase(name);
     }
     
     @Override

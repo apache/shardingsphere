@@ -38,8 +38,8 @@ public final class StorageNodeUtils {
      * @param dataSources data sources
      * @return storage node data sources
      */
-    public static Map<StorageNodeIdentifier, DataSource> getStorageNodeDataSources(final Map<String, DataSource> dataSources) {
+    public static Map<StorageNodeName, DataSource> getStorageNodeDataSources(final Map<String, DataSource> dataSources) {
         return dataSources.entrySet().stream().collect(
-                Collectors.toMap(entry -> new StorageNodeIdentifier(entry.getKey()), Entry::getValue, (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(dataSources.size(), 1F)));
+                Collectors.toMap(entry -> new StorageNodeName(entry.getKey()), Entry::getValue, (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(dataSources.size(), 1F)));
     }
 }

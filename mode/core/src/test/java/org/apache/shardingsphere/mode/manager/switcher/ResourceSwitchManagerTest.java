@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.switcher;
 
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeIdentifier;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.awaitility.Awaitility;
@@ -86,9 +86,9 @@ class ResourceSwitchManagerTest {
     
     private void assertNewDataSources(final SwitchingResource actual) {
         assertThat(actual.getNewStorageResource().getDataSourceMap().size(), is(3));
-        assertTrue(actual.getNewStorageResource().getDataSourceMap().containsKey(new StorageNodeIdentifier("not_change")));
-        assertTrue(actual.getNewStorageResource().getDataSourceMap().containsKey(new StorageNodeIdentifier("new")));
-        assertTrue(actual.getNewStorageResource().getDataSourceMap().containsKey(new StorageNodeIdentifier("replace")));
+        assertTrue(actual.getNewStorageResource().getDataSourceMap().containsKey(new StorageNodeName("not_change")));
+        assertTrue(actual.getNewStorageResource().getDataSourceMap().containsKey(new StorageNodeName("new")));
+        assertTrue(actual.getNewStorageResource().getDataSourceMap().containsKey(new StorageNodeName("replace")));
     }
     
     private void assertStaleDataSources(final Map<String, DataSource> originalDataSourceMap) {
