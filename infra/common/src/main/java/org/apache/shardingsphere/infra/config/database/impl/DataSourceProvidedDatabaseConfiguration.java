@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
-import org.apache.shardingsphere.infra.metadata.database.resource.StorageResourceUtils;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeUtils;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapperUtils;
 
 import javax.sql.DataSource;
@@ -49,7 +49,7 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
     
     public DataSourceProvidedDatabaseConfiguration(final Map<String, DataSource> dataSources, final Collection<RuleConfiguration> ruleConfigs) {
         this.ruleConfigurations = ruleConfigs;
-        storageResource = new StorageResource(StorageResourceUtils.getStorageNodeDataSources(dataSources), StorageUnitNodeMapperUtils.fromDataSources(dataSources));
+        storageResource = new StorageResource(StorageNodeUtils.getStorageNodeDataSources(dataSources), StorageUnitNodeMapperUtils.fromDataSources(dataSources));
         dataSourcePoolPropertiesMap = createDataSourcePoolPropertiesMap(dataSources);
     }
     

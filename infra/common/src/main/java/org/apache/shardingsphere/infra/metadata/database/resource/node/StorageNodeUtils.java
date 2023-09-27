@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.resource;
+package org.apache.shardingsphere.infra.metadata.database.resource.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -28,10 +27,10 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Storage resource utility class.
+ * Storage node utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StorageResourceUtils {
+public final class StorageNodeUtils {
     
     /**
      * Get storage node data sources.
