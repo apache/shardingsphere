@@ -21,10 +21,13 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.StorageResourceCreator;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -49,7 +52,16 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
         ruleConfigurations = ruleConfigs;
         dataSourcePoolPropertiesMap = dataSourceConfigs.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        storageResource = StorageResourceCreator.createStorageResource(dataSourcePoolPropertiesMap);
+        Map<String, StorageUnitNodeMapper> mappers = StorageResourceCreator.getStorageUnitNodeMappers(dataSourcePoolPropertiesMap);
+        storageResource = new StorageResource(getStorageNodeDataSourceMap(mappers), mappers);
+    }
+    
+    private Map<StorageNode, DataSource> getStorageNodeDataSourceMap(final Map<String, StorageUnitNodeMapper> mappers) {
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>(mappers.size(), 1F);
+        for (Entry<String, StorageUnitNodeMapper> entry : mappers.entrySet()) {
+            result.computeIfAbsent(entry.getValue().getStorageNode(), key -> DataSourcePoolCreator.create(entry.getKey(), dataSourcePoolPropertiesMap.get(entry.getKey()), true, result.values()));
+        }
+        return result;
     }
     
     @Override
