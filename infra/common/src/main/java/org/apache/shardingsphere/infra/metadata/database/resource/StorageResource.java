@@ -31,7 +31,7 @@ import java.util.Map.Entry;
  * Storage resource.
  */
 @Getter
-public class StorageResource {
+public final class StorageResource {
     
     private final Map<StorageNode, DataSource> dataSourceMap;
     

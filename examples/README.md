@@ -25,7 +25,7 @@ git clone https://github.com/apache/shardingsphere.git
 
 ## compile source code
 cd shardingsphere
-mvn clean install -Prelease
+./mvnw clean install -Prelease
 ```
 
 ## Module design

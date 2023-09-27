@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourceP
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -56,9 +57,10 @@ public final class ResourceMetaData {
                 StorageResourceUtils.getStorageUnitNodeMappers(dataSources));
     }
     
-    public ResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourcePoolProperties> propsMap) {
-        dataSourceMap = storageResource.getDataSourceMap();
-        storageUnitMetaData = new StorageUnitMetaData(databaseName, dataSourceMap, propsMap, storageResource.getStorageUnitNodeMappers());
+    public ResourceMetaData(final String databaseName, final Map<StorageNode, DataSource> dataSourceMap,
+                            final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final Map<String, DataSourcePoolProperties> propsMap) {
+        this.dataSourceMap = dataSourceMap;
+        storageUnitMetaData = new StorageUnitMetaData(databaseName, dataSourceMap, propsMap, storageUnitNodeMappers);
     }
     
     /**

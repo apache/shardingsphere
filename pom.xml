@@ -55,8 +55,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
-        <checkstyle.skip>true</checkstyle.skip>
-        <rat.skip>true</rat.skip>
         <shade.package>org.apache.shardingsphere.shade</shade.package>
         <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
         
@@ -95,7 +93,6 @@
         <curator.version>5.4.0</curator.version>
         <jetcd.version>0.7.5</jetcd.version>
         <grpc.version>1.51.0</grpc.version>
-        <apollo-client.version>1.9.0</apollo-client.version>
         
         <elasticjob.version>3.0.3</elasticjob.version>
         
@@ -113,8 +110,6 @@
         <hbase.client.version>1.7.1</hbase.client.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
-        <commons-dbcp2.version>2.9.0</commons-dbcp2.version>
-        <c3p0.version>0.9.5.5</c3p0.version>
         
         <junit.version>5.9.2</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
@@ -415,12 +410,6 @@
                 <artifactId>grpc-all</artifactId>
                 <version>${grpc.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.ctrip.framework.apollo</groupId>
-                <artifactId>apollo-client</artifactId>
-                <version>${apollo-client.version}</version>
-                <scope>provided</scope>
-            </dependency>
             
             <dependency>
                 <groupId>org.apache.shardingsphere.elasticjob</groupId>
@@ -531,18 +520,6 @@
                 <groupId>com.zaxxer</groupId>
                 <artifactId>HikariCP</artifactId>
                 <version>${hikari-cp.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-dbcp2</artifactId>
-                <version>${commons-dbcp2.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.mchange</groupId>
-                <artifactId>c3p0</artifactId>
-                <version>${c3p0.version}</version>
                 <scope>test</scope>
             </dependency>
             
@@ -874,119 +851,6 @@
                     </configuration>
                 </plugin>
                 
-                <!-- Check plugins -->
-                <plugin>
-                    <groupId>org.apache.rat</groupId>
-                    <artifactId>apache-rat-plugin</artifactId>
-                    <version>${apache-rat-plugin.version}</version>
-                    <configuration>
-                        <!--suppress MavenModelInspection -->
-                        <excludesFile>${maven.multiModuleProjectDirectory}/src/resources/rat.txt</excludesFile>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                            <phase>verify</phase>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>com.diffplug.spotless</groupId>
-                    <artifactId>spotless-maven-plugin</artifactId>
-                    <version>${spotless-maven-plugin.version}</version>
-                    <configuration>
-                        <java>
-                            <eclipse>
-                                <!--suppress MavenModelInspection -->
-                                <file>${maven.multiModuleProjectDirectory}/src/resources/spotless/java.xml</file>
-                            </eclipse>
-                            <licenseHeader>
-                                <!--suppress MavenModelInspection -->
-                                <file>${maven.multiModuleProjectDirectory}/src/resources/spotless/copyright.txt</file>
-                            </licenseHeader>
-                        </java>
-                        <pom>
-                            <sortPom>
-                                <encoding>UTF-8</encoding>
-                                <nrOfIndentSpace>4</nrOfIndentSpace>
-                                <keepBlankLines>true</keepBlankLines>
-                                <indentBlankLines>true</indentBlankLines>
-                                <indentSchemaLocation>false</indentSchemaLocation>
-                                <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
-                                <sortModules>false</sortModules>
-                                <sortExecutions>false</sortExecutions>
-                                <predefinedSortOrder>custom_1</predefinedSortOrder>
-                                <expandEmptyElements>false</expandEmptyElements>
-                                <sortProperties>false</sortProperties>
-                            </sortPom>
-                            <replace>
-                                <name>Leading blank line</name>
-                                <search>--&gt;
-&lt;project</search>
-                                <replacement>--&gt;
-
-&lt;project</replacement>
-                            </replace>
-                        </pom>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>${maven-checkstyle-plugin.version}</version>
-                    <configuration>
-                        <consoleOutput>true</consoleOutput>
-                        <failOnViolation>true</failOnViolation>
-                        <failsOnError>true</failsOnError>
-                        <violationSeverity>error</violationSeverity>
-                        <!--suppress MavenModelInspection -->
-                        <configLocation>${maven.multiModuleProjectDirectory}/src/resources/checkstyle.xml</configLocation>
-                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                        <excludes>**/autogen/**/*</excludes>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-pmd-plugin</artifactId>
-                    <version>${maven-pmd-plugin.version}</version>
-                    <configuration>
-                        <aggregate>true</aggregate>
-                        <targetJdk>${java.version}</targetJdk>
-                        <rulesets>
-                            <!--suppress MavenModelInspection -->
-                            <ruleset>${maven.multiModuleProjectDirectory}/src/resources/pmd.xml</ruleset>
-                        </rulesets>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>com.github.spotbugs</groupId>
-                    <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>${spotbugs-maven-plugin.version}</version>
-                    <configuration>
-                        <fork>false</fork>
-                        <failOnError>false</failOnError>
-                        <!--suppress MavenModelInspection -->
-                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/src/resources/spotbugs.xml</excludeFilterFile>
-                        <plugins>
-                            <plugin>
-                                <groupId>com.mebigfatguy.fb-contrib</groupId>
-                                <artifactId>fb-contrib</artifactId>
-                                <version>${fb-contrib.version}</version>
-                            </plugin>
-                            <plugin>
-                                <groupId>com.h3xstream.findsecbugs</groupId>
-                                <artifactId>findsecbugs-plugin</artifactId>
-                                <version>${findsecbugs.version}</version>
-                            </plugin>
-                        </plugins>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.sonarsource.scanner.maven</groupId>
-                    <artifactId>sonar-maven-plugin</artifactId>
-                    <version>${sonar-maven-plugin.version}</version>
-                </plugin>
-                
                 <!-- Report plugins -->
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
@@ -1043,43 +907,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            
-            <!-- Check plugins -->
-            <plugin>
-                <groupId>org.apache.rat</groupId>
-                <artifactId>apache-rat-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.diffplug.spotless</groupId>
-                <artifactId>spotless-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>apply</goal>
-                        </goals>
-                        <phase>compile</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>validate</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>validate</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-pmd-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
             </plugin>
         </plugins>
         
@@ -1288,6 +1115,165 @@
                                 <phase>package</phase>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>check</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <!-- Check plugins -->
+                        <plugin>
+                            <groupId>org.apache.rat</groupId>
+                            <artifactId>apache-rat-plugin</artifactId>
+                            <version>${apache-rat-plugin.version}</version>
+                            <configuration>
+                                <!--suppress MavenModelInspection -->
+                                <excludesFile>${maven.multiModuleProjectDirectory}/src/resources/rat.txt</excludesFile>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <goals>
+                                        <goal>check</goal>
+                                    </goals>
+                                    <phase>verify</phase>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <groupId>com.diffplug.spotless</groupId>
+                            <artifactId>spotless-maven-plugin</artifactId>
+                            <version>${spotless-maven-plugin.version}</version>
+                            <configuration>
+                                <java>
+                                    <eclipse>
+                                        <!--suppress MavenModelInspection -->
+                                        <file>${maven.multiModuleProjectDirectory}/src/resources/spotless/java.xml</file>
+                                    </eclipse>
+                                    <licenseHeader>
+                                        <!--suppress MavenModelInspection -->
+                                        <file>${maven.multiModuleProjectDirectory}/src/resources/spotless/copyright.txt</file>
+                                    </licenseHeader>
+                                </java>
+                                <pom>
+                                    <sortPom>
+                                        <encoding>UTF-8</encoding>
+                                        <nrOfIndentSpace>4</nrOfIndentSpace>
+                                        <keepBlankLines>true</keepBlankLines>
+                                        <indentBlankLines>true</indentBlankLines>
+                                        <indentSchemaLocation>false</indentSchemaLocation>
+                                        <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+                                        <sortModules>false</sortModules>
+                                        <sortExecutions>false</sortExecutions>
+                                        <predefinedSortOrder>custom_1</predefinedSortOrder>
+                                        <expandEmptyElements>false</expandEmptyElements>
+                                        <sortProperties>false</sortProperties>
+                                    </sortPom>
+                                    <replace>
+                                        <name>Leading blank line</name>
+                                        <search>--&gt;
+&lt;project</search>
+                                        <replacement>--&gt;
+
+&lt;project</replacement>
+                                    </replace>
+                                </pom>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <artifactId>maven-checkstyle-plugin</artifactId>
+                            <version>${maven-checkstyle-plugin.version}</version>
+                            <configuration>
+                                <consoleOutput>true</consoleOutput>
+                                <failOnViolation>true</failOnViolation>
+                                <failsOnError>true</failsOnError>
+                                <violationSeverity>error</violationSeverity>
+                                <!--suppress MavenModelInspection -->
+                                <configLocation>${maven.multiModuleProjectDirectory}/src/resources/checkstyle.xml</configLocation>
+                                <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                                <excludes>**/autogen/**/*</excludes>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <artifactId>maven-pmd-plugin</artifactId>
+                            <version>${maven-pmd-plugin.version}</version>
+                            <configuration>
+                                <aggregate>true</aggregate>
+                                <targetJdk>${java.version}</targetJdk>
+                                <rulesets>
+                                    <!--suppress MavenModelInspection -->
+                                    <ruleset>${maven.multiModuleProjectDirectory}/src/resources/pmd.xml</ruleset>
+                                </rulesets>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>com.github.spotbugs</groupId>
+                            <artifactId>spotbugs-maven-plugin</artifactId>
+                            <version>${spotbugs-maven-plugin.version}</version>
+                            <configuration>
+                                <fork>false</fork>
+                                <failOnError>false</failOnError>
+                                <!--suppress MavenModelInspection -->
+                                <excludeFilterFile>${maven.multiModuleProjectDirectory}/src/resources/spotbugs.xml</excludeFilterFile>
+                                <plugins>
+                                    <plugin>
+                                        <groupId>com.mebigfatguy.fb-contrib</groupId>
+                                        <artifactId>fb-contrib</artifactId>
+                                        <version>${fb-contrib.version}</version>
+                                    </plugin>
+                                    <plugin>
+                                        <groupId>com.h3xstream.findsecbugs</groupId>
+                                        <artifactId>findsecbugs-plugin</artifactId>
+                                        <version>${findsecbugs.version}</version>
+                                    </plugin>
+                                </plugins>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.sonarsource.scanner.maven</groupId>
+                            <artifactId>sonar-maven-plugin</artifactId>
+                            <version>${sonar-maven-plugin.version}</version>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+                <plugins>
+                    <!-- Check plugins -->
+                    <plugin>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.diffplug.spotless</groupId>
+                        <artifactId>spotless-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>apply</goal>
+                                </goals>
+                                <phase>compile</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>validate</id>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <phase>validate</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.github.spotbugs</groupId>
+                        <artifactId>spotbugs-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>
