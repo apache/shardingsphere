@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.resource;
+package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,19 +26,16 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Storage resource creator.
+ * Storage unit node mapper utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StorageResourceCreator {
+public final class StorageUnitNodeMapperUtils {
     
     /**
      * Get storage unit node mappers.
@@ -90,15 +87,12 @@ public final class StorageResourceCreator {
      */
     public static Map<StorageNode, DataSourcePoolProperties> getStorageNodeDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
         Map<StorageNode, DataSourcePoolProperties> result = new LinkedHashMap<>();
-        Collection<StorageNode> storageNodes = new HashSet<>();
         for (Entry<String, DataSourcePoolProperties> entry : storageUnitDataSourcePoolProps.entrySet()) {
             Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
             String url = standardProps.get("url").toString();
             boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
             StorageNode storageNode = new StorageNode(getStorageNodeName(entry.getKey(), url, standardProps.get("username").toString(), isInstanceConnectionAvailable));
-            if (storageNodes.add(storageNode)) {
-                result.put(storageNode, entry.getValue());
-            }
+            result.putIfAbsent(storageNode, entry.getValue());
         }
         return result;
     }
