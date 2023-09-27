@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
-import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -39,23 +38,5 @@ public final class StorageUnitNodeMapper {
     
     public StorageUnitNodeMapper(final String name, final StorageNode storageNode, final String url) {
         this(name, storageNode, url, null);
-    }
-    
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj instanceof StorageUnitNodeMapper) {
-            StorageUnitNodeMapper mapper = (StorageUnitNodeMapper) obj;
-            return mapper.name.equalsIgnoreCase(name) && mapper.storageNode.equals(storageNode) && isSameCatalog(mapper);
-        }
-        return false;
-    }
-    
-    private boolean isSameCatalog(final StorageUnitNodeMapper mapper) {
-        return null == catalog && null == mapper.getCatalog() || null != catalog && catalog.equalsIgnoreCase(mapper.getCatalog());
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(name.toUpperCase(), storageNode.getName().toUpperCase(), null == catalog ? null : catalog.toUpperCase());
     }
 }
