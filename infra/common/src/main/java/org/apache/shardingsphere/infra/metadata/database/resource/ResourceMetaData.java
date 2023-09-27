@@ -20,9 +20,8 @@ package org.apache.shardingsphere.infra.metadata.database.resource;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
@@ -111,14 +110,5 @@ public final class ResourceMetaData {
      */
     public Collection<String> getNotExistedDataSources(final Collection<String> resourceNames) {
         return resourceNames.stream().filter(each -> !storageUnitMetaData.getStorageUnits().containsKey(each)).collect(Collectors.toSet());
-    }
-    
-    /**
-     * Close data source.
-     *
-     * @param dataSource data source to be closed
-     */
-    public void close(final DataSource dataSource) {
-        new DataSourcePoolDestroyer(dataSource).asyncDestroy();
     }
 }
