@@ -24,12 +24,15 @@ import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcU
 import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 
+import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Storage unit node mapper utility class.
@@ -38,21 +41,38 @@ import java.util.Map.Entry;
 public final class StorageUnitNodeMapperUtils {
     
     /**
-     * Get storage unit node mappers.
+     * Get storage unit node mappers from data sources.
+     *
+     * @param dataSources data sources
+     * @return storage unit node mappers
+     */
+    public static Map<String, StorageUnitNodeMapper> fromDataSources(final Map<String, DataSource> dataSources) {
+        return dataSources.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> fromDataSource(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
+    }
+    
+    private static StorageUnitNodeMapper fromDataSource(final String storageUnitName, final DataSource dataSource) {
+        DataSourcePoolProperties props = DataSourcePoolPropertiesCreator.create(dataSource);
+        String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
+        return new StorageUnitNodeMapper(storageUnitName, new StorageNode(storageUnitName), url);
+    }
+    
+    /**
+     * Get storage unit node mappers from data source pool properties.
      *
      * @param propsMap data source pool properties map
      * @return storage unit node mappers
      */
-    public static Map<String, StorageUnitNodeMapper> getStorageUnitNodeMappers(final Map<String, DataSourcePoolProperties> propsMap) {
+    public static Map<String, StorageUnitNodeMapper> fromDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> propsMap) {
         Map<String, StorageUnitNodeMapper> result = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             String storageUnitName = entry.getKey();
-            result.put(storageUnitName, getStorageUnitNodeMapper(storageUnitName, entry.getValue()));
+            result.put(storageUnitName, fromDataSourcePoolProperties(storageUnitName, entry.getValue()));
         }
         return result;
     }
     
-    private static StorageUnitNodeMapper getStorageUnitNodeMapper(final String storageUnitName, final DataSourcePoolProperties props) {
+    private static StorageUnitNodeMapper fromDataSourcePoolProperties(final String storageUnitName, final DataSourcePoolProperties props) {
         Map<String, Object> standardProps = props.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProps.get("url").toString();
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();

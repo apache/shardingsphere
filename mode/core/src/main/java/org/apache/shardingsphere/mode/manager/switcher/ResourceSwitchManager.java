@@ -51,7 +51,7 @@ public final class ResourceSwitchManager {
     public SwitchingResource create(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeChangedPropsMap) {
         Map<String, DataSourcePoolProperties> mergedPropsMap = new HashMap<>(resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap());
         mergedPropsMap.putAll(toBeChangedPropsMap);
-        Map<String, StorageUnitNodeMapper> toBeChangedMappers = StorageUnitNodeMapperUtils.getStorageUnitNodeMappers(toBeChangedPropsMap);
+        Map<String, StorageUnitNodeMapper> toBeChangedMappers = StorageUnitNodeMapperUtils.fromDataSourcePoolProperties(toBeChangedPropsMap);
         return new SwitchingResource(resourceMetaData, createNewStorageResource(resourceMetaData, toBeChangedMappers, toBeChangedPropsMap),
                 getStaleDataSources(resourceMetaData, toBeChangedMappers, mergedPropsMap), mergedPropsMap);
     }
@@ -66,7 +66,7 @@ public final class ResourceSwitchManager {
     public SwitchingResource createByDropResource(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeDeletedPropsMap) {
         Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new HashMap<>(resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap());
         mergedDataSourcePoolPropertiesMap.keySet().removeIf(toBeDeletedPropsMap::containsKey);
-        Map<String, StorageUnitNodeMapper> toRemovedMappers = StorageUnitNodeMapperUtils.getStorageUnitNodeMappers(toBeDeletedPropsMap);
+        Map<String, StorageUnitNodeMapper> toRemovedMappers = StorageUnitNodeMapperUtils.fromDataSourcePoolProperties(toBeDeletedPropsMap);
         return new SwitchingResource(resourceMetaData, new StorageResource(Collections.emptyMap(), Collections.emptyMap()),
                 getToBeRemovedStaleDataSources(resourceMetaData, toRemovedMappers), mergedDataSourcePoolPropertiesMap);
     }
@@ -82,7 +82,7 @@ public final class ResourceSwitchManager {
         Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new HashMap<>(resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap());
         mergedDataSourcePoolPropertiesMap.keySet().removeIf(each -> !toBeChangedPropsMap.containsKey(each));
         mergedDataSourcePoolPropertiesMap.putAll(toBeChangedPropsMap);
-        Map<String, StorageUnitNodeMapper> toBeChangedMappers = StorageUnitNodeMapperUtils.getStorageUnitNodeMappers(toBeChangedPropsMap);
+        Map<String, StorageUnitNodeMapper> toBeChangedMappers = StorageUnitNodeMapperUtils.fromDataSourcePoolProperties(toBeChangedPropsMap);
         StorageResource staleStorageResource = getStaleDataSources(resourceMetaData, toBeChangedMappers, toBeChangedPropsMap);
         Collection<StorageNode> toBeChangedStorageNodes = toBeChangedMappers.values().stream().map(StorageUnitNodeMapper::getStorageNode).collect(Collectors.toSet());
         staleStorageResource.getDataSourceMap().putAll(getToBeDeletedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageNodes));
