@@ -57,7 +57,7 @@ public final class NewResourceSwitchManager {
     
     private StorageResource getRegisterNewStorageResource(final ResourceMetaData resourceMetaData,
                                                           final Map<String, StorageUnitNodeMapper> mappers, final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
-        Collection<StorageNodeIdentifier> storageNodeIdentifiers = mappers.values().stream().map(StorageUnitNodeMapper::getStorageNodeIdentifier).collect(Collectors.toSet());
+        Collection<StorageNodeIdentifier> storageNodeIdentifiers = mappers.values().stream().map(each -> each.getStorageNode().getName()).collect(Collectors.toSet());
         Map<StorageNodeIdentifier, DataSourcePoolProperties> storageNodeDataSourcePoolProps = StorageUnitNodeMapperUtils.getStorageNodeDataSourcePoolProperties(storageUnitDataSourcePoolProps);
         Map<StorageNodeIdentifier, DataSource> newStorageNodes = new LinkedHashMap<>(storageNodeIdentifiers.size(), 1F);
         for (StorageNodeIdentifier each : storageNodeIdentifiers) {
@@ -84,7 +84,7 @@ public final class NewResourceSwitchManager {
     }
     
     private StorageResource getAlterNewStorageResource(final Map<String, StorageUnitNodeMapper> mappers, final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
-        Collection<StorageNodeIdentifier> toBeAlteredStorageNodeIdentifiers = mappers.values().stream().map(StorageUnitNodeMapper::getStorageNodeIdentifier).collect(Collectors.toSet());
+        Collection<StorageNodeIdentifier> toBeAlteredStorageNodeIdentifiers = mappers.values().stream().map(each -> each.getStorageNode().getName()).collect(Collectors.toSet());
         Map<StorageNodeIdentifier, DataSourcePoolProperties> storageNodeDataSourcePoolProps = StorageUnitNodeMapperUtils.getStorageNodeDataSourcePoolProperties(storageUnitDataSourcePoolProps);
         Map<StorageNodeIdentifier, DataSource> storageNodes = new LinkedHashMap<>(toBeAlteredStorageNodeIdentifiers.size(), 1F);
         for (StorageNodeIdentifier each : toBeAlteredStorageNodeIdentifiers) {
@@ -94,7 +94,7 @@ public final class NewResourceSwitchManager {
     }
     
     private StorageResource getStaleStorageResource(final ResourceMetaData resourceMetaData, final Map<String, StorageUnitNodeMapper> mappers) {
-        Collection<StorageNodeIdentifier> toBeAlteredStorageNodeIdentifiers = mappers.values().stream().map(StorageUnitNodeMapper::getStorageNodeIdentifier).collect(Collectors.toSet());
+        Collection<StorageNodeIdentifier> toBeAlteredStorageNodeIdentifiers = mappers.values().stream().map(each -> each.getStorageNode().getName()).collect(Collectors.toSet());
         Map<StorageNodeIdentifier, DataSource> storageNodes = new LinkedHashMap<>(toBeAlteredStorageNodeIdentifiers.size(), 1F);
         for (Entry<StorageNodeIdentifier, DataSource> entry : resourceMetaData.getDataSourceMap().entrySet()) {
             if (toBeAlteredStorageNodeIdentifiers.contains(entry.getKey())) {
@@ -123,8 +123,8 @@ public final class NewResourceSwitchManager {
         StorageUnitNodeMapper storageUnitNodeMapper = resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers().remove(storageUnitName);
         Map<String, StorageUnitNodeMapper> reservedStorageUnitNodeMappers = resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers();
         Map<StorageNodeIdentifier, DataSource> storageNodes = new LinkedHashMap<>(1, 1F);
-        if (reservedStorageUnitNodeMappers.values().stream().noneMatch(each -> each.getStorageNodeIdentifier().equals(storageUnitNodeMapper.getStorageNodeIdentifier()))) {
-            storageNodes.put(storageUnitNodeMapper.getStorageNodeIdentifier(), resourceMetaData.getDataSourceMap().get(storageUnitNodeMapper.getStorageNodeIdentifier()));
+        if (reservedStorageUnitNodeMappers.values().stream().noneMatch(each -> each.getStorageNode().equals(storageUnitNodeMapper.getStorageNode()))) {
+            storageNodes.put(storageUnitNodeMapper.getStorageNode().getName(), resourceMetaData.getDataSourceMap().get(storageUnitNodeMapper.getStorageNode().getName()));
         }
         return new StorageResource(storageNodes, Collections.singletonMap(storageUnitName, storageUnitNodeMapper));
     }

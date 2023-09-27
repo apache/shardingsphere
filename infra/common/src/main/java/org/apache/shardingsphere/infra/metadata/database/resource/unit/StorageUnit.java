@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeIdentifier;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 
@@ -63,9 +64,10 @@ public final class StorageUnit {
         connectionProperties = createConnectionProperties(enabledStorageNodeDataSources, unitNodeMapper, storageType).orElse(null);
     }
     
-    private DataSource getStorageUnitDataSource(final Map<StorageNodeIdentifier, DataSource> storageNodeDataSources, final StorageUnitNodeMapper unitNodeMapper) {
-        DataSource dataSource = storageNodeDataSources.get(unitNodeMapper.getStorageNodeIdentifier());
-        return new CatalogSwitchableDataSource(dataSource, unitNodeMapper.getCatalog(), unitNodeMapper.getUrl());
+    private DataSource getStorageUnitDataSource(final Map<StorageNodeIdentifier, DataSource> storageNodeDataSources, final StorageUnitNodeMapper mapper) {
+        StorageNode storageNode = mapper.getStorageNode();
+        DataSource dataSource = storageNodeDataSources.get(storageNode.getName());
+        return new CatalogSwitchableDataSource(dataSource, storageNode.getCatalog(), storageNode.getUrl());
     }
     
     private Map<StorageNodeIdentifier, DataSource> getEnabledStorageNodeDataSources(final String databaseName, final Map<StorageNodeIdentifier, DataSource> storageNodeDataSources) {
@@ -79,19 +81,20 @@ public final class StorageUnit {
     }
     
     private DatabaseType createStorageType(final Map<StorageNodeIdentifier, DataSource> enabledStorageNodeDataSources, final StorageUnitNodeMapper unitNodeMapper) {
-        return DatabaseTypeEngine.getStorageType(enabledStorageNodeDataSources.containsKey(unitNodeMapper.getStorageNodeIdentifier())
-                ? Collections.singleton(enabledStorageNodeDataSources.get(unitNodeMapper.getStorageNodeIdentifier()))
+        return DatabaseTypeEngine.getStorageType(enabledStorageNodeDataSources.containsKey(unitNodeMapper.getStorageNode().getName())
+                ? Collections.singleton(enabledStorageNodeDataSources.get(unitNodeMapper.getStorageNode().getName()))
                 : Collections.emptyList());
     }
     
     private Optional<ConnectionProperties> createConnectionProperties(final Map<StorageNodeIdentifier, DataSource> enabledStorageNodeDataSources,
-                                                                      final StorageUnitNodeMapper unitNodeMapper, final DatabaseType storageType) {
-        if (!enabledStorageNodeDataSources.containsKey(unitNodeMapper.getStorageNodeIdentifier())) {
+                                                                      final StorageUnitNodeMapper mapper, final DatabaseType storageType) {
+        StorageNode storageNode = mapper.getStorageNode();
+        if (!enabledStorageNodeDataSources.containsKey(storageNode.getName())) {
             return Optional.empty();
         }
         Map<String, Object> standardProps = DataSourcePoolPropertiesCreator.create(
-                enabledStorageNodeDataSources.get(unitNodeMapper.getStorageNodeIdentifier())).getConnectionPropertySynonyms().getStandardProperties();
+                enabledStorageNodeDataSources.get(storageNode.getName())).getConnectionPropertySynonyms().getStandardProperties();
         ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
-        return Optional.of(parser.parse(standardProps.get("url").toString(), standardProps.get("username").toString(), unitNodeMapper.getCatalog()));
+        return Optional.of(parser.parse(standardProps.get("url").toString(), standardProps.get("username").toString(), storageNode.getCatalog()));
     }
 }

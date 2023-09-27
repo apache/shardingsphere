@@ -15,20 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.resource.unit;
+package org.apache.shardingsphere.infra.metadata.database.resource.node;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 
 /**
- * Storage unit and node mapper.
+ * Storage node.
  */
-@RequiredArgsConstructor
 @Getter
-public final class StorageUnitNodeMapper {
+public final class StorageNode {
     
-    private final String name;
+    private final StorageNodeIdentifier name;
     
-    private final StorageNode storageNode;
+    private final String url;
+    
+    private final String catalog;
+    
+    public StorageNode(final String name, final String url) {
+        this(name, url, null);
+    }
+    
+    public StorageNode(final String name, final String url, final String catalog) {
+        this.name = new StorageNodeIdentifier(name);
+        this.url = url;
+        this.catalog = catalog;
+    }
 }

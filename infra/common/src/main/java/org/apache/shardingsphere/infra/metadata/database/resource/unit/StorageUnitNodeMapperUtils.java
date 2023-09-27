@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeIdentifier;
 
 import javax.sql.DataSource;
@@ -54,7 +55,7 @@ public final class StorageUnitNodeMapperUtils {
     private static StorageUnitNodeMapper fromDataSource(final String storageUnitName, final DataSource dataSource) {
         DataSourcePoolProperties props = DataSourcePoolPropertiesCreator.create(dataSource);
         String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        return new StorageUnitNodeMapper(storageUnitName, new StorageNodeIdentifier(storageUnitName), url);
+        return new StorageUnitNodeMapper(storageUnitName, new StorageNode(storageUnitName, url));
     }
     
     /**
@@ -76,8 +77,8 @@ public final class StorageUnitNodeMapperUtils {
         Map<String, Object> standardProps = props.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProps.get("url").toString();
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-        StorageNodeIdentifier storageNodeIdentifier = new StorageNodeIdentifier(getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable));
-        return createStorageUnitNodeMapper(storageNodeIdentifier, storageUnitName, url, isInstanceConnectionAvailable);
+        String storageNodeName = getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
+        return createStorageUnitNodeMapper(storageNodeName, storageUnitName, url, isInstanceConnectionAvailable);
     }
     
     private static String getStorageNodeName(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
@@ -93,11 +94,10 @@ public final class StorageUnitNodeMapperUtils {
         return String.format("%s_%s_%s", hostname, port, username);
     }
     
-    private static StorageUnitNodeMapper createStorageUnitNodeMapper(final StorageNodeIdentifier storageNodeIdentifier,
-                                                                     final String storageUnitName, final String url, final boolean isInstanceConnectionAvailable) {
+    private static StorageUnitNodeMapper createStorageUnitNodeMapper(final String storageNodeName, final String storageUnitName, final String url, final boolean isInstanceConnectionAvailable) {
         return isInstanceConnectionAvailable
-                ? new StorageUnitNodeMapper(storageUnitName, storageNodeIdentifier, url, new StandardJdbcUrlParser().parse(url).getDatabase())
-                : new StorageUnitNodeMapper(storageUnitName, storageNodeIdentifier, url);
+                ? new StorageUnitNodeMapper(storageUnitName, new StorageNode(storageNodeName, url, new StandardJdbcUrlParser().parse(url).getDatabase()))
+                : new StorageUnitNodeMapper(storageUnitName, new StorageNode(storageNodeName, url));
     }
     
     /**

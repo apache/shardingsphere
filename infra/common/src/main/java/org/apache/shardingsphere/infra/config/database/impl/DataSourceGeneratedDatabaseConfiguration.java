@@ -59,7 +59,7 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     private Map<StorageNodeIdentifier, DataSource> getStorageNodeDataSourceMap(final Map<String, StorageUnitNodeMapper> mappers) {
         Map<StorageNodeIdentifier, DataSource> result = new LinkedHashMap<>(mappers.size(), 1F);
         for (Entry<String, StorageUnitNodeMapper> entry : mappers.entrySet()) {
-            result.computeIfAbsent(entry.getValue().getStorageNodeIdentifier(),
+            result.computeIfAbsent(entry.getValue().getStorageNode().getName(),
                     key -> DataSourcePoolCreator.create(entry.getKey(), dataSourcePoolPropertiesMap.get(entry.getKey()), true, result.values()));
         }
         return result;

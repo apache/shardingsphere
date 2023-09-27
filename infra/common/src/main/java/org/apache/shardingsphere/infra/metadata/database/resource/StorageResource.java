@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeIdentifier;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
 
@@ -48,9 +49,10 @@ public final class StorageResource {
     private Map<String, DataSource> createWrappedDataSources() {
         Map<String, DataSource> result = new LinkedHashMap<>(storageUnitNodeMappers.size(), 1F);
         for (Entry<String, StorageUnitNodeMapper> entry : storageUnitNodeMappers.entrySet()) {
-            DataSource dataSource = dataSourceMap.get(entry.getValue().getStorageNodeIdentifier());
+            StorageNode storageNode = entry.getValue().getStorageNode();
+            DataSource dataSource = dataSourceMap.get(storageNode.getName());
             if (null != dataSource) {
-                result.put(entry.getKey(), new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));
+                result.put(entry.getKey(), new CatalogSwitchableDataSource(dataSource, storageNode.getCatalog(), storageNode.getUrl()));
             }
         }
         return result;
