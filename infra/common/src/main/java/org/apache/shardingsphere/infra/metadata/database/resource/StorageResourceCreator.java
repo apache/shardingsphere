@@ -24,12 +24,10 @@ import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcU
 import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -41,24 +39,6 @@ import java.util.Map.Entry;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StorageResourceCreator {
-    
-    /**
-     * Create storage resource.
-     *
-     * @param propsMap data source pool properties map
-     * @return created storage resource
-     */
-    public static StorageResource createStorageResource(final Map<String, DataSourcePoolProperties> propsMap) {
-        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>();
-        Map<String, StorageUnitNodeMapper> mappers = new LinkedHashMap<>();
-        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            String storageUnitName = entry.getKey();
-            StorageUnitNodeMapper mapper = getStorageUnitNodeMapper(storageUnitName, entry.getValue());
-            mappers.put(storageUnitName, mapper);
-            storageNodes.computeIfAbsent(mapper.getStorageNode(), key -> DataSourcePoolCreator.create(storageUnitName, entry.getValue(), true, storageNodes.values()));
-        }
-        return new StorageResource(storageNodes, mappers);
-    }
     
     /**
      * Get storage unit node mappers.
