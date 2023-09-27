@@ -95,7 +95,7 @@ public final class StorageUnitNodeMapperUtils {
     
     private static StorageUnitNodeMapper createStorageUnitNodeMapper(final StorageNode storageNode, final String storageUnitName, final String url, final boolean isInstanceConnectionAvailable) {
         return isInstanceConnectionAvailable
-                ? new StorageUnitNodeMapper(storageUnitName, storageNode, new StandardJdbcUrlParser().parse(url).getDatabase(), url)
+                ? new StorageUnitNodeMapper(storageUnitName, storageNode, url, new StandardJdbcUrlParser().parse(url).getDatabase())
                 : new StorageUnitNodeMapper(storageUnitName, storageNode, url);
     }
     
