@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -37,6 +38,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -69,14 +71,15 @@ class ShardingSphereMetaDataTest {
     @Test
     void assertDropDatabase() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        DataSource dataSource = new MockedDataSource();
+        MockedDataSource dataSource = new MockedDataSource();
         ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class);
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(new HashMap<>(Collections.singletonMap("foo_db", mockDatabase(resourceMetaData, dataSource, databaseResourceHeldRule))),
                 mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalResourceHeldRule)), new ConfigurationProperties(new Properties()));
         metaData.dropDatabase("foo_db");
         assertTrue(metaData.getDatabases().isEmpty());
-        verify(resourceMetaData).close(dataSource);
+        Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
+        assertTrue(dataSource.isClosed());
         verify(databaseResourceHeldRule).closeStaleResource("foo_db");
         verify(globalResourceHeldRule).closeStaleResource("foo_db");
     }
