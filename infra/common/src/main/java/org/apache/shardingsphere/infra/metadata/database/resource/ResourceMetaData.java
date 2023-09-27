@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropert
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeIdentifier;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeUtils;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 @Getter
 public final class ResourceMetaData {
     
-    private final Map<StorageNode, DataSource> dataSourceMap;
+    private final Map<StorageNodeIdentifier, DataSource> dataSourceMap;
     
     private final StorageUnitMetaData storageUnitMetaData;
     
@@ -54,7 +54,7 @@ public final class ResourceMetaData {
                 StorageUnitNodeMapperUtils.fromDataSources(dataSources));
     }
     
-    public ResourceMetaData(final String databaseName, final Map<StorageNode, DataSource> dataSourceMap,
+    public ResourceMetaData(final String databaseName, final Map<StorageNodeIdentifier, DataSource> dataSourceMap,
                             final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final Map<String, DataSourcePoolProperties> propsMap) {
         this.dataSourceMap = dataSourceMap;
         storageUnitMetaData = new StorageUnitMetaData(databaseName, dataSourceMap, propsMap, storageUnitNodeMappers);

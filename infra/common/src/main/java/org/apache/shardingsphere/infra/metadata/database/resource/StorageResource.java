@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeIdentifier;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
 
 import javax.sql.DataSource;
@@ -33,13 +33,13 @@ import java.util.Map.Entry;
 @Getter
 public final class StorageResource {
     
-    private final Map<StorageNode, DataSource> dataSourceMap;
+    private final Map<StorageNodeIdentifier, DataSource> dataSourceMap;
     
     private final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers;
     
     private final Map<String, DataSource> wrappedDataSources;
     
-    public StorageResource(final Map<StorageNode, DataSource> dataSourceMap, final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers) {
+    public StorageResource(final Map<StorageNodeIdentifier, DataSource> dataSourceMap, final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers) {
         this.dataSourceMap = dataSourceMap;
         this.storageUnitNodeMappers = storageUnitNodeMappers;
         wrappedDataSources = createWrappedDataSources();
@@ -48,7 +48,7 @@ public final class StorageResource {
     private Map<String, DataSource> createWrappedDataSources() {
         Map<String, DataSource> result = new LinkedHashMap<>(storageUnitNodeMappers.size(), 1F);
         for (Entry<String, StorageUnitNodeMapper> entry : storageUnitNodeMappers.entrySet()) {
-            DataSource dataSource = dataSourceMap.get(entry.getValue().getStorageNode());
+            DataSource dataSource = dataSourceMap.get(entry.getValue().getStorageNodeIdentifier());
             if (null != dataSource) {
                 result.put(entry.getKey(), new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl()));
             }

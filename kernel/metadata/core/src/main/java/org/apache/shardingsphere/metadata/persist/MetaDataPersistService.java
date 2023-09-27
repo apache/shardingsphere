@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolD
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeIdentifier;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
@@ -120,9 +120,9 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
         return databaseConfigs.getDataSourcePoolPropertiesMap();
     }
     
-    private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final Map<StorageNode, DataSource> storageNodeDataSources) {
+    private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final Map<StorageNodeIdentifier, DataSource> storageNodeDataSources) {
         Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(storageNodeDataSources.size(), 1F);
-        for (Entry<StorageNode, DataSource> entry : storageNodeDataSources.entrySet()) {
+        for (Entry<StorageNodeIdentifier, DataSource> entry : storageNodeDataSources.entrySet()) {
             result.put(entry.getKey().getName(), DataSourcePoolPropertiesCreator.create(entry.getValue()));
         }
         return result;

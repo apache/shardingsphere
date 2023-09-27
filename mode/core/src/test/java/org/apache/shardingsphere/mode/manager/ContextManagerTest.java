@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeUtils;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeIdentifier;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
@@ -245,7 +245,7 @@ class ContextManagerTest {
                 Collections.singletonMap("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), createProperties("test", "test"))));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnitMetaData().getStorageUnits().size(), is(3));
         assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")
-                .getResourceMetaData().getDataSourceMap().get(new StorageNode("foo_ds")));
+                .getResourceMetaData().getDataSourceMap().get(new StorageNodeIdentifier("foo_ds")));
     }
     
     private ResourceMetaData createOriginalResource() {
@@ -254,7 +254,7 @@ class ContextManagerTest {
         originalDataSources.put("ds_1", new MockedDataSource());
         originalDataSources.put("ds_2", new MockedDataSource());
         when(result.getStorageUnitMetaData().getDataSources()).thenReturn(originalDataSources);
-        Map<StorageNode, DataSource> storageNodeDataSourceMap = StorageNodeUtils.getStorageNodeDataSources(originalDataSources);
+        Map<StorageNodeIdentifier, DataSource> storageNodeDataSourceMap = StorageNodeUtils.getStorageNodeDataSources(originalDataSources);
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = StorageUnitNodeMapperUtils.fromDataSources(originalDataSources);
         for (Entry<String, StorageUnitNodeMapper> entry : storageUnitNodeMappers.entrySet()) {

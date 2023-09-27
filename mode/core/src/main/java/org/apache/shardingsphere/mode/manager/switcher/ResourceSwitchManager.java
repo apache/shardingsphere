@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapperUtils;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeIdentifier;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
 
@@ -84,8 +84,8 @@ public final class ResourceSwitchManager {
         mergedDataSourcePoolPropertiesMap.putAll(toBeChangedPropsMap);
         Map<String, StorageUnitNodeMapper> toBeChangedMappers = StorageUnitNodeMapperUtils.fromDataSourcePoolProperties(toBeChangedPropsMap);
         StorageResource staleStorageResource = getStaleDataSources(resourceMetaData, toBeChangedMappers, toBeChangedPropsMap);
-        Collection<StorageNode> toBeChangedStorageNodes = toBeChangedMappers.values().stream().map(StorageUnitNodeMapper::getStorageNode).collect(Collectors.toSet());
-        staleStorageResource.getDataSourceMap().putAll(getToBeDeletedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageNodes));
+        Collection<StorageNodeIdentifier> toBeChangedStorageNodeIdentifiers = toBeChangedMappers.values().stream().map(StorageUnitNodeMapper::getStorageNodeIdentifier).collect(Collectors.toSet());
+        staleStorageResource.getDataSourceMap().putAll(getToBeDeletedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageNodeIdentifiers));
         staleStorageResource.getStorageUnitNodeMappers().putAll(
                 getToBeDeletedStorageUnitNodeMappers(resourceMetaData.getStorageUnitMetaData().getStorageUnits(), toBeChangedMappers.keySet()));
         return new SwitchingResource(resourceMetaData,
@@ -94,20 +94,20 @@ public final class ResourceSwitchManager {
     
     private StorageResource createNewStorageResource(final ResourceMetaData resourceMetaData,
                                                      final Map<String, StorageUnitNodeMapper> toBeChangedMappers, final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
-        Collection<StorageNode> toBeChangedStorageNode = toBeChangedMappers.values().stream().map(StorageUnitNodeMapper::getStorageNode).collect(Collectors.toSet());
-        Map<StorageNode, DataSourcePoolProperties> storageNodeDataSourcePoolProps = StorageUnitNodeMapperUtils.getStorageNodeDataSourcePoolProperties(storageUnitDataSourcePoolProps);
-        Map<StorageNode, DataSource> storageNodes =
-                getNewStorageNodes(resourceMetaData, toBeChangedStorageNode, storageNodeDataSourcePoolProps);
+        Collection<StorageNodeIdentifier> toBeChangedStorageNodeIdentifier = toBeChangedMappers.values().stream().map(StorageUnitNodeMapper::getStorageNodeIdentifier).collect(Collectors.toSet());
+        Map<StorageNodeIdentifier, DataSourcePoolProperties> storageNodeDataSourcePoolProps = StorageUnitNodeMapperUtils.getStorageNodeDataSourcePoolProperties(storageUnitDataSourcePoolProps);
+        Map<StorageNodeIdentifier, DataSource> storageNodes =
+                getNewStorageNodes(resourceMetaData, toBeChangedStorageNodeIdentifier, storageNodeDataSourcePoolProps);
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = getNewStorageUnitNodeMappers(resourceMetaData, toBeChangedMappers);
         return new StorageResource(storageNodes, storageUnitNodeMappers);
     }
     
-    private Map<StorageNode, DataSource> getNewStorageNodes(final ResourceMetaData resourceMetaData, final Collection<StorageNode> toBeChangedStorageNode,
-                                                            final Map<StorageNode, DataSourcePoolProperties> propsMap) {
-        Map<StorageNode, DataSource> result = new LinkedHashMap<>(resourceMetaData.getDataSourceMap());
-        result.keySet().removeAll(getToBeDeletedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageNode).keySet());
-        result.putAll(getChangedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageNode, propsMap));
-        result.putAll(getToBeAddedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageNode, propsMap));
+    private Map<StorageNodeIdentifier, DataSource> getNewStorageNodes(final ResourceMetaData resourceMetaData, final Collection<StorageNodeIdentifier> toBeChangedStorageNodeIdentifier,
+                                                                      final Map<StorageNodeIdentifier, DataSourcePoolProperties> propsMap) {
+        Map<StorageNodeIdentifier, DataSource> result = new LinkedHashMap<>(resourceMetaData.getDataSourceMap());
+        result.keySet().removeAll(getToBeDeletedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageNodeIdentifier).keySet());
+        result.putAll(getChangedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageNodeIdentifier, propsMap));
+        result.putAll(getToBeAddedDataSources(resourceMetaData.getDataSourceMap(), toBeChangedStorageNodeIdentifier, propsMap));
         return result;
     }
     
@@ -119,26 +119,29 @@ public final class ResourceSwitchManager {
         return result;
     }
     
-    private Map<StorageNode, DataSource> getChangedDataSources(final Map<StorageNode, DataSource> storageNodes,
-                                                               final Collection<StorageNode> toBeChangedStorageNode, final Map<StorageNode, DataSourcePoolProperties> propsMap) {
-        Collection<StorageNode> toBeChangedDataSourceNames = toBeChangedStorageNode.stream()
+    private Map<StorageNodeIdentifier, DataSource> getChangedDataSources(final Map<StorageNodeIdentifier, DataSource> storageNodes,
+                                                                         final Collection<StorageNodeIdentifier> toBeChangedStorageNodeIdentifier,
+                                                                         final Map<StorageNodeIdentifier, DataSourcePoolProperties> propsMap) {
+        Collection<StorageNodeIdentifier> toBeChangedDataSourceNames = toBeChangedStorageNodeIdentifier.stream()
                 .filter(each -> isModifiedDataSource(storageNodes, each, propsMap.get(each))).collect(Collectors.toList());
-        Map<StorageNode, DataSource> result = new LinkedHashMap<>(toBeChangedStorageNode.size(), 1F);
-        for (StorageNode each : toBeChangedDataSourceNames) {
+        Map<StorageNodeIdentifier, DataSource> result = new LinkedHashMap<>(toBeChangedStorageNodeIdentifier.size(), 1F);
+        for (StorageNodeIdentifier each : toBeChangedDataSourceNames) {
             result.put(each, DataSourcePoolCreator.create(propsMap.get(each)));
         }
         return result;
     }
     
-    private boolean isModifiedDataSource(final Map<StorageNode, DataSource> originalDataSources, final StorageNode storageNode, final DataSourcePoolProperties propsMap) {
-        return originalDataSources.containsKey(storageNode) && !propsMap.equals(DataSourcePoolPropertiesCreator.create(originalDataSources.get(storageNode)));
+    private boolean isModifiedDataSource(final Map<StorageNodeIdentifier, DataSource> originalDataSources,
+                                         final StorageNodeIdentifier storageNodeIdentifier, final DataSourcePoolProperties propsMap) {
+        return originalDataSources.containsKey(storageNodeIdentifier) && !propsMap.equals(DataSourcePoolPropertiesCreator.create(originalDataSources.get(storageNodeIdentifier)));
     }
     
-    private Map<StorageNode, DataSource> getToBeAddedDataSources(final Map<StorageNode, DataSource> storageNodes, final Collection<StorageNode> toBeChangedStorageNode,
-                                                                 final Map<StorageNode, DataSourcePoolProperties> propsMap) {
-        Collection<StorageNode> toBeAddedDataSourceNames = toBeChangedStorageNode.stream().filter(each -> !storageNodes.containsKey(each)).collect(Collectors.toList());
-        Map<StorageNode, DataSource> result = new LinkedHashMap<>();
-        for (StorageNode each : toBeAddedDataSourceNames) {
+    private Map<StorageNodeIdentifier, DataSource> getToBeAddedDataSources(final Map<StorageNodeIdentifier, DataSource> storageNodes,
+                                                                           final Collection<StorageNodeIdentifier> toBeChangedStorageNodeIdentifier,
+                                                                           final Map<StorageNodeIdentifier, DataSourcePoolProperties> propsMap) {
+        Collection<StorageNodeIdentifier> toBeAddedDataSourceNames = toBeChangedStorageNodeIdentifier.stream().filter(each -> !storageNodes.containsKey(each)).collect(Collectors.toList());
+        Map<StorageNodeIdentifier, DataSource> result = new LinkedHashMap<>();
+        for (StorageNodeIdentifier each : toBeAddedDataSourceNames) {
             result.put(each, DataSourcePoolCreator.create(propsMap.get(each)));
         }
         return result;
@@ -148,10 +151,10 @@ public final class ResourceSwitchManager {
         Map<String, StorageUnitNodeMapper> reservedStorageUnitNodeMappers = resourceMetaData.getStorageUnitMetaData().getStorageUnits().entrySet().stream()
                 .filter(entry -> !toRemovedMappers.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getUnitNodeMapper()));
-        Collection<StorageNode> toBeRemovedStorageNodes = toRemovedMappers.values().stream().map(StorageUnitNodeMapper::getStorageNode).collect(Collectors.toSet());
-        Collection<StorageNode> inUsedDataSourceNames = reservedStorageUnitNodeMappers.values().stream().map(StorageUnitNodeMapper::getStorageNode).collect(Collectors.toSet());
-        Map<StorageNode, DataSource> staleStorageNodes = resourceMetaData.getDataSourceMap().entrySet().stream()
-                .filter(entry -> toBeRemovedStorageNodes.contains(entry.getKey()) && !inUsedDataSourceNames.contains(entry.getKey()))
+        Collection<StorageNodeIdentifier> toBeRemovedStorageNodeIdentifiers = toRemovedMappers.values().stream().map(StorageUnitNodeMapper::getStorageNodeIdentifier).collect(Collectors.toSet());
+        Collection<StorageNodeIdentifier> inUsedDataSourceNames = reservedStorageUnitNodeMappers.values().stream().map(StorageUnitNodeMapper::getStorageNodeIdentifier).collect(Collectors.toSet());
+        Map<StorageNodeIdentifier, DataSource> staleStorageNodes = resourceMetaData.getDataSourceMap().entrySet().stream()
+                .filter(entry -> toBeRemovedStorageNodeIdentifiers.contains(entry.getKey()) && !inUsedDataSourceNames.contains(entry.getKey()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
         Map<String, StorageUnitNodeMapper> staleStorageUnitNodeMappers = resourceMetaData.getStorageUnitMetaData().getStorageUnits().entrySet().stream()
                 .filter(entry -> !reservedStorageUnitNodeMappers.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getUnitNodeMapper()));
@@ -160,27 +163,29 @@ public final class ResourceSwitchManager {
     
     private StorageResource getStaleDataSources(final ResourceMetaData resourceMetaData, final Map<String, StorageUnitNodeMapper> toBeChangedMappers,
                                                 final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
-        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(resourceMetaData.getDataSourceMap().size(), 1F);
+        Map<StorageNodeIdentifier, DataSource> storageNodes = new LinkedHashMap<>(resourceMetaData.getDataSourceMap().size(), 1F);
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaData().getUnitNodeMappers().size(), 1F);
         storageNodes.putAll(getToBeChangedDataSources(resourceMetaData.getDataSourceMap(), StorageUnitNodeMapperUtils.getStorageNodeDataSourcePoolProperties(storageUnitDataSourcePoolProps)));
         storageUnitNodeMappers.putAll(getChangedStorageUnitNodeMappers(resourceMetaData.getStorageUnitMetaData().getStorageUnits(), toBeChangedMappers));
         return new StorageResource(storageNodes, storageUnitNodeMappers);
     }
     
-    private Map<StorageNode, DataSource> getToBeChangedDataSources(final Map<StorageNode, DataSource> storageNodes, final Map<StorageNode, DataSourcePoolProperties> propsMap) {
-        Map<StorageNode, DataSource> result = new LinkedHashMap<>(storageNodes.size(), 1F);
-        for (Entry<StorageNode, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            StorageNode storageNode = entry.getKey();
-            if (isModifiedDataSource(storageNodes, storageNode, entry.getValue())) {
-                result.put(storageNode, storageNodes.get(storageNode));
+    private Map<StorageNodeIdentifier, DataSource> getToBeChangedDataSources(final Map<StorageNodeIdentifier, DataSource> storageNodes,
+                                                                             final Map<StorageNodeIdentifier, DataSourcePoolProperties> propsMap) {
+        Map<StorageNodeIdentifier, DataSource> result = new LinkedHashMap<>(storageNodes.size(), 1F);
+        for (Entry<StorageNodeIdentifier, DataSourcePoolProperties> entry : propsMap.entrySet()) {
+            StorageNodeIdentifier storageNodeIdentifier = entry.getKey();
+            if (isModifiedDataSource(storageNodes, storageNodeIdentifier, entry.getValue())) {
+                result.put(storageNodeIdentifier, storageNodes.get(storageNodeIdentifier));
             }
         }
         return result;
     }
     
-    private Map<StorageNode, DataSource> getToBeDeletedDataSources(final Map<StorageNode, DataSource> storageNodes, final Collection<StorageNode> toBeChangedDataSourceNames) {
-        Map<StorageNode, DataSource> result = new LinkedHashMap<>(storageNodes.size(), 1F);
-        for (Entry<StorageNode, DataSource> entry : storageNodes.entrySet()) {
+    private Map<StorageNodeIdentifier, DataSource> getToBeDeletedDataSources(final Map<StorageNodeIdentifier, DataSource> storageNodes,
+                                                                             final Collection<StorageNodeIdentifier> toBeChangedDataSourceNames) {
+        Map<StorageNodeIdentifier, DataSource> result = new LinkedHashMap<>(storageNodes.size(), 1F);
+        for (Entry<StorageNodeIdentifier, DataSource> entry : storageNodes.entrySet()) {
             if (!toBeChangedDataSourceNames.contains(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());
             }

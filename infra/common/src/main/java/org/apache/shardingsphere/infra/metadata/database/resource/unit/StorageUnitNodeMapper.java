@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeIdentifier;
 
 /**
  * Storage unit and node mapper.
@@ -30,13 +30,13 @@ public final class StorageUnitNodeMapper {
     
     private final String name;
     
-    private final StorageNode storageNode;
+    private final StorageNodeIdentifier storageNodeIdentifier;
     
     private final String url;
     
     private final String catalog;
     
-    public StorageUnitNodeMapper(final String name, final StorageNode storageNode, final String url) {
-        this(name, storageNode, url, null);
+    public StorageUnitNodeMapper(final String name, final StorageNodeIdentifier storageNodeIdentifier, final String url) {
+        this(name, storageNodeIdentifier, url, null);
     }
 }
