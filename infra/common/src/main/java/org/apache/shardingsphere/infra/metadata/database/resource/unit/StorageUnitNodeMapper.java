@@ -31,12 +31,4 @@ public final class StorageUnitNodeMapper {
     private final String name;
     
     private final StorageNode storageNode;
-    
-    private final String url;
-    
-    private final String catalog;
-    
-    public StorageUnitNodeMapper(final String name, final StorageNode storageNode, final String url) {
-        this(name, storageNode, url, null);
-    }
 }

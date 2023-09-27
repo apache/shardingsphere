@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -41,7 +41,7 @@ public final class StorageUnitMetaData {
     // TODO zhangliang: should refactor
     private final Map<String, DataSource> dataSources;
     
-    public StorageUnitMetaData(final String databaseName, final Map<StorageNode, DataSource> storageNodeDataSources,
+    public StorageUnitMetaData(final String databaseName, final Map<StorageNodeName, DataSource> storageNodeDataSources,
                                final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageUnitNodeMapper> unitNodeMappers) {
         this.unitNodeMappers = unitNodeMappers;
         storageUnits = new LinkedHashMap<>(unitNodeMappers.size(), 1F);

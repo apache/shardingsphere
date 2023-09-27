@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
@@ -274,7 +274,7 @@ public final class ConfigurationContextManager {
      * @return ShardingSphere databases
      */
     public Map<String, ShardingSphereDatabase> renewDatabase(final ShardingSphereDatabase database, final SwitchingResource resource) {
-        Map<StorageNode, DataSource> newStorageNodes = getNewStorageNodes(database.getResourceMetaData().getDataSourceMap(), resource);
+        Map<StorageNodeName, DataSource> newStorageNodes = getNewStorageNodes(database.getResourceMetaData().getDataSourceMap(), resource);
         Map<String, StorageUnitNodeMapper> newStorageUnitNodeMappers = getNewStorageUnitNodeMappers(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits(), resource);
         Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
@@ -282,9 +282,9 @@ public final class ConfigurationContextManager {
                 new ResourceMetaData(database.getName(), newStorageNodes, newStorageUnitNodeMappers, propsMap), database.getRuleMetaData(), database.getSchemas()));
     }
     
-    private Map<StorageNode, DataSource> getNewStorageNodes(final Map<StorageNode, DataSource> currentStorageNodes, final SwitchingResource resource) {
-        Map<StorageNode, DataSource> result = new LinkedHashMap<>();
-        for (Entry<StorageNode, DataSource> entry : currentStorageNodes.entrySet()) {
+    private Map<StorageNodeName, DataSource> getNewStorageNodes(final Map<StorageNodeName, DataSource> currentStorageNodes, final SwitchingResource resource) {
+        Map<StorageNodeName, DataSource> result = new LinkedHashMap<>();
+        for (Entry<StorageNodeName, DataSource> entry : currentStorageNodes.entrySet()) {
             if (!resource.getStaleStorageResource().getDataSourceMap().containsKey(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());
             }
@@ -364,7 +364,7 @@ public final class ConfigurationContextManager {
     }
     
     private StorageResource getMergedStorageResource(final ResourceMetaData currentResourceMetaData, final SwitchingResource switchingResource) {
-        Map<StorageNode, DataSource> storageNodeDataSources = currentResourceMetaData.getDataSourceMap();
+        Map<StorageNodeName, DataSource> storageNodeDataSources = currentResourceMetaData.getDataSourceMap();
         Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = currentResourceMetaData.getStorageUnitMetaData().getUnitNodeMappers();
         if (null != switchingResource && null != switchingResource.getNewStorageResource() && !switchingResource.getNewStorageResource().getDataSourceMap().isEmpty()) {
             storageNodeDataSources.putAll(switchingResource.getNewStorageResource().getDataSourceMap());

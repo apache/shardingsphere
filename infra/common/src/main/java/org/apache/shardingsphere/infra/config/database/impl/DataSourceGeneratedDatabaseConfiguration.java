@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourceP
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapperUtils;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
 
 import javax.sql.DataSource;
@@ -56,10 +56,11 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
         storageResource = new StorageResource(getStorageNodeDataSourceMap(mappers), mappers);
     }
     
-    private Map<StorageNode, DataSource> getStorageNodeDataSourceMap(final Map<String, StorageUnitNodeMapper> mappers) {
-        Map<StorageNode, DataSource> result = new LinkedHashMap<>(mappers.size(), 1F);
+    private Map<StorageNodeName, DataSource> getStorageNodeDataSourceMap(final Map<String, StorageUnitNodeMapper> mappers) {
+        Map<StorageNodeName, DataSource> result = new LinkedHashMap<>(mappers.size(), 1F);
         for (Entry<String, StorageUnitNodeMapper> entry : mappers.entrySet()) {
-            result.computeIfAbsent(entry.getValue().getStorageNode(), key -> DataSourcePoolCreator.create(entry.getKey(), dataSourcePoolPropertiesMap.get(entry.getKey()), true, result.values()));
+            result.computeIfAbsent(entry.getValue().getStorageNode().getName(),
+                    key -> DataSourcePoolCreator.create(entry.getKey(), dataSourcePoolPropertiesMap.get(entry.getKey()), true, result.values()));
         }
         return result;
     }

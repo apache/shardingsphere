@@ -17,31 +17,27 @@
 
 package org.apache.shardingsphere.infra.metadata.database.resource.node;
 
-import com.google.common.base.Objects;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Storage node.
  */
-@RequiredArgsConstructor
 @Getter
 public final class StorageNode {
     
-    private final String name;
+    private final StorageNodeName name;
     
-    @Override
-    public boolean equals(final Object obj) {
-        return obj instanceof StorageNode && ((StorageNode) obj).name.equalsIgnoreCase(name);
+    private final String url;
+    
+    private final String catalog;
+    
+    public StorageNode(final String name, final String url) {
+        this(name, url, null);
     }
     
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(name.toUpperCase());
-    }
-    
-    @Override
-    public String toString() {
-        return name;
+    public StorageNode(final String name, final String url, final String catalog) {
+        this.name = new StorageNodeName(name);
+        this.url = url;
+        this.catalog = catalog;
     }
 }
