@@ -44,14 +44,14 @@ public final class StorageUnitNodeMapper {
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof StorageUnitNodeMapper) {
-            StorageUnitNodeMapper storageUnitNodeMapper = (StorageUnitNodeMapper) obj;
-            return storageUnitNodeMapper.name.equalsIgnoreCase(name) && storageUnitNodeMapper.storageNode.equals(storageNode) && isSameCatalog(storageUnitNodeMapper);
+            StorageUnitNodeMapper mapper = (StorageUnitNodeMapper) obj;
+            return mapper.name.equalsIgnoreCase(name) && mapper.storageNode.equals(storageNode) && isSameCatalog(mapper);
         }
         return false;
     }
     
-    private boolean isSameCatalog(final StorageUnitNodeMapper storageUnitNodeMapper) {
-        return null == catalog ? null == storageUnitNodeMapper : catalog.equalsIgnoreCase(storageUnitNodeMapper.getCatalog());
+    private boolean isSameCatalog(final StorageUnitNodeMapper mapper) {
+        return null != catalog && catalog.equalsIgnoreCase(mapper.getCatalog());
     }
     
     @Override
