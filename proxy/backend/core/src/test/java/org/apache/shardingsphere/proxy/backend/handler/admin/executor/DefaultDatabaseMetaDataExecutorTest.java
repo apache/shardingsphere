@@ -119,7 +119,7 @@ class DefaultDatabaseMetaDataExecutorTest {
     
     private ShardingSphereDatabase createDatabase(final Map<String, String> expectedResultSetMap) throws SQLException {
         return new ShardingSphereDatabase("auth_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
-                new ResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))),
+                new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))),
                 mock(RuleMetaData.class), Collections.emptyMap());
     }
     
