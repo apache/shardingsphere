@@ -41,7 +41,7 @@ class ResourceSwitchManagerTest {
     @Test
     void assertCreate() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        SwitchingResource actual = new ResourceSwitchManager().create(new ResourceMetaData("sharding_db", dataSourceMap), createToBeChangedDataSourcePoolPropertiesMap());
+        SwitchingResource actual = new ResourceSwitchManager().create(new ResourceMetaData(dataSourceMap), createToBeChangedDataSourcePoolPropertiesMap());
         assertNewDataSources(actual);
         actual.closeStaleDataSources();
         assertStaleDataSources(dataSourceMap);
@@ -52,7 +52,7 @@ class ResourceSwitchManagerTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
-        SwitchingResource actual = new ResourceSwitchManager().createByAlterDataSourcePoolProperties(new ResourceMetaData("sharding_db", dataSourceMap), Collections.emptyMap());
+        SwitchingResource actual = new ResourceSwitchManager().createByAlterDataSourcePoolProperties(new ResourceMetaData(dataSourceMap), Collections.emptyMap());
         assertTrue(actual.getNewStorageResource().getDataSourceMap().isEmpty());
         assertThat(actual.getStaleStorageResource().getDataSourceMap().size(), is(2));
         actual.closeStaleDataSources();
