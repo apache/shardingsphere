@@ -33,12 +33,12 @@ public final class StorageUnitNodeMapper {
     
     private final StorageNode storageNode;
     
-    private final String catalog;
-    
     private final String url;
     
+    private final String catalog;
+    
     public StorageUnitNodeMapper(final String name, final StorageNode storageNode, final String url) {
-        this(name, storageNode, null, url);
+        this(name, storageNode, url, null);
     }
     
     @Override
@@ -51,7 +51,7 @@ public final class StorageUnitNodeMapper {
     }
     
     private boolean isSameCatalog(final StorageUnitNodeMapper mapper) {
-        return null != catalog && catalog.equalsIgnoreCase(mapper.getCatalog());
+        return null == catalog && null == mapper.getCatalog() || null != catalog && catalog.equalsIgnoreCase(mapper.getCatalog());
     }
     
     @Override
