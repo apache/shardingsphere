@@ -14,5 +14,3 @@ ShardingSphere-Proxy 提供基于 YAML 的配置方式，并使用 DistSQL 进�
 
 规则配置部分与 ShardingSphere-JDBC 的 YAML 配置完全一致。
 DistSQL 与 YAML 配置能够相互取代。
-
-更多使用细节请参见[使用示例](https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-proxy-example)。
