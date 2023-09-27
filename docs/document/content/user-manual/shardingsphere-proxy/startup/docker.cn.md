@@ -83,8 +83,3 @@ ShardingSphere-Proxy 默认端口 `3307`，可以通过环境变量 `-e PORT` �
 5. 使用客户端连接 ShardingSphere-Proxy
 
 请参考 [ShardingSphere-Proxy 启动手册 - 使用二进制发布包](/cn/user-manual/shardingsphere-proxy/startup/bin/)。
-
-## 配置示例
-
-完整配置请参考 ShardingSphere 仓库中的示例：
-<https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-proxy-example>

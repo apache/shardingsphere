@@ -85,8 +85,3 @@ psql -h ${proxy_host} -p ${proxy_port} -U ${proxy_username}
 ```bash 
 gsql -r -h ${proxy_host} -p ${proxy_port} -U ${proxy_username} -W ${proxy_password}
 ```
-
-## 配置示例
-
-完整配置请参考 ShardingSphere 仓库中的示例：
-<https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-proxy-example>
