@@ -39,20 +39,20 @@ import java.util.Map;
 @Getter
 public final class StorageUnit {
     
+    private final DataSource dataSource;
+    
     private final DataSourcePoolProperties dataSourcePoolProperties;
     
     private final StorageNode storageNode;
-    
-    private final DataSource dataSource;
     
     private final DatabaseType storageType;
     
     private final ConnectionProperties connectionProperties;
     
-    public StorageUnit(final String databaseName, final DataSource dataSource, final DataSourcePoolProperties props, final StorageNode storageNode) {
-        this.dataSourcePoolProperties = props;
-        this.storageNode = storageNode;
+    public StorageUnit(final String databaseName, final DataSource dataSource, final DataSourcePoolProperties dataSourcePoolProperties, final StorageNode storageNode) {
         this.dataSource = new CatalogSwitchableDataSource(dataSource, storageNode.getCatalog(), storageNode.getUrl());
+        this.dataSourcePoolProperties = dataSourcePoolProperties;
+        this.storageNode = storageNode;
         boolean isDataSourceEnabled = !DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, Collections.singletonMap(storageNode.getName().getName(), dataSource)).isEmpty();
         storageType = createStorageType(isDataSourceEnabled);
         connectionProperties = createConnectionProperties(isDataSourceEnabled);
