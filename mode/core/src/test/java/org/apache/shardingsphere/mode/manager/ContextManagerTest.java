@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeUtils;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
@@ -257,11 +258,14 @@ class ContextManagerTest {
         Map<StorageNodeName, DataSource> storageNodeDataSourceMap = StorageNodeUtils.getStorageNodeDataSources(originalDataSources);
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSources(originalDataSources);
+        Map<String, NewStorageUnitMetaData> metaDataMap = new LinkedHashMap<>(2, 1F);
         for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
             storageUnits.put(entry.getKey(), new StorageUnit("foo_db", storageNodeDataSourceMap.get(entry.getValue().getName()), mock(DataSourcePoolProperties.class), entry.getValue()));
+            metaDataMap.put(entry.getKey(), new NewStorageUnitMetaData(
+                    "foo_db", storageUnitNodeMap.get(entry.getKey()), mock(DataSourcePoolProperties.class), storageNodeDataSourceMap.get(entry.getValue().getName())));
         }
         when(result.getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
-        when(result.getStorageUnitMetaData().getStorageNodes()).thenReturn(storageUnitNodeMap);
+        when(result.getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
         when(result.getDataSources()).thenReturn(storageNodeDataSourceMap);
         return result;
     }

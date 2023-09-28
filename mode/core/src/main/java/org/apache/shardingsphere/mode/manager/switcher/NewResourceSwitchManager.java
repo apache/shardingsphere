@@ -120,8 +120,11 @@ public final class NewResourceSwitchManager {
     }
     
     private StorageResource getToBeRemovedStaleStorageResource(final ResourceMetaData resourceMetaData, final String storageUnitName) {
-        StorageNode storageNode = resourceMetaData.getStorageUnitMetaData().getStorageNodes().remove(storageUnitName);
-        Map<String, StorageNode> reservedStorageUintNodeMap = resourceMetaData.getStorageUnitMetaData().getStorageNodes();
+        Map<String, StorageNode> metaDataMap = new HashMap<>(
+                resourceMetaData.getStorageUnitMetaData().getMetaDataMap().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageNode())));
+        StorageNode storageNode = metaDataMap.remove(storageUnitName);
+        Map<String, StorageNode> reservedStorageUintNodeMap = resourceMetaData.getStorageUnitMetaData().getMetaDataMap().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageNode()));
         Map<StorageNodeName, DataSource> storageNodes = new LinkedHashMap<>(1, 1F);
         if (reservedStorageUintNodeMap.values().stream().noneMatch(each -> each.equals(storageNode))) {
             storageNodes.put(storageNode.getName(), resourceMetaData.getDataSources().get(storageNode.getName()));

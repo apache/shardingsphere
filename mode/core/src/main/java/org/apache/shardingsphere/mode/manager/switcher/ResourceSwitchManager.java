@@ -112,10 +112,12 @@ public final class ResourceSwitchManager {
     }
     
     private Map<String, StorageNode> getNewStorageUnitNodeMap(final ResourceMetaData resourceMetaData, final Map<String, StorageNode> toBeChangedStorageUnitNodeMap) {
-        Map<String, StorageNode> result = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaData().getStorageNodes());
+        Map<String, StorageNode> result = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaData().getMetaDataMap().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageNode(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         result.keySet().removeAll(getToBeDeletedStorageUnitNodeMap(resourceMetaData.getStorageUnitMetaData().getStorageUnits(), toBeChangedStorageUnitNodeMap.keySet()).keySet());
         result.putAll(getChangedStorageUnitNodeMap(resourceMetaData.getStorageUnitMetaData().getStorageUnits(), toBeChangedStorageUnitNodeMap));
-        result.putAll(getToBeAddedStorageUnitNodeMap(resourceMetaData.getStorageUnitMetaData().getStorageNodes(), toBeChangedStorageUnitNodeMap));
+        result.putAll(getToBeAddedStorageUnitNodeMap(resourceMetaData.getStorageUnitMetaData().getMetaDataMap().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageNode(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)), toBeChangedStorageUnitNodeMap));
         return result;
     }
     
@@ -164,7 +166,7 @@ public final class ResourceSwitchManager {
     private StorageResource getStaleDataSources(final ResourceMetaData resourceMetaData, final Map<String, StorageNode> toBeChangedStorageUnitNodeMap,
                                                 final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
         Map<StorageNodeName, DataSource> storageNodes = new LinkedHashMap<>(resourceMetaData.getDataSources().size(), 1F);
-        Map<String, StorageNode> storageUnitNodeMap = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaData().getStorageNodes().size(), 1F);
+        Map<String, StorageNode> storageUnitNodeMap = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaData().getMetaDataMap().size(), 1F);
         storageNodes.putAll(getToBeChangedDataSources(resourceMetaData.getDataSources(), StorageUnitNodeMapUtils.getStorageNodeDataSourcePoolProperties(storageUnitDataSourcePoolProps)));
         storageUnitNodeMap.putAll(getChangedStorageUnitNodeMap(resourceMetaData.getStorageUnitMetaData().getStorageUnits(), toBeChangedStorageUnitNodeMap));
         return new StorageResource(storageNodes, storageUnitNodeMap);

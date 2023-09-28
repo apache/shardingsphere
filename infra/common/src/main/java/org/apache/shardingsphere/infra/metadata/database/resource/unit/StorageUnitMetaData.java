@@ -34,23 +34,24 @@ import java.util.stream.Collectors;
 @Getter
 public final class StorageUnitMetaData {
     
-    // TODO zhangliang: should refactor
-    private final Map<String, StorageNode> storageNodes;
-    
     private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
     
     private final Map<String, StorageUnit> storageUnits;
     
-    // TODO zhangliang: should refactor
     private final Map<String, DataSource> dataSources;
+    
+    private final Map<String, NewStorageUnitMetaData> metaDataMap;
     
     public StorageUnitMetaData(final String databaseName, final Map<String, StorageNode> storageNodes, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap,
                                final Map<StorageNodeName, DataSource> dataSources) {
-        this.storageNodes = storageNodes;
+        metaDataMap = new LinkedHashMap<>();
+        for (Entry<String, StorageNode> entry : storageNodes.entrySet()) {
+            metaDataMap.put(entry.getKey(), new NewStorageUnitMetaData(databaseName, entry.getValue(), dataSourcePoolPropertiesMap.get(entry.getKey()), dataSources.get(entry.getValue().getName())));
+        }
         this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
         storageUnits = storageNodes.entrySet().stream().collect(
                 Collectors.toMap(Entry::getKey, entry -> new StorageUnit(databaseName, dataSources.get(entry.getValue().getName()), dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()),
-                        (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(this.storageNodes.size(), 1F)));
+                        (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(storageNodes.size(), 1F)));
         this.dataSources = storageUnits.entrySet().stream().collect(
                 Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(storageUnits.size(), 1F)));
     }
