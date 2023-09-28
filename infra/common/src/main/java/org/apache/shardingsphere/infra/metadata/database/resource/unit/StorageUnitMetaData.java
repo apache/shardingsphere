@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public final class StorageUnitMetaData {
     
     // TODO zhangliang: should refactor
-    private final Map<String, StorageNode> storageUnitNodeMap;
+    private final Map<String, StorageNode> storageNodes;
     
     private final Map<String, StorageUnit> storageUnits;
     
@@ -43,10 +43,10 @@ public final class StorageUnitMetaData {
     private final Map<String, DataSource> dataSources;
     
     public StorageUnitMetaData(final String databaseName, final Map<StorageNodeName, DataSource> storageNodeDataSources,
-                               final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap) {
-        this.storageUnitNodeMap = storageUnitNodeMap;
-        storageUnits = new LinkedHashMap<>(this.storageUnitNodeMap.size(), 1F);
-        for (Entry<String, StorageNode> entry : this.storageUnitNodeMap.entrySet()) {
+                               final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageNodes) {
+        this.storageNodes = storageNodes;
+        storageUnits = new LinkedHashMap<>(this.storageNodes.size(), 1F);
+        for (Entry<String, StorageNode> entry : this.storageNodes.entrySet()) {
             storageUnits.put(entry.getKey(), new StorageUnit(databaseName, storageNodeDataSources, dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()));
         }
         dataSources = createDataSources();

@@ -261,7 +261,7 @@ class ContextManagerTest {
             storageUnits.put(entry.getKey(), new StorageUnit("foo_db", storageNodeDataSourceMap, mock(DataSourcePoolProperties.class), entry.getValue()));
         }
         when(result.getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
-        when(result.getStorageUnitMetaData().getStorageUnitNodeMap()).thenReturn(storageUnitNodeMap);
+        when(result.getStorageUnitMetaData().getStorageNodes()).thenReturn(storageUnitNodeMap);
         when(result.getDataSources()).thenReturn(storageNodeDataSourceMap);
         return result;
     }
