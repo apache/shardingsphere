@@ -258,7 +258,7 @@ class ContextManagerTest {
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSources(originalDataSources);
         for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
-            storageUnits.put(entry.getKey(), new StorageUnit("foo_db", storageNodeDataSourceMap, mock(DataSourcePoolProperties.class), entry.getValue()));
+            storageUnits.put(entry.getKey(), new StorageUnit("foo_db", storageNodeDataSourceMap.get(entry.getValue().getName()), mock(DataSourcePoolProperties.class), entry.getValue()));
         }
         when(result.getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(result.getStorageUnitMetaData().getStorageNodes()).thenReturn(storageUnitNodeMap);
