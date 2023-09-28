@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.infra.metadata.database.resource.node;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Storage node.
  */
+@RequiredArgsConstructor
 @Getter
 public final class StorageNode {
     
@@ -31,13 +33,7 @@ public final class StorageNode {
     
     private final String catalog;
     
-    public StorageNode(final String name, final String url) {
+    public StorageNode(final StorageNodeName name, final String url) {
         this(name, url, null);
-    }
-    
-    public StorageNode(final String name, final String url, final String catalog) {
-        this.name = new StorageNodeName(name);
-        this.url = url;
-        this.catalog = catalog;
     }
 }
