@@ -45,19 +45,11 @@ public final class StorageUnitMetaData {
     public StorageUnitMetaData(final String databaseName, final Map<StorageNodeName, DataSource> storageNodeDataSources,
                                final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageNodes) {
         this.storageNodes = storageNodes;
-        storageUnits = new LinkedHashMap<>(this.storageNodes.size(), 1F);
-        for (Entry<String, StorageNode> entry : this.storageNodes.entrySet()) {
-            storageUnits.put(entry.getKey(), new StorageUnit(databaseName, storageNodeDataSources, dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()));
-        }
-        dataSources = createDataSources();
-    }
-    
-    private Map<String, DataSource> createDataSources() {
-        Map<String, DataSource> result = new LinkedHashMap<>(storageUnits.size(), 1F);
-        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getDataSource());
-        }
-        return result;
+        storageUnits = storageNodes.entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> new StorageUnit(databaseName, storageNodeDataSources, dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()),
+                        (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(this.storageNodes.size(), 1F)));
+        dataSources = storageUnits.entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(storageUnits.size(), 1F)));
     }
     
     /**
