@@ -194,7 +194,7 @@ public final class ResourceSwitchManager {
     }
     
     private Map<String, StorageNode> getToBeDeletedStorageUnitNodeMappers(final Map<String, StorageUnit> storageUnits,
-                                                                                    final Collection<String> toBeChangedStorageUnitNames) {
+                                                                          final Collection<String> toBeChangedStorageUnitNames) {
         Map<String, StorageNode> result = new LinkedHashMap<>(storageUnits.size(), 1F);
         for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
             if (!toBeChangedStorageUnitNames.contains(entry.getKey())) {
