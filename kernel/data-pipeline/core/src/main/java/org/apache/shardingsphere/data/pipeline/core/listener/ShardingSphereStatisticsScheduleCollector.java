@@ -113,7 +113,7 @@ public final class ShardingSphereStatisticsScheduleCollector {
                 log.error("Collect data failed!", ex);
             }
             tableData.ifPresent(optional -> statistics.getDatabaseData().computeIfAbsent(databaseName.toLowerCase(), key -> new ShardingSphereDatabaseData())
-                    .getSchemaData().computeIfAbsent(schemaName, key -> new ShardingSphereSchemaData()).getTableData().put(table.getName().toLowerCase(), optional));
+                    .getSchemaData().computeIfAbsent(schemaName, key -> new ShardingSphereSchemaData()).getTableData().put(table.getName(), optional));
         }
         
         private void compareUpdateAndSendEvent(final ShardingSphereStatistics statistics, final ShardingSphereStatistics changedStatistics,
@@ -139,7 +139,7 @@ public final class ShardingSphereStatisticsScheduleCollector {
             if (tableData.equals(changedTableData)) {
                 return;
             }
-            statistics.getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().put(changedTableData.getName().toLowerCase(), changedTableData);
+            statistics.getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().put(changedTableData.getName(), changedTableData);
             ShardingSphereSchemaDataAlteredEvent event = getShardingSphereSchemaDataAlteredEvent(databaseName, schemaName, tableData, changedTableData, table);
             contextManager.getInstanceContext().getEventBusContext().post(event);
         }

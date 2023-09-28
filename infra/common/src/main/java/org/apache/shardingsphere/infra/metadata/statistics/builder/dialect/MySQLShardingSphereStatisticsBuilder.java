@@ -28,8 +28,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSpher
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
-import java.util.Optional;
-import java.util.Collections;
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -37,32 +36,49 @@ import java.util.Map.Entry;
  */
 
 public final class MySQLShardingSphereStatisticsBuilder implements ShardingSphereStatisticsBuilder {
-    
+
+    private static final Set<String> CURRENT_SUPPORT = new HashSet<>(Arrays.asList("PARAMETERS"));
+
     private static final String SHARDING_SPHERE = "shardingsphere";
-    
+    private static final String INFORMATION_SCHEMA = "information_schema";
     private static final String CLUSTER_INFORMATION = "cluster_information";
-    
+
     @Override
     public ShardingSphereStatistics build(final ShardingSphereMetaData metaData) {
         ShardingSphereStatistics result = new ShardingSphereStatistics();
         Optional<ShardingSphereSchema> shardingSphereSchema = Optional.ofNullable(metaData.getDatabase(SHARDING_SPHERE)).map(database -> database.getSchema(SHARDING_SPHERE));
-        if (!shardingSphereSchema.isPresent()) {
-            return result;
-        }
-        ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-        for (Entry<String, ShardingSphereTable> entry : shardingSphereSchema.get().getTables().entrySet()) {
-            ShardingSphereTableData tableData = new ShardingSphereTableData(entry.getValue().getName());
-            if (CLUSTER_INFORMATION.equals(entry.getKey())) {
-                tableData.getRows().add(new ShardingSphereRowData(Collections.singletonList(ShardingSphereVersion.VERSION)));
+        if (shardingSphereSchema.isPresent()) {
+            ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
+            for (Entry<String, ShardingSphereTable> entry : shardingSphereSchema.get().getTables().entrySet()) {
+                ShardingSphereTableData tableData = new ShardingSphereTableData(entry.getValue().getName());
+                if (CLUSTER_INFORMATION.equals(entry.getKey())) {
+                    tableData.getRows().add(new ShardingSphereRowData(Collections.singletonList(ShardingSphereVersion.VERSION)));
+                }
+                schemaData.getTableData().put(entry.getKey(), tableData);
             }
-            schemaData.getTableData().put(entry.getKey(), tableData);
+            ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
+            databaseData.getSchemaData().put(SHARDING_SPHERE, schemaData);
+            result.getDatabaseData().put(SHARDING_SPHERE, databaseData);
         }
-        ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
-        databaseData.getSchemaData().put(SHARDING_SPHERE, schemaData);
-        result.getDatabaseData().put(SHARDING_SPHERE, databaseData);
+
+        Optional<ShardingSphereSchema> informationSchemaSchema = Optional.ofNullable(metaData.getDatabase("information_schema")).map(database -> database.getSchema("information_schema"));
+        if (informationSchemaSchema.isPresent()) {
+            ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
+            for (Entry<String, ShardingSphereTable> entry : informationSchemaSchema.get().getTables().entrySet()) {
+                if (!CURRENT_SUPPORT.contains(entry.getValue().getName())) {
+                    continue;
+                }
+                ShardingSphereTableData tableData = new ShardingSphereTableData(entry.getValue().getName());
+                schemaData.getTableData().put(entry.getValue().getName(), tableData);
+            }
+            ShardingSphereDatabaseData informationSchemaResult = new ShardingSphereDatabaseData();
+            informationSchemaResult.getSchemaData().put(INFORMATION_SCHEMA, schemaData);
+            result.getDatabaseData().put(INFORMATION_SCHEMA, informationSchemaResult);
+        }
+
         return result;
     }
-    
+
     @Override
     public String getDatabaseType() {
         return "MySQL";
