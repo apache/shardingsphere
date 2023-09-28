@@ -55,7 +55,7 @@ public final class StorageUnitNodeMapperUtils {
     private static StorageUnitNodeMapper fromDataSource(final String storageUnitName, final DataSource dataSource) {
         DataSourcePoolProperties props = DataSourcePoolPropertiesCreator.create(dataSource);
         String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        return new StorageUnitNodeMapper(storageUnitName, new StorageNode(storageUnitName, url));
+        return new StorageUnitNodeMapper(storageUnitName, new StorageNode(new StorageNodeName(storageUnitName), url));
     }
     
     /**
@@ -77,24 +77,21 @@ public final class StorageUnitNodeMapperUtils {
         Map<String, Object> standardProps = props.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProps.get("url").toString();
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-        String storageNodeName = getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
+        StorageNodeName storageNodeName = getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
         return createStorageUnitNodeMapper(storageNodeName, storageUnitName, url, isInstanceConnectionAvailable);
     }
     
-    private static String getStorageNodeName(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
+    private static StorageNodeName getStorageNodeName(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
         try {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-            return isInstanceConnectionAvailable ? generateStorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : dataSourceName;
+            return isInstanceConnectionAvailable ? new StorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : new StorageNodeName(dataSourceName);
         } catch (final UnrecognizedDatabaseURLException ex) {
-            return dataSourceName;
+            return new StorageNodeName(dataSourceName);
         }
     }
     
-    private static String generateStorageNodeName(final String hostname, final int port, final String username) {
-        return String.format("%s_%s_%s", hostname, port, username);
-    }
-    
-    private static StorageUnitNodeMapper createStorageUnitNodeMapper(final String storageNodeName, final String storageUnitName, final String url, final boolean isInstanceConnectionAvailable) {
+    private static StorageUnitNodeMapper createStorageUnitNodeMapper(final StorageNodeName storageNodeName,
+                                                                     final String storageUnitName, final String url, final boolean isInstanceConnectionAvailable) {
         return isInstanceConnectionAvailable
                 ? new StorageUnitNodeMapper(storageUnitName, new StorageNode(storageNodeName, url, new StandardJdbcUrlParser().parse(url).getDatabase()))
                 : new StorageUnitNodeMapper(storageUnitName, new StorageNode(storageNodeName, url));
@@ -112,7 +109,7 @@ public final class StorageUnitNodeMapperUtils {
             Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
             String url = standardProps.get("url").toString();
             boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-            StorageNodeName storageNodeName = new StorageNodeName(getStorageNodeName(entry.getKey(), url, standardProps.get("username").toString(), isInstanceConnectionAvailable));
+            StorageNodeName storageNodeName = getStorageNodeName(entry.getKey(), url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
             result.putIfAbsent(storageNodeName, entry.getValue());
         }
         return result;
