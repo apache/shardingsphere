@@ -49,7 +49,7 @@ public final class StorageUnitMetaData {
         this.storageNodes = storageNodes;
         this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
         storageUnits = storageNodes.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> new StorageUnit(databaseName, dataSources, dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()),
+                Collectors.toMap(Entry::getKey, entry -> new StorageUnit(databaseName, dataSources.get(entry.getValue().getName()), dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()),
                         (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(this.storageNodes.size(), 1F)));
         this.dataSources = storageUnits.entrySet().stream().collect(
                 Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(storageUnits.size(), 1F)));

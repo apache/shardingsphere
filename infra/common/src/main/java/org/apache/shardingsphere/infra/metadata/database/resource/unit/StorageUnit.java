@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSour
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 
 import javax.sql.DataSource;
@@ -50,18 +49,13 @@ public final class StorageUnit {
     
     private final ConnectionProperties connectionProperties;
     
-    public StorageUnit(final String databaseName, final Map<StorageNodeName, DataSource> storageNodeDataSources, final DataSourcePoolProperties props, final StorageNode storageNode) {
+    public StorageUnit(final String databaseName, final DataSource dataSource, final DataSourcePoolProperties props, final StorageNode storageNode) {
         this.dataSourcePoolProperties = props;
         this.storageNode = storageNode;
-        dataSource = getStorageUnitDataSource(storageNodeDataSources);
+        this.dataSource = new CatalogSwitchableDataSource(dataSource, storageNode.getCatalog(), storageNode.getUrl());
         boolean isDataSourceEnabled = !DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, Collections.singletonMap(storageNode.getName().getName(), dataSource)).isEmpty();
         storageType = createStorageType(isDataSourceEnabled);
         connectionProperties = createConnectionProperties(isDataSourceEnabled);
-    }
-    
-    private DataSource getStorageUnitDataSource(final Map<StorageNodeName, DataSource> storageNodeDataSources) {
-        DataSource dataSource = storageNodeDataSources.get(storageNode.getName());
-        return new CatalogSwitchableDataSource(dataSource, storageNode.getCatalog(), storageNode.getUrl());
     }
     
     private DatabaseType createStorageType(final boolean isDataSourceEnabled) {
