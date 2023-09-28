@@ -43,21 +43,21 @@ import java.util.stream.Collectors;
 @Getter
 public final class ResourceMetaData {
     
-    private final Map<StorageNodeName, DataSource> dataSourceMap;
+    private final Map<StorageNodeName, DataSource> dataSources;
     
     private final StorageUnitMetaData storageUnitMetaData;
     
     public ResourceMetaData(final Map<String, DataSource> dataSources) {
-        dataSourceMap = StorageNodeUtils.getStorageNodeDataSources(dataSources);
-        storageUnitMetaData = new StorageUnitMetaData(null, dataSourceMap, dataSources.entrySet().stream()
+        this.dataSources = StorageNodeUtils.getStorageNodeDataSources(dataSources);
+        storageUnitMetaData = new StorageUnitMetaData(null, this.dataSources, dataSources.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 StorageUnitNodeMapUtils.fromDataSources(dataSources));
     }
     
-    public ResourceMetaData(final String databaseName, final Map<StorageNodeName, DataSource> dataSourceMap,
+    public ResourceMetaData(final String databaseName, final Map<StorageNodeName, DataSource> dataSources,
                             final Map<String, StorageNode> storageUnitNodeMap, final Map<String, DataSourcePoolProperties> propsMap) {
-        this.dataSourceMap = dataSourceMap;
-        storageUnitMetaData = new StorageUnitMetaData(databaseName, dataSourceMap, propsMap, storageUnitNodeMap);
+        this.dataSources = dataSources;
+        storageUnitMetaData = new StorageUnitMetaData(databaseName, dataSources, propsMap, storageUnitNodeMap);
     }
     
     /**
