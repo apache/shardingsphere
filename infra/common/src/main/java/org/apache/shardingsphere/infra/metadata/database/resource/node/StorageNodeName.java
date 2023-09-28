@@ -33,7 +33,7 @@ public final class StorageNodeName {
     public StorageNodeName(final String hostname, final int port, final String username) {
         name = String.format("%s_%s_%s", hostname, port, username);
     }
-     
+    
     @Override
     public boolean equals(final Object obj) {
         return obj instanceof StorageNodeName && ((StorageNodeName) obj).name.equalsIgnoreCase(name);
