@@ -22,12 +22,12 @@ import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropert
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeUtils;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapperUtils;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -51,13 +51,13 @@ public final class ResourceMetaData {
         dataSourceMap = StorageNodeUtils.getStorageNodeDataSources(dataSources);
         storageUnitMetaData = new StorageUnitMetaData(null, dataSourceMap, dataSources.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
-                StorageUnitNodeMapperUtils.fromDataSources(dataSources));
+                StorageUnitNodeMapUtils.fromDataSources(dataSources));
     }
     
     public ResourceMetaData(final String databaseName, final Map<StorageNodeName, DataSource> dataSourceMap,
-                            final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers, final Map<String, DataSourcePoolProperties> propsMap) {
+                            final Map<String, StorageNode> storageUnitNodeMap, final Map<String, DataSourcePoolProperties> propsMap) {
         this.dataSourceMap = dataSourceMap;
-        storageUnitMetaData = new StorageUnitMetaData(databaseName, dataSourceMap, propsMap, storageUnitNodeMappers);
+        storageUnitMetaData = new StorageUnitMetaData(databaseName, dataSourceMap, propsMap, storageUnitNodeMap);
     }
     
     /**

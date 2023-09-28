@@ -28,12 +28,12 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeUtils;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeUtils;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapperUtils;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -256,12 +256,12 @@ class ContextManagerTest {
         when(result.getStorageUnitMetaData().getDataSources()).thenReturn(originalDataSources);
         Map<StorageNodeName, DataSource> storageNodeDataSourceMap = StorageNodeUtils.getStorageNodeDataSources(originalDataSources);
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
-        Map<String, StorageUnitNodeMapper> storageUnitNodeMappers = StorageUnitNodeMapperUtils.fromDataSources(originalDataSources);
-        for (Entry<String, StorageUnitNodeMapper> entry : storageUnitNodeMappers.entrySet()) {
+        Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSources(originalDataSources);
+        for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
             storageUnits.put(entry.getKey(), new StorageUnit("foo_db", storageNodeDataSourceMap, mock(DataSourcePoolProperties.class), entry.getValue()));
         }
         when(result.getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
-        when(result.getStorageUnitMetaData().getUnitNodeMappers()).thenReturn(storageUnitNodeMappers);
+        when(result.getStorageUnitMetaData().getStorageUnitNodeMap()).thenReturn(storageUnitNodeMap);
         when(result.getDataSourceMap()).thenReturn(storageNodeDataSourceMap);
         return result;
     }

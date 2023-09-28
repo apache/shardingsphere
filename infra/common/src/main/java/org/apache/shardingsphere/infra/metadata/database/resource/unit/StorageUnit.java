@@ -46,7 +46,7 @@ public final class StorageUnit {
     
     private final DataSourcePoolProperties dataSourcePoolProperties;
     
-    private final StorageUnitNodeMapper unitNodeMapper;
+    private final StorageNode storageNode;
     
     private final DataSource dataSource;
     
@@ -55,17 +55,16 @@ public final class StorageUnit {
     private final ConnectionProperties connectionProperties;
     
     public StorageUnit(final String databaseName, final Map<StorageNodeName, DataSource> storageNodeDataSources,
-                       final DataSourcePoolProperties props, final StorageUnitNodeMapper unitNodeMapper) {
+                       final DataSourcePoolProperties props, final StorageNode storageNode) {
         this.dataSourcePoolProperties = props;
-        this.unitNodeMapper = unitNodeMapper;
-        dataSource = getStorageUnitDataSource(storageNodeDataSources, unitNodeMapper);
+        this.storageNode = storageNode;
+        dataSource = getStorageUnitDataSource(storageNodeDataSources);
         Map<StorageNodeName, DataSource> enabledStorageNodeDataSources = getEnabledStorageNodeDataSources(databaseName, storageNodeDataSources);
-        storageType = createStorageType(enabledStorageNodeDataSources, unitNodeMapper);
-        connectionProperties = createConnectionProperties(enabledStorageNodeDataSources, unitNodeMapper, storageType).orElse(null);
+        storageType = createStorageType(enabledStorageNodeDataSources);
+        connectionProperties = createConnectionProperties(enabledStorageNodeDataSources).orElse(null);
     }
     
-    private DataSource getStorageUnitDataSource(final Map<StorageNodeName, DataSource> storageNodeDataSources, final StorageUnitNodeMapper mapper) {
-        StorageNode storageNode = mapper.getStorageNode();
+    private DataSource getStorageUnitDataSource(final Map<StorageNodeName, DataSource> storageNodeDataSources) {
         DataSource dataSource = storageNodeDataSources.get(storageNode.getName());
         return new CatalogSwitchableDataSource(dataSource, storageNode.getCatalog(), storageNode.getUrl());
     }
@@ -80,15 +79,13 @@ public final class StorageUnit {
                 .filter(entry -> enabledDataSources.containsKey(entry.getKey().getName())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
-    private DatabaseType createStorageType(final Map<StorageNodeName, DataSource> enabledStorageNodeDataSources, final StorageUnitNodeMapper unitNodeMapper) {
-        return DatabaseTypeEngine.getStorageType(enabledStorageNodeDataSources.containsKey(unitNodeMapper.getStorageNode().getName())
-                ? Collections.singleton(enabledStorageNodeDataSources.get(unitNodeMapper.getStorageNode().getName()))
+    private DatabaseType createStorageType(final Map<StorageNodeName, DataSource> enabledStorageNodeDataSources) {
+        return DatabaseTypeEngine.getStorageType(enabledStorageNodeDataSources.containsKey(storageNode.getName())
+                ? Collections.singleton(enabledStorageNodeDataSources.get(storageNode.getName()))
                 : Collections.emptyList());
     }
     
-    private Optional<ConnectionProperties> createConnectionProperties(final Map<StorageNodeName, DataSource> enabledStorageNodeDataSources,
-                                                                      final StorageUnitNodeMapper mapper, final DatabaseType storageType) {
-        StorageNode storageNode = mapper.getStorageNode();
+    private Optional<ConnectionProperties> createConnectionProperties(final Map<StorageNodeName, DataSource> enabledStorageNodeDataSources) {
         if (!enabledStorageNodeDataSources.containsKey(storageNode.getName())) {
             return Optional.empty();
         }

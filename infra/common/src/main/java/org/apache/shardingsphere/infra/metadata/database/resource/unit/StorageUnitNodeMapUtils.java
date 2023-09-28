@@ -36,36 +36,36 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Storage unit node mapper utility class.
+ * Storage unit node map utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StorageUnitNodeMapperUtils {
+public final class StorageUnitNodeMapUtils {
     
     /**
-     * Get storage unit node mappers from data sources.
+     * Get storage unit node map from data sources.
      *
      * @param dataSources data sources
      * @return storage unit node mappers
      */
-    public static Map<String, StorageUnitNodeMapper> fromDataSources(final Map<String, DataSource> dataSources) {
+    public static Map<String, StorageNode> fromDataSources(final Map<String, DataSource> dataSources) {
         return dataSources.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> fromDataSource(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
     }
     
-    private static StorageUnitNodeMapper fromDataSource(final String storageUnitName, final DataSource dataSource) {
+    private static StorageNode fromDataSource(final String storageUnitName, final DataSource dataSource) {
         DataSourcePoolProperties props = DataSourcePoolPropertiesCreator.create(dataSource);
         String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        return new StorageUnitNodeMapper(storageUnitName, new StorageNode(new StorageNodeName(storageUnitName), url));
+        return new StorageNode(new StorageNodeName(storageUnitName), url);
     }
     
     /**
-     * Get storage unit node mappers from data source pool properties.
+     * Get storage unit node map from data source pool properties.
      *
      * @param propsMap data source pool properties map
      * @return storage unit node mappers
      */
-    public static Map<String, StorageUnitNodeMapper> fromDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> propsMap) {
-        Map<String, StorageUnitNodeMapper> result = new LinkedHashMap<>();
+    public static Map<String, StorageNode> fromDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> propsMap) {
+        Map<String, StorageNode> result = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             String storageUnitName = entry.getKey();
             result.put(storageUnitName, fromDataSourcePoolProperties(storageUnitName, entry.getValue()));
@@ -73,12 +73,12 @@ public final class StorageUnitNodeMapperUtils {
         return result;
     }
     
-    private static StorageUnitNodeMapper fromDataSourcePoolProperties(final String storageUnitName, final DataSourcePoolProperties props) {
+    private static StorageNode fromDataSourcePoolProperties(final String storageUnitName, final DataSourcePoolProperties props) {
         Map<String, Object> standardProps = props.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProps.get("url").toString();
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
         StorageNodeName storageNodeName = getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
-        return createStorageUnitNodeMapper(storageNodeName, storageUnitName, url, isInstanceConnectionAvailable);
+        return createStorageNode(storageNodeName, url, isInstanceConnectionAvailable);
     }
     
     private static StorageNodeName getStorageNodeName(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
@@ -90,11 +90,8 @@ public final class StorageUnitNodeMapperUtils {
         }
     }
     
-    private static StorageUnitNodeMapper createStorageUnitNodeMapper(final StorageNodeName storageNodeName,
-                                                                     final String storageUnitName, final String url, final boolean isInstanceConnectionAvailable) {
-        return isInstanceConnectionAvailable
-                ? new StorageUnitNodeMapper(storageUnitName, new StorageNode(storageNodeName, url, new StandardJdbcUrlParser().parse(url).getDatabase()))
-                : new StorageUnitNodeMapper(storageUnitName, new StorageNode(storageNodeName, url));
+    private static StorageNode createStorageNode(final StorageNodeName storageNodeName, final String url, final boolean isInstanceConnectionAvailable) {
+        return isInstanceConnectionAvailable ? new StorageNode(storageNodeName, url, new StandardJdbcUrlParser().parse(url).getDatabase()) : new StorageNode(storageNodeName, url);
     }
     
     /**

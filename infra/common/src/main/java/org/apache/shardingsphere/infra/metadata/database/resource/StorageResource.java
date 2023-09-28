@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -36,20 +35,20 @@ public final class StorageResource {
     
     private final Map<StorageNodeName, DataSource> dataSourceMap;
     
-    private final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers;
+    private final Map<String, StorageNode> storageUnitNodeMap;
     
     private final Map<String, DataSource> wrappedDataSources;
     
-    public StorageResource(final Map<StorageNodeName, DataSource> dataSourceMap, final Map<String, StorageUnitNodeMapper> storageUnitNodeMappers) {
+    public StorageResource(final Map<StorageNodeName, DataSource> dataSourceMap, final Map<String, StorageNode> storageUnitNodeMap) {
         this.dataSourceMap = dataSourceMap;
-        this.storageUnitNodeMappers = storageUnitNodeMappers;
+        this.storageUnitNodeMap = storageUnitNodeMap;
         wrappedDataSources = createWrappedDataSources();
     }
     
     private Map<String, DataSource> createWrappedDataSources() {
-        Map<String, DataSource> result = new LinkedHashMap<>(storageUnitNodeMappers.size(), 1F);
-        for (Entry<String, StorageUnitNodeMapper> entry : storageUnitNodeMappers.entrySet()) {
-            StorageNode storageNode = entry.getValue().getStorageNode();
+        Map<String, DataSource> result = new LinkedHashMap<>(storageUnitNodeMap.size(), 1F);
+        for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
+            StorageNode storageNode = entry.getValue();
             DataSource dataSource = dataSourceMap.get(storageNode.getName());
             if (null != dataSource) {
                 result.put(entry.getKey(), new CatalogSwitchableDataSource(dataSource, storageNode.getCatalog(), storageNode.getUrl()));
