@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public final class StorageUnitMetaData {
     
     // TODO zhangliang: should refactor
-    private final Map<String, StorageNode> storageUnitNodeMap;
+    private final Map<String, StorageNode> storageNodes;
     
     private final Map<String, StorageUnit> storageUnits;
     
@@ -43,13 +43,13 @@ public final class StorageUnitMetaData {
     private final Map<String, DataSource> dataSources;
     
     public StorageUnitMetaData(final String databaseName, final Map<StorageNodeName, DataSource> storageNodeDataSources,
-                               final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap) {
-        this.storageUnitNodeMap = storageUnitNodeMap;
-        storageUnits = new LinkedHashMap<>(this.storageUnitNodeMap.size(), 1F);
-        for (Entry<String, StorageNode> entry : this.storageUnitNodeMap.entrySet()) {
-            storageUnits.put(entry.getKey(), new StorageUnit(databaseName, storageNodeDataSources, dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()));
-        }
-        dataSources = createDataSources();
+                               final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageNodes) {
+        this.storageNodes = storageNodes;
+        storageUnits = storageNodes.entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> new StorageUnit(databaseName, storageNodeDataSources, dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()),
+                        (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(this.storageNodes.size(), 1F)));
+        dataSources = storageUnits.entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(storageUnits.size(), 1F)));
     }
     
     /**
@@ -60,13 +60,5 @@ public final class StorageUnitMetaData {
     public Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap() {
         return storageUnits.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    private Map<String, DataSource> createDataSources() {
-        Map<String, DataSource> result = new LinkedHashMap<>(storageUnits.size(), 1F);
-        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getDataSource());
-        }
-        return result;
     }
 }
