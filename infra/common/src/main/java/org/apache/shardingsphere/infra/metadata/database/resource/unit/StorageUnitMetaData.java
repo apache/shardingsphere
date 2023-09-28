@@ -52,6 +52,14 @@ public final class StorageUnitMetaData {
         dataSources = createDataSources();
     }
     
+    private Map<String, DataSource> createDataSources() {
+        Map<String, DataSource> result = new LinkedHashMap<>(storageUnits.size(), 1F);
+        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().getDataSource());
+        }
+        return result;
+    }
+    
     /**
      * Get data source pool properties map.
      * 
@@ -60,13 +68,5 @@ public final class StorageUnitMetaData {
     public Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap() {
         return storageUnits.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    private Map<String, DataSource> createDataSources() {
-        Map<String, DataSource> result = new LinkedHashMap<>(storageUnits.size(), 1F);
-        for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().getDataSource());
-        }
-        return result;
     }
 }
