@@ -85,7 +85,7 @@ public final class ResourceSwitchManager {
         Map<String, StorageNode> toBeChangedStorageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(toBeChangedPropsMap);
         StorageResource staleStorageResource = getStaleDataSources(resourceMetaData, toBeChangedStorageUnitNodeMap, toBeChangedPropsMap);
         Collection<StorageNodeName> toBeChangedStorageNodeNames = toBeChangedStorageUnitNodeMap.values().stream().map(StorageNode::getName).collect(Collectors.toSet());
-        staleStorageResource.getDataSourceMap().putAll(getToBeDeletedDataSources(resourceMetaData.getDataSources(), toBeChangedStorageNodeNames));
+        staleStorageResource.getDataSources().putAll(getToBeDeletedDataSources(resourceMetaData.getDataSources(), toBeChangedStorageNodeNames));
         staleStorageResource.getStorageUnitNodeMap().putAll(
                 getToBeDeletedStorageUnitNodeMap(resourceMetaData.getStorageUnitMetaData().getStorageUnits(), toBeChangedStorageUnitNodeMap.keySet()));
         return new SwitchingResource(resourceMetaData,

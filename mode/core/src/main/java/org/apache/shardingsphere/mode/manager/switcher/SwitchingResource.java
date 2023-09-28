@@ -48,6 +48,6 @@ public final class SwitchingResource {
      * Close stale data sources.
      */
     public void closeStaleDataSources() {
-        staleStorageResource.getDataSourceMap().values().stream().filter(Objects::nonNull).forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
+        staleStorageResource.getDataSources().values().stream().filter(Objects::nonNull).forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
     }
 }
