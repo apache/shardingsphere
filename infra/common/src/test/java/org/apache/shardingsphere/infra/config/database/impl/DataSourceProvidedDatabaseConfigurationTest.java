@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.config.database.impl;
 
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
     @Test
     void assertGetStorageNodes() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        MockedDataSource dataSource = (MockedDataSource) databaseConfig.getStorageResource().getDataSourceMap().get(new StorageNode("foo_ds"));
+        MockedDataSource dataSource = (MockedDataSource) databaseConfig.getStorageResource().getDataSources().get(new StorageNodeName("foo_ds"));
         assertThat(dataSource.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(dataSource.getUsername(), is("root"));
         assertThat(dataSource.getPassword(), is("root"));

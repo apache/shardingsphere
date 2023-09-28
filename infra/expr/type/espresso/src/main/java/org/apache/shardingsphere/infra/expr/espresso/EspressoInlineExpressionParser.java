@@ -46,6 +46,17 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     private String inlineExpression;
     
+    /**
+     * TODO <a href="https://github.com/oracle/graal/issues/4555">espressoHome not defined</a> not yet closed.
+     * Maybe sometimes we need `.option("java.Properties.org.graalvm.home", System.getenv("JAVA_HOME"))`
+     *
+     * @see org.graalvm.polyglot.Context
+     */
+    private final Context context = Context.newBuilder()
+            .allowAllAccess(true)
+            .option("java.Classpath", JAVA_CLASSPATH)
+            .build();
+    
     static {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("espresso-need-libs");
         String dir = null == resource ? null : resource.getPath();
@@ -74,22 +85,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     @Override
     public List<String> splitAndEvaluate() {
-        try (Context context = createContext()) {
-            return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split(handlePlaceHolder(inlineExpression)), context));
-        }
-    }
-    
-    /**
-     * TODO <a href="https://github.com/oracle/graal/issues/4555">espressoHome not defined</a> not yet closed.
-     *
-     * @return the Truffle Context Instance.
-     */
-    private Context createContext() {
-        return Context.newBuilder()
-                .allowAllAccess(true)
-                .option("java.Properties.org.graalvm.home", System.getenv("JAVA_HOME"))
-                .option("java.Classpath", JAVA_CLASSPATH)
-                .build();
+        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split(handlePlaceHolder(inlineExpression)), context));
     }
     
     private List<String> split(final String inlineExpression) {

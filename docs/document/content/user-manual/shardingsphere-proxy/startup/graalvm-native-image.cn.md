@@ -50,16 +50,14 @@ services:
 
 ## 前提条件
 
-1. 根据 https://www.graalvm.org/downloads/ 要求安装和配置 JDK 17 对应的 `GraalVM Community Edition` 或 `Oracle GraalVM`
-   。或者使用 `SDKMAN!`
-   。如果你希望使用携带了 [GraalVM Free Terms and Conditions license](https://www.oracle.com/downloads/licenses/graal-free-license.html)
-   的 `Oracle GraalVM`，下面的命令应更改为 `sdk install java 17.0.8-graal`。
+1. 根据 https://www.graalvm.org/downloads/ 要求安装和配置 JDK 17 对应的 `GraalVM Community Edition`
+   或 `GraalVM Community Edition` 的下游发行版。若使用 `SDKMAN!`，
 
 ```shell
 sdk install java 17.0.8-graalce
 ```
 
-2. 根据 https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites 的要求安装本地工具链。
+2. 根据 https://www.graalvm.org/jdk17/reference-manual/native-image/#prerequisites 的要求安装本地工具链。
 
 3. 如果需要构建 Docker Image， 确保 `docker-ce` 已安装。
 
@@ -145,7 +143,7 @@ services:
 
 - 如果你不对 Git Source 做任何更改， 上文提及的命令将使用 `oraclelinux:9-slim` 作为 Base Docker Image。
   但如果你希望使用 `busybox:glic`，`gcr.io/distroless/base` 或 `scratch` 等更小体积的 Docker Image 作为 Base Docker
-  Image，你需要根据 https://www.graalvm.org/latest/reference-manual/native-image/guides/build-static-executables/ 的要求，
+  Image，你需要根据 https://www.graalvm.org/jdk17/reference-manual/native-image/guides/build-static-executables/ 的要求，
   做为 `pom.xml`的 `native profile` 添加 `-H:+StaticExecutableWithDynamicLibC` 的 `jvmArgs` 等操作。
   另请注意，某些第三方依赖将需要在 `Dockerfile` 安装更多系统库，例如 `libdl`。
   因此请确保根据你的使用情况调整 `distribution/proxy-native` 下的 `pom.xml` 和 `Dockerfile` 的内容。
@@ -155,7 +153,7 @@ services:
 - 针对 GraalVM Native Image 形态的 ShardingSphere Proxy，其提供的可观察性的能力与
   https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/ 并不一致。
 
-- 你可以使用 https://www.graalvm.org/latest/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image 的内部行为，
+- 你可以使用 https://www.graalvm.org/jdk17/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image 的内部行为，
   并根据其要求使用 VSCode 完成调试工作。如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native Image，你可以关注
   https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
   及其后继。如果你使用的不是 Linux，则无法对 GraalVM Native Image 进行 Debug，请关注尚未关闭的

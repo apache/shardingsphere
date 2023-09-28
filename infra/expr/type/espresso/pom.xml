@@ -27,7 +27,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <truffle-api.version>21.2.0</truffle-api.version>
+        <graalvm.version>21.2.0</graalvm.version>
     </properties>
     
     <dependencies>
@@ -46,18 +46,17 @@
             <artifactId>shardingsphere-infra-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
-        <dependency>
-            <groupId>org.graalvm.truffle</groupId>
-            <artifactId>truffle-api</artifactId>
-            <version>${truffle-api.version}</version>
-        </dependency>
-        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-test-util</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.graalvm.truffle</groupId>
+            <artifactId>truffle-api</artifactId>
+            <version>${graalvm.version}</version>
         </dependency>
     </dependencies>
     
@@ -69,12 +68,13 @@
                 <version>${maven-dependency-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>copy</id>
+                        <id>copy-dependencies</id>
                         <goals>
                             <goal>copy</goal>
                         </goals>
-                        <phase>process-test-classes</phase>
+                        <phase>process-resources</phase>
                         <configuration>
+                            <outputDirectory>${project.build.directory}/classes/espresso-need-libs</outputDirectory>
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.apache.groovy</groupId>
@@ -85,7 +85,6 @@
                                 </artifactItem>
                             </artifactItems>
                             <stripVersion>true</stripVersion>
-                            <outputDirectory>target/classes/espresso-need-libs</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

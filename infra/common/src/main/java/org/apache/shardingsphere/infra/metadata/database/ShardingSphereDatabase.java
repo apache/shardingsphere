@@ -124,7 +124,7 @@ public final class ShardingSphereDatabase {
     }
     
     private static ResourceMetaData createResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourcePoolProperties> propsMap) {
-        return new ResourceMetaData(databaseName, storageResource.getDataSourceMap(), storageResource.getStorageUnitNodeMappers(), propsMap);
+        return new ResourceMetaData(databaseName, storageResource.getDataSources(), storageResource.getStorageUnitNodeMap(), propsMap);
     }
     
     /**

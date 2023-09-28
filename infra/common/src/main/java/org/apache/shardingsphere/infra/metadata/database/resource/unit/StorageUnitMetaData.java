@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -34,18 +35,18 @@ import java.util.stream.Collectors;
 public final class StorageUnitMetaData {
     
     // TODO zhangliang: should refactor
-    private final Map<String, StorageUnitNodeMapper> unitNodeMappers;
+    private final Map<String, StorageNode> storageUnitNodeMap;
     
     private final Map<String, StorageUnit> storageUnits;
     
     // TODO zhangliang: should refactor
     private final Map<String, DataSource> dataSources;
     
-    public StorageUnitMetaData(final String databaseName, final Map<StorageNode, DataSource> storageNodeDataSources,
-                               final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageUnitNodeMapper> unitNodeMappers) {
-        this.unitNodeMappers = unitNodeMappers;
-        storageUnits = new LinkedHashMap<>(unitNodeMappers.size(), 1F);
-        for (Entry<String, StorageUnitNodeMapper> entry : unitNodeMappers.entrySet()) {
+    public StorageUnitMetaData(final String databaseName, final Map<StorageNodeName, DataSource> storageNodeDataSources,
+                               final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap) {
+        this.storageUnitNodeMap = storageUnitNodeMap;
+        storageUnits = new LinkedHashMap<>(this.storageUnitNodeMap.size(), 1F);
+        for (Entry<String, StorageNode> entry : this.storageUnitNodeMap.entrySet()) {
             storageUnits.put(entry.getKey(), new StorageUnit(databaseName, storageNodeDataSources, dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()));
         }
         dataSources = createDataSources();

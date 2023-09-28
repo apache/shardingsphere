@@ -17,23 +17,29 @@
 
 package org.apache.shardingsphere.infra.metadata.database.resource.node;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import javax.sql.DataSource;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
- * Storage node.
+ * Storage node utility class.
  */
-@RequiredArgsConstructor
-@Getter
-public final class StorageNode {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class StorageNodeUtils {
     
-    private final StorageNodeName name;
-    
-    private final String url;
-    
-    private final String catalog;
-    
-    public StorageNode(final StorageNodeName name, final String url) {
-        this(name, url, null);
+    /**
+     * Get storage node data sources.
+     *
+     * @param dataSources data sources
+     * @return storage node data sources
+     */
+    public static Map<StorageNodeName, DataSource> getStorageNodeDataSources(final Map<String, DataSource> dataSources) {
+        return dataSources.entrySet().stream().collect(
+                Collectors.toMap(entry -> new StorageNodeName(entry.getKey()), Entry::getValue, (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(dataSources.size(), 1F)));
     }
 }
