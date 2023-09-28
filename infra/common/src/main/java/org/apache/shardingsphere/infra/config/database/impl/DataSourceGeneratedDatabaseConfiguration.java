@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapperUtils;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapper;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -52,15 +52,14 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
         ruleConfigurations = ruleConfigs;
         dataSourcePoolPropertiesMap = dataSourceConfigs.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        Map<String, StorageUnitNodeMapper> mappers = StorageUnitNodeMapperUtils.fromDataSourcePoolProperties(dataSourcePoolPropertiesMap);
-        storageResource = new StorageResource(getStorageNodeDataSourceMap(mappers), mappers);
+        Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(dataSourcePoolPropertiesMap);
+        storageResource = new StorageResource(getStorageNodeDataSourceMap(storageUnitNodeMap), storageUnitNodeMap);
     }
     
-    private Map<StorageNodeName, DataSource> getStorageNodeDataSourceMap(final Map<String, StorageUnitNodeMapper> mappers) {
-        Map<StorageNodeName, DataSource> result = new LinkedHashMap<>(mappers.size(), 1F);
-        for (Entry<String, StorageUnitNodeMapper> entry : mappers.entrySet()) {
-            result.computeIfAbsent(entry.getValue().getStorageNode().getName(),
-                    key -> DataSourcePoolCreator.create(entry.getKey(), dataSourcePoolPropertiesMap.get(entry.getKey()), true, result.values()));
+    private Map<StorageNodeName, DataSource> getStorageNodeDataSourceMap(final Map<String, StorageNode> storageUnitNodeMap) {
+        Map<StorageNodeName, DataSource> result = new LinkedHashMap<>(storageUnitNodeMap.size(), 1F);
+        for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
+            result.computeIfAbsent(entry.getValue().getName(), key -> DataSourcePoolCreator.create(entry.getKey(), dataSourcePoolPropertiesMap.get(entry.getKey()), true, result.values()));
         }
         return result;
     }
