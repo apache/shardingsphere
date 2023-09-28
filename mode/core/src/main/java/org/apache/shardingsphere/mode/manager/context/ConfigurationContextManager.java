@@ -274,7 +274,7 @@ public final class ConfigurationContextManager {
      * @return ShardingSphere databases
      */
     public Map<String, ShardingSphereDatabase> renewDatabase(final ShardingSphereDatabase database, final SwitchingResource resource) {
-        Map<StorageNodeName, DataSource> newStorageNodes = getNewStorageNodes(database.getResourceMetaData().getDataSourceMap(), resource);
+        Map<StorageNodeName, DataSource> newStorageNodes = getNewStorageNodes(database.getResourceMetaData().getDataSources(), resource);
         Map<String, StorageNode> newStorageUnitNodeMap = getNewStorageUnitNodeMap(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits(), resource);
         Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
@@ -285,7 +285,7 @@ public final class ConfigurationContextManager {
     private Map<StorageNodeName, DataSource> getNewStorageNodes(final Map<StorageNodeName, DataSource> currentStorageNodes, final SwitchingResource resource) {
         Map<StorageNodeName, DataSource> result = new LinkedHashMap<>();
         for (Entry<StorageNodeName, DataSource> entry : currentStorageNodes.entrySet()) {
-            if (!resource.getStaleStorageResource().getDataSourceMap().containsKey(entry.getKey())) {
+            if (!resource.getStaleStorageResource().getDataSources().containsKey(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());
             }
         }
@@ -364,10 +364,10 @@ public final class ConfigurationContextManager {
     }
     
     private StorageResource getMergedStorageResource(final ResourceMetaData currentResourceMetaData, final SwitchingResource switchingResource) {
-        Map<StorageNodeName, DataSource> storageNodeDataSources = currentResourceMetaData.getDataSourceMap();
+        Map<StorageNodeName, DataSource> storageNodeDataSources = currentResourceMetaData.getDataSources();
         Map<String, StorageNode> storageUnitNodeMap = currentResourceMetaData.getStorageUnitMetaData().getStorageUnitNodeMap();
-        if (null != switchingResource && null != switchingResource.getNewStorageResource() && !switchingResource.getNewStorageResource().getDataSourceMap().isEmpty()) {
-            storageNodeDataSources.putAll(switchingResource.getNewStorageResource().getDataSourceMap());
+        if (null != switchingResource && null != switchingResource.getNewStorageResource() && !switchingResource.getNewStorageResource().getDataSources().isEmpty()) {
+            storageNodeDataSources.putAll(switchingResource.getNewStorageResource().getDataSources());
         }
         if (null != switchingResource && null != switchingResource.getNewStorageResource() && !switchingResource.getNewStorageResource().getStorageUnitNodeMap().isEmpty()) {
             storageUnitNodeMap.putAll(switchingResource.getNewStorageResource().getStorageUnitNodeMap());

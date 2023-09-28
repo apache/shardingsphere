@@ -222,7 +222,7 @@ class ContextManagerTest {
     void assertAlterRuleConfiguration() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", new MockedDataSource());
-        when(resourceMetaData.getDataSourceMap()).thenReturn(StorageNodeUtils.getStorageNodeDataSources(dataSources));
+        when(resourceMetaData.getDataSources()).thenReturn(StorageNodeUtils.getStorageNodeDataSources(dataSources));
         StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
         when(resourceMetaData.getStorageUnitMetaData()).thenReturn(storageUnitMetaData);
         when(storageUnitMetaData.getStorageUnits()).thenReturn(Collections.emptyMap());
@@ -245,7 +245,7 @@ class ContextManagerTest {
                 Collections.singletonMap("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), createProperties("test", "test"))));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnitMetaData().getStorageUnits().size(), is(3));
         assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")
-                .getResourceMetaData().getDataSourceMap().get(new StorageNodeName("foo_ds")));
+                .getResourceMetaData().getDataSources().get(new StorageNodeName("foo_ds")));
     }
     
     private ResourceMetaData createOriginalResource() {
@@ -262,7 +262,7 @@ class ContextManagerTest {
         }
         when(result.getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(result.getStorageUnitMetaData().getStorageUnitNodeMap()).thenReturn(storageUnitNodeMap);
-        when(result.getDataSourceMap()).thenReturn(storageNodeDataSourceMap);
+        when(result.getDataSources()).thenReturn(storageNodeDataSourceMap);
         return result;
     }
     

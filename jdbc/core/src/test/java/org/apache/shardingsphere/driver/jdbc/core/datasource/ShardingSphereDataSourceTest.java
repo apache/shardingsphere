@@ -133,7 +133,7 @@ class ShardingSphereDataSourceTest {
             ShardingSphereDataSource actual = createShardingSphereDataSource(dataSource);
             actual.close();
             Map<StorageNodeName, DataSource> dataSourceMap = getContextManager(actual).getMetaDataContexts().getMetaData()
-                    .getDatabase(DefaultDatabase.LOGIC_NAME).getResourceMetaData().getDataSourceMap();
+                    .getDatabase(DefaultDatabase.LOGIC_NAME).getResourceMetaData().getDataSources();
             assertTrue(((HikariDataSource) dataSourceMap.get(new StorageNodeName("ds"))).isClosed());
         }
     }

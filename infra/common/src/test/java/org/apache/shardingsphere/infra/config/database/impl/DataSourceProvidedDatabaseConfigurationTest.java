@@ -45,7 +45,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
     @Test
     void assertGetStorageNodes() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        MockedDataSource dataSource = (MockedDataSource) databaseConfig.getStorageResource().getDataSourceMap().get(new StorageNodeName("foo_ds"));
+        MockedDataSource dataSource = (MockedDataSource) databaseConfig.getStorageResource().getDataSources().get(new StorageNodeName("foo_ds"));
         assertThat(dataSource.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(dataSource.getUsername(), is("root"));
         assertThat(dataSource.getPassword(), is("root"));

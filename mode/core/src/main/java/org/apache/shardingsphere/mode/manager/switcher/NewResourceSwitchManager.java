@@ -61,7 +61,7 @@ public final class NewResourceSwitchManager {
         Map<StorageNodeName, DataSourcePoolProperties> storageNodeDataSourcePoolProps = StorageUnitNodeMapUtils.getStorageNodeDataSourcePoolProperties(storageUnitDataSourcePoolProps);
         Map<StorageNodeName, DataSource> newStorageNodes = new LinkedHashMap<>(storageNodeNames.size(), 1F);
         for (StorageNodeName each : storageNodeNames) {
-            if (!resourceMetaData.getDataSourceMap().containsKey(each)) {
+            if (!resourceMetaData.getDataSources().containsKey(each)) {
                 newStorageNodes.put(each, DataSourcePoolCreator.create(storageNodeDataSourcePoolProps.get(each)));
             }
         }
@@ -96,7 +96,7 @@ public final class NewResourceSwitchManager {
     private StorageResource getStaleStorageResource(final ResourceMetaData resourceMetaData, final Map<String, StorageNode> storageUintNodeMap) {
         Collection<StorageNodeName> toBeAlteredStorageNodeNames = storageUintNodeMap.values().stream().map(StorageNode::getName).collect(Collectors.toSet());
         Map<StorageNodeName, DataSource> storageNodes = new LinkedHashMap<>(toBeAlteredStorageNodeNames.size(), 1F);
-        for (Entry<StorageNodeName, DataSource> entry : resourceMetaData.getDataSourceMap().entrySet()) {
+        for (Entry<StorageNodeName, DataSource> entry : resourceMetaData.getDataSources().entrySet()) {
             if (toBeAlteredStorageNodeNames.contains(entry.getKey())) {
                 storageNodes.put(entry.getKey(), entry.getValue());
             }
@@ -124,7 +124,7 @@ public final class NewResourceSwitchManager {
         Map<String, StorageNode> reservedStorageUintNodeMap = resourceMetaData.getStorageUnitMetaData().getStorageUnitNodeMap();
         Map<StorageNodeName, DataSource> storageNodes = new LinkedHashMap<>(1, 1F);
         if (reservedStorageUintNodeMap.values().stream().noneMatch(each -> each.equals(storageNode))) {
-            storageNodes.put(storageNode.getName(), resourceMetaData.getDataSourceMap().get(storageNode.getName()));
+            storageNodes.put(storageNode.getName(), resourceMetaData.getDataSources().get(storageNode.getName()));
         }
         return new StorageResource(storageNodes, Collections.singletonMap(storageUnitName, storageNode));
     }

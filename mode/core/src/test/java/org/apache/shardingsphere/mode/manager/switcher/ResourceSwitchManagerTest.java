@@ -53,8 +53,8 @@ class ResourceSwitchManagerTest {
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         SwitchingResource actual = new ResourceSwitchManager().createByAlterDataSourcePoolProperties(new ResourceMetaData(dataSourceMap), Collections.emptyMap());
-        assertTrue(actual.getNewStorageResource().getDataSourceMap().isEmpty());
-        assertThat(actual.getStaleStorageResource().getDataSourceMap().size(), is(2));
+        assertTrue(actual.getNewStorageResource().getDataSources().isEmpty());
+        assertThat(actual.getStaleStorageResource().getDataSources().size(), is(2));
         actual.closeStaleDataSources();
         assertStaleDataSource((MockedDataSource) dataSourceMap.get("ds_0"));
         assertStaleDataSource((MockedDataSource) dataSourceMap.get("ds_1"));
@@ -85,10 +85,10 @@ class ResourceSwitchManagerTest {
     }
     
     private void assertNewDataSources(final SwitchingResource actual) {
-        assertThat(actual.getNewStorageResource().getDataSourceMap().size(), is(3));
-        assertTrue(actual.getNewStorageResource().getDataSourceMap().containsKey(new StorageNodeName("not_change")));
-        assertTrue(actual.getNewStorageResource().getDataSourceMap().containsKey(new StorageNodeName("new")));
-        assertTrue(actual.getNewStorageResource().getDataSourceMap().containsKey(new StorageNodeName("replace")));
+        assertThat(actual.getNewStorageResource().getDataSources().size(), is(3));
+        assertTrue(actual.getNewStorageResource().getDataSources().containsKey(new StorageNodeName("not_change")));
+        assertTrue(actual.getNewStorageResource().getDataSources().containsKey(new StorageNodeName("new")));
+        assertTrue(actual.getNewStorageResource().getDataSources().containsKey(new StorageNodeName("replace")));
     }
     
     private void assertStaleDataSources(final Map<String, DataSource> originalDataSourceMap) {
