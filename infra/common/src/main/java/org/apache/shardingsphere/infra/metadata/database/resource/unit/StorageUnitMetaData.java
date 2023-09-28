@@ -37,28 +37,21 @@ public final class StorageUnitMetaData {
     // TODO zhangliang: should refactor
     private final Map<String, StorageNode> storageNodes;
     
+    private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
+    
     private final Map<String, StorageUnit> storageUnits;
     
     // TODO zhangliang: should refactor
     private final Map<String, DataSource> dataSources;
     
-    public StorageUnitMetaData(final String databaseName, final Map<StorageNodeName, DataSource> storageNodeDataSources,
-                               final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageNodes) {
+    public StorageUnitMetaData(final String databaseName, final Map<String, StorageNode> storageNodes, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap,
+                               final Map<StorageNodeName, DataSource> storageNodeDataSources) {
         this.storageNodes = storageNodes;
+        this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
         storageUnits = storageNodes.entrySet().stream().collect(
                 Collectors.toMap(Entry::getKey, entry -> new StorageUnit(databaseName, storageNodeDataSources, dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()),
                         (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(this.storageNodes.size(), 1F)));
         dataSources = storageUnits.entrySet().stream().collect(
                 Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(storageUnits.size(), 1F)));
-    }
-    
-    /**
-     * Get data source pool properties map.
-     * 
-     * @return data source pool properties map
-     */
-    public Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap() {
-        return storageUnits.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }
