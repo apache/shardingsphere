@@ -49,6 +49,7 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.fieldli
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor;
 
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * Command executor factory for MySQL.
@@ -73,33 +74,35 @@ public final class MySQLCommandExecutorFactory {
         } else {
             log.debug("Execute packet type: {}", commandPacketType);
         }
-        switch (commandPacketType) {
-            case COM_QUIT:
-                return new MySQLComQuitExecutor();
-            case COM_INIT_DB:
-                return new MySQLComInitDbExecutor((MySQLComInitDbPacket) commandPacket, connectionSession);
-            case COM_FIELD_LIST:
-                return new MySQLComFieldListPacketExecutor((MySQLComFieldListPacket) commandPacket, connectionSession);
-            case COM_QUERY:
-                return new MySQLComQueryPacketExecutor((MySQLComQueryPacket) commandPacket, connectionSession);
-            case COM_PING:
-                return new MySQLComPingExecutor(connectionSession);
-            case COM_STMT_PREPARE:
-                return new MySQLComStmtPrepareExecutor((MySQLComStmtPreparePacket) commandPacket, connectionSession);
-            case COM_STMT_EXECUTE:
-                return new MySQLComStmtExecuteExecutor((MySQLComStmtExecutePacket) commandPacket, connectionSession);
-            case COM_STMT_SEND_LONG_DATA:
-                return new MySQLComStmtSendLongDataExecutor((MySQLComStmtSendLongDataPacket) commandPacket, connectionSession);
-            case COM_STMT_RESET:
-                return new MySQLComStmtResetExecutor((MySQLComStmtResetPacket) commandPacket, connectionSession);
-            case COM_STMT_CLOSE:
-                return new MySQLComStmtCloseExecutor((MySQLComStmtClosePacket) commandPacket, connectionSession);
-            case COM_SET_OPTION:
-                return new MySQLComSetOptionExecutor((MySQLComSetOptionPacket) commandPacket, connectionSession);
-            case COM_RESET_CONNECTION:
-                return new MySQLComResetConnectionExecutor(connectionSession);
-            default:
-                return new MySQLUnsupportedCommandExecutor(commandPacketType);
+        if (Objects.equals(commandPacketType,MySQLCommandPacketType.COM_QUERY)){
+            return new MySQLComQueryPacketExecutor((MySQLComQueryPacket) commandPacket, connectionSession);
+        }else {
+            switch (commandPacketType) {
+                case COM_QUIT:
+                    return new MySQLComQuitExecutor();
+                case COM_INIT_DB:
+                    return new MySQLComInitDbExecutor((MySQLComInitDbPacket) commandPacket, connectionSession);
+                case COM_FIELD_LIST:
+                    return new MySQLComFieldListPacketExecutor((MySQLComFieldListPacket) commandPacket, connectionSession);
+                case COM_PING:
+                    return new MySQLComPingExecutor(connectionSession);
+                case COM_STMT_PREPARE:
+                    return new MySQLComStmtPrepareExecutor((MySQLComStmtPreparePacket) commandPacket, connectionSession);
+                case COM_STMT_EXECUTE:
+                    return new MySQLComStmtExecuteExecutor((MySQLComStmtExecutePacket) commandPacket, connectionSession);
+                case COM_STMT_SEND_LONG_DATA:
+                    return new MySQLComStmtSendLongDataExecutor((MySQLComStmtSendLongDataPacket) commandPacket, connectionSession);
+                case COM_STMT_RESET:
+                    return new MySQLComStmtResetExecutor((MySQLComStmtResetPacket) commandPacket, connectionSession);
+                case COM_STMT_CLOSE:
+                    return new MySQLComStmtCloseExecutor((MySQLComStmtClosePacket) commandPacket, connectionSession);
+                case COM_SET_OPTION:
+                    return new MySQLComSetOptionExecutor((MySQLComSetOptionPacket) commandPacket, connectionSession);
+                case COM_RESET_CONNECTION:
+                    return new MySQLComResetConnectionExecutor(connectionSession);
+                default:
+                    return new MySQLUnsupportedCommandExecutor(commandPacketType);
+            }
         }
     }
 }
