@@ -358,7 +358,8 @@ public final class ConfigurationContextManager {
                                                            final Collection<RuleConfiguration> toBeCreatedRuleConfigs) {
         StorageResource storageResource = getMergedStorageResource(resourceMetaData, switchingResource);
         Map<String, DataSourcePoolProperties> propsMap = null == switchingResource
-                ? resourceMetaData.getStorageUnitMetaData().getDataSourcePoolPropertiesMap()
+                ? resourceMetaData.getStorageUnitMetaData().getMetaDataMap()
+                    .entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))
                 : switchingResource.getMergedDataSourcePoolPropertiesMap();
         return new DataSourceProvidedDatabaseConfiguration(storageResource, toBeCreatedRuleConfigs, propsMap);
     }
