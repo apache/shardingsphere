@@ -134,7 +134,7 @@ class ConfigurationChangedSubscriberTest {
     @Test
     void assertRenewForDataSourceChanged() {
         subscriber.renew(new DataSourceUnitsChangedEvent("db", "0", createChangedDataSourcePoolPropertiesMap()));
-        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getStorageUnitMetaData().getStorageUnits().containsKey("ds_2"));
+        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().containsKey("ds_2"));
     }
     
     private Map<String, DataSourcePoolProperties> createChangedDataSourcePoolPropertiesMap() {

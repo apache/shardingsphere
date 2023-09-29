@@ -26,15 +26,12 @@ import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Storage unit meta data.
  */
 @Getter
 public final class StorageUnitMetaData {
-    
-    private final Map<String, StorageUnit> storageUnits;
     
     private final Map<String, NewStorageUnitMetaData> metaDataMap;
     
@@ -44,8 +41,5 @@ public final class StorageUnitMetaData {
         for (Entry<String, StorageNode> entry : storageNodes.entrySet()) {
             metaDataMap.put(entry.getKey(), new NewStorageUnitMetaData(databaseName, entry.getValue(), dataSourcePoolPropertiesMap.get(entry.getKey()), dataSources.get(entry.getValue().getName())));
         }
-        storageUnits = storageNodes.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> new StorageUnit(databaseName, dataSources.get(entry.getValue().getName()), dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()),
-                        (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(storageNodes.size(), 1F)));
     }
 }

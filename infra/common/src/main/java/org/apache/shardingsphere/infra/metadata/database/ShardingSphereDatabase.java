@@ -175,7 +175,7 @@ public final class ShardingSphereDatabase {
      * @return is completed or not
      */
     public boolean isComplete() {
-        return !ruleMetaData.getRules().isEmpty() && !resourceMetaData.getStorageUnitMetaData().getStorageUnits().isEmpty();
+        return !ruleMetaData.getRules().isEmpty() && !resourceMetaData.getStorageUnitMetaData().getMetaDataMap().isEmpty();
     }
     
     /**
@@ -184,7 +184,7 @@ public final class ShardingSphereDatabase {
      * @return contains data source or not
      */
     public boolean containsDataSource() {
-        return !resourceMetaData.getStorageUnitMetaData().getStorageUnits().isEmpty();
+        return !resourceMetaData.getStorageUnitMetaData().getMetaDataMap().isEmpty();
     }
     
     /**

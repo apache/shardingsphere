@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -83,15 +84,19 @@ class SQLRewriteEntryTest {
     }
     
     private ResourceMetaData mockResourceMetaData() {
-        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
         StorageUnit storageUnit1 = mock(StorageUnit.class);
         when(storageUnit1.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "H2"));
         StorageUnit storageUnit2 = mock(StorageUnit.class);
         when(storageUnit2.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        storageUnits.put("ds_0", storageUnit1);
-        storageUnits.put("ds_1", storageUnit2);
+        Map<String, NewStorageUnitMetaData> metaDataMap = new LinkedHashMap<>(2, 1F);
+        NewStorageUnitMetaData storageUnitMetaData1 = mock(NewStorageUnitMetaData.class);
+        when(storageUnitMetaData1.getStorageUnit()).thenReturn(storageUnit1);
+        NewStorageUnitMetaData storageUnitMetaData2 = mock(NewStorageUnitMetaData.class);
+        when(storageUnitMetaData2.getStorageUnit()).thenReturn(storageUnit2);
+        metaDataMap.put("ds_0", storageUnitMetaData1);
+        metaDataMap.put("ds_1", storageUnitMetaData2);
         ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
+        when(result.getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
         return result;
     }
 }

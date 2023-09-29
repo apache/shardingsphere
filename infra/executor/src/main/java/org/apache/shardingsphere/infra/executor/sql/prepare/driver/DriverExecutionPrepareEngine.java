@@ -97,7 +97,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("unchecked")
     private ExecutionGroup<T> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnits, final C connection, final ConnectionMode connectionMode) throws SQLException {
         List<T> inputs = new LinkedList<>();
-        DatabaseType databaseType = storageUnitMetaData.getStorageUnits().get(dataSourceName).getStorageType();
+        DatabaseType databaseType = storageUnitMetaData.getMetaDataMap().get(dataSourceName).getStorageUnit().getStorageType();
         for (SQLUnit each : sqlUnits) {
             inputs.add((T) sqlExecutionUnitBuilder.build(new ExecutionUnit(dataSourceName, each), statementManager, connection, connectionMode, option, databaseType));
         }
