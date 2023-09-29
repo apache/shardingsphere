@@ -28,8 +28,12 @@ import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSpher
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * ShardingSphere statistics builder for MySQL.
@@ -40,7 +44,9 @@ public final class MySQLShardingSphereStatisticsBuilder implements ShardingSpher
     private static final Set<String> CURRENT_SUPPORT = new HashSet<>(Arrays.asList("PARAMETERS"));
 
     private static final String SHARDING_SPHERE = "shardingsphere";
+
     private static final String INFORMATION_SCHEMA = "information_schema";
+
     private static final String CLUSTER_INFORMATION = "cluster_information";
 
     @Override
