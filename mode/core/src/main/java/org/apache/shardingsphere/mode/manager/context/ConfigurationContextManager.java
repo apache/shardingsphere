@@ -175,7 +175,9 @@ public final class ConfigurationContextManager {
             Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
             rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
             rules.addAll(DatabaseRulesBuilder.build(databaseName,
-                    database.getResourceMetaData().getStorageUnitMetaData().getDataSources(), database.getRuleMetaData().getRules(), ruleConfig, instanceContext));
+                    database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().entrySet().stream()
+                            .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+                    database.getRuleMetaData().getRules(), ruleConfig, instanceContext));
             refreshMetadata(databaseName, database, rules);
         } catch (final SQLException ex) {
             log.error("Alter database: {} rule configurations failed", databaseName, ex);
@@ -195,7 +197,9 @@ public final class ConfigurationContextManager {
             rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
             if (isNotEmptyConfig(ruleConfig)) {
                 rules.addAll(DatabaseRulesBuilder.build(databaseName,
-                        database.getResourceMetaData().getStorageUnitMetaData().getDataSources(), database.getRuleMetaData().getRules(), ruleConfig, instanceContext));
+                        database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().entrySet().stream()
+                                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+                        database.getRuleMetaData().getRules(), ruleConfig, instanceContext));
             }
             refreshMetadata(databaseName, database, rules);
         } catch (final SQLException ex) {

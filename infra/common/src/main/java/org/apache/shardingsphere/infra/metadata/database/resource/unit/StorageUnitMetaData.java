@@ -36,8 +36,6 @@ public final class StorageUnitMetaData {
     
     private final Map<String, StorageUnit> storageUnits;
     
-    private final Map<String, DataSource> dataSources;
-    
     private final Map<String, NewStorageUnitMetaData> metaDataMap;
     
     public StorageUnitMetaData(final String databaseName, final Map<String, StorageNode> storageNodes, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap,
@@ -49,7 +47,5 @@ public final class StorageUnitMetaData {
         storageUnits = storageNodes.entrySet().stream().collect(
                 Collectors.toMap(Entry::getKey, entry -> new StorageUnit(databaseName, dataSources.get(entry.getValue().getName()), dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()),
                         (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(storageNodes.size(), 1F)));
-        this.dataSources = storageUnits.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(storageUnits.size(), 1F)));
     }
 }
