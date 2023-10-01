@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
@@ -60,7 +60,7 @@ class RouteSQLRewriteEngineTest {
         routeContext.getRouteUnits().add(routeUnit);
         DatabaseType databaseType = mock(DatabaseType.class);
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnits(databaseType)).rewrite(sqlRewriteContext, routeContext);
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnitMetaData(databaseType)).rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("SELECT ?"));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getParameters(), is(Collections.singletonList(1)));
@@ -79,7 +79,7 @@ class RouteSQLRewriteEngineTest {
         routeContext.getRouteUnits().add(secondRouteUnit);
         DatabaseType databaseType = mock(DatabaseType.class);
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnits(databaseType)).rewrite(sqlRewriteContext, routeContext);
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnitMetaData(databaseType)).rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(firstRouteUnit).getSql(), is("SELECT ? UNION ALL SELECT ?"));
         assertThat(actual.getSqlRewriteUnits().get(firstRouteUnit).getParameters(), is(Arrays.asList(1, 1)));
@@ -99,7 +99,7 @@ class RouteSQLRewriteEngineTest {
         routeContext.getRouteUnits().add(routeUnit);
         DatabaseType databaseType = mock(DatabaseType.class);
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnits(databaseType)).rewrite(sqlRewriteContext, routeContext);
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnitMetaData(databaseType)).rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getParameters(), is(Collections.singletonList(1)));
@@ -121,7 +121,7 @@ class RouteSQLRewriteEngineTest {
         routeContext.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds.tbl_0")));
         DatabaseType databaseType = mock(DatabaseType.class);
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnits(databaseType)).rewrite(sqlRewriteContext, routeContext);
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnitMetaData(databaseType)).rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getParameters(), is(Collections.singletonList(1)));
@@ -142,7 +142,7 @@ class RouteSQLRewriteEngineTest {
         routeContext.getOriginalDataNodes().add(Collections.emptyList());
         DatabaseType databaseType = mock(DatabaseType.class);
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnits(databaseType)).rewrite(sqlRewriteContext, routeContext);
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnitMetaData(databaseType)).rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getParameters(), is(Collections.singletonList(1)));
@@ -163,7 +163,7 @@ class RouteSQLRewriteEngineTest {
         routeContext.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_1.tbl_1")));
         DatabaseType databaseType = mock(DatabaseType.class);
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnits(databaseType)).rewrite(sqlRewriteContext, routeContext);
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), databaseType, mockStorageUnitMetaData(databaseType)).rewrite(sqlRewriteContext, routeContext);
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
         assertTrue(actual.getSqlRewriteUnits().get(routeUnit).getParameters().isEmpty());
@@ -176,9 +176,9 @@ class RouteSQLRewriteEngineTest {
         return result;
     }
     
-    private Map<String, StorageUnit> mockStorageUnits(final DatabaseType databaseType) {
-        StorageUnit result = mock(StorageUnit.class);
-        when(result.getStorageType()).thenReturn(databaseType);
+    private Map<String, NewStorageUnitMetaData> mockStorageUnitMetaData(final DatabaseType databaseType) {
+        NewStorageUnitMetaData result = mock(NewStorageUnitMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getStorageUnit().getStorageType()).thenReturn(databaseType);
         return Collections.singletonMap("ds_0", result);
     }
 }

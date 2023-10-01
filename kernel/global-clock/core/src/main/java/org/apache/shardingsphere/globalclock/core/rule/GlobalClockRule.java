@@ -23,7 +23,6 @@ import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
@@ -61,7 +60,8 @@ public final class GlobalClockRule implements GlobalRule {
     }
     
     private Optional<DatabaseType> findStorageType(final Collection<ShardingSphereDatabase> databases) {
-        return databases.stream().flatMap(each -> each.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().values().stream()).findFirst().map(StorageUnit::getStorageType);
+        return databases.stream()
+                .flatMap(each -> each.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().values().stream()).findFirst().map(each -> each.getStorageUnit().getStorageType());
     }
     
     /**

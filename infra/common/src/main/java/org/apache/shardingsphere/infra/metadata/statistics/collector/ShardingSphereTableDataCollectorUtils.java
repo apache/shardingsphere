@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.statistics.collector;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
@@ -57,7 +57,7 @@ public final class ShardingSphereTableDataCollectorUtils {
             return Collections.emptyList();
         }
         Collection<ShardingSphereRowData> result = new LinkedList<>();
-        for (StorageUnit each : database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().values()) {
+        for (NewStorageUnitMetaData each : database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().values()) {
             try (
                     Connection connection = each.getDataSource().getConnection();
                     Statement statement = connection.createStatement();
@@ -69,7 +69,7 @@ public final class ShardingSphereTableDataCollectorUtils {
     }
     
     private static boolean isDifferentProtocolAndStorageType(final ShardingSphereDatabase database) {
-        return !database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().values().stream().allMatch(each -> each.getStorageType().equals(database.getProtocolType()));
+        return !database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().values().stream().allMatch(each -> each.getStorageUnit().getStorageType().equals(database.getProtocolType()));
     }
     
     private static Collection<ShardingSphereRowData> getRows(final ShardingSphereTable table, final Collection<String> selectedColumnNames, final ResultSet resultSet) throws SQLException {

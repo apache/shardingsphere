@@ -57,11 +57,11 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
     }
     
     private void checkDataSources(final Map<String, ShadowDataSourceConfiguration> shadowDataSources, final Map<String, DataSource> dataSourceMap, final String databaseName) {
-        Set<String> dataSource = dataSourceMap.keySet();
+        Set<String> dataSourceName = dataSourceMap.keySet();
         for (Entry<String, ShadowDataSourceConfiguration> entry : shadowDataSources.entrySet()) {
-            ShardingSpherePreconditions.checkState(dataSource.contains(entry.getValue().getProductionDataSourceName()),
+            ShardingSpherePreconditions.checkState(dataSourceName.contains(entry.getValue().getProductionDataSourceName()),
                     () -> new MissingRequiredShadowConfigurationException("ProductionDataSourceName", databaseName));
-            ShardingSpherePreconditions.checkState(dataSource.contains(entry.getValue().getShadowDataSourceName()),
+            ShardingSpherePreconditions.checkState(dataSourceName.contains(entry.getValue().getShadowDataSourceName()),
                     () -> new MissingRequiredShadowConfigurationException("ShadowDataSourceName", databaseName));
         }
     }

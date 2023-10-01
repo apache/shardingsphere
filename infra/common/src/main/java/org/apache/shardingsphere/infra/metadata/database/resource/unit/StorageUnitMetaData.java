@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
@@ -26,7 +27,6 @@ import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Storage unit meta data.
@@ -34,24 +34,17 @@ import java.util.stream.Collectors;
 @Getter
 public final class StorageUnitMetaData {
     
-    // TODO zhangliang: should refactor
-    private final Map<String, StorageNode> storageNodes;
-    
-    private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
-    
-    private final Map<String, StorageUnit> storageUnits;
-    
-    // TODO zhangliang: should refactor
-    private final Map<String, DataSource> dataSources;
+    private final Map<String, NewStorageUnitMetaData> metaDataMap;
     
     public StorageUnitMetaData(final String databaseName, final Map<String, StorageNode> storageNodes, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap,
                                final Map<StorageNodeName, DataSource> dataSources) {
-        this.storageNodes = storageNodes;
-        this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
-        storageUnits = storageNodes.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> new StorageUnit(databaseName, dataSources.get(entry.getValue().getName()), dataSourcePoolPropertiesMap.get(entry.getKey()), entry.getValue()),
-                        (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(this.storageNodes.size(), 1F)));
-        this.dataSources = storageUnits.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(storageUnits.size(), 1F)));
+        metaDataMap = new LinkedHashMap<>();
+        for (Entry<String, StorageNode> entry : storageNodes.entrySet()) {
+            DataSource dataSource = dataSources.get(entry.getValue().getName());
+            if (!(dataSource instanceof CatalogSwitchableDataSource)) {
+                dataSource = new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl());
+            }
+            metaDataMap.put(entry.getKey(), new NewStorageUnitMetaData(databaseName, entry.getValue(), dataSourcePoolPropertiesMap.get(entry.getKey()), dataSource));
+        }
     }
 }

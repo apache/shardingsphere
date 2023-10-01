@@ -74,13 +74,13 @@ class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithDuplicateRuleNames() {
-        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
+        when(resourceMetaData.getStorageUnitMetaData().getMetaDataMap()).thenReturn(Collections.emptyMap());
         assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("TEST"), createCurrentRuleConfiguration()));
     }
     
     @Test
     void assertCheckSQLStatementWithDuplicateResource() {
-        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("write_ds", null));
+        when(resourceMetaData.getStorageUnitMetaData().getMetaDataMap()).thenReturn(Collections.singletonMap("write_ds", null));
         assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, createSQLStatement("write_ds", "TEST"), createCurrentRuleConfiguration()));
     }
     

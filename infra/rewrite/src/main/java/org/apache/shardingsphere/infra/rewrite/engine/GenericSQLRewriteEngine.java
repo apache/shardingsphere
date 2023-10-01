@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rewrite.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
@@ -38,7 +38,7 @@ public final class GenericSQLRewriteEngine {
     
     private final DatabaseType protocolType;
     
-    private final Map<String, StorageUnit> storageUnits;
+    private final Map<String, NewStorageUnitMetaData> storageUnitMetaDataMap;
     
     /**
      * Rewrite SQL and parameters.
@@ -49,7 +49,7 @@ public final class GenericSQLRewriteEngine {
     public GenericSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
         String sql = translatorRule.translate(
                 new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getSqlStatementContext().getSqlStatement(), protocolType,
-                storageUnits.isEmpty() ? protocolType : storageUnits.values().iterator().next().getStorageType());
+                storageUnitMetaDataMap.isEmpty() ? protocolType : storageUnitMetaDataMap.values().iterator().next().getStorageUnit().getStorageType());
         return new GenericSQLRewriteResult(new SQLRewriteUnit(sql, sqlRewriteContext.getParameterBuilder().getParameters()));
     }
 }

@@ -69,7 +69,7 @@ class RefreshTableMetaDataUpdaterTest {
     @Test
     void assertEmptyResource() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getStorageUnits("foo_db")).thenReturn(Collections.emptyMap());
+        when(contextManager.getStorageUnitMetaDataMap("foo_db")).thenReturn(Collections.emptyMap());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
         UpdatableRALBackendHandler<?> backendHandler = new UpdatableRALBackendHandler<>(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"));

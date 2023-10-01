@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourceP
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.ShardingSphereExternalException;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -101,15 +101,15 @@ public final class AlterStorageUnitBackendHandler extends StorageUnitDefinitionB
     }
     
     private void checkStorageUnitNameExisted(final String databaseName, final Collection<String> storageUnitNames) {
-        Map<String, StorageUnit> storageUnits = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getStorageUnits();
-        Collection<String> notExistedStorageUnitNames = storageUnitNames.stream().filter(each -> !storageUnits.containsKey(each)).collect(Collectors.toList());
+        Map<String, NewStorageUnitMetaData> metaDataMap = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getMetaDataMap();
+        Collection<String> notExistedStorageUnitNames = storageUnitNames.stream().filter(each -> !metaDataMap.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedStorageUnitNames.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedStorageUnitNames));
     }
     
     private void checkDatabase(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
-        Map<String, StorageUnit> storageUnits = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getStorageUnits();
+        Map<String, NewStorageUnitMetaData> metaDataMap = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getMetaDataMap();
         Collection<String> invalidStorageUnitNames = sqlStatement.getStorageUnits().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
-                .filter(each -> !isIdenticalDatabase(each.getValue(), storageUnits.get(each.getKey()).getDataSource())).map(Entry::getKey).collect(Collectors.toSet());
+                .filter(each -> !isIdenticalDatabase(each.getValue(), metaDataMap.get(each.getKey()).getDataSource())).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(invalidStorageUnitNames.isEmpty(),
                 () -> new InvalidStorageUnitsException(Collections.singleton(String.format("Cannot alter the database of %s", invalidStorageUnitNames))));
     }

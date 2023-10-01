@@ -126,8 +126,8 @@ public final class ReadwriteSplittingRuleStatementChecker {
     private static void checkDuplicateRuleNamesWithExistsDataSources(final ShardingSphereDatabase database, final Collection<ReadwriteSplittingRuleSegment> segments) {
         Collection<String> currentRuleNames = new HashSet<>();
         ResourceMetaData resourceMetaData = database.getResourceMetaData();
-        if (null != resourceMetaData && null != resourceMetaData.getStorageUnitMetaData().getStorageUnits()) {
-            currentRuleNames.addAll(resourceMetaData.getStorageUnitMetaData().getStorageUnits().keySet());
+        if (null != resourceMetaData && null != resourceMetaData.getStorageUnitMetaData().getMetaDataMap()) {
+            currentRuleNames.addAll(resourceMetaData.getStorageUnitMetaData().getMetaDataMap().keySet());
         }
         currentRuleNames.addAll(getLogicDataSources(database));
         Collection<String> toBeCreatedRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());

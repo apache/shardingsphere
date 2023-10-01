@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
@@ -38,12 +38,15 @@ import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilde
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere database.
@@ -172,7 +175,7 @@ public final class ShardingSphereDatabase {
      * @return is completed or not
      */
     public boolean isComplete() {
-        return !ruleMetaData.getRules().isEmpty() && !resourceMetaData.getStorageUnitMetaData().getStorageUnits().isEmpty();
+        return !ruleMetaData.getRules().isEmpty() && !resourceMetaData.getStorageUnitMetaData().getMetaDataMap().isEmpty();
     }
     
     /**
@@ -181,7 +184,7 @@ public final class ShardingSphereDatabase {
      * @return contains data source or not
      */
     public boolean containsDataSource() {
-        return !resourceMetaData.getStorageUnitMetaData().getStorageUnits().isEmpty();
+        return !resourceMetaData.getStorageUnitMetaData().getMetaDataMap().isEmpty();
     }
     
     /**
@@ -195,7 +198,9 @@ public final class ShardingSphereDatabase {
         Collection<ShardingSphereRule> databaseRules = new LinkedList<>(ruleMetaData.getRules());
         toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
             databaseRules.removeAll(toBeReloadedRules);
-            databaseRules.add(((MutableDataNodeRule) optional).reloadRule(ruleConfig, name, resourceMetaData.getStorageUnitMetaData().getDataSources(), databaseRules));
+            Map<String, DataSource> dataSources = resourceMetaData.getStorageUnitMetaData().getMetaDataMap().entrySet().stream()
+                    .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+            databaseRules.add(((MutableDataNodeRule) optional).reloadRule(ruleConfig, name, dataSources, databaseRules));
         });
         ruleMetaData.getRules().clear();
         ruleMetaData.getRules().addAll(databaseRules);

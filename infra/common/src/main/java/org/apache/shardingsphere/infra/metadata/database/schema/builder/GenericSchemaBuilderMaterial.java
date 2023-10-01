@@ -52,9 +52,11 @@ public final class GenericSchemaBuilderMaterial {
     
     public GenericSchemaBuilderMaterial(final DatabaseType protocolType, final StorageUnitMetaData storageUnitMetaData,
                                         final Collection<ShardingSphereRule> rules, final ConfigurationProperties props, final String defaultSchemaName) {
-        this(protocolType, storageUnitMetaData.getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageType(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
-                storageUnitMetaData.getDataSources(), rules, props, defaultSchemaName);
+        this(protocolType, storageUnitMetaData.getMetaDataMap().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getStorageType(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+                storageUnitMetaData.getMetaDataMap().entrySet().stream()
+                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+                rules, props, defaultSchemaName);
     }
     
     /**
