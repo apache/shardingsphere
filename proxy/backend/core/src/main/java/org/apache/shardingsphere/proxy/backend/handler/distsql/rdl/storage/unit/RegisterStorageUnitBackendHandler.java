@@ -112,7 +112,7 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
     }
     
     private Collection<String> getCurrentStorageUnitNames(final String databaseName) {
-        return ProxyContext.getInstance().getContextManager().getStorageUnits(databaseName).keySet();
+        return ProxyContext.getInstance().getContextManager().getStorageUnitMetaDataMap(databaseName).keySet();
     }
     
     private Collection<String> getLogicalDataSourceNames(final String databaseName) {

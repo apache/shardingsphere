@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import javax.sql.DataSource;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -251,7 +253,11 @@ class ShardingSphereConnectionTest {
     
     private ContextManager mockContextManager(final StorageUnit storageUnit) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getStorageUnits(DefaultDatabase.LOGIC_NAME)).thenReturn(Collections.singletonMap("ds", storageUnit));
+        NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class);
+        when(storageUnitMetaData.getStorageUnit()).thenReturn(storageUnit);
+        DataSource dataSource = storageUnit.getDataSource();
+        when(storageUnitMetaData.getDataSource()).thenReturn(dataSource);
+        when(result.getStorageUnitMetaDataMap(DefaultDatabase.LOGIC_NAME)).thenReturn(Collections.singletonMap("ds", storageUnitMetaData));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mockTransactionRule(), mock(TrafficRule.class))));
         return result;
     }

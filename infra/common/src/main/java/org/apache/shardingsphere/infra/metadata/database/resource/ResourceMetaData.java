@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeUtils;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
 
@@ -68,9 +67,9 @@ public final class ResourceMetaData {
      */
     public Collection<String> getAllInstanceDataSourceNames() {
         Collection<String> result = new LinkedList<>();
-        for (Entry<String, NewStorageUnitMetaData> entry : storageUnitMetaData.getMetaDataMap().entrySet()) {
-            if (!isExisted(entry.getKey(), result)) {
-                result.add(entry.getKey());
+        for (String each : storageUnitMetaData.getMetaDataMap().keySet()) {
+            if (!isExisted(each, result)) {
+                result.add(each);
             }
         }
         return result;

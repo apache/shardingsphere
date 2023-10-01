@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -75,8 +76,8 @@ class DriverDatabaseConnectionManagerTest {
     
     private ContextManager mockContextManager() throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        Map<String, StorageUnit> storageUnits = mockStorageUnits();
-        when(result.getStorageUnits(DefaultDatabase.LOGIC_NAME)).thenReturn(storageUnits);
+        Map<String, NewStorageUnitMetaData> metaDataMap = mockStorageUnitMetaDataMap();
+        when(result.getStorageUnitMetaDataMap(DefaultDatabase.LOGIC_NAME)).thenReturn(metaDataMap);
         MetaDataPersistService persistService = mockMetaDataPersistService();
         when(result.getMetaDataContexts().getPersistService()).thenReturn(persistService);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
@@ -88,16 +89,20 @@ class DriverDatabaseConnectionManagerTest {
         return result;
     }
     
-    private Map<String, StorageUnit> mockStorageUnits() throws SQLException {
-        Map<String, StorageUnit> result = new HashMap<>(2, 1F);
-        StorageUnit validStorageUnit = mock(StorageUnit.class);
-        when(validStorageUnit.getDataSource()).thenReturn(new MockedDataSource());
-        result.put("ds", validStorageUnit);
-        StorageUnit invalidStorageUnit = mock(StorageUnit.class);
+    private Map<String, NewStorageUnitMetaData> mockStorageUnitMetaDataMap() throws SQLException {
+        Map<String, NewStorageUnitMetaData> result = new HashMap<>(2, 1F);
+        result.put("ds", mockStorageUnitMetaData(new MockedDataSource()));
         DataSource invalidDataSource = mock(DataSource.class);
         when(invalidDataSource.getConnection()).thenThrow(new SQLException());
-        when(invalidStorageUnit.getDataSource()).thenReturn(invalidDataSource);
-        result.put("invalid_ds", invalidStorageUnit);
+        result.put("invalid_ds", mockStorageUnitMetaData(invalidDataSource));
+        return result;
+    }
+    
+    private NewStorageUnitMetaData mockStorageUnitMetaData(final DataSource dataSource) {
+        NewStorageUnitMetaData result = mock(NewStorageUnitMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getDataSource()).thenReturn(dataSource);
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(result.getStorageUnit()).thenReturn(storageUnit);
         return result;
     }
     
