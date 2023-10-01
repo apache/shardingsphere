@@ -187,7 +187,7 @@ After editing the above information, run Run -> Run -> e2e-debug in IDEA to star
 Debug Testcontainer started Proxy container by the following method:
   - Set a breakpoint in the relevant startup class of Testcontainer, for example, after the line `containerComposer.start();` in BaseE2EIT#setUp() in the suite test, at this time, the relevant containers must have been started.
   - Access breakpoint debugging mode through shortcut key Alt + F8, and view the port mapped by the 3308 mapping of the Proxy object under the containerComposer (the external mapping port of Testcontainer is random). For example, the expression `((ShardingSphereProxyClusterContainer)((java.util.LinkedList)((ITContainers)((ClusterContainerComposer)containerComposer).containers).dockerContainers).getLast()).getMappedPort(3308)` get the mapped random port 51837.(or get mapped port by `docker ps`)
-  - See the `Remote debug Proxy started by docker image` method, set the Name, Host, Port, and use the port got in previous step, e.g 51837.
+  - See the `Remote debug Proxy started by docker image` method, set the Name, Host, Port, and use the port got in previous step, e.g. 51837.
 
 After editing the above information, run Run -> Run -> e2e-debug -> debug in IDEA to start the remote debug of IDEA.
 
