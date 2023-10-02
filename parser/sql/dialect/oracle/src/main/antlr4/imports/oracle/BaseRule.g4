@@ -471,6 +471,10 @@ functionName
     : identifier
     ;
 
+cursorName
+    : identifier
+    ;
+
 featureId
     : numberLiterals
     ;
