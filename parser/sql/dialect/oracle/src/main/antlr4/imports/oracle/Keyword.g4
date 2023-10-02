@@ -247,6 +247,10 @@ ELSE
     : E L S E
     ;
 
+ELSIF
+    : E L S I F
+    ;
+
 THEN
     : T H E N
     ;

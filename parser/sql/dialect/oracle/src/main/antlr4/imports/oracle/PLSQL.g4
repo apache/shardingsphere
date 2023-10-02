@@ -105,7 +105,7 @@ fetchStatement
     ;
 
 ifStatment
-    : IF booleanPrimary THEN statement (ELSE statement)? END IF
+    : IF booleanPrimary THEN statement+ (ELSIF booleanPrimary THEN statement+)? (ELSE statement)? END IF
     ;
 
 returnStatement
