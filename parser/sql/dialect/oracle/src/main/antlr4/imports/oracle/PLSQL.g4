@@ -79,8 +79,14 @@ statement
         | insert
         | lockTable
         | merge
+        | basicLoopStatement
         ) SEMI_
     ;
+
+basicLoopStatement
+    : LOOP statement+ (EXIT label? (WHEN booleanPrimary)?)? END LOOP label?
+    ;
+
 
 exceptionHandler
     : WHEN ((typeName (OR typeName)*)| OTHERS) THEN statement+

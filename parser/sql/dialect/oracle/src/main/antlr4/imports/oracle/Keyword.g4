@@ -416,6 +416,14 @@ LOCALTIMESTAMP
     : L O C A L T I M E S T A M P
     ;
 
+LOOP
+    : L O O P
+    ;
+
+EXIT
+    : E X I T
+    ;
+
 YEAR
     : Y E A R
     ;
