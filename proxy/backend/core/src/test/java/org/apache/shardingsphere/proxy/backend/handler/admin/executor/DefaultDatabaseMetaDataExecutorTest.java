@@ -125,7 +125,6 @@ class DefaultDatabaseMetaDataExecutorTest {
     
     private Connection mockConnection(final Map<String, String> expectedResultSetMap) throws SQLException {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/foo_ds");
         ResultSet resultSet = mockResultSet(expectedResultSetMap);
         when(result.prepareStatement(any(String.class)).executeQuery()).thenReturn(resultSet);
         return result;

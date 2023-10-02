@@ -43,11 +43,7 @@ public final class CatalogSwitchableDataSource implements DataSource, AutoClosea
     
     @Override
     public Connection getConnection() throws SQLException {
-        Connection result = dataSource.getConnection();
-        if (null != catalog) {
-            result.setCatalog(catalog);
-        }
-        return result;
+        return new CatalogSwitchableConnection(dataSource.getConnection(), catalog, url);
     }
     
     @Override
