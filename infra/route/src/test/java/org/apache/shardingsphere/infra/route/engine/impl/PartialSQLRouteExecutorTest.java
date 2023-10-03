@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintDataSourceNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -65,7 +65,7 @@ class PartialSQLRouteExecutorTest {
     
     @BeforeEach
     void setup() {
-        Map<String, NewStorageUnitMetaData> metaDataMap = new HashMap<>();
+        Map<String, StorageUnitMetaData> metaDataMap = new HashMap<>();
         metaDataMap.put("ds_0", null);
         metaDataMap.put("ds_1", null);
         when(database.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(metaDataMap);

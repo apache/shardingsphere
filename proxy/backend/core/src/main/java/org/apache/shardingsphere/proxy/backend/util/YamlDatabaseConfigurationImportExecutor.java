@@ -44,7 +44,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -160,11 +160,11 @@ public final class YamlDatabaseConfigurationImportExecutor {
         } catch (final SQLException ex) {
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
-        Map<String, NewStorageUnitMetaData> metaDataMap = ProxyContext.getInstance().getContextManager()
+        Map<String, StorageUnitMetaData> metaDataMap = ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaDataMap();
         Map<String, StorageNode> toBeAddedStorageNode = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(propsMap);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            metaDataMap.put(entry.getKey(), new NewStorageUnitMetaData(databaseName, toBeAddedStorageNode.get(entry.getKey()), entry.getValue(), DataSourcePoolCreator.create(entry.getValue())));
+            metaDataMap.put(entry.getKey(), new StorageUnitMetaData(databaseName, toBeAddedStorageNode.get(entry.getKey()), entry.getValue(), DataSourcePoolCreator.create(entry.getValue())));
         }
     }
     

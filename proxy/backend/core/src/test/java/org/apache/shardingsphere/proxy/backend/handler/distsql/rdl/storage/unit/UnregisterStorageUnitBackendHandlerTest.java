@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -85,7 +85,7 @@ class UnregisterStorageUnitBackendHandlerTest {
     @BeforeEach
     void setUp() {
         resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        NewStorageUnitMetaData storageUnitMetaData = new NewStorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource());
+        StorageUnitMetaData storageUnitMetaData = new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource());
         when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         contextManager = mockContextManager();
@@ -105,7 +105,7 @@ class UnregisterStorageUnitBackendHandlerTest {
     
     @Test
     void assertExecute() throws SQLException {
-        NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class);
+        StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
         when(storageUnitMetaData.getDataSource()).thenReturn(new MockedDataSource());
         when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
@@ -125,7 +125,7 @@ class UnregisterStorageUnitBackendHandlerTest {
     void assertStorageUnitNameInUseExecute() {
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(shadowRule)));
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
-        NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class);
+        StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
         when(storageUnitMetaData.getDataSource()).thenReturn(new MockedDataSource());
         when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
@@ -140,7 +140,7 @@ class UnregisterStorageUnitBackendHandlerTest {
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(singleRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
-        NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class);
+        StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
         when(storageUnitMetaData.getDataSource()).thenReturn(new MockedDataSource());
         when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
@@ -154,7 +154,7 @@ class UnregisterStorageUnitBackendHandlerTest {
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(singleRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
-        NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class);
+        StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
         when(storageUnitMetaData.getDataSource()).thenReturn(new MockedDataSource());
         when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);

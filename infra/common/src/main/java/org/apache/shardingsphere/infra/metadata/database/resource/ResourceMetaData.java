@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeUtils;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
 
 import javax.sql.DataSource;
@@ -45,7 +45,7 @@ public final class ResourceMetaData {
     
     private final Map<StorageNodeName, DataSource> dataSources;
     
-    private final Map<String, NewStorageUnitMetaData> storageUnitMetaDataMap;
+    private final Map<String, StorageUnitMetaData> storageUnitMetaDataMap;
     
     public ResourceMetaData(final Map<String, DataSource> dataSources) {
         this.dataSources = StorageNodeUtils.getStorageNodeDataSources(dataSources);
@@ -58,7 +58,7 @@ public final class ResourceMetaData {
             if (!(dataSource instanceof CatalogSwitchableDataSource)) {
                 dataSource = new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl());
             }
-            storageUnitMetaDataMap.put(entry.getKey(), new NewStorageUnitMetaData(null, entry.getValue(), dataSourcePoolPropertiesMap.get(entry.getKey()), dataSource));
+            storageUnitMetaDataMap.put(entry.getKey(), new StorageUnitMetaData(null, entry.getValue(), dataSourcePoolPropertiesMap.get(entry.getKey()), dataSource));
         }
     }
     
@@ -71,7 +71,7 @@ public final class ResourceMetaData {
             if (!(dataSource instanceof CatalogSwitchableDataSource)) {
                 dataSource = new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl());
             }
-            storageUnitMetaDataMap.put(entry.getKey(), new NewStorageUnitMetaData(databaseName, entry.getValue(), propsMap.get(entry.getKey()), dataSource));
+            storageUnitMetaDataMap.put(entry.getKey(), new StorageUnitMetaData(databaseName, entry.getValue(), propsMap.get(entry.getKey()), dataSource));
         }
     }
     

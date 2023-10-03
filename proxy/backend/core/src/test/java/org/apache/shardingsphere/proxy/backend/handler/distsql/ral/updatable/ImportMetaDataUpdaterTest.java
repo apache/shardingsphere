@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -110,7 +110,7 @@ class ImportMetaDataUpdaterTest {
         if (null != feature) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));
-            Map<String, NewStorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap();
+            Map<String, StorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap();
             when(database.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
             when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(feature, database));
             when(result.getMetaDataContexts().getMetaData().getDatabase(feature)).thenReturn(database);
@@ -118,10 +118,10 @@ class ImportMetaDataUpdaterTest {
         return result;
     }
     
-    private Map<String, NewStorageUnitMetaData> createStorageUnitMetaDataMap() {
-        Map<String, NewStorageUnitMetaData> result = new LinkedHashMap<>(2, 1F);
-        result.put("ds_0", new NewStorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
-        result.put("ds_1", new NewStorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
+    private Map<String, StorageUnitMetaData> createStorageUnitMetaDataMap() {
+        Map<String, StorageUnitMetaData> result = new LinkedHashMap<>(2, 1F);
+        result.put("ds_0", new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
+        result.put("ds_1", new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
         return result;
     }
     

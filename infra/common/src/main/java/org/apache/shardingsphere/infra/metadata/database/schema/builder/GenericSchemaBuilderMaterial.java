@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
@@ -50,7 +50,7 @@ public final class GenericSchemaBuilderMaterial {
     
     private final String defaultSchemaName;
     
-    public GenericSchemaBuilderMaterial(final DatabaseType protocolType, final Map<String, NewStorageUnitMetaData> storageUnitMetaDataMap,
+    public GenericSchemaBuilderMaterial(final DatabaseType protocolType, final Map<String, StorageUnitMetaData> storageUnitMetaDataMap,
                                         final Collection<ShardingSphereRule> rules, final ConfigurationProperties props, final String defaultSchemaName) {
         this(protocolType, storageUnitMetaDataMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getStorageType(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),

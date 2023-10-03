@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.SchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -296,9 +296,9 @@ public final class ConfigurationContextManager {
         return result;
     }
     
-    private Map<String, StorageNode> getNewStorageUnitNodeMap(final Map<String, NewStorageUnitMetaData> currentStorageUnitMetaDataMap, final SwitchingResource resource) {
+    private Map<String, StorageNode> getNewStorageUnitNodeMap(final Map<String, StorageUnitMetaData> currentStorageUnitMetaDataMap, final SwitchingResource resource) {
         Map<String, StorageNode> result = new LinkedHashMap<>(currentStorageUnitMetaDataMap.size(), 1F);
-        for (Entry<String, NewStorageUnitMetaData> entry : currentStorageUnitMetaDataMap.entrySet()) {
+        for (Entry<String, StorageUnitMetaData> entry : currentStorageUnitMetaDataMap.entrySet()) {
             if (!resource.getStaleStorageResource().getStorageUnitNodeMap().containsKey(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue().getStorageNode());
             }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.DriverExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -55,11 +55,11 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("rawtypes")
     private final SQLExecutionUnitBuilder sqlExecutionUnitBuilder;
     
-    private final Map<String, NewStorageUnitMetaData> storageUnitMetaDataMap;
+    private final Map<String, StorageUnitMetaData> storageUnitMetaDataMap;
     
     public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final DatabaseConnectionManager<C> databaseConnectionManager,
                                         final ExecutorStatementManager<C, ?, ?> statementManager, final StorageResourceOption option, final Collection<ShardingSphereRule> rules,
-                                        final Map<String, NewStorageUnitMetaData> storageUnitMetaDataMap) {
+                                        final Map<String, StorageUnitMetaData> storageUnitMetaDataMap) {
         super(maxConnectionsSizePerQuery, rules);
         this.databaseConnectionManager = databaseConnectionManager;
         this.statementManager = statementManager;

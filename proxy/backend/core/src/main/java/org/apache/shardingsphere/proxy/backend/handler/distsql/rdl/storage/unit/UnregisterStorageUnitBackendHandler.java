@@ -25,7 +25,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterSto
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -71,7 +71,7 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
     }
     
     private void checkExisted(final String databaseName, final Collection<String> storageUnitNames) {
-        Map<String, NewStorageUnitMetaData> metaDataMap = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaDataMap();
+        Map<String, StorageUnitMetaData> metaDataMap = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaDataMap();
         Collection<String> notExistedStorageUnits = storageUnitNames.stream().filter(each -> !metaDataMap.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedStorageUnits));
     }

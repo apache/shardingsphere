@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.statistics.collector;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
@@ -57,7 +57,7 @@ public final class ShardingSphereTableDataCollectorUtils {
             return Collections.emptyList();
         }
         Collection<ShardingSphereRowData> result = new LinkedList<>();
-        for (NewStorageUnitMetaData each : database.getResourceMetaData().getStorageUnitMetaDataMap().values()) {
+        for (StorageUnitMetaData each : database.getResourceMetaData().getStorageUnitMetaDataMap().values()) {
             try (
                     Connection connection = each.getDataSource().getConnection();
                     Statement statement = connection.createStatement();

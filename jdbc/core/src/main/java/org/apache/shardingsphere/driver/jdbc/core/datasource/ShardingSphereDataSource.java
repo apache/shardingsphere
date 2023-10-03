@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -102,7 +102,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     @Override
     public void close() throws SQLException {
         contextManagerDestroyedCallback(databaseName);
-        for (NewStorageUnitMetaData each : contextManager.getStorageUnitMetaDataMap(databaseName).values()) {
+        for (StorageUnitMetaData each : contextManager.getStorageUnitMetaDataMap(databaseName).values()) {
             close(each.getDataSource());
         }
         contextManager.close();
@@ -133,13 +133,13 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     @Override
     public int getLoginTimeout() throws SQLException {
-        Map<String, NewStorageUnitMetaData> metaDataMap = contextManager.getStorageUnitMetaDataMap(databaseName);
+        Map<String, StorageUnitMetaData> metaDataMap = contextManager.getStorageUnitMetaDataMap(databaseName);
         return metaDataMap.isEmpty() ? 0 : metaDataMap.values().iterator().next().getDataSource().getLoginTimeout();
     }
     
     @Override
     public void setLoginTimeout(final int seconds) throws SQLException {
-        for (NewStorageUnitMetaData each : contextManager.getStorageUnitMetaDataMap(databaseName).values()) {
+        for (StorageUnitMetaData each : contextManager.getStorageUnitMetaDataMap(databaseName).values()) {
             each.getDataSource().setLoginTimeout(seconds);
         }
     }

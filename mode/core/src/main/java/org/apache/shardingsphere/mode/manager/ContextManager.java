@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.SchemaManager;
@@ -105,7 +105,7 @@ public final class ContextManager implements AutoCloseable {
      * @param databaseName database name
      * @return storage unit meta data map
      */
-    public Map<String, NewStorageUnitMetaData> getStorageUnitMetaDataMap(final String databaseName) {
+    public Map<String, StorageUnitMetaData> getStorageUnitMetaDataMap(final String databaseName) {
         return metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaDataMap();
     }
     

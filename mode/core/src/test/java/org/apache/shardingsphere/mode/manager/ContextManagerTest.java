@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeUtils;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -104,11 +104,11 @@ class ContextManagerTest {
         when(mutableDataNodeRule.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(mock(DataNode.class)));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mutableDataNodeRule)));
         when(result.getSchemas()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", new ShardingSphereSchema())));
-        NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class, RETURNS_DEEP_STUBS);
+        StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class, RETURNS_DEEP_STUBS);
         when(storageUnitMetaData.getStorageUnit().getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(result.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
-        Map<String, NewStorageUnitMetaData> metaDataMap = Collections.singletonMap("foo_ds",
-                new NewStorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
+        Map<String, StorageUnitMetaData> metaDataMap = Collections.singletonMap("foo_ds",
+                new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
         when(result.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
         return result;
     }
@@ -254,9 +254,9 @@ class ContextManagerTest {
         originalDataSources.put("ds_2", new MockedDataSource());
         Map<StorageNodeName, DataSource> storageNodeDataSourceMap = StorageNodeUtils.getStorageNodeDataSources(originalDataSources);
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSources(originalDataSources);
-        Map<String, NewStorageUnitMetaData> metaDataMap = new LinkedHashMap<>(2, 1F);
+        Map<String, StorageUnitMetaData> metaDataMap = new LinkedHashMap<>(2, 1F);
         for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
-            metaDataMap.put(entry.getKey(), new NewStorageUnitMetaData(
+            metaDataMap.put(entry.getKey(), new StorageUnitMetaData(
                     "foo_db", storageUnitNodeMap.get(entry.getKey()), mock(DataSourcePoolProperties.class), storageNodeDataSourceMap.get(entry.getValue().getName())));
         }
         ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);

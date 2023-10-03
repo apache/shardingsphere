@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
@@ -140,7 +140,7 @@ class OpenGaussComBatchBindExecutorTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("foo_ds"));
-        NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class, RETURNS_DEEP_STUBS);
+        StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class, RETURNS_DEEP_STUBS);
         when(storageUnitMetaData.getStorageUnit().getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "openGauss"));
         when(result.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));

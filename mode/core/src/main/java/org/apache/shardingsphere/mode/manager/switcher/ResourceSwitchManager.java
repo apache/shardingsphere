@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
 
 import javax.sql.DataSource;
@@ -197,9 +197,9 @@ public final class ResourceSwitchManager {
         return result;
     }
     
-    private Map<String, StorageNode> getToBeDeletedStorageUnitNodeMap(final Map<String, NewStorageUnitMetaData> storageUnitMetaDataMap, final Collection<String> toBeChangedStorageUnitNames) {
+    private Map<String, StorageNode> getToBeDeletedStorageUnitNodeMap(final Map<String, StorageUnitMetaData> storageUnitMetaDataMap, final Collection<String> toBeChangedStorageUnitNames) {
         Map<String, StorageNode> result = new LinkedHashMap<>(storageUnitMetaDataMap.size(), 1F);
-        for (Entry<String, NewStorageUnitMetaData> entry : storageUnitMetaDataMap.entrySet()) {
+        for (Entry<String, StorageUnitMetaData> entry : storageUnitMetaDataMap.entrySet()) {
             if (!toBeChangedStorageUnitNames.contains(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue().getStorageNode());
             }
@@ -207,12 +207,12 @@ public final class ResourceSwitchManager {
         return result;
     }
     
-    private Map<String, StorageNode> getChangedStorageUnitNodeMap(final Map<String, NewStorageUnitMetaData> storageUnitMetaDataMap, final Map<String, StorageNode> toBeChangedStorageUnitNodeMap) {
+    private Map<String, StorageNode> getChangedStorageUnitNodeMap(final Map<String, StorageUnitMetaData> storageUnitMetaDataMap, final Map<String, StorageNode> toBeChangedStorageUnitNodeMap) {
         return toBeChangedStorageUnitNodeMap.entrySet().stream().filter(entry -> isModifiedStorageUnitNodeMap(storageUnitMetaDataMap, entry.getKey(), entry.getValue()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private boolean isModifiedStorageUnitNodeMap(final Map<String, NewStorageUnitMetaData> originalstorageUnitMetaDataMap,
+    private boolean isModifiedStorageUnitNodeMap(final Map<String, StorageUnitMetaData> originalstorageUnitMetaDataMap,
                                                  final String dataSourceName, final StorageNode storageNode) {
         return originalstorageUnitMetaDataMap.containsKey(dataSourceName) && !storageNode.equals(originalstorageUnitMetaDataMap.get(dataSourceName).getStorageNode());
     }

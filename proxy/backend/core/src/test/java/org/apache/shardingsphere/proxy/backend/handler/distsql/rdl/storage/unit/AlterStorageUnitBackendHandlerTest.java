@@ -29,7 +29,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorage
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -80,7 +80,7 @@ class AlterStorageUnitBackendHandlerTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class);
+        StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
         when(storageUnitMetaData.getDataSource()).thenReturn(mockHikariDataSource("ds_0"));
         when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("ds_0", storageUnitMetaData));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
@@ -107,7 +107,7 @@ class AlterStorageUnitBackendHandlerTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class);
+        StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
         when(storageUnitMetaData.getDataSource()).thenReturn(mockHikariDataSource("ds_1"));
         when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("ds_0", storageUnitMetaData));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);

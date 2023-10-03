@@ -27,7 +27,7 @@ import javax.sql.DataSource;
  * Storage unit meta data.
  */
 @Getter
-public final class NewStorageUnitMetaData {
+public final class StorageUnitMetaData {
     
     private final StorageNode storageNode;
     
@@ -37,7 +37,7 @@ public final class NewStorageUnitMetaData {
     
     private final StorageUnit storageUnit;
     
-    public NewStorageUnitMetaData(final String databaseName, final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProperties, final DataSource dataSource) {
+    public StorageUnitMetaData(final String databaseName, final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProperties, final DataSource dataSource) {
         this.storageNode = storageNode;
         this.dataSourcePoolProperties = dataSourcePoolProperties;
         this.dataSource = dataSource;

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
@@ -87,7 +87,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
         }
     }
     
-    private void addTableRowsAndDataLength(final Map<String, NewStorageUnitMetaData> metaDataMap, final DataNode dataNode, final List<Object> row) throws SQLException {
+    private void addTableRowsAndDataLength(final Map<String, StorageUnitMetaData> metaDataMap, final DataNode dataNode, final List<Object> row) throws SQLException {
         DatabaseType databaseType = metaDataMap.get(dataNode.getDataSourceName()).getStorageUnit().getStorageType();
         Optional<DialectShardingStatisticsTableCollector> dialectCollector = DatabaseTypedSPILoader.findService(DialectShardingStatisticsTableCollector.class, databaseType);
         boolean isAppended = false;
