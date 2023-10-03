@@ -18,15 +18,10 @@
 package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 
 import javax.sql.DataSource;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Storage unit meta data.
@@ -34,17 +29,18 @@ import java.util.Map.Entry;
 @Getter
 public final class StorageUnitMetaData {
     
-    private final Map<String, NewStorageUnitMetaData> metaDataMap;
+    private final StorageNode storageNode;
     
-    public StorageUnitMetaData(final String databaseName, final Map<String, StorageNode> storageNodes, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap,
-                               final Map<StorageNodeName, DataSource> dataSources) {
-        metaDataMap = new LinkedHashMap<>();
-        for (Entry<String, StorageNode> entry : storageNodes.entrySet()) {
-            DataSource dataSource = dataSources.get(entry.getValue().getName());
-            if (!(dataSource instanceof CatalogSwitchableDataSource)) {
-                dataSource = new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl());
-            }
-            metaDataMap.put(entry.getKey(), new NewStorageUnitMetaData(databaseName, entry.getValue(), dataSourcePoolPropertiesMap.get(entry.getKey()), dataSource));
-        }
+    private final DataSourcePoolProperties dataSourcePoolProperties;
+    
+    private final DataSource dataSource;
+    
+    private final StorageUnit storageUnit;
+    
+    public StorageUnitMetaData(final String databaseName, final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProperties, final DataSource dataSource) {
+        this.storageNode = storageNode;
+        this.dataSourcePoolProperties = dataSourcePoolProperties;
+        this.dataSource = dataSource;
+        storageUnit = new StorageUnit(databaseName, dataSource, dataSourcePoolProperties, storageNode);
     }
 }

@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -121,9 +121,9 @@ public abstract class SQLRewriterIT {
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         mockDataSource(databaseConfig.getDataSources());
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
-        Map<String, NewStorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap(databaseConfig, databaseType);
+        Map<String, StorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap(databaseConfig, databaseType);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(resourceMetaData.getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
+        when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
         String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(DefaultDatabase.LOGIC_NAME);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType()),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
@@ -171,12 +171,12 @@ public abstract class SQLRewriterIT {
         return result;
     }
     
-    private Map<String, NewStorageUnitMetaData> createStorageUnitMetaDataMap(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
-        Map<String, NewStorageUnitMetaData> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1F);
+    private Map<String, StorageUnitMetaData> createStorageUnitMetaDataMap(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
+        Map<String, StorageUnitMetaData> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1F);
         for (Entry<String, DataSource> entry : databaseConfig.getDataSources().entrySet()) {
             StorageUnit storageUnit = mock(StorageUnit.class);
             when(storageUnit.getStorageType()).thenReturn(databaseType);
-            NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class);
+            StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
             when(storageUnitMetaData.getStorageUnit()).thenReturn(storageUnit);
             result.put(entry.getKey(), storageUnitMetaData);
         }

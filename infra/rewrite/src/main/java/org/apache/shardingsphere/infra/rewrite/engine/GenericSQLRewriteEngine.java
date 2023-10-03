@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rewrite.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
@@ -38,7 +38,7 @@ public final class GenericSQLRewriteEngine {
     
     private final DatabaseType protocolType;
     
-    private final Map<String, NewStorageUnitMetaData> storageUnitMetaDataMap;
+    private final Map<String, StorageUnitMetaData> storageUnitMetaDataMap;
     
     /**
      * Rewrite SQL and parameters.

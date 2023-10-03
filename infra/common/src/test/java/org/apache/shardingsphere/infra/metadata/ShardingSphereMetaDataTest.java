@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -90,8 +90,8 @@ class ShardingSphereMetaDataTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn("foo_db");
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
-        NewStorageUnitMetaData storageUnitMetaData = new NewStorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), dataSource);
-        when(result.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(Collections.singletonMap("foo_db", storageUnitMetaData));
+        StorageUnitMetaData storageUnitMetaData = new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), dataSource);
+        when(result.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_db", storageUnitMetaData));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(databaseResourceHeldRule)));
         return result;
     }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.resource;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -44,20 +45,34 @@ public final class ResourceMetaData {
     
     private final Map<StorageNodeName, DataSource> dataSources;
     
-    private final StorageUnitMetaData storageUnitMetaData;
+    private final Map<String, StorageUnitMetaData> storageUnitMetaDataMap;
     
     public ResourceMetaData(final Map<String, DataSource> dataSources) {
         this.dataSources = StorageNodeUtils.getStorageNodeDataSources(dataSources);
-        storageUnitMetaData = new StorageUnitMetaData(null, StorageUnitNodeMapUtils.fromDataSources(dataSources),
-                dataSources.entrySet().stream().collect(
-                        Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
-                this.dataSources);
+        Map<String, StorageNode> storageNodes = StorageUnitNodeMapUtils.fromDataSources(dataSources);
+        Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap = dataSources.entrySet().stream().collect(
+                Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        storageUnitMetaDataMap = new LinkedHashMap<>();
+        for (Entry<String, StorageNode> entry : storageNodes.entrySet()) {
+            DataSource dataSource = dataSources.get(entry.getValue().getName().getName());
+            if (!(dataSource instanceof CatalogSwitchableDataSource)) {
+                dataSource = new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl());
+            }
+            storageUnitMetaDataMap.put(entry.getKey(), new StorageUnitMetaData(null, entry.getValue(), dataSourcePoolPropertiesMap.get(entry.getKey()), dataSource));
+        }
     }
     
     public ResourceMetaData(final String databaseName, final Map<StorageNodeName, DataSource> dataSources,
-                            final Map<String, StorageNode> storageUnitNodeMap, final Map<String, DataSourcePoolProperties> propsMap) {
+                            final Map<String, StorageNode> storageNodes, final Map<String, DataSourcePoolProperties> propsMap) {
         this.dataSources = dataSources;
-        storageUnitMetaData = new StorageUnitMetaData(databaseName, storageUnitNodeMap, propsMap, dataSources);
+        storageUnitMetaDataMap = new LinkedHashMap<>();
+        for (Entry<String, StorageNode> entry : storageNodes.entrySet()) {
+            DataSource dataSource = dataSources.get(entry.getValue().getName());
+            if (!(dataSource instanceof CatalogSwitchableDataSource)) {
+                dataSource = new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl());
+            }
+            storageUnitMetaDataMap.put(entry.getKey(), new StorageUnitMetaData(databaseName, entry.getValue(), propsMap.get(entry.getKey()), dataSource));
+        }
     }
     
     /**
@@ -67,7 +82,7 @@ public final class ResourceMetaData {
      */
     public Collection<String> getAllInstanceDataSourceNames() {
         Collection<String> result = new LinkedList<>();
-        for (String each : storageUnitMetaData.getMetaDataMap().keySet()) {
+        for (String each : storageUnitMetaDataMap.keySet()) {
             if (!isExisted(each, result)) {
                 result.add(each);
             }
@@ -76,8 +91,8 @@ public final class ResourceMetaData {
     }
     
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
-        return existedDataSourceNames.stream().anyMatch(each -> storageUnitMetaData.getMetaDataMap().get(dataSourceName).getStorageUnit().getConnectionProperties()
-                .isInSameDatabaseInstance(storageUnitMetaData.getMetaDataMap().get(each).getStorageUnit().getConnectionProperties()));
+        return existedDataSourceNames.stream().anyMatch(each -> storageUnitMetaDataMap.get(dataSourceName).getStorageUnit().getConnectionProperties()
+                .isInSameDatabaseInstance(storageUnitMetaDataMap.get(each).getStorageUnit().getConnectionProperties()));
     }
     
     /**
@@ -87,7 +102,7 @@ public final class ResourceMetaData {
      * @return connection properties
      */
     public ConnectionProperties getConnectionProperties(final String dataSourceName) {
-        return storageUnitMetaData.getMetaDataMap().get(dataSourceName).getStorageUnit().getConnectionProperties();
+        return storageUnitMetaDataMap.get(dataSourceName).getStorageUnit().getConnectionProperties();
     }
     
     /**
@@ -97,7 +112,7 @@ public final class ResourceMetaData {
      * @return storage type
      */
     public DatabaseType getStorageType(final String dataSourceName) {
-        return storageUnitMetaData.getMetaDataMap().get(dataSourceName).getStorageUnit().getStorageType();
+        return storageUnitMetaDataMap.get(dataSourceName).getStorageUnit().getStorageType();
     }
     
     /**
@@ -107,6 +122,6 @@ public final class ResourceMetaData {
      * @return not existed resource names
      */
     public Collection<String> getNotExistedDataSources(final Collection<String> resourceNames) {
-        return resourceNames.stream().filter(each -> !storageUnitMetaData.getMetaDataMap().containsKey(each)).collect(Collectors.toSet());
+        return resourceNames.stream().filter(each -> !storageUnitMetaDataMap.containsKey(each)).collect(Collectors.toSet());
     }
 }

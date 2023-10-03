@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.exception.postgresql.exception.metadata.C
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -400,9 +400,9 @@ class PostgreSQLComDescribeExecutorTest {
         when(schema.getTable(TABLE_NAME)).thenReturn(table);
         when(schema.getAllColumnNames(TABLE_NAME)).thenReturn(Arrays.asList("id", "k", "c", "pad"));
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class, RETURNS_DEEP_STUBS);
+        StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class, RETURNS_DEEP_STUBS);
         when(storageUnitMetaData.getStorageUnit().getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageUnitMetaData().getMetaDataMap())
+        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageUnitMetaDataMap())
                 .thenReturn(Collections.singletonMap("ds_0", storageUnitMetaData));
         when(result.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).containsSchema("public")).thenReturn(true);

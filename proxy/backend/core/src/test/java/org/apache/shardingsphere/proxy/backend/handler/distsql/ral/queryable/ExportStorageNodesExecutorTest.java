@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -130,8 +130,8 @@ class ExportStorageNodesExecutorTest {
     @Test
     void assertExecute() {
         when(database.getName()).thenReturn("normal_db");
-        Map<String, NewStorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap();
-        when(database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
+        Map<String, StorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap();
+        when(database.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -144,8 +144,8 @@ class ExportStorageNodesExecutorTest {
     @Test
     void assertExecuteWithDatabaseName() {
         when(database.getName()).thenReturn("normal_db");
-        Map<String, NewStorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap();
-        when(database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
+        Map<String, StorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap();
+        when(database.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -165,18 +165,18 @@ class ExportStorageNodesExecutorTest {
         return result;
     }
     
-    private Map<String, NewStorageUnitMetaData> createStorageUnitMetaDataMap() {
-        NewStorageUnitMetaData storageUnitMetaData1 = mock(NewStorageUnitMetaData.class);
+    private Map<String, StorageUnitMetaData> createStorageUnitMetaDataMap() {
+        StorageUnitMetaData storageUnitMetaData1 = mock(StorageUnitMetaData.class);
         StorageUnit storageUnit1 = createStorageUnit("demo_ds_0");
         when(storageUnitMetaData1.getStorageUnit()).thenReturn(storageUnit1);
         DataSource dataSource1 = storageUnit1.getDataSource();
         when(storageUnitMetaData1.getDataSource()).thenReturn(dataSource1);
-        NewStorageUnitMetaData storageUnitMetaData2 = mock(NewStorageUnitMetaData.class);
+        StorageUnitMetaData storageUnitMetaData2 = mock(StorageUnitMetaData.class);
         StorageUnit storageUnit2 = createStorageUnit("demo_ds_1");
         when(storageUnitMetaData2.getStorageUnit()).thenReturn(storageUnit2);
         DataSource dataSource2 = storageUnit2.getDataSource();
         when(storageUnitMetaData2.getDataSource()).thenReturn(dataSource2);
-        Map<String, NewStorageUnitMetaData> result = new LinkedHashMap<>(2, 1F);
+        Map<String, StorageUnitMetaData> result = new LinkedHashMap<>(2, 1F);
         result.put("ds_0", storageUnitMetaData1);
         result.put("ds_1", storageUnitMetaData2);
         return result;

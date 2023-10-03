@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.RouteSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
@@ -54,7 +54,7 @@ public final class RouteSQLRewriteEngine {
     
     private final DatabaseType protocolType;
     
-    private final Map<String, NewStorageUnitMetaData> storageUnitMetaDataMap;
+    private final Map<String, StorageUnitMetaData> storageUnitMetaDataMap;
     
     /**
      * Rewrite SQL and parameters.

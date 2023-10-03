@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -253,7 +253,7 @@ class ShardingSphereConnectionTest {
     
     private ContextManager mockContextManager(final StorageUnit storageUnit) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class);
+        StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
         when(storageUnitMetaData.getStorageUnit()).thenReturn(storageUnit);
         DataSource dataSource = storageUnit.getDataSource();
         when(storageUnitMetaData.getDataSource()).thenReturn(dataSource);

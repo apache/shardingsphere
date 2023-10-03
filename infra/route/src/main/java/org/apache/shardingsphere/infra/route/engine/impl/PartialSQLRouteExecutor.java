@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintDataSourceNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -59,7 +59,7 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public RouteContext route(final ConnectionContext connectionContext, final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         RouteContext result = new RouteContext();
-        Optional<String> dataSourceName = findDataSourceByHint(queryContext.getHintValueContext(), database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap());
+        Optional<String> dataSourceName = findDataSourceByHint(queryContext.getHintValueContext(), database.getResourceMetaData().getStorageUnitMetaDataMap());
         if (dataSourceName.isPresent()) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), Collections.emptyList()));
             return result;
@@ -71,14 +71,14 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
                 entry.getValue().decorateRouteContext(result, queryContext, database, entry.getKey(), props, connectionContext);
             }
         }
-        if (result.getRouteUnits().isEmpty() && 1 == database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().size()) {
-            String singleDataSourceName = database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().keySet().iterator().next();
+        if (result.getRouteUnits().isEmpty() && 1 == database.getResourceMetaData().getStorageUnitMetaDataMap().size()) {
+            String singleDataSourceName = database.getResourceMetaData().getStorageUnitMetaDataMap().keySet().iterator().next();
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(singleDataSourceName, singleDataSourceName), Collections.emptyList()));
         }
         return result;
     }
     
-    private Optional<String> findDataSourceByHint(final HintValueContext hintValueContext, final Map<String, NewStorageUnitMetaData> metaDataMap) {
+    private Optional<String> findDataSourceByHint(final HintValueContext hintValueContext, final Map<String, StorageUnitMetaData> metaDataMap) {
         Optional<String> result = HintManager.isInstantiated() && HintManager.getDataSourceName().isPresent() ? HintManager.getDataSourceName() : hintValueContext.findHintDataSourceName();
         if (result.isPresent() && !metaDataMap.containsKey(result.get())) {
             throw new SQLHintDataSourceNotExistsException(result.get());

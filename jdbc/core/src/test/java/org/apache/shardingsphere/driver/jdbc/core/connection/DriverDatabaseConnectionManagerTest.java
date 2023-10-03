@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -76,7 +76,7 @@ class DriverDatabaseConnectionManagerTest {
     
     private ContextManager mockContextManager() throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        Map<String, NewStorageUnitMetaData> metaDataMap = mockStorageUnitMetaDataMap();
+        Map<String, StorageUnitMetaData> metaDataMap = mockStorageUnitMetaDataMap();
         when(result.getStorageUnitMetaDataMap(DefaultDatabase.LOGIC_NAME)).thenReturn(metaDataMap);
         MetaDataPersistService persistService = mockMetaDataPersistService();
         when(result.getMetaDataContexts().getPersistService()).thenReturn(persistService);
@@ -89,8 +89,8 @@ class DriverDatabaseConnectionManagerTest {
         return result;
     }
     
-    private Map<String, NewStorageUnitMetaData> mockStorageUnitMetaDataMap() throws SQLException {
-        Map<String, NewStorageUnitMetaData> result = new HashMap<>(2, 1F);
+    private Map<String, StorageUnitMetaData> mockStorageUnitMetaDataMap() throws SQLException {
+        Map<String, StorageUnitMetaData> result = new HashMap<>(2, 1F);
         result.put("ds", mockStorageUnitMetaData(new MockedDataSource()));
         DataSource invalidDataSource = mock(DataSource.class);
         when(invalidDataSource.getConnection()).thenThrow(new SQLException());
@@ -98,8 +98,8 @@ class DriverDatabaseConnectionManagerTest {
         return result;
     }
     
-    private NewStorageUnitMetaData mockStorageUnitMetaData(final DataSource dataSource) {
-        NewStorageUnitMetaData result = mock(NewStorageUnitMetaData.class, RETURNS_DEEP_STUBS);
+    private StorageUnitMetaData mockStorageUnitMetaData(final DataSource dataSource) {
+        StorageUnitMetaData result = mock(StorageUnitMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getDataSource()).thenReturn(dataSource);
         StorageUnit storageUnit = mock(StorageUnit.class);
         when(result.getStorageUnit()).thenReturn(storageUnit);

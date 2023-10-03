@@ -49,7 +49,7 @@ class TransactionRuleBuilderTest {
                 new RuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         TransactionRule rule = new TransactionRuleBuilder().build(ruleConfig, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ConfigurationProperties.class));
         assertNotNull(rule.getConfiguration());
-        assertThat(rule.getDatabases().get("logic_db").getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().size(), is(2));
+        assertThat(rule.getDatabases().get("logic_db").getResourceMetaData().getStorageUnitMetaDataMap().size(), is(2));
     }
     
     private Map<String, DataSource> createDataSourceMap() {

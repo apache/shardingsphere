@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNode;
@@ -87,7 +87,7 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
     
     private Map<String, Collection<ExportedStorageNode>> generateDatabaseExportStorageNodesData(final ShardingSphereDatabase database) {
         Map<String, ExportedStorageNode> storageNodes = new LinkedHashMap<>();
-        for (Entry<String, NewStorageUnitMetaData> entry : database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().entrySet()) {
+        for (Entry<String, StorageUnitMetaData> entry : database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet()) {
             ConnectionProperties connectionProps = database.getResourceMetaData().getConnectionProperties(entry.getKey());
             String databaseInstanceIp = getDatabaseInstanceIp(connectionProps);
             if (storageNodes.containsKey(databaseInstanceIp)) {

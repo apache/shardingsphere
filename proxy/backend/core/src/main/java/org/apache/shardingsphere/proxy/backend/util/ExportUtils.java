@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
@@ -84,11 +84,11 @@ public final class ExportUtils {
     }
     
     private static void appendDataSourceConfigurations(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
-        if (database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().isEmpty()) {
+        if (database.getResourceMetaData().getStorageUnitMetaDataMap().isEmpty()) {
             return;
         }
         stringBuilder.append("dataSources:").append(System.lineSeparator());
-        for (Entry<String, NewStorageUnitMetaData> entry : database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().entrySet()) {
+        for (Entry<String, StorageUnitMetaData> entry : database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet()) {
             appendDataSourceConfiguration(entry.getKey(), entry.getValue().getDataSourcePoolProperties(), stringBuilder);
         }
     }

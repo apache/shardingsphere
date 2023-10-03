@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.NewStorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -111,7 +111,7 @@ class ExportMetaDataExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("empty_metadata"));
-        when(database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(Collections.emptyMap());
+        when(database.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(Collections.emptyMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ExportMetaDataStatement sqlStatement = new ExportMetaDataStatement(null);
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
@@ -134,8 +134,8 @@ class ExportMetaDataExecutorTest {
     void assertExecute() {
         when(database.getName()).thenReturn("normal_db");
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("empty_metadata"));
-        Map<String, NewStorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap();
-        when(database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
+        Map<String, StorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap();
+        when(database.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -147,12 +147,12 @@ class ExportMetaDataExecutorTest {
         assertThat(row.getCell(3).toString(), is(loadExpectedRow()));
     }
     
-    private Map<String, NewStorageUnitMetaData> createStorageUnitMetaDataMap() {
+    private Map<String, StorageUnitMetaData> createStorageUnitMetaDataMap() {
         Map<String, DataSourcePoolProperties> propsMap = createDataSourceMap().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        Map<String, NewStorageUnitMetaData> result = new LinkedHashMap<>();
+        Map<String, StorageUnitMetaData> result = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class);
+            StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
             when(storageUnitMetaData.getDataSourcePoolProperties()).thenReturn(entry.getValue());
             result.put(entry.getKey(), storageUnitMetaData);
         }

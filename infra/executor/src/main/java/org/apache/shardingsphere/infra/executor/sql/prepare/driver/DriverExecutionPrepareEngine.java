@@ -55,17 +55,17 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("rawtypes")
     private final SQLExecutionUnitBuilder sqlExecutionUnitBuilder;
     
-    private final StorageUnitMetaData storageUnitMetaData;
+    private final Map<String, StorageUnitMetaData> storageUnitMetaDataMap;
     
     public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final DatabaseConnectionManager<C> databaseConnectionManager,
                                         final ExecutorStatementManager<C, ?, ?> statementManager, final StorageResourceOption option, final Collection<ShardingSphereRule> rules,
-                                        final StorageUnitMetaData storageUnitMetaData) {
+                                        final Map<String, StorageUnitMetaData> storageUnitMetaDataMap) {
         super(maxConnectionsSizePerQuery, rules);
         this.databaseConnectionManager = databaseConnectionManager;
         this.statementManager = statementManager;
         this.option = option;
         sqlExecutionUnitBuilder = getCachedSqlExecutionUnitBuilder(type);
-        this.storageUnitMetaData = storageUnitMetaData;
+        this.storageUnitMetaDataMap = storageUnitMetaDataMap;
     }
     
     /**
@@ -97,7 +97,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("unchecked")
     private ExecutionGroup<T> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnits, final C connection, final ConnectionMode connectionMode) throws SQLException {
         List<T> inputs = new LinkedList<>();
-        DatabaseType databaseType = storageUnitMetaData.getMetaDataMap().get(dataSourceName).getStorageUnit().getStorageType();
+        DatabaseType databaseType = storageUnitMetaDataMap.get(dataSourceName).getStorageUnit().getStorageType();
         for (SQLUnit each : sqlUnits) {
             inputs.add((T) sqlExecutionUnitBuilder.build(new ExecutionUnit(dataSourceName, each), statementManager, connection, connectionMode, option, databaseType));
         }
