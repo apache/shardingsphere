@@ -55,11 +55,6 @@
     
     <alter-table sql-case-id="alter_table_modify_lob_shrink_space">
         <table name="employees" start-index="12" stop-index="20" />
-        <modify-column>
-            <column-definition start-index="29" stop-index="31">
-                <column name="LOB" />
-            </column-definition>
-        </modify-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_set_unused">
@@ -72,11 +67,6 @@
     
     <alter-table sql-case-id="alter_table_modify_lob_cache">
         <table name="employees" start-index="12" stop-index="20" />
-        <modify-column>
-            <column-definition start-index="29" stop-index="31">
-                <column name="LOB" />
-            </column-definition>
-        </modify-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_move_storage_tablespace">
@@ -1600,11 +1590,6 @@
     
     <alter-table sql-case-id="alter_table_modify_lob_nocache">
         <table name="employees" start-index="12" stop-index="20" />
-        <modify-column>
-            <column-definition start-index="29" stop-index="31">
-                <column name="LOB" />
-            </column-definition>
-        </modify-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_move_tablespace1">
@@ -1711,5 +1696,17 @@
                 <column name="new_column" />
             </column-definition>
         </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_lob1">
+        <table name="t1" start-index="12" stop-index="13" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_lob2">
+        <table name="t1" start-index="12" stop-index="13" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_move_compress_for_oltp">
+        <table name="table_name" start-index="12" stop-index="21" />
     </alter-table>
 </sql-parser-test-cases>

@@ -468,7 +468,7 @@ dropSynonym
     ;
 
 columnClauses
-    : operateColumnClause+ | renameColumnClause | modifyCollectionRetrieval
+    : operateColumnClause+ | renameColumnClause | modifyCollectionRetrieval | modifylobStorageClause
     ;
 
 operateColumnClause

@@ -228,4 +228,7 @@
     <sql-case id="alter_table_add_ref_with_rowid" value="ALTER TABLE staff  ADD (REF(dept) WITH ROWID)" db-types="Oracle" />
     <sql-case id="alter_table_add_scope_for_is" value="ALTER TABLE staff ADD (SCOPE FOR (dept) IS offices)" db-types="Oracle" />
     <sql-case id="alter_table_add_column_no_parentheses" value="ALTER TABLE T_MASK ADD new_column VARCHAR2(100)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob1" value="ALTER TABLE t1 MODIFY LOB(a) (KEEP_DUPLICATES)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob2" value="ALTER TABLE t1 MODIFY LOB(a) (COMPRESS LOW)" db-types="Oracle" />
+    <sql-case id="alter_table_move_compress_for_oltp" value="ALTER TABLE table_name MOVE COMPRESS FOR OLTP" db-types="Oracle" />
 </sql-cases>
