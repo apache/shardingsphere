@@ -132,7 +132,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     private void checkDatabase(final String databaseName) {
         ShardingSpherePreconditions.checkNotNull(databaseName, () -> new UnsupportedSQLOperationException("Property `databaseName` in imported config is required"));
         if (ProxyContext.getInstance().databaseExists(databaseName)) {
-            ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().isEmpty(),
+            ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaDataMap().isEmpty(),
                     () -> new UnsupportedSQLOperationException(String.format("Database `%s` exists and is not empty，overwrite is not supported", databaseName)));
         }
     }
@@ -161,7 +161,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
         Map<String, NewStorageUnitMetaData> metaDataMap = ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getMetaDataMap();
+                .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaDataMap();
         Map<String, StorageNode> toBeAddedStorageNode = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(propsMap);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             metaDataMap.put(entry.getKey(), new NewStorageUnitMetaData(databaseName, toBeAddedStorageNode.get(entry.getKey()), entry.getValue(), DataSourcePoolCreator.create(entry.getValue())));
@@ -252,7 +252,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
         shardingRuleConfigImportChecker.check(database, shardingRuleConfig);
         allRuleConfigs.add(shardingRuleConfig);
-        database.getRuleMetaData().getRules().add(new ShardingRule(shardingRuleConfig, database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().keySet(), instanceContext));
+        database.getRuleMetaData().getRules().add(new ShardingRule(shardingRuleConfig, database.getResourceMetaData().getStorageUnitMetaDataMap().keySet(), instanceContext));
     }
     
     private void addReadwriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig,
@@ -285,7 +285,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     private void addBroadcastRuleConfiguration(final BroadcastRuleConfiguration broadcastRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
         allRuleConfigs.add(broadcastRuleConfig);
         database.getRuleMetaData().getRules().add(new BroadcastRule(broadcastRuleConfig, database.getName(),
-                database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().entrySet().stream()
+                database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))));
     }
     
@@ -293,7 +293,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         allRuleConfigs.add(broadcastRuleConfig);
         database.getRuleMetaData().getRules().add(
                 new SingleRule(broadcastRuleConfig, database.getName(),
-                        database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().entrySet().stream()
+                        database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
                                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                         database.getRuleMetaData().getRules()));
     }

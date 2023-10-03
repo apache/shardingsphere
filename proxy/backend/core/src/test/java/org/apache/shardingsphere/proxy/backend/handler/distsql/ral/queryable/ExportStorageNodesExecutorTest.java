@@ -131,7 +131,7 @@ class ExportStorageNodesExecutorTest {
     void assertExecute() {
         when(database.getName()).thenReturn("normal_db");
         Map<String, NewStorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap();
-        when(database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
+        when(database.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -145,7 +145,7 @@ class ExportStorageNodesExecutorTest {
     void assertExecuteWithDatabaseName() {
         when(database.getName()).thenReturn("normal_db");
         Map<String, NewStorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap();
-        when(database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
+        when(database.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

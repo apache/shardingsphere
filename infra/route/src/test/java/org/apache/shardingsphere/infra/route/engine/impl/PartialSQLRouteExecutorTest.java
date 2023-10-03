@@ -68,7 +68,7 @@ class PartialSQLRouteExecutorTest {
         Map<String, NewStorageUnitMetaData> metaDataMap = new HashMap<>();
         metaDataMap.put("ds_0", null);
         metaDataMap.put("ds_1", null);
-        when(database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
+        when(database.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
     }
     
     @Test

@@ -82,7 +82,7 @@ class AlterStorageUnitBackendHandlerTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class);
         when(storageUnitMetaData.getDataSource()).thenReturn(mockHikariDataSource("ds_0"));
-        when(resourceMetaData.getStorageUnitMetaData().getMetaDataMap()).thenReturn(Collections.singletonMap("ds_0", storageUnitMetaData));
+        when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("ds_0", storageUnitMetaData));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         assertThat(handler.execute("foo_db", createAlterStorageUnitStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
     }
@@ -109,7 +109,7 @@ class AlterStorageUnitBackendHandlerTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class);
         when(storageUnitMetaData.getDataSource()).thenReturn(mockHikariDataSource("ds_1"));
-        when(resourceMetaData.getStorageUnitMetaData().getMetaDataMap()).thenReturn(Collections.singletonMap("ds_0", storageUnitMetaData));
+        when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("ds_0", storageUnitMetaData));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         assertThrows(InvalidStorageUnitsException.class, () -> handler.execute("foo_db", createAlterStorageUnitStatement("ds_0")));
     }

@@ -87,7 +87,7 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
     
     private Map<String, Collection<ExportedStorageNode>> generateDatabaseExportStorageNodesData(final ShardingSphereDatabase database) {
         Map<String, ExportedStorageNode> storageNodes = new LinkedHashMap<>();
-        for (Entry<String, NewStorageUnitMetaData> entry : database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().entrySet()) {
+        for (Entry<String, NewStorageUnitMetaData> entry : database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet()) {
             ConnectionProperties connectionProps = database.getResourceMetaData().getConnectionProperties(entry.getKey());
             String databaseInstanceIp = getDatabaseInstanceIp(connectionProps);
             if (storageNodes.containsKey(databaseInstanceIp)) {

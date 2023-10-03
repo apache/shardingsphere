@@ -90,15 +90,15 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     }
     
     private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().size(), 1F);
-        Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().entrySet().stream()
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(database.getResourceMetaData().getStorageUnitMetaDataMap().size(), 1F);
+        Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
-        Map<String, NewStorageUnitMetaData> metaDataMap = database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap();
+        Map<String, NewStorageUnitMetaData> metaDataMap = database.getResourceMetaData().getStorageUnitMetaDataMap();
         Optional<Integer> usageCount = sqlStatement.getUsageCount();
         if (usageCount.isPresent()) {
             Map<String, Collection<String>> inUsedStorageUnits = StorageUnitUtils.getInUsedStorageUnits(
-                    database.getRuleMetaData(), database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().size());
-            for (Entry<String, NewStorageUnitMetaData> entry : database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().entrySet()) {
+                    database.getRuleMetaData(), database.getResourceMetaData().getStorageUnitMetaDataMap().size());
+            for (Entry<String, NewStorageUnitMetaData> entry : database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet()) {
                 Integer currentUsageCount = inUsedStorageUnits.containsKey(entry.getKey()) ? inUsedStorageUnits.get(entry.getKey()).size() : 0;
                 if (usageCount.get().equals(currentUsageCount)) {
                     result.put(entry.getKey(),

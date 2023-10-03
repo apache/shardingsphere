@@ -142,7 +142,7 @@ class OpenGaussComBatchBindExecutorTest {
         when(result.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("foo_ds"));
         NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class, RETURNS_DEEP_STUBS);
         when(storageUnitMetaData.getStorageUnit().getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "openGauss"));
-        when(result.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
+        when(result.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(result.containsSchema("public")).thenReturn(true);
         when(result.getSchema("public").containsTable("bmsql")).thenReturn(true);

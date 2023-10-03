@@ -95,7 +95,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     @Override
     protected void preProcess(final String databaseName, final Map<String, Object> rows, final Map<String, String> alias) {
         ResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
-        Collection<String> catalogs = resourceMetaData.getStorageUnitMetaData().getMetaDataMap().keySet()
+        Collection<String> catalogs = resourceMetaData.getStorageUnitMetaDataMap().keySet()
                 .stream().map(each -> resourceMetaData.getConnectionProperties(each).getCatalog()).collect(Collectors.toSet());
         schemaNameAlias = alias.getOrDefault(SCHEMA_NAME, "");
         String rowValue = rows.getOrDefault(schemaNameAlias, "").toString();

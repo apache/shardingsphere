@@ -54,7 +54,7 @@ class KernelProcessorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         QueryContext queryContext = new QueryContext(sqlStatementContext, "SELECT * FROM tbl", Collections.emptyList());
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(resourceMetaData.getStorageUnitMetaData().getMetaDataMap()).thenReturn(Collections.emptyMap());
+        when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(Collections.emptyMap());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
                 resourceMetaData, new RuleMetaData(mockShardingSphereRule()), Collections.emptyMap());
         ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString())));

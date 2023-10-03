@@ -160,7 +160,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("foo_ds"));
         NewStorageUnitMetaData storageUnitMetaData = mock(NewStorageUnitMetaData.class, RETURNS_DEEP_STUBS);
         when(storageUnitMetaData.getStorageUnit().getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        when(database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
+        when(database.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(database.containsSchema("public")).thenReturn(true);
         when(database.getSchema("public").containsTable("t_order")).thenReturn(true);

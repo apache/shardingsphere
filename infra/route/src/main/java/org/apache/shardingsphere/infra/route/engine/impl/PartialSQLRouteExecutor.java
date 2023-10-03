@@ -59,7 +59,7 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public RouteContext route(final ConnectionContext connectionContext, final QueryContext queryContext, final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         RouteContext result = new RouteContext();
-        Optional<String> dataSourceName = findDataSourceByHint(queryContext.getHintValueContext(), database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap());
+        Optional<String> dataSourceName = findDataSourceByHint(queryContext.getHintValueContext(), database.getResourceMetaData().getStorageUnitMetaDataMap());
         if (dataSourceName.isPresent()) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), Collections.emptyList()));
             return result;
@@ -71,8 +71,8 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
                 entry.getValue().decorateRouteContext(result, queryContext, database, entry.getKey(), props, connectionContext);
             }
         }
-        if (result.getRouteUnits().isEmpty() && 1 == database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().size()) {
-            String singleDataSourceName = database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().keySet().iterator().next();
+        if (result.getRouteUnits().isEmpty() && 1 == database.getResourceMetaData().getStorageUnitMetaDataMap().size()) {
+            String singleDataSourceName = database.getResourceMetaData().getStorageUnitMetaDataMap().keySet().iterator().next();
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(singleDataSourceName, singleDataSourceName), Collections.emptyList()));
         }
         return result;

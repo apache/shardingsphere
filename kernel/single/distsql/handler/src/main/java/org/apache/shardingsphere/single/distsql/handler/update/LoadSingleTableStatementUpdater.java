@@ -114,7 +114,7 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
         }
         ResourceMetaData resourceMetaData = database.getResourceMetaData();
         Map<String, DataSource> aggregateDataSourceMap = SingleTableLoadUtils.getAggregatedDataSourceMap(
-                resourceMetaData.getStorageUnitMetaData().getMetaDataMap().entrySet().stream()
+                resourceMetaData.getStorageUnitMetaDataMap().entrySet().stream()
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 database.getRuleMetaData().getRules());
         Map<String, Map<String, Collection<String>>> actualTableNodes = new LinkedHashMap<>();

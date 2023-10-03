@@ -111,7 +111,7 @@ class ImportMetaDataUpdaterTest {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));
             Map<String, NewStorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap();
-            when(database.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
+            when(database.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
             when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(feature, database));
             when(result.getMetaDataContexts().getMetaData().getDatabase(feature)).thenReturn(database);
         }

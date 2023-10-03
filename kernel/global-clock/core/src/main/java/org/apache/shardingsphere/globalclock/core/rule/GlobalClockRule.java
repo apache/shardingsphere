@@ -61,7 +61,7 @@ public final class GlobalClockRule implements GlobalRule {
     
     private Optional<DatabaseType> findStorageType(final Collection<ShardingSphereDatabase> databases) {
         return databases.stream()
-                .flatMap(each -> each.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap().values().stream()).findFirst().map(each -> each.getStorageUnit().getStorageType());
+                .flatMap(each -> each.getResourceMetaData().getStorageUnitMetaDataMap().values().stream()).findFirst().map(each -> each.getStorageUnit().getStorageType());
     }
     
     /**

@@ -47,7 +47,7 @@ public final class NewResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource registerStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
-        Map<String, DataSourcePoolProperties> mergedPropsMap = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaData().getMetaDataMap()
+        Map<String, DataSourcePoolProperties> mergedPropsMap = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaDataMap()
                 .entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         mergedPropsMap.putAll(storageUnitDataSourcePoolProps);
         Map<String, StorageNode> toBeCreatedStorageUintNodeMap = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(storageUnitDataSourcePoolProps);
@@ -76,7 +76,7 @@ public final class NewResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource alterStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> propsMap) {
-        Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaData().getMetaDataMap()
+        Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaDataMap()
                 .entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         mergedDataSourcePoolPropertiesMap.putAll(propsMap);
         Map<String, StorageNode> toBeAlteredStorageUintNodeMap = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(mergedDataSourcePoolPropertiesMap);
@@ -113,20 +113,20 @@ public final class NewResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource unregisterStorageUnit(final ResourceMetaData resourceMetaData, final String storageUnitName) {
-        Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaData().getMetaDataMap()
+        Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaDataMap()
                 .entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         mergedDataSourcePoolPropertiesMap.keySet().removeIf(each -> each.equals(storageUnitName));
-        resourceMetaData.getStorageUnitMetaData().getMetaDataMap().remove(storageUnitName);
+        resourceMetaData.getStorageUnitMetaDataMap().remove(storageUnitName);
         return new SwitchingResource(resourceMetaData, new StorageResource(Collections.emptyMap(), Collections.emptyMap()),
                 getToBeRemovedStaleStorageResource(resourceMetaData, storageUnitName), mergedDataSourcePoolPropertiesMap);
     }
     
     private StorageResource getToBeRemovedStaleStorageResource(final ResourceMetaData resourceMetaData, final String storageUnitName) {
         Map<String, StorageNode> metaDataMap = new LinkedHashMap<>(
-                resourceMetaData.getStorageUnitMetaData().getMetaDataMap().entrySet().stream()
+                resourceMetaData.getStorageUnitMetaDataMap().entrySet().stream()
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageNode(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         StorageNode storageNode = metaDataMap.remove(storageUnitName);
-        Map<String, StorageNode> reservedStorageUintNodeMap = resourceMetaData.getStorageUnitMetaData().getMetaDataMap().entrySet().stream()
+        Map<String, StorageNode> reservedStorageUintNodeMap = resourceMetaData.getStorageUnitMetaDataMap().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageNode()));
         Map<StorageNodeName, DataSource> storageNodes = new LinkedHashMap<>(1, 1F);
         if (reservedStorageUintNodeMap.values().stream().noneMatch(each -> each.equals(storageNode))) {

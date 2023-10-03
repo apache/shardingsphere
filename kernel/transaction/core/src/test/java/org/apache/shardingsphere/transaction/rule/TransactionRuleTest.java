@@ -62,14 +62,14 @@ class TransactionRuleTest {
         assertThat(actual.getDatabases().size(), is(2));
         assertTrue(actual.getDatabases().containsKey(SHARDING_DB_1));
         ResourceMetaData resourceMetaData1 = actual.getDatabases().get(SHARDING_DB_1).getResourceMetaData();
-        assertThat(resourceMetaData1.getStorageUnitMetaData().getMetaDataMap().size(), is(2));
-        assertTrue(resourceMetaData1.getStorageUnitMetaData().getMetaDataMap().containsKey("ds_0"));
-        assertTrue(resourceMetaData1.getStorageUnitMetaData().getMetaDataMap().containsKey("ds_1"));
+        assertThat(resourceMetaData1.getStorageUnitMetaDataMap().size(), is(2));
+        assertTrue(resourceMetaData1.getStorageUnitMetaDataMap().containsKey("ds_0"));
+        assertTrue(resourceMetaData1.getStorageUnitMetaDataMap().containsKey("ds_1"));
         assertTrue(actual.getDatabases().containsKey(SHARDING_DB_2));
         ResourceMetaData resourceMetaData2 = actual.getDatabases().get(SHARDING_DB_2).getResourceMetaData();
-        assertThat(resourceMetaData2.getStorageUnitMetaData().getMetaDataMap().size(), is(2));
-        assertTrue(resourceMetaData2.getStorageUnitMetaData().getMetaDataMap().containsKey("ds_0"));
-        assertTrue(resourceMetaData2.getStorageUnitMetaData().getMetaDataMap().containsKey("ds_1"));
+        assertThat(resourceMetaData2.getStorageUnitMetaDataMap().size(), is(2));
+        assertTrue(resourceMetaData2.getStorageUnitMetaDataMap().containsKey("ds_0"));
+        assertTrue(resourceMetaData2.getStorageUnitMetaDataMap().containsKey("ds_1"));
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
@@ -102,7 +102,7 @@ class TransactionRuleTest {
         Map<String, NewStorageUnitMetaData> metaDataMap = new HashMap<>(2, 1F);
         metaDataMap.put("ds_0", new NewStorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
         metaDataMap.put("ds_1", new NewStorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
-        when(result.getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
+        when(result.getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
         return result;
     }
     
@@ -119,7 +119,7 @@ class TransactionRuleTest {
         Map<String, NewStorageUnitMetaData> metaDataMap = new HashMap<>(2, 1F);
         metaDataMap.put("ds_0", new NewStorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
         metaDataMap.put("ds_1", new NewStorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
-        when(result.getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
+        when(result.getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
         return result;
     }
     

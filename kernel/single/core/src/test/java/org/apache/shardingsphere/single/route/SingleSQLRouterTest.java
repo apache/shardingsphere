@@ -85,7 +85,7 @@ class SingleSQLRouterTest {
     
     private ShardingSphereDatabase mockSingleDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", mock(NewStorageUnitMetaData.class)));
+        when(result.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", mock(NewStorageUnitMetaData.class)));
         return result;
     }
     
@@ -107,7 +107,7 @@ class SingleSQLRouterTest {
     private ShardingSphereDatabase mockReadwriteSplittingDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn(" db_schema");
-        when(result.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(Collections.singletonMap("write_ds", mock(NewStorageUnitMetaData.class)));
+        when(result.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("write_ds", mock(NewStorageUnitMetaData.class)));
         return result;
     }
     
@@ -151,7 +151,7 @@ class SingleSQLRouterTest {
         Map<String, NewStorageUnitMetaData> metaDataMap = new HashMap<>(2, 1F);
         metaDataMap.put("ds_0", new NewStorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
         metaDataMap.put("ds_1", new NewStorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
-        when(result.getResourceMetaData().getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
+        when(result.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
         when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order")).thenReturn(true);

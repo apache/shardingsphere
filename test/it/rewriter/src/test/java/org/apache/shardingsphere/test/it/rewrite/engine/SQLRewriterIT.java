@@ -123,7 +123,7 @@ public abstract class SQLRewriterIT {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
         Map<String, NewStorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap(databaseConfig, databaseType);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(resourceMetaData.getStorageUnitMetaData().getMetaDataMap()).thenReturn(metaDataMap);
+        when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
         String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(DefaultDatabase.LOGIC_NAME);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType()),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
