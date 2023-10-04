@@ -31,13 +31,10 @@ public final class StorageUnitMetaData {
     
     private final StorageNode storageNode;
     
-    private final DataSourcePoolProperties dataSourcePoolProperties;
-    
     private final StorageUnit storageUnit;
     
     public StorageUnitMetaData(final String databaseName, final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProperties, final DataSource dataSource) {
         this.storageNode = storageNode;
-        this.dataSourcePoolProperties = dataSourcePoolProperties;
         storageUnit = new StorageUnit(databaseName, dataSource, dataSourcePoolProperties, storageNode);
     }
 }

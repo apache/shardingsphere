@@ -89,7 +89,7 @@ class ExportDatabaseConfigurationExecutorTest {
             when(storageUnit.getDataSourcePoolProperties()).thenReturn(entry.getValue());
             StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class, RETURNS_DEEP_STUBS);
             when(storageUnitMetaData.getStorageUnit()).thenReturn(storageUnit);
-            when(storageUnitMetaData.getDataSourcePoolProperties()).thenReturn(entry.getValue());
+            when(storageUnitMetaData.getStorageUnit().getDataSourcePoolProperties()).thenReturn(entry.getValue());
             result.put(entry.getKey(), storageUnitMetaData);
         }
         return result;
