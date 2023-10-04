@@ -93,22 +93,4 @@ public final class StorageUnitNodeMapUtils {
     private static StorageNode createStorageNode(final StorageNodeName storageNodeName, final String url, final boolean isInstanceConnectionAvailable) {
         return isInstanceConnectionAvailable ? new StorageNode(storageNodeName, url, new StandardJdbcUrlParser().parse(url).getDatabase()) : new StorageNode(storageNodeName, url);
     }
-    
-    /**
-     * Get storage node grouped data source pool properties map.
-     *
-     * @param storageUnitDataSourcePoolProps storage unit grouped data source pool properties map
-     * @return storage node grouped data source pool properties map
-     */
-    public static Map<StorageNodeName, DataSourcePoolProperties> getStorageNodeDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolProps) {
-        Map<StorageNodeName, DataSourcePoolProperties> result = new LinkedHashMap<>();
-        for (Entry<String, DataSourcePoolProperties> entry : storageUnitDataSourcePoolProps.entrySet()) {
-            Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
-            String url = standardProps.get("url").toString();
-            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-            StorageNodeName storageNodeName = getStorageNodeName(entry.getKey(), url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
-            result.putIfAbsent(storageNodeName, entry.getValue());
-        }
-        return result;
-    }
 }
