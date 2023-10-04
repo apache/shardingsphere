@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -55,7 +55,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -167,15 +166,11 @@ class ExportStorageNodesExecutorTest {
     
     private Map<String, StorageUnitMetaData> createStorageUnitMetaDataMap() {
         StorageUnitMetaData storageUnitMetaData1 = mock(StorageUnitMetaData.class);
-        StorageUnit storageUnit1 = createStorageUnit("demo_ds_0");
+        StorageUnit storageUnit1 = createStorageUnit("ds_0");
         when(storageUnitMetaData1.getStorageUnit()).thenReturn(storageUnit1);
-        DataSource dataSource1 = storageUnit1.getDataSource();
-        when(storageUnitMetaData1.getDataSource()).thenReturn(dataSource1);
         StorageUnitMetaData storageUnitMetaData2 = mock(StorageUnitMetaData.class);
-        StorageUnit storageUnit2 = createStorageUnit("demo_ds_1");
+        StorageUnit storageUnit2 = createStorageUnit("ds_1");
         when(storageUnitMetaData2.getStorageUnit()).thenReturn(storageUnit2);
-        DataSource dataSource2 = storageUnit2.getDataSource();
-        when(storageUnitMetaData2.getDataSource()).thenReturn(dataSource2);
         Map<String, StorageUnitMetaData> result = new LinkedHashMap<>(2, 1F);
         result.put("ds_0", storageUnitMetaData1);
         result.put("ds_1", storageUnitMetaData2);

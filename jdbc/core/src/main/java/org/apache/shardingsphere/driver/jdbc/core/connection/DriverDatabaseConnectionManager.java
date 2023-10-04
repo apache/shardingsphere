@@ -90,7 +90,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
         for (Entry<String, StorageUnitMetaData> entry : contextManager.getStorageUnitMetaDataMap(databaseName).entrySet()) {
-            DataSource dataSource = entry.getValue().getDataSource();
+            DataSource dataSource = entry.getValue().getStorageUnit().getDataSource();
             String cacheKey = getKey(databaseName, entry.getKey());
             dataSourceMap.put(cacheKey, dataSource);
             physicalDataSourceMap.put(cacheKey, dataSource);
@@ -343,7 +343,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         String cacheKey = getKey(currentDatabaseName, dataSourceName);
         DataSource dataSource = databaseName.equals(currentDatabaseName)
                 ? dataSourceMap.get(cacheKey)
-                : contextManager.getStorageUnitMetaDataMap(currentDatabaseName).get(dataSourceName).getDataSource();
+                : contextManager.getStorageUnitMetaDataMap(currentDatabaseName).get(dataSourceName).getStorageUnit().getDataSource();
         Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (cachedConnections) {

@@ -101,13 +101,14 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
             for (Entry<String, StorageUnitMetaData> entry : database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet()) {
                 Integer currentUsageCount = inUsedStorageUnits.containsKey(entry.getKey()) ? inUsedStorageUnits.get(entry.getKey()).size() : 0;
                 if (usageCount.get().equals(currentUsageCount)) {
-                    result.put(entry.getKey(),
-                            getDataSourcePoolProperties(propsMap, entry.getKey(), metaDataMap.get(entry.getKey()).getStorageUnit().getStorageType(), entry.getValue().getDataSource()));
+                    result.put(entry.getKey(), getDataSourcePoolProperties(
+                            propsMap, entry.getKey(), metaDataMap.get(entry.getKey()).getStorageUnit().getStorageType(), entry.getValue().getStorageUnit().getDataSource()));
                 }
             }
         } else {
             for (Entry<String, StorageUnitMetaData> entry : metaDataMap.entrySet()) {
-                result.put(entry.getKey(), getDataSourcePoolProperties(propsMap, entry.getKey(), metaDataMap.get(entry.getKey()).getStorageUnit().getStorageType(), entry.getValue().getDataSource()));
+                result.put(entry.getKey(),
+                        getDataSourcePoolProperties(propsMap, entry.getKey(), metaDataMap.get(entry.getKey()).getStorageUnit().getStorageType(), entry.getValue().getStorageUnit().getDataSource()));
             }
         }
         return result;

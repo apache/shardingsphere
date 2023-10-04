@@ -69,7 +69,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     public List<Connection> getConnections(final String databaseName, final String dataSourceName,
                                            final int connectionSize, final ConnectionMode connectionMode, final TransactionType transactionType) throws SQLException {
         DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()
-                .getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaDataMap().get(dataSourceName).getDataSource();
+                .getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaDataMap().get(dataSourceName).getStorageUnit().getDataSource();
         if (dataSourceName.contains(".")) {
             String dataSourceStr = dataSourceName.split("\\.")[0];
             if (GlobalDataSourceRegistry.getInstance().getCachedDataSources().containsKey(dataSourceStr)) {

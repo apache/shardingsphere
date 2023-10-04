@@ -199,7 +199,7 @@ public final class ShardingSphereDatabase {
         toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
             databaseRules.removeAll(toBeReloadedRules);
             Map<String, DataSource> dataSources = resourceMetaData.getStorageUnitMetaDataMap().entrySet().stream()
-                    .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                    .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
             databaseRules.add(((MutableDataNodeRule) optional).reloadRule(ruleConfig, name, dataSources, databaseRules));
         });
         ruleMetaData.getRules().clear();

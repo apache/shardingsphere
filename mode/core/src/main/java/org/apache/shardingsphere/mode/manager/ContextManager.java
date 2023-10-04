@@ -184,7 +184,7 @@ public final class ContextManager implements AutoCloseable {
         database.reloadRules(MutableDataNodeRule.class);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
                 Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnitMetaDataMap().get(dataSourceName).getStorageUnit().getStorageType()),
-                Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnitMetaDataMap().get(dataSourceName).getDataSource()),
+                Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnitMetaDataMap().get(dataSourceName).getStorageUnit().getDataSource()),
                 database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
         ShardingSphereSchema result = GenericSchemaBuilder.build(material).get(schemaName);
         result.getViews().putAll(metaDataContexts.get().getPersistService().getDatabaseMetaDataService().getViewMetaDataPersistService().load(database.getName(), schemaName));

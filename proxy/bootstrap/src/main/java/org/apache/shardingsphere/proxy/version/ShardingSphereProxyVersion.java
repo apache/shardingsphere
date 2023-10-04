@@ -79,7 +79,7 @@ public final class ShardingSphereProxyVersion {
         Optional<String> dataSourceName = resourceMetaData.getStorageUnitMetaDataMap().entrySet()
                 .stream().filter(entry -> entry.getValue().getStorageUnit().getStorageType().equals(protocolType)).map(Entry::getKey).findFirst();
         Map<String, DataSource> dataSources = resourceMetaData.getStorageUnitMetaDataMap().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         return dataSourceName.flatMap(optional -> Optional.ofNullable(DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, dataSources).get(optional)));
     }
 }
