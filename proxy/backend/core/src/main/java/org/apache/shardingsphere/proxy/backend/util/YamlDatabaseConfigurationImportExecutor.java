@@ -289,10 +289,10 @@ public final class YamlDatabaseConfigurationImportExecutor {
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))));
     }
     
-    private void addSingleRuleConfiguration(final SingleRuleConfiguration broadcastRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
-        allRuleConfigs.add(broadcastRuleConfig);
+    private void addSingleRuleConfiguration(final SingleRuleConfiguration singleRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
+        allRuleConfigs.add(singleRuleConfig);
         database.getRuleMetaData().getRules().add(
-                new SingleRule(broadcastRuleConfig, database.getName(),
+                new SingleRule(singleRuleConfig, database.getName(),
                         database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
                                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                         database.getRuleMetaData().getRules()));
