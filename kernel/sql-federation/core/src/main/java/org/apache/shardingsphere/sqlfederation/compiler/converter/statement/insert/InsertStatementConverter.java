@@ -59,9 +59,11 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
     }
     
     private SqlNode convertSource(final InsertStatement insertStatement) {
-        return insertStatement.getInsertSelect().isPresent() 
-                ? new SelectStatementConverter().convert(insertStatement.getInsertSelect().get().getSelect())
-                : convertValues(insertStatement.getValues());
+        if (insertStatement.getInsertSelect().isPresent()) {
+            return new SelectStatementConverter().convert(insertStatement.getInsertSelect().get().getSelect());
+        } else {
+            return convertValues(insertStatement.getValues());
+        }
     }
     
     private SqlNode convertValues(final Collection<InsertValuesSegment> insertValuesSegments) {
