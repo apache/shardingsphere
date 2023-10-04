@@ -63,8 +63,7 @@ class ShardingSphereMetaDataTest {
         ConfigurationProperties configProps = new ConfigurationProperties(new Properties());
         when(ShardingSphereDatabase.create("foo_db", databaseType, configProps)).thenReturn(database);
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(Collections.singletonMap("foo_db", database));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class),
-                new RuleMetaData(Collections.singleton(globalResourceHeldRule)), configProps);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalResourceHeldRule)), configProps);
         metaData.addDatabase("foo_db", databaseType, configProps);
         assertThat(metaData.getDatabases(), is(databases));
         verify(globalResourceHeldRule).addResource(database);
@@ -90,7 +89,9 @@ class ShardingSphereMetaDataTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn("foo_db");
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
-        StorageUnitMetaData storageUnitMetaData = new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), dataSource);
+        DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
+        StorageUnitMetaData storageUnitMetaData = new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), dataSourcePoolProps, dataSource);
         when(result.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_db", storageUnitMetaData));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(databaseResourceHeldRule)));
         return result;

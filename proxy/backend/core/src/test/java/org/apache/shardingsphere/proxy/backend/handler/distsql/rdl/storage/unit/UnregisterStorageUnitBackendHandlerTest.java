@@ -85,7 +85,9 @@ class UnregisterStorageUnitBackendHandlerTest {
     @BeforeEach
     void setUp() {
         resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        StorageUnitMetaData storageUnitMetaData = new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource());
+        DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
+        StorageUnitMetaData storageUnitMetaData = new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), dataSourcePoolProps, new MockedDataSource());
         when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         contextManager = mockContextManager();

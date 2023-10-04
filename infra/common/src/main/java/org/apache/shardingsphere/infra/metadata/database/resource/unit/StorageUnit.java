@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropert
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
-import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
@@ -43,8 +42,6 @@ public final class StorageUnit {
     
     private final DataSourcePoolProperties dataSourcePoolProperties;
     
-    private final StorageNode storageNode;
-    
     private final DatabaseType storageType;
     
     private final ConnectionProperties connectionProperties;
@@ -52,22 +49,21 @@ public final class StorageUnit {
     public StorageUnit(final String databaseName, final DataSource dataSource, final DataSourcePoolProperties dataSourcePoolProperties, final StorageNode storageNode) {
         this.dataSource = new CatalogSwitchableDataSource(dataSource, storageNode.getCatalog(), storageNode.getUrl());
         this.dataSourcePoolProperties = dataSourcePoolProperties;
-        this.storageNode = storageNode;
         boolean isDataSourceEnabled = !DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, Collections.singletonMap(storageNode.getName().getName(), dataSource)).isEmpty();
         storageType = createStorageType(isDataSourceEnabled);
-        connectionProperties = createConnectionProperties(isDataSourceEnabled);
+        connectionProperties = createConnectionProperties(isDataSourceEnabled, storageNode);
     }
     
     private DatabaseType createStorageType(final boolean isDataSourceEnabled) {
         return DatabaseTypeEngine.getStorageType(isDataSourceEnabled ? Collections.singleton(dataSource) : Collections.emptyList());
     }
     
-    private ConnectionProperties createConnectionProperties(final boolean isDataSourceEnabled) {
+    private ConnectionProperties createConnectionProperties(final boolean isDataSourceEnabled, final StorageNode storageNode) {
         if (!isDataSourceEnabled) {
             return null;
         }
-        Map<String, Object> standardProps = DataSourcePoolPropertiesCreator.create(dataSource).getConnectionPropertySynonyms().getStandardProperties();
+        Map<String, Object> standardProps = dataSourcePoolProperties.getConnectionPropertySynonyms().getStandardProperties();
         ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
-        return parser.parse(standardProps.get("url").toString(), standardProps.getOrDefault("username", "").toString(), storageNode.getCatalog());
+        return parser.parse(standardProps.getOrDefault("url", "").toString(), standardProps.getOrDefault("username", "").toString(), storageNode.getCatalog());
     }
 }

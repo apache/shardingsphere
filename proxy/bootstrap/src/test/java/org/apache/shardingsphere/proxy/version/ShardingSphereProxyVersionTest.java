@@ -83,7 +83,9 @@ class ShardingSphereProxyVersionTest {
     private ResourceMetaData mockResourceMetaData(final String databaseProductName, final String databaseProductVersion) throws SQLException {
         ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         DataSource dataSource = createDataSource(databaseProductName, databaseProductVersion);
-        StorageUnitMetaData storageUnitMetaData = new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), dataSource);
+        DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
+        StorageUnitMetaData storageUnitMetaData = new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), dataSourcePoolProps, dataSource);
         when(result.getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
         return result;
     }

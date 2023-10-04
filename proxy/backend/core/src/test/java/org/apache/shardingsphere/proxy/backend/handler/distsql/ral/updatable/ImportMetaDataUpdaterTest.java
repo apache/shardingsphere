@@ -120,8 +120,10 @@ class ImportMetaDataUpdaterTest {
     
     private Map<String, StorageUnitMetaData> createStorageUnitMetaDataMap() {
         Map<String, StorageUnitMetaData> result = new LinkedHashMap<>(2, 1F);
-        result.put("ds_0", new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
-        result.put("ds_1", new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), mock(DataSourcePoolProperties.class), new MockedDataSource()));
+        DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
+        result.put("ds_0", new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), dataSourcePoolProps, new MockedDataSource()));
+        result.put("ds_1", new StorageUnitMetaData("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), dataSourcePoolProps, new MockedDataSource()));
         return result;
     }
     
