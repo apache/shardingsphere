@@ -27,6 +27,7 @@ import org.apache.shardingsphere.readwritesplitting.exception.checker.DataSource
 import org.apache.shardingsphere.readwritesplitting.exception.checker.DuplicateDataSourceException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.InvalidWeightLoadBalancerConfigurationException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredWriteDataSourceNameException;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -127,10 +128,10 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
     
     private Map<String, DataSource> mockDataSources() {
         Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
-        result.put("read_ds_0", mock(DataSource.class));
-        result.put("read_ds_1", mock(DataSource.class));
-        result.put("write_ds_0", mock(DataSource.class));
-        result.put("write_ds_1", mock(DataSource.class));
+        result.put("read_ds_0", new MockedDataSource());
+        result.put("read_ds_1", new MockedDataSource());
+        result.put("write_ds_0", new MockedDataSource());
+        result.put("write_ds_1", new MockedDataSource());
         return result;
     }
 }
