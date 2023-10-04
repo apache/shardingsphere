@@ -96,7 +96,7 @@ class JDBCBackendDataSourceTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getProtocolType()).thenReturn(databaseType);
         for (Entry<String, DataSource> entry : mockDataSources(2).entrySet()) {
-            when(database.getResourceMetaData().getStorageUnitMetaDataMap().get(entry.getKey()).getStorageUnit().getDataSource()).thenReturn(entry.getValue());
+            when(database.getResourceMetaData().getStorageUnitMetaDataMap().get(entry.getKey()).getDataSource()).thenReturn(entry.getValue());
         }
         return Collections.singletonMap("schema", database);
     }

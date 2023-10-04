@@ -34,7 +34,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
@@ -174,10 +173,8 @@ public abstract class SQLRewriterIT {
     private Map<String, StorageUnitMetaData> createStorageUnitMetaDataMap(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
         Map<String, StorageUnitMetaData> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1F);
         for (Entry<String, DataSource> entry : databaseConfig.getDataSources().entrySet()) {
-            StorageUnit storageUnit = mock(StorageUnit.class);
-            when(storageUnit.getStorageType()).thenReturn(databaseType);
             StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
-            when(storageUnitMetaData.getStorageUnit()).thenReturn(storageUnit);
+            when(storageUnitMetaData.getStorageType()).thenReturn(databaseType);
             result.put(entry.getKey(), storageUnitMetaData);
         }
         return result;

@@ -59,7 +59,7 @@ public final class ShardingSphereTableDataCollectorUtils {
         Collection<ShardingSphereRowData> result = new LinkedList<>();
         for (StorageUnitMetaData each : database.getResourceMetaData().getStorageUnitMetaDataMap().values()) {
             try (
-                    Connection connection = each.getStorageUnit().getDataSource().getConnection();
+                    Connection connection = each.getDataSource().getConnection();
                     Statement statement = connection.createStatement();
                     ResultSet resultSet = statement.executeQuery(sql)) {
                 result.addAll(getRows(table, selectedColumnNames, resultSet));
@@ -69,7 +69,7 @@ public final class ShardingSphereTableDataCollectorUtils {
     }
     
     private static boolean isDifferentProtocolAndStorageType(final ShardingSphereDatabase database) {
-        return !database.getResourceMetaData().getStorageUnitMetaDataMap().values().stream().allMatch(each -> each.getStorageUnit().getStorageType().equals(database.getProtocolType()));
+        return !database.getResourceMetaData().getStorageUnitMetaDataMap().values().stream().allMatch(each -> each.getStorageType().equals(database.getProtocolType()));
     }
     
     private static Collection<ShardingSphereRowData> getRows(final ShardingSphereTable table, final Collection<String> selectedColumnNames, final ResultSet resultSet) throws SQLException {

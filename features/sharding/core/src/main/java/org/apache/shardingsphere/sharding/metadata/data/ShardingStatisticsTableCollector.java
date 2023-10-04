@@ -88,11 +88,11 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
     }
     
     private void addTableRowsAndDataLength(final Map<String, StorageUnitMetaData> metaDataMap, final DataNode dataNode, final List<Object> row) throws SQLException {
-        DatabaseType databaseType = metaDataMap.get(dataNode.getDataSourceName()).getStorageUnit().getStorageType();
+        DatabaseType databaseType = metaDataMap.get(dataNode.getDataSourceName()).getStorageType();
         Optional<DialectShardingStatisticsTableCollector> dialectCollector = DatabaseTypedSPILoader.findService(DialectShardingStatisticsTableCollector.class, databaseType);
         boolean isAppended = false;
         if (dialectCollector.isPresent()) {
-            try (Connection connection = metaDataMap.get(dataNode.getDataSourceName()).getStorageUnit().getDataSource().getConnection()) {
+            try (Connection connection = metaDataMap.get(dataNode.getDataSourceName()).getDataSource().getConnection()) {
                 isAppended = dialectCollector.get().appendRow(connection, dataNode, row);
             }
         }

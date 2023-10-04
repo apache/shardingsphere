@@ -176,7 +176,7 @@ public final class ConfigurationContextManager {
             rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
             rules.addAll(DatabaseRulesBuilder.build(databaseName,
                     database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
-                            .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+                            .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                     database.getRuleMetaData().getRules(), ruleConfig, instanceContext));
             refreshMetadata(databaseName, database, rules);
         } catch (final SQLException ex) {
@@ -198,7 +198,7 @@ public final class ConfigurationContextManager {
             if (isNotEmptyConfig(ruleConfig)) {
                 rules.addAll(DatabaseRulesBuilder.build(databaseName,
                         database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
-                                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+                                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                         database.getRuleMetaData().getRules(), ruleConfig, instanceContext));
             }
             refreshMetadata(databaseName, database, rules);
@@ -281,7 +281,7 @@ public final class ConfigurationContextManager {
         Map<StorageNodeName, DataSource> newStorageNodes = getNewStorageNodes(database.getResourceMetaData().getDataSources(), resource);
         Map<String, StorageNode> newStorageUnitNodeMap = getNewStorageUnitNodeMap(database.getResourceMetaData().getStorageUnitMetaDataMap(), resource);
         Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
         return Collections.singletonMap(database.getName().toLowerCase(), new ShardingSphereDatabase(database.getName(), database.getProtocolType(),
                 new ResourceMetaData(database.getName(), newStorageNodes, newStorageUnitNodeMap, propsMap), database.getRuleMetaData(), database.getSchemas()));
     }
@@ -363,7 +363,7 @@ public final class ConfigurationContextManager {
         StorageResource storageResource = getMergedStorageResource(resourceMetaData, switchingResource);
         Map<String, DataSourcePoolProperties> propsMap = null == switchingResource
                 ? resourceMetaData.getStorageUnitMetaDataMap().entrySet().stream()
-                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))
+                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))
                 : switchingResource.getMergedDataSourcePoolPropertiesMap();
         return new DataSourceProvidedDatabaseConfiguration(storageResource, toBeCreatedRuleConfigs, propsMap);
     }

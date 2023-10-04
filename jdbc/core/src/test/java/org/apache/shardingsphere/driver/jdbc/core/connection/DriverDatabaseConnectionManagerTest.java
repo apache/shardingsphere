@@ -99,7 +99,7 @@ class DriverDatabaseConnectionManagerTest {
     
     private StorageUnitMetaData mockStorageUnitMetaData(final DataSource dataSource) {
         StorageUnitMetaData result = mock(StorageUnitMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getStorageUnit().getDataSource()).thenReturn(dataSource);
+        when(result.getDataSource()).thenReturn(dataSource);
         return result;
     }
     

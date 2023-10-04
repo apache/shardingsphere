@@ -178,7 +178,7 @@ class RouteSQLRewriteEngineTest {
     
     private Map<String, StorageUnitMetaData> mockStorageUnitMetaData(final DatabaseType databaseType) {
         StorageUnitMetaData result = mock(StorageUnitMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getStorageUnit().getStorageType()).thenReturn(databaseType);
+        when(result.getStorageType()).thenReturn(databaseType);
         return Collections.singletonMap("ds_0", result);
     }
 }
