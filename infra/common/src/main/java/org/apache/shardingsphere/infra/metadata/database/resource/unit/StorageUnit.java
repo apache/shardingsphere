@@ -43,8 +43,6 @@ public final class StorageUnit {
     
     private final DataSourcePoolProperties dataSourcePoolProperties;
     
-    private final StorageNode storageNode;
-    
     private final DatabaseType storageType;
     
     private final ConnectionProperties connectionProperties;
@@ -52,17 +50,16 @@ public final class StorageUnit {
     public StorageUnit(final String databaseName, final DataSource dataSource, final DataSourcePoolProperties dataSourcePoolProperties, final StorageNode storageNode) {
         this.dataSource = new CatalogSwitchableDataSource(dataSource, storageNode.getCatalog(), storageNode.getUrl());
         this.dataSourcePoolProperties = dataSourcePoolProperties;
-        this.storageNode = storageNode;
         boolean isDataSourceEnabled = !DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, Collections.singletonMap(storageNode.getName().getName(), dataSource)).isEmpty();
         storageType = createStorageType(isDataSourceEnabled);
-        connectionProperties = createConnectionProperties(isDataSourceEnabled);
+        connectionProperties = createConnectionProperties(isDataSourceEnabled, storageNode);
     }
     
     private DatabaseType createStorageType(final boolean isDataSourceEnabled) {
         return DatabaseTypeEngine.getStorageType(isDataSourceEnabled ? Collections.singleton(dataSource) : Collections.emptyList());
     }
     
-    private ConnectionProperties createConnectionProperties(final boolean isDataSourceEnabled) {
+    private ConnectionProperties createConnectionProperties(final boolean isDataSourceEnabled, final StorageNode storageNode) {
         if (!isDataSourceEnabled) {
             return null;
         }
