@@ -64,6 +64,6 @@ public final class StorageUnit {
         }
         Map<String, Object> standardProps = dataSourcePoolProperties.getConnectionPropertySynonyms().getStandardProperties();
         ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
-        return parser.parse(standardProps.get("url").toString(), standardProps.getOrDefault("username", "").toString(), storageNode.getCatalog());
+        return parser.parse(standardProps.getOrDefault("url", "").toString(), standardProps.getOrDefault("username", "").toString(), storageNode.getCatalog());
     }
 }
