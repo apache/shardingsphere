@@ -286,7 +286,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         allRuleConfigs.add(broadcastRuleConfig);
         database.getRuleMetaData().getRules().add(new BroadcastRule(broadcastRuleConfig, database.getName(),
                 database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
-                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))));
+                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))));
     }
     
     private void addSingleRuleConfiguration(final SingleRuleConfiguration singleRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
@@ -294,7 +294,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         database.getRuleMetaData().getRules().add(
                 new SingleRule(singleRuleConfig, database.getName(),
                         database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
-                                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+                                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                         database.getRuleMetaData().getRules()));
     }
     

@@ -93,7 +93,7 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
             if (storageNodes.containsKey(databaseInstanceIp)) {
                 continue;
             }
-            Map<String, Object> standardProps = DataSourcePoolPropertiesCreator.create(entry.getValue().getStorageUnit().getDataSource()).getConnectionPropertySynonyms().getStandardProperties();
+            Map<String, Object> standardProps = DataSourcePoolPropertiesCreator.create(entry.getValue().getDataSource()).getConnectionPropertySynonyms().getStandardProperties();
             ExportedStorageNode exportedStorageNode = new ExportedStorageNode(connectionProps.getHostname(), String.valueOf(connectionProps.getPort()),
                     String.valueOf(standardProps.get("username")), String.valueOf(standardProps.get("password")), connectionProps.getCatalog());
             storageNodes.put(databaseInstanceIp, exportedStorageNode);

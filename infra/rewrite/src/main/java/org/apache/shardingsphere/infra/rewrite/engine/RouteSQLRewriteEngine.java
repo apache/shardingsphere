@@ -157,7 +157,7 @@ public final class RouteSQLRewriteEngine {
     private Map<RouteUnit, SQLRewriteUnit> translate(final SQLStatement sqlStatement, final Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits) {
         Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(sqlRewriteUnits.size(), 1F);
         for (Entry<RouteUnit, SQLRewriteUnit> entry : sqlRewriteUnits.entrySet()) {
-            DatabaseType storageType = storageUnitMetaDataMap.get(entry.getKey().getDataSourceMapper().getActualName()).getStorageUnit().getStorageType();
+            DatabaseType storageType = storageUnitMetaDataMap.get(entry.getKey().getDataSourceMapper().getActualName()).getStorageType();
             String sql = translatorRule.translate(entry.getValue().getSql(), sqlStatement, protocolType, storageType);
             SQLRewriteUnit sqlRewriteUnit = new SQLRewriteUnit(sql, entry.getValue().getParameters());
             result.put(entry.getKey(), sqlRewriteUnit);

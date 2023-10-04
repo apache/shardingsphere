@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -55,6 +54,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -166,26 +166,22 @@ class ExportStorageNodesExecutorTest {
     
     private Map<String, StorageUnitMetaData> createStorageUnitMetaDataMap() {
         StorageUnitMetaData storageUnitMetaData1 = mock(StorageUnitMetaData.class);
-        StorageUnit storageUnit1 = createStorageUnit("ds_0");
-        when(storageUnitMetaData1.getStorageUnit()).thenReturn(storageUnit1);
+        when(storageUnitMetaData1.getDataSource()).thenReturn(createDataSource("ds_0"));
         StorageUnitMetaData storageUnitMetaData2 = mock(StorageUnitMetaData.class);
-        StorageUnit storageUnit2 = createStorageUnit("ds_1");
-        when(storageUnitMetaData2.getStorageUnit()).thenReturn(storageUnit2);
+        when(storageUnitMetaData2.getDataSource()).thenReturn(createDataSource("ds_2"));
         Map<String, StorageUnitMetaData> result = new LinkedHashMap<>(2, 1F);
         result.put("ds_0", storageUnitMetaData1);
         result.put("ds_1", storageUnitMetaData2);
         return result;
     }
     
-    private StorageUnit createStorageUnit(final String name) {
-        MockedDataSource dataSource = new MockedDataSource();
-        dataSource.setUrl(String.format("jdbc:mock://127.0.0.1/%s", name));
-        dataSource.setUsername("root");
-        dataSource.setPassword("test");
-        dataSource.setMaxPoolSize(50);
-        dataSource.setMinPoolSize(1);
-        StorageUnit result = mock(StorageUnit.class);
-        when(result.getDataSource()).thenReturn(dataSource);
+    private DataSource createDataSource(final String name) {
+        MockedDataSource result = new MockedDataSource();
+        result.setUrl(String.format("jdbc:mock://127.0.0.1/%s", name));
+        result.setUsername("root");
+        result.setPassword("test");
+        result.setMaxPoolSize(50);
+        result.setMinPoolSize(1);
         return result;
     }
     

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
@@ -84,15 +83,11 @@ class SQLRewriteEntryTest {
     }
     
     private ResourceMetaData mockResourceMetaData() {
-        StorageUnit storageUnit1 = mock(StorageUnit.class);
-        when(storageUnit1.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "H2"));
-        StorageUnit storageUnit2 = mock(StorageUnit.class);
-        when(storageUnit2.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         Map<String, StorageUnitMetaData> metaDataMap = new LinkedHashMap<>(2, 1F);
         StorageUnitMetaData storageUnitMetaData1 = mock(StorageUnitMetaData.class);
-        when(storageUnitMetaData1.getStorageUnit()).thenReturn(storageUnit1);
+        when(storageUnitMetaData1.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "H2"));
         StorageUnitMetaData storageUnitMetaData2 = mock(StorageUnitMetaData.class);
-        when(storageUnitMetaData2.getStorageUnit()).thenReturn(storageUnit2);
+        when(storageUnitMetaData2.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         metaDataMap.put("ds_0", storageUnitMetaData1);
         metaDataMap.put("ds_1", storageUnitMetaData2);
         ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);

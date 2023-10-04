@@ -49,7 +49,7 @@ public final class NewResourceSwitchManager {
      */
     public SwitchingResource registerStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolPropsMap) {
         Map<String, DataSourcePoolProperties> mergedPropsMap = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaDataMap().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         mergedPropsMap.putAll(storageUnitDataSourcePoolPropsMap);
         Map<String, StorageNode> toBeCreatedStorageUintNodeMap = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(storageUnitDataSourcePoolPropsMap);
         return new SwitchingResource(resourceMetaData,
@@ -78,7 +78,7 @@ public final class NewResourceSwitchManager {
      */
     public SwitchingResource alterStorageUnit(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> propsMap) {
         Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaDataMap().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         mergedDataSourcePoolPropertiesMap.putAll(propsMap);
         Map<String, StorageNode> toBeAlteredStorageUintNodeMap = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(mergedDataSourcePoolPropertiesMap);
         return new SwitchingResource(resourceMetaData,
@@ -115,7 +115,7 @@ public final class NewResourceSwitchManager {
      */
     public SwitchingResource unregisterStorageUnit(final ResourceMetaData resourceMetaData, final String storageUnitName) {
         Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new LinkedHashMap<>(resourceMetaData.getStorageUnitMetaDataMap().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         mergedDataSourcePoolPropertiesMap.keySet().removeIf(each -> each.equals(storageUnitName));
         resourceMetaData.getStorageUnitMetaDataMap().remove(storageUnitName);
         return new SwitchingResource(resourceMetaData, new StorageResource(Collections.emptyMap(), Collections.emptyMap()),

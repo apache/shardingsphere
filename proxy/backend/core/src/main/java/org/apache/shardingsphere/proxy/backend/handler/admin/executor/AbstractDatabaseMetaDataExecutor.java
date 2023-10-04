@@ -165,7 +165,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
                 return;
             }
             try (
-                    Connection connection = storageUnitMetaData.get().getStorageUnit().getDataSource().getConnection();
+                    Connection connection = storageUnitMetaData.get().getDataSource().getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 for (int i = 0; i < parameters.size(); i++) {
                     preparedStatement.setObject(i + 1, parameters.get(i));

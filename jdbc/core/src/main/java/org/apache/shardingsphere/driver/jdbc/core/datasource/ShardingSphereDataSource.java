@@ -103,7 +103,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     public void close() throws SQLException {
         contextManagerDestroyedCallback(databaseName);
         for (StorageUnitMetaData each : contextManager.getStorageUnitMetaDataMap(databaseName).values()) {
-            close(each.getStorageUnit().getDataSource());
+            close(each.getDataSource());
         }
         contextManager.close();
     }
@@ -134,13 +134,13 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     @Override
     public int getLoginTimeout() throws SQLException {
         Map<String, StorageUnitMetaData> metaDataMap = contextManager.getStorageUnitMetaDataMap(databaseName);
-        return metaDataMap.isEmpty() ? 0 : metaDataMap.values().iterator().next().getStorageUnit().getDataSource().getLoginTimeout();
+        return metaDataMap.isEmpty() ? 0 : metaDataMap.values().iterator().next().getDataSource().getLoginTimeout();
     }
     
     @Override
     public void setLoginTimeout(final int seconds) throws SQLException {
         for (StorageUnitMetaData each : contextManager.getStorageUnitMetaDataMap(databaseName).values()) {
-            each.getStorageUnit().getDataSource().setLoginTimeout(seconds);
+            each.getDataSource().setLoginTimeout(seconds);
         }
     }
 }

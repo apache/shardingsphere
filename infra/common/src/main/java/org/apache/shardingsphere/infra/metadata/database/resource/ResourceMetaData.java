@@ -91,8 +91,8 @@ public final class ResourceMetaData {
     }
     
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
-        return existedDataSourceNames.stream().anyMatch(each -> storageUnitMetaDataMap.get(dataSourceName).getStorageUnit().getConnectionProperties()
-                .isInSameDatabaseInstance(storageUnitMetaDataMap.get(each).getStorageUnit().getConnectionProperties()));
+        return existedDataSourceNames.stream().anyMatch(each -> storageUnitMetaDataMap.get(dataSourceName).getConnectionProperties()
+                .isInSameDatabaseInstance(storageUnitMetaDataMap.get(each).getConnectionProperties()));
     }
     
     /**
@@ -102,7 +102,7 @@ public final class ResourceMetaData {
      * @return connection properties
      */
     public ConnectionProperties getConnectionProperties(final String dataSourceName) {
-        return storageUnitMetaDataMap.get(dataSourceName).getStorageUnit().getConnectionProperties();
+        return storageUnitMetaDataMap.get(dataSourceName).getConnectionProperties();
     }
     
     /**
@@ -112,7 +112,7 @@ public final class ResourceMetaData {
      * @return storage type
      */
     public DatabaseType getStorageType(final String dataSourceName) {
-        return storageUnitMetaDataMap.get(dataSourceName).getStorageUnit().getStorageType();
+        return storageUnitMetaDataMap.get(dataSourceName).getStorageType();
     }
     
     /**

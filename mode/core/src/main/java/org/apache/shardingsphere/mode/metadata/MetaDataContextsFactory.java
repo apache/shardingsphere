@@ -148,7 +148,7 @@ public final class MetaDataContextsFactory {
             String databaseName = entry.getKey();
             metadataContexts.getPersistService().persistConfigurations(entry.getKey(), entry.getValue(),
                     metadataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
-                            .collect(Collectors.toMap(Entry::getKey, each -> each.getValue().getStorageUnit().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+                            .collect(Collectors.toMap(Entry::getKey, each -> each.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                     metadataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
         }
     }

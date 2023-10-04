@@ -105,7 +105,7 @@ class ContextManagerTest {
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mutableDataNodeRule)));
         when(result.getSchemas()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", new ShardingSphereSchema())));
         StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class, RETURNS_DEEP_STUBS);
-        when(storageUnitMetaData.getStorageUnit().getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(storageUnitMetaData.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(result.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(Collections.singletonMap("foo_ds", storageUnitMetaData));
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
