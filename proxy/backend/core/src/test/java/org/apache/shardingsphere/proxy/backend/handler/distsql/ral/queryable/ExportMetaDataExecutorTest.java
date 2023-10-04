@@ -152,8 +152,8 @@ class ExportMetaDataExecutorTest {
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<String, StorageUnitMetaData> result = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
-            when(storageUnitMetaData.getDataSourcePoolProperties()).thenReturn(entry.getValue());
+            StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class, RETURNS_DEEP_STUBS);
+            when(storageUnitMetaData.getStorageUnit().getDataSourcePoolProperties()).thenReturn(entry.getValue());
             result.put(entry.getKey(), storageUnitMetaData);
         }
         return result;

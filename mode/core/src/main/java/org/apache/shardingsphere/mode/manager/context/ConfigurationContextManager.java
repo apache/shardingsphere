@@ -281,7 +281,7 @@ public final class ConfigurationContextManager {
         Map<StorageNodeName, DataSource> newStorageNodes = getNewStorageNodes(database.getResourceMetaData().getDataSources(), resource);
         Map<String, StorageNode> newStorageUnitNodeMap = getNewStorageUnitNodeMap(database.getResourceMetaData().getStorageUnitMetaDataMap(), resource);
         Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
         return Collections.singletonMap(database.getName().toLowerCase(), new ShardingSphereDatabase(database.getName(), database.getProtocolType(),
                 new ResourceMetaData(database.getName(), newStorageNodes, newStorageUnitNodeMap, propsMap), database.getRuleMetaData(), database.getSchemas()));
     }
@@ -362,8 +362,8 @@ public final class ConfigurationContextManager {
                                                            final Collection<RuleConfiguration> toBeCreatedRuleConfigs) {
         StorageResource storageResource = getMergedStorageResource(resourceMetaData, switchingResource);
         Map<String, DataSourcePoolProperties> propsMap = null == switchingResource
-                ? resourceMetaData.getStorageUnitMetaDataMap()
-                        .entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))
+                ? resourceMetaData.getStorageUnitMetaDataMap().entrySet().stream()
+                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))
                 : switchingResource.getMergedDataSourcePoolPropertiesMap();
         return new DataSourceProvidedDatabaseConfiguration(storageResource, toBeCreatedRuleConfigs, propsMap);
     }
