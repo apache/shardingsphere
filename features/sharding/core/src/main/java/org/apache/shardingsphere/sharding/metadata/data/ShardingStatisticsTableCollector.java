@@ -92,7 +92,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
         Optional<DialectShardingStatisticsTableCollector> dialectCollector = DatabaseTypedSPILoader.findService(DialectShardingStatisticsTableCollector.class, databaseType);
         boolean isAppended = false;
         if (dialectCollector.isPresent()) {
-            try (Connection connection = metaDataMap.get(dataNode.getDataSourceName()).getDataSource().getConnection()) {
+            try (Connection connection = metaDataMap.get(dataNode.getDataSourceName()).getStorageUnit().getDataSource().getConnection()) {
                 isAppended = dialectCollector.get().appendRow(connection, dataNode, row);
             }
         }

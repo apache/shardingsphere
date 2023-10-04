@@ -134,7 +134,7 @@ public final class NewRuleDefinitionBackendHandler<T extends RuleDefinitionState
         Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass());
         return decorator.map(optional -> optional.decorate(database.getName(),
                 database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
-                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
+                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageUnit().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 database.getRuleMetaData().getRules(), ruleConfig)).orElse(ruleConfig);
     }
     

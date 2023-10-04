@@ -73,7 +73,8 @@ class ShardingSphereDataSourceTest {
             assertThat(contextManager.getClusterStateContext().getCurrentState(), is(ClusterState.OK));
             assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(InstanceState.OK));
             assertThat(contextManager.getStorageUnitMetaDataMap(DefaultDatabase.LOGIC_NAME).size(), is(1));
-            assertThat(contextManager.getStorageUnitMetaDataMap(DefaultDatabase.LOGIC_NAME).get("ds").getDataSource().getConnection().getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
+            assertThat(contextManager.getStorageUnitMetaDataMap(DefaultDatabase.LOGIC_NAME).get("ds").getStorageUnit().getDataSource().getConnection().getMetaData().getURL(),
+                    is("jdbc:mock://127.0.0.1/foo_ds"));
         }
     }
     

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -100,9 +99,7 @@ class DriverDatabaseConnectionManagerTest {
     
     private StorageUnitMetaData mockStorageUnitMetaData(final DataSource dataSource) {
         StorageUnitMetaData result = mock(StorageUnitMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getDataSource()).thenReturn(dataSource);
-        StorageUnit storageUnit = mock(StorageUnit.class);
-        when(result.getStorageUnit()).thenReturn(storageUnit);
+        when(result.getStorageUnit().getDataSource()).thenReturn(dataSource);
         return result;
     }
     

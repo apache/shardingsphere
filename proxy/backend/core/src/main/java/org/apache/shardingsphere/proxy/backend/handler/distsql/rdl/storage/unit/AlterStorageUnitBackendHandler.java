@@ -109,7 +109,7 @@ public final class AlterStorageUnitBackendHandler extends StorageUnitDefinitionB
     private void checkDatabase(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
         Map<String, StorageUnitMetaData> metaDataMap = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaDataMap();
         Collection<String> invalidStorageUnitNames = sqlStatement.getStorageUnits().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
-                .filter(each -> !isIdenticalDatabase(each.getValue(), metaDataMap.get(each.getKey()).getDataSource())).map(Entry::getKey).collect(Collectors.toSet());
+                .filter(each -> !isIdenticalDatabase(each.getValue(), metaDataMap.get(each.getKey()).getStorageUnit().getDataSource())).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(invalidStorageUnitNames.isEmpty(),
                 () -> new InvalidStorageUnitsException(Collections.singleton(String.format("Cannot alter the database of %s", invalidStorageUnitNames))));
     }
