@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourceP
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeUtils;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeAggregator;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
 
@@ -48,7 +48,7 @@ public final class ResourceMetaData {
     private final Map<String, StorageUnitMetaData> storageUnitMetaDataMap;
     
     public ResourceMetaData(final Map<String, DataSource> dataSources) {
-        this.dataSources = StorageNodeUtils.getStorageNodeDataSources(dataSources);
+        this.dataSources = StorageNodeAggregator.aggregateDataSources(dataSources);
         Map<String, StorageNode> storageNodes = StorageUnitNodeMapUtils.fromDataSources(dataSources);
         Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap = dataSources.entrySet().stream().collect(
                 Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeUtils;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeAggregator;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -226,7 +226,7 @@ class ContextManagerTest {
     void assertAlterRuleConfiguration() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", new MockedDataSource());
-        when(resourceMetaData.getDataSources()).thenReturn(StorageNodeUtils.getStorageNodeDataSources(dataSources));
+        when(resourceMetaData.getDataSources()).thenReturn(StorageNodeAggregator.aggregateDataSources(dataSources));
         when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(Collections.emptyMap());
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
                 TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), resourceMetaData, mock(RuleMetaData.class), Collections.emptyMap());
@@ -254,7 +254,7 @@ class ContextManagerTest {
         Map<String, DataSource> originalDataSources = new LinkedHashMap<>(2, 1F);
         originalDataSources.put("ds_1", new MockedDataSource());
         originalDataSources.put("ds_2", new MockedDataSource());
-        Map<StorageNodeName, DataSource> storageNodeDataSourceMap = StorageNodeUtils.getStorageNodeDataSources(originalDataSources);
+        Map<StorageNodeName, DataSource> storageNodeDataSourceMap = StorageNodeAggregator.aggregateDataSources(originalDataSources);
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSources(originalDataSources);
         Map<String, StorageUnitMetaData> metaDataMap = new LinkedHashMap<>(2, 1F);
         for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
