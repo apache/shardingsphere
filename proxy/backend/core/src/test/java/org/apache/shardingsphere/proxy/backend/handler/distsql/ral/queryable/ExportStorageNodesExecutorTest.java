@@ -165,9 +165,9 @@ class ExportStorageNodesExecutorTest {
     }
     
     private Map<String, StorageUnit> createStorageUnits() {
-        StorageUnit storageUnit1 = mock(StorageUnit.class);
+        StorageUnit storageUnit1 = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit1.getDataSource()).thenReturn(createDataSource("ds_0"));
-        StorageUnit storageUnit2 = mock(StorageUnit.class);
+        StorageUnit storageUnit2 = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit2.getDataSource()).thenReturn(createDataSource("ds_2"));
         Map<String, StorageUnit> result = new LinkedHashMap<>(2, 1F);
         result.put("ds_0", storageUnit1);
