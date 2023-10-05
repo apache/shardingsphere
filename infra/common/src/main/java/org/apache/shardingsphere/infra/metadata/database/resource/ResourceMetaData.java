@@ -89,8 +89,7 @@ public final class ResourceMetaData {
     }
     
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
-        return existedDataSourceNames.stream().anyMatch(each -> storageUnits.get(dataSourceName).getConnectionProperties()
-                .isInSameDatabaseInstance(storageUnits.get(each).getConnectionProperties()));
+        return existedDataSourceNames.stream().anyMatch(each -> storageUnits.get(dataSourceName).getConnectionProperties().isInSameDatabaseInstance(storageUnits.get(each).getConnectionProperties()));
     }
     
     /**
