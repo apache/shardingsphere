@@ -121,13 +121,13 @@ public final class ShardingSphereDatabase {
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                 final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
-        ResourceMetaData resourceMetaData = createResourceMetaData(name, databaseConfig.getStorageResource(), databaseConfig.getDataSourcePoolPropertiesMap());
+        ResourceMetaData resourceMetaData = createResourceMetaData(databaseConfig.getStorageResource(), databaseConfig.getDataSourcePoolPropertiesMap());
         RuleMetaData ruleMetaData = new RuleMetaData(rules);
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, ruleMetaData, schemas);
     }
     
-    private static ResourceMetaData createResourceMetaData(final String databaseName, final StorageResource storageResource, final Map<String, DataSourcePoolProperties> propsMap) {
-        return new ResourceMetaData(databaseName, storageResource.getDataSources(), storageResource.getStorageUnitNodeMap(), propsMap);
+    private static ResourceMetaData createResourceMetaData(final StorageResource storageResource, final Map<String, DataSourcePoolProperties> propsMap) {
+        return new ResourceMetaData(storageResource.getDataSources(), storageResource.getStorageUnitNodeMap(), propsMap);
     }
     
     /**

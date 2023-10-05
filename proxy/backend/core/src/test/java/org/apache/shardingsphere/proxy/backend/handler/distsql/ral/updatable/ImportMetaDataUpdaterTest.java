@@ -123,8 +123,8 @@ class ImportMetaDataUpdaterTest {
         Map<String, StorageUnit> result = new LinkedHashMap<>(2, 1F);
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
-        result.put("ds_0", new StorageUnit("foo_db", new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/ds_0"), dataSourcePoolProps, new MockedDataSource()));
-        result.put("ds_1", new StorageUnit("foo_db", new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/ds_1"), dataSourcePoolProps, new MockedDataSource()));
+        result.put("ds_0", new StorageUnit(new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/ds_0", null), dataSourcePoolProps, new MockedDataSource()));
+        result.put("ds_1", new StorageUnit(new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/ds_1", null), dataSourcePoolProps, new MockedDataSource()));
         return result;
     }
     

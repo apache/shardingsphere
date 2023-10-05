@@ -32,8 +32,4 @@ public final class StorageNode {
     private final String url;
     
     private final String catalog;
-    
-    public StorageNode(final StorageNodeName name, final String url) {
-        this(name, url, null);
-    }
 }
