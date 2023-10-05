@@ -55,7 +55,8 @@ public final class StorageUnitNodeMapUtils {
     private static StorageNode fromDataSource(final String storageUnitName, final DataSource dataSource) {
         DataSourcePoolProperties props = DataSourcePoolPropertiesCreator.create(dataSource);
         String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        return new StorageNode(new StorageNodeName(storageUnitName), url);
+        boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
+        return createStorageNode(new StorageNodeName(storageUnitName), url, isInstanceConnectionAvailable);
     }
     
     /**
