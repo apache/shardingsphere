@@ -164,7 +164,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
                 .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
         Map<String, StorageNode> toBeAddedStorageNode = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(propsMap);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            storageUnits.put(entry.getKey(), new StorageUnit(databaseName, toBeAddedStorageNode.get(entry.getKey()), entry.getValue(), DataSourcePoolCreator.create(entry.getValue())));
+            storageUnits.put(entry.getKey(), new StorageUnit(toBeAddedStorageNode.get(entry.getKey()), entry.getValue(), DataSourcePoolCreator.create(entry.getValue())));
         }
     }
     

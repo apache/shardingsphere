@@ -110,7 +110,7 @@ class ContextManagerTest {
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
         Map<String, StorageUnit> storageUnits = Collections.singletonMap("foo_ds",
-                new StorageUnit("foo_db", new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/foo_db"), dataSourcePoolProps, new MockedDataSource()));
+                new StorageUnit(new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/foo_db"), dataSourcePoolProps, new MockedDataSource()));
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         return result;
     }
@@ -260,8 +260,7 @@ class ContextManagerTest {
         for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
             DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
             when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
-            storageUnits.put(entry.getKey(), new StorageUnit(
-                    "foo_db", storageUnitNodeMap.get(entry.getKey()), dataSourcePoolProps, storageNodeDataSourceMap.get(entry.getValue().getName())));
+            storageUnits.put(entry.getKey(), new StorageUnit(storageUnitNodeMap.get(entry.getKey()), dataSourcePoolProps, storageNodeDataSourceMap.get(entry.getValue().getName())));
         }
         ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getStorageUnits()).thenReturn(storageUnits);

@@ -283,7 +283,7 @@ public final class ConfigurationContextManager {
         Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
         return Collections.singletonMap(database.getName().toLowerCase(), new ShardingSphereDatabase(database.getName(), database.getProtocolType(),
-                new ResourceMetaData(database.getName(), newStorageNodes, newStorageUnitNodeMap, propsMap), database.getRuleMetaData(), database.getSchemas()));
+                new ResourceMetaData(newStorageNodes, newStorageUnitNodeMap, propsMap), database.getRuleMetaData(), database.getSchemas()));
     }
     
     private Map<StorageNodeName, DataSource> getNewStorageNodes(final Map<StorageNodeName, DataSource> currentStorageNodes, final SwitchingResource resource) {

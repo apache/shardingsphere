@@ -51,16 +51,15 @@ public final class ResourceMetaData {
                 Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         storageUnits = new LinkedHashMap<>();
         for (Entry<String, StorageNode> entry : storageNodes.entrySet()) {
-            storageUnits.put(entry.getKey(), new StorageUnit(null, entry.getValue(), dataSourcePoolPropsMap.get(entry.getKey()), dataSources.get(entry.getValue().getName().getName())));
+            storageUnits.put(entry.getKey(), new StorageUnit(entry.getValue(), dataSourcePoolPropsMap.get(entry.getKey()), dataSources.get(entry.getValue().getName().getName())));
         }
     }
     
-    public ResourceMetaData(final String databaseName, final Map<StorageNodeName, DataSource> dataSources,
-                            final Map<String, StorageNode> storageNodes, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap) {
+    public ResourceMetaData(final Map<StorageNodeName, DataSource> dataSources, final Map<String, StorageNode> storageNodes, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap) {
         this.dataSources = dataSources;
         storageUnits = new LinkedHashMap<>();
         for (Entry<String, StorageNode> entry : storageNodes.entrySet()) {
-            storageUnits.put(entry.getKey(), new StorageUnit(databaseName, entry.getValue(), dataSourcePoolPropsMap.get(entry.getKey()), dataSources.get(entry.getValue().getName())));
+            storageUnits.put(entry.getKey(), new StorageUnit(entry.getValue(), dataSourcePoolPropsMap.get(entry.getKey()), dataSources.get(entry.getValue().getName())));
         }
     }
     

@@ -151,8 +151,8 @@ class SingleSQLRouterTest {
         Map<String, StorageUnit> storageUnits = new HashMap<>(2, 1F);
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
-        storageUnits.put("ds_0", new StorageUnit("foo_db", new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/ds_0"), dataSourcePoolProps, new MockedDataSource()));
-        storageUnits.put("ds_1", new StorageUnit("foo_db", new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/ds_1"), dataSourcePoolProps, new MockedDataSource()));
+        storageUnits.put("ds_0", new StorageUnit(new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/ds_0"), dataSourcePoolProps, new MockedDataSource()));
+        storageUnits.put("ds_1", new StorageUnit(new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/ds_1"), dataSourcePoolProps, new MockedDataSource()));
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);

@@ -26,10 +26,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 
 import javax.sql.DataSource;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -48,21 +46,17 @@ public final class StorageUnit {
     
     private final ConnectionProperties connectionProperties;
     
-    public StorageUnit(final String databaseName, final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProperties, final DataSource dataSource) {
+    public StorageUnit(final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProperties, final DataSource dataSource) {
         this.storageNode = storageNode;
         this.dataSource = new CatalogSwitchableDataSource(dataSource, storageNode.getCatalog(), storageNode.getUrl());
         this.dataSourcePoolProperties = dataSourcePoolProperties;
         storageType = DatabaseTypeFactory.get(storageNode.getUrl());
-        boolean isDataSourceEnabled = !DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, Collections.singletonMap(storageNode.getName().getName(), dataSource)).isEmpty();
-        connectionProperties = createConnectionProperties(isDataSourceEnabled, storageNode);
+        connectionProperties = createConnectionProperties(storageNode);
     }
     
-    private ConnectionProperties createConnectionProperties(final boolean isDataSourceEnabled, final StorageNode storageNode) {
-        if (!isDataSourceEnabled) {
-            return null;
-        }
+    private ConnectionProperties createConnectionProperties(final StorageNode storageNode) {
         Map<String, Object> standardProps = dataSourcePoolProperties.getConnectionPropertySynonyms().getStandardProperties();
         ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
-        return parser.parse(standardProps.getOrDefault("url", "").toString(), standardProps.getOrDefault("username", "").toString(), storageNode.getCatalog());
+        return parser.parse(storageNode.getUrl(), standardProps.getOrDefault("username", "").toString(), storageNode.getCatalog());
     }
 }
