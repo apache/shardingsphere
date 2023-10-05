@@ -44,6 +44,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -65,7 +66,7 @@ class JDBCExecutorCallbackTest {
     @Test
     void assertExecuteFailedAndProtocolTypeDifferentWithDatabaseType() throws SQLException {
         Object saneResult = new Object();
-        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(resourceMetaData.getStorageUnits().get("ds").getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         JDBCExecutorCallback<Object> callback =
                 new JDBCExecutorCallback<Object>(TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, mock(SelectStatement.class), true) {
@@ -86,7 +87,7 @@ class JDBCExecutorCallbackTest {
     
     @Test
     void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() {
-        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(resourceMetaData.getStorageUnits().get("ds").getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         JDBCExecutorCallback<Object> callback =
                 new JDBCExecutorCallback<Object>(TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, mock(SelectStatement.class), true) {
