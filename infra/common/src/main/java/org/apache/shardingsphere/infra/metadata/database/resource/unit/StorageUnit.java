@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -52,13 +52,9 @@ public final class StorageUnit {
         this.storageNode = storageNode;
         this.dataSource = new CatalogSwitchableDataSource(dataSource, storageNode.getCatalog(), storageNode.getUrl());
         this.dataSourcePoolProperties = dataSourcePoolProperties;
+        storageType = DatabaseTypeFactory.get(storageNode.getUrl());
         boolean isDataSourceEnabled = !DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, Collections.singletonMap(storageNode.getName().getName(), dataSource)).isEmpty();
-        storageType = createStorageType(isDataSourceEnabled);
         connectionProperties = createConnectionProperties(isDataSourceEnabled, storageNode);
-    }
-    
-    private DatabaseType createStorageType(final boolean isDataSourceEnabled) {
-        return isDataSourceEnabled ? DatabaseTypeEngine.getStorageType(dataSource) : DatabaseTypeEngine.getDefaultStorageType();
     }
     
     private ConnectionProperties createConnectionProperties(final boolean isDataSourceEnabled, final StorageNode storageNode) {
