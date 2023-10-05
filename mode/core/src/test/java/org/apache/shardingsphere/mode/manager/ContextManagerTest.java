@@ -110,7 +110,7 @@ class ContextManagerTest {
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
         Map<String, StorageUnit> storageUnits = Collections.singletonMap("foo_ds",
-                new StorageUnit("foo_db", mock(StorageNode.class, RETURNS_DEEP_STUBS), dataSourcePoolProps, new MockedDataSource()));
+                new StorageUnit("foo_db", new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/foo_db"), dataSourcePoolProps, new MockedDataSource()));
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         return result;
     }
