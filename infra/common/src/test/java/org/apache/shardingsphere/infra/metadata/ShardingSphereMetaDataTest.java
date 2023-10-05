@@ -92,7 +92,7 @@ class ShardingSphereMetaDataTest {
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
-        StorageUnit storageUnit = new StorageUnit(new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/foo_ds"), dataSourcePoolProps, dataSource);
+        StorageUnit storageUnit = new StorageUnit(new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/foo_ds", null), dataSourcePoolProps, dataSource);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_db", storageUnit));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(databaseResourceHeldRule)));
         return result;
