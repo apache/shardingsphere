@@ -173,7 +173,7 @@ public abstract class SQLRewriterIT {
     private Map<String, StorageUnit> createStorageUnits(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
         Map<String, StorageUnit> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1F);
         for (Entry<String, DataSource> entry : databaseConfig.getDataSources().entrySet()) {
-            StorageUnit storageUnit = mock(StorageUnit.class);
+            StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
             when(storageUnit.getStorageType()).thenReturn(databaseType);
             result.put(entry.getKey(), storageUnit);
         }
