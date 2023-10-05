@@ -114,7 +114,7 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
     }
     
     private void checkDataSources(final ShardingSphereDatabase database) {
-        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnitMetaDataMap().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
+        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnits().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
     }
     
     @Override

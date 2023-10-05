@@ -33,10 +33,10 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Storage unit meta data.
+ * Storage unit.
  */
 @Getter
-public final class StorageUnitMetaData {
+public final class StorageUnit {
     
     private final StorageNode storageNode;
     
@@ -48,7 +48,7 @@ public final class StorageUnitMetaData {
     
     private final ConnectionProperties connectionProperties;
     
-    public StorageUnitMetaData(final String databaseName, final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProperties, final DataSource dataSource) {
+    public StorageUnit(final String databaseName, final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProperties, final DataSource dataSource) {
         this.storageNode = storageNode;
         this.dataSource = new CatalogSwitchableDataSource(dataSource, storageNode.getCatalog(), storageNode.getUrl());
         this.dataSourcePoolProperties = dataSourcePoolProperties;

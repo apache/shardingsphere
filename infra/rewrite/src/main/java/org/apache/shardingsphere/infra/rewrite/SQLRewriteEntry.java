@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
@@ -77,10 +77,10 @@ public final class SQLRewriteEntry {
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, params, sqlStatementContext, routeContext, connectionContext, hintValueContext);
         SQLTranslatorRule rule = globalRuleMetaData.getSingleRule(SQLTranslatorRule.class);
         DatabaseType protocolType = database.getProtocolType();
-        Map<String, StorageUnitMetaData> storageUnitMetaDataMap = database.getResourceMetaData().getStorageUnitMetaDataMap();
+        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         return routeContext.getRouteUnits().isEmpty()
-                ? new GenericSQLRewriteEngine(rule, protocolType, storageUnitMetaDataMap).rewrite(sqlRewriteContext)
-                : new RouteSQLRewriteEngine(rule, protocolType, storageUnitMetaDataMap).rewrite(sqlRewriteContext, routeContext);
+                ? new GenericSQLRewriteEngine(rule, protocolType, storageUnits).rewrite(sqlRewriteContext)
+                : new RouteSQLRewriteEngine(rule, protocolType, storageUnits).rewrite(sqlRewriteContext, routeContext);
     }
     
     private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> params, final SQLStatementContext sqlStatementContext,

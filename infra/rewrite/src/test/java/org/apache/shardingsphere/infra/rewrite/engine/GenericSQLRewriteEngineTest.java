@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
@@ -46,7 +46,7 @@ class GenericSQLRewriteEngineTest {
     void assertRewrite() {
         DatabaseType databaseType = mock(DatabaseType.class);
         SQLTranslatorRule rule = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration());
-        GenericSQLRewriteResult actual = new GenericSQLRewriteEngine(rule, databaseType, mockStorageUnitMetaData(databaseType))
+        GenericSQLRewriteResult actual = new GenericSQLRewriteEngine(rule, databaseType, mockStorageUnits(databaseType))
                 .rewrite(new SQLRewriteContext(mockDatabase(), mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList(), mock(ConnectionContext.class),
                         new HintValueContext()));
         assertThat(actual.getSqlRewriteUnit().getSql(), is("SELECT 1"));
@@ -63,8 +63,8 @@ class GenericSQLRewriteEngineTest {
         assertThat(actual.getSqlRewriteUnit().getParameters(), is(Collections.emptyList()));
     }
     
-    private Map<String, StorageUnitMetaData> mockStorageUnitMetaData(final DatabaseType databaseType) {
-        StorageUnitMetaData result = mock(StorageUnitMetaData.class, RETURNS_DEEP_STUBS);
+    private Map<String, StorageUnit> mockStorageUnits(final DatabaseType databaseType) {
+        StorageUnit result = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(result.getStorageType()).thenReturn(databaseType);
         return Collections.singletonMap("ds_0", result);
     }

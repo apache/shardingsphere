@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.proxy.backend.util.StorageUnitUtils;
 
@@ -90,25 +90,25 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     }
     
     private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(database.getResourceMetaData().getStorageUnitMetaDataMap().size(), 1F);
-        Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(database.getResourceMetaData().getStorageUnits().size(), 1F);
+        Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
-        Map<String, StorageUnitMetaData> metaDataMap = database.getResourceMetaData().getStorageUnitMetaDataMap();
+        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         Optional<Integer> usageCount = sqlStatement.getUsageCount();
         if (usageCount.isPresent()) {
             Map<String, Collection<String>> inUsedStorageUnits = StorageUnitUtils.getInUsedStorageUnits(
-                    database.getRuleMetaData(), database.getResourceMetaData().getStorageUnitMetaDataMap().size());
-            for (Entry<String, StorageUnitMetaData> entry : database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet()) {
+                    database.getRuleMetaData(), database.getResourceMetaData().getStorageUnits().size());
+            for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnits().entrySet()) {
                 Integer currentUsageCount = inUsedStorageUnits.containsKey(entry.getKey()) ? inUsedStorageUnits.get(entry.getKey()).size() : 0;
                 if (usageCount.get().equals(currentUsageCount)) {
                     result.put(entry.getKey(), getDataSourcePoolProperties(
-                            propsMap, entry.getKey(), metaDataMap.get(entry.getKey()).getStorageType(), entry.getValue().getDataSource()));
+                            propsMap, entry.getKey(), storageUnits.get(entry.getKey()).getStorageType(), entry.getValue().getDataSource()));
                 }
             }
         } else {
-            for (Entry<String, StorageUnitMetaData> entry : metaDataMap.entrySet()) {
+            for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
                 result.put(entry.getKey(),
-                        getDataSourcePoolProperties(propsMap, entry.getKey(), metaDataMap.get(entry.getKey()).getStorageType(), entry.getValue().getDataSource()));
+                        getDataSourcePoolProperties(propsMap, entry.getKey(), storageUnits.get(entry.getKey()).getStorageType(), entry.getValue().getDataSource()));
             }
         }
         return result;

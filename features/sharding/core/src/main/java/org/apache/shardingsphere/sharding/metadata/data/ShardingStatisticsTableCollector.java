@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
@@ -81,18 +81,18 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
                 row.add(each.getLogicTable());
                 row.add(dataNode.getDataSourceName());
                 row.add(dataNode.getTableName());
-                addTableRowsAndDataLength(database.getResourceMetaData().getStorageUnitMetaDataMap(), dataNode, row);
+                addTableRowsAndDataLength(database.getResourceMetaData().getStorageUnits(), dataNode, row);
                 tableData.getRows().add(new ShardingSphereRowData(row));
             }
         }
     }
     
-    private void addTableRowsAndDataLength(final Map<String, StorageUnitMetaData> metaDataMap, final DataNode dataNode, final List<Object> row) throws SQLException {
-        DatabaseType databaseType = metaDataMap.get(dataNode.getDataSourceName()).getStorageType();
+    private void addTableRowsAndDataLength(final Map<String, StorageUnit> storageUnits, final DataNode dataNode, final List<Object> row) throws SQLException {
+        DatabaseType databaseType = storageUnits.get(dataNode.getDataSourceName()).getStorageType();
         Optional<DialectShardingStatisticsTableCollector> dialectCollector = DatabaseTypedSPILoader.findService(DialectShardingStatisticsTableCollector.class, databaseType);
         boolean isAppended = false;
         if (dialectCollector.isPresent()) {
-            try (Connection connection = metaDataMap.get(dataNode.getDataSourceName()).getDataSource().getConnection()) {
+            try (Connection connection = storageUnits.get(dataNode.getDataSourceName()).getDataSource().getConnection()) {
                 isAppended = dialectCollector.get().appendRow(connection, dataNode, row);
             }
         }

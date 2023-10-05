@@ -105,7 +105,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     private RuleConfiguration decorateRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration ruleConfig) {
         Optional<RuleConfigurationDecorator> decorator = TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass());
         return decorator.map(optional -> optional.decorate(database.getName(),
-                database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
+                database.getResourceMetaData().getStorageUnits().entrySet().stream()
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 database.getRuleMetaData().getRules(), ruleConfig)).orElse(ruleConfig);
     }

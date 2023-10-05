@@ -113,6 +113,6 @@ public final class ShardingSphereMetaData {
         database.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
         database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class).ifPresent(StaticDataSourceContainedRule::cleanStorageNodeDataSources);
         Optional.ofNullable(database.getResourceMetaData())
-                .ifPresent(optional -> optional.getStorageUnitMetaDataMap().values().forEach(each -> new DataSourcePoolDestroyer(each.getDataSource()).asyncDestroy()));
+                .ifPresent(optional -> optional.getStorageUnits().values().forEach(each -> new DataSourcePoolDestroyer(each.getDataSource()).asyncDestroy()));
     }
 }

@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
@@ -120,9 +120,9 @@ public abstract class SQLRewriterIT {
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         mockDataSource(databaseConfig.getDataSources());
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
-        Map<String, StorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap(databaseConfig, databaseType);
+        Map<String, StorageUnit> storageUnits = createStorageUnits(databaseConfig, databaseType);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(resourceMetaData.getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
+        when(resourceMetaData.getStorageUnits()).thenReturn(storageUnits);
         String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(DefaultDatabase.LOGIC_NAME);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType()),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
@@ -170,12 +170,12 @@ public abstract class SQLRewriterIT {
         return result;
     }
     
-    private Map<String, StorageUnitMetaData> createStorageUnitMetaDataMap(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
-        Map<String, StorageUnitMetaData> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1F);
+    private Map<String, StorageUnit> createStorageUnits(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
+        Map<String, StorageUnit> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1F);
         for (Entry<String, DataSource> entry : databaseConfig.getDataSources().entrySet()) {
-            StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class);
-            when(storageUnitMetaData.getStorageType()).thenReturn(databaseType);
-            result.put(entry.getKey(), storageUnitMetaData);
+            StorageUnit storageUnit = mock(StorageUnit.class);
+            when(storageUnit.getStorageType()).thenReturn(databaseType);
+            result.put(entry.getKey(), storageUnit);
         }
         return result;
     }
