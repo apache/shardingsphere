@@ -42,7 +42,7 @@ public abstract class TracingJDBCExecutorCallbackAdvice<T> implements InstanceMe
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
         ResourceMetaData resourceMetaData = AgentReflectionUtils.getFieldValue(target, "resourceMetaData");
         ConnectionProperties connectionProps = resourceMetaData.getStorageUnits().get(executionUnit.getExecutionUnit().getDataSourceName()).getConnectionProperties();
-        DatabaseType storageType = resourceMetaData.getStorageType(executionUnit.getExecutionUnit().getDataSourceName());
+        DatabaseType storageType = resourceMetaData.getStorageUnits().get(executionUnit.getExecutionUnit().getDataSourceName()).getStorageType();
         recordExecuteInfo(RootSpanContext.get(), target, executionUnit, (boolean) args[1], connectionProps, storageType);
     }
     

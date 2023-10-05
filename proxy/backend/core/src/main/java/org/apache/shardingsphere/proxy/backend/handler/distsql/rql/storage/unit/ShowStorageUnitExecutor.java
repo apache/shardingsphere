@@ -65,7 +65,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
             Map<String, Object> poolProps = entry.getValue().getPoolPropertySynonyms().getStandardProperties();
             Map<String, Object> customProps = getCustomProps(entry.getValue().getCustomProperties().getProperties(), connectionProps.getQueryProperties());
             result.add(new LocalDataQueryResultRow(key,
-                    resourceMetaData.getStorageType(key).getType(),
+                    resourceMetaData.getStorageUnits().get(key).getStorageType().getType(),
                     connectionProps.getHostname(),
                     connectionProps.getPort(),
                     connectionProps.getCatalog(),

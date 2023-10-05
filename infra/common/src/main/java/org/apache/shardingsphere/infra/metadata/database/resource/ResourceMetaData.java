@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
@@ -92,16 +91,6 @@ public final class ResourceMetaData {
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
         return existedDataSourceNames.stream().anyMatch(each -> storageUnits.get(dataSourceName).getConnectionProperties()
                 .isInSameDatabaseInstance(storageUnits.get(each).getConnectionProperties()));
-    }
-    
-    /**
-     * Get storage type.
-     *
-     * @param dataSourceName data source name
-     * @return storage type
-     */
-    public DatabaseType getStorageType(final String dataSourceName) {
-        return storageUnits.get(dataSourceName).getStorageType();
     }
     
     /**

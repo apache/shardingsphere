@@ -66,7 +66,7 @@ class JDBCExecutorCallbackTest {
     void assertExecuteFailedAndProtocolTypeDifferentWithDatabaseType() throws SQLException {
         Object saneResult = new Object();
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
-        when(resourceMetaData.getStorageType("ds")).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(resourceMetaData.getStorageUnits().get("ds").getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         JDBCExecutorCallback<Object> callback =
                 new JDBCExecutorCallback<Object>(TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, mock(SelectStatement.class), true) {
                     
@@ -87,7 +87,7 @@ class JDBCExecutorCallbackTest {
     @Test
     void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
-        when(resourceMetaData.getStorageType("ds")).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(resourceMetaData.getStorageUnits().get("ds").getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         JDBCExecutorCallback<Object> callback =
                 new JDBCExecutorCallback<Object>(TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, mock(SelectStatement.class), true) {
                     
