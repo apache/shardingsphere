@@ -54,7 +54,12 @@ public final class DatabaseTypeEngine {
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
-        return findConfiguredDatabaseType(props).orElseGet(() -> getStorageType(DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig)));
+        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
+        if (configuredDatabaseType.isPresent()) {
+            return configuredDatabaseType.get();
+        }
+        Collection<DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig);
+        return enabledDataSources.isEmpty() ? getDefaultStorageType() : getStorageType(enabledDataSources.iterator().next());
     }
     
     /**
@@ -66,7 +71,11 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        return configuredDatabaseType.orElseGet(() -> getStorageType(getEnabledDataSources(databaseConfigs).values()));
+        if (configuredDatabaseType.isPresent()) {
+            return configuredDatabaseType.get();
+        }
+        Map<String, DataSource> enabledDataSources = getEnabledDataSources(databaseConfigs);
+        return enabledDataSources.isEmpty() ? getDefaultStorageType() : getStorageType(enabledDataSources.values().iterator().next());
     }
     
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
@@ -101,18 +110,24 @@ public final class DatabaseTypeEngine {
     /**
      * Get storage type.
      *
-     * @param dataSources data sources
+     * @param dataSource data source
      * @return storage type
+     * @throws SQLWrapperException SQL wrapper exception
      */
-    public static DatabaseType getStorageType(final Collection<DataSource> dataSources) {
-        return dataSources.isEmpty() ? TypedSPILoader.getService(DatabaseType.class, DEFAULT_DATABASE_TYPE) : getStorageType(dataSources.iterator().next());
-    }
-    
-    private static DatabaseType getStorageType(final DataSource dataSource) {
+    public static DatabaseType getStorageType(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypeFactory.get(connection.getMetaData().getURL());
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
+    }
+    
+    /**
+     * Get default storage type.
+     *
+     * @return default storage type
+     */
+    public static DatabaseType getDefaultStorageType() {
+        return TypedSPILoader.getService(DatabaseType.class, DEFAULT_DATABASE_TYPE);
     }
 }

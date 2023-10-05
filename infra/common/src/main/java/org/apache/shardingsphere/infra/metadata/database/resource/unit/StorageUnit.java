@@ -58,7 +58,7 @@ public final class StorageUnit {
     }
     
     private DatabaseType createStorageType(final boolean isDataSourceEnabled) {
-        return DatabaseTypeEngine.getStorageType(isDataSourceEnabled ? Collections.singleton(dataSource) : Collections.emptyList());
+        return isDataSourceEnabled ? DatabaseTypeEngine.getStorageType(dataSource) : DatabaseTypeEngine.getDefaultStorageType();
     }
     
     private ConnectionProperties createConnectionProperties(final boolean isDataSourceEnabled, final StorageNode storageNode) {
