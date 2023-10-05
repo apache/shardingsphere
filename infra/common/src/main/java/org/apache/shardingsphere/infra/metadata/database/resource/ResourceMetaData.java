@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -48,28 +47,20 @@ public final class ResourceMetaData {
     public ResourceMetaData(final Map<String, DataSource> dataSources) {
         this.dataSources = StorageNodeAggregator.aggregateDataSources(dataSources);
         Map<String, StorageNode> storageNodes = StorageUnitNodeMapUtils.fromDataSources(dataSources);
-        Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap = dataSources.entrySet().stream().collect(
+        Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = dataSources.entrySet().stream().collect(
                 Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         storageUnits = new LinkedHashMap<>();
         for (Entry<String, StorageNode> entry : storageNodes.entrySet()) {
-            DataSource dataSource = dataSources.get(entry.getValue().getName().getName());
-            if (!(dataSource instanceof CatalogSwitchableDataSource)) {
-                dataSource = new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl());
-            }
-            storageUnits.put(entry.getKey(), new StorageUnit(null, entry.getValue(), dataSourcePoolPropertiesMap.get(entry.getKey()), dataSource));
+            storageUnits.put(entry.getKey(), new StorageUnit(null, entry.getValue(), dataSourcePoolPropsMap.get(entry.getKey()), dataSources.get(entry.getValue().getName().getName())));
         }
     }
     
     public ResourceMetaData(final String databaseName, final Map<StorageNodeName, DataSource> dataSources,
-                            final Map<String, StorageNode> storageNodes, final Map<String, DataSourcePoolProperties> propsMap) {
+                            final Map<String, StorageNode> storageNodes, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap) {
         this.dataSources = dataSources;
         storageUnits = new LinkedHashMap<>();
         for (Entry<String, StorageNode> entry : storageNodes.entrySet()) {
-            DataSource dataSource = dataSources.get(entry.getValue().getName());
-            if (!(dataSource instanceof CatalogSwitchableDataSource)) {
-                dataSource = new CatalogSwitchableDataSource(dataSource, entry.getValue().getCatalog(), entry.getValue().getUrl());
-            }
-            storageUnits.put(entry.getKey(), new StorageUnit(databaseName, entry.getValue(), propsMap.get(entry.getKey()), dataSource));
+            storageUnits.put(entry.getKey(), new StorageUnit(databaseName, entry.getValue(), dataSourcePoolPropsMap.get(entry.getKey()), dataSources.get(entry.getValue().getName())));
         }
     }
     
