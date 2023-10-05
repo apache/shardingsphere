@@ -175,7 +175,7 @@ public final class ShardingSphereDatabase {
      * @return is completed or not
      */
     public boolean isComplete() {
-        return !ruleMetaData.getRules().isEmpty() && !resourceMetaData.getStorageUnitMetaDataMap().isEmpty();
+        return !ruleMetaData.getRules().isEmpty() && !resourceMetaData.getStorageUnits().isEmpty();
     }
     
     /**
@@ -184,7 +184,7 @@ public final class ShardingSphereDatabase {
      * @return contains data source or not
      */
     public boolean containsDataSource() {
-        return !resourceMetaData.getStorageUnitMetaDataMap().isEmpty();
+        return !resourceMetaData.getStorageUnits().isEmpty();
     }
     
     /**
@@ -198,7 +198,7 @@ public final class ShardingSphereDatabase {
         Collection<ShardingSphereRule> databaseRules = new LinkedList<>(ruleMetaData.getRules());
         toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
             databaseRules.removeAll(toBeReloadedRules);
-            Map<String, DataSource> dataSources = resourceMetaData.getStorageUnitMetaDataMap().entrySet().stream()
+            Map<String, DataSource> dataSources = resourceMetaData.getStorageUnits().entrySet().stream()
                     .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
             databaseRules.add(((MutableDataNodeRule) optional).reloadRule(ruleConfig, name, dataSources, databaseRules));
         });

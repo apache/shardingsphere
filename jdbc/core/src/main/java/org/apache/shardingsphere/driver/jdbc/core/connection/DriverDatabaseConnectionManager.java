@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConne
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
@@ -89,7 +89,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     private final String databaseName;
     
     public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
-        for (Entry<String, StorageUnitMetaData> entry : contextManager.getStorageUnitMetaDataMap(databaseName).entrySet()) {
+        for (Entry<String, StorageUnit> entry : contextManager.getStorageUnits(databaseName).entrySet()) {
             DataSource dataSource = entry.getValue().getDataSource();
             String cacheKey = getKey(databaseName, entry.getKey());
             dataSourceMap.put(cacheKey, dataSource);
@@ -343,7 +343,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         String cacheKey = getKey(currentDatabaseName, dataSourceName);
         DataSource dataSource = databaseName.equals(currentDatabaseName)
                 ? dataSourceMap.get(cacheKey)
-                : contextManager.getStorageUnitMetaDataMap(currentDatabaseName).get(dataSourceName).getDataSource();
+                : contextManager.getStorageUnits(currentDatabaseName).get(dataSourceName).getDataSource();
         Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (cachedConnections) {

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourceP
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -70,8 +70,8 @@ class ExportDatabaseConfigurationExecutorTest {
     @Test
     void assertExecute() {
         when(database.getName()).thenReturn("normal_db");
-        Map<String, StorageUnitMetaData> metaDataMap = createStorageUnitMetaDataMap();
-        when(database.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(metaDataMap);
+        Map<String, StorageUnit> storageUnits = createStorageUnits();
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         Collection<LocalDataQueryResultRow> actual = new ExportDatabaseConfigurationExecutor().getRows(database, new ExportDatabaseConfigurationStatement(mock(DatabaseSegment.class), null));
         assertThat(actual.size(), is(1));
@@ -79,14 +79,14 @@ class ExportDatabaseConfigurationExecutorTest {
         assertThat(row.getCell(1), is(loadExpectedRow()));
     }
     
-    private Map<String, StorageUnitMetaData> createStorageUnitMetaDataMap() {
+    private Map<String, StorageUnit> createStorageUnits() {
         Map<String, DataSourcePoolProperties> propsMap = createDataSourceMap().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        Map<String, StorageUnitMetaData> result = new LinkedHashMap<>();
+        Map<String, StorageUnit> result = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            StorageUnitMetaData storageUnitMetaData = mock(StorageUnitMetaData.class, RETURNS_DEEP_STUBS);
-            when(storageUnitMetaData.getDataSourcePoolProperties()).thenReturn(entry.getValue());
-            result.put(entry.getKey(), storageUnitMetaData);
+            StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+            when(storageUnit.getDataSourcePoolProperties()).thenReturn(entry.getValue());
+            result.put(entry.getKey(), storageUnit);
         }
         return result;
     }
@@ -94,7 +94,7 @@ class ExportDatabaseConfigurationExecutorTest {
     @Test
     void assertExecuteWithEmptyDatabase() {
         when(database.getName()).thenReturn("empty_db");
-        when(database.getResourceMetaData().getStorageUnitMetaDataMap()).thenReturn(Collections.emptyMap());
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ExportDatabaseConfigurationStatement sqlStatement = new ExportDatabaseConfigurationStatement(new DatabaseSegment(0, 0, new IdentifierValue("empty_db")), null);
         Collection<LocalDataQueryResultRow> actual = new ExportDatabaseConfigurationExecutor().getRows(database, sqlStatement);

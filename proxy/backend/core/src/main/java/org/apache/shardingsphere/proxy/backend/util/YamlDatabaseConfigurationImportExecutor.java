@@ -44,7 +44,7 @@ import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.c
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -132,7 +132,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     private void checkDatabase(final String databaseName) {
         ShardingSpherePreconditions.checkNotNull(databaseName, () -> new UnsupportedSQLOperationException("Property `databaseName` in imported config is required"));
         if (ProxyContext.getInstance().databaseExists(databaseName)) {
-            ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaDataMap().isEmpty(),
+            ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getStorageUnits().isEmpty(),
                     () -> new UnsupportedSQLOperationException(String.format("Database `%s` exists and is not empty，overwrite is not supported", databaseName)));
         }
     }
@@ -160,11 +160,11 @@ public final class YamlDatabaseConfigurationImportExecutor {
         } catch (final SQLException ex) {
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
-        Map<String, StorageUnitMetaData> metaDataMap = ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaDataMap();
+        Map<String, StorageUnit> storageUnits = ProxyContext.getInstance().getContextManager()
+                .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
         Map<String, StorageNode> toBeAddedStorageNode = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(propsMap);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            metaDataMap.put(entry.getKey(), new StorageUnitMetaData(databaseName, toBeAddedStorageNode.get(entry.getKey()), entry.getValue(), DataSourcePoolCreator.create(entry.getValue())));
+            storageUnits.put(entry.getKey(), new StorageUnit(databaseName, toBeAddedStorageNode.get(entry.getKey()), entry.getValue(), DataSourcePoolCreator.create(entry.getValue())));
         }
     }
     
@@ -252,7 +252,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
         shardingRuleConfigImportChecker.check(database, shardingRuleConfig);
         allRuleConfigs.add(shardingRuleConfig);
-        database.getRuleMetaData().getRules().add(new ShardingRule(shardingRuleConfig, database.getResourceMetaData().getStorageUnitMetaDataMap().keySet(), instanceContext));
+        database.getRuleMetaData().getRules().add(new ShardingRule(shardingRuleConfig, database.getResourceMetaData().getStorageUnits().keySet(), instanceContext));
     }
     
     private void addReadwriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig,
@@ -285,7 +285,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     private void addBroadcastRuleConfiguration(final BroadcastRuleConfiguration broadcastRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
         allRuleConfigs.add(broadcastRuleConfig);
         database.getRuleMetaData().getRules().add(new BroadcastRule(broadcastRuleConfig, database.getName(),
-                database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
+                database.getResourceMetaData().getStorageUnits().entrySet().stream()
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))));
     }
     
@@ -293,7 +293,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         allRuleConfigs.add(singleRuleConfig);
         database.getRuleMetaData().getRules().add(
                 new SingleRule(singleRuleConfig, database.getName(),
-                        database.getResourceMetaData().getStorageUnitMetaDataMap().entrySet().stream()
+                        database.getResourceMetaData().getStorageUnits().entrySet().stream()
                                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                         database.getRuleMetaData().getRules()));
     }
