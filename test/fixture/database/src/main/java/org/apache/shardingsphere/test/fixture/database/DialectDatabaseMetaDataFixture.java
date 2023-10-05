@@ -34,11 +34,6 @@ public final class DialectDatabaseMetaDataFixture implements DialectDatabaseMeta
     }
     
     @Override
-    public boolean isInstanceConnectionAvailable() {
-        return true;
-    }
-    
-    @Override
     public String getDatabaseType() {
         return "FIXTURE";
     }
