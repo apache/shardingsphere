@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeAggregator;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
 
@@ -93,16 +92,6 @@ public final class ResourceMetaData {
     private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames) {
         return existedDataSourceNames.stream().anyMatch(each -> storageUnits.get(dataSourceName).getConnectionProperties()
                 .isInSameDatabaseInstance(storageUnits.get(each).getConnectionProperties()));
-    }
-    
-    /**
-     * Get connection properties.
-     *
-     * @param dataSourceName data source name
-     * @return connection properties
-     */
-    public ConnectionProperties getConnectionProperties(final String dataSourceName) {
-        return storageUnits.get(dataSourceName).getConnectionProperties();
     }
     
     /**
