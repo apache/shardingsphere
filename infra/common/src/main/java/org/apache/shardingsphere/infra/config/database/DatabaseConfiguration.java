@@ -31,13 +31,6 @@ import java.util.Map;
 public interface DatabaseConfiguration {
     
     /**
-     * Get data sources.
-     * 
-     * @return data sources
-     */
-    Map<String, DataSource> getDataSources();
-    
-    /**
      * Get rule configurations.
      * 
      * @return rule configurations
@@ -50,6 +43,13 @@ public interface DatabaseConfiguration {
      * @return storage units
      */
     Map<String, StorageUnit> getStorageUnits();
+    
+    /**
+     * Get data sources.
+     *
+     * @return data sources
+     */
+    Map<String, DataSource> getDataSources();
     
     /**
      * Get storage resource.

@@ -42,19 +42,18 @@ import java.util.stream.Collectors;
 @Getter
 public final class DataSourceProvidedDatabaseConfiguration implements DatabaseConfiguration {
     
-    private final StorageResource storageResource;
-    
     private final Collection<RuleConfiguration> ruleConfigurations;
     
     private final Map<String, StorageUnit> storageUnits;
     
     private final Map<String, DataSource> dataSources;
     
+    private final StorageResource storageResource;
+    
     public DataSourceProvidedDatabaseConfiguration(final Map<String, DataSource> dataSources, final Collection<RuleConfiguration> ruleConfigs) {
         this.ruleConfigurations = ruleConfigs;
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSources(dataSources);
         Map<StorageNodeName, DataSource> storageNodeDataSources = StorageNodeAggregator.aggregateDataSources(dataSources);
-        storageResource = new StorageResource(storageNodeDataSources, storageUnitNodeMap);
         Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap = createDataSourcePoolPropertiesMap(dataSources);
         storageUnits = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
         this.dataSources = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
@@ -65,6 +64,7 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
             storageUnits.put(storageUnitName, storageUnit);
             this.dataSources.put(storageUnitName, storageUnit.getDataSource());
         }
+        storageResource = new StorageResource(storageNodeDataSources, storageUnitNodeMap);
     }
     
     public DataSourceProvidedDatabaseConfiguration(final StorageResource storageResource,

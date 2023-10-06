@@ -43,13 +43,13 @@ import java.util.stream.Collectors;
 @Getter
 public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseConfiguration {
     
-    private final StorageResource storageResource;
-    
     private final Collection<RuleConfiguration> ruleConfigurations;
     
     private final Map<String, StorageUnit> storageUnits;
     
     private final Map<String, DataSource> dataSources;
+    
+    private final StorageResource storageResource;
     
     public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs) {
         ruleConfigurations = ruleConfigs;
