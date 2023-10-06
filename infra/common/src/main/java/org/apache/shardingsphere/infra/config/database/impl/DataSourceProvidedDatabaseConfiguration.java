@@ -46,8 +46,6 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
     
     private final Collection<RuleConfiguration> ruleConfigurations;
     
-    private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
-    
     private final Map<String, StorageUnit> storageUnits;
     
     private final Map<String, DataSource> dataSources;
@@ -57,7 +55,7 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSources(dataSources);
         Map<StorageNodeName, DataSource> storageNodeDataSources = StorageNodeAggregator.aggregateDataSources(dataSources);
         storageResource = new StorageResource(storageNodeDataSources, storageUnitNodeMap);
-        dataSourcePoolPropertiesMap = createDataSourcePoolPropertiesMap(dataSources);
+        Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap = createDataSourcePoolPropertiesMap(dataSources);
         storageUnits = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
         this.dataSources = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
@@ -73,7 +71,6 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
                                                    final Collection<RuleConfiguration> ruleConfigs, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap) {
         this.storageResource = storageResource;
         this.ruleConfigurations = ruleConfigs;
-        this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(dataSourcePoolPropertiesMap);
         Map<StorageNodeName, DataSource> storageNodeDataSources = storageResource.getDataSources();
         storageUnits = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);

@@ -120,10 +120,11 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
     }
     
     private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final DatabaseConfiguration databaseConfigs) {
-        if (!databaseConfigs.getDataSources().isEmpty() && databaseConfigs.getDataSourcePoolPropertiesMap().isEmpty()) {
+        if (!databaseConfigs.getDataSources().isEmpty() && databaseConfigs.getStorageUnits().isEmpty()) {
             return getDataSourcePoolPropertiesMap(databaseConfigs.getStorageResource().getDataSources());
         }
-        return databaseConfigs.getDataSourcePoolPropertiesMap();
+        return databaseConfigs.getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final Map<StorageNodeName, DataSource> storageNodeDataSources) {

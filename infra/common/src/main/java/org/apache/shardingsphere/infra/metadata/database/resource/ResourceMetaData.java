@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Resource meta data.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ResourceMetaData {
     
@@ -52,14 +54,6 @@ public final class ResourceMetaData {
         storageUnits = new LinkedHashMap<>();
         for (Entry<String, StorageNode> entry : storageNodes.entrySet()) {
             storageUnits.put(entry.getKey(), new StorageUnit(entry.getValue(), dataSourcePoolPropsMap.get(entry.getKey()), dataSources.get(entry.getValue().getName().getName())));
-        }
-    }
-    
-    public ResourceMetaData(final Map<StorageNodeName, DataSource> dataSources, final Map<String, StorageNode> storageNodes, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap) {
-        this.dataSources = dataSources;
-        storageUnits = new LinkedHashMap<>();
-        for (Entry<String, StorageNode> entry : storageNodes.entrySet()) {
-            storageUnits.put(entry.getKey(), new StorageUnit(entry.getValue(), dataSourcePoolPropsMap.get(entry.getKey()), dataSources.get(entry.getValue().getName())));
         }
     }
     
