@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -48,7 +47,7 @@ public final class StorageUnitNodeMapUtils {
      */
     public static Map<String, StorageNode> fromDataSources(final Map<String, DataSource> dataSources) {
         return dataSources.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> new StorageNode(new StorageNodeName(entry.getKey())), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
+                .collect(Collectors.toMap(Entry::getKey, entry -> new StorageNode(entry.getKey()), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
     }
     
     /**
@@ -70,16 +69,15 @@ public final class StorageUnitNodeMapUtils {
         Map<String, Object> standardProps = props.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProps.get("url").toString();
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-        StorageNodeName storageNodeName = getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
-        return new StorageNode(storageNodeName);
+        return getStorageNode(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
     }
     
-    private static StorageNodeName getStorageNodeName(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
+    private static StorageNode getStorageNode(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
         try {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-            return isInstanceConnectionAvailable ? new StorageNodeName(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : new StorageNodeName(dataSourceName);
+            return isInstanceConnectionAvailable ? new StorageNode(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : new StorageNode(dataSourceName);
         } catch (final UnrecognizedDatabaseURLException ex) {
-            return new StorageNodeName(dataSourceName);
+            return new StorageNode(dataSourceName);
         }
     }
 }
