@@ -73,9 +73,9 @@ class ContextManagerBuilderParameterTest {
         assertFalse(new ContextManagerBuilderParameter(null, mockDatabaseConfigurations(true, false), Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false).isEmpty());
     }
     
-    private Map<String, DatabaseConfiguration> mockDatabaseConfigurations(final boolean isEmptyDataSources, final boolean isEmptyRuleConfigs) {
+    private Map<String, DatabaseConfiguration> mockDatabaseConfigurations(final boolean isEmptyStorageUnits, final boolean isEmptyRuleConfigs) {
         DatabaseConfiguration databaseConfig = mock(DatabaseConfiguration.class, RETURNS_DEEP_STUBS);
-        when(databaseConfig.getDataSources().isEmpty()).thenReturn(isEmptyDataSources);
+        when(databaseConfig.getStorageUnits().isEmpty()).thenReturn(isEmptyStorageUnits);
         when(databaseConfig.getRuleConfigurations().isEmpty()).thenReturn(isEmptyRuleConfigs);
         return Collections.singletonMap("foo_ds", databaseConfig);
     }

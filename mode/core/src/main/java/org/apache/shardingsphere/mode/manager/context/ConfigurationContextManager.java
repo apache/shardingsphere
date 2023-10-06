@@ -279,11 +279,9 @@ public final class ConfigurationContextManager {
      */
     public Map<String, ShardingSphereDatabase> renewDatabase(final ShardingSphereDatabase database, final SwitchingResource resource) {
         Map<StorageNodeName, DataSource> newStorageNodes = getNewStorageNodes(database.getResourceMetaData().getDataSources(), resource);
-        Map<String, StorageNode> newStorageUnitNodeMap = getNewStorageUnitNodes(database.getResourceMetaData().getStorageUnits(), resource);
-        Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
+        Map<String, StorageUnit> newStorageUnits = getNewStorageUnits(database.getResourceMetaData().getStorageUnits(), resource);
         return Collections.singletonMap(database.getName().toLowerCase(), new ShardingSphereDatabase(database.getName(), database.getProtocolType(),
-                new ResourceMetaData(newStorageNodes, newStorageUnitNodeMap, propsMap), database.getRuleMetaData(), database.getSchemas()));
+                new ResourceMetaData(newStorageNodes, newStorageUnits), database.getRuleMetaData(), database.getSchemas()));
     }
     
     private Map<StorageNodeName, DataSource> getNewStorageNodes(final Map<StorageNodeName, DataSource> currentStorageNodes, final SwitchingResource resource) {
@@ -296,11 +294,11 @@ public final class ConfigurationContextManager {
         return result;
     }
     
-    private Map<String, StorageNode> getNewStorageUnitNodes(final Map<String, StorageUnit> currentStorageUnits, final SwitchingResource resource) {
-        Map<String, StorageNode> result = new LinkedHashMap<>(currentStorageUnits.size(), 1F);
+    private Map<String, StorageUnit> getNewStorageUnits(final Map<String, StorageUnit> currentStorageUnits, final SwitchingResource resource) {
+        Map<String, StorageUnit> result = new LinkedHashMap<>(currentStorageUnits.size(), 1F);
         for (Entry<String, StorageUnit> entry : currentStorageUnits.entrySet()) {
             if (!resource.getStaleStorageResource().getStorageUnitNodeMap().containsKey(entry.getKey())) {
-                result.put(entry.getKey(), entry.getValue().getStorageNode());
+                result.put(entry.getKey(), entry.getValue());
             }
         }
         return result;

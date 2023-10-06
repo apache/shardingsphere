@@ -80,7 +80,7 @@ public final class ExternalMetaDataFactory {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size(), 1F);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
-            if (!entry.getValue().getDataSources().isEmpty() || !systemDatabase.getSystemSchemas().contains(databaseName)) {
+            if (!entry.getValue().getStorageUnits().isEmpty() || !systemDatabase.getSystemSchemas().contains(databaseName)) {
                 Map<String, DatabaseType> storageTypes = DatabaseTypeEngine.getStorageTypes(entry.getKey(), entry.getValue());
                 result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType, storageTypes, entry.getValue(), props, instanceContext));
             }
@@ -92,7 +92,7 @@ public final class ExternalMetaDataFactory {
                                                                              final SystemDatabase systemDatabase, final ConfigurationProperties props) {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(systemDatabase.getSystemDatabaseSchemaMap().size(), 1F);
         for (String each : systemDatabase.getSystemDatabaseSchemaMap().keySet()) {
-            if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getDataSources().isEmpty()) {
+            if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getStorageUnits().isEmpty()) {
                 result.put(each.toLowerCase(), ShardingSphereDatabase.create(each, protocolType, props));
             }
         }
