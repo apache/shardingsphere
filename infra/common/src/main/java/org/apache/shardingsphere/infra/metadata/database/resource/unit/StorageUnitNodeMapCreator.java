@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNo
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Storage unit node map creator.
@@ -44,21 +45,16 @@ public final class StorageUnitNodeMapCreator {
      * @return storage unit node map
      */
     public static Map<String, StorageNode> create(final Map<String, DataSourcePoolProperties> propsMap) {
-        Map<String, StorageNode> result = new LinkedHashMap<>();
-        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            result.put(entry.getKey(), create(entry.getKey(), entry.getValue()));
-        }
-        return result;
+        return propsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private static StorageNode create(final String storageUnitName, final DataSourcePoolProperties props) {
         Map<String, Object> standardProps = props.getConnectionPropertySynonyms().getStandardProperties();
-        String url = standardProps.get("url").toString();
-        boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-        return create(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
+        return create(storageUnitName, standardProps.get("url").toString(), standardProps.get("username").toString());
     }
     
-    private static StorageNode create(final String storageUnitName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
+    private static StorageNode create(final String storageUnitName, final String url, final String username) {
+        boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
         try {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
             return isInstanceConnectionAvailable ? new StorageNode(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : new StorageNode(storageUnitName);
