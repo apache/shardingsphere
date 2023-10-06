@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.config.database.impl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
@@ -40,7 +39,6 @@ import java.util.stream.Collectors;
 /**
  * Data source provided database configuration.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DataSourceProvidedDatabaseConfiguration implements DatabaseConfiguration {
     
@@ -60,6 +58,24 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
         Map<StorageNodeName, DataSource> storageNodeDataSources = StorageNodeAggregator.aggregateDataSources(dataSources);
         storageResource = new StorageResource(storageNodeDataSources, storageUnitNodeMap);
         dataSourcePoolPropertiesMap = createDataSourcePoolPropertiesMap(dataSources);
+        storageUnits = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
+        this.dataSources = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
+        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
+            String storageUnitName = entry.getKey();
+            StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
+            StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), storageNodeDataSources.get(storageNode.getName()));
+            storageUnits.put(storageUnitName, storageUnit);
+            this.dataSources.put(storageUnitName, storageUnit.getDataSource());
+        }
+    }
+    
+    public DataSourceProvidedDatabaseConfiguration(final StorageResource storageResource,
+                                                   final Collection<RuleConfiguration> ruleConfigs, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap) {
+        this.storageResource = storageResource;
+        this.ruleConfigurations = ruleConfigs;
+        this.dataSourcePoolPropertiesMap = dataSourcePoolPropertiesMap;
+        Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(dataSourcePoolPropertiesMap);
+        Map<StorageNodeName, DataSource> storageNodeDataSources = storageResource.getDataSources();
         storageUnits = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
         this.dataSources = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
