@@ -46,8 +46,7 @@ public final class StorageUnitNodeMapCreator {
     public static Map<String, StorageNode> create(final Map<String, DataSourcePoolProperties> propsMap) {
         Map<String, StorageNode> result = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            String storageUnitName = entry.getKey();
-            result.put(storageUnitName, create(storageUnitName, entry.getValue()));
+            result.put(entry.getKey(), create(entry.getKey(), entry.getValue()));
         }
         return result;
     }
