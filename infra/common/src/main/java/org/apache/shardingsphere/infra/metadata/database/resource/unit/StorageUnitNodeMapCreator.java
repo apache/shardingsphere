@@ -27,52 +27,39 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 
-import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
- * Storage unit node map utility class.
+ * Storage unit node map creator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StorageUnitNodeMapUtils {
+public final class StorageUnitNodeMapCreator {
     
     /**
-     * Get storage unit node map from data sources.
-     *
-     * @param dataSources data sources
-     * @return storage unit node mappers
-     */
-    public static Map<String, StorageNode> fromDataSources(final Map<String, DataSource> dataSources) {
-        return dataSources.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> new StorageNode(entry.getKey()), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
-    }
-    
-    /**
-     * Get storage unit node map from data source pool properties.
+     * Create storage unit node map.
      *
      * @param propsMap data source pool properties map
-     * @return storage unit node mappers
+     * @return storage unit node map
      */
-    public static Map<String, StorageNode> fromDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> propsMap) {
+    public static Map<String, StorageNode> create(final Map<String, DataSourcePoolProperties> propsMap) {
         Map<String, StorageNode> result = new LinkedHashMap<>();
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             String storageUnitName = entry.getKey();
-            result.put(storageUnitName, fromDataSourcePoolProperties(storageUnitName, entry.getValue()));
+            result.put(storageUnitName, create(storageUnitName, entry.getValue()));
         }
         return result;
     }
     
-    private static StorageNode fromDataSourcePoolProperties(final String storageUnitName, final DataSourcePoolProperties props) {
+    private static StorageNode create(final String storageUnitName, final DataSourcePoolProperties props) {
         Map<String, Object> standardProps = props.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProps.get("url").toString();
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-        return getStorageNode(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
+        return create(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
     }
     
-    private static StorageNode getStorageNode(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
+    private static StorageNode create(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
         try {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
             return isInstanceConnectionAvailable ? new StorageNode(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : new StorageNode(dataSourceName);
