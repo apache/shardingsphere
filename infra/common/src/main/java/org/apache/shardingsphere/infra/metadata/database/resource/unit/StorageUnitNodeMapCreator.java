@@ -59,12 +59,12 @@ public final class StorageUnitNodeMapCreator {
         return create(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
     }
     
-    private static StorageNode create(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
+    private static StorageNode create(final String storageUnitName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
         try {
             JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-            return isInstanceConnectionAvailable ? new StorageNode(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : new StorageNode(dataSourceName);
+            return isInstanceConnectionAvailable ? new StorageNode(jdbcUrl.getHostname(), jdbcUrl.getPort(), username) : new StorageNode(storageUnitName);
         } catch (final UnrecognizedDatabaseURLException ex) {
-            return new StorageNode(dataSourceName);
+            return new StorageNode(storageUnitName);
         }
     }
 }
