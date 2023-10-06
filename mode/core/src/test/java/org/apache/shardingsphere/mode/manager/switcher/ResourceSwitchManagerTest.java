@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.manager.switcher;
 
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
@@ -32,8 +32,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceSwitchManagerTest {
@@ -86,9 +86,9 @@ class ResourceSwitchManagerTest {
     
     private void assertNewDataSources(final SwitchingResource actual) {
         assertThat(actual.getNewStorageResource().getDataSources().size(), is(3));
-        assertTrue(actual.getNewStorageResource().getDataSources().containsKey(new StorageNodeName("not_change")));
-        assertTrue(actual.getNewStorageResource().getDataSources().containsKey(new StorageNodeName("new")));
-        assertTrue(actual.getNewStorageResource().getDataSources().containsKey(new StorageNodeName("replace")));
+        assertTrue(actual.getNewStorageResource().getDataSources().containsKey(new StorageNode("not_change")));
+        assertTrue(actual.getNewStorageResource().getDataSources().containsKey(new StorageNode("new")));
+        assertTrue(actual.getNewStorageResource().getDataSources().containsKey(new StorageNode("replace")));
     }
     
     private void assertStaleDataSources(final Map<String, DataSource> originalDataSourceMap) {

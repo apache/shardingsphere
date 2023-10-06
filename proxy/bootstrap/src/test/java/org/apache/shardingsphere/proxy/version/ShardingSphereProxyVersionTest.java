@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -86,7 +85,7 @@ class ShardingSphereProxyVersionTest {
         DataSource dataSource = createDataSource(databaseProductName, databaseProductVersion);
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/foo_db"));
-        StorageUnit storageUnit = new StorageUnit(new StorageNode(mock(StorageNodeName.class)), dataSourcePoolProps, dataSource);
+        StorageUnit storageUnit = new StorageUnit(mock(StorageNode.class), dataSourcePoolProps, dataSource);
         when(result.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         return result;
     }

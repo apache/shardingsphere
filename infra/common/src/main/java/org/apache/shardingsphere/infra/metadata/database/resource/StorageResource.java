@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.metadata.database.resource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -32,7 +31,7 @@ import java.util.Map;
 @Getter
 public final class StorageResource {
     
-    private final Map<StorageNodeName, DataSource> dataSources;
+    private final Map<StorageNode, DataSource> dataSources;
     
     private final Map<String, StorageNode> storageUnitNodeMap;
 }

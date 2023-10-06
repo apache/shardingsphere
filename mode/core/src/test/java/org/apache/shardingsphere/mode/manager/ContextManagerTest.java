@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeAggregator;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapUtils;
@@ -109,7 +108,7 @@ class ContextManagerTest {
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
         when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/foo_db"));
-        Map<String, StorageUnit> storageUnits = Collections.singletonMap("foo_ds", new StorageUnit(new StorageNode(mock(StorageNodeName.class)), dataSourcePoolProps, new MockedDataSource()));
+        Map<String, StorageUnit> storageUnits = Collections.singletonMap("foo_ds", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps, new MockedDataSource()));
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         return result;
     }
@@ -246,20 +245,20 @@ class ContextManagerTest {
         contextManager.getConfigurationContextManager().alterDataSourceUnitsConfiguration("foo_db", dataSourcePoolPropsMap);
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageUnits().size(), is(3));
         assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")
-                .getResourceMetaData().getDataSources().get(new StorageNodeName("foo_ds")));
+                .getResourceMetaData().getDataSources().get(new StorageNode("foo_ds")));
     }
     
     private ResourceMetaData createOriginalResource() {
         Map<String, DataSource> originalDataSources = new LinkedHashMap<>(2, 1F);
         originalDataSources.put("ds_1", new MockedDataSource());
         originalDataSources.put("ds_2", new MockedDataSource());
-        Map<StorageNodeName, DataSource> storageNodeDataSourceMap = StorageNodeAggregator.aggregateDataSources(originalDataSources);
+        Map<StorageNode, DataSource> storageNodeDataSourceMap = StorageNodeAggregator.aggregateDataSources(originalDataSources);
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSources(originalDataSources);
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
         for (Entry<String, StorageNode> entry : storageUnitNodeMap.entrySet()) {
             DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
             when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/foo_db"));
-            storageUnits.put(entry.getKey(), new StorageUnit(storageUnitNodeMap.get(entry.getKey()), dataSourcePoolProps, storageNodeDataSourceMap.get(entry.getValue().getName())));
+            storageUnits.put(entry.getKey(), new StorageUnit(storageUnitNodeMap.get(entry.getKey()), dataSourcePoolProps, storageNodeDataSourceMap.get(entry.getValue())));
         }
         ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getStorageUnits()).thenReturn(storageUnits);
