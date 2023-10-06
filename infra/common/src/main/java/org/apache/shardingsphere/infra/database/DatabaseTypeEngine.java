@@ -58,7 +58,7 @@ public final class DatabaseTypeEngine {
         if (configuredDatabaseType.isPresent()) {
             return configuredDatabaseType.get();
         }
-        Collection<DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig);
+        Collection<DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig).values();
         return enabledDataSources.isEmpty() ? getDefaultStorageType() : getStorageType(enabledDataSources.iterator().next());
     }
     
@@ -86,7 +86,7 @@ public final class DatabaseTypeEngine {
     private static Map<String, DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSource> result = new LinkedHashMap<>();
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
-            result.putAll(DataSourceStateManager.getInstance().getEnabledDataSources(entry.getKey(), entry.getValue().getDataSources()));
+            result.putAll(DataSourceStateManager.getInstance().getEnabledDataSources(entry.getKey(), entry.getValue()));
         }
         return result;
     }
@@ -99,8 +99,8 @@ public final class DatabaseTypeEngine {
      * @return storage types
      */
     public static Map<String, DatabaseType> getStorageTypes(final String databaseName, final DatabaseConfiguration databaseConfig) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1F);
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig.getDataSources());
+        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getStorageUnits().size(), 1F);
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, databaseConfig);
         for (Entry<String, DataSource> entry : enabledDataSources.entrySet()) {
             result.put(entry.getKey(), getStorageType(entry.getValue()));
         }

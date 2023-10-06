@@ -42,7 +42,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     @Test
     void assertGetDataSources() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("normal_db");
+        DataSource dataSource = databaseConfig.getStorageUnits().get("normal_db").getDataSource();
         assertTrue(dataSource instanceof CatalogSwitchableDataSource);
         assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof HikariDataSource);
     }
@@ -59,7 +59,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     @Test
     void assertGetStorageUnits() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("normal_db");
+        DataSource dataSource = databaseConfig.getStorageUnits().get("normal_db").getDataSource();
         assertTrue(dataSource instanceof CatalogSwitchableDataSource);
         assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof HikariDataSource);
     }

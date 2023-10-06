@@ -37,7 +37,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
     @Test
     void assertGetDataSources() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("foo_ds");
+        DataSource dataSource = databaseConfig.getStorageUnits().get("foo_ds").getDataSource();
         assertTrue(dataSource instanceof CatalogSwitchableDataSource);
         assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof MockedDataSource);
     }
@@ -54,7 +54,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
     @Test
     void assertGetStorageUnits() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("foo_ds");
+        DataSource dataSource = databaseConfig.getStorageUnits().get("foo_ds").getDataSource();
         assertTrue(dataSource instanceof CatalogSwitchableDataSource);
         assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof MockedDataSource);
     }

@@ -46,8 +46,6 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
     
     private final Map<String, StorageUnit> storageUnits;
     
-    private final Map<String, DataSource> dataSources;
-    
     private final StorageResource storageResource;
     
     public DataSourceProvidedDatabaseConfiguration(final Map<String, DataSource> dataSources, final Collection<RuleConfiguration> ruleConfigs) {
@@ -56,13 +54,11 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
         Map<StorageNodeName, DataSource> storageNodeDataSources = StorageNodeAggregator.aggregateDataSources(dataSources);
         Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap = createDataSourcePoolPropertiesMap(dataSources);
         storageUnits = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
-        this.dataSources = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
             String storageUnitName = entry.getKey();
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
             StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), storageNodeDataSources.get(storageNode.getName()));
             storageUnits.put(storageUnitName, storageUnit);
-            this.dataSources.put(storageUnitName, storageUnit.getDataSource());
         }
         storageResource = new StorageResource(storageNodeDataSources, storageUnitNodeMap);
     }
@@ -74,13 +70,11 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(dataSourcePoolPropertiesMap);
         Map<StorageNodeName, DataSource> storageNodeDataSources = storageResource.getDataSources();
         storageUnits = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
-        this.dataSources = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
             String storageUnitName = entry.getKey();
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
             StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), storageNodeDataSources.get(storageNode.getName()));
             storageUnits.put(storageUnitName, storageUnit);
-            this.dataSources.put(storageUnitName, storageUnit.getDataSource());
         }
     }
     

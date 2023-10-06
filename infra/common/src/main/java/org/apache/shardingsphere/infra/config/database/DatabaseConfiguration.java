@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
@@ -43,13 +42,6 @@ public interface DatabaseConfiguration {
      * @return storage units
      */
     Map<String, StorageUnit> getStorageUnits();
-    
-    /**
-     * Get data sources.
-     *
-     * @return data sources
-     */
-    Map<String, DataSource> getDataSources();
     
     /**
      * Get storage resource.

@@ -114,7 +114,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     }
     
     private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final DatabaseConfiguration databaseConfigs) {
-        if (!databaseConfigs.getDataSources().isEmpty() && databaseConfigs.getStorageUnits().isEmpty()) {
+        if (!databaseConfigs.getStorageUnits().isEmpty() && databaseConfigs.getStorageUnits().isEmpty()) {
             return getDataSourcePoolPropertiesMap(databaseConfigs.getStorageResource().getDataSources());
         }
         return databaseConfigs.getStorageUnits().entrySet().stream()
@@ -132,7 +132,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     @Override
     public Map<String, DataSourceConfiguration> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSourcePoolProperties> propsMap = dataSourceUnitService.load(databaseName);
-        if (databaseConfigs.containsKey(databaseName) && !databaseConfigs.get(databaseName).getDataSources().isEmpty()) {
+        if (databaseConfigs.containsKey(databaseName) && !databaseConfigs.get(databaseName).getStorageUnits().isEmpty()) {
             databaseConfigs.get(databaseName).getStorageResource().getDataSources().values().forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
         }
         return propsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey,

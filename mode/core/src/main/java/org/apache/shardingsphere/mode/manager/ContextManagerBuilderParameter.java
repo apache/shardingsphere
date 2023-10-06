@@ -61,7 +61,7 @@ public final class ContextManagerBuilderParameter {
      */
     public boolean isEmpty() {
         return globalRuleConfigs.isEmpty() && props.isEmpty()
-                && databaseConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty());
+                && databaseConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getStorageUnits().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty());
     }
     
     /**

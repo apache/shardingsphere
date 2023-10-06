@@ -126,8 +126,8 @@ public final class NewMetaDataContextsFactory {
     private static void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final Map<String, StorageNodeDataSource> storageNodes, final boolean force) {
         Map<String, DataSourceState> storageDataSourceStates = getStorageDataSourceStates(storageNodes);
         databaseConfigs.forEach((key, value) -> {
-            if (!value.getDataSources().isEmpty()) {
-                DataSourceStateManager.getInstance().initStates(key, value.getDataSources(), storageDataSourceStates, force);
+            if (!value.getStorageUnits().isEmpty()) {
+                DataSourceStateManager.getInstance().initStates(key, value.getStorageUnits(), storageDataSourceStates, force);
             }
         });
     }

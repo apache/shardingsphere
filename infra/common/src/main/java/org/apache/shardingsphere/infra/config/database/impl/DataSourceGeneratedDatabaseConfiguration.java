@@ -47,8 +47,6 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     
     private final Map<String, StorageUnit> storageUnits;
     
-    private final Map<String, DataSource> dataSources;
-    
     private final StorageResource storageResource;
     
     public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs) {
@@ -58,14 +56,12 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapUtils.fromDataSourcePoolProperties(dataSourcePoolPropertiesMap);
         Map<StorageNodeName, DataSource> storageNodeDataSources = getStorageNodeDataSourceMap(dataSourcePoolPropertiesMap, storageUnitNodeMap);
         storageUnits = new LinkedHashMap<>(dataSourceConfigs.size(), 1F);
-        dataSources = new LinkedHashMap<>(dataSourceConfigs.size(), 1F);
         for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigs.entrySet()) {
             String storageUnitName = entry.getKey();
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
             DataSource dataSource = storageNodeDataSources.get(storageNode.getName());
             StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), dataSource);
             storageUnits.put(storageUnitName, storageUnit);
-            dataSources.put(storageUnitName, storageUnit.getDataSource());
         }
         storageResource = new StorageResource(storageNodeDataSources, storageUnitNodeMap);
     }
