@@ -20,9 +20,11 @@ package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
+import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -38,25 +40,32 @@ public final class StorageUnit {
     
     private final StorageNode storageNode;
     
+    private final String url;
+    
+    private final DatabaseType storageType;
+    
+    private final String catalog;
+    
     private final DataSource dataSource;
     
     private final DataSourcePoolProperties dataSourcePoolProperties;
-    
-    private final DatabaseType storageType;
     
     private final ConnectionProperties connectionProperties;
     
     public StorageUnit(final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProperties, final DataSource dataSource) {
         this.storageNode = storageNode;
-        this.dataSource = new CatalogSwitchableDataSource(dataSource, storageNode.getCatalog(), storageNode.getUrl());
+        Map<String, Object> standardProps = dataSourcePoolProperties.getConnectionPropertySynonyms().getStandardProperties();
+        url = standardProps.get("url").toString();
+        storageType = DatabaseTypeFactory.get(url);
+        boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
+        catalog = isInstanceConnectionAvailable ? new StandardJdbcUrlParser().parse(url).getDatabase() : null;
+        this.dataSource = new CatalogSwitchableDataSource(dataSource, catalog, url);
         this.dataSourcePoolProperties = dataSourcePoolProperties;
-        storageType = DatabaseTypeFactory.get(storageNode.getUrl());
-        connectionProperties = createConnectionProperties(storageNode);
+        connectionProperties = createConnectionProperties(standardProps);
     }
     
-    private ConnectionProperties createConnectionProperties(final StorageNode storageNode) {
-        Map<String, Object> standardProps = dataSourcePoolProperties.getConnectionPropertySynonyms().getStandardProperties();
+    private ConnectionProperties createConnectionProperties(final Map<String, Object> standardProps) {
         ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
-        return parser.parse(storageNode.getUrl(), standardProps.getOrDefault("username", "").toString(), storageNode.getCatalog());
+        return parser.parse(url, standardProps.getOrDefault("username", "").toString(), catalog);
     }
 }

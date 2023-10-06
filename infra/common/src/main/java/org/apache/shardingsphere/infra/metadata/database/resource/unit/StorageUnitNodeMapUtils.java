@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcU
 import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeName;
@@ -49,14 +48,7 @@ public final class StorageUnitNodeMapUtils {
      */
     public static Map<String, StorageNode> fromDataSources(final Map<String, DataSource> dataSources) {
         return dataSources.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> fromDataSource(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
-    }
-    
-    private static StorageNode fromDataSource(final String storageUnitName, final DataSource dataSource) {
-        DataSourcePoolProperties props = DataSourcePoolPropertiesCreator.create(dataSource);
-        String url = props.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
-        boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-        return createStorageNode(new StorageNodeName(storageUnitName), url, isInstanceConnectionAvailable);
+                .collect(Collectors.toMap(Entry::getKey, entry -> new StorageNode(new StorageNodeName(entry.getKey())), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
     }
     
     /**
@@ -79,7 +71,7 @@ public final class StorageUnitNodeMapUtils {
         String url = standardProps.get("url").toString();
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
         StorageNodeName storageNodeName = getStorageNodeName(storageUnitName, url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
-        return createStorageNode(storageNodeName, url, isInstanceConnectionAvailable);
+        return new StorageNode(storageNodeName);
     }
     
     private static StorageNodeName getStorageNodeName(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
@@ -89,9 +81,5 @@ public final class StorageUnitNodeMapUtils {
         } catch (final UnrecognizedDatabaseURLException ex) {
             return new StorageNodeName(dataSourceName);
         }
-    }
-    
-    private static StorageNode createStorageNode(final StorageNodeName storageNodeName, final String url, final boolean isInstanceConnectionAvailable) {
-        return new StorageNode(storageNodeName, url, isInstanceConnectionAvailable ? new StandardJdbcUrlParser().parse(url).getDatabase() : null);
     }
 }

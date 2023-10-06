@@ -85,8 +85,8 @@ class ShardingSphereProxyVersionTest {
         ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         DataSource dataSource = createDataSource(databaseProductName, databaseProductVersion);
         DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
-        StorageUnit storageUnit = new StorageUnit(new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/foo_db", null), dataSourcePoolProps, dataSource);
+        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/foo_db"));
+        StorageUnit storageUnit = new StorageUnit(new StorageNode(mock(StorageNodeName.class)), dataSourcePoolProps, dataSource);
         when(result.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         return result;
     }

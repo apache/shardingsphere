@@ -86,26 +86,13 @@ class ShardingSphereMetaDataTest {
         verify(globalResourceHeldRule).closeStaleResource("foo_db");
     }
     
-    private ShardingSphereDatabase mockDatabase(final ResourceMetaData resourceMetaData, final DataSource dataSource, final ResourceHeldRule<?> databaseResourceHeldRule) {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        when(result.getName()).thenReturn("foo_db");
-        when(result.getResourceMetaData()).thenReturn(resourceMetaData);
-        DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.emptyMap());
-        StorageUnit storageUnit = new StorageUnit(new StorageNode(mock(StorageNodeName.class), "jdbc:mock://127.0.0.1/foo_ds", null), dataSourcePoolProps, dataSource);
-        when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_db", storageUnit));
-        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(databaseResourceHeldRule)));
-        return result;
-    }
-    
     @Test
     void assertContainsDatabase() {
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
         ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new MockedDataSource(), globalResourceHeldRule);
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(Collections.singletonMap("foo_db", database));
         ConfigurationProperties configProps = new ConfigurationProperties(new Properties());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class),
-                new RuleMetaData(Collections.singleton(globalResourceHeldRule)), configProps);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalResourceHeldRule)), configProps);
         assertTrue(metaData.containsDatabase("foo_db"));
     }
     
@@ -115,8 +102,19 @@ class ShardingSphereMetaDataTest {
         ShardingSphereDatabase database = mockDatabase(mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new MockedDataSource(), globalResourceHeldRule);
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(Collections.singletonMap("foo_db", database));
         ConfigurationProperties configProps = new ConfigurationProperties(new Properties());
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class),
-                new RuleMetaData(Collections.singleton(globalResourceHeldRule)), configProps);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), new RuleMetaData(Collections.singleton(globalResourceHeldRule)), configProps);
         assertThat(metaData.getDatabase("foo_db"), is(database));
+    }
+    
+    private ShardingSphereDatabase mockDatabase(final ResourceMetaData resourceMetaData, final DataSource dataSource, final ResourceHeldRule<?> databaseResourceHeldRule) {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        when(result.getName()).thenReturn("foo_db");
+        when(result.getResourceMetaData()).thenReturn(resourceMetaData);
+        DataSourcePoolProperties dataSourcePoolProps = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/foo_ds"));
+        StorageUnit storageUnit = new StorageUnit(new StorageNode(mock(StorageNodeName.class)), dataSourcePoolProps, dataSource);
+        when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_db", storageUnit));
+        when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(databaseResourceHeldRule)));
+        return result;
     }
 }

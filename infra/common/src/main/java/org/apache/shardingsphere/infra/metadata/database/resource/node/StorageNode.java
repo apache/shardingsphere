@@ -28,8 +28,4 @@ import lombok.RequiredArgsConstructor;
 public final class StorageNode {
     
     private final StorageNodeName name;
-    
-    private final String url;
-    
-    private final String catalog;
 }
