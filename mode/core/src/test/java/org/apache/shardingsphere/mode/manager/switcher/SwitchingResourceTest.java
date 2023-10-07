@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.switcher;
 
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.awaitility.Awaitility;
@@ -36,8 +35,7 @@ class SwitchingResourceTest {
     void assertCloseStaleDataSources() {
         MockedDataSource staleDataSource = new MockedDataSource();
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
-        StorageResource newStorageResource = new StorageResource(Collections.singletonMap(new StorageNode("new_ds"), new MockedDataSource()), Collections.emptyList());
-        new SwitchingResource(resourceMetaData, newStorageResource,
+        new SwitchingResource(resourceMetaData, Collections.singletonMap(new StorageNode("new_ds"), new MockedDataSource()),
                 Collections.singletonMap(new StorageNode("stale_ds"), staleDataSource), Collections.emptyList(), Collections.emptyMap()).closeStaleDataSources();
         Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(staleDataSource::isClosed);
         assertTrue(staleDataSource.isClosed());

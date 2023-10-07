@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 
 import javax.sql.DataSource;
@@ -41,7 +40,7 @@ public final class SwitchingResource {
     @Getter(AccessLevel.NONE)
     private final ResourceMetaData resourceMetaData;
     
-    private final StorageResource newStorageResource;
+    private final Map<StorageNode, DataSource> newDataSources;
     
     private final Map<StorageNode, DataSource> staleDataSources;
     

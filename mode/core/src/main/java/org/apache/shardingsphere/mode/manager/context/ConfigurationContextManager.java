@@ -365,8 +365,8 @@ public final class ConfigurationContextManager {
     
     private Map<StorageNode, DataSource> getMergedStorageNodeDataSources(final ResourceMetaData currentResourceMetaData, final SwitchingResource switchingResource) {
         Map<StorageNode, DataSource> result = currentResourceMetaData.getDataSources();
-        if (null != switchingResource && null != switchingResource.getNewStorageResource() && !switchingResource.getNewStorageResource().getDataSources().isEmpty()) {
-            result.putAll(switchingResource.getNewStorageResource().getDataSources());
+        if (null != switchingResource && null != switchingResource.getNewDataSources() && !switchingResource.getNewDataSources().isEmpty()) {
+            result.putAll(switchingResource.getNewDataSources());
         }
         return result;
     }
