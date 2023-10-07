@@ -285,7 +285,7 @@ public final class ConfigurationContextManager {
     private Map<StorageNode, DataSource> getNewStorageNodes(final Map<StorageNode, DataSource> currentStorageNodes, final SwitchingResource resource) {
         Map<StorageNode, DataSource> result = new LinkedHashMap<>();
         for (Entry<StorageNode, DataSource> entry : currentStorageNodes.entrySet()) {
-            if (!resource.getStaleStorageResource().getDataSources().containsKey(entry.getKey())) {
+            if (!resource.getStaleDataSources().containsKey(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());
             }
         }
@@ -295,7 +295,7 @@ public final class ConfigurationContextManager {
     private Map<String, StorageUnit> getNewStorageUnits(final Map<String, StorageUnit> currentStorageUnits, final SwitchingResource resource) {
         Map<String, StorageUnit> result = new LinkedHashMap<>(currentStorageUnits.size(), 1F);
         for (Entry<String, StorageUnit> entry : currentStorageUnits.entrySet()) {
-            if (!resource.getStaleStorageResource().getStorageUnitNames().contains(entry.getKey())) {
+            if (!resource.getStaleStorageUnitNames().contains(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());
             }
         }

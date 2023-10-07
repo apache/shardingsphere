@@ -54,7 +54,7 @@ class ResourceSwitchManagerTest {
         dataSourceMap.put("ds_1", new MockedDataSource());
         SwitchingResource actual = new ResourceSwitchManager().createByAlterDataSourcePoolProperties(new ResourceMetaData(dataSourceMap), Collections.emptyMap());
         assertTrue(actual.getNewStorageResource().getDataSources().isEmpty());
-        assertThat(actual.getStaleStorageResource().getDataSources().size(), is(2));
+        assertThat(actual.getStaleDataSources().size(), is(2));
         actual.closeStaleDataSources();
         assertStaleDataSource((MockedDataSource) dataSourceMap.get("ds_0"));
         assertStaleDataSource((MockedDataSource) dataSourceMap.get("ds_1"));

@@ -24,7 +24,10 @@ import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolD
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 
+import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
@@ -40,7 +43,9 @@ public final class SwitchingResource {
     
     private final StorageResource newStorageResource;
     
-    private final StorageResource staleStorageResource;
+    private final Map<StorageNode, DataSource> staleDataSources;
+    
+    private final Collection<String> staleStorageUnitNames;
     
     private final Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap;
     
@@ -48,6 +53,6 @@ public final class SwitchingResource {
      * Close stale data sources.
      */
     public void closeStaleDataSources() {
-        staleStorageResource.getDataSources().values().stream().filter(Objects::nonNull).forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
+        staleDataSources.values().stream().filter(Objects::nonNull).forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
     }
 }
