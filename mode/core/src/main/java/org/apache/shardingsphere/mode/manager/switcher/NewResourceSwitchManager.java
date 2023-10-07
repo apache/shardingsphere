@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -63,7 +64,7 @@ public final class NewResourceSwitchManager {
                 newStorageNodes.put(each, DataSourcePoolCreator.create(dataSourcePoolPropsMap.get(each)));
             }
         }
-        return new StorageResource(newStorageNodes, storageUintNodeMap.keySet());
+        return new StorageResource(newStorageNodes, new LinkedHashSet<>(storageUintNodeMap.keySet()));
     }
     
     /**
@@ -88,7 +89,7 @@ public final class NewResourceSwitchManager {
         for (StorageNode each : storageUintNodeMap.values()) {
             storageNodes.put(each, DataSourcePoolCreator.create(dataSourcePoolPropsMap.get(each)));
         }
-        return new StorageResource(storageNodes, storageUintNodeMap.keySet());
+        return new StorageResource(storageNodes, new LinkedHashSet<>(storageUintNodeMap.keySet()));
     }
     
     private StorageResource getStaleStorageResource(final ResourceMetaData resourceMetaData, final Map<String, StorageNode> storageUintNodeMap) {
@@ -98,7 +99,7 @@ public final class NewResourceSwitchManager {
                 storageNodes.put(entry.getKey(), entry.getValue());
             }
         }
-        return new StorageResource(storageNodes, storageUintNodeMap.keySet());
+        return new StorageResource(storageNodes, new LinkedHashSet<>(storageUintNodeMap.keySet()));
     }
     
     /**
