@@ -36,8 +36,8 @@ class SwitchingResourceTest {
     void assertCloseStaleDataSources() {
         MockedDataSource staleDataSource = new MockedDataSource();
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
-        StorageResource newStorageResource = new StorageResource(Collections.singletonMap(new StorageNode("new_ds"), new MockedDataSource()), Collections.emptyMap());
-        StorageResource staleStorageResource = new StorageResource(Collections.singletonMap(new StorageNode("stale_ds"), staleDataSource), Collections.emptyMap());
+        StorageResource newStorageResource = new StorageResource(Collections.singletonMap(new StorageNode("new_ds"), new MockedDataSource()), Collections.emptyList());
+        StorageResource staleStorageResource = new StorageResource(Collections.singletonMap(new StorageNode("stale_ds"), staleDataSource), Collections.emptyList());
         new SwitchingResource(resourceMetaData, newStorageResource, staleStorageResource, Collections.emptyMap()).closeStaleDataSources();
         Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(staleDataSource::isClosed);
         assertTrue(staleDataSource.isClosed());
