@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeAggregator;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -52,16 +51,14 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
         Map<String, StorageNode> storageUnitNodeMap = dataSources.keySet().stream()
                 .collect(Collectors.toMap(each -> each, StorageNode::new, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<StorageNode, DataSource> storageNodeDataSources = StorageNodeAggregator.aggregateDataSources(dataSources);
-        Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = createDataSourcePoolPropertiesMap(dataSources);
-        storageUnits = getStorageUnits(storageUnitNodeMap, storageNodeDataSources, dataSourcePoolPropsMap);
+        storageUnits = getStorageUnits(storageUnitNodeMap, storageNodeDataSources, createDataSourcePoolPropertiesMap(dataSources));
         this.dataSources = storageNodeDataSources;
     }
     
-    public DataSourceProvidedDatabaseConfiguration(final StorageResource storageResource,
+    public DataSourceProvidedDatabaseConfiguration(final Map<StorageNode, DataSource> storageNodeDataSources,
                                                    final Collection<RuleConfiguration> ruleConfigs, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap) {
         this.ruleConfigurations = ruleConfigs;
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropsMap);
-        Map<StorageNode, DataSource> storageNodeDataSources = storageResource.getDataSources();
         storageUnits = getStorageUnits(storageUnitNodeMap, storageNodeDataSources, dataSourcePoolPropsMap);
         dataSources = storageNodeDataSources;
     }
