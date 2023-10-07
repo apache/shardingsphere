@@ -295,7 +295,7 @@ public final class ConfigurationContextManager {
     private Map<String, StorageUnit> getNewStorageUnits(final Map<String, StorageUnit> currentStorageUnits, final SwitchingResource resource) {
         Map<String, StorageUnit> result = new LinkedHashMap<>(currentStorageUnits.size(), 1F);
         for (Entry<String, StorageUnit> entry : currentStorageUnits.entrySet()) {
-            if (!resource.getStaleStorageResource().getStorageUnitNodeMap().containsKey(entry.getKey())) {
+            if (!resource.getStaleStorageResource().getStorageUnitNames().contains(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());
             }
         }

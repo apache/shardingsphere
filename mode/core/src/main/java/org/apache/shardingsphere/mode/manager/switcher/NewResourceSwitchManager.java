@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -52,7 +53,7 @@ public final class NewResourceSwitchManager {
         Map<String, StorageNode> toBeCreatedStorageUintNodeMap = StorageUnitNodeMapCreator.create(storageUnitDataSourcePoolPropsMap);
         Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap = StorageNodeAggregator.aggregateDataSourcePoolProperties(storageUnitDataSourcePoolPropsMap);
         return new SwitchingResource(resourceMetaData, getRegisterNewStorageResource(resourceMetaData, toBeCreatedStorageUintNodeMap, dataSourcePoolPropsMap),
-                new StorageResource(Collections.emptyMap(), Collections.emptyMap()), mergedPropsMap);
+                new StorageResource(Collections.emptyMap(), Collections.emptyList()), mergedPropsMap);
     }
     
     private StorageResource getRegisterNewStorageResource(final ResourceMetaData resourceMetaData,
@@ -63,7 +64,7 @@ public final class NewResourceSwitchManager {
                 newStorageNodes.put(each, DataSourcePoolCreator.create(dataSourcePoolPropsMap.get(each)));
             }
         }
-        return new StorageResource(newStorageNodes, storageUintNodeMap);
+        return new StorageResource(newStorageNodes, new LinkedHashSet<>(storageUintNodeMap.keySet()));
     }
     
     /**
@@ -88,7 +89,7 @@ public final class NewResourceSwitchManager {
         for (StorageNode each : storageUintNodeMap.values()) {
             storageNodes.put(each, DataSourcePoolCreator.create(dataSourcePoolPropsMap.get(each)));
         }
-        return new StorageResource(storageNodes, storageUintNodeMap);
+        return new StorageResource(storageNodes, new LinkedHashSet<>(storageUintNodeMap.keySet()));
     }
     
     private StorageResource getStaleStorageResource(final ResourceMetaData resourceMetaData, final Map<String, StorageNode> storageUintNodeMap) {
@@ -98,7 +99,7 @@ public final class NewResourceSwitchManager {
                 storageNodes.put(entry.getKey(), entry.getValue());
             }
         }
-        return new StorageResource(storageNodes, storageUintNodeMap);
+        return new StorageResource(storageNodes, new LinkedHashSet<>(storageUintNodeMap.keySet()));
     }
     
     /**
@@ -113,7 +114,7 @@ public final class NewResourceSwitchManager {
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         mergedDataSourcePoolPropertiesMap.keySet().removeIf(each -> each.equals(storageUnitName));
         resourceMetaData.getStorageUnits().remove(storageUnitName);
-        return new SwitchingResource(resourceMetaData, new StorageResource(Collections.emptyMap(), Collections.emptyMap()),
+        return new SwitchingResource(resourceMetaData, new StorageResource(Collections.emptyMap(), Collections.emptyList()),
                 getToBeRemovedStaleStorageResource(resourceMetaData, storageUnitName), mergedDataSourcePoolPropertiesMap);
     }
     
@@ -128,6 +129,6 @@ public final class NewResourceSwitchManager {
         if (reservedStorageUintNodeMap.values().stream().noneMatch(each -> each.equals(storageNode))) {
             storageNodes.put(storageNode, resourceMetaData.getDataSources().get(storageNode));
         }
-        return new StorageResource(storageNodes, Collections.singletonMap(storageUnitName, storageNode));
+        return new StorageResource(storageNodes, Collections.singleton(storageUnitName));
     }
 }
