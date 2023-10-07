@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfigur
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapCreator;
@@ -46,7 +45,7 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
     
     private final Map<String, StorageUnit> storageUnits;
     
-    private final StorageResource storageResource;
+    private final Map<StorageNode, DataSource> dataSources;
     
     public DataSourceGeneratedDatabaseConfiguration(final Map<String, DataSourceConfiguration> dataSourceConfigs, final Collection<RuleConfiguration> ruleConfigs) {
         ruleConfigurations = ruleConfigs;
@@ -62,7 +61,7 @@ public final class DataSourceGeneratedDatabaseConfiguration implements DatabaseC
             StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), dataSource);
             storageUnits.put(storageUnitName, storageUnit);
         }
-        storageResource = new StorageResource(storageNodeDataSources, storageUnitNodeMap);
+        dataSources = storageNodeDataSources;
     }
     
     private Map<StorageNode, DataSource> getStorageNodeDataSourceMap(final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap, final Map<String, StorageNode> storageUnitNodeMap) {

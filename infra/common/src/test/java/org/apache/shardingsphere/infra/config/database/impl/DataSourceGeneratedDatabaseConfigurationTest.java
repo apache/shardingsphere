@@ -50,7 +50,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     @Test
     void assertGetStorageNodes() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        HikariDataSource hikariDataSource = (HikariDataSource) databaseConfig.getStorageResource().getDataSources().get(new StorageNode("normal_db"));
+        HikariDataSource hikariDataSource = (HikariDataSource) databaseConfig.getDataSources().get(new StorageNode("normal_db"));
         assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mock://127.0.0.1/normal_db"));
         assertThat(hikariDataSource.getUsername(), is("root"));
         assertThat(hikariDataSource.getPassword(), is(""));

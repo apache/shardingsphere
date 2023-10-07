@@ -114,7 +114,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     
     private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final DatabaseConfiguration databaseConfigs) {
         if (!databaseConfigs.getStorageUnits().isEmpty() && databaseConfigs.getStorageUnits().isEmpty()) {
-            return getDataSourcePoolPropertiesMap(databaseConfigs.getStorageResource().getDataSources());
+            return getDataSourcePoolPropertiesMap(databaseConfigs.getDataSources());
         }
         return databaseConfigs.getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
