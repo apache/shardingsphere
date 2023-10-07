@@ -126,7 +126,7 @@ class MergeStatementBinderTest {
         OracleSelectStatement oracleSelectStatement = new OracleSelectStatement();
         oracleSelectStatement.setProjections(projectionsSegment);
         oracleSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
-        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, oracleSelectStatement));
+        SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(new SubquerySegment(0, 0, oracleSelectStatement, ""));
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("b")));
         mergeStatement.setSource(subqueryTableSegment);
         UpdateStatement updateStatement = new OracleUpdateStatement();
