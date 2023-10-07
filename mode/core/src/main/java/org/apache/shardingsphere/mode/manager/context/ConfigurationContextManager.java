@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -357,26 +356,19 @@ public final class ConfigurationContextManager {
     
     private DatabaseConfiguration getDatabaseConfiguration(final ResourceMetaData resourceMetaData, final SwitchingResource switchingResource,
                                                            final Collection<RuleConfiguration> toBeCreatedRuleConfigs) {
-        StorageResource storageResource = getMergedStorageResource(resourceMetaData, switchingResource);
         Map<String, DataSourcePoolProperties> propsMap = null == switchingResource
                 ? resourceMetaData.getStorageUnits().entrySet().stream()
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new))
                 : switchingResource.getMergedDataSourcePoolPropertiesMap();
-        return new DataSourceProvidedDatabaseConfiguration(storageResource.getDataSources(), toBeCreatedRuleConfigs, propsMap);
+        return new DataSourceProvidedDatabaseConfiguration(getMergedStorageNodeDataSources(resourceMetaData, switchingResource), toBeCreatedRuleConfigs, propsMap);
     }
     
-    private StorageResource getMergedStorageResource(final ResourceMetaData currentResourceMetaData, final SwitchingResource switchingResource) {
-        Map<StorageNode, DataSource> storageNodeDataSources = currentResourceMetaData.getDataSources();
-        Map<String, StorageNode> storageUnitNodeMap = new LinkedHashMap<>(
-                currentResourceMetaData.getStorageUnits().entrySet().stream()
-                        .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageNode(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+    private Map<StorageNode, DataSource> getMergedStorageNodeDataSources(final ResourceMetaData currentResourceMetaData, final SwitchingResource switchingResource) {
+        Map<StorageNode, DataSource> result = currentResourceMetaData.getDataSources();
         if (null != switchingResource && null != switchingResource.getNewStorageResource() && !switchingResource.getNewStorageResource().getDataSources().isEmpty()) {
-            storageNodeDataSources.putAll(switchingResource.getNewStorageResource().getDataSources());
+            result.putAll(switchingResource.getNewStorageResource().getDataSources());
         }
-        if (null != switchingResource && null != switchingResource.getNewStorageResource() && !switchingResource.getNewStorageResource().getStorageUnitNodeMap().isEmpty()) {
-            storageUnitNodeMap.putAll(switchingResource.getNewStorageResource().getStorageUnitNodeMap());
-        }
-        return new StorageResource(storageNodeDataSources, storageUnitNodeMap);
+        return result;
     }
     
     private ShardingSphereDatabase createChangedDatabase(final String databaseName, final boolean internalLoadMetaData, final MetaDataBasedPersistService persistService,
