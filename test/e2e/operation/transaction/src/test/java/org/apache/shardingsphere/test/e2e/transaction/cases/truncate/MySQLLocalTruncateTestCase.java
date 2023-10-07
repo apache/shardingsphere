@@ -32,8 +32,8 @@ import java.sql.SQLException;
 @TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL, transactionTypes = TransactionType.LOCAL)
 public final class MySQLLocalTruncateTestCase extends BaseTransactionTestCase {
     
-    public MySQLLocalTruncateTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public MySQLLocalTruncateTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

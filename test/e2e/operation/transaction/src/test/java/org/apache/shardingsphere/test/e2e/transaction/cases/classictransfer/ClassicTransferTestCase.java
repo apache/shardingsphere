@@ -43,8 +43,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @TransactionTestCase
 public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     
-    public ClassicTransferTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public ClassicTransferTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

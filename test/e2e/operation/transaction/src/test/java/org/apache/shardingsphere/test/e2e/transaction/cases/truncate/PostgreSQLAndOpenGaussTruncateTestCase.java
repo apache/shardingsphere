@@ -31,8 +31,8 @@ import java.sql.SQLException;
 @TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL, TransactionTestConstants.OPENGAUSS})
 public final class PostgreSQLAndOpenGaussTruncateTestCase extends BaseTransactionTestCase {
     
-    public PostgreSQLAndOpenGaussTruncateTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public PostgreSQLAndOpenGaussTruncateTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

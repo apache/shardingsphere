@@ -34,8 +34,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @TransactionTestCase(adapters = TransactionTestConstants.PROXY, scenario = "addResource")
 public final class AddResourceTestCase extends BaseTransactionTestCase {
     
-    public AddResourceTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public AddResourceTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

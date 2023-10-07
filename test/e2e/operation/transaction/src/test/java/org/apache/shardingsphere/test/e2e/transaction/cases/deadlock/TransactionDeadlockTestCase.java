@@ -47,8 +47,8 @@ public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
     
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
     
-    public TransactionDeadlockTestCase(TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public TransactionDeadlockTestCase(TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

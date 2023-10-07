@@ -43,7 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Slf4j
 public abstract class BaseTransactionTestCase {
     
-    private final TransactionTestCaseParameter parameters;
+    private final TransactionTestCaseParameter testCaseParam;
     
     /**
      * Execute test cases.
@@ -143,14 +143,14 @@ public abstract class BaseTransactionTestCase {
     }
     
     protected DataSource getDataSource() {
-        return parameters.getDataSource();
+        return testCaseParam.getDataSource();
     }
     
     protected TransactionBaseE2EIT getBaseTransactionITCase() {
-        return parameters.getBaseTransactionITCase();
+        return testCaseParam.getBaseTransactionITCase();
     }
     
     protected TransactionType getTransactionType() {
-        return parameters.getTransactionType();
+        return testCaseParam.getTransactionType();
     }
 }

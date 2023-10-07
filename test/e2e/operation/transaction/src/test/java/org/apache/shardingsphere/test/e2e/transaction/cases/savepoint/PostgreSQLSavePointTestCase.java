@@ -37,8 +37,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 @TransactionTestCase(dbTypes = TransactionTestConstants.POSTGRESQL)
 public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
     
-    public PostgreSQLSavePointTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public PostgreSQLSavePointTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

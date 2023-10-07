@@ -34,8 +34,8 @@ public final class MultiTableCommitAndRollbackTestCase extends BaseTransactionTe
     
     private static final String T_ORDER_ITEM = "t_order_item";
     
-    public MultiTableCommitAndRollbackTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public MultiTableCommitAndRollbackTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

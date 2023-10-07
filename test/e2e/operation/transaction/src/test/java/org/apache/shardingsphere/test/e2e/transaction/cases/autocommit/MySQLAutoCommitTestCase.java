@@ -36,8 +36,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL)
 public final class MySQLAutoCommitTestCase extends AutoCommitTestCase {
     
-    public MySQLAutoCommitTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public MySQLAutoCommitTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

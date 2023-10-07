@@ -36,8 +36,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 @TransactionTestCase(dbTypes = TransactionTestConstants.OPENGAUSS)
 public final class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
     
-    public OpenGaussSavePointTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public OpenGaussSavePointTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

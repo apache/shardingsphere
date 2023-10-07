@@ -36,8 +36,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TransactionTestCase(dbTypes = TransactionTestConstants.POSTGRESQL)
 public final class PostgreSQLAutoCommitTestCase extends AutoCommitTestCase {
     
-    public PostgreSQLAutoCommitTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public PostgreSQLAutoCommitTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

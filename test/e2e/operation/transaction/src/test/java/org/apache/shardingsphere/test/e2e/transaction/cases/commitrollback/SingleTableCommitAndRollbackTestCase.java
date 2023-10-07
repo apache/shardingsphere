@@ -31,8 +31,8 @@ import java.sql.Statement;
 @TransactionTestCase
 public final class SingleTableCommitAndRollbackTestCase extends BaseTransactionTestCase {
     
-    public SingleTableCommitAndRollbackTestCase(TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public SingleTableCommitAndRollbackTestCase(TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

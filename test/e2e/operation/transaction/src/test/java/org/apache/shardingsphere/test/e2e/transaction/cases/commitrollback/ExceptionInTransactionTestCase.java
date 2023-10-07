@@ -37,8 +37,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 @Slf4j
 public final class ExceptionInTransactionTestCase extends BaseTransactionTestCase {
     
-    public ExceptionInTransactionTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public ExceptionInTransactionTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

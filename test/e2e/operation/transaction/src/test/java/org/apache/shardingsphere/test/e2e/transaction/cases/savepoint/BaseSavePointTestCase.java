@@ -28,8 +28,8 @@ import java.sql.Savepoint;
  */
 public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
     
-    protected BaseSavePointTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    protected BaseSavePointTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     void assertRollbackToSavepoint() throws SQLException {

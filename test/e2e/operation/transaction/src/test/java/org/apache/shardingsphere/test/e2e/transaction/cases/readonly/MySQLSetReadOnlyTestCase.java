@@ -36,8 +36,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 @Slf4j
 public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     
-    public MySQLSetReadOnlyTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public MySQLSetReadOnlyTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

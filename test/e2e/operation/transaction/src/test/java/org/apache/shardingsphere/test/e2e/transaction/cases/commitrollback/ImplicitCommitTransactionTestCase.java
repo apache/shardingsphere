@@ -36,8 +36,8 @@ public final class ImplicitCommitTransactionTestCase extends BaseTransactionTest
     
     private static final String T_ADDRESS = "t_address";
     
-    public ImplicitCommitTransactionTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public ImplicitCommitTransactionTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

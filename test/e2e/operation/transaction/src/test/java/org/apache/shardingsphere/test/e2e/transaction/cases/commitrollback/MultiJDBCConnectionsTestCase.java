@@ -33,8 +33,8 @@ import java.sql.SQLException;
 @TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL, transactionTypes = TransactionType.XA)
 public final class MultiJDBCConnectionsTestCase extends BaseTransactionTestCase {
     
-    public MultiJDBCConnectionsTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public MultiJDBCConnectionsTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

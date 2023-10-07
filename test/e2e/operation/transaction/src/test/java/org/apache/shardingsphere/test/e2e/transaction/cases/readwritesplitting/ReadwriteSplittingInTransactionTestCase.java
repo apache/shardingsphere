@@ -35,8 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL, scenario = "readwrite-splitting", adapters = TransactionTestConstants.PROXY)
 public final class ReadwriteSplittingInTransactionTestCase extends BaseTransactionTestCase {
     
-    public ReadwriteSplittingInTransactionTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public ReadwriteSplittingInTransactionTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

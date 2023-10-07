@@ -37,8 +37,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 @Slf4j
 public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     
-    public MySQLXATruncateTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public MySQLXATruncateTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

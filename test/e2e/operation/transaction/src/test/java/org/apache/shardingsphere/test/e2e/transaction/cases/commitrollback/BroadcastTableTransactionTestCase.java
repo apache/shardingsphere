@@ -33,8 +33,8 @@ public final class BroadcastTableTransactionTestCase extends BaseTransactionTest
     
     private static final String T_ADDRESS = "t_address";
     
-    public BroadcastTableTransactionTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public BroadcastTableTransactionTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

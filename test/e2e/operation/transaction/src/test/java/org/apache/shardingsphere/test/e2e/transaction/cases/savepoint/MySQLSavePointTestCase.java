@@ -33,8 +33,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL)
 public final class MySQLSavePointTestCase extends BaseSavePointTestCase {
     
-    public MySQLSavePointTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public MySQLSavePointTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

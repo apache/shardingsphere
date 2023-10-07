@@ -33,8 +33,8 @@ import java.sql.SQLException;
 @Slf4j
 public final class CloseResourceTestCase extends BaseTransactionTestCase {
     
-    public CloseResourceTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public CloseResourceTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

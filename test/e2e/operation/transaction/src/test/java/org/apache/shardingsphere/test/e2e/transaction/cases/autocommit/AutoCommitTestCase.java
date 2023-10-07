@@ -31,8 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public abstract class AutoCommitTestCase extends BaseTransactionTestCase {
     
-    protected AutoCommitTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    protected AutoCommitTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     protected void assertAutoCommitWithStatement() throws SQLException {

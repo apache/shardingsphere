@@ -32,8 +32,8 @@ import java.sql.SQLException;
 @Slf4j
 public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     
-    public PostgreSQLSetReadOnlyTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public PostgreSQLSetReadOnlyTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

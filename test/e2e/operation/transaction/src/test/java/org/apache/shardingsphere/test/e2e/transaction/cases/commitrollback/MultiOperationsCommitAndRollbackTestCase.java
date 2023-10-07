@@ -30,8 +30,8 @@ import java.sql.SQLException;
 @TransactionTestCase
 public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransactionTestCase {
     
-    public MultiOperationsCommitAndRollbackTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public MultiOperationsCommitAndRollbackTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

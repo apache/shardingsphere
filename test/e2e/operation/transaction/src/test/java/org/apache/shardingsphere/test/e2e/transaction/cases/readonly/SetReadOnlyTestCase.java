@@ -32,8 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public abstract class SetReadOnlyTestCase extends BaseTransactionTestCase {
     
-    protected SetReadOnlyTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    protected SetReadOnlyTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     void assertNotSetReadOnly() throws SQLException {

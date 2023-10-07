@@ -31,8 +31,8 @@ import java.sql.SQLException;
 @TransactionTestCase
 public final class MultiTransactionInConnectionTestCase extends BaseTransactionTestCase {
     
-    public MultiTransactionInConnectionTestCase(final TransactionTestCaseParameter parameters) {
-        super(parameters);
+    public MultiTransactionInConnectionTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override
