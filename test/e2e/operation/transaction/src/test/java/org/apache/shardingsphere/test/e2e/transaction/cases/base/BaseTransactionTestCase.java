@@ -149,7 +149,7 @@ public abstract class BaseTransactionTestCase {
     protected DataSource getDataSource() {
         return testCaseParam.getDataSource();
     }
-        
+    
     protected TransactionType getTransactionType() {
         return testCaseParam.getTransactionType();
     }
