@@ -169,7 +169,7 @@ it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 ```
 
 #### 远程 debug Docker 容器中的 Proxy 代码
-首先修改要测试模块的配置文件 it-env.properties，将 function.it.env.type 设置为 `docker`，然后设置对应的数据库镜像版本，例如 `transaction.it.docker.mysql.version=mysql:5.7`。
+首先修改要测试模块的配置文件 it-env.properties，将 function.it.env.type 设置为 `docker`；设置对应的数据库镜像版本，例如 `transaction.it.docker.mysql.version=mysql:5.7`。
 其次通过命令生成测试镜像，例如：
 
 ```bash
