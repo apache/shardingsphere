@@ -45,7 +45,7 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
     
     private final Map<String, StorageUnit> storageUnits;
     
-    private final StorageResource storageResource;
+    private final Map<StorageNode, DataSource> dataSources;
     
     public DataSourceProvidedDatabaseConfiguration(final Map<String, DataSource> dataSources, final Collection<RuleConfiguration> ruleConfigs) {
         this.ruleConfigurations = ruleConfigs;
@@ -60,12 +60,11 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
             StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), storageNodeDataSources.get(storageNode));
             storageUnits.put(storageUnitName, storageUnit);
         }
-        storageResource = new StorageResource(storageNodeDataSources, storageUnitNodeMap);
+        this.dataSources = storageNodeDataSources;
     }
     
     public DataSourceProvidedDatabaseConfiguration(final StorageResource storageResource,
                                                    final Collection<RuleConfiguration> ruleConfigs, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap) {
-        this.storageResource = storageResource;
         this.ruleConfigurations = ruleConfigs;
         Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropertiesMap);
         Map<StorageNode, DataSource> storageNodeDataSources = storageResource.getDataSources();
@@ -76,6 +75,7 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
             StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), storageNodeDataSources.get(storageNode));
             storageUnits.put(storageUnitName, storageUnit);
         }
+        dataSources = storageNodeDataSources;
     }
     
     private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final Map<String, DataSource> dataSources) {

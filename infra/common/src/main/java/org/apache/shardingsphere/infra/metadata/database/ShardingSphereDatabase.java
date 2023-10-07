@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
@@ -121,13 +121,13 @@ public final class ShardingSphereDatabase {
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                 final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
-        ResourceMetaData resourceMetaData = createResourceMetaData(databaseConfig.getStorageResource(), databaseConfig.getStorageUnits());
+        ResourceMetaData resourceMetaData = createResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
         RuleMetaData ruleMetaData = new RuleMetaData(rules);
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, ruleMetaData, schemas);
     }
     
-    private static ResourceMetaData createResourceMetaData(final StorageResource storageResource, final Map<String, StorageUnit> storageUnits) {
-        return new ResourceMetaData(storageResource.getDataSources(), storageUnits);
+    private static ResourceMetaData createResourceMetaData(final Map<StorageNode, DataSource> dataSources, final Map<String, StorageUnit> storageUnits) {
+        return new ResourceMetaData(dataSources, storageUnits);
     }
     
     /**
