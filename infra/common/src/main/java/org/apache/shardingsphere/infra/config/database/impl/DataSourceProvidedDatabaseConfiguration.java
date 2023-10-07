@@ -64,15 +64,15 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
     }
     
     public DataSourceProvidedDatabaseConfiguration(final StorageResource storageResource,
-                                                   final Collection<RuleConfiguration> ruleConfigs, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap) {
+                                                   final Collection<RuleConfiguration> ruleConfigs, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap) {
         this.ruleConfigurations = ruleConfigs;
-        Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropertiesMap);
+        Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropsMap);
         Map<StorageNode, DataSource> storageNodeDataSources = storageResource.getDataSources();
-        storageUnits = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
+        storageUnits = new LinkedHashMap<>(dataSourcePoolPropsMap.size(), 1F);
+        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropsMap.entrySet()) {
             String storageUnitName = entry.getKey();
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
-            StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), storageNodeDataSources.get(storageNode));
+            StorageUnit storageUnit = new StorageUnit(storageNode, entry.getValue(), storageNodeDataSources.get(storageNode));
             storageUnits.put(storageUnitName, storageUnit);
         }
         dataSources = storageNodeDataSources;
