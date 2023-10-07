@@ -1712,10 +1712,10 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "change-replication-source-to")
     private final List<ChangeReplicationSourceToStatementTestCase> changeReplicationSourceToStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-java")
     private final List<CreateJavaStatementTestCase> createJavaStatementTestCases = new LinkedList<>();
-
+    
     /**
      * Get all SQL parser test cases.
      *
