@@ -81,6 +81,7 @@ import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.exception.metadata.EmptyTrafficExecutionUnitException;
 import org.apache.shardingsphere.traffic.executor.TrafficExecutorCallback;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -310,6 +311,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private int executeUpdate0(final String sql, final ExecuteUpdateCallback updateCallback, final TrafficExecutorCallback<Integer> trafficCallback) throws SQLException {
         QueryContext queryContext = createQueryContext(sql);
+        handleAutoCommit(queryContext);
         databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
         trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
@@ -335,6 +337,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             // CHECKSTYLE:ON
             connection.rollback();
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
+        } finally {
+            connection.setAutoCommit(true);
         }
         return result;
     }
@@ -428,6 +432,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private boolean execute0(final String sql, final ExecuteCallback executeCallback, final TrafficExecutorCallback<Boolean> trafficCallback) throws SQLException {
         try {
             QueryContext queryContext = createQueryContext(sql);
+            handleAutoCommit(queryContext);
             databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
             connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
             trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
@@ -449,6 +454,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             return isNeedImplicitCommitTransaction(connection, executionContext) ? executeWithImplicitCommitTransaction(executeCallback) : useDriverToExecute(executeCallback);
         } finally {
             currentResultSet = null;
+        }
+    }
+    
+    private void handleAutoCommit(final QueryContext queryContext) throws SQLException {
+        if (AutoCommitUtils.needOpenTransaction(queryContext.getSqlStatementContext().getSqlStatement())) {
+            connection.handleAutoCommit();
         }
     }
     
@@ -527,6 +538,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             // CHECKSTYLE:ON
             connection.rollback();
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
+        } finally {
+            connection.setAutoCommit(true);
         }
         return result;
     }

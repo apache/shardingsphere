@@ -180,6 +180,9 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private boolean isNeedImplicitCommitTransaction(final Collection<ExecutionContext> executionContexts) {
+        if (!databaseConnectionManager.getConnectionSession().isAutoCommit()) {
+            return false;
+        }
         TransactionStatus transactionStatus = databaseConnectionManager.getConnectionSession().getTransactionStatus();
         if (!TransactionType.isDistributedTransaction(transactionStatus.getTransactionType()) || transactionStatus.isInTransaction()) {
             return false;
