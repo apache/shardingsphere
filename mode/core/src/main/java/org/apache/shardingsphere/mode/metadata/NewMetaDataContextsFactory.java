@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedD
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -118,9 +119,16 @@ public final class NewMetaDataContextsFactory {
     
     private static DatabaseConfiguration createEffectiveDatabaseConfiguration(final String databaseName,
                                                                               final Map<String, DatabaseConfiguration> databaseConfigs, final NewMetaDataPersistService persistService) {
-        Map<String, DataSourceConfiguration> effectiveDataSources = persistService.getEffectiveDataSources(databaseName, databaseConfigs);
+        closeGeneratedDataSources(databaseName, databaseConfigs);
+        Map<String, DataSourceConfiguration> dataSources = persistService.loadDataSourceConfigurations(databaseName);
         Collection<RuleConfiguration> databaseRuleConfigs = persistService.getDatabaseRulePersistService().load(databaseName);
-        return new DataSourceGeneratedDatabaseConfiguration(effectiveDataSources, databaseRuleConfigs);
+        return new DataSourceGeneratedDatabaseConfiguration(dataSources, databaseRuleConfigs);
+    }
+    
+    private static void closeGeneratedDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+        if (databaseConfigs.containsKey(databaseName) && !databaseConfigs.get(databaseName).getStorageUnits().isEmpty()) {
+            databaseConfigs.get(databaseName).getStorageResource().getDataSources().values().forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
+        }
     }
     
     private static void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final Map<String, StorageNodeDataSource> storageNodes, final boolean force) {

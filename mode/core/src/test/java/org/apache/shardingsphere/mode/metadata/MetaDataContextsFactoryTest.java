@@ -76,7 +76,7 @@ class MetaDataContextsFactoryTest {
     
     @BeforeEach
     void setUp() throws SQLException {
-        when(metaDataPersistService.getEffectiveDataSources(eq("foo_db"), anyMap())).thenReturn(Collections.emptyMap());
+        when(metaDataPersistService.loadDataSourceConfigurations(eq("foo_db"))).thenReturn(Collections.emptyMap());
         DatabaseRulePersistService databaseRulePersistService = mockDatabaseRulePersistService();
         when(metaDataPersistService.getDatabaseRulePersistService()).thenReturn(databaseRulePersistService);
         GlobalRulePersistService globalRulePersistService = mockGlobalRulePersistService();
