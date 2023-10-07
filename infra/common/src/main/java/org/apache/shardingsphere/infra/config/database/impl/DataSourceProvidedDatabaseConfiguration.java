@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeAggregator;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -52,34 +51,32 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
         Map<String, StorageNode> storageUnitNodeMap = dataSources.keySet().stream()
                 .collect(Collectors.toMap(each -> each, StorageNode::new, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<StorageNode, DataSource> storageNodeDataSources = StorageNodeAggregator.aggregateDataSources(dataSources);
-        Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap = createDataSourcePoolPropertiesMap(dataSources);
-        storageUnits = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
-            String storageUnitName = entry.getKey();
-            StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
-            StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), storageNodeDataSources.get(storageNode));
-            storageUnits.put(storageUnitName, storageUnit);
-        }
+        storageUnits = getStorageUnits(storageUnitNodeMap, storageNodeDataSources, createDataSourcePoolPropertiesMap(dataSources));
         this.dataSources = storageNodeDataSources;
     }
     
-    public DataSourceProvidedDatabaseConfiguration(final StorageResource storageResource,
-                                                   final Collection<RuleConfiguration> ruleConfigs, final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap) {
+    public DataSourceProvidedDatabaseConfiguration(final Map<StorageNode, DataSource> storageNodeDataSources,
+                                                   final Collection<RuleConfiguration> ruleConfigs, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap) {
         this.ruleConfigurations = ruleConfigs;
-        Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropertiesMap);
-        Map<StorageNode, DataSource> storageNodeDataSources = storageResource.getDataSources();
-        storageUnits = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
-            String storageUnitName = entry.getKey();
-            StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
-            StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), storageNodeDataSources.get(storageNode));
-            storageUnits.put(storageUnitName, storageUnit);
-        }
+        Map<String, StorageNode> storageUnitNodeMap = StorageUnitNodeMapCreator.create(dataSourcePoolPropsMap);
+        storageUnits = getStorageUnits(storageUnitNodeMap, storageNodeDataSources, dataSourcePoolPropsMap);
         dataSources = storageNodeDataSources;
     }
     
+    private Map<String, StorageUnit> getStorageUnits(final Map<String, StorageNode> storageUnitNodeMap,
+                                                     final Map<StorageNode, DataSource> storageNodeDataSources, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap) {
+        Map<String, StorageUnit> result = new LinkedHashMap<>(dataSourcePoolPropsMap.size(), 1F);
+        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropsMap.entrySet()) {
+            String storageUnitName = entry.getKey();
+            StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
+            StorageUnit storageUnit = new StorageUnit(storageNode, entry.getValue(), storageNodeDataSources.get(storageNode));
+            result.put(storageUnitName, storageUnit);
+        }
+        return result;
+    }
+    
     private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap(final Map<String, DataSource> dataSources) {
-        return dataSources.entrySet().stream().collect(Collectors
-                .toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return dataSources.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
 }
