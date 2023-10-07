@@ -121,5 +121,5 @@ public interface MetaDataBasedPersistService {
      * @param databaseConfigs database configurations
      * @return effective data sources
      */
-    Map<String, DataSourceConfiguration> getEffectiveDataSources(String databaseName, Map<String, ? extends DatabaseConfiguration> databaseConfigs);
+    Map<String, DataSourceConfiguration> loadDataSourceConfigurations(String databaseName, Map<String, ? extends DatabaseConfiguration> databaseConfigs);
 }

@@ -89,7 +89,7 @@ class MetaDataPersistServiceTest {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
         Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(), Collection.class));
         Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs));
-        Map<String, DataSourceConfiguration> resultEffectiveDataSources = metaDataPersistService.getEffectiveDataSources("foo_db", databaseConfigs);
+        Map<String, DataSourceConfiguration> resultEffectiveDataSources = metaDataPersistService.loadDataSourceConfigurations("foo_db", databaseConfigs);
         assertTrue(resultEffectiveDataSources.isEmpty());
     }
     

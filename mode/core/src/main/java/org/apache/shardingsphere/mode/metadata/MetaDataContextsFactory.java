@@ -116,7 +116,7 @@ public final class MetaDataContextsFactory {
     
     private static DatabaseConfiguration createEffectiveDatabaseConfiguration(final String databaseName,
                                                                               final Map<String, DatabaseConfiguration> databaseConfigs, final MetaDataPersistService persistService) {
-        Map<String, DataSourceConfiguration> effectiveDataSources = persistService.getEffectiveDataSources(databaseName, databaseConfigs);
+        Map<String, DataSourceConfiguration> effectiveDataSources = persistService.loadDataSourceConfigurations(databaseName, databaseConfigs);
         Collection<RuleConfiguration> databaseRuleConfigs = persistService.getDatabaseRulePersistService().load(databaseName);
         return new DataSourceGeneratedDatabaseConfiguration(effectiveDataSources, databaseRuleConfigs);
     }
