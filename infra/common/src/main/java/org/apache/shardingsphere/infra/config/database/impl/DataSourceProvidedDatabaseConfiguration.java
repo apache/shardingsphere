@@ -52,12 +52,12 @@ public final class DataSourceProvidedDatabaseConfiguration implements DatabaseCo
         Map<String, StorageNode> storageUnitNodeMap = dataSources.keySet().stream()
                 .collect(Collectors.toMap(each -> each, StorageNode::new, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<StorageNode, DataSource> storageNodeDataSources = StorageNodeAggregator.aggregateDataSources(dataSources);
-        Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap = createDataSourcePoolPropertiesMap(dataSources);
-        storageUnits = new LinkedHashMap<>(dataSourcePoolPropertiesMap.size(), 1F);
-        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropertiesMap.entrySet()) {
+        Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = createDataSourcePoolPropertiesMap(dataSources);
+        storageUnits = new LinkedHashMap<>(dataSourcePoolPropsMap.size(), 1F);
+        for (Entry<String, DataSourcePoolProperties> entry : dataSourcePoolPropsMap.entrySet()) {
             String storageUnitName = entry.getKey();
             StorageNode storageNode = storageUnitNodeMap.get(storageUnitName);
-            StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropertiesMap.get(storageUnitName), storageNodeDataSources.get(storageNode));
+            StorageUnit storageUnit = new StorageUnit(storageNode, dataSourcePoolPropsMap.get(storageUnitName), storageNodeDataSources.get(storageNode));
             storageUnits.put(storageUnitName, storageUnit);
         }
         this.dataSources = storageNodeDataSources;
