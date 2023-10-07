@@ -102,7 +102,7 @@ class InsertStatementBinderTest {
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
         subSelectStatement.setProjections(projections);
-        insertStatement.setInsertSelect(new SubquerySegment(0, 0, subSelectStatement));
+        insertStatement.setInsertSelect(new SubquerySegment(0, 0, subSelectStatement, ""));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
                 new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK"))));
         InsertStatement actual = new InsertStatementBinder().bind(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);
@@ -124,7 +124,7 @@ class InsertStatementBinderTest {
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
         subSelectStatement.setProjections(projections);
-        insertStatement.setInsertSelect(new SubquerySegment(0, 0, subSelectStatement));
+        insertStatement.setInsertSelect(new SubquerySegment(0, 0, subSelectStatement, ""));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
                 new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK"))));
         InsertStatement actual = new InsertStatementBinder().bind(insertStatement, createMetaData(), DefaultDatabase.LOGIC_NAME);

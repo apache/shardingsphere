@@ -68,7 +68,7 @@ class WhereExtractUtilsTest {
         WhereSegment where = new WhereSegment(35, 62, new BinaryOperationExpression(41, 62, left, right, "=", "order_id = oi.order_id"));
         subQuerySelectStatement.setWhere(where);
         ProjectionsSegment projections = new ProjectionsSegment(7, 79);
-        projections.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(7, 63, subQuerySelectStatement), "(SELECT status FROM t_order WHERE order_id = oi.order_id)"));
+        projections.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(7, 63, subQuerySelectStatement, ""), "(SELECT status FROM t_order WHERE order_id = oi.order_id)"));
         SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(projections);
         Collection<WhereSegment> subqueryWhereSegments = WhereExtractUtils.getSubqueryWhereSegments(selectStatement);
@@ -88,7 +88,7 @@ class WhereExtractUtilsTest {
         MySQLSelectStatement subQuerySelectStatement = new MySQLSelectStatement();
         subQuerySelectStatement.setFrom(joinTableSegment);
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(20, 84, subQuerySelectStatement)));
+        selectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(20, 84, subQuerySelectStatement, "")));
         Collection<WhereSegment> subqueryWhereSegments = WhereExtractUtils.getSubqueryWhereSegments(selectStatement);
         WhereSegment actual = subqueryWhereSegments.iterator().next();
         assertThat(actual.getExpr(), is(((JoinTableSegment) subQuerySelectStatement.getFrom()).getCondition()));
