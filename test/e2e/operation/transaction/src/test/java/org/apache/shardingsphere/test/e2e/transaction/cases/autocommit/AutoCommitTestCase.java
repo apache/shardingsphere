@@ -59,10 +59,10 @@ public abstract class AutoCommitTestCase extends BaseTransactionTestCase {
     
     protected void assertAutoCommitWithPrepareStatement() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
-            PreparedStatement prepareStatement = connection.prepareStatement("INSERT INTO account VALUES(?, ?, ?)");
             connection.setAutoCommit(false);
             executeWithLog(connection, "DELETE FROM account");
             assertFalse(connection.getAutoCommit());
+            PreparedStatement prepareStatement = connection.prepareStatement("INSERT INTO account VALUES(?, ?, ?)");
             setPrepareStatementParameters(prepareStatement, 1);
             prepareStatement.execute();
             connection.commit();

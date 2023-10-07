@@ -131,17 +131,6 @@ public abstract class BaseTransactionTestCase {
         assertThat(String.format("Balance is %s, should be %s.", actual, expected), actual, is(expected));
     }
     
-    @Getter
-    @RequiredArgsConstructor
-    public static final class TransactionTestCaseParameter {
-        
-        private final TransactionBaseE2EIT baseTransactionITCase;
-        
-        private final DataSource dataSource;
-        
-        private final TransactionType transactionType;
-    }
-    
     protected TransactionBaseE2EIT getBaseTransactionITCase() {
         return testCaseParam.getBaseTransactionITCase();
     }
@@ -152,5 +141,16 @@ public abstract class BaseTransactionTestCase {
     
     protected TransactionType getTransactionType() {
         return testCaseParam.getTransactionType();
+    }
+    
+    @Getter
+    @RequiredArgsConstructor
+    public static final class TransactionTestCaseParameter {
+        
+        private final TransactionBaseE2EIT baseTransactionITCase;
+        
+        private final DataSource dataSource;
+        
+        private final TransactionType transactionType;
     }
 }
