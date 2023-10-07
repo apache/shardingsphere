@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.manager.switcher;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNodeAggregator;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnitNodeMapCreator;
@@ -52,19 +51,18 @@ public final class NewResourceSwitchManager {
         mergedPropsMap.putAll(storageUnitDataSourcePoolPropsMap);
         Map<String, StorageNode> toBeCreatedStorageUintNodeMap = StorageUnitNodeMapCreator.create(storageUnitDataSourcePoolPropsMap);
         Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap = StorageNodeAggregator.aggregateDataSourcePoolProperties(storageUnitDataSourcePoolPropsMap);
-        return new SwitchingResource(resourceMetaData, getRegisterNewStorageResource(resourceMetaData, toBeCreatedStorageUintNodeMap, dataSourcePoolPropsMap),
-                new StorageResource(Collections.emptyMap(), Collections.emptyList()), mergedPropsMap);
+        return new SwitchingResource(getNewDataSources(resourceMetaData, toBeCreatedStorageUintNodeMap, dataSourcePoolPropsMap), Collections.emptyMap(), Collections.emptyList(), mergedPropsMap);
     }
     
-    private StorageResource getRegisterNewStorageResource(final ResourceMetaData resourceMetaData,
-                                                          final Map<String, StorageNode> storageUintNodeMap, final Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap) {
-        Map<StorageNode, DataSource> newStorageNodes = new LinkedHashMap<>(storageUintNodeMap.size(), 1F);
+    private Map<StorageNode, DataSource> getNewDataSources(final ResourceMetaData resourceMetaData,
+                                                           final Map<String, StorageNode> storageUintNodeMap, final Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap) {
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>(storageUintNodeMap.size(), 1F);
         for (StorageNode each : storageUintNodeMap.values()) {
             if (!resourceMetaData.getDataSources().containsKey(each)) {
-                newStorageNodes.put(each, DataSourcePoolCreator.create(dataSourcePoolPropsMap.get(each)));
+                result.put(each, DataSourcePoolCreator.create(dataSourcePoolPropsMap.get(each)));
             }
         }
-        return new StorageResource(newStorageNodes, new LinkedHashSet<>(storageUintNodeMap.keySet()));
+        return result;
     }
     
     /**
@@ -80,26 +78,26 @@ public final class NewResourceSwitchManager {
         mergedDataSourcePoolPropsMap.putAll(propsMap);
         Map<String, StorageNode> toBeAlteredStorageUintNodeMap = StorageUnitNodeMapCreator.create(mergedDataSourcePoolPropsMap);
         Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap = StorageNodeAggregator.aggregateDataSourcePoolProperties(mergedDataSourcePoolPropsMap);
-        return new SwitchingResource(resourceMetaData, getAlterNewStorageResource(toBeAlteredStorageUintNodeMap, dataSourcePoolPropsMap),
-                getStaleStorageResource(resourceMetaData, toBeAlteredStorageUintNodeMap), mergedDataSourcePoolPropsMap);
+        return new SwitchingResource(getAlterNewDataSources(toBeAlteredStorageUintNodeMap, dataSourcePoolPropsMap),
+                getStaleDataSources(resourceMetaData, toBeAlteredStorageUintNodeMap), new LinkedHashSet<>(toBeAlteredStorageUintNodeMap.keySet()), mergedDataSourcePoolPropsMap);
     }
     
-    private StorageResource getAlterNewStorageResource(final Map<String, StorageNode> storageUintNodeMap, final Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap) {
-        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(storageUintNodeMap.size(), 1F);
+    private Map<StorageNode, DataSource> getAlterNewDataSources(final Map<String, StorageNode> storageUintNodeMap, final Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap) {
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>(storageUintNodeMap.size(), 1F);
         for (StorageNode each : storageUintNodeMap.values()) {
-            storageNodes.put(each, DataSourcePoolCreator.create(dataSourcePoolPropsMap.get(each)));
+            result.put(each, DataSourcePoolCreator.create(dataSourcePoolPropsMap.get(each)));
         }
-        return new StorageResource(storageNodes, new LinkedHashSet<>(storageUintNodeMap.keySet()));
+        return result;
     }
     
-    private StorageResource getStaleStorageResource(final ResourceMetaData resourceMetaData, final Map<String, StorageNode> storageUintNodeMap) {
-        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(storageUintNodeMap.size(), 1F);
+    private Map<StorageNode, DataSource> getStaleDataSources(final ResourceMetaData resourceMetaData, final Map<String, StorageNode> storageUintNodeMap) {
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>(storageUintNodeMap.size(), 1F);
         for (Entry<StorageNode, DataSource> entry : resourceMetaData.getDataSources().entrySet()) {
             if (storageUintNodeMap.containsValue(entry.getKey())) {
-                storageNodes.put(entry.getKey(), entry.getValue());
+                result.put(entry.getKey(), entry.getValue());
             }
         }
-        return new StorageResource(storageNodes, new LinkedHashSet<>(storageUintNodeMap.keySet()));
+        return result;
     }
     
     /**
@@ -114,21 +112,21 @@ public final class NewResourceSwitchManager {
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         mergedDataSourcePoolPropertiesMap.keySet().removeIf(each -> each.equals(storageUnitName));
         resourceMetaData.getStorageUnits().remove(storageUnitName);
-        return new SwitchingResource(resourceMetaData, new StorageResource(Collections.emptyMap(), Collections.emptyList()),
-                getToBeRemovedStaleStorageResource(resourceMetaData, storageUnitName), mergedDataSourcePoolPropertiesMap);
+        return new SwitchingResource(
+                Collections.emptyMap(), getToBeRemovedStaleDataSource(resourceMetaData, storageUnitName), Collections.singleton(storageUnitName), mergedDataSourcePoolPropertiesMap);
     }
     
-    private StorageResource getToBeRemovedStaleStorageResource(final ResourceMetaData resourceMetaData, final String storageUnitName) {
+    private Map<StorageNode, DataSource> getToBeRemovedStaleDataSource(final ResourceMetaData resourceMetaData, final String storageUnitName) {
         Map<String, StorageNode> metaDataMap = new LinkedHashMap<>(
                 resourceMetaData.getStorageUnits().entrySet().stream()
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageNode(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         StorageNode storageNode = metaDataMap.remove(storageUnitName);
         Map<String, StorageNode> reservedStorageUintNodeMap = resourceMetaData.getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getStorageNode()));
-        Map<StorageNode, DataSource> storageNodes = new LinkedHashMap<>(1, 1F);
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>(1, 1F);
         if (reservedStorageUintNodeMap.values().stream().noneMatch(each -> each.equals(storageNode))) {
-            storageNodes.put(storageNode, resourceMetaData.getDataSources().get(storageNode));
+            result.put(storageNode, resourceMetaData.getDataSources().get(storageNode));
         }
-        return new StorageResource(storageNodes, Collections.singleton(storageUnitName));
+        return result;
     }
 }

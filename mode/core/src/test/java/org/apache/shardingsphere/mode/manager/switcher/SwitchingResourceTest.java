@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.switcher;
 
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.StorageResource;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.awaitility.Awaitility;
@@ -28,17 +26,14 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 class SwitchingResourceTest {
     
     @Test
     void assertCloseStaleDataSources() {
         MockedDataSource staleDataSource = new MockedDataSource();
-        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
-        StorageResource newStorageResource = new StorageResource(Collections.singletonMap(new StorageNode("new_ds"), new MockedDataSource()), Collections.emptyList());
-        StorageResource staleStorageResource = new StorageResource(Collections.singletonMap(new StorageNode("stale_ds"), staleDataSource), Collections.emptyList());
-        new SwitchingResource(resourceMetaData, newStorageResource, staleStorageResource, Collections.emptyMap()).closeStaleDataSources();
+        new SwitchingResource(Collections.singletonMap(new StorageNode("new_ds"), new MockedDataSource()),
+                Collections.singletonMap(new StorageNode("stale_ds"), staleDataSource), Collections.emptyList(), Collections.emptyMap()).closeStaleDataSources();
         Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(staleDataSource::isClosed);
         assertTrue(staleDataSource.isClosed());
     }
