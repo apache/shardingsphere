@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager.switcher;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 
 import javax.sql.DataSource;
@@ -36,9 +34,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Getter
 public final class SwitchingResource {
-    
-    @Getter(AccessLevel.NONE)
-    private final ResourceMetaData resourceMetaData;
     
     private final Map<StorageNode, DataSource> newDataSources;
     
