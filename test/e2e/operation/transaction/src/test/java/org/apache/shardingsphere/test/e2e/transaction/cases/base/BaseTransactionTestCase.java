@@ -133,7 +133,7 @@ public abstract class BaseTransactionTestCase {
     
     @Getter
     @RequiredArgsConstructor
-    public static class TransactionTestCaseParameter {
+    public static final class TransactionTestCaseParameter {
         
         private final TransactionBaseE2EIT baseTransactionITCase;
         
@@ -142,14 +142,14 @@ public abstract class BaseTransactionTestCase {
         private final TransactionType transactionType;
     }
     
-    protected DataSource getDataSource() {
-        return testCaseParam.getDataSource();
-    }
-    
     protected TransactionBaseE2EIT getBaseTransactionITCase() {
         return testCaseParam.getBaseTransactionITCase();
     }
     
+    protected DataSource getDataSource() {
+        return testCaseParam.getDataSource();
+    }
+        
     protected TransactionType getTransactionType() {
         return testCaseParam.getTransactionType();
     }
