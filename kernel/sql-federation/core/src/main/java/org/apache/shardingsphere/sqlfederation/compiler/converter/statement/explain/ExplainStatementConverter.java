@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.converter.statement.explain;
 
-import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlExplain;
-import org.apache.calcite.sql.SqlExplainLevel;
 import org.apache.calcite.sql.SqlExplainFormat;
+import org.apache.calcite.sql.SqlExplainLevel;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
@@ -34,6 +34,8 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.inse
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.select.SelectStatementConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.update.UpdateStatementConverter;
 
+import java.util.Optional;
+
 /**
  * Explain statement converter.
  */
@@ -46,19 +48,19 @@ public final class ExplainStatementConverter implements SQLStatementConverter<Ex
     }
     
     private SqlNode convertSQLStatement(final ExplainStatement explainStatement) {
-        return explainStatement.getStatement().map(this::convertSqlNode).orElseThrow(IllegalStateException::new);
+        return explainStatement.getStatement().flatMap(this::convertSqlNode).orElseThrow(IllegalStateException::new);
     }
     
-    private SqlNode convertSqlNode(final SQLStatement sqlStatement) {
+    private Optional<SqlNode> convertSqlNode(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementConverter().convert((SelectStatement) sqlStatement);
+            return Optional.of(new SelectStatementConverter().convert((SelectStatement) sqlStatement));
         } else if (sqlStatement instanceof DeleteStatement) {
-            return new DeleteStatementConverter().convert((DeleteStatement) sqlStatement);
+            return Optional.of(new DeleteStatementConverter().convert((DeleteStatement) sqlStatement));
         } else if (sqlStatement instanceof UpdateStatement) {
-            return new UpdateStatementConverter().convert((UpdateStatement) sqlStatement);
+            return Optional.of(new UpdateStatementConverter().convert((UpdateStatement) sqlStatement));
         } else if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementConverter().convert((InsertStatement) sqlStatement);
+            return Optional.of(new InsertStatementConverter().convert((InsertStatement) sqlStatement));
         }
-        return null;
+        return Optional.empty();
     }
 }

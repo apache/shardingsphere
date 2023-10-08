@@ -44,7 +44,7 @@ public final class WithConverter {
      * @param query SqlNode
      * @return SqlNodeList
      */
-    public Optional<SqlNodeList> convert(final WithSegment withSegment, final SqlNode query) {
+    public Optional<SqlNode> convert(final WithSegment withSegment, final SqlNode query) {
         SqlIdentifier name = new SqlIdentifier(withSegment.getCommonTableExpressions().iterator().next().getIdentifier().getValue(), SqlParserPos.ZERO);
         SqlNode selectSubquery = new SelectStatementConverter().convert(withSegment.getCommonTableExpressions().iterator().next().getSubquery().getSelect());
         ExpressionConverter converter = new ExpressionConverter();
