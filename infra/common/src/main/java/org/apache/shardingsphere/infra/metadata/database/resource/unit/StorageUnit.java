@@ -40,8 +40,6 @@ public final class StorageUnit {
     
     private final StorageNode storageNode;
     
-    private final String url;
-    
     private final DatabaseType storageType;
     
     private final String catalog;
@@ -55,7 +53,7 @@ public final class StorageUnit {
     public StorageUnit(final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProperties, final DataSource dataSource) {
         this.storageNode = storageNode;
         Map<String, Object> standardProps = dataSourcePoolProperties.getConnectionPropertySynonyms().getStandardProperties();
-        url = standardProps.get("url").toString();
+        String url = standardProps.get("url").toString();
         storageType = DatabaseTypeFactory.get(url);
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
         catalog = isInstanceConnectionAvailable ? new StandardJdbcUrlParser().parse(url).getDatabase() : null;
@@ -66,6 +64,6 @@ public final class StorageUnit {
     
     private ConnectionProperties createConnectionProperties(final Map<String, Object> standardProps) {
         ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
-        return parser.parse(url, standardProps.getOrDefault("username", "").toString(), catalog);
+        return parser.parse(standardProps.get("url").toString(), standardProps.getOrDefault("username", "").toString(), catalog);
     }
 }
