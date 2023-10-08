@@ -36,8 +36,10 @@ public final class ShowSQLFederationRuleExecutor implements MetaDataRequiredQuer
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowSQLFederationRuleStatement sqlStatement) {
         SQLFederationRuleConfiguration ruleConfig = metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).getConfiguration();
-        return Collections.singleton(new LocalDataQueryResultRow(String.valueOf(ruleConfig.isSqlFederationEnabled()),
-                null != ruleConfig.getExecutionPlanCache() ? ruleConfig.getExecutionPlanCache().toString() : ""));
+        String sqlFederationEnabled = String.valueOf(ruleConfig.isSqlFederationEnabled());
+        String executionPlanCache = null != ruleConfig.getExecutionPlanCache() ? ruleConfig.getExecutionPlanCache().toString() : "";
+        LocalDataQueryResultRow row = new LocalDataQueryResultRow(sqlFederationEnabled, executionPlanCache);
+        return Collections.singleton(row);
     }
     
     @Override
