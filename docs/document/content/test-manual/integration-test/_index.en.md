@@ -92,6 +92,8 @@ The assertion file format is as follows:
 </dataset>
 ```
 
+> e2e operation module is E2E test，does not contains the assertion for `</dataset>` tag
+
 ### Environment configuration
 
 `${SCENARIO-TYPE}` Refers to the scenario name used to identify a unique scenario during the test engine run.
@@ -167,6 +169,16 @@ If you only modify the test code, you can reuse the existing test mirror without
 ```
 
 #### Remote debug Proxy code in Docker container
+First of all, you need to modify the configuration file it-env.properties, set function.it.env.type to `docker`, and then set the corresponding database image version like `transaction.it.docker.mysql.version=mysql:5.7`.
+Then generate the test image through the command, for example:
+
+```bash
+# for operation, replace ${operation} with transaction、pipeline or showprocesslist
+./mvnw -B clean install -am -pl test/e2e/operation/${operation} -Pit.env.docker -DskipTests
+
+# for e2e sql
+./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
+```
 
 ##### Remote debug Proxy started by docker image
 E2E Test Proxy image opens the 3308 port by default for remote debugging of the instance in the container.

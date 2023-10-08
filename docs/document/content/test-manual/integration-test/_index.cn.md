@@ -90,6 +90,8 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
 </dataset>
 ```
 
+> e2e operation 为 E2E 测试，并不包含 <dataset> 这类断言
+
 ### 环境配置
 
 `${SCENARIO-TYPE}` 表示场景名称，在测试引擎运行中用于标识唯一场景。
@@ -167,6 +169,16 @@ it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 ```
 
 #### 远程 debug Docker 容器中的 Proxy 代码
+首先修改要测试模块的配置文件 it-env.properties，将 function.it.env.type 设置为 `docker`；设置对应的数据库镜像版本，例如 `transaction.it.docker.mysql.version=mysql:5.7`。
+其次通过命令生成测试镜像，例如：
+
+```bash
+# for operation, replace ${operation} with transaction、pipeline or showprocesslist
+./mvnw -B clean install -am -pl test/e2e/operation/${operation} -Pit.env.docker -DskipTests
+
+# for e2e sql
+./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
+```
 
 ##### 远程调试通过镜像启动的 Proxy
 E2E 测试的 Proxy 镜像默认开启了 3308 端口用于远程调试容器中的实例。  
