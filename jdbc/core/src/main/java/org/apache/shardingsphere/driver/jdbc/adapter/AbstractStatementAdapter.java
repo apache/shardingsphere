@@ -58,10 +58,10 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     private boolean closed;
     
     protected final boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final ExecutionContext executionContext) {
-        return isInDistributedTransaction(connection) && isModifiedSQL(executionContext) && executionContext.getExecutionUnits().size() > 1;
+        return connection.getAutoCommit() && isNotInDistributedTransaction(connection) && isModifiedSQL(executionContext) && executionContext.getExecutionUnits().size() > 1;
     }
     
-    private boolean isInDistributedTransaction(final ShardingSphereConnection connection) {
+    private boolean isNotInDistributedTransaction(final ShardingSphereConnection connection) {
         ConnectionTransaction connectionTransaction = connection.getDatabaseConnectionManager().getConnectionTransaction();
         boolean isInTransaction = connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction();
         return TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) && !isInTransaction;

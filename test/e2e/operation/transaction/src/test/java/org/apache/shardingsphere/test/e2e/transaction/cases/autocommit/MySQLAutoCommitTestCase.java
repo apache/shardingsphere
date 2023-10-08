@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.cases.autocommit;
 
-import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.awaitility.Awaitility;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
@@ -36,16 +33,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * MySQL auto commit transaction integration test.
  */
-@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL, transactionTypes = TransactionType.LOCAL)
-public final class MySQLAutoCommitTestCase extends BaseTransactionTestCase {
+@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL)
+public final class MySQLAutoCommitTestCase extends AutoCommitTestCase {
     
-    public MySQLAutoCommitTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
-        super(baseTransactionITCase, dataSource);
+    public MySQLAutoCommitTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
-        assertAutoCommit();
+        if (TransactionType.LOCAL == getTransactionType()) {
+            assertAutoCommit();
+        }
+        assertAutoCommitWithStatement();
+        assertAutoCommitWithPrepareStatement();
     }
     
     private void assertAutoCommit() throws SQLException {

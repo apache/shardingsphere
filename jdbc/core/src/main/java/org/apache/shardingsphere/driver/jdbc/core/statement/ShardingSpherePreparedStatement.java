@@ -87,6 +87,7 @@ import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorCon
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.exception.metadata.EmptyTrafficExecutionUnitException;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
@@ -267,6 +268,12 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return executor.getSqlFederationEngine().decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, globalRuleMetaData);
     }
     
+    private void handleAutoCommit(final QueryContext queryContext) throws SQLException {
+        if (AutoCommitUtils.needOpenTransaction(queryContext.getSqlStatementContext().getSqlStatement())) {
+            connection.handleAutoCommit();
+        }
+    }
+    
     private JDBCExecutionUnit createTrafficExecutionUnit(final String trafficInstanceId, final QueryContext queryContext) throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
         ExecutionUnit executionUnit = new ExecutionUnit(trafficInstanceId, new SQLUnit(queryContext.getSql(), queryContext.getParameters()));
@@ -338,6 +345,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             QueryContext queryContext = createQueryContext();
+            handleAutoCommit(queryContext);
             trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
@@ -400,6 +408,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             QueryContext queryContext = createQueryContext();
+            handleAutoCommit(queryContext);
             trafficInstanceId = getInstanceIdAndSet(queryContext).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, queryContext);
@@ -454,6 +463,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             // CHECKSTYLE:ON
             connection.rollback();
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
+        } finally {
+            connection.setAutoCommit(true);
         }
         return result;
     }
@@ -469,6 +480,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             // CHECKSTYLE:ON
             connection.rollback();
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
+        } finally {
+            connection.setAutoCommit(true);
         }
         return result;
     }
