@@ -16,12 +16,34 @@
   -->
 <integration-test-cases>
     <test-case sql="SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM" db-types="MySQL, PostgreSQL">
-        <assertion expected-data-file="drop_single_table_rules.xml">
-            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));
-            CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')))));
-            SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0;" />
-            <assertion-sql sql="SHOW SINGLE TABLES;" />
-            <destroy-sql sql="DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;" />
+        <assertion expected-data-file="drop_single_table_rules/create_sharding_table_rule_t_order.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));"/>
+            <assertion-sql sql="SHOW SHARDING TABLE RULE t_order;"/>
+        </assertion>
+
+        <assertion expected-data-file="drop_single_table_rules/create_sharding_table_rule_t_order_item.xml">
+            <initial-sql
+                    sql="CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')))));"/>
+            <assertion-sql sql="SHOW SHARDING TABLE RULE t_order_item;"/>
+        </assertion>
+
+        <assertion expected-data-file="drop_single_table_rules/set_default_single_table_storage_unit.xml">
+            <initial-sql sql="SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0;"/>
+            <assertion-sql sql="SHOW DEFAULT SINGLE TABLE STORAGE UNIT;"/>
+        </assertion>
+
+        <assertion expected-data-file="drop_single_table_rules/drop_single_table_rules.xml">
+            <assertion-sql sql="SHOW SINGLE TABLES;"/>
+        </assertion>
+
+        <assertion expected-data-file="drop_single_table_rules/drop_sharding_table_rule_t_order.xml">
+            <destroy-sql sql="DROP SHARDING TABLE RULE t_order;"/>
+            <assertion-sql sql="SHOW SHARDING TABLE RULE t_order;"/>
+        </assertion>
+
+        <assertion expected-data-file="drop_single_table_rules/drop_sharding_table_rule_t_order_item.xml">
+            <destroy-sql sql="DROP SHARDING TABLE RULE t_order_item;"/>
+            <assertion-sql sql="SHOW SHARDING TABLE RULE t_order_item;"/>
         </assertion>
     </test-case>
 </integration-test-cases>

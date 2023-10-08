@@ -94,30 +94,39 @@ public final class E2ETestParameterGenerator {
     private Collection<AssertionTestParameter> getAssertionTestParameter(final IntegrationTestCaseContext testCaseContext,
                                                                          final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
-        for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
-            result.addAll(getAssertionTestParameter(testCaseContext, databaseType, sqlExecuteType, each, sqlCommandType));
+        
+        if ("RDL".equals(sqlCommandType.name())) {
+            IntegrationTestCaseAssertion eachAssertions = testCaseContext.getTestCase().getAssertions().iterator().next();
+            result.addAll(getAssertionTestParameter(testCaseContext, databaseType, sqlExecuteType, eachAssertions, testCaseContext.getTestCase().getAssertions(), sqlCommandType));
+        } else {
+            for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
+                result.addAll(getAssertionTestParameter(testCaseContext, databaseType, sqlExecuteType, each, testCaseContext.getTestCase().getAssertions(), sqlCommandType));
+            }
         }
         return result;
     }
     
     private Collection<AssertionTestParameter> getAssertionTestParameter(final IntegrationTestCaseContext testCaseContext,
                                                                          final DatabaseType databaseType, final SQLExecuteType sqlExecuteType,
-                                                                         final IntegrationTestCaseAssertion assertion, final SQLCommandType sqlCommandType) {
+                                                                         final IntegrationTestCaseAssertion assertion,
+                                                                         final Collection<IntegrationTestCaseAssertion> assertions,
+                                                                         final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
         for (String each : getEnvAdapters(testCaseContext.getTestCase().getAdapters())) {
             if (sqlCommandType.getRunningAdaptors().contains(each) && envAdapters.contains(each)) {
-                result.addAll(getAssertionTestParameter(testCaseContext, assertion, each, databaseType, sqlExecuteType, sqlCommandType));
+                result.addAll(getAssertionTestParameter(testCaseContext, assertion, assertions, each, databaseType, sqlExecuteType, sqlCommandType));
             }
         }
         return result;
     }
     
     private Collection<AssertionTestParameter> getAssertionTestParameter(final IntegrationTestCaseContext testCaseContext, final IntegrationTestCaseAssertion assertion,
+                                                                         final Collection<IntegrationTestCaseAssertion> assertions,
                                                                          final String adapter, final DatabaseType databaseType,
                                                                          final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> filterScenarios(each, scenarios, sqlCommandType.getSqlStatementClass()))
-                .map(each -> new AssertionTestParameter(testCaseContext, assertion, adapter, each, envMode, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
+                .map(each -> new AssertionTestParameter(testCaseContext, assertion, assertions, adapter, each, envMode, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
     }
     
     private Collection<String> getEnvAdapters(final String envAdapters) {
