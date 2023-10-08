@@ -102,18 +102,18 @@ public final class RuleMetaData {
      *
      * @return in used storage units name and used rule classes map
      */
-    public Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitAndRulesMap() {
+    public Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitNameAndRulesMap() {
         Map<String, Collection<Class<? extends ShardingSphereRule>>> result = new LinkedHashMap<>();
         for (DataSourceContainedRule each : findRules(DataSourceContainedRule.class)) {
-            result.putAll(getInUsedStorageUnitAndRulesMap(each, getInUsedStorageUnitNames(each)));
+            result.putAll(getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames(each)));
         }
         for (DataNodeContainedRule each : findRules(DataNodeContainedRule.class)) {
-            result.putAll(getInUsedStorageUnitAndRulesMap(each, getInUsedStorageUnitNames(each)));
+            result.putAll(getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames(each)));
         }
         return result;
     }
     
-    private Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitAndRulesMap(final ShardingSphereRule rule, final Collection<String> inUsedStorageUnitNames) {
+    private Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitNameAndRulesMap(final ShardingSphereRule rule, final Collection<String> inUsedStorageUnitNames) {
         Map<String, Collection<Class<? extends ShardingSphereRule>>> result = new LinkedHashMap<>();
         for (String each : inUsedStorageUnitNames) {
             if (!result.containsKey(each)) {
