@@ -47,14 +47,12 @@ public final class EncryptTable {
     
     private final Map<String, EncryptColumn> columns;
     
-    @SuppressWarnings("rawtypes")
     public EncryptTable(final EncryptTableRuleConfiguration config, final Map<String, StandardEncryptAlgorithm> standardEncryptors,
                         final Map<String, AssistedEncryptAlgorithm> assistedEncryptors, final Map<String, LikeEncryptAlgorithm> likeEncryptors) {
         table = config.getName();
         columns = createEncryptColumns(config, standardEncryptors, assistedEncryptors, likeEncryptors);
     }
     
-    @SuppressWarnings("rawtypes")
     private Map<String, EncryptColumn> createEncryptColumns(final EncryptTableRuleConfiguration config, final Map<String, StandardEncryptAlgorithm> standardEncryptors,
                                                             final Map<String, AssistedEncryptAlgorithm> assistedEncryptors, final Map<String, LikeEncryptAlgorithm> likeEncryptors) {
         Map<String, EncryptColumn> result = new CaseInsensitiveMap<>();
