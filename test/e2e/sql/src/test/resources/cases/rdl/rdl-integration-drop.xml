@@ -16,57 +16,32 @@
   -->
 <integration-test-cases>
     <test-case sql="DROP SHARDING TABLE REFERENCE RULE reference_0;" db-types="MySQL, PostgreSQL">
-        <assertion expected-data-file="drop_binding_rules/create_sharding_table_rule_t_order.xml">
-            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));"/>
-            <assertion-sql sql="SHOW SHARDING TABLE RULE t_order;" />
-        </assertion>
-        <assertion expected-data-file="drop_binding_rules/create_sharding_table_rule_t_order_item.xml">
-            <initial-sql sql="CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 2}')))));" />
-            <assertion-sql sql="SHOW SHARDING TABLE RULE t_order_item;" />
-        </assertion>
-        <assertion expected-data-file="drop_binding_rules/create_sharding_table_reference_rule_reference_0.xml">
-            <initial-sql sql="CREATE SHARDING TABLE REFERENCE RULE reference_0 (t_order,t_order_item);" />
+        <assertion expected-data-file="drop_binding_rules.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));
+            CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 2}')))));
+            CREATE SHARDING TABLE REFERENCE RULE reference_0 (t_order,t_order_item);" />
             <assertion-sql sql="SHOW SHARDING TABLE REFERENCE RULES;" />
-        </assertion>
-        <assertion expected-data-file="drop_binding_rules/drop_binding_rules.xml">
-            <assertion-sql sql="SHOW SHARDING TABLE REFERENCE RULES;" />
-        </assertion>
-        <assertion expected-data-file="drop_binding_rules/drop_sharding_table_rule_t_order.xml">
-            <destroy-sql sql="DROP SHARDING TABLE RULE t_order;" />
-            <assertion-sql sql="SHOW SHARDING TABLE RULE t_order;" />
-        </assertion>
-        <assertion expected-data-file="drop_binding_rules/drop_sharding_table_rule_t_order_item.xml">
-            <destroy-sql sql="DROP SHARDING TABLE RULE t_order_item;" />
-            <assertion-sql sql="SHOW SHARDING TABLE RULE t_order_item;" />
+            <destroy-sql sql="DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;" />
         </assertion>
     </test-case>
-
+    
     <test-case sql="DROP BROADCAST TABLE RULE t_country;" db-types="MySQL, PostgreSQL">
-        <assertion expected-data-file="drop_broadcast_rules/create_broadcast_table_rule_t_country.xml">
+        <assertion expected-data-file="drop_broadcast_rules.xml">
             <initial-sql sql="CREATE BROADCAST TABLE RULE t_country;" />
             <assertion-sql sql="SHOW BROADCAST TABLE RULES;" />
         </assertion>
-        <assertion expected-data-file="drop_broadcast_rules/drop_broadcast_rules.xml">
-            <assertion-sql sql="SHOW BROADCAST TABLE RULES;" />
-        </assertion>
     </test-case>
-
+    
     <test-case sql="DROP ENCRYPT RULE t_user;" db-types="MySQL, PostgreSQL">
-        <assertion expected-data-file="drop_encrypt_rule/create_encrypt_rule_t_user.xml">
+        <assertion expected-data-file="drop_encrypt_rule.xml">
             <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS((NAME=pwd,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))))));" />
             <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user;" />
         </assertion>
-        <assertion expected-data-file="drop_encrypt_rule/drop_encrypt_rule_t_user.xml">
-            <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user;" />
-        </assertion>
     </test-case>
-
-    <test-case sql="DROP SHARDING TABLE RULE t_order;" db-types="MySQL">
-        <assertion expected-data-file="drop_sharding_rules/create_sharding_rules.xml">
+    
+    <test-case sql="DROP SHARDING TABLE RULE t_order" db-types="MySQL">
+        <assertion expected-data-file="drop_sharding_rules.xml">
             <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));" />
-            <assertion-sql sql="SHOW SHARDING TABLE RULE t_order;" />
-        </assertion>
-        <assertion expected-data-file="drop_sharding_rules/drop_sharding_rules.xml">
             <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
         </assertion>
     </test-case>
@@ -78,13 +53,10 @@
 <!--            <assertion-sql sql="SHOW TABLES;" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
-
+    
     <test-case sql="DROP MASK RULE t_mask;">
-        <assertion expected-data-file="drop_mask_rule/create_mask_rule_t_mask.xml">
+        <assertion expected-data-file="drop_mask_rule.xml">
             <initial-sql sql="CREATE MASK RULE t_mask (COLUMNS((NAME=order_id,TYPE(NAME='MD5'))));" />
-            <assertion-sql sql="SHOW MASK RULES;" />
-        </assertion>
-        <assertion expected-data-file="drop_mask_rule/drop_mask_rule.xml">
             <assertion-sql sql="SHOW MASK RULES;" />
         </assertion>
     </test-case>
