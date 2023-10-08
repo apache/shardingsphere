@@ -98,12 +98,6 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
     
-    protected void processFailed(final String jobId, final int shardingItem, final Exception ex) {
-        log.error("job prepare failed, {}-{}", jobId, shardingItem, ex);
-        jobAPI.updateJobItemErrorMessage(jobId, shardingItem, ex);
-        jobAPI.stop(jobId);
-    }
-    
     @Override
     public Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {
         return Optional.ofNullable(tasksRunnerMap.get(shardingItem));

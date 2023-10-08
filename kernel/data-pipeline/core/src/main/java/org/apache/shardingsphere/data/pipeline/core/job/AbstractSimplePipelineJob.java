@@ -75,4 +75,10 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
         log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
         tasksRunner.start();
     }
+    
+    private void processFailed(final String jobId, final int shardingItem, final Exception ex) {
+        log.error("job prepare failed, {}-{}", jobId, shardingItem, ex);
+        getJobAPI().updateJobItemErrorMessage(jobId, shardingItem, ex);
+        getJobAPI().stop(jobId);
+    }
 }
