@@ -30,8 +30,8 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.proxy.backend.util.StorageUnitUtils;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -96,7 +96,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         Optional<Integer> usageCount = sqlStatement.getUsageCount();
         if (usageCount.isPresent()) {
-            Map<String, Collection<String>> inUsedStorageUnits = StorageUnitUtils.getInUsedStorageUnits(database.getRuleMetaData());
+            Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnits = database.getRuleMetaData().getInUsedStorageUnitAndRulesMap();
             for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnits().entrySet()) {
                 Integer currentUsageCount = inUsedStorageUnits.containsKey(entry.getKey()) ? inUsedStorageUnits.get(entry.getKey()).size() : 0;
                 if (usageCount.get().equals(currentUsageCount)) {
