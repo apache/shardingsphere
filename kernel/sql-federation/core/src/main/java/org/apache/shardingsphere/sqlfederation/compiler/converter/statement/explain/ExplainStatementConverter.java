@@ -25,10 +25,12 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.SQLStatementConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.delete.DeleteStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.insert.InsertStatementConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.select.SelectStatementConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.update.UpdateStatementConverter;
 
@@ -54,8 +56,9 @@ public final class ExplainStatementConverter implements SQLStatementConverter<Ex
             return new DeleteStatementConverter().convert((DeleteStatement) sqlStatement);
         } else if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementConverter().convert((UpdateStatement) sqlStatement);
+        } else if (sqlStatement instanceof InsertStatement) {
+            return new InsertStatementConverter().convert((InsertStatement) sqlStatement);
         }
-        // TODO other statement converter.
         return null;
     }
 }

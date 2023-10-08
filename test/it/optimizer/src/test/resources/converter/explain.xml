@@ -59,4 +59,7 @@
     <test-cases sql-case-id="explain_for_update" expected-sql="EXPLAIN PLAN INCLUDING ALL ATTRIBUTES WITH TYPE FOR UPDATE &quot;t_order&quot; SET &quot;id&quot; = 1" db-types="Oracle" />
     <test-cases sql-case-id="explain_for_update_with_statement" expected-sql="EXPLAIN PLAN INCLUDING ALL ATTRIBUTES WITH TYPE FOR UPDATE &quot;t_order&quot; SET &quot;id&quot; = 1" db-types="Oracle" />
     <test-cases sql-case-id="explain_for_update_with_into" expected-sql="EXPLAIN PLAN INCLUDING ALL ATTRIBUTES WITH TYPE FOR UPDATE &quot;t_order&quot; SET &quot;id&quot; = 1" db-types="Oracle" />
+    <test-cases sql-case-id="explain_insert_without_parameters" expected-sql="EXPLAIN PLAN INCLUDING ALL ATTRIBUTES WITH TYPE FOR INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert')" db-types="MySQL" />
+    <test-cases sql-case-id="explain_insert_without_parameters" expected-sql="EXPLAIN PLAN INCLUDING ALL ATTRIBUTES WITH TYPE FOR INSERT INTO &quot;t_order&quot; (&quot;order_id&quot;, &quot;user_id&quot;, &quot;status&quot;) VALUES (1, 1, 'insert')" db-types="PostgreSQL,openGauss,Oracle" />
+    <test-cases sql-case-id="explain_for_with_analyze_insert" expected-sql="EXPLAIN PLAN INCLUDING ALL ATTRIBUTES WITH TYPE FOR INSERT INTO &quot;t_order&quot; (&quot;order_id&quot;) VALUES (1)" db-types="Oracle" />
 </sql-node-converter-test-cases>
