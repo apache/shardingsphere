@@ -817,54 +817,69 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     private ASTNode createProjectionForExpressionSegment(final ASTNode projection, final AliasSegment alias) {
         // FIXME :For DISTINCT()
         if (projection instanceof ColumnSegment) {
-            ColumnProjectionSegment result = new ColumnProjectionSegment((ColumnSegment) projection);
-            result.setAlias(alias);
-            return result;
+            return createColumnProjectionSegment((ColumnSegment) projection, alias);
         }
         if (projection instanceof BinaryOperationExpression) {
-            BinaryOperationExpression binaryExpression = (BinaryOperationExpression) projection;
-            int startIndex = binaryExpression.getStartIndex();
-            int stopIndex = null == alias ? binaryExpression.getStopIndex() : alias.getStopIndex();
-            ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, binaryExpression.getText(), binaryExpression);
-            result.setAlias(alias);
-            return result;
+            return createExpressionProjectionSegment((BinaryOperationExpression) projection, alias);
         }
         if (projection instanceof MultisetExpression) {
-            MultisetExpression multisetExpression = (MultisetExpression) projection;
-            int startIndex = multisetExpression.getStartIndex();
-            int stopIndex = null == alias ? multisetExpression.getStopIndex() : alias.getStopIndex();
-            ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, multisetExpression.getText(), multisetExpression);
-            result.setAlias(alias);
-            return result;
+            return createExpressionProjectionSegment((MultisetExpression) projection, alias);
         }
         if (projection instanceof DatetimeExpression) {
-            DatetimeExpression datetimeExpression = (DatetimeExpression) projection;
-            return null == datetimeExpression.getRight()
-                    ? new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(), datetimeExpression.getLeft(), datetimeExpression.getText())
-                    : new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(),
-                            datetimeExpression.getLeft(), datetimeExpression.getRight(), datetimeExpression.getText());
+            return createDatetimeProjectionSegment((DatetimeExpression) projection);
         }
         if (projection instanceof IntervalExpressionProjection) {
-            IntervalExpressionProjection intervalExpressionProjection = (IntervalExpressionProjection) projection;
-            IntervalExpressionProjection result = new IntervalExpressionProjection(intervalExpressionProjection.getStartIndex(), intervalExpressionProjection.getStopIndex(),
-                    intervalExpressionProjection.getLeft(), intervalExpressionProjection.getMinus(), intervalExpressionProjection.getRight(), intervalExpressionProjection.getText());
-            if (null != intervalExpressionProjection.getDayToSecondExpression()) {
-                result.setDayToSecondExpression(intervalExpressionProjection.getDayToSecondExpression());
-            } else {
-                result.setYearToMonthExpression(intervalExpressionProjection.getYearToMonthExpression());
-            }
-            return result;
+            return createIntervalExpressionProjection((IntervalExpressionProjection) projection);
         }
-        if (projection instanceof CaseWhenExpression || projection instanceof VariableSegment || projection instanceof BetweenExpression || projection instanceof InExpression
-                || projection instanceof CollateExpression) {
-            return createExpressionProjectionSegment(alias, (ExpressionSegment) projection);
+        if (projection instanceof CaseWhenExpression || projection instanceof VariableSegment
+                || projection instanceof BetweenExpression || projection instanceof InExpression || projection instanceof CollateExpression) {
+            return createExpressionProjectionSegment((ExpressionSegment) projection, alias);
         }
         throw new UnsupportedOperationException("Unsupported Expression");
     }
     
-    private ExpressionProjectionSegment createExpressionProjectionSegment(final AliasSegment alias, final ExpressionSegment projection) {
+    private ColumnProjectionSegment createColumnProjectionSegment(final ColumnSegment projection, final AliasSegment alias) {
+        ColumnProjectionSegment result = new ColumnProjectionSegment(projection);
+        result.setAlias(alias);
+        return result;
+    }
+    
+    private ExpressionProjectionSegment createExpressionProjectionSegment(final BinaryOperationExpression projection, final AliasSegment alias) {
+        int startIndex = projection.getStartIndex();
+        int stopIndex = null == alias ? projection.getStopIndex() : alias.getStopIndex();
+        ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, projection.getText(), projection);
+        result.setAlias(alias);
+        return result;
+    }
+    
+    private ExpressionProjectionSegment createExpressionProjectionSegment(final MultisetExpression projection, final AliasSegment alias) {
+        int startIndex = projection.getStartIndex();
+        int stopIndex = null == alias ? projection.getStopIndex() : alias.getStopIndex();
+        ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, projection.getText(), projection);
+        result.setAlias(alias);
+        return result;
+    }
+    
+    private ExpressionProjectionSegment createExpressionProjectionSegment(final ExpressionSegment projection, final AliasSegment alias) {
         ExpressionProjectionSegment result = new ExpressionProjectionSegment(projection.getStartIndex(), projection.getStopIndex(), projection.getText(), projection);
         result.setAlias(alias);
+        return result;
+    }
+    
+    private DatetimeProjectionSegment createDatetimeProjectionSegment(final DatetimeExpression projection) {
+        return null == projection.getRight()
+                ? new DatetimeProjectionSegment(projection.getStartIndex(), projection.getStopIndex(), projection.getLeft(), projection.getText())
+                : new DatetimeProjectionSegment(projection.getStartIndex(), projection.getStopIndex(), projection.getLeft(), projection.getRight(), projection.getText());
+    }
+    
+    private IntervalExpressionProjection createIntervalExpressionProjection(final IntervalExpressionProjection projection) {
+        IntervalExpressionProjection result = new IntervalExpressionProjection(
+                projection.getStartIndex(), projection.getStopIndex(), projection.getLeft(), projection.getMinus(), projection.getRight(), projection.getText());
+        if (null != projection.getDayToSecondExpression()) {
+            result.setDayToSecondExpression(projection.getDayToSecondExpression());
+        } else {
+            result.setYearToMonthExpression(projection.getYearToMonthExpression());
+        }
         return result;
     }
     
