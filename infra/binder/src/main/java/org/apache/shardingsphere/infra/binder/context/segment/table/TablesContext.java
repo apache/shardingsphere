@@ -57,8 +57,7 @@ public final class TablesContext {
     private final Collection<SimpleTableSegment> simpleTableSegments = new LinkedList<>();
     
     /**
-     * -- GETTER --
-     *  Get table names.
+     * Get table names.
      *
      * @return table names
      */
