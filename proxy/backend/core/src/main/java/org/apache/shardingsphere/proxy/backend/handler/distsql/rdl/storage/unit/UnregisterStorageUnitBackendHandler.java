@@ -78,8 +78,7 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
     
     private void checkInUsed(final String databaseName, final UnregisterStorageUnitStatement sqlStatement) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
-        Map<String, Collection<String>> inUsedStorageUnits = StorageUnitUtils.getInUsedStorageUnits(
-                database.getRuleMetaData(), database.getResourceMetaData().getStorageUnits().size());
+        Map<String, Collection<String>> inUsedStorageUnits = StorageUnitUtils.getInUsedStorageUnits(database.getRuleMetaData(), database.getResourceMetaData().getStorageUnits().size());
         Collection<String> inUsedStorageUnitNames = inUsedStorageUnits.keySet();
         inUsedStorageUnitNames.retainAll(sqlStatement.getStorageUnitNames());
         if (!inUsedStorageUnitNames.isEmpty()) {
