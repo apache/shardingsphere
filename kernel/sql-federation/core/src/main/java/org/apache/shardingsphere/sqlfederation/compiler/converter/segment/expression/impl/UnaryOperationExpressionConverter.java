@@ -23,6 +23,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.function.dialect.mysql.SQLExtensionOperatorTable;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
@@ -32,14 +33,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 
 /**
  * Unary operation expression converter.
  */
 public final class UnaryOperationExpressionConverter implements SQLSegmentConverter<UnaryOperationExpression, SqlNode> {
     
-    private static final Map<String, SqlOperator> REGISTRY = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private static final Map<String, SqlOperator> REGISTRY = new CaseInsensitiveMap<>();
     
     static {
         register();

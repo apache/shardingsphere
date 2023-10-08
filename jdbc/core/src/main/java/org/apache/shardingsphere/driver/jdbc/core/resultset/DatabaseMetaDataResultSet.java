@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import lombok.EqualsAndHashCode;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.apache.shardingsphere.driver.jdbc.exception.connection.ResultSetClosedException;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.ColumnIndexOutOfRangeException;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.ColumnLabelNotFoundException;
-import org.apache.shardingsphere.driver.jdbc.exception.connection.ResultSetClosedException;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedDatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -43,7 +44,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 
 /**
  * Database meta data result set.
@@ -83,7 +83,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     }
     
     private Map<String, Integer> initIndexMap() throws SQLException {
-        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, Integer> result = new CaseInsensitiveMap<>();
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
             result.put(resultSetMetaData.getColumnLabel(i), i);
         }
