@@ -42,12 +42,10 @@ public final class StorageUnitUtils {
      * Export configuration data to specified file.
      * 
      * @param ruleMetaData ShardingSphere rule meta data
-     * @param initialCapacity the initial capacity for map
      * @return in used storage units
      */
-    public static Map<String, Collection<String>> getInUsedStorageUnits(final RuleMetaData ruleMetaData, final int initialCapacity) {
-        Map<String, Collection<String>> result = new LinkedHashMap<>(initialCapacity, 1F);
-        result.putAll(getFromDataSourceContainedRules(ruleMetaData.findRules(DataSourceContainedRule.class)));
+    public static Map<String, Collection<String>> getInUsedStorageUnits(final RuleMetaData ruleMetaData) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>(getFromDataSourceContainedRules(ruleMetaData.findRules(DataSourceContainedRule.class)));
         result.putAll(getFromDataNodeContainedRules(ruleMetaData.findRules(DataNodeContainedRule.class)));
         return result;
     }
