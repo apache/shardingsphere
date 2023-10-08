@@ -1709,4 +1709,13 @@
     <alter-table sql-case-id="alter_table_move_compress_for_oltp">
         <table name="table_name" start-index="12" stop-index="21" />
     </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_encrypt_identified_by_password">
+        <table name="t1" start-index="12" stop-index="13" />
+        <modify-column>
+            <column-definition type="CLOB" start-index="24" stop-index="55">
+                <column name="a" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
 </sql-parser-test-cases>

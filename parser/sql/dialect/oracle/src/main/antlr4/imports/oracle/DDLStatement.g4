@@ -324,7 +324,7 @@ identityOption
     ;
 
 encryptionSpecification
-    : (USING STRING_)? (IDENTIFIED BY STRING_)? (integrityAlgorithm? (NO? SALT)? | (NO? SALT)? integrityAlgorithm?)
+    : (USING STRING_)? (IDENTIFIED BY (STRING_ | IDENTIFIER_))? (integrityAlgorithm? (NO? SALT)? | (NO? SALT)? integrityAlgorithm?)
     ;
 
 inlineConstraint
