@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.rule;
 
 import lombok.Getter;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
@@ -35,29 +36,26 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.TreeMap;
 
 /**
  * Encrypt table.
  */
+@Getter
 public final class EncryptTable {
     
-    @Getter
     private final String table;
     
     private final Map<String, EncryptColumn> columns;
     
-    @SuppressWarnings("rawtypes")
     public EncryptTable(final EncryptTableRuleConfiguration config, final Map<String, StandardEncryptAlgorithm> standardEncryptors,
                         final Map<String, AssistedEncryptAlgorithm> assistedEncryptors, final Map<String, LikeEncryptAlgorithm> likeEncryptors) {
         table = config.getName();
         columns = createEncryptColumns(config, standardEncryptors, assistedEncryptors, likeEncryptors);
     }
     
-    @SuppressWarnings("rawtypes")
     private Map<String, EncryptColumn> createEncryptColumns(final EncryptTableRuleConfiguration config, final Map<String, StandardEncryptAlgorithm> standardEncryptors,
                                                             final Map<String, AssistedEncryptAlgorithm> assistedEncryptors, final Map<String, LikeEncryptAlgorithm> likeEncryptors) {
-        Map<String, EncryptColumn> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, EncryptColumn> result = new CaseInsensitiveMap<>();
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
             result.put(each.getName(), createEncryptColumn(each, standardEncryptors, assistedEncryptors, likeEncryptors));
         }

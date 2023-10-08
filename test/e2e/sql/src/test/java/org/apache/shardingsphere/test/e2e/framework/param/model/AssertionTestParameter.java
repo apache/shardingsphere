@@ -25,11 +25,9 @@ import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
 
-import java.util.Collection;
 /**
  * Assertion test parameter.
  */
-
 @RequiredArgsConstructor
 @Getter
 public final class AssertionTestParameter implements E2ETestParameter {
@@ -37,8 +35,6 @@ public final class AssertionTestParameter implements E2ETestParameter {
     private final IntegrationTestCaseContext testCaseContext;
     
     private final IntegrationTestCaseAssertion assertion;
-    
-    private final Collection<IntegrationTestCaseAssertion> assertions;
     
     private final String adapter;
     
