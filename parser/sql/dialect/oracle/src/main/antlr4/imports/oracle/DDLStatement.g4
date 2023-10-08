@@ -4104,3 +4104,20 @@ createCluster
     (SINGLE TABLE)? HASHKEYS INTEGER_ (HASH IS functionName LP_ (argument (COMMA_ argument)*) RP_)?)?
     parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
     ;
+
+createJava
+    : CREATE (OR REPLACE)? (AND (RESOLVE | COMPILE))? NOFORCE? JAVA
+    ((SOURCE | RESOURCE) NAMED (schemaName DOT_)? primaryName
+    | CLASS (SCHEMA schemaName)?) invokerRightsClause? resolveClauses?
+    (usingClause | AS sourceText)
+    ;
+
+usingClause
+    : USING (fileType (LP_ directoryName COMMA_ serverFileName RP_ | subquery) | BQ_ keyForBlob BQ_)
+    ;
+
+fileType
+    : BFILE
+    | CLOB
+    | BLOB
+    ;

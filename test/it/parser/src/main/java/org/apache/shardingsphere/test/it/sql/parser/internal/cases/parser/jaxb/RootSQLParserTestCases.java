@@ -181,6 +181,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateInmemoryJoinGroupStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateJavaStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateLanguageStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateLockdownProfileStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateMaterializedViewLogStatementTestCase;
@@ -1711,6 +1712,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "change-replication-source-to")
     private final List<ChangeReplicationSourceToStatementTestCase> changeReplicationSourceToStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-java")
+    private final List<CreateJavaStatementTestCase> createJavaStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
