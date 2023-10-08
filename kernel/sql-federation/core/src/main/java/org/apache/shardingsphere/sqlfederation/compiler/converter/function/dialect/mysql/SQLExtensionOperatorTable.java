@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl;
+package org.apache.shardingsphere.sqlfederation.compiler.converter.function.dialect.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlPrefixOperator;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.function.dialect.mysql.MySQLMatchAgainstFunction;
 
 /**
  * SQL extension operator table.

@@ -24,7 +24,6 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.DeleteStatementHandler;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.from.TableConverter;
@@ -59,10 +58,6 @@ public final class DeleteStatementConverter implements SQLStatementConverter<Del
         SqlNode condition = deleteStatement.getWhere().flatMap(optional -> new WhereConverter().convert(optional)).orElse(null);
         SqlIdentifier alias = deleteStatement.getTable().getAliasName().map(optional -> new SqlIdentifier(optional, SqlParserPos.ZERO)).orElse(null);
         SqlDelete sqlDelete = new SqlDelete(SqlParserPos.ZERO, deleteTable, condition, null, alias);
-        Optional<WithSegment> with = DeleteStatementHandler.getWithSegment(deleteStatement);
-        if (with.isPresent()) {
-            return new WithConverter().convert(DeleteStatementHandler.getWithSegment(deleteStatement).get(), sqlDelete).get();
-        }
-        return sqlDelete;
+        return DeleteStatementHandler.getWithSegment(deleteStatement).flatMap(optional -> new WithConverter().convert(optional, sqlDelete)).orElse(sqlDelete);
     }
 }
