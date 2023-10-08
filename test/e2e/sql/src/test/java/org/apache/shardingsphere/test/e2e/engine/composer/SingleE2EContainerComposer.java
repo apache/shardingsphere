@@ -25,8 +25,6 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,10 +41,6 @@ public final class SingleE2EContainerComposer extends E2EContainerComposer {
     
     private final IntegrationTestCaseAssertion assertion;
     
-    private final Collection<IntegrationTestCaseAssertion> assertions;
-    
-    private final List<DataSet> dataSets = new ArrayList<>();
-    
     private final DataSet dataSet;
     
     private final DataSet generatedKeyDataSet;
@@ -55,18 +49,7 @@ public final class SingleE2EContainerComposer extends E2EContainerComposer {
         super(testParam);
         sql = testParam.getTestCaseContext().getTestCase().getSql();
         sqlExecuteType = testParam.getSqlExecuteType();
-        assertions = testParam.getAssertions();
         assertion = testParam.getAssertion();
-        
-        if ("RDL".equals(testParam.getSqlCommandType().name())) {
-            for (IntegrationTestCaseAssertion caseAssertion : assertions) {
-                dataSets.add(null == caseAssertion || null == caseAssertion.getExpectedDataFile()
-                        ? null
-                        : DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(),
-                                caseAssertion.getExpectedDataFile()));
-            }
-        }
-        
         dataSet = null == assertion || null == assertion.getExpectedDataFile()
                 ? null
                 : DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), assertion.getExpectedDataFile());
