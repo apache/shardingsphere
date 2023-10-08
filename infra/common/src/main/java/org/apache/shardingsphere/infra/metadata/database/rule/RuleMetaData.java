@@ -104,11 +104,12 @@ public final class RuleMetaData {
      */
     public Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitNameAndRulesMap() {
         Map<String, Collection<Class<? extends ShardingSphereRule>>> result = new LinkedHashMap<>();
-        for (DataSourceContainedRule each : findRules(DataSourceContainedRule.class)) {
-            result.putAll(getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames(each)));
-        }
-        for (DataNodeContainedRule each : findRules(DataNodeContainedRule.class)) {
-            result.putAll(getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames(each)));
+        for (ShardingSphereRule each : rules) {
+            if (each instanceof DataSourceContainedRule) {
+                result.putAll(getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames((DataSourceContainedRule) each)));
+            } else if (each instanceof DataNodeContainedRule) {
+                result.putAll(getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames((DataNodeContainedRule) each)));
+            }
         }
         return result;
     }
