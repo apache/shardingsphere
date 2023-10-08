@@ -56,11 +56,6 @@ public final class TablesContext {
     
     private final Collection<SimpleTableSegment> simpleTableSegments = new LinkedList<>();
     
-    /**
-     * Get table names.
-     *
-     * @return table names
-     */
     @Getter
     private final Collection<String> tableNames = new HashSet<>();
     
