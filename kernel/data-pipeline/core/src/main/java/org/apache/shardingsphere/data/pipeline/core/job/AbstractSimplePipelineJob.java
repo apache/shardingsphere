@@ -52,14 +52,33 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
             log.info("stopping true, ignore");
             return;
         }
-        PipelineJobItemContext jobItemContext = buildPipelineJobItemContext(shardingContext);
+        try {
+            PipelineJobItemContext jobItemContext = buildPipelineJobItemContext(shardingContext);
+            execute0(jobItemContext);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            processFailed(jobId, shardingItem, ex);
+            throw ex;
+        }
+    }
+    
+    private void execute0(final PipelineJobItemContext jobItemContext) {
+        String jobId = jobItemContext.getJobId();
+        int shardingItem = jobItemContext.getShardingItem();
         PipelineTasksRunner tasksRunner = buildPipelineTasksRunner(jobItemContext);
         if (!addTasksRunner(shardingItem, tasksRunner)) {
             return;
         }
-        getJobAPI().cleanJobItemErrorMessage(jobId, jobItemContext.getShardingItem());
+        getJobAPI().cleanJobItemErrorMessage(jobId, shardingItem);
         prepare(jobItemContext);
         log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
         tasksRunner.start();
+    }
+    
+    private void processFailed(final String jobId, final int shardingItem, final Exception ex) {
+        log.error("job prepare failed, {}-{}", jobId, shardingItem, ex);
+        getJobAPI().updateJobItemErrorMessage(jobId, shardingItem, ex);
+        getJobAPI().stop(jobId);
     }
 }
