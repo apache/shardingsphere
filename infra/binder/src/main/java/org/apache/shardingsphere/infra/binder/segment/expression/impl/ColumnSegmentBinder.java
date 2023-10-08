@@ -53,7 +53,7 @@ import java.util.Optional;
 public final class ColumnSegmentBinder {
     
     private static final Collection<String> EXCLUDE_BIND_COLUMNS = new LinkedHashSet<>(Arrays.asList("ROWNUM", "ROW_NUMBER", "ROWNUM_", "SYSDATE", "SYSTIMESTAMP", "CURRENT_TIMESTAMP",
-            "LOCALTIMESTAMP", "UID", "USER", "NEXTVAL", "ROWID"));
+            "LOCALTIMESTAMP", "UID", "USER", "NEXTVAL", "ROWID", "LEVEL"));
     
     private static final Map<SegmentType, String> SEGMENT_TYPE_MESSAGES = Maps.of(SegmentType.PROJECTION, "field list", SegmentType.JOIN_ON, "on clause", SegmentType.JOIN_USING, "from clause",
             SegmentType.PREDICATE, "where clause", SegmentType.ORDER_BY, "order clause", SegmentType.GROUP_BY, "group statement", SegmentType.INSERT_COLUMNS, "field list");
