@@ -81,7 +81,7 @@ public final class CDCClient implements AutoCloseable {
     @SneakyThrows(InterruptedException.class)
     public void connect() {
         Bootstrap bootstrap = new Bootstrap();
-        group = new NioEventLoopGroup();
+        group = new NioEventLoopGroup(1);
         bootstrap.channel(NioSocketChannel.class)
                 .group(group)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
