@@ -193,4 +193,3 @@ jobs:
           stale-issue-message: >
             There hasn't been any activity on this issue recently, and in order to prioritize active issues, it will be
             marked as stale.
-
