@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporterManager.getImporter;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -40,14 +39,14 @@ class CDCImporterManagerTest {
     @Test
     void assertPutImporter() {
         CDCImporterManager.putImporter(actual);
-        CDCImporter expected = getImporter(actual.getImporterId());
+        CDCImporter expected = CDCImporterManager.getImporter(actual.getImporterId());
         assertThat(actual.getImporterId(), is(expected.getImporterId()));
     }
 
     @Test
     void assertGetImporter() {
         CDCImporterManager.putImporter(actual);
-        CDCImporter expected = getImporter(actual.getImporterId());
+        CDCImporter expected = CDCImporterManager.getImporter(actual.getImporterId());
         assertThat(actual, is(expected));
     }
 
@@ -55,7 +54,7 @@ class CDCImporterManagerTest {
     void assertRemoveImporter() {
         CDCImporterManager.putImporter(actual);
         CDCImporterManager.removeImporter(actual.getImporterId());
-        assertNull(getImporter(actual.getImporterId()));
+        assertNull(CDCImporterManager.getImporter(actual.getImporterId()));
     }
 
 }
