@@ -247,6 +247,10 @@ ELSE
     : E L S E
     ;
 
+ELSIF
+    : E L S I F
+    ;
+
 THEN
     : T H E N
     ;
@@ -414,6 +418,14 @@ LOCALTIME
 
 LOCALTIMESTAMP
     : L O C A L T I M E S T A M P
+    ;
+
+LOOP
+    : L O O P
+    ;
+
+EXIT
+    : E X I T
     ;
 
 YEAR
