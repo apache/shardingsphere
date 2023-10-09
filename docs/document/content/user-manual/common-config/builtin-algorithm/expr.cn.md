@@ -99,5 +99,5 @@ rules:
 
 ## 相关参考
 
-- [核心概念](/docs/document/content/features/sharding/concept.cn.md)
-- [数据分片](/docs/document/content/dev-manual/sharding.cn.md)
+- [核心概念](/cn/features/sharding/concept)
+- [数据分片](/cn/dev-manual/sharding)

@@ -107,5 +107,5 @@ rules:
 
 ## Related References
 
-- [Core Concept](/docs/document/content/features/sharding/concept.en.md)
-- [Data Sharding](/docs/document/content/dev-manual/sharding.en.md)
+- [Core Concept](/en/features/sharding/concept)
+- [Data Sharding](/en/dev-manual/sharding)
