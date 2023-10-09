@@ -101,7 +101,8 @@ jobs:
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Aggregate checkstyle report
-        run:
+        run: |
+          export MAVEN_OPTS='-Xmx4g -Xms512m'
           ./mvnw clean verify checkstyle:checkstyle-aggregate
       - name: Upload checkstyle report to SonarCloud
         env:
