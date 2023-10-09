@@ -1,6 +1,6 @@
 +++
 title = "Row Value Expressions"
-weight = 8
+weight = 10
 +++
 
 ## Row Value Expressions that uses the Groovy syntax

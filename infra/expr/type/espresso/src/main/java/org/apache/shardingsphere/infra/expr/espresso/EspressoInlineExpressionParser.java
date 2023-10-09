@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import groovy.lang.GroovyShell;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
+import org.apache.shardingsphere.infra.util.groovy.GroovyUtils;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
 
@@ -41,8 +42,6 @@ import java.util.stream.Collectors;
 public final class EspressoInlineExpressionParser implements InlineExpressionParser {
     
     private static final String JAVA_CLASSPATH;
-    
-    private static final char SPLITTER = ',';
     
     private String inlineExpression;
     
@@ -85,48 +84,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     @Override
     public List<String> splitAndEvaluate() {
-        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split(handlePlaceHolder(inlineExpression)), context));
-    }
-    
-    private List<String> split(final String inlineExpression) {
-        List<String> result = new ArrayList<>();
-        StringBuilder segment = new StringBuilder();
-        int bracketsDepth = 0;
-        for (int i = 0; i < inlineExpression.length(); i++) {
-            char each = inlineExpression.charAt(i);
-            switch (each) {
-                case SPLITTER:
-                    if (bracketsDepth > 0) {
-                        segment.append(each);
-                    } else {
-                        result.add(segment.toString().trim());
-                        segment.setLength(0);
-                    }
-                    break;
-                case '$':
-                    if ('{' == inlineExpression.charAt(i + 1)) {
-                        bracketsDepth++;
-                    }
-                    if ("->{".equals(inlineExpression.substring(i + 1, i + 4))) {
-                        bracketsDepth++;
-                    }
-                    segment.append(each);
-                    break;
-                case '}':
-                    if (bracketsDepth > 0) {
-                        bracketsDepth--;
-                    }
-                    segment.append(each);
-                    break;
-                default:
-                    segment.append(each);
-                    break;
-            }
-        }
-        if (segment.length() > 0) {
-            result.add(segment.toString().trim());
-        }
-        return result;
+        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(GroovyUtils.split(handlePlaceHolder(inlineExpression)), context));
     }
     
     private List<Value> evaluate(final List<String> inlineExpressions, final Context context) {
