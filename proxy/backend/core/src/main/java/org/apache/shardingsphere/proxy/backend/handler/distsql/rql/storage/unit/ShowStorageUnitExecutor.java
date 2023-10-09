@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.storage.unit
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
@@ -40,7 +39,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Show storage unit executor.
@@ -56,14 +54,13 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        for (Entry<String, DataSourcePoolProperties> entry : getDataSourcePoolPropertiesMap(database, sqlStatement).entrySet()) {
-            String storageUnitName = entry.getKey();
-            StorageUnit storageUnit = database.getResourceMetaData().getStorageUnits().get(storageUnitName);
-            ConnectionProperties connectionProps = storageUnit.getConnectionProperties();
-            Map<String, Object> poolProps = entry.getValue().getPoolPropertySynonyms().getStandardProperties();
-            Map<String, Object> customProps = getCustomProperties(entry.getValue().getCustomProperties().getProperties(), connectionProps.getQueryProperties());
-            result.add(new LocalDataQueryResultRow(storageUnitName,
-                    storageUnit.getStorageType().getType(),
+        for (Entry<String, StorageUnit> entry : getToBeShownStorageUnits(database, sqlStatement).entrySet()) {
+            ConnectionProperties connectionProps = entry.getValue().getConnectionProperties();
+            DataSourcePoolProperties dataSourcePoolProperties = getDataSourcePoolProperties(entry.getValue());
+            Map<String, Object> poolProps = dataSourcePoolProperties.getPoolPropertySynonyms().getStandardProperties();
+            Map<String, Object> customProps = getCustomProperties(dataSourcePoolProperties.getCustomProperties().getProperties(), connectionProps.getQueryProperties());
+            result.add(new LocalDataQueryResultRow(entry.getKey(),
+                    entry.getValue().getStorageType().getType(),
                     connectionProps.getHostname(),
                     connectionProps.getPort(),
                     connectionProps.getCatalog(),
@@ -78,10 +75,8 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         return result;
     }
     
-    private Map<String, DataSourcePoolProperties> getDataSourcePoolPropertiesMap(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(database.getResourceMetaData().getStorageUnits().size(), 1F);
-        Map<String, DataSourcePoolProperties> propsMap = database.getResourceMetaData().getStorageUnits().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
+    private Map<String, StorageUnit> getToBeShownStorageUnits(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
+        Map<String, StorageUnit> result = new LinkedHashMap<>(database.getResourceMetaData().getStorageUnits().size(), 1F);
         Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         Optional<Integer> usageCount = sqlStatement.getUsageCount();
         if (usageCount.isPresent()) {
@@ -89,23 +84,21 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
             for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnits().entrySet()) {
                 int currentUsageCount = inUsedStorageUnits.containsKey(entry.getKey()) ? inUsedStorageUnits.get(entry.getKey()).size() : 0;
                 if (usageCount.get().equals(currentUsageCount)) {
-                    result.put(entry.getKey(), getDataSourcePoolProperties(propsMap, entry.getKey(), storageUnits.get(entry.getKey()).getStorageType(), entry.getValue().getDataSource()));
+                    result.put(entry.getKey(), entry.getValue());
                 }
             }
         } else {
-            for (Entry<String, StorageUnit> entry : storageUnits.entrySet()) {
-                result.put(entry.getKey(), getDataSourcePoolProperties(propsMap, entry.getKey(), storageUnits.get(entry.getKey()).getStorageType(), entry.getValue().getDataSource()));
-            }
+            result.putAll(storageUnits);
         }
         return result;
     }
     
-    private DataSourcePoolProperties getDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> propsMap, final String storageUnitName,
-                                                                 final DatabaseType databaseType, final DataSource dataSource) {
+    private DataSourcePoolProperties getDataSourcePoolProperties(final StorageUnit storageUnit) {
+        DataSource dataSource = storageUnit.getDataSource();
         DataSourcePoolProperties result = DataSourcePoolPropertiesCreator.create(
                 dataSource instanceof CatalogSwitchableDataSource ? ((CatalogSwitchableDataSource) dataSource).getDataSource() : dataSource);
-        if (new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().isInstanceConnectionAvailable() && propsMap.containsKey(storageUnitName)) {
-            for (Entry<String, Object> entry : propsMap.get(storageUnitName).getPoolPropertySynonyms().getStandardProperties().entrySet()) {
+        if (new DatabaseTypeRegistry(storageUnit.getStorageType()).getDialectDatabaseMetaData().isInstanceConnectionAvailable()) {
+            for (Entry<String, Object> entry : storageUnit.getDataSourcePoolProperties().getPoolPropertySynonyms().getStandardProperties().entrySet()) {
                 if (null != entry.getValue()) {
                     result.getPoolPropertySynonyms().getStandardProperties().put(entry.getKey(), entry.getValue());
                 }
