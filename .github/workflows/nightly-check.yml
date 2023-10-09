@@ -23,7 +23,7 @@ on:
   workflow_dispatch:
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
 
 jobs:
   global-environment:
@@ -101,7 +101,8 @@ jobs:
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Aggregate checkstyle report
-        run:
+        run: |
+          export MAVEN_OPTS='-Xmx4g -Xms512m'
           ./mvnw clean verify checkstyle:checkstyle-aggregate
       - name: Upload checkstyle report to SonarCloud
         env:
@@ -192,4 +193,3 @@ jobs:
           stale-issue-message: >
             There hasn't been any activity on this issue recently, and in order to prioritize active issues, it will be
             marked as stale.
-
