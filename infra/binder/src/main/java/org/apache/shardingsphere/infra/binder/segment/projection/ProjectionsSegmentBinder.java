@@ -79,7 +79,7 @@ public final class ProjectionsSegmentBinder {
         if (projectionSegment instanceof ExpressionProjectionSegment) {
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(projectionSegment.getStartIndex(), projectionSegment.getStopIndex(),
                     ((ExpressionProjectionSegment) projectionSegment).getText(), ExpressionSegmentBinder.bind(((ExpressionProjectionSegment) projectionSegment).getExpr(), SegmentType.PROJECTION,
-                    statementBinderContext, tableBinderContexts, outerTableBinderContexts));
+                            statementBinderContext, tableBinderContexts, outerTableBinderContexts));
             result.setAlias(((ExpressionProjectionSegment) projectionSegment).getAliasSegment());
             return result;
         }
