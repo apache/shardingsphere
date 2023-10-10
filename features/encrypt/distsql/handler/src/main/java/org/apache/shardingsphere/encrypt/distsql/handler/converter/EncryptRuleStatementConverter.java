@@ -23,9 +23,9 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnItemSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnItemSegment;
+import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnSegment;
+import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 
 import java.util.Collection;

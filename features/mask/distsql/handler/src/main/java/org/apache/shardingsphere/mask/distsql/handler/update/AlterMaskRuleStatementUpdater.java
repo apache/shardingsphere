@@ -26,8 +26,8 @@ import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.handler.converter.MaskRuleStatementConverter;
-import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
-import org.apache.shardingsphere.mask.distsql.parser.statement.AlterMaskRuleStatement;
+import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
+import org.apache.shardingsphere.mask.distsql.statement.AlterMaskRuleStatement;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
-import org.apache.shardingsphere.traffic.distsql.parser.statement.queryable.ShowTrafficRulesStatement;
+import org.apache.shardingsphere.traffic.distsql.statement.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.util.Arrays;

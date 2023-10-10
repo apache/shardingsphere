@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingAuditorStatementUpdater;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAuditorStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.DropShardingAuditorStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

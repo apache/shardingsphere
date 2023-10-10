@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQuery
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
-import org.apache.shardingsphere.transaction.distsql.parser.statement.queryable.ShowTransactionRuleStatement;
+import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.util.Arrays;

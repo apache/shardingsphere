@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.CountShardingRuleExecutor;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CountShardingRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.CountShardingRuleStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.junit.jupiter.api.Test;

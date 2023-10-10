@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
-import org.apache.shardingsphere.traffic.distsql.parser.statement.queryable.ShowTrafficRulesStatement;
+import org.apache.shardingsphere.traffic.distsql.statement.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.junit.jupiter.api.Test;
 

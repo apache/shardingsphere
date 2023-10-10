@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.broadcast.distsql.parser.core;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.broadcast.distsql.parser.statement.CountBroadcastRuleStatement;
-import org.apache.shardingsphere.broadcast.distsql.parser.statement.CreateBroadcastTableRuleStatement;
-import org.apache.shardingsphere.broadcast.distsql.parser.statement.DropBroadcastTableRuleStatement;
-import org.apache.shardingsphere.broadcast.distsql.parser.statement.ShowBroadcastTableRulesStatement;
+import org.apache.shardingsphere.broadcast.distsql.statement.CountBroadcastRuleStatement;
+import org.apache.shardingsphere.broadcast.distsql.statement.CreateBroadcastTableRuleStatement;
+import org.apache.shardingsphere.broadcast.distsql.statement.DropBroadcastTableRuleStatement;
+import org.apache.shardingsphere.broadcast.distsql.statement.ShowBroadcastTableRulesStatement;
 import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementParser.CountBroadcastRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementParser.CreateBroadcastTableRuleContext;

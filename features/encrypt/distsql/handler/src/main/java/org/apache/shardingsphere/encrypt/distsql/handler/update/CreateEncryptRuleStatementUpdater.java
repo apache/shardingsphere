@@ -29,9 +29,9 @@ import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlg
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnItemSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnItemSegment;
+import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
