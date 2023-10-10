@@ -121,7 +121,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     }
     
     private void processFailed(final String jobId, final int shardingItem, final Exception ex) {
-        log.error("job prepare failed, {}-{}", jobId, shardingItem, ex);
+        log.error("job execution failed, {}-{}", jobId, shardingItem, ex);
         jobAPI.updateJobItemErrorMessage(jobId, shardingItem, ex);
         PipelineJobCenter.stop(jobId);
         jobAPI.updateJobConfigurationDisabled(jobId, true);
