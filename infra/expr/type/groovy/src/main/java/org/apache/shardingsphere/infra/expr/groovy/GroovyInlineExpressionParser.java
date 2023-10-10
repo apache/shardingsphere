@@ -24,6 +24,7 @@ import groovy.lang.GString;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
+import org.apache.shardingsphere.infra.util.groovy.GroovyUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,8 +41,6 @@ import java.util.stream.Collectors;
  * Groovy inline expression parser.
  */
 public final class GroovyInlineExpressionParser implements InlineExpressionParser {
-    
-    private static final char SPLITTER = ',';
     
     private static final String INLINE_EXPRESSION_KEY = "inlineExpression";
     
@@ -78,7 +77,7 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
      */
     @Override
     public List<String> splitAndEvaluate() {
-        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split(handlePlaceHolder(inlineExpression))));
+        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(GroovyUtils.split(handlePlaceHolder(inlineExpression))));
     }
     
     /**
@@ -115,47 +114,6 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
             SCRIPTS.put(expression, script);
         }
         return script.run();
-    }
-    
-    private List<String> split(final String inlineExpression) {
-        List<String> result = new ArrayList<>();
-        StringBuilder segment = new StringBuilder();
-        int bracketsDepth = 0;
-        for (int i = 0; i < inlineExpression.length(); i++) {
-            char each = inlineExpression.charAt(i);
-            switch (each) {
-                case SPLITTER:
-                    if (bracketsDepth > 0) {
-                        segment.append(each);
-                    } else {
-                        result.add(segment.toString().trim());
-                        segment.setLength(0);
-                    }
-                    break;
-                case '$':
-                    if ('{' == inlineExpression.charAt(i + 1)) {
-                        bracketsDepth++;
-                    }
-                    if ("->{".equals(inlineExpression.substring(i + 1, i + 4))) {
-                        bracketsDepth++;
-                    }
-                    segment.append(each);
-                    break;
-                case '}':
-                    if (bracketsDepth > 0) {
-                        bracketsDepth--;
-                    }
-                    segment.append(each);
-                    break;
-                default:
-                    segment.append(each);
-                    break;
-            }
-        }
-        if (segment.length() > 0) {
-            result.add(segment.toString().trim());
-        }
-        return result;
     }
     
     private List<String> flatten(final List<Object> segments) {
