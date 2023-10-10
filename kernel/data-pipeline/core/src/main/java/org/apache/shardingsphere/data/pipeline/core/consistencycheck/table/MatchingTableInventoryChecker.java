@@ -78,9 +78,9 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
         calculators.add(sourceCalculator);
         SingleTableInventoryCalculator targetCalculator = buildSingleTableInventoryCalculator();
         calculators.add(targetCalculator);
-        Iterator<SingleTableInventoryCalculatedResult> sourceCalculatedResults = waitFuture(executor.submit(() -> sourceCalculator.calculate(sourceParam))).iterator();
-        Iterator<SingleTableInventoryCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> targetCalculator.calculate(targetParam))).iterator();
         try {
+            Iterator<SingleTableInventoryCalculatedResult> sourceCalculatedResults = waitFuture(executor.submit(() -> sourceCalculator.calculate(sourceParam))).iterator();
+            Iterator<SingleTableInventoryCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> targetCalculator.calculate(targetParam))).iterator();
             return checkSingleTableInventoryData(sourceCalculatedResults, targetCalculatedResults, param, executor);
         } finally {
             QuietlyCloser.close(sourceParam.getCalculationContext());
