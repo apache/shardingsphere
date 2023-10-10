@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
@@ -142,7 +143,10 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         log.error("onFailure, inventory task execute failed.", throwable);
         String jobId = jobItemContext.getJobId();
         jobAPI.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
-        jobAPI.stop(jobId);
+        try {
+            jobAPI.stop(jobId);
+        } catch (final PipelineJobNotFoundException ignored) {
+        }
     }
     
     private final class InventoryTaskExecuteCallback implements ExecuteCallback {
@@ -174,7 +178,10 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
             log.error("onFailure, incremental task execute failed.", throwable);
             String jobId = jobItemContext.getJobId();
             jobAPI.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
-            jobAPI.stop(jobId);
+            try {
+                jobAPI.stop(jobId);
+            } catch (final PipelineJobNotFoundException ignored) {
+            }
         }
     }
 }

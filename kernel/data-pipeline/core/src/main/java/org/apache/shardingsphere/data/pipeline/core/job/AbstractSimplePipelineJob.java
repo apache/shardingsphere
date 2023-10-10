@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
@@ -77,8 +78,11 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
     }
     
     private void processFailed(final String jobId, final int shardingItem, final Exception ex) {
-        log.error("job prepare failed, {}-{}", jobId, shardingItem, ex);
+        log.error("job execution failed, {}-{}", jobId, shardingItem, ex);
         getJobAPI().updateJobItemErrorMessage(jobId, shardingItem, ex);
-        getJobAPI().stop(jobId);
+        try {
+            getJobAPI().stop(jobId);
+        } catch (final PipelineJobNotFoundException ignored) {
+        }
     }
 }

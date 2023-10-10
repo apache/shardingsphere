@@ -20,10 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yam
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckIgnoredType;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyContentCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCountCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult.YamlTableDataConsistencyContentCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult.YamlTableDataConsistencyCountCheckResult;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
@@ -39,13 +35,7 @@ public final class YamlTableDataConsistencyCheckResultSwapper implements YamlCon
             result.setIgnoredType(data.getIgnoredType().name());
             return result;
         }
-        YamlTableDataConsistencyCountCheckResult countCheckResult = new YamlTableDataConsistencyCountCheckResult();
-        countCheckResult.setSourceRecordsCount(data.getCountCheckResult().getSourceRecordsCount());
-        countCheckResult.setTargetRecordsCount(data.getCountCheckResult().getTargetRecordsCount());
-        result.setCountCheckResult(countCheckResult);
-        YamlTableDataConsistencyContentCheckResult contentCheckResult = new YamlTableDataConsistencyContentCheckResult();
-        contentCheckResult.setMatched(data.getContentCheckResult().isMatched());
-        result.setContentCheckResult(contentCheckResult);
+        result.setMatched(data.isMatched());
         return result;
     }
     
@@ -57,10 +47,7 @@ public final class YamlTableDataConsistencyCheckResultSwapper implements YamlCon
         if (!Strings.isNullOrEmpty(yamlConfig.getIgnoredType())) {
             return new TableDataConsistencyCheckResult(TableDataConsistencyCheckIgnoredType.valueOf(yamlConfig.getIgnoredType()));
         }
-        YamlTableDataConsistencyCountCheckResult yamlCountCheck = yamlConfig.getCountCheckResult();
-        TableDataConsistencyCountCheckResult countCheckResult = new TableDataConsistencyCountCheckResult(yamlCountCheck.getSourceRecordsCount(), yamlCountCheck.getTargetRecordsCount());
-        TableDataConsistencyContentCheckResult contentCheckResult = new TableDataConsistencyContentCheckResult(yamlConfig.getContentCheckResult().isMatched());
-        return new TableDataConsistencyCheckResult(countCheckResult, contentCheckResult);
+        return new TableDataConsistencyCheckResult(yamlConfig.isMatched());
     }
     
     /**
