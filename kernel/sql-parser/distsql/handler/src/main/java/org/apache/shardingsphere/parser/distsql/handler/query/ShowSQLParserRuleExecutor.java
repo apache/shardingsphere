@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQuery
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.parser.distsql.parser.statement.queryable.ShowSQLParserRuleStatement;
+import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
 import java.util.Arrays;

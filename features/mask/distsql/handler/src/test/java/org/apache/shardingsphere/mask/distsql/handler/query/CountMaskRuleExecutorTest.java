@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableNamesMapper;
-import org.apache.shardingsphere.mask.distsql.parser.statement.CountMaskRuleStatement;
+import org.apache.shardingsphere.mask.distsql.statement.CountMaskRuleStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.junit.jupiter.api.Test;
 

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.distsql.parser.statement.DropMaskRuleStatement;
+import org.apache.shardingsphere.mask.distsql.statement.DropMaskRuleStatement;
 
 import java.util.Collection;
 import java.util.Collections;

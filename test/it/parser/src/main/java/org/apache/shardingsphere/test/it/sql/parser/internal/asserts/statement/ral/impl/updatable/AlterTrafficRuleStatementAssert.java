@@ -24,8 +24,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.dis
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ral.ExpectedTrafficRule;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterTrafficRuleStatementTestCase;
-import org.apache.shardingsphere.traffic.distsql.parser.segment.TrafficRuleSegment;
-import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.AlterTrafficRuleStatement;
+import org.apache.shardingsphere.traffic.distsql.segment.TrafficRuleSegment;
+import org.apache.shardingsphere.traffic.distsql.statement.updatable.AlterTrafficRuleStatement;
 
 import java.util.Collection;
 import java.util.List;

@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.apache.shardingsphere.traffic.distsql.handler.convert.TrafficRuleConverter;
-import org.apache.shardingsphere.traffic.distsql.parser.segment.TrafficRuleSegment;
-import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.AlterTrafficRuleStatement;
+import org.apache.shardingsphere.traffic.distsql.segment.TrafficRuleSegment;
+import org.apache.shardingsphere.traffic.distsql.statement.updatable.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 

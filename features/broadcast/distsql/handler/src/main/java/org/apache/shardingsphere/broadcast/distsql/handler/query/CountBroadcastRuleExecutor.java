@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.broadcast.distsql.handler.query;
 
-import org.apache.shardingsphere.broadcast.distsql.parser.statement.CountBroadcastRuleStatement;
+import org.apache.shardingsphere.broadcast.distsql.statement.CountBroadcastRuleStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
