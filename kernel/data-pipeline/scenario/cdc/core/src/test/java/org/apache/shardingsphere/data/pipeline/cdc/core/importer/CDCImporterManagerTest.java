@@ -27,34 +27,34 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class CDCImporterManagerTest {
-
+    
     private CDCImporter actual;
-
+    
     @BeforeEach
     void setUp() {
         actual = mock(CDCImporter.class);
         when(actual.getImporterId()).thenReturn("nish8gx8");
     }
-
+    
     @Test
     void assertPutImporter() {
         CDCImporterManager.putImporter(actual);
         CDCImporter expected = CDCImporterManager.getImporter(actual.getImporterId());
         assertThat(actual.getImporterId(), is(expected.getImporterId()));
     }
-
+    
     @Test
     void assertGetImporter() {
         CDCImporterManager.putImporter(actual);
         CDCImporter expected = CDCImporterManager.getImporter(actual.getImporterId());
         assertThat(actual, is(expected));
     }
-
+    
     @Test
     void assertRemoveImporter() {
         CDCImporterManager.putImporter(actual);
         CDCImporterManager.removeImporter(actual.getImporterId());
         assertNull(CDCImporterManager.getImporter(actual.getImporterId()));
     }
-
+    
 }
