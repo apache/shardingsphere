@@ -134,7 +134,7 @@ public final class EncryptTable {
     public String getLogicColumnByCipherColumn(final String cipherColumnName) {
         for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
             if (entry.getValue().getCipher().getName().equalsIgnoreCase(cipherColumnName)) {
-                return entry.getKey();
+                return entry.getValue().getName();
             }
         }
         throw new EncryptLogicColumnNotFoundException(cipherColumnName);
