@@ -38,14 +38,14 @@ public final class ShowMigrationCheckAlgorithmsExecutor implements QueryableRALE
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationCheckAlgorithmsStatement sqlStatement) {
         InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION");
         return jobAPI.listDataConsistencyCheckAlgorithms().stream().map(
-                each -> new LocalDataQueryResultRow(each.getType(),
+                each -> new LocalDataQueryResultRow(each.getType(), each.getTypeAliases(),
                         each.getSupportedDatabaseTypes().stream().map(DatabaseType::getType).collect(Collectors.joining(",")), each.getDescription()))
                 .collect(Collectors.toList());
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("type", "supported_database_types", "description");
+        return Arrays.asList("type", "type_aliases", "supported_database_types", "description");
     }
     
     @Override

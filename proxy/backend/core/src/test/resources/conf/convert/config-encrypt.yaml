@@ -44,12 +44,8 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
-    rc4_encryptor:
-      type: RC4
-      props:
-        rc4-key-value: 123456abc
     like_encryptor:
-      type: CHAR_DIGEST_LIKE
+      type: CORE.QUERY_LIKE.FIXTURE
   tables:
     t_encrypt:
       columns:
@@ -59,11 +55,11 @@ rules:
             encryptorName: aes_encryptor
           assistedQuery:
             name: user_assisted
-            encryptorName: rc4_encryptor
+            encryptorName: aes_encryptor
           likeQuery:
             name: user_like
             encryptorName: like_encryptor
         order_id:
           cipher:
             name: order_cipher
-            encryptorName: rc4_encryptor
+            encryptorName: aes_encryptor

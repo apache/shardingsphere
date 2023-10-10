@@ -16,10 +16,10 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 ## Contributor Covenant Submitting of Conduct
 
  - Conform to `Contributor Covenant Code of Conduct` below.
- - Make sure Maven build process success. Run `./mvnw clean install -B -T1C -Dmaven.javadoc.skip -Dmaven.jacoco.skip -e` command in shell to start Maven build process.
+ - Make sure Maven build process success. Run `./mvnw clean install -B -T1C -Pcheck` command in shell to start Maven build process.
  - Make sure the test coverage rate is not lower than the master branch.
  - Careful consideration for each `pull request`; Small and frequent `pull request` with complete unit function is welcomed.
- - Through the uniform code style of spotless, execute the `mvn spotless:apply` formatted code.
+ - Through the uniform code style of spotless, execute the `./mvnw spotless:apply -Pcheck` formatted code.
  - If using IDEA, you can import the recommended `src/resources/code-style-idea.xml`.
 
 ## Contributor Covenant Code of Conduct

@@ -63,7 +63,7 @@ class AlterShardingTableRuleStatementUpdaterTest {
     
     private final ShardingRuleConfiguration currentRuleConfig = createCurrentShardingRuleConfiguration();
     
-    private final ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", createDataSource());
+    private final ResourceMetaData resourceMetaData = new ResourceMetaData(createDataSource());
     
     private final AlterShardingTableRuleStatementUpdater updater = new AlterShardingTableRuleStatementUpdater();
     

@@ -33,4 +33,5 @@
         INCREMENT BY 1
         NOCACHE
         NOCYCLE;" db-types="Oracle" />
+    <sql-case id="create_sequence_lab_samples_seq" value="create sequence LAB_SAMPLES_SEQ" db-types="Oracle" />
 </sql-cases>

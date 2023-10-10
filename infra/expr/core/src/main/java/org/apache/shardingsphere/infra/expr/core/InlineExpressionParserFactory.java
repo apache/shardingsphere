@@ -22,21 +22,45 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
+import java.util.Properties;
+
 /**
  * Inline expression parser factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InlineExpressionParserFactory {
     
-    // workaround for https://junit.org/junit5/docs/5.10.0/api/org.junit.jupiter.api/org/junit/jupiter/api/condition/EnabledInNativeImage.html
-    private static final boolean IS_SUBSTRATE_VM = "runtime".equals(System.getProperty("org.graalvm.nativeimage.imagecode"));
+    private static final String TYPE_NAME_BEGIN_SYMBOL = "<";
+    
+    private static final String TYPE_NAME_END_SYMBOL = ">";
     
     /**
-     * Create new instance of inline expression parser.
-     * 
+     * Create new instance of inline expression parser by inlineExpression.
+     * And for compatibility reasons, inlineExpression allows to be null.
+     *
+     * @param inlineExpression inline expression
      * @return created instance
      */
-    public static InlineExpressionParser newInstance() {
-        return TypedSPILoader.getService(InlineExpressionParser.class, IS_SUBSTRATE_VM ? "PURELIST" : "HOTSPOT");
+    public static InlineExpressionParser newInstance(final String inlineExpression) {
+        Properties props = new Properties();
+        if (null == inlineExpression) {
+            return TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", props);
+        }
+        if (!inlineExpression.startsWith(TYPE_NAME_BEGIN_SYMBOL)) {
+            props.setProperty(InlineExpressionParser.INLINE_EXPRESSION_KEY, inlineExpression);
+            return TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", props);
+        }
+        Integer typeBeginIndex = inlineExpression.indexOf(TYPE_NAME_BEGIN_SYMBOL);
+        Integer typeEndIndex = inlineExpression.indexOf(TYPE_NAME_END_SYMBOL);
+        props.setProperty(InlineExpressionParser.INLINE_EXPRESSION_KEY, getExprWithoutTypeName(inlineExpression, typeBeginIndex, typeEndIndex));
+        return TypedSPILoader.getService(InlineExpressionParser.class, getTypeName(inlineExpression, typeBeginIndex, typeEndIndex), props);
+    }
+    
+    private static String getTypeName(final String inlineExpression, final Integer beginIndex, final Integer endIndex) {
+        return beginIndex.equals(-1) || endIndex.equals(-1) ? "GROOVY" : inlineExpression.substring(beginIndex + 1, endIndex);
+    }
+    
+    private static String getExprWithoutTypeName(final String inlineExpression, final Integer beginIndex, final Integer endIndex) {
+        return inlineExpression.substring(0, beginIndex) + inlineExpression.substring(endIndex + 1);
     }
 }

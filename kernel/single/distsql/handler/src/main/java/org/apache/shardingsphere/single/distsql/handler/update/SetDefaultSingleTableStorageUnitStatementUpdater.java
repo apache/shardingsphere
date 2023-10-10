@@ -40,7 +40,7 @@ public final class SetDefaultSingleTableStorageUnitStatementUpdater implements R
     
     private void checkStorageUnitExist(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         if (!Strings.isNullOrEmpty(sqlStatement.getDefaultStorageUnit())) {
-            Collection<String> storageUnitNames = database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().keySet();
+            Collection<String> storageUnitNames = database.getResourceMetaData().getStorageUnits().keySet();
             ShardingSpherePreconditions.checkState(storageUnitNames.contains(sqlStatement.getDefaultStorageUnit()),
                     () -> new MissingRequiredStorageUnitsException(database.getName(), Collections.singleton(sqlStatement.getDefaultStorageUnit())));
         }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,52 +30,11 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlTableDataConsistencyCheckResult implements YamlConfiguration {
     
-    private YamlTableDataConsistencyCountCheckResult countCheckResult;
-    
-    private YamlTableDataConsistencyContentCheckResult contentCheckResult;
+    private boolean matched;
     
     private String ignoredType;
     
-    public YamlTableDataConsistencyCheckResult(final YamlTableDataConsistencyCountCheckResult countCheckResult, final YamlTableDataConsistencyContentCheckResult contentCheckResult) {
-        this.countCheckResult = countCheckResult;
-        this.contentCheckResult = contentCheckResult;
-    }
-    
-    /**
-     * YAML table data consistency count result.
-     */
-    @Getter
-    @Setter
-    public static class YamlTableDataConsistencyCountCheckResult implements YamlConfiguration {
-        
-        private long sourceRecordsCount;
-        
-        private long targetRecordsCount;
-        
-        /**
-         * Add records count.
-         *
-         * @param delta delta count
-         * @param onSource add on source or target
-         */
-        public void addRecordsCount(final long delta, final boolean onSource) {
-            if (onSource) {
-                sourceRecordsCount += delta;
-            } else {
-                targetRecordsCount += delta;
-            }
-        }
-    }
-    
-    /**
-     * YAML table data consistency content result.
-     */
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Getter
-    @Setter
-    public static class YamlTableDataConsistencyContentCheckResult implements YamlConfiguration {
-        
-        private boolean matched;
+    public YamlTableDataConsistencyCheckResult(final boolean matched) {
+        this.matched = matched;
     }
 }

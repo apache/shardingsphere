@@ -25,9 +25,9 @@ docker pull apache/shardingsphere-proxy
 * Method 3: Build your own image
 ```bash
 git clone https://github.com/apache/shardingsphere
-mvn clean install
+./mvnw clean install
 cd shardingsphere-distribution/shardingsphere-proxy-distribution
-mvn clean package -Prelease,docker
+./mvnw clean package -Prelease,docker
 ```
 
 If the following problems emerge, please make sure Docker daemon Process is running.
@@ -83,8 +83,3 @@ Support setting environment variable CGROUP_ MEM_ OPTS: used to set related memo
 5. Use Client to connect to ShardingSphere-Proxy
 
 Please refer to [ShardingSphere-Proxy quick start manual - binary distribution packages](/en/user-manual/shardingsphere-proxy/startup/bin/).
-
-## Configuration Example
-
-For full configuration, please refer to the examples given in ShardingSphere library:
-<https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-proxy-example>

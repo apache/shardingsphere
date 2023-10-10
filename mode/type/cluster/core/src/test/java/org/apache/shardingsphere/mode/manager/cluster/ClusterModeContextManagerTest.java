@@ -366,7 +366,7 @@ class ClusterModeContextManagerTest {
     
     private ShardingSphereMetaData createShardingSphereMetaData() {
         return new ShardingSphereMetaData(Collections.singletonMap("db", new ShardingSphereDatabase("db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
-                new ResourceMetaData("db", Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyMap())),
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyMap())),
                 mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
     

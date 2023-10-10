@@ -19,12 +19,10 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -39,8 +37,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 @Slf4j
 public final class ExceptionInTransactionTestCase extends BaseTransactionTestCase {
     
-    public ExceptionInTransactionTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
-        super(baseTransactionITCase, dataSource);
+    public ExceptionInTransactionTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override
@@ -66,17 +64,9 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
                 connection.close();
             }
         }
-        Thread queryThread = new Thread(() -> {
-            try (Connection connection2 = getDataSource().getConnection()) {
-                assertAccountRowCount(connection2, 0);
-            } catch (final SQLException ignored) {
-            }
-        });
-        queryThread.start();
-        try {
-            queryThread.join();
-        } catch (final InterruptedException ignored) {
-            Thread.currentThread().interrupt();
+        try (Connection connection2 = getDataSource().getConnection()) {
+            assertAccountRowCount(connection2, 0);
+        } catch (final SQLException ignored) {
         }
     }
 }

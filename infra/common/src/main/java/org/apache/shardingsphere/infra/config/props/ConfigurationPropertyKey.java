@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.props.TypedPropertyKey;
+import org.slf4j.event.Level;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,7 +37,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * The system log level.
      */
-    SYSTEM_LOG_LEVEL("system-log-level", LoggerLevel.INFO.name(), LoggerLevel.class, false),
+    SYSTEM_LOG_LEVEL("system-log-level", Level.INFO.toString(), Level.class, false),
     
     /**
      * Whether show SQL in log.

@@ -86,7 +86,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
     @BeforeEach
     void before() {
         when(database.getName()).thenReturn("schema");
-        ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", createDataSource());
+        ResourceMetaData resourceMetaData = new ResourceMetaData(createDataSource());
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(new MockDataSourceContainedRule())));
     }

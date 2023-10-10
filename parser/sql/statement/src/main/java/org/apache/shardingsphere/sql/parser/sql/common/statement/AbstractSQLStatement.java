@@ -37,6 +37,8 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final Collection<CommentSegment> commentSegments = new LinkedList<>();
     
+    private final Collection<String> variableNames = new HashSet<>();
+    
     @Override
     public int getParameterCount() {
         return uniqueParameterIndexes.size();

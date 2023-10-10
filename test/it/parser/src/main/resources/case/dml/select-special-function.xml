@@ -41,7 +41,11 @@
             <column-projection name="order_id" start-index="7" stop-index="14" />
             <expression-projection text="ROW_NUMBER() OVER()" start-index="17" stop-index="35">
                 <expr>
-                    <function function-name="ROW_NUMBER" start-index="17" stop-index="35" text="ROW_NUMBER() OVER()" />
+                    <function function-name="OVER" start-index="17" stop-index="35" text="ROW_NUMBER() OVER()" >
+                        <parameter>
+                            <function function-name="ROW_NUMBER" start-index="17" stop-index="26" text="ROW_NUMBER()" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -427,7 +431,7 @@
                 <expr>
                     <function function-name="EXTRACT" text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" start-index="7" stop-index="56" literal-start-index="7" literal-stop-index="56">
                         <parameter>
-                            <literal-expression value="2001-02-16 20:38:40" start-index="25" stop-index="55" literal-start-index="25" literal-stop-index="55" />
+                            <common-expression text="TIMESTAMP '2001-02-16 20:38:40'" start-index="25" stop-index="55" literal-start-index="25" literal-stop-index="55" />
                         </parameter>
                         <literalText>EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')</literalText>
                     </function>
@@ -566,5 +570,25 @@
         <order-by>
             <column-item name="customer_id" order-direction="ASC" start-index="80" stop-index="90" literal-start-index="80" literal-stop-index="90" />
         </order-by>
+    </select>
+    
+    <select sql-case-id="select_pivot">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from>
+            <subquery-table>
+                <subquery>
+                    <select>
+                        <projections start-index="22" stop-index="22">
+                            <shorthand-projection start-index="22" stop-index="22"/>
+                        </projections>
+                        <from start-index="29" stop-index="33">
+                            <simple-table name="sales" start-index="29" stop-index="33"/>
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
     </select>
 </sql-parser-test-cases>

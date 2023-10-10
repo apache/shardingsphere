@@ -111,8 +111,9 @@ class ShardingRouteCacheableCheckerTest {
     
     private ShardingSphereDatabase createDatabase(final ShardingRule shardingRule, final TimestampServiceRule timestampServiceRule) {
         ShardingSphereSchema schema = new ShardingSphereSchema();
-        schema.getTables().put("t_warehouse", new ShardingSphereTable("t_warehouse",
-                Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false)),
+        schema.getTables().put("t_warehouse", new ShardingSphereTable("t_warehouse", Arrays.asList(
+                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("warehouse_name", Types.VARCHAR, false, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
         schema.getTables().put("t_order", new ShardingSphereTable("t_order", Arrays.asList(
                 new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false, false),
@@ -122,8 +123,17 @@ class ShardingRouteCacheableCheckerTest {
                 new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("order_broadcast_table_id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
+        schema.getTables().put("t_non_sharding_table", new ShardingSphereTable("t_non_sharding_table", Collections.singleton(
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)),
+                Collections.emptyList(), Collections.emptyList()));
+        schema.getTables().put("t_non_cacheable_database_sharding", new ShardingSphereTable("t_non_cacheable_database_sharding", Collections.singleton(
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)),
+                Collections.emptyList(), Collections.emptyList()));
+        schema.getTables().put("t_non_cacheable_table_sharding", new ShardingSphereTable("t_non_cacheable_table_sharding", Collections.singleton(
+                new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)),
+                Collections.emptyList(), Collections.emptyList()));
         return new ShardingSphereDatabase(DATABASE_NAME, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"),
-                new ResourceMetaData(DATABASE_NAME, Collections.emptyMap()), new RuleMetaData(Arrays.asList(shardingRule, timestampServiceRule)),
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Arrays.asList(shardingRule, timestampServiceRule)),
                 Collections.singletonMap(SCHEMA_NAME, schema));
     }
     

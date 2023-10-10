@@ -145,7 +145,7 @@ ds_0:
 ```
 ### /metadata/${databaseName}/data_sources/nodes/ds_0/versions/0
 
-数据库连接池的，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid，HikariCP）。
+数据库连接池的，不同数据库连接池属性自适配（例如：HikariCP）。
 
 ```yaml
 ds_0:

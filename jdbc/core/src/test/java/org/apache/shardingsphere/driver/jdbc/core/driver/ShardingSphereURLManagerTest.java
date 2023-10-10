@@ -17,28 +17,18 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
-import com.ctrip.framework.apollo.ConfigFile;
-import com.ctrip.framework.apollo.ConfigService;
-import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.URLProviderNotFoundException;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ConfigService.class)
 class ShardingSphereURLManagerTest {
     
     private final int fooDriverConfigLength = 999;
@@ -61,15 +51,5 @@ class ShardingSphereURLManagerTest {
         String absolutePath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
         byte[] actual = ShardingSphereURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absolutePath, urlPrefix);
         assertThat(actual.length, is(fooDriverConfigLength));
-    }
-    
-    @Test
-    void assertToApolloConfigurationFile() {
-        ConfigFile configFile = mock(ConfigFile.class);
-        when(configFile.getContent()).thenReturn("config content");
-        when(ConfigService.getConfigFile(anyString(), any(ConfigFileFormat.class))).thenReturn(configFile);
-        String url = "jdbc:shardingsphere:apollo:namespace";
-        byte[] content = ShardingSphereURLManager.getContent(url, urlPrefix);
-        assertThat("config content".getBytes(StandardCharsets.UTF_8), is(content));
     }
 }

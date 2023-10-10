@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.config.database.impl;
 
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageNode;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +37,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
     @Test
     void assertGetDataSources() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("foo_ds");
+        DataSource dataSource = databaseConfig.getStorageUnits().get("foo_ds").getDataSource();
         assertTrue(dataSource instanceof CatalogSwitchableDataSource);
         assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof MockedDataSource);
     }
@@ -45,7 +45,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
     @Test
     void assertGetStorageNodes() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        MockedDataSource dataSource = (MockedDataSource) databaseConfig.getStorageResource().getStorageNodeDataSources().get(new StorageNode("foo_ds"));
+        MockedDataSource dataSource = (MockedDataSource) databaseConfig.getDataSources().get(new StorageNode("foo_ds"));
         assertThat(dataSource.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(dataSource.getUsername(), is("root"));
         assertThat(dataSource.getPassword(), is("root"));
@@ -54,7 +54,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
     @Test
     void assertGetStorageUnits() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("foo_ds");
+        DataSource dataSource = databaseConfig.getStorageUnits().get("foo_ds").getDataSource();
         assertTrue(dataSource instanceof CatalogSwitchableDataSource);
         assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof MockedDataSource);
     }
@@ -69,7 +69,7 @@ class DataSourceProvidedDatabaseConfigurationTest {
     @Test
     void assertGetDataSourcePoolProperties() {
         DataSourceProvidedDatabaseConfiguration databaseConfig = createDataSourceProvidedDatabaseConfiguration();
-        DataSourcePoolProperties props = databaseConfig.getDataSourcePoolPropertiesMap().get("foo_ds");
+        DataSourcePoolProperties props = databaseConfig.getStorageUnits().get("foo_ds").getDataSourcePoolProperties();
         Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
         assertThat(poolStandardProps.size(), is(0));
         Map<String, Object> connStandardProps = props.getConnectionPropertySynonyms().getStandardProperties();

@@ -37,7 +37,7 @@ public final class TaskExecuteCallback implements ExecuteCallback {
     
     @Override
     public void onFailure(final Throwable throwable) {
-        log.error("onFailure, task ID={}", task.getTaskId());
+        log.error("onFailure, task ID={}", task.getTaskId(), throwable);
         task.stop();
         IOUtils.closeQuietly(task);
     }

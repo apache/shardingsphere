@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -65,7 +66,10 @@ public final class ExpressionSegmentBinder {
             return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, statementBinderContext, tableBinderContexts);
         }
         if (segment instanceof SubqueryExpressionSegment) {
-            return SubqueryExpressionSegmentBinder.bind((SubqueryExpressionSegment) segment, statementBinderContext, tableBinderContexts);
+            Map<String, TableSegmentBinderContext> newOuterTableBinderContexts = new LinkedHashMap<>();
+            newOuterTableBinderContexts.putAll(outerTableBinderContexts);
+            newOuterTableBinderContexts.putAll(tableBinderContexts);
+            return SubqueryExpressionSegmentBinder.bind((SubqueryExpressionSegment) segment, statementBinderContext, newOuterTableBinderContexts);
         }
         if (segment instanceof InExpression) {
             return InExpressionBinder.bind((InExpression) segment, parentSegmentType, statementBinderContext, tableBinderContexts);

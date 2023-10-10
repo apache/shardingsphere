@@ -17,6 +17,28 @@
   -->
 
 <sql-parser-test-cases>
+    <alter-table sql-case-id="alter_table_drop_partition_for_to_date_function">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_constraint_unique_disable_validate">
+        <table name="sales" start-index="12" stop-index="16" />
+        <add-constraint constraint-name="sales_uk" start-index="22" stop-index="114">
+            <index-column name="prod_id" start-index="50" stop-index="56" />
+            <index-column name="cust_id" start-index="59" stop-index="65" />
+            <index-column name="promo_id" start-index="68" stop-index="75" />
+            <index-column name="channel_id" start-index="78" stop-index="87" />
+            <index-column name="time_id" start-index="90" stop-index="96" />
+        </add-constraint>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_constraint_foreign_key_references_rely_disable_novalidate">
+        <table name="sales" start-index="12" stop-index="16" />
+        <add-constraint constraint-name="sales_time_fk" start-index="22" stop-index="118">
+            <referenced-table name="times" start-index="80" stop-index="84" />
+        </add-constraint>
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_add_constraint_foreign_key_references_enable_novalidate">
         <table name="sales" start-index="12" stop-index="16" />
         <add-constraint constraint-name="sales_time_fk" start-index="22" stop-index="112">
@@ -33,11 +55,6 @@
     
     <alter-table sql-case-id="alter_table_modify_lob_shrink_space">
         <table name="employees" start-index="12" stop-index="20" />
-        <modify-column>
-            <column-definition start-index="29" stop-index="31">
-                <column name="LOB" />
-            </column-definition>
-        </modify-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_set_unused">
@@ -50,11 +67,6 @@
     
     <alter-table sql-case-id="alter_table_modify_lob_cache">
         <table name="employees" start-index="12" stop-index="20" />
-        <modify-column>
-            <column-definition start-index="29" stop-index="31">
-                <column name="LOB" />
-            </column-definition>
-        </modify-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_move_storage_tablespace">
@@ -119,6 +131,7 @@
     
     <alter-table sql-case-id="alter_table_modify7">
         <table name="locations" start-index="12" stop-index="20" />
+        <modify-constraint start-index="22" stop-index="55" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_modify8">
@@ -132,11 +145,7 @@
     
     <alter-table sql-case-id="alter_table_modify9">
         <table name="sales" start-index="12" stop-index="16" />
-        <modify-column>
-            <column-definition type="time_view_fk" start-index="25" stop-index="52">
-                <column name="CONSTRAINT" />
-            </column-definition>
-        </modify-column>
+        <modify-constraint start-index="18" stop-index="52" constraint-name="time_view_fk" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_modify10">
@@ -1109,6 +1118,10 @@
     
     <alter-table sql-case-id="alter_table_rename_column">
         <table name="t_order" start-index="12" stop-index="18" />
+        <rename-column start-index="20" stop-index="52">
+            <old-column-name name="user_id" start-index="34" stop-index="40" />
+            <column-name name="user_id1" start-index="45" stop-index="52" />
+        </rename-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_with_exist_index">
@@ -1577,11 +1590,6 @@
     
     <alter-table sql-case-id="alter_table_modify_lob_nocache">
         <table name="employees" start-index="12" stop-index="20" />
-        <modify-column>
-            <column-definition start-index="29" stop-index="31">
-                <column name="LOB" />
-            </column-definition>
-        </modify-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_move_tablespace1">
@@ -1608,6 +1616,14 @@
         <table name="sales" start-index="12" stop-index="16" />
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_add_partition_values_less_than3">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_values_less_than4">
+        <table name="shipments" start-index="12" stop-index="20" />
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_modify_subpartition_drop_values">
         <table name="quarterly_regional_sales" start-index="12" stop-index="35" />
     </alter-table>
@@ -1626,5 +1642,80 @@
                 <owner start-index="44" stop-index="50" name="mytable" />
             </table>
         </modify-collection-retrieval>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_partition_storage">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_rename_partition1">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_partition2">
+        <table name="scubagear" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_interval_expr">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_constraint_primary_key_disable_validate">
+        <table name="sales_01_2001" start-index="12" stop-index="24" />
+        <add-constraint constraint-name="sales_pk_jan01" start-index="30" stop-index="106">
+            <primary-key-column name="sales_transaction_id" start-index="69" stop-index="88" />
+        </add-constraint>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_move_subpartition_tablespace_parallel">
+        <table name="scuba_gear" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_ref_with_rowid">
+        <table name="staff" start-index="12" stop-index="16" />
+        <add-column>
+            <column-definition start-index="24" stop-index="43">
+                <column name="dept" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_scope_for_is">
+        <table name="staff" start-index="12" stop-index="16" />
+        <add-column>
+            <column-definition start-index="23" stop-index="49">
+                <column name="dept" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_column_no_parentheses">
+        <table name="T_MASK" start-index="12" stop-index="17" />
+        <add-column>
+            <column-definition type="VARCHAR2" start-index="23" stop-index="46">
+                <column name="new_column" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_lob1">
+        <table name="t1" start-index="12" stop-index="13" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_lob2">
+        <table name="t1" start-index="12" stop-index="13" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_move_compress_for_oltp">
+        <table name="table_name" start-index="12" stop-index="21" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_encrypt_identified_by_password">
+        <table name="t1" start-index="12" stop-index="13" />
+        <modify-column>
+            <column-definition type="CLOB" start-index="24" stop-index="55">
+                <column name="a" />
+            </column-definition>
+        </modify-column>
     </alter-table>
 </sql-parser-test-cases>

@@ -59,10 +59,11 @@ public final class DatabaseRulesBuilder {
         for (Entry<RuleConfiguration, DatabaseRuleBuilder> entry : getRuleBuilderMap(databaseConfig).entrySet()) {
             RuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(
                     RuleConfigurationChecker.class, Collections.singleton(entry.getKey().getClass())).get(entry.getKey().getClass());
+            Map<String, DataSource> dataSources = databaseConfig.getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, storageUnit -> storageUnit.getValue().getDataSource()));
             if (null != configChecker) {
-                configChecker.check(databaseName, entry.getKey(), databaseConfig.getDataSources(), result);
+                configChecker.check(databaseName, entry.getKey(), dataSources, result);
             }
-            result.add(entry.getValue().build(entry.getKey(), databaseName, databaseConfig.getDataSources(), result, instanceContext));
+            result.add(entry.getValue().build(entry.getKey(), databaseName, dataSources, result, instanceContext));
         }
         return result;
     }

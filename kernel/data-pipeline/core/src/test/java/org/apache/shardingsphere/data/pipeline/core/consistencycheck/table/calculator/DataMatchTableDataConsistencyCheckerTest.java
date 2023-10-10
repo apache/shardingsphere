@@ -17,21 +17,29 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.DataMatchTableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Arrays;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DataMatchTableDataConsistencyCheckerTest {
     
+    @SneakyThrows(ReflectiveOperationException.class)
     @Test
     void assertInitSuccess() {
         for (String each : Arrays.asList("1", "1000")) {
-            new DataMatchTableDataConsistencyChecker().init(buildAlgorithmProperties(each));
+            DataMatchTableDataConsistencyChecker checker = new DataMatchTableDataConsistencyChecker();
+            checker.init(buildAlgorithmProperties(each));
+            String actual = Plugins.getMemberAccessor().get(DataMatchTableDataConsistencyChecker.class.getDeclaredField("chunkSize"), checker).toString();
+            assertThat(actual, is(each));
         }
     }
     

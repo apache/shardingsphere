@@ -64,7 +64,7 @@ class SubqueryExtractUtilsTest {
         selectStatement.setProjections(new ProjectionsSegment(7, 14));
         selectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(7, 14, new IdentifierValue("order_id"))));
         ColumnSegment left = new ColumnSegment(40, 47, new IdentifierValue("order_id"));
-        SubqueryExpressionSegment right = new SubqueryExpressionSegment(new SubquerySegment(51, 100, subquerySelectStatement));
+        SubqueryExpressionSegment right = new SubqueryExpressionSegment(new SubquerySegment(51, 100, subquerySelectStatement, ""));
         WhereSegment whereSegment = new WhereSegment(34, 100, new BinaryOperationExpression(40, 100, left, right, "=", "order_id = (SELECT order_id FROM t_order WHERE status = 'OK')"));
         selectStatement.setWhere(whereSegment);
         Collection<SubquerySegment> result = SubqueryExtractUtils.getSubquerySegments(selectStatement);
@@ -78,7 +78,7 @@ class SubqueryExtractUtilsTest {
         ColumnSegment right = new ColumnSegment(52, 62, new IdentifierValue("order_id"));
         MySQLSelectStatement subquerySelectStatement = new MySQLSelectStatement();
         subquerySelectStatement.setWhere(new WhereSegment(35, 62, new BinaryOperationExpression(41, 62, left, right, "=", "order_id = oi.order_id")));
-        SubquerySegment subquerySegment = new SubquerySegment(7, 63, subquerySelectStatement);
+        SubquerySegment subquerySegment = new SubquerySegment(7, 63, subquerySelectStatement, "");
         SubqueryProjectionSegment subqueryProjectionSegment = new SubqueryProjectionSegment(subquerySegment, "(SELECT status FROM t_order WHERE order_id = oi.order_id)");
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(7, 79));
@@ -101,7 +101,7 @@ class SubqueryExtractUtilsTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(7, 16));
         selectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(7, 16, new IdentifierValue("order_id"))));
-        selectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(23, 71, subquery)));
+        selectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(23, 71, subquery, "")));
         
         Collection<SubquerySegment> result = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(result.size(), is(1));
@@ -139,8 +139,8 @@ class SubqueryExtractUtilsTest {
         ColumnSegment columnSegment2 = new ColumnSegment(203, 213, new IdentifierValue("order_id"));
         BinaryOperationExpression orderIdCondition = new BinaryOperationExpression(190, 213, columnSegment1, columnSegment2, "=", "o.order_id = oi.order_id");
         from.setCondition(orderIdCondition);
-        SubqueryTableSegment leftSubquerySegment = new SubqueryTableSegment(new SubquerySegment(26, 92, subqueryLeftSelectStatement));
-        SubqueryTableSegment rightSubquerySegment = new SubqueryTableSegment(new SubquerySegment(104, 175, subqueryRightSelectStatement));
+        SubqueryTableSegment leftSubquerySegment = new SubqueryTableSegment(new SubquerySegment(26, 92, subqueryLeftSelectStatement, ""));
+        SubqueryTableSegment rightSubquerySegment = new SubqueryTableSegment(new SubquerySegment(104, 175, subqueryRightSelectStatement, ""));
         from.setLeft(leftSubquerySegment);
         from.setRight(rightSubquerySegment);
         selectStatement.setFrom(from);
@@ -163,8 +163,8 @@ class SubqueryExtractUtilsTest {
         SelectStatement selectStatement = new MySQLSelectStatement();
         ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         selectStatement.setWhere(new WhereSegment(0, 0, new InExpression(0, 0,
-                left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSelectStatement())), false)));
-        return new SubquerySegment(0, 0, selectStatement);
+                left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSelectStatement(), "")), false)));
+        return new SubquerySegment(0, 0, selectStatement, "");
     }
     
     @Test
@@ -179,7 +179,7 @@ class SubqueryExtractUtilsTest {
         SelectStatement result = new MySQLSelectStatement();
         ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         result.setWhere(new WhereSegment(0, 0, new InExpression(0, 0,
-                left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSelectStatement())), false)));
+                left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSelectStatement(), "")), false)));
         return result;
     }
 }

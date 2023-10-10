@@ -2021,4 +2021,19 @@
             <column name="COL4" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_ref_data_type">
+        <table name="location_table" start-index="13" stop-index="26"  />
+        <column-definition type="NUMBER" start-index="29" stop-index="50">
+            <column name="location_number" />
+        </column-definition>
+        <column-definition type="warehouse_typ" start-index="53" stop-index="103">
+            <column name="building" />
+            <referenced-table name="warehouse_table" start-index="89" stop-index="103" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_select">
+        <table name="t_order_new" start-index="13" stop-index="23"/>
+    </create-table>
 </sql-parser-test-cases>

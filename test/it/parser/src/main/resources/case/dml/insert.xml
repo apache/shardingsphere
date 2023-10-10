@@ -1200,12 +1200,36 @@
             </value>
         </values>
         <on-duplicate-key-columns start-index="61" stop-index="126" literal-start-index="65" literal-stop-index="130">
-            <assignment start-index="85" stop-index="126" literal-start-index="89" literal-stop-index="130">
+            <assignment>
                 <column name="salary" start-index="85" stop-index="90" literal-start-index="89" literal-stop-index="94" />
                 <assignment-value>
-                    <!-- FIXME -->
-                    <!--<common-expression text="VALUES(salary)+VALUES(salary)*0.2" />-->
-                    <common-expression text="VALUES(salary)" />
+                    <binary-operation-expression start-index="94" stop-index="126" literal-start-index="98" literal-stop-index="130">
+                        <left>
+                            <binary-operation-expression start-index="94" stop-index="122" literal-start-index="98" literal-stop-index="126">
+                                <left>
+                                    <function function-name="VALUES" text="VALUES(salary)" start-index="94" stop-index="107" literal-start-index="98" literal-stop-index="111">
+                                        <parameter>
+                                            <column name="salary" start-index="101" stop-index="106" literal-start-index="105" literal-stop-index="110" />
+                                        </parameter>
+                                        <literalText>VALUES(salary)</literalText>
+                                    </function>
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <function function-name="VALUES" text="VALUES(salary)" start-index="109" stop-index="122" literal-start-index="113" literal-stop-index="126">
+                                        <parameter>
+                                            <column name="salary" start-index="116" stop-index="121" literal-start-index="120" literal-stop-index="125" />
+                                        </parameter>
+                                        <literalText>VALUES(salary)</literalText>
+                                    </function>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>*</operator>
+                        <right>
+                            <literal-expression value="0.2" start-index="124" stop-index="126" literal-start-index="128" literal-stop-index="130" />
+                        </right>
+                    </binary-operation-expression>
                 </assignment-value>
             </assignment>
         </on-duplicate-key-columns>
@@ -1338,8 +1362,9 @@
     </insert>
 
     <insert sql-case-id="insert_all_with_all_placeholders" parameters="1, 1, 'init', 2, 2, 'init', 3, 3, 'init'">
-        <multi-table-element start-index="11" stop-index="183" literal-start-index="11" literal-stop-index="198">
-            <table-element>
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="11" stop-index="183" literal-start-index="11" literal-stop-index="198">
+            <insert-statement parameters="1, 1, 'init'">
                 <table name="t_order" start-index="16" stop-index="22" />
                 <columns start-index="24" stop-index="50">
                     <column name="order_id" start-index="25" stop-index="32" />
@@ -1362,8 +1387,8 @@
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-            <table-element>
+            </insert-statement>
+            <insert-statement parameters="2, 2, 'init'">
                 <table name="t_order" start-index="74" stop-index="80" literal-start-index="79" literal-stop-index="85" />
                 <columns start-index="82" stop-index="108" literal-start-index="87" literal-stop-index="113">
                     <column name="order_id" start-index="83" stop-index="90" literal-start-index="88" literal-stop-index="95" />
@@ -1386,8 +1411,8 @@
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-            <table-element>
+            </insert-statement>
+            <insert-statement parameters="2, 2, 'init'">
                 <table name="t_order" start-index="132" stop-index="138" literal-start-index="142" literal-stop-index="148" />
                 <columns start-index="140" stop-index="166" literal-start-index="150" literal-stop-index="176">
                     <column name="order_id" start-index="141" stop-index="148" literal-start-index="151" literal-stop-index="158" />
@@ -1410,8 +1435,8 @@
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-        </multi-table-element>
+            </insert-statement>
+        </multi-table-insert-into>
         <select>
             <from>
                 <simple-table name="dual" start-index="199" stop-index="202" literal-start-index="214" literal-stop-index="217" />
@@ -1468,7 +1493,7 @@
             <column name="user_id" start-index="31" stop-index="37" />
             <column name="status" start-index="40" stop-index="45" />
         </columns>
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order" start-index="86" stop-index="92" />
             </from>
@@ -1497,7 +1522,7 @@
     <insert sql-case-id="insert_select_without_columns" parameters="100">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="19" stop-index="19" />
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order" start-index="58" stop-index="64" />
             </from>
@@ -1532,7 +1557,7 @@
             <column name="status" start-index="53" stop-index="58" />
             <column name="creation_date" start-index="61" stop-index="73" />
         </columns>
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order_item" start-index="139" stop-index="150" />
             </from>
@@ -1568,7 +1593,7 @@
             <column name="status" start-index="44" stop-index="49" />
             <column name="creation_date" start-index="52" stop-index="64" />
         </columns>
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order_item" start-index="121" stop-index="132" />
             </from>
@@ -1602,7 +1627,7 @@
             <column name="user_id" start-index="30" stop-index="36" />
             <column name="status" start-index="39" stop-index="44" />
         </columns>
-        <select>
+        <select parameters="100">
             <from>
                 <simple-table name="t_order" start-index="85" stop-index="91" />
             </from>
@@ -2021,8 +2046,9 @@
     </insert>
 
     <insert sql-case-id="insert_with_multitable_element">
-        <multi-table-element start-index="11" stop-index="231">
-            <table-element>
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="11" stop-index="231">
+            <insert-statement>
                 <table name="sales" start-index="16" stop-index="20" />
                 <columns start-index="22" stop-index="56">
                     <column name="prod_id" start-index="23" stop-index="29" />
@@ -2046,8 +2072,8 @@
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-            <table-element>
+            </insert-statement>
+            <insert-statement>
                 <table name="sales" start-index="126" stop-index="130" />
                 <columns start-index="132" stop-index="166">
                     <column name="prod_id" start-index="133" stop-index="139" />
@@ -2067,12 +2093,20 @@
                             <column name="sales_mon" start-index="201" stop-index="209" />
                         </assignment-value>
                         <assignment-value>
-                            <common-expression text="weekly_start_date+1" start-index="212" stop-index="230" />
+                            <binary-operation-expression start-index="212" stop-index="230" literal-start-index="212" literal-stop-index="230">
+                                <left>
+                                    <column name="weekly_start_date" start-index="212" stop-index="228" literal-start-index="212" literal-stop-index="228" />
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <literal-expression value="1" start-index="230" stop-index="230" literal-start-index="230" literal-stop-index="230" />
+                                </right>
+                            </binary-operation-expression>
                         </assignment-value>
                     </value>
                 </values>
-            </table-element>
-        </multi-table-element>
+            </insert-statement>
+        </multi-table-insert-into>
         <select>
             <from>
                 <simple-table name="sales_input_table" start-index="310" stop-index="326" />
@@ -2087,21 +2121,83 @@
         </select>
     </insert>
 
-    <insert sql-case-id="insert_all_with_multitable_with_conditional_when">
-        <multi-table-element start-index="7" stop-index="185">
-            <table-element>
-                <table name="small_orders" start-index="48" stop-index="59" />
-                <columns start-index="60" stop-index="60" />
-            </table-element>
-            <table-element>
-                <table name="medium_orders" start-index="124" stop-index="136" />
-                <columns start-index="137" stop-index="137" />
-            </table-element>
-            <table-element>
-                <table name="large_orders" start-index="174" stop-index="185" />
-                <columns start-index="186" stop-index="186" />
-            </table-element>
-        </multi-table-element>
+    <insert sql-case-id="insert_all_with_multi_table_with_conditional_when">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-conditional-into start-index="7" stop-index="185">
+            <conditional-into-when-then start-index="11" stop-index="59">
+                <when start-index="16" stop-index="36">
+                    <binary-operation-expression start-index="16" stop-index="36">
+                        <left>
+                            <column name="order_total" start-index="16" stop-index="26" />
+                        </left>
+                        <operator>&lt;=</operator>
+                        <right>
+                            <literal-expression value="100000" start-index="31" stop-index="36" />
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="43" stop-index="59">
+                    <insert-statement>
+                        <table name="small_orders" start-index="48" stop-index="59" />
+                        <columns start-index="60" stop-index="60" />
+                    </insert-statement>        
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-when-then start-index="61" stop-index="136">
+                <when start-index="66" stop-index="112">
+                    <binary-operation-expression start-index="66" stop-index="112">
+                        <left>
+                            <binary-operation-expression start-index="66" stop-index="86">
+                                <left>
+                                    <column name="order_total" start-index="66" stop-index="76" />
+                                </left>
+                                <operator>&gt;</operator>
+                                <right>
+                                    <literal-expression value="1000000" start-index="80" stop-index="86" />
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <binary-operation-expression start-index="92" stop-index="112">
+                                <left>
+                                    <column name="order_total" start-index="92" stop-index="102" />
+                                </left>
+                                <operator>&lt;=</operator>
+                                <right>
+                                    <literal-expression value="200000" start-index="107" stop-index="112" />
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="119" stop-index="136">
+                    <insert-statement>
+                        <table name="medium_orders" start-index="124" stop-index="136" />
+                        <columns start-index="137" stop-index="137" />
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-when-then start-index="138" stop-index="185">
+                <when start-index="143" stop-index="162">
+                    <binary-operation-expression start-index="143" stop-index="162">
+                        <left>
+                            <column name="order_total" start-index="143" stop-index="153" />
+                        </left>
+                        <operator>&gt;</operator>
+                        <right>
+                            <literal-expression value="200000" start-index="157" stop-index="162" />
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="169" stop-index="185">
+                    <insert-statement>
+                        <table name="large_orders" start-index="174" stop-index="185" />
+                        <columns start-index="186" stop-index="186" />
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+        </multi-table-conditional-into>
         <select>
             <from>
                 <simple-table name="orders" start-index="248" stop-index="253" />
@@ -2115,21 +2211,70 @@
         </select>
     </insert>
 
-    <insert sql-case-id="insert_all_with_multitable_with_conditional_when_with_conditional_else">
-        <multi-table-element start-index="7" stop-index="158">
-            <table-element>
-                <table name="small_orders" start-index="48" stop-index="59" />
-                <columns start-index="60" stop-index="60" />
-            </table-element>
-            <table-element>
-                <table name="medium_orders" start-index="123" stop-index="135" />
-                <columns start-index="136" stop-index="136" />
-            </table-element>
-            <table-element>
-                <table name="large_orders" start-index="147" stop-index="158" />
-                <columns start-index="159" stop-index="159" />
-            </table-element>
-        </multi-table-element>
+    <insert sql-case-id="insert_all_with_multi_table_with_conditional_when_with_conditional_else">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-conditional-into start-index="7" stop-index="158">
+            <conditional-into-when-then start-index="11" stop-index="59">
+                <when start-index="16" stop-index="36">
+                    <binary-operation-expression start-index="16" stop-index="36">
+                        <left>
+                            <column name="order_total" start-index="16" stop-index="26" />
+                        </left>
+                        <operator>&lt;=</operator>
+                        <right>
+                            <literal-expression value="100000" start-index="31" stop-index="36" />
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="43" stop-index="59">
+                    <insert-statement>
+                        <table name="small_orders" start-index="48" stop-index="59" />
+                        <columns start-index="60" stop-index="60" />
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-when-then start-index="61" stop-index="135">
+                <when start-index="66" stop-index="111">
+                    <binary-operation-expression start-index="66" stop-index="111">
+                        <left>
+                            <binary-operation-expression start-index="66" stop-index="85">
+                                <left>
+                                    <column name="order_total" start-index="66" stop-index="76" />
+                                </left>
+                                <operator>&gt;</operator>
+                                <right>
+                                    <literal-expression value="100000" start-index="80" stop-index="85" />
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <binary-operation-expression start-index="91" stop-index="111">
+                                <left>
+                                    <column name="order_total" start-index="91" stop-index="101" />
+                                </left>
+                                <operator>&lt;=</operator>
+                                <right>
+                                    <literal-expression value="200000" start-index="106" stop-index="111" />
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="118" stop-index="135">
+                    <insert-statement>
+                        <table name="medium_orders" start-index="123" stop-index="135" />
+                        <columns start-index="136" stop-index="136" />
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-else start-index="137" stop-index="158">
+                <insert-statement>
+                    <table name="large_orders" start-index="147" stop-index="158" />
+                    <columns start-index="159" stop-index="159" />
+                </insert-statement>
+            </conditional-into-else>
+        </multi-table-conditional-into>
         <select>
             <from>
                 <simple-table name="orders" start-index="221" stop-index="226" />
@@ -2227,7 +2372,15 @@
             <assignment start-index="96" stop-index="116">
                 <column name="user_id" start-index="96" stop-index="102" />
                 <assignment-value>
-                    <common-expression literal-text="user_id + 1" start-index="106" stop-index="116" />
+                    <binary-operation-expression start-index="106" stop-index="116" literal-start-index="106" literal-stop-index="116">
+                        <left>
+                            <column name="user_id" start-index="106" stop-index="112" literal-start-index="106" literal-stop-index="112" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <literal-expression value="1" start-index="116" stop-index="116" literal-start-index="116" literal-stop-index="116" />
+                        </right>
+                    </binary-operation-expression>
                 </assignment-value>
             </assignment>
             <assignment start-index="119" stop-index="133">
@@ -2270,13 +2423,13 @@
         <values>
             <value>
                 <assignment-value>
-                    <literal-expression value="1999-12-01 10:00:00" start-index="30" stop-index="59" />
+                    <common-expression text="TIMESTAMP'1999-12-01 10:00:00'" start-index="30" stop-index="59" />
                 </assignment-value>
                 <assignment-value>
-                    <literal-expression value="1999-12-01 10:00:00" start-index="62" stop-index="91" />
+                    <common-expression text="TIMESTAMP'1999-12-01 10:00:00'" start-index="62" stop-index="91" />
                 </assignment-value>
                 <assignment-value>
-                    <literal-expression value="1999-12-01 10:00:00" start-index="94" stop-index="123" />
+                    <common-expression text="TIMESTAMP'1999-12-01 10:00:00'" start-index="94" stop-index="123" />
                 </assignment-value>
             </value>
         </values>
@@ -2409,5 +2562,198 @@
                 </assignment-value>
             </value>
         </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_oracle_datetime_type">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="93">
+            <column name="create_date" start-index="21" stop-index="31" />
+            <column name="create_timestamp" start-index="34" stop-index="49" />
+            <column name="create_interval_year" start-index="52" stop-index="71" />
+            <column name="create_interval_day" start-index="74" stop-index="92" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="103" stop-index="125" literal-start-index="103" literal-stop-index="125">
+                        <parameter>
+                            <literal-expression value="'2009'" start-index="111" stop-index="116" literal-start-index="111" literal-stop-index="116" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="'YYYY'" start-index="119" stop-index="124" literal-start-index="119" literal-stop-index="124" />
+                        </parameter>
+                        <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                    </function>
+                </assignment-value>
+                <assignment-value>
+                    <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="128" stop-index="150" literal-start-index="128" literal-stop-index="150">
+                        <parameter>
+                            <literal-expression value="'2009'" start-index="136" stop-index="141" literal-start-index="136" literal-stop-index="141" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="'YYYY'" start-index="144" stop-index="149" literal-start-index="144" literal-stop-index="149" />
+                        </parameter>
+                        <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                    </function>
+                </assignment-value>
+                <assignment-value>
+                    <interval-expression>
+                        <left>
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="154" stop-index="176" literal-start-index="154" literal-stop-index="176">
+                                <parameter>
+                                    <literal-expression value="'2009'" start-index="162" stop-index="167" literal-start-index="162" literal-stop-index="167" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'YYYY'" start-index="170" stop-index="175" literal-start-index="170" literal-stop-index="175" />
+                                </parameter>
+                                <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                            </function>
+                        </left>
+                        <right>
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="180" stop-index="202" literal-start-index="180" literal-stop-index="202">
+                                <parameter>
+                                    <literal-expression value="'2009'" start-index="188" stop-index="193" literal-start-index="188" literal-stop-index="193" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'YYYY'" start-index="196" stop-index="201" literal-start-index="196" literal-stop-index="201" />
+                                </parameter>
+                                <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                            </function>
+                        </right>
+                    </interval-expression>
+                </assignment-value>
+                <assignment-value>
+                    <interval-expression>
+                        <left>
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="221" stop-index="243" literal-start-index="221" literal-stop-index="243">
+                                <parameter>
+                                    <literal-expression value="'2009'" start-index="229" stop-index="234" literal-start-index="229" literal-stop-index="234" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'YYYY'" start-index="237" stop-index="242" literal-start-index="237" literal-stop-index="242" />
+                                </parameter>
+                                <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                            </function>
+                        </left>
+                        <right>
+                            <function function-name="TO_DATE" text="TO_DATE('2009', 'YYYY')" start-index="247" stop-index="269" literal-start-index="247" literal-stop-index="269">
+                                <parameter>
+                                    <literal-expression value="'2009'" start-index="255" stop-index="260" literal-start-index="255" literal-stop-index="260" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="'YYYY'" start-index="263" stop-index="268" literal-start-index="263" literal-stop-index="268" />
+                                </parameter>
+                                <literalText>TO_DATE('2009', 'YYYY')</literalText>
+                            </function>
+                        </right>
+                    </interval-expression>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_all_into">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="11" stop-index="213">
+            <insert-statement>
+                <table name="T_MASK" start-index="16" stop-index="21" />
+                <columns start-index="22" stop-index="50">
+                    <column name="ID" start-index="23" stop-index="24" />
+                    <column name="EMAIL" start-index="26" stop-index="30" />
+                    <column name="NAME" start-index="32" stop-index="35" />
+                    <column name="PHONE" start-index="37" stop-index="41" />
+                    <column name="ADDRESS" start-index="43" stop-index="49" />
+                </columns>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <literal-expression value="1" start-index="60" stop-index="60" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="62" stop-index="64" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="3" start-index="66" stop-index="68" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="4" start-index="70" stop-index="72" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="5" start-index="74" stop-index="76" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert-statement>
+            <insert-statement>
+                <table name="T_MASK" start-index="84" stop-index="89" />
+                <columns start-index="90" stop-index="118">
+                    <column name="ID" start-index="91" stop-index="92" />
+                    <column name="EMAIL" start-index="94" stop-index="98" />
+                    <column name="NAME" start-index="100" stop-index="103" />
+                    <column name="PHONE" start-index="105" stop-index="109" />
+                    <column name="ADDRESS" start-index="111" stop-index="117" />
+                </columns>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="128" stop-index="128" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="130" stop-index="132" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="3" start-index="134" stop-index="136" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="4" start-index="138" stop-index="140" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="5" start-index="142" stop-index="144" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert-statement>
+            <insert-statement>
+                <table name="T_MASK" start-index="152" stop-index="157" />
+                <columns start-index="158" stop-index="186">
+                    <column name="ID" start-index="159" stop-index="160" />
+                    <column name="EMAIL" start-index="162" stop-index="166" />
+                    <column name="NAME" start-index="168" stop-index="171" />
+                    <column name="PHONE" start-index="173" stop-index="177" />
+                    <column name="ADDRESS" start-index="179" stop-index="185" />
+                </columns>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <literal-expression value="3" start-index="196" stop-index="196" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="2" start-index="198" stop-index="200" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="3" start-index="202" stop-index="204" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="4" start-index="206" stop-index="208" />
+                        </assignment-value>
+                        <assignment-value>
+                            <literal-expression value="5" start-index="210" stop-index="212" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert-statement>
+        </multi-table-insert-into>
+        <select>
+            <projections start-index="222" stop-index="222">
+                <expression-projection start-index="222" stop-index="222" text="1">
+                    <expr>
+                        <literal-expression start-index="222" stop-index="222" value="1" />
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <simple-table name="DUAL" start-index="229" stop-index="232" />
+            </from>
+        </select>
     </insert>
 </sql-parser-test-cases>

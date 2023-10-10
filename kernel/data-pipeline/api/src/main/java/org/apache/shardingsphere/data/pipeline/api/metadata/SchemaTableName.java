@@ -42,4 +42,14 @@ public class SchemaTableName {
         this.schemaName = new SchemaName(schemaName);
         this.tableName = new TableName(tableName);
     }
+    
+    /**
+     * Marshal to text.
+     *
+     * @return text
+     */
+    public String marshal() {
+        String schemaName = this.schemaName.getOriginal();
+        return null == schemaName ? tableName.getOriginal() : schemaName + "." + tableName.getOriginal();
+    }
 }

@@ -67,9 +67,9 @@ public final class MergeStatementAssert {
     
     private static void assertExpression(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
         if (null == expected.getExpr()) {
-            assertNull(actual.getExpr(), assertContext.getText("Actual expression should not exist."));
+            assertNull(actual.getExpression(), assertContext.getText("Actual expression should not exist."));
         } else {
-            ExpressionAssert.assertExpression(assertContext, actual.getExpr(), expected.getExpr());
+            ExpressionAssert.assertExpression(assertContext, actual.getExpression().getExpr(), expected.getExpr());
         }
     }
     

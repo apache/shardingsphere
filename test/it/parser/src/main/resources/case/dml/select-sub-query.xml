@@ -108,7 +108,7 @@
         <from>
             <subquery-table alias="t">
                 <subquery>
-                    <select>
+                    <select parameters="3, 4">
                         <projections start-index="24" stop-index="24">
                             <shorthand-projection start-index="24" stop-index="24" />
                         </projections>

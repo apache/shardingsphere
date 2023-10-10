@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.database.oracle.metadata.data.loader;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderConnection;
+import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -76,11 +76,11 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     private static final int MAX_EXPRESSION_SIZE = 1000;
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
-        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1F);
-        Map<String, Collection<IndexMetaData>> indexMetaDataMap = new HashMap<>(tables.size(), 1F);
-        try (Connection connection = new MetaDataLoaderConnection(TypedSPILoader.getService(DatabaseType.class, "Oracle"), dataSource.getConnection())) {
-            for (List<String> each : Lists.partition(new ArrayList<>(tables), MAX_EXPRESSION_SIZE)) {
+    public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
+        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(material.getActualTableNames().size(), 1F);
+        Map<String, Collection<IndexMetaData>> indexMetaDataMap = new HashMap<>(material.getActualTableNames().size(), 1F);
+        try (Connection connection = new MetaDataLoaderConnection(TypedSPILoader.getService(DatabaseType.class, "Oracle"), material.getDataSource().getConnection())) {
+            for (List<String> each : Lists.partition(new ArrayList<>(material.getActualTableNames()), MAX_EXPRESSION_SIZE)) {
                 columnMetaDataMap.putAll(loadColumnMetaDataMap(connection, each));
                 indexMetaDataMap.putAll(loadIndexMetaData(connection, each));
             }
@@ -90,7 +90,7 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
             tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
         }
         // TODO Load views from Oracle database.
-        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList));
+        return Collections.singletonList(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaDataList));
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {

@@ -20,10 +20,11 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import javax.sql.DataSource;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -72,9 +74,7 @@ class ShardingSphereConnectionTest {
     @Test
     void assertSetAutoCommitWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
-        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getDataSource().getConnection()).thenReturn(physicalConnection);
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(storageUnit))) {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection))) {
             connection.getDatabaseConnectionManager().getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
             connection.setAutoCommit(true);
             assertTrue(connection.getAutoCommit());
@@ -98,9 +98,7 @@ class ShardingSphereConnectionTest {
     @Test
     void assertCommitWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
-        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getDataSource().getConnection()).thenReturn(physicalConnection);
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(storageUnit))) {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection))) {
             connection.getDatabaseConnectionManager().getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
             connection.setAutoCommit(false);
             assertFalse(connection.getAutoCommit());
@@ -133,9 +131,7 @@ class ShardingSphereConnectionTest {
     @Test
     void assertRollbackWithLocalTransaction() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
-        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getDataSource().getConnection()).thenReturn(physicalConnection);
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(storageUnit))) {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection))) {
             connection.getDatabaseConnectionManager().getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
             connection.setAutoCommit(false);
             assertFalse(connection.getAutoCommit());
@@ -216,9 +212,7 @@ class ShardingSphereConnectionTest {
     @Test
     void assertCreateArrayOf() throws SQLException {
         Connection physicalConnection = mock(Connection.class);
-        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getDataSource().getConnection()).thenReturn(physicalConnection);
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(storageUnit))) {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection))) {
             connection.getDatabaseConnectionManager().getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
             assertNull(connection.createArrayOf("int", null));
         }
@@ -230,9 +224,7 @@ class ShardingSphereConnectionTest {
         CallableStatement expected = mock(CallableStatement.class);
         Connection physicalConnection = mock(Connection.class);
         when(physicalConnection.prepareCall("")).thenReturn(expected);
-        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getDataSource().getConnection()).thenReturn(physicalConnection);
-        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(storageUnit))) {
+        try (ShardingSphereConnection connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(physicalConnection))) {
             assertThat(connection.prepareCall(""), is(expected));
         }
     }
@@ -246,11 +238,17 @@ class ShardingSphereConnectionTest {
     }
     
     private ContextManager mockContextManager() {
-        return mockContextManager(mock(StorageUnit.class, RETURNS_DEEP_STUBS));
+        return mockContextManager(new MockedDataSource());
     }
     
-    private ContextManager mockContextManager(final StorageUnit storageUnit) {
+    private ContextManager mockContextManager(final Connection connection) {
+        return mockContextManager(new MockedDataSource(connection));
+    }
+    
+    private ContextManager mockContextManager(final DataSource dataSource) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(dataSource);
         when(result.getStorageUnits(DefaultDatabase.LOGIC_NAME)).thenReturn(Collections.singletonMap("ds", storageUnit));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mockTransactionRule(), mock(TrafficRule.class))));
         return result;

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -90,14 +90,16 @@ class DriverDatabaseConnectionManagerTest {
     
     private Map<String, StorageUnit> mockStorageUnits() throws SQLException {
         Map<String, StorageUnit> result = new HashMap<>(2, 1F);
-        StorageUnit validStorageUnit = mock(StorageUnit.class);
-        when(validStorageUnit.getDataSource()).thenReturn(new MockedDataSource());
-        result.put("ds", validStorageUnit);
-        StorageUnit invalidStorageUnit = mock(StorageUnit.class);
+        result.put("ds", mockStorageUnit(new MockedDataSource()));
         DataSource invalidDataSource = mock(DataSource.class);
         when(invalidDataSource.getConnection()).thenThrow(new SQLException());
-        when(invalidStorageUnit.getDataSource()).thenReturn(invalidDataSource);
-        result.put("invalid_ds", invalidStorageUnit);
+        result.put("invalid_ds", mockStorageUnit(invalidDataSource));
+        return result;
+    }
+    
+    private StorageUnit mockStorageUnit(final DataSource dataSource) {
+        StorageUnit result = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+        when(result.getDataSource()).thenReturn(dataSource);
         return result;
     }
     
@@ -136,8 +138,9 @@ class DriverDatabaseConnectionManagerTest {
     @Test
     void assertGetRandomPhysicalDataSourceNameFromCache() throws SQLException {
         databaseConnectionManager.getConnections("ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
-        String actual = databaseConnectionManager.getRandomPhysicalDataSourceName();
-        assertThat(actual, is("ds"));
+        assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
+        assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
+        assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
     }
     
     @Test

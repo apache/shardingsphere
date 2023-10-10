@@ -667,6 +667,8 @@ public enum SQLVisitorRule {
     
     CREATE_MATERIALIZED_VIEW("CreateMaterializedView", SQLStatementType.DDL),
     
+    CREATE_MATERIALIZED_VIEW_LOG("CreateMaterializedViewLog", SQLStatementType.DDL),
+    
     CREATE_OPERATOR("CreateOperator", SQLStatementType.DDL),
     
     CREATE_POLICY("CreatePolicy", SQLStatementType.DDL),
@@ -691,7 +693,9 @@ public enum SQLVisitorRule {
     
     SYSTEM_ACTION("SystemAction", SQLStatementType.DDL),
     
-    EMPTY_STATEMENT("EmptyStatement", SQLStatementType.DAL);
+    EMPTY_STATEMENT("EmptyStatement", SQLStatementType.DAL),
+    
+    CREATE_JAVA("CreateJava", SQLStatementType.DDL);
     
     private final String name;
     

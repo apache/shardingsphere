@@ -31,11 +31,11 @@ import java.util.LinkedList;
  * CRC32 match table data consistency checker.
  */
 @SPIDescription("Match CRC32 of records.")
-public final class CRC32MatchTableDataConsistencyChecker extends MatchingTableDataConsistencyChecker {
+public final class CRC32MatchTableDataConsistencyChecker implements TableDataConsistencyChecker {
     
     @Override
-    protected SingleTableInventoryCalculator buildSingleTableInventoryCalculator() {
-        return new CRC32SingleTableInventoryCalculator();
+    public TableInventoryChecker buildTableInventoryChecker(final TableInventoryCheckParameter param) {
+        return new CRC32MatchTableInventoryChecker(param);
     }
     
     @Override
@@ -48,7 +48,23 @@ public final class CRC32MatchTableDataConsistencyChecker extends MatchingTableDa
     }
     
     @Override
+    public void close() {
+    }
+    
+    @Override
     public String getType() {
         return "CRC32_MATCH";
+    }
+    
+    private static final class CRC32MatchTableInventoryChecker extends MatchingTableInventoryChecker {
+        
+        CRC32MatchTableInventoryChecker(final TableInventoryCheckParameter param) {
+            super(param);
+        }
+        
+        @Override
+        protected SingleTableInventoryCalculator buildSingleTableInventoryCalculator() {
+            return new CRC32SingleTableInventoryCalculator();
+        }
     }
 }

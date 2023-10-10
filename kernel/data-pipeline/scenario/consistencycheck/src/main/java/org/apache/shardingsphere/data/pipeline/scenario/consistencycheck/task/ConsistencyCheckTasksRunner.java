@@ -101,8 +101,11 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
                         parentJobConfig, jobAPI.buildPipelineProcessContext(parentJobConfig), jobItemContext.getProgressContext());
                 consistencyChecker.set(checker);
                 Map<String, TableDataConsistencyCheckResult> checkResultMap = checker.check(checkJobConfig.getAlgorithmTypeName(), checkJobConfig.getAlgorithmProps());
-                log.info("job {} with check algorithm '{}' data consistency checker result: {}", parentJobId, checkJobConfig.getAlgorithmTypeName(), checkResultMap);
-                PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(parentJobId)).persistCheckJobResult(parentJobId, checkJobId, checkResultMap);
+                log.info("job {} with check algorithm '{}' data consistency checker result: {}, stopping: {}",
+                        parentJobId, checkJobConfig.getAlgorithmTypeName(), checkResultMap, jobItemContext.isStopping());
+                if (!jobItemContext.isStopping()) {
+                    PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(parentJobId)).persistCheckJobResult(parentJobId, checkJobId, checkResultMap);
+                }
             } finally {
                 jobItemContext.getProgressContext().setCheckEndTimeMillis(System.currentTimeMillis());
             }
@@ -121,6 +124,10 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         
         @Override
         public void onSuccess() {
+            if (jobItemContext.isStopping()) {
+                log.info("onSuccess, stopping true, ignore");
+                return;
+            }
             log.info("onSuccess, check job id: {}, parent job id: {}", checkJobId, parentJobId);
             jobItemContext.setStatus(JobStatus.FINISHED);
             checkJobAPI.persistJobItemProgress(jobItemContext);
@@ -136,7 +143,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
                 return;
             }
             log.info("onFailure, check job id: {}, parent job id: {}", checkJobId, parentJobId, throwable);
-            checkJobAPI.persistJobItemErrorMessage(checkJobId, 0, throwable);
+            checkJobAPI.updateJobItemErrorMessage(checkJobId, 0, throwable);
             checkJobAPI.stop(checkJobId);
         }
     }

@@ -42,8 +42,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MigrationDataConsistencyCheckerTest {
@@ -64,15 +62,14 @@ class MigrationDataConsistencyCheckerTest {
         governanceRepositoryAPI.persist(String.format("/pipeline/jobs/%s/config", jobConfig.getJobId()), YamlEngine.marshal(jobConfigurationPOJO));
         governanceRepositoryAPI.persistJobItemProgress(jobConfig.getJobId(), 0, "");
         Map<String, TableDataConsistencyCheckResult> actual = new MigrationDataConsistencyChecker(jobConfig, new MigrationProcessContext(jobConfig.getJobId(), null),
-                createConsistencyCheckJobItemProgressContext()).check("FIXTURE", null);
-        String checkKey = "ds_0.t_order";
-        assertTrue(actual.get(checkKey).getCountCheckResult().isMatched());
-        assertThat(actual.get(checkKey).getCountCheckResult().getSourceRecordsCount(), is(actual.get(checkKey).getCountCheckResult().getTargetRecordsCount()));
-        assertTrue(actual.get(checkKey).getContentCheckResult().isMatched());
+                createConsistencyCheckJobItemProgressContext(jobConfig.getJobId())).check("FIXTURE", null);
+        String checkKey = "t_order";
+        assertTrue(actual.get(checkKey).isMatched());
+        assertTrue(actual.get(checkKey).isMatched());
     }
     
-    private ConsistencyCheckJobItemProgressContext createConsistencyCheckJobItemProgressContext() {
-        return new ConsistencyCheckJobItemProgressContext("", 0);
+    private ConsistencyCheckJobItemProgressContext createConsistencyCheckJobItemProgressContext(final String jobId) {
+        return new ConsistencyCheckJobItemProgressContext(jobId, 0, "H2");
     }
     
     private MigrationJobConfiguration createJobConfiguration() throws SQLException {

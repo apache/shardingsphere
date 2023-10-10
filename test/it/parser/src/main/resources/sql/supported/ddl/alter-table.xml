@@ -17,6 +17,9 @@
   -->
 
 <sql-cases>
+    <sql-case id="alter_table_drop_partition_for_to_date_function" value="ALTER TABLE sales DROP PARTITION FOR(TO_DATE('01-SEP-2007','dd-MON-yyyy'))" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_unique_disable_validate" value="ALTER TABLE sales ADD CONSTRAINT sales_uk UNIQUE (prod_id, cust_id, promo_id, channel_id, time_id) DISABLE VALIDATE" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_foreign_key_references_rely_disable_novalidate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) RELY DISABLE NOVALIDATE" db-types="Oracle" />
     <sql-case id="alter_table_add_constraint_foreign_key_references_enable_novalidate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) ENABLE NOVALIDATE" db-types="Oracle" />
     <sql-case id="alter_table_add_constraint_foreign_key_references_enable_validate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) ENABLE VALIDATE" db-types="Oracle" />
     <sql-case id="alter_table_modify_lob_shrink_space" value="ALTER TABLE employees MODIFY LOB (perf_review) (SHRINK SPACE)" db-types="Oracle" />
@@ -211,7 +214,22 @@
     <sql-case id="alter_table_modify_subpartition_add_values" value="ALTER TABLE quarterly_regional_sales MODIFY SUBPARTITION q1_1999_southeast ADD VALUES ('KS')" db-types="Oracle" />
     <sql-case id="alter_table_add_partition_values_less_than1" value="ALTER TABLE quarterly_regional_sales ADD PARTITION q1_2000 VALUES LESS THAN (TO_DATE('1-APR-2000','DD-MON-YYYY')) STORAGE (INITIAL 20K NEXT 20K) TABLESPACE ts3 NOLOGGING(SUBPARTITION q1_2000_northwest VALUES ('OR', 'WA'), SUBPARTITION q1_2000_southwest VALUES ('AZ', 'UT', 'NM'), SUBPARTITION q1_2000_northeast VALUES ('NY', 'VM', 'NJ'), SUBPARTITION q1_2000_southeast VALUES ('FL', 'GA'), SUBPARTITION q1_2000_northcentral VALUES ('SD', 'WI'), SUBPARTITION q1_2000_southcentral VALUES ('OK', 'TX'))" db-types="Oracle" />
     <sql-case id="alter_table_add_partition_values_less_than2" value="ALTER TABLE sales ADD PARTITION jan99 VALUES LESS THAN ('01-FEB-1999') TABLESPACE tsx" db-types="Oracle" />
+    <sql-case id="alter_table_add_partition_values_less_than3" value="ALTER TABLE sales ADD PARTITION sales_01_2001  VALUES LESS THAN (TO_DATE('01-FEB-2001', 'DD-MON-YYYY'))" db-types="Oracle" />
+    <sql-case id="alter_table_add_partition_values_less_than4" value="ALTER TABLE shipments ADD PARTITION p_2007_jan VALUES LESS THAN (TO_DATE('01-FEB-2007','dd-MON-yyyy')) COMPRESS (SUBPARTITION p07_jan_e VALUES LESS THAN (TO_DATE('15-FEB-2007','dd-MON-yyyy')), SUBPARTITION p07_jan_a VALUES LESS THAN (TO_DATE('01-MAR-2007','dd-MON-yyyy')), SUBPARTITION p07_jan_l VALUES LESS THAN (TO_DATE('01-APR-2007','dd-MON-yyyy')))" db-types="Oracle" />
     <sql-case id="alter_table_modify_subpartition_drop_values" value="ALTER TABLE quarterly_regional_sales MODIFY SUBPARTITION q1_1999_southeast DROP VALUES ('KS')" db-types="Oracle" />
     <sql-case id="alter_table_modify_nested_table_return_as_value" value="ALTER TABLE print_media MODIFY NESTED TABLE ad_textdocs_ntab RETURN AS VALUE" db-types="Oracle" />
     <sql-case id="alter_table_modify_nested_owner_table_return_as_value" value="ALTER TABLE print_media MODIFY NESTED TABLE mytable.ad_textdocs_ntab RETURN AS VALUE" db-types="Oracle" />
+    <sql-case id="alter_table_modify_partition_storage" value="ALTER TABLE sales MODIFY PARTITION sales_q1 STORAGE (MAXEXTENTS 10)" db-types="Oracle" />
+    <sql-case id="alter_table_rename_partition1" value="ALTER TABLE sales RENAME PARTITION sales_q4_2003 TO sales_currentq" db-types="Oracle" />
+    <sql-case id="alter_table_rename_partition2" value="ALTER TABLE scubagear RENAME PARTITION sys_p636 TO tanks" db-types="Oracle" />
+    <sql-case id="alter_table_set_interval_expr" value="ALTER TABLE sales SET INTERVAL (NUMTOYMINTERVAL(1,'MONTH'))" db-types="Oracle" />
+    <sql-case id="alter_table_add_constraint_primary_key_disable_validate" value="ALTER TABLE sales_01_2001 ADD CONSTRAINT sales_pk_jan01 PRIMARY KEY (sales_transaction_id) DISABLE VALIDATE" db-types="Oracle" />
+    <sql-case id="alter_table_move_subpartition_tablespace_parallel" value="ALTER TABLE scuba_gear MOVE SUBPARTITION bcd_types TABLESPACE tbs23 PARALLEL (DEGREE 2)" db-types="Oracle" />
+    <sql-case id="alter_table_add_ref_with_rowid" value="ALTER TABLE staff  ADD (REF(dept) WITH ROWID)" db-types="Oracle" />
+    <sql-case id="alter_table_add_scope_for_is" value="ALTER TABLE staff ADD (SCOPE FOR (dept) IS offices)" db-types="Oracle" />
+    <sql-case id="alter_table_add_column_no_parentheses" value="ALTER TABLE T_MASK ADD new_column VARCHAR2(100)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob1" value="ALTER TABLE t1 MODIFY LOB(a) (KEEP_DUPLICATES)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob2" value="ALTER TABLE t1 MODIFY LOB(a) (COMPRESS LOW)" db-types="Oracle" />
+    <sql-case id="alter_table_move_compress_for_oltp" value="ALTER TABLE table_name MOVE COMPRESS FOR OLTP" db-types="Oracle" />
+    <sql-case id="alter_table_modify_encrypt_identified_by_password" value="ALTER TABLE t1 MODIFY ( a CLOB ENCRYPT IDENTIFIED BY foo)" db-types="Oracle" />
 </sql-cases>

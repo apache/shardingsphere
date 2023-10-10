@@ -17,7 +17,16 @@
 
 grammar DDLStatement;
 
-import BaseRule, DCLStatement;
+import BaseRule, DCLStatement, DMLStatement;
+
+createView
+    : CREATE (OR REPLACE)? (NO? FORCE)? (EDITIONING | EDITIONABLE EDITIONING? | NONEDITIONABLE)? VIEW viewName
+    ( SHARING EQ_ (METADATA | DATA | EXTENDED DATA | NONE))?
+    ( LP_ (alias (VISIBLE | INVISIBLE)? inlineConstraint* (COMMA_ alias (VISIBLE | INVISIBLE)? inlineConstraint*)*
+    | outOfLineConstraint) RP_ | objectViewClause | xmlTypeViewClause)?
+    ( DEFAULT COLLATION collationName)? (BEQUEATH (CURRENT_USER | DEFINER))? AS select subqueryRestrictionClause?
+    ( CONTAINER_MAP | CONTAINERS_DEFAULT)?
+    ;
 
 createTable
     : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
@@ -45,6 +54,11 @@ objectBaseTypeDef
 
 objectTypeDef
     : OBJECT LP_ dataTypeDefinition (COMMA_ dataTypeDefinition)* RP_ finalClause? instantiableClause? persistableClause?
+    ;
+
+objectViewClause
+    : OF typeName (WITH OBJECT (IDENTIFIER | ID) (DEFAULT | LP_ attribute (COMMA_ attribute)* RP_) | UNDER (schemaName DOT_)? superview)
+    ( LP_ outOfLineConstraint | attribute inlineConstraint* (COMMA_ outOfLineConstraint | attribute inlineConstraint*)* RP_)?
     ;
 
 finalClause
@@ -178,7 +192,11 @@ createSharingClause
     ;
 
 createDefinitionClause
-    : createRelationalTableClause | createObjectTableClause | createXMLTypeTableClause
+    : createRelationalTableClause | createObjectTableClause | createTableAsSelectClause | createXMLTypeTableClause
+    ;
+
+createTableAsSelectClause
+    : AS selectSubquery
     ;
 
 createXMLTypeTableClause
@@ -209,6 +227,15 @@ xmlSchemaSpecClause
 
 xmlTypeVirtualColumnsClause
     : VIRTUAL COLUMNS LP_ (columnName AS LP_ expr RP_ (COMMA_ columnName AS LP_ expr RP_)+) RP_
+    ;
+
+xmlTypeViewClause
+    : OF XMLTYPE xmlSchemaSpec? WITH OBJECT (IDENTIFIER | ID) (DEFAULT | LP_ expr (COMMA_ expr)* RL_)
+    ;
+
+xmlSchemaSpec
+    : (XMLSCHEMA xmlSchemaURLName)? ELEMENT (elementName | xmlSchemaURLName POUND_ elementName)
+    ( STORE ALL VARRAYS AS (LOBS | TABLES))? ((ALLOW | DISALLOW) NONSCHEMA)? ((ALLOW | DISALLOW) ANYSCHEMA)?
     ;
 
 oidClause
@@ -260,8 +287,9 @@ relationalProperty
     ;
 
 columnDefinition
-    : columnName dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
+    : columnName REF? dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
     | REF LP_ columnName RP_ WITH ROWID
+    | SCOPE FOR LP_ columnName RP_ IS identifier
     ;
 
 visibleClause
@@ -296,7 +324,7 @@ identityOption
     ;
 
 encryptionSpecification
-    : (USING STRING_)? (IDENTIFIED BY STRING_)? (integrityAlgorithm? (NO? SALT)? | (NO? SALT)? integrityAlgorithm?)   
+    : (USING STRING_)? (IDENTIFIED BY (STRING_ | IDENTIFIER_))? (integrityAlgorithm? (NO? SALT)? | (NO? SALT)? integrityAlgorithm?)
     ;
 
 inlineConstraint
@@ -440,7 +468,7 @@ dropSynonym
     ;
 
 columnClauses
-    : operateColumnClause+ | renameColumnClause | modifyCollectionRetrieval
+    : operateColumnClause+ | renameColumnClause | modifyCollectionRetrieval | modifylobStorageClause
     ;
 
 operateColumnClause
@@ -448,7 +476,7 @@ operateColumnClause
     ;
 
 addColumnSpecification
-    : ADD LP_ columnOrVirtualDefinitions RP_ columnProperties?
+    : ADD (LP_ columnOrVirtualDefinitions RP_ | columnOrVirtualDefinitions) columnProperties?
     ;
 
 columnOrVirtualDefinitions
@@ -688,7 +716,7 @@ rebuildClause
     ;
 
 parallelClause
-    : NOPARALLEL | PARALLEL NUMBER_?
+    : NOPARALLEL | PARALLEL (INTEGER_ | LP_ DEGREE INTEGER_ RP_)?
     ;
 
 usableSpecification
@@ -1266,9 +1294,12 @@ alterTablePartitioning
     | modifyTablePartition
     | modifyTableSubpartition
     | moveTablePartition
+    | moveTableSubPartition
     | addTablePartition
     | coalesceTablePartition
     | dropTablePartition
+    | renamePartitionSubpart
+    | alterIntervalPartitioning
     ;
 
 modifyTableDefaultAttrs
@@ -1394,6 +1425,10 @@ moveTablePartition
     : MOVE partitionExtendedName (MAPPING TABLE)? tablePartitionDescription? filterCondition? updateAllIndexesClause? parallelClause? allowDisallowClustering? ONLINE?
     ;
 
+moveTableSubPartition
+	: MOVE subpartitionExtendedName indexingClause? partitioningStorageClause? updateIndexClauses? filterCondition? parallelClause? allowDisallowClustering? ONLINE?
+	;
+
 filterCondition
     : INCLUDING ROWS whereClause
     ;
@@ -1439,6 +1474,14 @@ addHashPartitionClause
 
 dropTablePartition
     : DROP partitionExtendedNames (updateIndexClauses parallelClause?)?
+    ;
+
+renamePartitionSubpart
+    : RENAME (partitionExtendedName | subpartitionExtendedName) TO newName
+    ;
+
+alterIntervalPartitioning
+    : SET INTERVAL LP_ expr? RP_ | SET STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_
     ;
 
 partitionExtendedNames
@@ -2150,7 +2193,7 @@ scopeClause
 
 analyze
     : (ANALYZE ((TABLE tableName| INDEX indexName) partitionExtensionClause? | CLUSTER clusterName))
-    (validationClauses | LIST CHAINED ROWS intoClause? | DELETE SYSTEM? STATISTICS)
+    (validationClauses | LIST CHAINED ROWS intoTableClause? | DELETE SYSTEM? STATISTICS)
     ;
 
 partitionExtensionClause
@@ -2160,10 +2203,10 @@ partitionExtensionClause
 
 validationClauses
     : VALIDATE REF UPDATE (SET DANGLING TO NULL)?
-    | VALIDATE STRUCTURE (CASCADE (FAST | COMPLETE? (OFFLINE | ONLINE) intoClause?)?)?
+    | VALIDATE STRUCTURE (CASCADE (FAST | COMPLETE? (OFFLINE | ONLINE) intoTableClause?)?)?
     ;
 
-intoClause
+intoTableClause
     : INTO tableName
     ;
 
@@ -2586,29 +2629,20 @@ alterAttributeDimension
     ;
 
 createSequence
-    : CREATE SEQUENCE (schemaName DOT_)? sequenceName (SHARING EQ_ (METADATA | DATA | NONE))? createSequenceClause+
+    : CREATE SEQUENCE (schemaName DOT_)? sequenceName (SHARING EQ_ (METADATA | DATA | NONE))? createSequenceClause*
     ;
 
 createSequenceClause
     : (INCREMENT BY | START WITH) INTEGER_
-    | MAXVALUE INTEGER_
-    | NOMAXVALUE
-    | MINVALUE INTEGER_
-    | NOMINVALUE
-    | CYCLE
-    | NOCYCLE
-    | CACHE INTEGER_
-    | NOCACHE
-    | ORDER
-    | NOORDER
-    | KEEP
-    | NOKEEP
-    | SCALE (EXTEND | NOEXTEND)
-    | NOSCALE
-    | SHARD (EXTEND | NOEXTEND)
-    | NOSHARD
-    | SESSION
-    | GLOBAL
+    | (MAXVALUE INTEGER_ | NOMAXVALUE)
+    | (MINVALUE INTEGER_ | NOMINVALUE)
+    | (CYCLE | NOCYCLE)
+    | (CACHE INTEGER_ | NOCACHE)
+    | (ORDER | NOORDER)
+    | (KEEP | NOKEEP)
+    | (SCALE (EXTEND | NOEXTEND) | NOSCALE)
+    | (SHARD (EXTEND | NOEXTEND) | NOSHARD)
+    | (SESSION | GLOBAL)
     ;
 
 alterSequence
@@ -3363,6 +3397,56 @@ arryDMLSubClause
     : LP_ typeName (COMMA_ varrayType)? RP_
     ;
 
+createMaterializedView
+    : CREATE MATERIALIZED VIEW materializedViewName (OF typeName )? materializedViewColumnClause? materializedViewPrebuiltClause materializedViewUsingClause? createMvRefresh? (FOR UPDATE)? ( (DISABLE | ENABLE) QUERY REWRITE )? AS selectSubquery
+    ;
+
+materializedViewColumnClause
+    : ( LP_ (scopedTableRefConstraint | mvColumnAlias) (COMMA_ (scopedTableRefConstraint | mvColumnAlias))* RP_ )
+    ;
+
+materializedViewPrebuiltClause
+    : ( ON PREBUILT TABLE ( (WITH | WITHOUT) REDUCED PRECISION)? | physicalProperties?  (CACHE | NOCACHE)? parallelClause? buildClause?)
+    ;
+
+materializedViewUsingClause
+    : ( USING INDEX ( (physicalAttributesClause | TABLESPACE tablespaceName)+ )* | USING NO INDEX)
+    ;
+
+mvColumnAlias
+    : (identifier | quotedString) (ENCRYPT encryptionSpecification)?
+    ;
+
+createMvRefresh
+    : ( NEVER REFRESH | REFRESH createMvRefreshOptions+)
+    ;
+
+createMvRefreshOptions
+    : ( (FAST | COMPLETE | FORCE) | ON (DEMAND | COMMIT) | (START WITH | NEXT) | WITH (PRIMARY KEY | ROWID) | USING ( DEFAULT (MASTER LOCAL)? ROLLBACK SEGMENT | (MASTER | LOCAL)? ROLLBACK SEGMENT rb_segment=REGULAR_ID ) | USING (ENFORCED | TRUSTED) CONSTRAINTS)
+    ;
+
+quotedString
+    : variableName
+    | CHAR_STRING
+    | NATIONAL_CHAR_STRING_LIT
+    ;
+
+buildClause
+    : BUILD (IMMEDIATE | DEFERRED)
+    ;
+
+createMaterializedViewLog
+    : CREATE MATERIALIZED VIEW LOG ON tableName materializedViewLogAttribute? parallelClause? ( WITH ( COMMA_? ( OBJECT ID | PRIMARY KEY | ROWID | SEQUENCE | COMMIT SCN ) )* (LP_ ( COMMA_? identifier )+ RP_ newViewValuesClause? )? mvLogPurgeClause? )*
+    ;
+
+materializedViewLogAttribute
+    : ( ( physicalAttributesClause | TABLESPACE tablespaceName | loggingClause | (CACHE | NOCACHE))+ )
+    ;
+
+newViewValuesClause
+    : (INCLUDING | EXCLUDING ) NEW VALUES
+    ;
+
 alterMaterializedView
     : ALTER MATERIALIZED VIEW materializedViewName materializedViewAttribute? alterIotClauses? (USING INDEX physicalAttributesClause)?
     ((MODIFY scopedTableRefConstraint) | alterMvRefresh)? evaluationEditionClause?
@@ -3631,7 +3715,7 @@ pdbUnplugEncrypt
 
 pdbSettingsClauses
     : pdbName? pdbSettingClause
-    | CONTAINERS containersClause
+    | CONTAINERS (DEFAULT TARGET EQ_ ((LP_ containerName RP_) | NONE) | HOST EQ_ hostName | PORT EQ_ NUMBER_)
     ;
 
 pdbSettingClause
@@ -3648,12 +3732,6 @@ pdbSettingClause
     | pdbRefreshModeClause
     | REFRESH pdbRefreshSwitchoverClause?
     | SET CONTAINER_MAP EQ_ mapObject
-    ;
-
-containersClause
-    : DEFAULT TARGET EQ_ ((LP_ containerName RP_) | NONE)
-    | HOST EQ_ hostName
-    | PORT EQ_ NUMBER_
     ;
 
 pdbStorageClause
@@ -4025,4 +4103,21 @@ createCluster
     (physicalAttributesClause | SET sizeClause | TABLESPACE tablespaceName | INDEX |
     (SINGLE TABLE)? HASHKEYS INTEGER_ (HASH IS functionName LP_ (argument (COMMA_ argument)*) RP_)?)?
     parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
+    ;
+
+createJava
+    : CREATE (OR REPLACE)? (AND (RESOLVE | COMPILE))? NOFORCE? JAVA
+    ((SOURCE | RESOURCE) NAMED (schemaName DOT_)? primaryName
+    | CLASS (SCHEMA schemaName)?) invokerRightsClause? resolveClauses?
+    (usingClause | AS sourceText)
+    ;
+
+usingClause
+    : USING (fileType (LP_ directoryName COMMA_ serverFileName RP_ | subquery) | BQ_ keyForBlob BQ_)
+    ;
+
+fileType
+    : BFILE
+    | CLOB
+    | BLOB
     ;

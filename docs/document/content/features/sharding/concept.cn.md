@@ -159,6 +159,13 @@ db0.t_order0, db0.t_order1, db1.t_order2, db1.t_order3, db1.t_order4
 
 对于常见的分片算法，使用 Java 代码实现并不有助于配置的统一管理。 通过行表达式书写分片算法，可以有效地将规则配置一同存放，更加易于浏览与存储。
 
+行表达式作为字符串由两部分组成，分别是字符串开头的对应 SPI 实现的 Type Name 部分和表达式部分。 以 `<GROOVY>t_order_${1..3}` 为例，字符
+串`<GROOVY>` 部分的子字符串 `GROOVY` 为此行表达式使用的对应 SPI 实现的 Type Name，其被  `<>` 符号包裹来识别。而字符串 `t_order_${1..3}`
+为此行表达式的表达式部分。当行表达式不指定 Type Name 时，例如 `t_order_${1..3}`，行表示式默认将使用 `InlineExpressionParser` SPI 的 
+`GROOVY` 实现来解析表达式。
+
+以下部分介绍 `GROOVY` 实现的语法规则。
+
 行表达式的使用非常直观，只需要在配置中使用 `${ expression }` 或 `$->{ expression }` 标识行表达式即可。 目前支持数据节点和分片算法这两个部分的配置。 行表达式的内容使用的是 Groovy 的语法，Groovy 能够支持的所有操作，行表达式均能够支持。 例如：
 
 `${begin..end}` 表示范围区间

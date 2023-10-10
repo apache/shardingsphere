@@ -79,3 +79,21 @@ Obtain the current date for routing definition
 |--------------------------|--------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | DatabaseTimestampService | Get the current time from the database for routing           | [`org.apache.shardingsphere.timeservice.type.database.DatabaseTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/database/src/main/java/org/apache/shardingsphere/timeservice/type/database/DatabaseTimestampService.java) |
 | SystemTimestampService   | Get the current time from the application system for routing | [`org.apache.shardingsphere.timeservice.type.system.SystemTimestampService`](https://github.com/apache/shardingsphere/blob/master/kernel/time-service/type/system/src/main/java/org/apache/shardingsphere/timeservice/type/system/SystemTimestampService.java)           |
+
+## InlineExpressionParser
+
+### Fully-qualified class name
+
+`org.apache.shardingsphere.infra.expr.core.InlineExpressionParser`
+
+### Definition
+
+Row Value Expressions definition
+
+### Implementation classes
+
+| *Configuration Type* | *Description*                                                                                        | *Fully-qualified class name*                                                   |
+|----------------------|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| GROOVY               | Row Value Expressions that uses the Groovy syntax                                                    | `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`     |
+| LITERAL              | Row Value Expressions that uses a standard list                                                      | `org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser`   |
+| ESPRESSO             | Row Value Expressions that uses the Groovy syntax based on GraalVM Truffle's Espresso implementation | `org.apache.shardingsphere.infra.expr.espresso.EspressoInlineExpressionParser` |

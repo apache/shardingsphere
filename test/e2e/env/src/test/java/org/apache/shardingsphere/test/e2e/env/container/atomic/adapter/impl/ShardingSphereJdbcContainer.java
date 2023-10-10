@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -82,7 +83,7 @@ public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, A
     private DataSource createGovernanceClientDataSource(final String serverLists) {
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(scenarioCommonPath.getRuleConfigurationFile(databaseType)), YamlRootConfiguration.class);
         rootConfig.setMode(createYamlModeConfiguration(serverLists));
-        return YamlShardingSphereDataSourceFactory.createDataSource(storageContainer.getActualDataSourceMap(), YamlEngine.marshal(rootConfig).getBytes(StandardCharsets.UTF_8));
+        return YamlShardingSphereDataSourceFactory.createDataSource(Collections.emptyMap(), YamlEngine.marshal(rootConfig).getBytes(StandardCharsets.UTF_8));
     }
     
     private YamlModeConfiguration createYamlModeConfiguration(final String serverLists) {

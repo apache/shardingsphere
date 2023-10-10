@@ -82,7 +82,7 @@ class InsertClauseShardingConditionEngineTest {
         InsertStatement insertStatement = mockInsertStatement();
         shardingConditionEngine = new InsertClauseShardingConditionEngine(database, shardingRule, new TimestampServiceRule(new TimestampServiceRuleConfiguration("System", new Properties())));
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
-        when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_col_1"));
+        when(insertStatementContext.getColumnNames()).thenReturn(Arrays.asList("foo_col_1", "foo_col_3"));
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(createInsertValueContext()));
         when(insertStatementContext.getInsertSelectContext()).thenReturn(null);
         when(insertStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
@@ -94,7 +94,7 @@ class InsertClauseShardingConditionEngineTest {
         when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
         when(schema.containsTable("foo_table")).thenReturn(true);
-        when(schema.getTable("foo_table").getColumnNames()).thenReturn(Arrays.asList("foo_col_1", "foo_col_2"));
+        when(schema.getTable("foo_table").getColumnNames()).thenReturn(Arrays.asList("foo_col_1", "foo_col_2", "foo_Col_3"));
         when(result.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         return result;
     }
@@ -208,5 +208,13 @@ class InsertClauseShardingConditionEngineTest {
         assertThat(actual.get(0).getValues().size(), is(1));
         assertThat(actual.get(0).getValues().get(0).getColumnName(), is("foo_col_2"));
         assertThat(actual.get(0).getValues().get(0).getTableName(), is("foo_table"));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithCaseSensitiveField() {
+        when(shardingRule.findShardingColumn("foo_Col_3", "foo_table")).thenReturn(Optional.of("foo_Col_3"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
+        assertThat(actual.size(), is(1));
+        
     }
 }

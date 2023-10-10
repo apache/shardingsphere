@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.engine;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementBinder;
@@ -44,15 +45,19 @@ import java.util.List;
 /**
  * SQL bind engine.
  */
+@RequiredArgsConstructor
 public final class SQLBindEngine {
     
     private final ShardingSphereMetaData metaData;
     
     private final String defaultDatabaseName;
     
+    private final HintValueContext hintValueContext;
+    
     public SQLBindEngine(final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
         this.metaData = metaData;
         this.defaultDatabaseName = defaultDatabaseName;
+        this.hintValueContext = new HintValueContext();
     }
     
     /**
@@ -68,7 +73,7 @@ public final class SQLBindEngine {
     }
     
     private SQLStatement bind(final SQLStatement statement, final ShardingSphereMetaData metaData, final String defaultDatabaseName) {
-        if (containsDataSourceNameSQLHint(statement)) {
+        if (containsDataSourceNameSQLHint(hintValueContext, statement)) {
             return statement;
         }
         if (statement instanceof DMLStatement) {
@@ -80,7 +85,10 @@ public final class SQLBindEngine {
         return statement;
     }
     
-    private boolean containsDataSourceNameSQLHint(final SQLStatement sqlStatement) {
+    private boolean containsDataSourceNameSQLHint(final HintValueContext hintValueContext, final SQLStatement sqlStatement) {
+        if (hintValueContext.findHintDataSourceName().isPresent()) {
+            return true;
+        }
         if (sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty()) {
             return SQLHintUtils.extractHint(((AbstractSQLStatement) sqlStatement).getCommentSegments().iterator().next().getText()).flatMap(HintValueContext::findHintDataSourceName).isPresent();
         }

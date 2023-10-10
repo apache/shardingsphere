@@ -38,6 +38,7 @@ public final class YamlConsistencyCheckJobItemProgressSwapper implements YamlCon
         result.setCheckEndTimeMillis(data.getCheckEndTimeMillis());
         result.setSourceTableCheckPositions(data.getSourceTableCheckPositions());
         result.setTargetTableCheckPositions(data.getTargetTableCheckPositions());
+        result.setSourceDatabaseType(data.getSourceDatabaseType());
         return result;
     }
     
@@ -45,7 +46,7 @@ public final class YamlConsistencyCheckJobItemProgressSwapper implements YamlCon
     public ConsistencyCheckJobItemProgress swapToObject(final YamlConsistencyCheckJobItemProgress yamlConfig) {
         ConsistencyCheckJobItemProgress result = new ConsistencyCheckJobItemProgress(yamlConfig.getTableNames(), yamlConfig.getIgnoredTableNames(), yamlConfig.getCheckedRecordsCount(),
                 yamlConfig.getRecordsCount(), yamlConfig.getCheckBeginTimeMillis(), yamlConfig.getCheckEndTimeMillis(),
-                yamlConfig.getSourceTableCheckPositions(), yamlConfig.getTargetTableCheckPositions());
+                yamlConfig.getSourceTableCheckPositions(), yamlConfig.getTargetTableCheckPositions(), yamlConfig.getSourceDatabaseType());
         result.setStatus(JobStatus.valueOf(yamlConfig.getStatus()));
         return result;
     }

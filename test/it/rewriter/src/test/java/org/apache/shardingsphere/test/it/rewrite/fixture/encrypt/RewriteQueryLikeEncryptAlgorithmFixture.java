@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 
-import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 
-public final class RewriteQueryLikeEncryptAlgorithmFixture implements LikeEncryptAlgorithm<Object, String> {
+public final class RewriteQueryLikeEncryptAlgorithmFixture implements LikeEncryptAlgorithm {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {

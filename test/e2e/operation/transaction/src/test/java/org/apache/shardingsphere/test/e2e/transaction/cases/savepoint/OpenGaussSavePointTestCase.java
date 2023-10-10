@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.cases.savepoint;
 
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.opengauss.jdbc.PSQLSavepoint;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -38,13 +36,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 @TransactionTestCase(dbTypes = TransactionTestConstants.OPENGAUSS)
 public final class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
     
-    public OpenGaussSavePointTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
-        super(baseTransactionITCase, dataSource);
+    public OpenGaussSavePointTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
-        assertRollback2Savepoint();
+        assertRollbackToSavepoint();
         assertReleaseSavepoint();
         assertErrors();
     }

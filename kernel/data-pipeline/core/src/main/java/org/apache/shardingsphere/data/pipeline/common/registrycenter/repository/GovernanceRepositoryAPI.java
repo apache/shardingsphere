@@ -171,6 +171,14 @@ public interface GovernanceRepositoryAPI {
     void persist(String key, String value);
     
     /**
+     * Update data.
+     *
+     * @param key key of data
+     * @param value value of data
+     */
+    void update(String key, String value);
+    
+    /**
      * Get sharding items of job.
      *
      * @param jobId job id
@@ -218,12 +226,4 @@ public interface GovernanceRepositoryAPI {
      * @return error msg
      */
     String getJobItemErrorMessage(String jobId, int shardingItem);
-    
-    /**
-     * Clean job item error message.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     */
-    void cleanJobItemErrorMessage(String jobId, int shardingItem);
 }

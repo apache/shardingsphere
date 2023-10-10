@@ -39,7 +39,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -58,7 +57,6 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.executor.SQLFederationExecutorContext;
@@ -143,26 +141,31 @@ public final class EnumerableScanExecutor {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
             return createEmptyEnumerable();
         }
-        return execute(queryContext, database, context);
-    }
-    
-    private AbstractEnumerable<Object> execute(final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext context) {
         try {
-            computeConnectionOffsets(context);
-            ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
-                    prepareEngine.prepare(context.getRouteContext(), executorContext.getConnectionOffsets(), context.getExecutionUnits(), new ExecutionGroupReportContext(database.getName()));
-            setParameters(executionGroupContext.getInputGroups());
-            processEngine.executeSQL(executionGroupContext, context.getQueryContext());
-            List<QueryResult> queryResults = jdbcExecutor.execute(executionGroupContext, callback).stream().map(QueryResult.class::cast).collect(Collectors.toList());
-            MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
-            MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
-            Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
-            return createEnumerable(mergedResult, queryResults.get(0).getMetaData(), statements);
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
+            return createEnumerable(queryContext, database, context);
         } finally {
             processEngine.completeSQLExecution();
         }
+    }
+    
+    private AbstractEnumerable<Object> createEnumerable(final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext context) {
+        return new AbstractEnumerable<Object>() {
+            
+            @SneakyThrows
+            @Override
+            public Enumerator<Object> enumerator() {
+                computeConnectionOffsets(context);
+                ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
+                        prepareEngine.prepare(context.getRouteContext(), executorContext.getConnectionOffsets(), context.getExecutionUnits(), new ExecutionGroupReportContext(database.getName()));
+                setParameters(executionGroupContext.getInputGroups());
+                processEngine.executeSQL(executionGroupContext, context.getQueryContext());
+                List<QueryResult> queryResults = jdbcExecutor.execute(executionGroupContext, callback).stream().map(QueryResult.class::cast).collect(Collectors.toList());
+                MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
+                MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
+                Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
+                return new SQLFederationRowEnumerator(mergedResult, queryResults.get(0).getMetaData(), statements);
+            }
+        };
     }
     
     private void computeConnectionOffsets(final ExecutionContext context) {
@@ -267,24 +270,15 @@ public final class EnumerableScanExecutor {
         }
     }
     
-    private AbstractEnumerable<Object> createEnumerable(final MergedResult mergedResult, final QueryResultMetaData metaData, final Collection<Statement> statements) {
-        return new AbstractEnumerable<Object>() {
-            
-            @Override
-            public Enumerator<Object> enumerator() {
-                return new SQLFederationRowEnumerator(mergedResult, metaData, statements);
-            }
-        };
-    }
-    
     private QueryContext createQueryContext(final ShardingSphereMetaData metaData, final EnumerableScanExecutorContext sqlString, final DatabaseType databaseType, final boolean useCache) {
         String sql = sqlString.getSql().replace("\n", " ");
         SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType,
                 optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache(),
                 optimizerContext.getSqlParserRule().isSqlCommentParseEnabled()).parse(sql, useCache);
         List<Object> params = getParameters(sqlString.getParamIndexes());
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, executorContext.getDatabaseName()).bind(sqlStatement, params);
-        return new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), useCache);
+        HintValueContext hintValueContext = new HintValueContext();
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, executorContext.getDatabaseName(), hintValueContext).bind(sqlStatement, params);
+        return new QueryContext(sqlStatementContext, sql, params, hintValueContext, useCache);
     }
     
     private List<Object> getParameters(final int[] paramIndexes) {

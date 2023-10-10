@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfigur
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageNode;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -42,7 +42,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     @Test
     void assertGetDataSources() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("normal_db");
+        DataSource dataSource = databaseConfig.getStorageUnits().get("normal_db").getDataSource();
         assertTrue(dataSource instanceof CatalogSwitchableDataSource);
         assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof HikariDataSource);
     }
@@ -50,7 +50,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     @Test
     void assertGetStorageNodes() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        HikariDataSource hikariDataSource = (HikariDataSource) databaseConfig.getStorageResource().getStorageNodeDataSources().get(new StorageNode("normal_db"));
+        HikariDataSource hikariDataSource = (HikariDataSource) databaseConfig.getDataSources().get(new StorageNode("normal_db"));
         assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mock://127.0.0.1/normal_db"));
         assertThat(hikariDataSource.getUsername(), is("root"));
         assertThat(hikariDataSource.getPassword(), is(""));
@@ -59,7 +59,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     @Test
     void assertGetStorageUnits() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getDataSources().get("normal_db");
+        DataSource dataSource = databaseConfig.getStorageUnits().get("normal_db").getDataSource();
         assertTrue(dataSource instanceof CatalogSwitchableDataSource);
         assertTrue(((CatalogSwitchableDataSource) dataSource).getDataSource() instanceof HikariDataSource);
     }
@@ -74,7 +74,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     @Test
     void assertGetDataSourcePoolProperties() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSourcePoolProperties props = databaseConfig.getDataSourcePoolPropertiesMap().get("normal_db");
+        DataSourcePoolProperties props = databaseConfig.getStorageUnits().get("normal_db").getDataSourcePoolProperties();
         Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
         assertThat(poolStandardProps.size(), is(6));
         assertThat(poolStandardProps.get("connectionTimeoutMilliseconds"), is(2000L));

@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="insert_into_values" value="insert into test_nested values(1)" db-types="MySQL" />
+    <sql-case id="insert_into_values" value="INSERT INTO test_nested VALUES(1)" db-types="MySQL" />
     <sql-case id="insert_with_all_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" />
     <sql-case id="insert_with_historical_type_cast_syntax" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?::int4, ?::text)" db-types="PostgreSQL,openGauss" />
     <sql-case id="insert_with_now_function" value="INSERT INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())" db-types="MySQL" />
@@ -84,8 +84,8 @@
     <sql-case id="insert_with_dml_table_expr_select" value="INSERT INTO (SELECT employee_id, last_name, email, hire_date, job_id, salary, commission_pct FROM employees) VALUES (207, 'Gregory', 'pgregory@example.com', sysdate, 'PU_CLERK', 1.2E3, NULL)" db-types="Oracle" />
     <sql-case id="insert_with_select_subquery" value="INSERT INTO bonuses SELECT employee_id, salary*1.1 FROM employees WHERE commission_pct > 0.25" db-types="Oracle" />
     <sql-case id="insert_with_multitable_element" value="INSERT ALL INTO sales (prod_id, cust_id, time_id, amount) VALUES (product_id, customer_id, weekly_start_date, sales_sun) INTO sales (prod_id, cust_id, time_id, amount) VALUES (product_id, customer_id, sales_mon, weekly_start_date+1) SELECT product_id, customer_id, weekly_start_date, sales_sun, sales_mon FROM sales_input_table" db-types="Oracle" />
-    <sql-case id="insert_all_with_multitable_with_conditional_when" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 1000000 AND order_total &lt;= 200000 THEN INTO medium_orders WHEN order_total > 200000 THEN INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
-    <sql-case id="insert_all_with_multitable_with_conditional_when_with_conditional_else" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 100000 AND order_total &lt;= 200000 THEN INTO medium_orders ELSE INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
+    <sql-case id="insert_all_with_multi_table_with_conditional_when" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 1000000 AND order_total &lt;= 200000 THEN INTO medium_orders WHEN order_total > 200000 THEN INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
+    <sql-case id="insert_all_with_multi_table_with_conditional_when_with_conditional_else" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 100000 AND order_total &lt;= 200000 THEN INTO medium_orders ELSE INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
     <sql-case id="insert_with_rank_column" value="INSERT INTO sales (rank) VALUES (1)" db-types="Oracle" />
     <sql-case id="insert_with_schema" value="INSERT INTO db1.t_order VALUES (1,2,3)" />
     <sql-case id="insert_on_duplicate_key_update_nothing" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') ON DUPLICATE KEY UPDATE NOTHING" db-types="openGauss" />
@@ -95,4 +95,6 @@
     <sql-case id="insert_with_content_keyword" value="INSERT INTO SYS_MQ_MSG (ID, CONTENT) VALUES (1, 'test');" db-types="Oracle" />
     <sql-case id="insert_with_connect_by_and_prior" value="Insert Into t (c1,c2,c3,c4,c5) select c1,c2,regexp_substr(c3, '[^,]+', 1, l) c3,c4,c5 from t where id=1 connect by l &lt;= regexp_count(c3, ',') + 1 and ID = prior ID and prior dbms_random.value is not null;" db-types="Oracle" />
     <sql-case id="insert_with_national_character_set" value="INSERT INTO customers VALUES (1000, TO_NCHAR('John Smith'),N'500 Oracle Parkway',sysdate);" db-types="Oracle" />
+    <sql-case id="insert_with_oracle_datetime_type" value="INSERT INTO t_order (create_date, create_timestamp, create_interval_year, create_interval_day) VALUES (TO_DATE('2009', 'YYYY'), TO_DATE('2009', 'YYYY'), (TO_DATE('2009', 'YYYY') - TO_DATE('2009', 'YYYY')) year to MONTH, (TO_DATE('2009', 'YYYY') - TO_DATE('2009', 'YYYY')) DAY TO SECOND);" db-types="Oracle" />
+    <sql-case id="insert_all_into" value="INSERT ALL INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (1,'2','3','4','5') INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (2,'2','3','4','5') INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (3,'2','3','4','5') SELECT 1 FROM DUAL" db-types="Oracle" />
 </sql-cases>

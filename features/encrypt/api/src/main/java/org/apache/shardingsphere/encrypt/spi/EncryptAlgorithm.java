@@ -22,11 +22,8 @@ import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 
 /**
  * Encrypt algorithm.
- *
- * @param <I> type of plain value
- * @param <O> type of cipher value
  */
-public interface EncryptAlgorithm<I, O> extends ShardingSphereAlgorithm {
+public interface EncryptAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Encrypt.
@@ -35,5 +32,5 @@ public interface EncryptAlgorithm<I, O> extends ShardingSphereAlgorithm {
      * @param encryptContext encrypt context
      * @return cipher value
      */
-    O encrypt(I plainValue, EncryptContext encryptContext);
+    Object encrypt(Object plainValue, EncryptContext encryptContext);
 }

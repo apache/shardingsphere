@@ -21,7 +21,6 @@ ShardingSphere-JDBC provides a JDBC Driver, which can be used only through confi
 - Configuration file loading rule:
   - `absolutepath:` prefix means to load the configuration file from the absolute path
   - `classpath:` prefix indicates that the configuration file is loaded from the classpath
-  - `apollo:` prefix means to load the configuration file from apollo
 
 ## Procedure
 
@@ -32,16 +31,6 @@ ShardingSphere-JDBC provides a JDBC Driver, which can be used only through confi
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${shardingsphere.version}</version>
-</dependency>
-```
-
-If you use the apollo configuration method, you also need to introduce the `apollo-client` dependency:
-
-```xml
-<dependency>
-    <groupId>com.ctrip.framework.apollo</groupId>
-    <artifactId>apollo-client</artifactId>
-    <version>${apollo-client.version}</version>
 </dependency>
 ```
 
@@ -102,9 +91,4 @@ jdbc:shardingsphere:classpath:config.yaml
 Load JDBC URL of config.yaml profile in absolute path
 ```
 jdbc:shardingsphere:absolutepath:/path/to/config.yaml
-```
-
-Load JDBC URL of the yaml configuration file in the specified namespace of apollo:
-```
-jdbc:shardingsphere:apollo:TEST.test_namespace
 ```

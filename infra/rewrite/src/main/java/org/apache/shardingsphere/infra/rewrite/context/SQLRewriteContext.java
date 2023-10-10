@@ -69,10 +69,16 @@ public final class SQLRewriteContext {
         if (!hintValueContext.isSkipSQLRewrite()) {
             addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
         }
-        parameterBuilder = sqlStatementContext instanceof InsertStatementContext && null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
-                ? new GroupedParameterBuilder(
-                        ((InsertStatementContext) sqlStatementContext).getGroupedParameters(), ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
+        parameterBuilder = containsInsertValues(sqlStatementContext)
+                ? new GroupedParameterBuilder(((InsertStatementContext) sqlStatementContext).getGroupedParameters(), ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
                 : new StandardParameterBuilder(params);
+    }
+    
+    private boolean containsInsertValues(final SQLStatementContext sqlStatementContext) {
+        if (!(sqlStatementContext instanceof InsertStatementContext)) {
+            return false;
+        }
+        return null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext();
     }
     
     /**

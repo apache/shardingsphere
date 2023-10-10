@@ -31,9 +31,10 @@ class ShowMigrationCheckAlgorithmsExecutorTest {
     void assertGetColumnNames() {
         ShowMigrationCheckAlgorithmsExecutor executor = new ShowMigrationCheckAlgorithmsExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
+        assertThat(columns.size(), is(4));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("type"));
+        assertThat(iterator.next(), is("type_aliases"));
         assertThat(iterator.next(), is("supported_database_types"));
         assertThat(iterator.next(), is("description"));
     }

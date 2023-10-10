@@ -162,13 +162,13 @@ public interface PipelineJobAPI extends TypedSPI {
     String getJobItemErrorMessage(String jobId, int shardingItem);
     
     /**
-     * Persist job item error message.
+     * Update job item error message.
      *
      * @param jobId job id
      * @param shardingItem sharding item
      * @param error error
      */
-    void persistJobItemErrorMessage(String jobId, int shardingItem, Object error);
+    void updateJobItemErrorMessage(String jobId, int shardingItem, Object error);
     
     /**
      * Clean job item error message.

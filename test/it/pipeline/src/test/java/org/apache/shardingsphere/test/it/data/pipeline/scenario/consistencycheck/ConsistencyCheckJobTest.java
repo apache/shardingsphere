@@ -72,6 +72,8 @@ class ConsistencyCheckJobTest {
         YamlConsistencyCheckJobConfiguration result = new YamlConsistencyCheckJobConfiguration();
         result.setJobId(checkJobId);
         result.setParentJobId("");
+        result.setAlgorithmTypeName("DATA_MATCH");
+        result.setSourceDatabaseType("H2");
         return result;
     }
 }

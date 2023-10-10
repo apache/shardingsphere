@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.mode.manager.switcher;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 
+import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,12 +35,11 @@ import java.util.Objects;
 @Getter
 public final class SwitchingResource {
     
-    @Getter(AccessLevel.NONE)
-    private final ResourceMetaData resourceMetaData;
+    private final Map<StorageNode, DataSource> newDataSources;
     
-    private final StorageResource newStorageResource;
+    private final Map<StorageNode, DataSource> staleDataSources;
     
-    private final StorageResource staleStorageResource;
+    private final Collection<String> staleStorageUnitNames;
     
     private final Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap;
     
@@ -47,6 +47,6 @@ public final class SwitchingResource {
      * Close stale data sources.
      */
     public void closeStaleDataSources() {
-        staleStorageResource.getStorageNodeDataSources().values().stream().filter(Objects::nonNull).forEach(resourceMetaData::close);
+        staleDataSources.values().stream().filter(Objects::nonNull).forEach(each -> new DataSourcePoolDestroyer(each).asyncDestroy());
     }
 }

@@ -74,7 +74,7 @@ class ShardingRuleStatementCheckerTest {
     
     private final ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
     
-    private final ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", createDataSource());
+    private final ResourceMetaData resourceMetaData = new ResourceMetaData(createDataSource());
     
     @BeforeEach
     void before() {
@@ -84,7 +84,7 @@ class ShardingRuleStatementCheckerTest {
     }
     
     @Test
-    void assertCheckCreatSuccess() {
+    void assertCheckCreateSuccess() {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createCompleteAutoTableRule());
         rules.add(createCompleteTableRule());

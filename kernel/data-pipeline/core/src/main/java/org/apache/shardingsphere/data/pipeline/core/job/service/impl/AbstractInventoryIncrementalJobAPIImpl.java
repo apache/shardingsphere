@@ -61,6 +61,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -203,7 +204,8 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         Collection<DataConsistencyCheckAlgorithmInfo> result = new LinkedList<>();
         for (TableDataConsistencyChecker each : ShardingSphereServiceLoader.getServiceInstances(TableDataConsistencyChecker.class)) {
             SPIDescription description = each.getClass().getAnnotation(SPIDescription.class);
-            result.add(new DataConsistencyCheckAlgorithmInfo(each.getType(), getSupportedDatabaseTypes(each.getSupportedDatabaseTypes()), null == description ? "" : description.value()));
+            String typeAliases = each.getTypeAliases().stream().map(Object::toString).collect(Collectors.joining(","));
+            result.add(new DataConsistencyCheckAlgorithmInfo(each.getType(), typeAliases, getSupportedDatabaseTypes(each.getSupportedDatabaseTypes()), null == description ? "" : description.value()));
         }
         return result;
     }

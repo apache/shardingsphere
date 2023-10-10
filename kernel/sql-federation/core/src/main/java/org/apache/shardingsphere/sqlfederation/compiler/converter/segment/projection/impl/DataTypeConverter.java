@@ -19,11 +19,13 @@ package org.apache.shardingsphere.sqlfederation.compiler.converter.segment.proje
 
 import org.apache.calcite.sql.SqlDataTypeSpec;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlUserDefinedTypeNameSpec;
+import org.apache.calcite.sql.SqlBasicTypeNameSpec;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -36,6 +38,7 @@ public final class DataTypeConverter implements SQLSegmentConverter<DataTypeSegm
         if (null == segment) {
             return Optional.empty();
         }
-        return Optional.of(new SqlDataTypeSpec(new SqlUserDefinedTypeNameSpec(segment.getDataTypeName(), SqlParserPos.ZERO), SqlParserPos.ZERO));
+        return Optional.of(new SqlDataTypeSpec(new SqlBasicTypeNameSpec(Objects.requireNonNull(SqlTypeName.get(segment.getDataTypeName())), segment.getDataLength().getPrecision(), SqlParserPos.ZERO),
+                SqlParserPos.ZERO));
     }
 }

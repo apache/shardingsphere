@@ -46,8 +46,15 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
         SqlNode right = new TableConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
         Optional<SqlNode> condition = convertJoinCondition(segment);
         SqlLiteral conditionType = convertConditionType(segment);
-        SqlLiteral joinType = JoinType.valueOf(segment.getJoinType()).symbol(SqlParserPos.ZERO);
+        SqlLiteral joinType = convertJoinType(segment);
         return Optional.of(new SqlJoin(SqlParserPos.ZERO, left, SqlLiteral.createBoolean(segment.isNatural(), SqlParserPos.ZERO), joinType, right, conditionType, condition.orElse(null)));
+    }
+    
+    private static SqlLiteral convertJoinType(final JoinTableSegment segment) {
+        if (JoinType.INNER.name().equals(segment.getJoinType()) && !segment.isNatural() && null == segment.getCondition() && segment.getUsing().isEmpty()) {
+            return JoinType.COMMA.symbol(SqlParserPos.ZERO);
+        }
+        return JoinType.valueOf(segment.getJoinType()).symbol(SqlParserPos.ZERO);
     }
     
     private SqlLiteral convertConditionType(final JoinTableSegment segment) {

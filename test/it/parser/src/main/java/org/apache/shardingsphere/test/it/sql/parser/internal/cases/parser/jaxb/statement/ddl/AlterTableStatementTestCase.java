@@ -57,6 +57,9 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "add-constraint")
     private final List<ExpectedConstraintDefinition> addConstraints = new LinkedList<>();
     
+    @XmlElement(name = "modify-constraint")
+    private final List<ExpectedConstraintDefinition> modifyConstraints = new LinkedList<>();
+    
     @XmlElement(name = "modify-column")
     private final List<ExpectedModifyColumnDefinition> modifyColumns = new LinkedList<>();
     

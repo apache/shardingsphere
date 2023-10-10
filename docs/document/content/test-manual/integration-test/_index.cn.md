@@ -90,6 +90,8 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
 </dataset>
 ```
 
+> e2e operation 为 E2E 测试，并不包含 <dataset> 这类断言
+
 ### 环境配置
 
 `${SCENARIO-TYPE}` 表示场景名称，在测试引擎运行中用于标识唯一场景。
@@ -167,6 +169,16 @@ it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 ```
 
 #### 远程 debug Docker 容器中的 Proxy 代码
+首先修改要测试模块的配置文件 it-env.properties，将 function.it.env.type 设置为 `docker`；设置对应的数据库镜像版本，例如 `transaction.it.docker.mysql.version=mysql:5.7`。
+其次通过命令生成测试镜像，例如：
+
+```bash
+# for operation, replace ${operation} with transaction、pipeline or showprocesslist
+./mvnw -B clean install -am -pl test/e2e/operation/${operation} -Pit.env.docker -DskipTests
+
+# for e2e sql
+./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
+```
 
 ##### 远程调试通过镜像启动的 Proxy
 E2E 测试的 Proxy 镜像默认开启了 3308 端口用于远程调试容器中的实例。  
@@ -177,7 +189,7 @@ IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
 编辑对应的信息：
   - Name：一个描述性的名字，例如 e2e-debug。
   - Host：可以访问 docker 的 IP，例如 127.0.0.1。
-  - Port：调试端口 3308。
+  - Port：调试端口（需要在下一步中设置）。
   - use module classpath：项目根目录 shardingsphere。
 
 编辑好上面的信息后，在 IDEA 中 Run -> Run -> e2e-debug 即可启动 IDEA 的远程 debug。
@@ -187,9 +199,9 @@ IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
 可以通过如下方式 debug Testcontainer 启动的 Proxy 容器：
   - 在 Testcontainer 的相关启动类后打一个断点，例如 sql 测试中 E2EIT#setUp() -> `containerComposer.start();` 后面的一行打断点，此时相关容器一定已经启动。
   - 通过快捷键 Alt + F8，进入断点调试模式，查看 containerComposer 下的 Proxy 对象 3308 映射的端口（Testcontainer 对外映射端口是随机的）。例如本次通过该表达式：`((ShardingSphereProxyClusterContainer)((java.util.LinkedList)((ITContainers)((ClusterContainerComposer)containerComposer).containers).dockerContainers).getLast()).getMappedPort(3308)` 获取到映射的对外随机端口为 51837。（或者通过命令 `docker ps` 查看）
-  - 参考 `远程调试通过镜像启动的 Proxy` 中的方式，Port 设置为上一步中获取到的端口。
+  - 参考 `远程调试通过镜像启动的 Proxy` 中的方式，将 Remote JVM Debug 配置中的 Port 设置为上一步中获取到的端口，例如 51837。
 
-编辑好上面的信息后，在 IDEA 中 Run -> Run -> e2e-debug 即可启动 IDEA 的远程 debug。
+编辑好上面的信息后，在 IDEA 中 Run -> Run -> e2e-debug -> debug 即可启动 IDEA 的远程 debug。
 
 
 #### 注意事项

@@ -30,26 +30,32 @@ import java.util.List;
 public interface InlineExpressionParser extends TypedSPI {
     
     /**
-     * Replace all inline expression placeholders.
-     *
-     * @param inlineExpression inline expression with {@code $->}
-     * @return result inline expression with {@code $}
+     * The expression used to build the InlineExpressionParser instance will be saved to the Properties instance via this key.
      */
-    String handlePlaceHolder(String inlineExpression);
+    String INLINE_EXPRESSION_KEY = "inlineExpression";
+    
+    /**
+     * This method is used to return the inlineExpression String itself. In some cases, you may want to do
+     * additional processing on inlineExpression to return a specific value, in which case you need to override this method.
+     *
+     * @return result processed inline expression defined by the SPI implementation
+     */
+    String handlePlaceHolder();
     
     /**
      * Split and evaluate inline expression.
      *
-     * @param inlineExpression inline expression
      * @return result list
      */
-    List<String> splitAndEvaluate(String inlineExpression);
+    List<String> splitAndEvaluate();
     
     /**
      * Evaluate closure.
      *
-     * @param inlineExpression inline expression
      * @return closure
+     * @throws UnsupportedOperationException In most cases, users should not implement this method, and the return value of this method can only be a Groovy closure
      */
-    Closure<?> evaluateClosure(String inlineExpression);
+    default Closure<?> evaluateClosure() {
+        throw new UnsupportedOperationException("This SPI implementation does not support the use of this method.");
+    }
 }

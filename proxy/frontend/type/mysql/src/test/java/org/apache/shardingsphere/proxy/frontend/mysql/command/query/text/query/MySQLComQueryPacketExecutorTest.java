@@ -152,8 +152,9 @@ class MySQLComQueryPacketExecutorTest {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("t", table);
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"),
-                new ResourceMetaData("foo_db", Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singletonMap("foo_db", schema));
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singletonMap("foo_db", schema));
         when(result.getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(result.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         return result;
         
     }

@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.transaction.rule;
 
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.fixture.ShardingSphereTransactionManagerFixture;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -60,14 +62,14 @@ class TransactionRuleTest {
         assertThat(actual.getDatabases().size(), is(2));
         assertTrue(actual.getDatabases().containsKey(SHARDING_DB_1));
         ResourceMetaData resourceMetaData1 = actual.getDatabases().get(SHARDING_DB_1).getResourceMetaData();
-        assertThat(resourceMetaData1.getStorageUnitMetaData().getDataSources().size(), is(2));
-        assertTrue(resourceMetaData1.getStorageUnitMetaData().getDataSources().containsKey("ds_0"));
-        assertTrue(resourceMetaData1.getStorageUnitMetaData().getDataSources().containsKey("ds_1"));
+        assertThat(resourceMetaData1.getStorageUnits().size(), is(2));
+        assertTrue(resourceMetaData1.getStorageUnits().containsKey("ds_0"));
+        assertTrue(resourceMetaData1.getStorageUnits().containsKey("ds_1"));
         assertTrue(actual.getDatabases().containsKey(SHARDING_DB_2));
         ResourceMetaData resourceMetaData2 = actual.getDatabases().get(SHARDING_DB_2).getResourceMetaData();
-        assertThat(resourceMetaData2.getStorageUnitMetaData().getDataSources().size(), is(2));
-        assertTrue(resourceMetaData2.getStorageUnitMetaData().getDataSources().containsKey("ds_0"));
-        assertTrue(resourceMetaData2.getStorageUnitMetaData().getDataSources().containsKey("ds_1"));
+        assertThat(resourceMetaData2.getStorageUnits().size(), is(2));
+        assertTrue(resourceMetaData2.getStorageUnits().containsKey("ds_0"));
+        assertTrue(resourceMetaData2.getStorageUnits().containsKey("ds_1"));
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
@@ -96,11 +98,15 @@ class TransactionRuleTest {
     }
     
     private ResourceMetaData createResourceMetaData() {
+        Map<String, StorageUnit> storageUnits = new HashMap<>(2, 1F);
+        DataSourcePoolProperties dataSourcePoolProps0 = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(dataSourcePoolProps0.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/ds_0"));
+        storageUnits.put("ds_0", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps0, new MockedDataSource()));
+        DataSourcePoolProperties dataSourcePoolProps1 = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(dataSourcePoolProps1.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/ds_1"));
+        storageUnits.put("ds_1", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps1, new MockedDataSource()));
         ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1F);
-        dataSourceMap.put("ds_0", new MockedDataSource());
-        dataSourceMap.put("ds_1", new MockedDataSource());
-        when(result.getStorageUnitMetaData().getDataSources()).thenReturn(dataSourceMap);
+        when(result.getStorageUnits()).thenReturn(storageUnits);
         return result;
     }
     
@@ -113,11 +119,15 @@ class TransactionRuleTest {
     }
     
     private ResourceMetaData createAddResourceMetaData() {
+        Map<String, StorageUnit> storageUnits = new HashMap<>(2, 1F);
+        DataSourcePoolProperties dataSourcePoolProps0 = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(dataSourcePoolProps0.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/ds_0"));
+        storageUnits.put("ds_0", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps0, new MockedDataSource()));
+        DataSourcePoolProperties dataSourcePoolProps1 = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(dataSourcePoolProps1.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/ds_1"));
+        storageUnits.put("ds_1", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps1, new MockedDataSource()));
         ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1F);
-        dataSourceMap.put("ds_0", new MockedDataSource());
-        dataSourceMap.put("ds_1", new MockedDataSource());
-        when(result.getStorageUnitMetaData().getDataSources()).thenReturn(dataSourceMap);
+        when(result.getStorageUnits()).thenReturn(storageUnits);
         return result;
     }
     

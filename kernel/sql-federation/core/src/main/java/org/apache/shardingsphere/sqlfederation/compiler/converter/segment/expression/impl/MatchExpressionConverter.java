@@ -23,9 +23,12 @@ import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAgainstExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.function.dialect.mysql.SQLExtensionOperatorTable;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.ExpressionConverter;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -38,10 +41,22 @@ public final class MatchExpressionConverter implements SQLSegmentConverter<Match
     @Override
     public Optional<SqlNode> convert(final MatchAgainstExpression segment) {
         List<SqlNode> sqlNodes = new LinkedList<>();
-        sqlNodes.add(new SqlIdentifier(segment.getColumnName().getIdentifier().getValue(), SqlParserPos.ZERO));
+        List<String> names = new ArrayList<>();
+        if (segment.getColumnName().getOwner().isPresent()) {
+            addOwnerNames(names, segment.getColumnName().getOwner().get());
+        }
+        names.add(segment.getColumnName().getIdentifier().getValue());
+        sqlNodes.add(new SqlIdentifier(names, SqlParserPos.ZERO));
         new ExpressionConverter().convert(segment.getExpr()).ifPresent(sqlNodes::add);
         SqlNode searchModifier = SqlLiteral.createCharString(segment.getSearchModifier(), SqlParserPos.ZERO);
         sqlNodes.add(searchModifier);
         return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.MATCH_AGAINST, sqlNodes, SqlParserPos.ZERO));
+    }
+    
+    private void addOwnerNames(final List<String> names, final OwnerSegment owner) {
+        if (null != owner) {
+            addOwnerNames(names, owner.getOwner().orElse(null));
+            names.add(owner.getIdentifier().getValue());
+        }
     }
 }

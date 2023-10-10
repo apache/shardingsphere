@@ -51,10 +51,6 @@
 #      type: AES
 #      props:
 #        aes-key-value: 123456abc
-#    rc4_encryptor:
-#      type: RC4
-#      props:
-#        rc4-key-value: 123456abc
 #  tables:
 #    t_encrypt:
 #      columns:
@@ -65,7 +61,7 @@
 #        order_id:
 #          cipher:
 #            name: order_encrypt
-#            encryptorName: rc4_encryptor
+#            encryptorName: aes_encryptor
 
 ######################################################################################################
 #
@@ -102,10 +98,6 @@
 #      type: AES
 #      props:
 #        aes-key-value: 123456abc
-#    rc4_encryptor:
-#      type: RC4
-#      props:
-#        rc4-key-value: 123456abc
 #  tables:
 #    t_encrypt:
 #      columns:
@@ -116,4 +108,4 @@
 #        order_id:
 #          cipher:
 #            name: order_encrypt
-#            encryptorName: rc4_encryptor
+#            encryptorName: aes_encryptor

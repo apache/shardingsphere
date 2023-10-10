@@ -25,6 +25,8 @@ import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
@@ -78,7 +80,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
             return;
         }
         TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType()).persistJobItemProgress(jobItemContext);
-        if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
+        if (PipelineJobProgressDetector.isAllInventoryTasksFinished(inventoryTasks)) {
             log.info("All inventory tasks finished.");
             executeIncrementalTask();
         } else {
@@ -104,6 +106,10 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     }
     
     private synchronized void executeIncrementalTask() {
+        if (jobItemContext.isStopping()) {
+            log.info("Stopping is true, ignore incremental task");
+            return;
+        }
         if (incrementalTasks.isEmpty()) {
             log.info("incrementalTasks empty, ignore");
             return;
@@ -124,8 +130,9 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     }
     
     protected void inventorySuccessCallback() {
-        if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
+        if (PipelineJobProgressDetector.isAllInventoryTasksFinished(inventoryTasks)) {
             log.info("onSuccess, all inventory tasks finished.");
+            PipelineJobProgressPersistService.persistNow(jobItemContext.getJobId(), jobItemContext.getShardingItem());
             executeIncrementalTask();
         } else {
             log.info("onSuccess, inventory tasks not finished");
@@ -135,14 +142,21 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     protected void inventoryFailureCallback(final Throwable throwable) {
         log.error("onFailure, inventory task execute failed.", throwable);
         String jobId = jobItemContext.getJobId();
-        jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
-        jobAPI.stop(jobId);
+        jobAPI.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+        try {
+            jobAPI.stop(jobId);
+        } catch (final PipelineJobNotFoundException ignored) {
+        }
     }
     
     private final class InventoryTaskExecuteCallback implements ExecuteCallback {
         
         @Override
         public void onSuccess() {
+            if (jobItemContext.isStopping()) {
+                log.info("Inventory task onSuccess, stopping true, ignore");
+                return;
+            }
             inventorySuccessCallback();
         }
         
@@ -163,8 +177,11 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         public void onFailure(final Throwable throwable) {
             log.error("onFailure, incremental task execute failed.", throwable);
             String jobId = jobItemContext.getJobId();
-            jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
-            jobAPI.stop(jobId);
+            jobAPI.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+            try {
+                jobAPI.stop(jobId);
+            } catch (final PipelineJobNotFoundException ignored) {
+            }
         }
     }
 }

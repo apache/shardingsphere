@@ -43,6 +43,6 @@ public final class CaseWhenExpression implements ExpressionSegment {
     
     @Override
     public String getText() {
-        return caseExpr.getText();
+        return null == caseExpr ? "" : caseExpr.getText();
     }
 }

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemCon
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.listener.PipelineElasticJobListener;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -90,26 +90,13 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         try {
             doPrepare(jobItemContext);
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            processFailed(jobItemContext, ex);
-            throw ex;
-            // CHECKSTYLE:OFF
         } catch (final SQLException ex) {
             // CHECKSTYLE:ON
-            processFailed(jobItemContext, ex);
             throw new PipelineInternalException(ex);
         }
     }
     
     protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
-    
-    protected void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
-        String jobId = jobItemContext.getJobId();
-        log.error("job prepare failed, {}-{}", jobId, jobItemContext.getShardingItem(), ex);
-        jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
-        jobAPI.stop(jobId);
-    }
     
     @Override
     public Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {

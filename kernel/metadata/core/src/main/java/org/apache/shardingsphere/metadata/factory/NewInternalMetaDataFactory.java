@@ -74,7 +74,7 @@ public final class NewInternalMetaDataFactory {
         Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size(), 1F);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
-            if (entry.getValue().getDataSources().isEmpty()) {
+            if (entry.getValue().getStorageUnits().isEmpty()) {
                 result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType, props));
             } else {
                 result.put(databaseName.toLowerCase(), create(databaseName, persistService, entry.getValue(), props, instanceContext));

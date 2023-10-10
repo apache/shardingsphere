@@ -79,8 +79,39 @@ statement
         | insert
         | lockTable
         | merge
+        | assignmentStatement
+        | basicLoopStatement
+        | closeStatement
+        | fetchStatement
+        | ifStatment
+        | returnStatement
         ) SEMI_
     ;
+
+basicLoopStatement
+    : LOOP (statement (EXIT label? (WHEN booleanPrimary)? SEMI_)?)+ END LOOP label?
+    ;
+
+assignmentStatement
+    : variableName ASSIGNMENT_OPERATOR_ expr
+    ;
+
+closeStatement
+    : CLOSE cursorName
+    ;
+
+fetchStatement
+    : FETCH cursorName INTO identifier
+    ;
+
+ifStatment
+    : IF booleanPrimary THEN statement+ (ELSIF booleanPrimary THEN statement+)? (ELSE statement)? END IF
+    ;
+
+returnStatement
+    : RETURN expr
+    ;
+
 
 exceptionHandler
     : WHEN ((typeName (OR typeName)*)| OTHERS) THEN statement+

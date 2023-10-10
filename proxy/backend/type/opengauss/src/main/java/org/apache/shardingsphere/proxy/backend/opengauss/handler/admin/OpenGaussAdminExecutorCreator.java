@@ -45,8 +45,14 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     static {
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("VERSION()");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("opengauss_version()");
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("gs_password_deadline()");
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("intervaltonum()");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("intervaltonum(gs_password_deadline())");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("gs_password_notifytime()");
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("pg_catalog.gs_password_deadline()");
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("pg_catalog.intervaltonum()");
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("pg_catalog.intervaltonum(pg_catalog.gs_password_deadline())");
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("pg_catalog.gs_password_notifytime()");
         SYSTEM_CATALOG_TABLES.add("pg_class");
         SYSTEM_CATALOG_TABLES.add("pg_namespace");
         SYSTEM_CATALOG_TABLES.add("pg_database");

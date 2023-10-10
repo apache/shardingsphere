@@ -27,9 +27,8 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-proxy-example</module>
         <module>shardingsphere-parser-example</module>
-        <module>shardingsphere-example-generator</module>
+        <module>shardingsphere-jdbc-example-generator</module>
     </modules>
     
     <properties>
@@ -116,11 +115,6 @@
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-cluster-mode-repository-nacos</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

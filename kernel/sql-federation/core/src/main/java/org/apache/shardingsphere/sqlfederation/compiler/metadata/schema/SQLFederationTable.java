@@ -20,7 +20,9 @@ package org.apache.shardingsphere.sqlfederation.compiler.metadata.schema;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.calcite.DataContext;
+import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
+import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.linq4j.Queryable;
 import org.apache.calcite.linq4j.tree.Expression;
@@ -43,6 +45,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.metadata.util.SQLFederat
 import org.apache.shardingsphere.sqlfederation.compiler.statistic.SQLFederationStatistic;
 import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerableScanExecutorContext;
+import org.apache.shardingsphere.sqlfederation.executor.row.EmptyRowEnumerator;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -96,7 +99,20 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
      * @return enumerable result
      */
     public Enumerable<Object> execute(final DataContext root, final String sql, final int[] paramIndexes) {
+        if (null == scanExecutor) {
+            return createEmptyEnumerable();
+        }
         return scanExecutor.execute(table, new EnumerableScanExecutorContext(root, sql, paramIndexes));
+    }
+    
+    private AbstractEnumerable<Object> createEmptyEnumerable() {
+        return new AbstractEnumerable<Object>() {
+            
+            @Override
+            public Enumerator<Object> enumerator() {
+                return new EmptyRowEnumerator();
+            }
+        };
     }
     
     @Override

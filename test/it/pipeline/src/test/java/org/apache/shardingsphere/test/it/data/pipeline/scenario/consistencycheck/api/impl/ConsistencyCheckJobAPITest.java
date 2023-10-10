@@ -20,8 +20,6 @@ package org.apache.shardingsphere.test.it.data.pipeline.scenario.consistencychec
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyContentCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobId;
@@ -32,6 +30,8 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -81,12 +81,11 @@ class ConsistencyCheckJobAPITest {
                 parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
         GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey());
         governanceRepositoryAPI.persistLatestCheckJobId(parentJobId, checkJobId);
-        Map<String, TableDataConsistencyCheckResult> expectedCheckResult = Collections.singletonMap("t_order", new TableDataConsistencyCheckResult(new TableDataConsistencyCountCheckResult(1, 1),
-                new TableDataConsistencyContentCheckResult(true)));
+        Map<String, TableDataConsistencyCheckResult> expectedCheckResult = Collections.singletonMap("t_order", new TableDataConsistencyCheckResult(true));
         governanceRepositoryAPI.persistCheckJobResult(parentJobId, checkJobId, expectedCheckResult);
         Map<String, TableDataConsistencyCheckResult> actualCheckResult = checkJobAPI.getLatestDataConsistencyCheckResult(parentJobId);
         assertThat(actualCheckResult.size(), is(expectedCheckResult.size()));
-        assertThat(actualCheckResult.get("t_order").getCountCheckResult().isMatched(), is(expectedCheckResult.get("t_order").getContentCheckResult().isMatched()));
+        assertThat(actualCheckResult.get("t_order").isMatched(), is(expectedCheckResult.get("t_order").isMatched()));
     }
     
     @Test
@@ -99,10 +98,9 @@ class ConsistencyCheckJobAPITest {
             String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
                     parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
             ConsistencyCheckJobItemContext checkJobItemContext = new ConsistencyCheckJobItemContext(
-                    new ConsistencyCheckJobConfiguration(checkJobId, parentJobId, null, null), 0, JobStatus.FINISHED, null);
+                    new ConsistencyCheckJobConfiguration(checkJobId, parentJobId, null, null, TypedSPILoader.getService(DatabaseType.class, "H2")), 0, JobStatus.FINISHED, null);
             checkJobAPI.persistJobItemProgress(checkJobItemContext);
-            Map<String, TableDataConsistencyCheckResult> dataConsistencyCheckResult = Collections.singletonMap("t_order",
-                    new TableDataConsistencyCheckResult(new TableDataConsistencyCountCheckResult(0, 0), new TableDataConsistencyContentCheckResult(true)));
+            Map<String, TableDataConsistencyCheckResult> dataConsistencyCheckResult = Collections.singletonMap("t_order", new TableDataConsistencyCheckResult(true));
             repositoryAPI.persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
             Optional<String> latestCheckJobId = repositoryAPI.getLatestCheckJobId(parentJobId);
             assertTrue(latestCheckJobId.isPresent());

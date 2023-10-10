@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.ddl;
 
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * DDL result merger for Sharding.
@@ -62,7 +62,7 @@ public final class ShardingDDLResultMerger implements ResultMerger {
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
-        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, Integer> result = new CaseInsensitiveMap<>();
         for (int i = 0; i < queryResult.getMetaData().getColumnCount(); i++) {
             result.put(SQLUtils.getExactlyValue(queryResult.getMetaData().getColumnLabel(i + 1)), i + 1);
         }

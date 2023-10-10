@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ColumnWithJoinOperatorSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
@@ -50,6 +51,12 @@ public final class ColumnExtractor {
             }
             if (((BinaryOperationExpression) expression).getRight() instanceof ColumnSegment) {
                 result.add((ColumnSegment) ((BinaryOperationExpression) expression).getRight());
+            }
+            if (((BinaryOperationExpression) expression).getLeft() instanceof ColumnWithJoinOperatorSegment) {
+                result.add(((ColumnWithJoinOperatorSegment) ((BinaryOperationExpression) expression).getLeft()).getColumnName());
+            }
+            if (((BinaryOperationExpression) expression).getRight() instanceof ColumnWithJoinOperatorSegment) {
+                result.add(((ColumnWithJoinOperatorSegment) ((BinaryOperationExpression) expression).getRight()).getColumnName());
             }
         }
         if (expression instanceof InExpression && ((InExpression) expression).getLeft() instanceof ColumnSegment) {

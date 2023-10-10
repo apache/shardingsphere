@@ -61,7 +61,7 @@ class ShowStorageUnitExecutorTest {
     
     @BeforeEach
     void before() {
-        ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", createDataSources());
+        ResourceMetaData resourceMetaData = new ResourceMetaData(createDataSources());
         RuleMetaData metaData = new RuleMetaData(Collections.singleton(createShardingRule()));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData()).thenReturn(metaData);

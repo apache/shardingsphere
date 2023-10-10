@@ -197,12 +197,32 @@
         </expr>
         <update>
             <set start-index="177" stop-index="208">
-                <assignment start-index="177" stop-index="208">
-                    <column name="bonus" start-index="177" stop-index="183">
-                        <owner name="D" start-index="177" stop-index="177" />
-                    </column>
+                <assignment>
+                    <columns name="bonus" start-index="177" stop-index="183" literal-start-index="177" literal-stop-index="183">
+                        <owner name="D" start-index="177" stop-index="177" literal-start-index="177" literal-stop-index="177" />
+                    </columns>
                     <assignment-value>
-                        <literal-expression value="D.bonus + S.salary*.01" start-index="187" stop-index="208" />
+                        <binary-operation-expression start-index="187" stop-index="208" literal-start-index="187" literal-stop-index="208">
+                            <left>
+                                <binary-operation-expression start-index="187" stop-index="204" literal-start-index="187" literal-stop-index="204">
+                                    <left>
+                                        <column name="bonus" start-index="187" stop-index="193" literal-start-index="187" literal-stop-index="193">
+                                            <owner name="D" start-index="187" stop-index="187" literal-start-index="187" literal-stop-index="187" />
+                                        </column>
+                                    </left>
+                                    <operator>+</operator>
+                                    <right>
+                                        <column name="salary" start-index="197" stop-index="204" literal-start-index="197" literal-stop-index="204">
+                                            <owner name="S" start-index="197" stop-index="197" literal-start-index="197" literal-stop-index="197" />
+                                        </column>
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>*</operator>
+                            <right>
+                                <literal-expression value="0.01" start-index="206" stop-index="208" literal-start-index="206" literal-stop-index="208" />
+                            </right>
+                        </binary-operation-expression>
                     </assignment-value>
                 </assignment>
             </set>
@@ -276,6 +296,26 @@
             </binary-operation-expression>
         </expr>
         <insert>
+            <values>
+                <value>
+                    <assignment-value>
+                        <column name="employee_id" start-index="331" stop-index="343">
+                            <owner name="S" start-index="331" stop-index="331" />
+                        </column>
+                        <binary-operation-expression start-index="67" stop-index="74">
+                            <left>
+                                <column name="salary" start-index="346" stop-index="353">
+                                    <owner name="S" start-index="346" stop-index="346" />
+                                </column>
+                            </left>
+                            <operator>*</operator>
+                            <right>
+                                <literal-expression value=".01" start-index="355" stop-index="357" />
+                            </right>
+                        </binary-operation-expression>
+                    </assignment-value>
+                </value>
+            </values>
             <where start-index="365" stop-index="388" literal-start-index="365" literal-stop-index="388">
                 <expr>
                     <binary-operation-expression start-index="372" stop-index="387" literal-start-index="372" literal-stop-index="387">
@@ -366,13 +406,33 @@
             </binary-operation-expression>
         </expr>
         <update>
-            <set start-index="218" stop-index="249">
-                <assignment start-index="218" stop-index="249">
-                    <column name="bonus" start-index="218" stop-index="224">
-                        <owner name="D" start-index="218" stop-index="218" />
-                    </column>
+            <set start-index="218" stop-index="249" literal-start-index="218" literal-stop-index="249">
+                <assignment>
+                    <columns name="bonus" start-index="218" stop-index="224" literal-start-index="218" literal-stop-index="224">
+                        <owner name="D" start-index="218" stop-index="218" literal-start-index="218" literal-stop-index="218" />
+                    </columns>
                     <assignment-value>
-                        <literal-expression value="D.bonus + S.salary*.01" start-index="228" stop-index="249" />
+                        <binary-operation-expression start-index="228" stop-index="249" literal-start-index="228" literal-stop-index="249">
+                            <left>
+                                <binary-operation-expression start-index="228" stop-index="245" literal-start-index="228" literal-stop-index="245">
+                                    <left>
+                                        <column name="bonus" start-index="228" stop-index="234" literal-start-index="228" literal-stop-index="234">
+                                            <owner name="D" start-index="228" stop-index="228" literal-start-index="228" literal-stop-index="228" />
+                                        </column>
+                                    </left>
+                                    <operator>+</operator>
+                                    <right>
+                                        <column name="salary" start-index="238" stop-index="245" literal-start-index="238" literal-stop-index="245">
+                                            <owner name="S" start-index="238" stop-index="238" literal-start-index="238" literal-stop-index="238" />
+                                        </column>
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>*</operator>
+                            <right>
+                                <literal-expression value="0.01" start-index="247" stop-index="249" literal-start-index="247" literal-stop-index="249" />
+                            </right>
+                        </binary-operation-expression>
                     </assignment-value>
                 </assignment>
             </set>

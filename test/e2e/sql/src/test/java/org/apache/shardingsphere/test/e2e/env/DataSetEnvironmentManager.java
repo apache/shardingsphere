@@ -167,7 +167,7 @@ public final class DataSetEnvironmentManager {
     
     private Map<String, Collection<String>> getDataNodeMap(final DataSetMetaData dataSetMetaData) {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (String each : InlineExpressionParserFactory.newInstance().splitAndEvaluate(dataSetMetaData.getDataNodes())) {
+        for (String each : InlineExpressionParserFactory.newInstance(dataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             if (!result.containsKey(dataNode.getDataSourceName())) {
                 result.put(dataNode.getDataSourceName(), new LinkedList<>());
@@ -220,7 +220,7 @@ public final class DataSetEnvironmentManager {
                 for (String each : tableNames) {
                     DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
                     DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", dialectDatabaseMetaData.getQuoteCharacter().wrap(each)))) {
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", dialectDatabaseMetaData.getQuoteCharacter().wrap(each)))) {
                         preparedStatement.execute();
                     }
                 }

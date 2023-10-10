@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.DriverExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.metadata.database.resource.storage.StorageUnitMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
@@ -55,17 +55,17 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("rawtypes")
     private final SQLExecutionUnitBuilder sqlExecutionUnitBuilder;
     
-    private final StorageUnitMetaData storageUnitMetaData;
+    private final Map<String, StorageUnit> storageUnits;
     
     public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final DatabaseConnectionManager<C> databaseConnectionManager,
                                         final ExecutorStatementManager<C, ?, ?> statementManager, final StorageResourceOption option, final Collection<ShardingSphereRule> rules,
-                                        final StorageUnitMetaData storageUnitMetaData) {
+                                        final Map<String, StorageUnit> storageUnits) {
         super(maxConnectionsSizePerQuery, rules);
         this.databaseConnectionManager = databaseConnectionManager;
         this.statementManager = statementManager;
         this.option = option;
         sqlExecutionUnitBuilder = getCachedSqlExecutionUnitBuilder(type);
-        this.storageUnitMetaData = storageUnitMetaData;
+        this.storageUnits = storageUnits;
     }
     
     /**
@@ -97,7 +97,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     @SuppressWarnings("unchecked")
     private ExecutionGroup<T> createExecutionGroup(final String dataSourceName, final List<SQLUnit> sqlUnits, final C connection, final ConnectionMode connectionMode) throws SQLException {
         List<T> inputs = new LinkedList<>();
-        DatabaseType databaseType = storageUnitMetaData.getStorageUnits().get(dataSourceName).getStorageType();
+        DatabaseType databaseType = storageUnits.get(dataSourceName).getStorageType();
         for (SQLUnit each : sqlUnits) {
             inputs.add((T) sqlExecutionUnitBuilder.build(new ExecutionUnit(dataSourceName, each), statementManager, connection, connectionMode, option, databaseType));
         }

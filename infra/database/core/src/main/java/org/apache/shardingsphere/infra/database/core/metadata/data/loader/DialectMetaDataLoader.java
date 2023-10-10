@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaM
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -34,11 +33,9 @@ public interface DialectMetaDataLoader extends DatabaseTypedSPI {
     /**
      * Load schema meta data.
      *
-     * @param dataSource data source
-     * @param tables tables
-     * @param defaultSchemaName default schema name
+     * @param material meta data loader material
      * @return schema meta data collection
      * @throws SQLException SQL exception
      */
-    Collection<SchemaMetaData> load(DataSource dataSource, Collection<String> tables, String defaultSchemaName) throws SQLException;
+    Collection<SchemaMetaData> load(MetaDataLoaderMaterial material) throws SQLException;
 }

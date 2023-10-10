@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.it.data.pipeline.core.fixture.TableDataConsistencyCheckerFixture
+org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureTableDataConsistencyChecker

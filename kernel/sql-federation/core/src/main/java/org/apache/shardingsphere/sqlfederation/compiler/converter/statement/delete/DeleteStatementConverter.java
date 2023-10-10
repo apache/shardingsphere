@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.from.T
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.limit.PaginationValueSQLConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.orderby.OrderByConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.where.WhereConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.with.WithConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.SQLStatementConverter;
 
 import java.util.Optional;
@@ -41,7 +42,7 @@ public final class DeleteStatementConverter implements SQLStatementConverter<Del
     
     @Override
     public SqlNode convert(final DeleteStatement deleteStatement) {
-        SqlDelete sqlDelete = convertDelete(deleteStatement);
+        SqlNode sqlDelete = convertDelete(deleteStatement);
         SqlNodeList orderBy = DeleteStatementHandler.getOrderBySegment(deleteStatement).flatMap(optional -> new OrderByConverter().convert(optional)).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = DeleteStatementHandler.getLimitSegment(deleteStatement);
         if (limit.isPresent()) {
@@ -52,10 +53,11 @@ public final class DeleteStatementConverter implements SQLStatementConverter<Del
         return orderBy.isEmpty() ? sqlDelete : new SqlOrderBy(SqlParserPos.ZERO, sqlDelete, orderBy, null, null);
     }
     
-    private SqlDelete convertDelete(final DeleteStatement deleteStatement) {
+    private SqlNode convertDelete(final DeleteStatement deleteStatement) {
         SqlNode deleteTable = new TableConverter().convert(deleteStatement.getTable()).orElseThrow(IllegalStateException::new);
         SqlNode condition = deleteStatement.getWhere().flatMap(optional -> new WhereConverter().convert(optional)).orElse(null);
         SqlIdentifier alias = deleteStatement.getTable().getAliasName().map(optional -> new SqlIdentifier(optional, SqlParserPos.ZERO)).orElse(null);
-        return new SqlDelete(SqlParserPos.ZERO, deleteTable, condition, null, alias);
+        SqlDelete sqlDelete = new SqlDelete(SqlParserPos.ZERO, deleteTable, condition, null, alias);
+        return DeleteStatementHandler.getWithSegment(deleteStatement).flatMap(optional -> new WithConverter().convert(optional, sqlDelete)).orElse(sqlDelete);
     }
 }

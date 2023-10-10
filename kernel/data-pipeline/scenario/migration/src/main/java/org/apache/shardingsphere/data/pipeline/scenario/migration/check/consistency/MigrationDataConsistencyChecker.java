@@ -39,6 +39,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.Tabl
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckerFactory;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryCheckParameter;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryChecker;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
@@ -46,14 +47,15 @@ import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorit
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Data consistency checker for migration job.
@@ -67,7 +69,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     
     private final ConsistencyCheckJobItemProgressContext progressContext;
     
-    private final Set<TableDataConsistencyChecker> tableCheckers = new HashSet<>();
+    private final AtomicReference<TableInventoryChecker> currentTableInventoryChecker = new AtomicReference<>();
     
     public MigrationDataConsistencyChecker(final MigrationJobConfiguration jobConfig, final InventoryIncrementalProcessContext processContext,
                                            final ConsistencyCheckJobItemProgressContext progressContext) {
@@ -84,13 +86,15 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         progressContext.setRecordsCount(getRecordsCount());
         progressContext.getTableNames().addAll(sourceTableNames);
         progressContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
-        Map<String, TableDataConsistencyCheckResult> result = new LinkedHashMap<>();
-        try (PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager()) {
+        Map<SchemaTableName, TableDataConsistencyCheckResult> result = new LinkedHashMap<>();
+        try (
+                PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+                TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps)) {
             for (JobDataNodeLine each : jobConfig.getJobShardingDataNodes()) {
-                checkTableInventoryData(each, algorithmType, algorithmProps, result, dataSourceManager);
+                checkTableInventoryData(each, tableChecker, result, dataSourceManager);
             }
         }
-        return result;
+        return result.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().marshal(), Entry::getValue));
     }
     
     private long getRecordsCount() {
@@ -98,15 +102,12 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         return jobProgress.values().stream().filter(Objects::nonNull).mapToLong(InventoryIncrementalJobItemProgress::getProcessedRecordsCount).sum();
     }
     
-    private void checkTableInventoryData(final JobDataNodeLine jobDataNodeLine, final String algorithmType, final Properties algorithmProps,
-                                         final Map<String, TableDataConsistencyCheckResult> checkResults, final PipelineDataSourceManager dataSourceManager) {
+    private void checkTableInventoryData(final JobDataNodeLine jobDataNodeLine, final TableDataConsistencyChecker tableChecker,
+                                         final Map<SchemaTableName, TableDataConsistencyCheckResult> checkResultMap, final PipelineDataSourceManager dataSourceManager) {
         for (JobDataNodeEntry entry : jobDataNodeLine.getEntries()) {
             for (DataNode each : entry.getDataNodes()) {
-                TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps);
-                tableCheckers.add(tableChecker);
                 TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(entry.getLogicTableName(), each, tableChecker, dataSourceManager);
-                checkResults.put(DataNodeUtils.formatWithSchema(each), checkResult);
-                tableCheckers.remove(null);
+                checkResultMap.put(new SchemaTableName(each.getSchemaName(), each.getTableName()), checkResult);
                 if (!checkResult.isMatched() && tableChecker.isBreakOnInventoryCheckNotMatched()) {
                     log.info("Unmatched on table '{}', ignore left tables", DataNodeUtils.formatWithSchema(each));
                     return;
@@ -129,18 +130,27 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
                 sourceTable.getSchemaName().getOriginal(), sourceTable.getTableName().getOriginal(), metaDataLoader);
         TableInventoryCheckParameter param = new TableInventoryCheckParameter(
                 jobConfig.getJobId(), sourceDataSource, targetDataSource, sourceTable, targetTable, columnNames, uniqueKeys, readRateLimitAlgorithm, progressContext);
-        return tableChecker.checkSingleTableInventoryData(param);
+        TableInventoryChecker tableInventoryChecker = tableChecker.buildTableInventoryChecker(param);
+        currentTableInventoryChecker.set(tableInventoryChecker);
+        TableDataConsistencyCheckResult result = tableInventoryChecker.checkSingleTableInventoryData();
+        currentTableInventoryChecker.set(null);
+        return result;
     }
     
     @Override
     public void cancel() {
-        for (TableDataConsistencyChecker each : tableCheckers) {
-            each.cancel();
+        TableInventoryChecker checker = currentTableInventoryChecker.get();
+        if (null != checker) {
+            checker.cancel();
         }
     }
     
     @Override
     public boolean isCanceling() {
-        return tableCheckers.stream().anyMatch(TableDataConsistencyChecker::isCanceling);
+        TableInventoryChecker checker = currentTableInventoryChecker.get();
+        if (null == checker) {
+            return false;
+        }
+        return checker.isCanceling();
     }
 }

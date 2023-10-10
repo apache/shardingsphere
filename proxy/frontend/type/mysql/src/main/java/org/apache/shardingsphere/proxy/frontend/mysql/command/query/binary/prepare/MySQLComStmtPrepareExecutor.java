@@ -56,7 +56,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -81,7 +80,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             throw new UnsupportedPreparedStatementException();
         }
         SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
-                connectionSession.getDefaultDatabaseName()).bind(sqlStatement, Collections.emptyList());
+                connectionSession.getDefaultDatabaseName(), packet.getHintValueContext()).bind(sqlStatement, Collections.emptyList());
         int statementId = MySQLStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
         MySQLServerPreparedStatement serverPreparedStatement = new MySQLServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext(), new CopyOnWriteArrayList<>());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
@@ -99,7 +98,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private Collection<DatabasePacket> createPackets(final SQLStatementContext sqlStatementContext, final int statementId, final MySQLServerPreparedStatement serverPreparedStatement) {
         Collection<DatabasePacket> result = new LinkedList<>();
-        List<Projection> projections = getProjections(sqlStatementContext);
+        Collection<Projection> projections = getProjections(sqlStatementContext);
         int parameterCount = sqlStatementContext.getSqlStatement().getParameterCount();
         result.add(new MySQLComStmtPrepareOKPacket(statementId, projections.size(), parameterCount, 0));
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
@@ -108,14 +107,14 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             result.addAll(createParameterColumnDefinition41Packets(sqlStatementContext, characterSet, serverPreparedStatement));
             result.add(new MySQLEofPacket(statusFlags));
         }
-        if (!projections.isEmpty()) {
+        if (!projections.isEmpty() && sqlStatementContext instanceof SelectStatementContext) {
             result.addAll(createProjectionColumnDefinition41Packets((SelectStatementContext) sqlStatementContext, characterSet));
             result.add(new MySQLEofPacket(statusFlags));
         }
         return result;
     }
     
-    private List<Projection> getProjections(final SQLStatementContext sqlStatementContext) {
+    private Collection<Projection> getProjections(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections() : Collections.emptyList();
     }
     

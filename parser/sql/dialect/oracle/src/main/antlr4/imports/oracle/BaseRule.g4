@@ -87,7 +87,7 @@ unreservedWord1
     : TRUNCATE | FUNCTION | PROCEDURE | CASE | WHEN | CAST | TRIM | SUBSTRING
     | NATURAL | JOIN | FULL | INNER | OUTER | LEFT | RIGHT
     | CROSS | USING | IF | TRUE | FALSE | LIMIT | OFFSET
-    | BEGIN | COMMIT | ROLLBACK | SAVEPOINT | BOOLEAN | DOUBLE | CHARACTER
+    | COMMIT | ROLLBACK | SAVEPOINT
     | ARRAY | INTERVAL | TIME | TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | YEAR
     | QUARTER | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND
     | MICROSECOND | MAX | MIN | SUM | COUNT | AVG | ENABLE
@@ -97,7 +97,7 @@ unreservedWord1
     | FLASHBACK | ARCHIVE | REFRESH | QUERY | REWRITE | KEEP | SEQUENCE
     | INHERIT | TRANSLATE | SQL | MERGE | AT | BITMAP | CACHE | CHECKPOINT
     | CONSTRAINTS | CYCLE | DBTIMEZONE | ENCRYPT | DECRYPT | DEFERRABLE
-    | DEFERRED | EDITION | ELEMENT | END | EXCEPTIONS | FORCE | GLOBAL
+    | DEFERRED | EDITION | ELEMENT | EXCEPTIONS | FORCE | GLOBAL
     | IDENTITY | INITIALLY | INVALIDATE | JAVA | LEVELS | LOCAL | MAXVALUE
     | MINVALUE | NOMAXVALUE | NOMINVALUE | MINING | MODEL | NATIONAL | NEW
     | NOCACHE | NOCYCLE | NOORDER | NORELY | NOVALIDATE | ONLY | PRESERVE
@@ -115,10 +115,10 @@ unreservedWord1
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
     | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | MINUTE | ANY 
     | LENGTH | SINGLE_C | TIME_UNIT | TARGET | PUBLIC | ID | STATE | PRIORITY
-    | CONSTRAINT | PRIMARY | FOREIGN | KEY | POSITION | PRECISION | FUNCTION | PROCEDURE | SPECIFICATION | CASE
+    | PRIMARY | FOREIGN | KEY | POSITION | PRECISION | FUNCTION | PROCEDURE | SPECIFICATION | CASE
     | WHEN | CAST | TRIM | SUBSTRING | FULL | INNER | OUTER | LEFT | RIGHT | CROSS
     | USING | FALSE | SAVEPOINT | BODY | CHARACTER | ARRAY | TIME | TIMEOUT | TIMESTAMP | LOCALTIME
-    | DAY | ENABLE | DISABLE | CALL | INSTANCE | CLOSE | NEXT | NAME | INT | NUMERIC
+    | DAY | ENABLE | DISABLE | CALL | INSTANCE | CLOSE | NEXT | NAME | NUMERIC
     | TRIGGERS | GLOBAL_NAME | BINARY | MOD | XOR | UNKNOWN | ALWAYS | CASCADE | GENERATED | PRIVILEGES
     | READ | WRITE | ROLE | VISIBLE | INVISIBLE | EXECUTE | USE | DEBUG | UNDER | FLASHBACK
     | ARCHIVE | REFRESH | QUERY | REWRITE | CHECKPOINT | ENCRYPT | DIRECTORY | CREDENTIALS | EXCEPT | NOFORCE
@@ -180,7 +180,7 @@ unreservedWord1
     | HOST | PORT | EVERY | MINUTES | HOURS | NORELOCATE | SAVE | DISCARD | APPLICATION | INSTALL
     | MINIMUM | VERSION | UNINSTALL | COMPATIBILITY | MATERIALIZE | SUBTYPE | RECORD | CONSTANT | CURSOR
     | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA | PERCENT_RANK | ROWID
-    | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE | EVALNAME | LEVEL | CONTENT | ON
+    | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE | EVALNAME | LEVEL | CONTENT | ON | LOOP | EXIT | ELSIF
     ;
     
 unreservedWord2
@@ -471,6 +471,10 @@ functionName
     : identifier
     ;
 
+cursorName
+    : identifier
+    ;
+
 featureId
     : numberLiterals
     ;
@@ -560,7 +564,7 @@ partitionSetName
     ;
 
 partitionKeyValue
-    : INTEGER_ | dateTimeLiterals
+    : INTEGER_ | dateTimeLiterals | toDateFunction
     ;
 
 subpartitionKeyValue
@@ -664,7 +668,7 @@ notOperator
 
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
-    | PRIOR predicate
+    | (PRIOR | DISTINCT) predicate
     | CONNECT_BY_ROOT predicate
     | booleanPrimary SAFE_EQ_ predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
@@ -775,7 +779,11 @@ leadLagInfo
 
 specialFunction
     : castFunction | charFunction | extractFunction | formatFunction | firstOrLastValueFunction | trimFunction | featureFunction
-    | setFunction | translateFunction | cursorFunction | toDateFunction
+    | setFunction | translateFunction | cursorFunction | toDateFunction | approxRank
+    ;
+
+approxRank
+    : APPROX_RANK LP_ queryPartitionClause? orderByClause RP_
     ;
 
 toDateFunction
@@ -1941,7 +1949,9 @@ datetimeExpr
     ;
 
 xmlFunction
-    : xmlAggFunction
+    : xmlElementFunction
+    | xmlCdataFunction
+    | xmlAggFunction
     | xmlColattvalFunction
     | xmlExistsFunction
     | xmlForestFunction
@@ -1957,6 +1967,22 @@ xmlFunction
         | SYS_DBURIGEN | UPDATEXML | XMLCONCAT | XMLDIFF | XMLEXISTS | XMLISVALID | XMLPATCH | XMLSEQUENCE | XMLTRANSFORM) exprList
     | specifiedFunctionName = (DEPTH | PATH) LP_ correlationInteger RP_
     | specifiedFunctionName = XMLCOMMENT LP_ stringLiterals RP_
+    ;
+
+xmlElementFunction
+    : XMLELEMENT LP_ identifier (COMMA_ xmlAttributes)? (COMMA_ exprWithAlias)* RP_
+    ;
+
+exprWithAlias
+    : expr (AS alias)?
+    ;
+
+xmlAttributes
+    : XMLATTRIBUTES LP_ exprWithAlias (COMMA_ exprWithAlias)* RP_
+    ;
+
+xmlCdataFunction
+    : XMLCDATA LP_ stringLiterals RP_
     ;
 
 xmlAggFunction
@@ -2039,4 +2065,48 @@ multisetOperator
     : EXCEPT
     | INTERSECT
     | UNION
+    ;
+
+superview
+    : identifier
+    ;
+
+primaryName
+    : identifier
+    ;
+
+directoryObjectName
+    : identifier
+    ;
+
+serverFileName
+    : identifier
+    ;
+
+keyForBlob
+    : identifier
+    ;
+
+sourceText
+    : identifier
+    ;
+
+primaryName
+    : identifier
+    ;
+
+directoryObjectName
+    : identifier
+    ;
+
+serverFileName
+    : identifier
+    ;
+
+keyForBlob
+    : identifier
+    ;
+
+sourceText
+    : identifier
     ;

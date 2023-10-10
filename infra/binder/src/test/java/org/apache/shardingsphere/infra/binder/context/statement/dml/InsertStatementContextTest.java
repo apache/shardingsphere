@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
@@ -161,15 +162,16 @@ class InsertStatementContextTest {
     void assertInsertSelect() {
         InsertStatement insertStatement = new MySQLInsertStatement();
         SelectStatement selectStatement = new MySQLSelectStatement();
+        selectStatement.addParameterMarkerSegments(Collections.singleton(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.QUESTION)));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SubquerySegment insertSelect = new SubquerySegment(0, 0, selectStatement);
+        SubquerySegment insertSelect = new SubquerySegment(0, 0, selectStatement, "");
         insertStatement.setInsertSelect(insertSelect);
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         InsertStatementContext actual = createInsertStatementContext(Collections.singletonList("param"), insertStatement);
         actual.setUpParameters(Collections.singletonList("param"));
-        assertThat(actual.getInsertSelectContext().getParameterCount(), is(0));
+        assertThat(actual.getInsertSelectContext().getParameterCount(), is(1));
         assertThat(actual.getGroupedParameters().size(), is(1));
-        assertThat(actual.getGroupedParameters().iterator().next(), is(Collections.emptyList()));
+        assertThat(actual.getGroupedParameters().iterator().next(), is(Collections.singletonList("param")));
     }
     
     private void setUpInsertValues(final InsertStatement insertStatement) {

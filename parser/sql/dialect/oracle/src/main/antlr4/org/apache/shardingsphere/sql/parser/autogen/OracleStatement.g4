@@ -17,13 +17,14 @@
 
 grammar OracleStatement;
 
-import DMLStatement, TCLStatement, DCLStatement, DALStatement, PLSQL;
+import DMLStatement, DDLStatement, TCLStatement, DCLStatement, DALStatement, PLSQL;
 
 execute
     : (select
     | insert
     | update
     | delete
+    | createView
     | createTable
     | alterTable
     | dropTable
@@ -120,6 +121,8 @@ execute
     | alterRollbackSegment
     | alterDiskgroup
     | alterIndexType
+    | createMaterializedView
+    | createMaterializedViewLog
     | alterMaterializedView
     | alterMaterializedViewLog
     | alterFunction
@@ -150,5 +153,6 @@ execute
     | alterType
     | createType
     | createCluster
+    | createJava
     ) SEMI_?
     ;

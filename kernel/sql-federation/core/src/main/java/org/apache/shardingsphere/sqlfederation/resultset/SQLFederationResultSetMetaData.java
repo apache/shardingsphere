@@ -181,7 +181,7 @@ public final class SQLFederationResultSetMetaData extends WrapperAdapter impleme
                 expandProjections.size() < column ? new ColumnProjection(null, resultColumnType.getFieldList().get(column - 1).getName(), null, selectStatementContext.getDatabaseType())
                         : expandProjections.get(column - 1);
         if (projection instanceof ColumnProjection) {
-            return Optional.of(((ColumnProjection) projection).getOriginalTable().getValue());
+            return Optional.ofNullable(((ColumnProjection) projection).getOriginalTable().getValue());
         }
         return Optional.empty();
     }

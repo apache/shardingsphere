@@ -36,7 +36,7 @@ public @interface TransactionTestCase {
      * 
      * @return database types
      */
-    String[] dbTypes() default {"mysql", "PostgreSQL", "OpenGauss"};
+    String[] dbTypes() default {"MySQL", "PostgreSQL", "OpenGauss"};
     
     /**
      * Specifies which adapters do the case run on.

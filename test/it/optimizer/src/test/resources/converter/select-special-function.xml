@@ -18,4 +18,7 @@
 
 <sql-node-converter-test-cases>
     <test-cases sql-case-id="select_extract_function" expected-sql="SELECT EXTRACT(&quot;YEAR&quot; FROM CAST('2001-02-16 20:38:40' AS TIMESTAMP))" db-types="PostgreSQL,openGauss" />
+    <test-cases sql-case-id="select_with_trim_expr" expected-sql="SELECT TRIM(BOTH '#' FROM `name`) FROM `t_order`" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_trim_expr_from_expr" expected-sql="SELECT TRIM(BOTH `remove_name` FROM `name`) FROM `t_order`" db-types="MySQL" />
+    <test-cases sql-case-id="select_window_function" expected-sql="SELECT `order_id`, ROW_NUMBER() OVER () FROM `t_order`" db-types="MySQL" />
 </sql-node-converter-test-cases>

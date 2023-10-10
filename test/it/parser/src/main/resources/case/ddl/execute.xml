@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
     <execute sql-case-id="execute_with_expected_db_table" />
+    <execute sql-case-id="execute_without_parameter" />
 </sql-parser-test-cases>

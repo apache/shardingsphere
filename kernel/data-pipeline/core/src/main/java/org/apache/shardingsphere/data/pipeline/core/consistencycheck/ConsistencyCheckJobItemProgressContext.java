@@ -58,6 +58,8 @@ public final class ConsistencyCheckJobItemProgressContext implements PipelineJob
     
     private final Map<String, Object> targetTableCheckPositions = new ConcurrentHashMap<>();
     
+    private final String sourceDatabaseType;
+    
     @Override
     public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {
         checkedRecordsCount.addAndGet(param.getProcessedRecordsCount());

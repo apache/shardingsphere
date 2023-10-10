@@ -1404,3 +1404,47 @@ PREDICT
 FEATURES
     : F E A T U R E S
     ;
+
+TS_REWRITE
+    : T S UL_ R E W R I T E
+    ;
+
+INT16
+    : I N T [16]
+    ;
+
+INT1
+    : I N T [1]
+    ;
+
+ELEM_CONTAINED_BY_RANGE
+    : E L E M UL_ C O N T A I N E D UL_ B Y UL_ R A N G E
+    ;
+
+LOWER_INF
+    : L O W E R UL_ I N F
+    ;
+
+UPPER_INF
+    : U P P E R UL_ I N F
+    ;
+
+ABBREV
+    : A B B R E V
+    ;
+
+SET_MASKLEN
+    : S E T UL_ M A S K L E N
+    ;
+
+TRUNC
+    : T R U N C
+    ;
+
+CLIENT_MASTER_KEY
+    : C L I E N T UL_ M A S T E R UL_ K E Y
+    ;
+
+COLUMN_ENCRYPTION_KEY
+    : C O L U M N UL_ E N C R Y P T I O N UL_ K E Y
+    ;

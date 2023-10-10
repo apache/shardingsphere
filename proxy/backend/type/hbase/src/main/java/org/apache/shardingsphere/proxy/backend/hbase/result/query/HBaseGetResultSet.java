@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.result.query;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.client.Get;
@@ -51,7 +52,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -144,7 +144,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
     }
     
     private Map<String, String> parseResult(final Result result) {
-        Map<String, String> row = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, String> row = new CaseInsensitiveMap<>();
         row.put(ROW_KEY_COLUMN_NAME, Bytes.toString(result.getRow()));
         Long timestamp = null;
         for (Cell each : result.listCells()) {

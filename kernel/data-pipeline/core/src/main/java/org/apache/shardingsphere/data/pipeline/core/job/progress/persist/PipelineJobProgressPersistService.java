@@ -80,11 +80,29 @@ public final class PipelineJobProgressPersistService {
      * @param shardingItem sharding item
      */
     public static void notifyPersist(final String jobId, final int shardingItem) {
+        getPersistContext(jobId, shardingItem).ifPresent(PipelineJobProgressPersistService::notifyPersist);
+    }
+    
+    private static void notifyPersist(final PipelineJobProgressPersistContext persistContext) {
+        persistContext.getHasNewEvents().set(true);
+    }
+    
+    private static Optional<PipelineJobProgressPersistContext> getPersistContext(final String jobId, final int shardingItem) {
         Map<Integer, PipelineJobProgressPersistContext> persistContextMap = JOB_PROGRESS_PERSIST_MAP.getOrDefault(jobId, Collections.emptyMap());
-        PipelineJobProgressPersistContext persistContext = persistContextMap.get(shardingItem);
-        if (null != persistContext) {
-            persistContext.getHasNewEvents().set(true);
-        }
+        return Optional.ofNullable(persistContextMap.get(shardingItem));
+    }
+    
+    /**
+     * Persist now.
+     *
+     * @param jobId job ID
+     * @param shardingItem sharding item
+     */
+    public static void persistNow(final String jobId, final int shardingItem) {
+        getPersistContext(jobId, shardingItem).ifPresent(persistContext -> {
+            notifyPersist(persistContext);
+            PersistJobContextRunnable.persist(jobId, shardingItem, persistContext);
+        });
     }
     
     private static final class PersistJobContextRunnable implements Runnable {
@@ -96,7 +114,7 @@ public final class PipelineJobProgressPersistService {
             }
         }
         
-        private void persist(final String jobId, final int shardingItem, final PipelineJobProgressPersistContext persistContext) {
+        private static synchronized void persist(final String jobId, final int shardingItem, final PipelineJobProgressPersistContext persistContext) {
             Long beforePersistingProgressMillis = persistContext.getBeforePersistingProgressMillis().get();
             if ((null == beforePersistingProgressMillis || System.currentTimeMillis() - beforePersistingProgressMillis < TimeUnit.SECONDS.toMillis(DELAY_SECONDS))
                     && !persistContext.getHasNewEvents().get()) {

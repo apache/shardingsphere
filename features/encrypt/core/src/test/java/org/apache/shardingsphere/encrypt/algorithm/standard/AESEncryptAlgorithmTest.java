@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.encrypt.algorithm.standard;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -42,12 +42,11 @@ import static org.mockito.Mockito.times;
 
 class AESEncryptAlgorithmTest {
     
-    private StandardEncryptAlgorithm<Object, String> encryptAlgorithm;
+    private StandardEncryptAlgorithm encryptAlgorithm;
     
-    @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
-        encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test")));
+        encryptAlgorithm = (StandardEncryptAlgorithm) TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test")));
     }
     
     @Test

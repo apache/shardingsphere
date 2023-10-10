@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 /**
  * SQL federation rule configuration.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
 public final class SQLFederationRuleConfiguration implements GlobalRuleConfiguration {
     
     private final boolean sqlFederationEnabled;

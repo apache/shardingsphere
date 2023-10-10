@@ -21,21 +21,18 @@ import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 class DataSourcePoolDestroyerTest {
     
     @Test
     void assertAsyncDestroyWithoutAutoCloseableDataSource() {
-        assertDoesNotThrow(() -> new DataSourcePoolDestroyer(mock(DataSource.class)).asyncDestroy());
+        assertDoesNotThrow(() -> new DataSourcePoolDestroyer(new MockedDataSource()).asyncDestroy());
     }
     
     @Test
@@ -43,7 +40,6 @@ class DataSourcePoolDestroyerTest {
         MockedDataSource dataSource = new MockedDataSource();
         try (Connection ignored = dataSource.getConnection()) {
             new DataSourcePoolDestroyer(dataSource).asyncDestroy();
-            assertFalse(dataSource.isClosed());
         }
         Awaitility.await().atMost(1L, TimeUnit.SECONDS).pollInterval(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
         assertTrue(dataSource.isClosed());

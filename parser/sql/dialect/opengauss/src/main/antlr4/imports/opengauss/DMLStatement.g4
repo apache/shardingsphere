@@ -260,9 +260,7 @@ targetList
 
 targetEl
     : colId DOT_ASTERISK_
-    | aExpr AS identifier
-    | aExpr identifier
-    | aExpr
+    | aExpr AS? identifier?
     | ASTERISK_
     ;
 

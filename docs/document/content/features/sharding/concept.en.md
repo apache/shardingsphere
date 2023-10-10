@@ -159,6 +159,15 @@ Row expressions are designed to address the two main issues of configuration sim
 
 For the common sharding algorithm, using Java code implementation does not help to manage the configuration uniformly. But by writing the sharding algorithm through line expressions, the rule configuration can be effectively stored together, which is easier to browse and store.
 
+A Row Value Expressions consists of two parts as a string, the Type Name part of the corresponding SPI implementation at the beginning of the string and the expression part.
+
+Take `<GROOVY>t_order_${1..3}` as sample, the `GROOVY` substring in the part of the `<GROOVY>` string is the Type Name used by the corresponding SPI implementation for this Row Value Expressions, which is identified by the `<>` symbol.
+And the `t_order_${1..3}` string is the expression part of this Row Value Expressions. When a Row Value Expressions does
+not specify a Type Name, such as `t_order_${1..3}`, the Row Value Expressions defaults to parse expressions by `GROOVY` implementation for `InlineExpressionParser` SPI.
+
+The following sections describe the syntax rules for the `GROOVY` implementation.
+
+
 Row expressions are very intuitive, just use `${ expression }` or `$->{ expression }` in the configuration to identify the row expressions. Data nodes and sharding algorithms are currently supported. The content of row expressions uses Groovy syntax, and all operations supported by Groovy are supported by row expressions. For example:
 
 `${begin..end}` denotes the range interval

@@ -77,7 +77,7 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     public void createSchema(final String databaseName, final String schemaName) {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
-        database.putSchema(schemaName, schema);
+        database.addSchema(schemaName, schema);
         refreshMetaDataHeldRule(database);
         contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().persist(databaseName, schemaName, schema);
     }
@@ -97,7 +97,7 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     
     private void putSchemaMetaData(final ShardingSphereDatabase database, final String schemaName, final String renameSchemaName, final String logicDataSourceName) {
         ShardingSphereSchema schema = database.getSchema(schemaName);
-        database.putSchema(renameSchemaName, schema);
+        database.addSchema(renameSchemaName, schema);
         addDataNode(database, logicDataSourceName, schemaName, schema.getAllTableNames());
     }
     
@@ -141,7 +141,7 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     
     private void removeSchemaMetaData(final ShardingSphereDatabase database, final String schemaName) {
         ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(schemaName).getTables(), database.getSchema(schemaName).getViews());
-        database.removeSchema(schemaName);
+        database.dropSchema(schemaName);
         removeDataNode(database.getRuleMetaData().findRules(MutableDataNodeRule.class), Collections.singletonList(schemaName), schema.getAllTableNames());
     }
     
@@ -177,7 +177,7 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
         for (String each : schemaNames) {
             ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(each).getTables(), database.getSchema(each).getViews());
-            database.removeSchema(each);
+            database.dropSchema(each);
             Optional.of(schema).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
             tobeRemovedSchemas.add(each.toLowerCase());
         }

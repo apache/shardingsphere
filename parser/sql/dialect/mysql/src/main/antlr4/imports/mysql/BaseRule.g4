@@ -918,7 +918,7 @@ simpleExpr
     | columnRef
     | simpleExpr collateClause
     | variable
-    | simpleExpr OR_ simpleExpr
+    | simpleExpr VERTICAL_BAR_ VERTICAL_BAR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | notOperator | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
@@ -947,7 +947,7 @@ columnRefList
     ;
     
 functionCall
-    : aggregationFunction | specialFunction | regularFunction | jsonFunction | udfFunction
+    : aggregationFunction | specialFunction | jsonFunction | regularFunction | udfFunction
     ;
 
 udfFunction

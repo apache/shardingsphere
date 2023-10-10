@@ -86,10 +86,14 @@ public abstract class BaseDMLE2EIT {
     }
     
     protected final void assertDataSet(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer, final int actualUpdateCount) throws SQLException {
-        assertThat("Only support single table for DML.", containerComposer.getDataSet().getMetaDataList().size(), is(1));
         assertThat(actualUpdateCount, is(containerComposer.getDataSet().getUpdateCount()));
-        DataSetMetaData expectedDataSetMetaData = containerComposer.getDataSet().getMetaDataList().get(0);
-        for (String each : InlineExpressionParserFactory.newInstance().splitAndEvaluate(expectedDataSetMetaData.getDataNodes())) {
+        for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
+            assertDataSet(testParam, containerComposer, each);
+        }
+    }
+    
+    private void assertDataSet(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer, final DataSetMetaData expectedDataSetMetaData) throws SQLException {
+        for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = containerComposer.getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
@@ -148,7 +152,11 @@ public abstract class BaseDMLE2EIT {
         } else if (Arrays.asList(Types.TIME, Types.TIME_WITH_TIMEZONE).contains(actual.getMetaData().getColumnType(columnIndex))) {
             assertThat(timeFormatter.format(actual.getTime(columnIndex).toLocalTime()), is(expected));
         } else if (Arrays.asList(Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE).contains(actual.getMetaData().getColumnType(columnIndex))) {
-            assertThat(timestampFormatter.format(actual.getTimestamp(columnIndex).toLocalDateTime()), is(expected));
+            if ("Oracle".equals(testParam.getDatabaseType().getType()) && "DATE".equalsIgnoreCase(actual.getMetaData().getColumnTypeName(columnIndex))) {
+                assertThat(dateFormatter.format(actual.getDate(columnIndex).toLocalDate()), is(expected));
+            } else {
+                assertThat(timestampFormatter.format(actual.getTimestamp(columnIndex).toLocalDateTime()), is(expected));
+            }
         } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
                 && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType())
                         || "Oracle".equals(testParam.getDatabaseType().getType()))) {
