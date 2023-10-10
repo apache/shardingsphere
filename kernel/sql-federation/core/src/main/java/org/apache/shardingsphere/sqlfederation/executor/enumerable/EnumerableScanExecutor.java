@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqlfederation.executor.enumerable;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
@@ -84,6 +85,7 @@ import java.util.stream.Collectors;
 /**
  * Enumerable scan executor.
  */
+@Slf4j
 @RequiredArgsConstructor
 public final class EnumerableScanExecutor {
     
@@ -155,6 +157,9 @@ public final class EnumerableScanExecutor {
             @Override
             public Enumerator<Object> enumerator() {
                 computeConnectionOffsets(context);
+                for (Entry<String, Integer> entry : executorContext.getConnectionOffsets().entrySet()) {
+                    log.warn("connection ds: {}, offset: {}", entry.getKey(), entry.getValue());
+                }
                 ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
                         prepareEngine.prepare(context.getRouteContext(), executorContext.getConnectionOffsets(), context.getExecutionUnits(), new ExecutionGroupReportContext(database.getName()));
                 setParameters(executionGroupContext.getInputGroups());
