@@ -82,10 +82,10 @@ public final class ResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource createByAlterDataSourcePoolProperties(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeChangedPropsMap) {
-        Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropertiesMap = new LinkedHashMap<>(resourceMetaData.getStorageUnits().entrySet().stream()
+        Map<String, DataSourcePoolProperties> mergedDataSourcePoolPropsMap = new LinkedHashMap<>(resourceMetaData.getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSourcePoolProperties(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
-        mergedDataSourcePoolPropertiesMap.keySet().removeIf(each -> !toBeChangedPropsMap.containsKey(each));
-        mergedDataSourcePoolPropertiesMap.putAll(toBeChangedPropsMap);
+        mergedDataSourcePoolPropsMap.keySet().removeIf(each -> !toBeChangedPropsMap.containsKey(each));
+        mergedDataSourcePoolPropsMap.putAll(toBeChangedPropsMap);
         Map<String, StorageNode> toBeChangedStorageUnitNodeMap = StorageUnitNodeMapCreator.create(toBeChangedPropsMap);
         Map<StorageNode, DataSource> staleStorageDataSources = getStaleDataSources(resourceMetaData, toBeChangedPropsMap);
         staleStorageDataSources.putAll(getToBeDeletedDataSources(resourceMetaData.getDataSources(), toBeChangedStorageUnitNodeMap.values()));
@@ -93,7 +93,7 @@ public final class ResourceSwitchManager {
         staleStorageUnitNames.addAll(getToBeDeletedStorageUnitNames(resourceMetaData.getStorageUnits(), toBeChangedStorageUnitNodeMap.keySet()));
         Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap = StorageNodeAggregator.aggregateDataSourcePoolProperties(toBeChangedPropsMap);
         return new SwitchingResource(
-                createNewDataSources(resourceMetaData, toBeChangedStorageUnitNodeMap, dataSourcePoolPropsMap), staleStorageDataSources, staleStorageUnitNames, mergedDataSourcePoolPropertiesMap);
+                createNewDataSources(resourceMetaData, toBeChangedStorageUnitNodeMap, dataSourcePoolPropsMap), staleStorageDataSources, staleStorageUnitNames, mergedDataSourcePoolPropsMap);
     }
     
     private Map<StorageNode, DataSource> createNewDataSources(final ResourceMetaData resourceMetaData, final Map<String, StorageNode> toBeChangedStorageUnitNodeMap,
