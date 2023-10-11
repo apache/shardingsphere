@@ -17,31 +17,131 @@
 
 package org.apache.shardingsphere.infra.metadata.database.rule;
 
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class RuleMetaDataTest {
-    
+
     private final RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(new ShardingSphereRuleFixture()));
-    
+
     @Test
     void assertFindRules() {
         assertThat(ruleMetaData.findRules(ShardingSphereRuleFixture.class).size(), is(1));
     }
-    
+
     @Test
     void assertFindSingleRule() {
         assertTrue(ruleMetaData.findSingleRule(ShardingSphereRuleFixture.class).isPresent());
     }
-    
+
     @Test
     void assertGetSingleRule() {
-        assertThat(ruleMetaData.getSingleRule(ShardingSphereRuleFixture.class), instanceOf(ShardingSphereRuleFixture.class));
+        assertThat(ruleMetaData.getSingleRule(ShardingSphereRuleFixture.class),
+                instanceOf(ShardingSphereRuleFixture.class));
+    }
+
+    @Test
+    void assertGetInUsedStorageUnitNameAndRulesMapWhenRulesContainDataNodeContainedRule() {
+        Collection<ShardingSphereRule> rules = new ArrayList<>();
+        DataNodeContainedRule rule = new MockDataNodeContainedRule();
+        rules.add(rule);
+        RuleMetaData r = new RuleMetaData(rules);
+        Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = r.getInUsedStorageUnitNameAndRulesMap();
+        
+        assertTrue(actual.size() == 1);
+        assertTrue(actual.containsKey("testDataNodeSourceName"));
+        assertTrue(actual.get("testDataNodeSourceName").size() == 1);
+        assertTrue(actual.get("testDataNodeSourceName").contains(MockDataNodeContainedRule.class));
+    }
+
+    @Test
+    void assertGetInUsedStorageUnitNameAndRulesMapWhenRulesContainBothDataSourceContainedRuleAndDataNodeContainedRule() {
+        Collection<ShardingSphereRule> rules = new ArrayList<>();
+        DataSourceContainedRule dataSourceContainedRule = new MockDataSourceContainedRule();
+        DataNodeContainedRule dataNodeContainedRule = new MockDataNodeContainedRule();
+        rules.add(dataSourceContainedRule);
+        rules.add(dataNodeContainedRule);
+        RuleMetaData r = new RuleMetaData(rules);
+        Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = r.getInUsedStorageUnitNameAndRulesMap();
+
+        assertTrue(actual.size() == 2);
+        assertTrue(actual.containsKey("testDataSourceName"));
+        assertTrue(actual.containsKey("testDataNodeSourceName"));
+        assertTrue(actual.get("testDataSourceName").contains(MockDataSourceContainedRule.class));
+        assertTrue(actual.get("testDataNodeSourceName").contains(MockDataNodeContainedRule.class));
+    }
+
+    private static class MockDataSourceContainedRule implements DataSourceContainedRule {
+
+        @Override
+        public RuleConfiguration getConfiguration() {
+            return mock(RuleConfiguration.class);
+        }
+
+        @Override
+        public Map<String, Collection<String>> getDataSourceMapper() {
+            Map<String, Collection<String>> result = new LinkedHashMap<>();
+            result.put("test", Arrays.asList("testDataSourceName"));
+            return result;
+        }
+    }
+
+    private static class MockDataNodeContainedRule implements DataNodeContainedRule {
+
+        @Override
+        public RuleConfiguration getConfiguration() {
+            return mock(RuleConfiguration.class);
+        }
+
+        @Override
+        public Map<String, Collection<DataNode>> getAllDataNodes() {
+            Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
+            result.put("test", Arrays.asList(new DataNode("testDataNodeSourceName", "testTableName")));
+            return result;
+        }
+
+        @Override
+        public boolean isNeedAccumulate(Collection<String> tableNames) {
+            return false;
+        }
+
+        @Override
+        public Optional<String> findLogicTableByActualTable(String actualTable) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Optional<String> findFirstActualTable(String logicTable) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Collection<DataNode> getDataNodesByTableName(String tableName) {
+            return null;
+        }
+
+        @Override
+        public Optional<String> findActualTableByCatalog(String catalog, String logicTable) {
+            return Optional.empty();
+        }
     }
 }
