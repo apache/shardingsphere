@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
