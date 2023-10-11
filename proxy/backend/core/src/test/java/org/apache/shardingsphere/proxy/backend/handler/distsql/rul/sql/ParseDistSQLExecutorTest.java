@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
 
-import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement;
+import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
+import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;

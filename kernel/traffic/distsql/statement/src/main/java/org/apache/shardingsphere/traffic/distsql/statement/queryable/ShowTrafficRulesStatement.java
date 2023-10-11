@@ -19,7 +19,7 @@ package org.apache.shardingsphere.traffic.distsql.statement.queryable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
 /**
  * Show traffic rules statement.

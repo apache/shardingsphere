@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.alter.AlterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.create.RegisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefinitionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.AlterStorageUnitBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.RegisterStorageUnitBackendHandler;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelComputeNodeStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlabelComputeNodeStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;

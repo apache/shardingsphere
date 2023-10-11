@@ -283,7 +283,7 @@ public final class ConfigurationContextManager {
     }
     
     private Map<StorageNode, DataSource> getNewStorageNodes(final Map<StorageNode, DataSource> currentStorageNodes, final SwitchingResource resource) {
-        Map<StorageNode, DataSource> result = new LinkedHashMap<>();
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>(currentStorageNodes.size(), 1F);
         for (Entry<StorageNode, DataSource> entry : currentStorageNodes.entrySet()) {
             if (!resource.getStaleDataSources().containsKey(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());

@@ -22,10 +22,10 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.Duplicate
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
-import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.statement.rdl.alter.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;

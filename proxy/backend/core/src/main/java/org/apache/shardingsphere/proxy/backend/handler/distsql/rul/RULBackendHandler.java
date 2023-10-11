@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
+import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 

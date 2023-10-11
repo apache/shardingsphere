@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.distsql.parser.rdl;
 
 import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.statement.rdl.create.RegisterStorageUnitStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

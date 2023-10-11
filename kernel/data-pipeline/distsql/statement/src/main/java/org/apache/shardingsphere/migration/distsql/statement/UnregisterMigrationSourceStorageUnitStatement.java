@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.migration.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
 
 import java.util.Collection;
 

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.converter;
 
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnItemSegment;
 import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnSegment;

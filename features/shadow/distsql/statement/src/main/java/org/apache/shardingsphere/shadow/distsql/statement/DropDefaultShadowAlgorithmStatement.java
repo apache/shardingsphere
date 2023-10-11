@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.statement;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.drop.DropRuleStatement;
 
 /**
  * Drop default shadow algorithm statement.

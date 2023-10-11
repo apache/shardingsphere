@@ -19,7 +19,7 @@ package org.apache.shardingsphere.globalclock.distsql.statement.updatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.UpdatableGlobalRuleRALStatement;
 
 import java.util.Properties;
 

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.segment.table;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 
 import java.util.Collection;
 

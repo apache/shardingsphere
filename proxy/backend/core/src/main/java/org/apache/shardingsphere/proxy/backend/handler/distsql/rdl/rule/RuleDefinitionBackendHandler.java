@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdat
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionUpdater;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;

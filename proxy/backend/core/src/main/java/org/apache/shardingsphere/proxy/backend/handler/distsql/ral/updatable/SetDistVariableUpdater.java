@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.props.TypedPropertyKey;

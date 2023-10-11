@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.rul;
 
-import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
+import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
