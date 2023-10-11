@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;

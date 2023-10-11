@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.distsql.statement;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
 /**
  * Show SQL translator rule statement.

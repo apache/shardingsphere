@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor;
 
 import org.apache.shardingsphere.distsql.handler.rul.RULExecutor;
-import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
+import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;

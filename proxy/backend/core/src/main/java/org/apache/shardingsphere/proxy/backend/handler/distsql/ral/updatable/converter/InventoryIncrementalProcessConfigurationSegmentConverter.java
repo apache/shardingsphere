@@ -22,9 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineWriteConfiguration;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalRuleSegment;
-import org.apache.shardingsphere.distsql.parser.segment.ReadOrWriteSegment;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.segment.InventoryIncrementalRuleSegment;
+import org.apache.shardingsphere.distsql.segment.ReadOrWriteSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 
 /**

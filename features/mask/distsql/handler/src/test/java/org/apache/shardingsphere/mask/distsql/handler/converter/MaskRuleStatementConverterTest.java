@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.converter;
 
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;

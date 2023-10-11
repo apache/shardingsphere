@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rul.SQLRULStatement;
+import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
+import org.apache.shardingsphere.distsql.statement.rul.SQLRULStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rul.impl.SQLRULStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodesStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodesStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
@@ -56,7 +55,7 @@ class ShowComputeNodeInfoExecutorTest {
     }
     
     @Test
-    void assertExecute() throws SQLException {
+    void assertExecute() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(createInstanceContext(), mock(ShowComputeNodesStatement.class));
         assertThat(actual.size(), is(1));

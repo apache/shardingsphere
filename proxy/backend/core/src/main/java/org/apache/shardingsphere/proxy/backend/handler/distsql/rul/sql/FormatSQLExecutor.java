@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
 
-import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
+import org.apache.shardingsphere.distsql.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;

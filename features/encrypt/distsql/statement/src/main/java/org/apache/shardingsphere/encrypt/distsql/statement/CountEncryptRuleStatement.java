@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.distsql.statement;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**

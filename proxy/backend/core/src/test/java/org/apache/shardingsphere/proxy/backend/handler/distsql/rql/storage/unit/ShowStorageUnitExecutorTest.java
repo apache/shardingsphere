@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.storage.unit;
 
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
