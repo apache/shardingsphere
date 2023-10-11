@@ -206,23 +206,23 @@
 	.palette-color-4 { fill: #6AB356 !important; }
 	.palette-color-5 { fill: #47A042 !important; }
 	.palette-color-6 { fill: #328533 !important; }
-	.de { fill: #47A042; }
-	.lk { fill: #47A042; }
-	.cn { fill: #328533; }
-	.in { fill: #328533; }
-	.kr { fill: #D9E887; }
 	.eg { fill: #D9E887; }
-	.ua { fill: #D9E887; }
 	.ca { fill: #D9E887; }
+	.kr { fill: #D9E887; }
+	.ua { fill: #D9E887; }
 	.ae { fill: #D9E887; }
 	.nl { fill: #B3D778; }
 	.hu { fill: #B3D778; }
 	.br { fill: #8CC569; }
 	.ie { fill: #8CC569; }
-	.at { fill: #8CC569; }
 	.us { fill: #8CC569; }
-	.gr { fill: #6AB356; }
+	.at { fill: #8CC569; }
 	.sg { fill: #6AB356; }
+	.gr { fill: #6AB356; }
+	.de { fill: #47A042; }
+	.lk { fill: #47A042; }
+	.cn { fill: #328533; }
+	.in { fill: #328533; }
 #legend6 { display: inline !important; }</style>
 
   <path
@@ -7514,7 +7514,7 @@
      class="landxx coastxx cn"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title8623">China (19585 contributions)
+       id="title8623">China (19586 contributions)
 </title>
     <g
        id="cnx"
