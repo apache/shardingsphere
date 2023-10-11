@@ -23,7 +23,8 @@
     <sql-case id="alter_table_add_constraint_foreign_key_references_enable_novalidate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) ENABLE NOVALIDATE" db-types="Oracle" />
     <sql-case id="alter_table_add_constraint_foreign_key_references_enable_validate" value="ALTER TABLE sales ADD CONSTRAINT sales_time_fk FOREIGN KEY (time_id) REFERENCES times (time_id) ENABLE VALIDATE" db-types="Oracle" />
     <sql-case id="alter_table_modify_lob_shrink_space" value="ALTER TABLE employees MODIFY LOB (perf_review) (SHRINK SPACE)" db-types="Oracle" />
-    <sql-case id="alter_table_set_unused" value="ALTER TABLE hr.admin_emp SET UNUSED (hiredate, mgr)" db-types="Oracle" />
+    <sql-case id="alter_table_set_unused1" value="ALTER TABLE hr.admin_emp SET UNUSED (hiredate, mgr)" db-types="Oracle" />
+    <sql-case id="alter_table_set_unused2" value="ALTER TABLE table_name SET UNUSED (M_ROW$$)" db-types="Oracle" />
     <sql-case id="alter_table_modify_lob_cache" value="ALTER TABLE employees MODIFY LOB (resume) (CACHE)" db-types="Oracle" />
     <sql-case id="alter_table_move_storage_tablespace" value="ALTER TABLE hr.admin_emp MOVE STORAGE (INITIAL 20K NEXT 40K MINEXTENTS 2 MAXEXTENTS 20 PCTINCREASE 0) TABLESPACE hr_tbs" db-types="Oracle" />
     <sql-case id="alter_table_modify1" value="ALTER TABLE employee MODIFY (first_name DECRYPT)" db-types="Oracle" />
@@ -228,8 +229,17 @@
     <sql-case id="alter_table_add_ref_with_rowid" value="ALTER TABLE staff  ADD (REF(dept) WITH ROWID)" db-types="Oracle" />
     <sql-case id="alter_table_add_scope_for_is" value="ALTER TABLE staff ADD (SCOPE FOR (dept) IS offices)" db-types="Oracle" />
     <sql-case id="alter_table_add_column_no_parentheses" value="ALTER TABLE T_MASK ADD new_column VARCHAR2(100)" db-types="Oracle" />
-    <sql-case id="alter_table_modify_lob1" value="ALTER TABLE t1 MODIFY LOB(a) (KEEP_DUPLICATES)" db-types="Oracle" />
-    <sql-case id="alter_table_modify_lob2" value="ALTER TABLE t1 MODIFY LOB(a) (COMPRESS LOW)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_keep_duplicates" value="ALTER TABLE t1 MODIFY LOB(a) (KEEP_DUPLICATES)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_compress_low" value="ALTER TABLE t1 MODIFY LOB(a) (COMPRESS LOW)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_compress_high" value="ALTER TABLE t1 MODIFY LOB(a) (COMPRESS HIGH)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_deduplicate" value="ALTER TABLE t1 MODIFY LOB(a) (DEDUPLICATE)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_nocompress" value="ALTER TABLE t1 MODIFY LOB(a) (NOCOMPRESS)" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_encrypt_using" value="ALTER TABLE t1 MODIFY LOB(a) (ENCRYPT USING '3DES168')" db-types="Oracle" />
     <sql-case id="alter_table_move_compress_for_oltp" value="ALTER TABLE table_name MOVE COMPRESS FOR OLTP" db-types="Oracle" />
     <sql-case id="alter_table_modify_encrypt_identified_by_password" value="ALTER TABLE t1 MODIFY ( a CLOB ENCRYPT IDENTIFIED BY foo)" db-types="Oracle" />
+    <sql-case id="alter_table_move_nocompress_parallel" value="ALTER TABLE table_name MOVE NOCOMPRESS PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_table_modify_constraint_rely" value="ALTER TABLE time MODIFY CONSTRAINT pk_time RELY" db-types="Oracle" />
+    <sql-case id="alter_table_enable_row_movement" value="ALTER TABLE table ENABLE ROW MOVEMENT" db-types="Oracle" />
+    <sql-case id="alter_table_set_interval" value="ALTER TABLE transactions SET INTERVAL()" db-types="Oracle" />
+    <sql-case id="alter_table_add_primary_key_xmldata" value="ALTER TABLE xwarehouses ADD (PRIMARY KEY(XMLDATA.&quot;WarehouseId&quot;))" db-types="Oracle" /> 
 </sql-cases>
