@@ -58,6 +58,7 @@ jobs:
             echo "GLOBAL_JOB_ENABLED=false" >> $GITHUB_OUTPUT
             echo '${{ env.JSON_LABELS }}' | while read line
             do
+              echo "label=${line}"
               if [ [ -z "${{ steps.import-variables.outputs.DISABLE_CI }}" || "${{ steps.import-variables.outputs.DISABLE_CI }}"=="false" ]; then
                 echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
                 break
