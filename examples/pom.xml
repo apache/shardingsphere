@@ -43,7 +43,7 @@
         <hikari-cp.version>3.4.2</hikari-cp.version>
         <mysql-connector-java.version>5.1.49</mysql-connector-java.version>
         <postgresql.version>42.4.1</postgresql.version>
-        <h2.version>2.1.214</h2.version>
+        <h2.version>2.2.224</h2.version>
         <slf4j.version>1.7.7</slf4j.version>
         <logback.version>1.2.10</logback.version>
         <lombok.version>1.18.20</lombok.version>
