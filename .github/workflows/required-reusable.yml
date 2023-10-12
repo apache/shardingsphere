@@ -56,13 +56,6 @@ jobs:
           if [ ${{ toJSON(github.repository) }} = ${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }} ]; then
             echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=true" >> $GITHUB_OUTPUT
             echo "GLOBAL_JOB_ENABLED=false" >> $GITHUB_OUTPUT
-            echo '${{ env.JSON_LABELS }}' | while read line
-            do
-              if [ ${line}="type: ${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }}" ] || [ -z "${{ steps.import-variables.outputs.RUNNABLE_CI_LABEL }}" ]; then
-                echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
-                break
-              fi
-            done
           fi
     outputs:
       GLOBAL_RUNS_ON: ${{ steps.import-variables.outputs.GLOBAL_RUNS_ON }}
