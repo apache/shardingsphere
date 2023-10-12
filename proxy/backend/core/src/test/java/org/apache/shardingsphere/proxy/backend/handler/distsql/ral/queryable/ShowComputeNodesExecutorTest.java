@@ -45,9 +45,10 @@ class ShowComputeNodesExecutorTest {
     void assertGetColumns() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(8));
+        assertThat(columns.size(), is(9));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("instance_id"));
+        assertThat(iterator.next(), is("instance_type"));
         assertThat(iterator.next(), is("host"));
         assertThat(iterator.next(), is("port"));
         assertThat(iterator.next(), is("status"));
@@ -63,14 +64,15 @@ class ShowComputeNodesExecutorTest {
         Collection<LocalDataQueryResultRow> actual = executor.getRows(createStandaloneInstanceContext(), mock(ShowComputeNodesStatement.class));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(1), is("127.0.0.1@3308"));
-        assertThat(row.getCell(2), is("127.0.0.1"));
-        assertThat(row.getCell(3), is(3308));
-        assertThat(row.getCell(4), is("OK"));
-        assertThat(row.getCell(5), is("Standalone"));
-        assertThat(row.getCell(6), is(0));
-        assertThat(row.getCell(7), is(""));
-        assertThat(row.getCell(8), is("foo_version"));
+        assertThat(row.getCell(1), is("foo"));
+        assertThat(row.getCell(2), is("PROXY"));
+        assertThat(row.getCell(3), is("127.0.0.1"));
+        assertThat(row.getCell(4), is(3308));
+        assertThat(row.getCell(5), is("OK"));
+        assertThat(row.getCell(6), is("Standalone"));
+        assertThat(row.getCell(7), is(0));
+        assertThat(row.getCell(8), is(""));
+        assertThat(row.getCell(9), is("foo_version"));
     }
     
     @Test
@@ -79,19 +81,20 @@ class ShowComputeNodesExecutorTest {
         Collection<LocalDataQueryResultRow> actual = executor.getRows(createClusterInstanceContext(), mock(ShowComputeNodesStatement.class));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(1), is("127.0.0.1@3309"));
-        assertThat(row.getCell(2), is("127.0.0.1"));
-        assertThat(row.getCell(3), is(3309));
-        assertThat(row.getCell(4), is("OK"));
-        assertThat(row.getCell(5), is("Cluster"));
-        assertThat(row.getCell(6), is(1));
-        assertThat(row.getCell(7), is(""));
-        assertThat(row.getCell(8), is("foo_version"));
+        assertThat(row.getCell(1), is("foo"));
+        assertThat(row.getCell(2), is("PROXY"));
+        assertThat(row.getCell(3), is("127.0.0.1"));
+        assertThat(row.getCell(4), is(3309));
+        assertThat(row.getCell(5), is("OK"));
+        assertThat(row.getCell(6), is("Cluster"));
+        assertThat(row.getCell(7), is(1));
+        assertThat(row.getCell(8), is(""));
+        assertThat(row.getCell(9), is("foo_version"));
     }
     
     private InstanceContext createStandaloneInstanceContext() {
         InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
-        when(result.getInstance().getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3308", "127.0.0.1@3308", "foo_version"));
+        when(result.getInstance().getMetaData()).thenReturn(new ProxyInstanceMetaData("foo", "127.0.0.1@3308", "foo_version"));
         when(result.getInstance().getState()).thenReturn(new InstanceStateContext());
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties())));
         when(result.getInstance().getWorkerId()).thenReturn(0);
@@ -102,7 +105,7 @@ class ShowComputeNodesExecutorTest {
         InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class)));
         ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class, RETURNS_DEEP_STUBS);
-        when(computeNodeInstance.getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3309", "127.0.0.1@3309", "foo_version"));
+        when(computeNodeInstance.getMetaData()).thenReturn(new ProxyInstanceMetaData("foo", "127.0.0.1@3309", "foo_version"));
         when(computeNodeInstance.getState()).thenReturn(new InstanceStateContext());
         when(computeNodeInstance.getWorkerId()).thenReturn(1);
         when(result.getAllClusterInstances()).thenReturn(Collections.singleton(computeNodeInstance));
