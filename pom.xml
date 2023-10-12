@@ -374,8 +374,8 @@
                         <artifactId>netty-transport-native-epoll</artifactId>
                     </exclusion>
                     <exclusion>
-                        <artifactId>logback-core</artifactId>
                         <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-core</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
