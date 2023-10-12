@@ -121,7 +121,10 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         if (columnPositionSegment.isPresent()) {
             String columnName = columnPositionSegment.get().getColumnName().getIdentifier().getValue();
             if (encryptTable.isEncryptColumn(columnName)) {
-                return Optional.of(getPositionColumnToken(encryptTable.getEncryptColumn(columnName), segment.getColumnPosition().get()));
+                EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
+                ShardingSpherePreconditions.checkState(encryptColumn.getName().equals(encryptColumn.getCipher().getName()),
+                        () -> new UnsupportedOperationException(String.format("Column %s is already exists", columnName)));
+                return Optional.of(getPositionColumnToken(encryptColumn, segment.getColumnPosition().get()));
             }
         }
         return Optional.empty();
