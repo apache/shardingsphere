@@ -234,7 +234,7 @@ The text of each license is the standard Apache 2.0 license.
     curator-client 5.4.0:  https://github.com/apache/curator, Apache 2.0
     curator-framework 5.4.0:  https://github.com/apache/curator, Apache 2.0
     curator-recipes 5.4.0:  https://github.com/apache/curator, Apache 2.0
-    error_prone_annotations 2.11.0: https://github.com/google/error-prone, Apache 2.0
+    error_prone_annotations 2.22.0: https://github.com/google/error-prone, Apache 2.0
     failsafe 2.4.4: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0
     freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
@@ -367,6 +367,6 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     bcprov-jdk15on 1.70: https://www.bouncycastle.org, MIT
     bctls-jdk15on 1.70: https://www.bouncycastle.org, MIT
     bcutil-jdk15on 1.70: https://www.bouncycastle.org, MIT
-    checker-qual 3.5.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
+    checker-qual 3.39.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
     jul-to-slf4j 1.7.36: https://www.slf4j.org, MIT
     slf4j-api 1.7.36: https://www.slf4j.org, MIT
