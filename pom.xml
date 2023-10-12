@@ -361,6 +361,10 @@
                         <groupId>io.netty</groupId>
                         <artifactId>netty-transport-native-epoll</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <artifactId>logback-core</artifactId>
+                        <groupId>ch.qos.logback</groupId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
