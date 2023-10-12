@@ -55,7 +55,7 @@ jobs:
           echo "GLOBAL_CACHE_PREFIX=${GLOBAL_CACHE_PREFIX}" >> $GITHUB_OUTPUT
           if [ ${{ toJSON(github.repository) }} = ${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }} ]; then
             echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=true" >> $GITHUB_OUTPUT
-            echo "GLOBAL_JOB_ENABLED=false" >> $GITHUB_OUTPUT
+            echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
           fi
     outputs:
       GLOBAL_RUNS_ON: ${{ steps.import-variables.outputs.GLOBAL_RUNS_ON }}
