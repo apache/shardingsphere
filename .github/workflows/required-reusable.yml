@@ -59,7 +59,6 @@ jobs:
             echo "GLOBAL_JOB_ENABLED=false" >> $GITHUB_OUTPUT
             if [ -z "${{ steps.import-variables.outputs.DISABLE_CI }}"] || [ "${{ steps.import-variables.outputs.DISABLE_CI }}"=="false" ] ; then
               echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
-              break
             fi
           fi
     outputs:
