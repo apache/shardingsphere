@@ -84,7 +84,7 @@
         
         <calcite.version>1.35.0</calcite.version>
         <immutables.version>2.9.3</immutables.version>
-        <netty.version>4.1.90.Final</netty.version>
+        <netty.version>4.1.99.Final</netty.version>
         <bouncycastle.version>1.70</bouncycastle.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>

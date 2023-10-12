@@ -268,15 +268,20 @@ The text of each license is the standard Apache 2.0 license.
     json-simple 1.1.1: https://code.google.com/archive/p/json-simple/, Apache 2.0
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
     memory 0.9.0, Apache 2.0
-    netty-buffer 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-codec 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http2 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-codec-socks 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-common 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-handler 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-handler-proxy 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-resolver 4.1.90.Final: https://github.com/netty, Apache 2.0
+    netty-buffer 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-codec 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http2 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-codec-socks 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-common 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-handler 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-handler-proxy 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-resolver 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-transport 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-transport-classes-epoll 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.99.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.99.Final-linux-x86_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-unix-common 4.1.99.Final: https://github.com/netty, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final-linux-aarch_64: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final-linux-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
@@ -284,11 +289,6 @@ The text of each license is the standard Apache 2.0 license.
     netty-tcnative-boringssl-static 2.0.59.Final-osx-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final-windows-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-classes 2.0.59.Final: https://github.com/netty/netty-tcnative, Apache 2.0
-    netty-transport 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-transport-classes-epoll 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.90.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.90.Final-linux-x86_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-unix-common 4.1.90.Final: https://github.com/netty, Apache 2.0
     perfmark-api 0.25.0: https://github.com/perfmark/perfmark, Apache 2.0
     proto-google-common-protos 2.9.0: https://github.com/googleapis/common-protos-java, Apache 2.0
     proj4j 1.1.5: https://github.com/locationtech/proj4j, Apache 2.0
