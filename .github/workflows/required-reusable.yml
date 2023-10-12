@@ -62,6 +62,7 @@ jobs:
               echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
               break
             fi
+            echo '${{ env.GLOBAL_JOB_ENABLED }}'
           fi
     outputs:
       GLOBAL_RUNS_ON: ${{ steps.import-variables.outputs.GLOBAL_RUNS_ON }}
