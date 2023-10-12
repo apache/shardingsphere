@@ -354,7 +354,7 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     logback-classic 1.2.11: https://github.com/qos-ch/logback, EPL 1.0
     logback-core 1.2.11: https://github.com/qos-ch/logback, EPL 1.0
     mchange-commons-java 0.2.15: https://github.com/swaldman/mchange-commons-java, EPL 1.0
-    h2 2.1.214: https://github.com/h2database/h2database, EPL 1.0
+    h2 2.2.224: https://github.com/h2database/h2database, EPL 1.0
 
 ========================================================================
 MIT licenses
