@@ -92,7 +92,7 @@
         <zookeeper.version>3.8.1</zookeeper.version>
         <curator.version>5.4.0</curator.version>
         <jetcd.version>0.7.5</jetcd.version>
-        <grpc.version>1.51.0</grpc.version>
+        <grpc.version>1.58.0</grpc.version>
         
         <elasticjob.version>3.0.3</elasticjob.version>
         

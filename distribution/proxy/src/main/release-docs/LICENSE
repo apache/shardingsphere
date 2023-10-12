@@ -239,14 +239,14 @@ The text of each license is the standard Apache 2.0 license.
     failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0
     freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
     groovy 4.0.10: https://groovy.apache.org/, Apache 2.0
-    grpc-api 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-context 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-core 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-grpclb 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-netty 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf-lite 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-stub 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-api 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-context 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-core 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-grpclb 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-netty 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf-lite 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-stub 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
     gson 2.9.1: https://github.com/google/gson, Apache 2.0
     guava 32.1.2-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 4.0.3: https://github.com/brettwooldridge/HikariCP, Apache 2.0
