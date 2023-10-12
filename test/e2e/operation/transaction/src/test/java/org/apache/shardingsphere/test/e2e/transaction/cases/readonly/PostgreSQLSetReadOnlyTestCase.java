@@ -52,7 +52,7 @@ public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
             connection2.setReadOnly(true);
             assertQueryBalance(connection2);
             executeWithLog(connection2, "update account set balance = 100 where id = 2;");
-            log.info("Using the driver of postgresql:42.4.1 expect to update successfully.");
+            log.info("Using the driver of postgresql:42.4.3 expect to update successfully.");
         }
     }
 }

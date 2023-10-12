@@ -63,7 +63,7 @@
         <sonar.exclusions>**/autogen/**/*</sonar.exclusions>
         
         <!-- 3rd party library versions -->
-        <guava.version>30.0-jre</guava.version>
+        <guava.version>32.1.2-jre</guava.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-codec.version>1.15</commons-codec.version>
@@ -74,6 +74,7 @@
         <snakeyaml.version>1.33</snakeyaml.version>
         <gson.version>2.9.1</gson.version>
         <jackson.version>2.14.0</jackson.version>
+        <json-path.version>2.8.0</json-path.version>
         <groovy.version>4.0.10</groovy.version>
         <freemarker.version>2.3.31</freemarker.version>
         <caffeine.version>2.9.3</caffeine.version>
@@ -84,7 +85,7 @@
         
         <calcite.version>1.35.0</calcite.version>
         <immutables.version>2.9.3</immutables.version>
-        <netty.version>4.1.90.Final</netty.version>
+        <netty.version>4.1.99.Final</netty.version>
         <bouncycastle.version>1.70</bouncycastle.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
@@ -92,7 +93,7 @@
         <zookeeper.version>3.8.1</zookeeper.version>
         <curator.version>5.4.0</curator.version>
         <jetcd.version>0.7.5</jetcd.version>
-        <grpc.version>1.51.0</grpc.version>
+        <grpc.version>1.58.0</grpc.version>
         
         <elasticjob.version>3.0.3</elasticjob.version>
         
@@ -101,7 +102,7 @@
         
         <lombok.version>1.18.30</lombok.version>
         
-        <postgresql.version>42.4.1</postgresql.version>
+        <postgresql.version>42.4.3</postgresql.version>
         <opengauss.version>3.1.0-og</opengauss.version>
         <mysql-connector-java.version>5.1.49</mysql-connector-java.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
@@ -235,6 +236,11 @@
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path</artifactId>
+                <version>${json-path.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.groovy</groupId>
                 <artifactId>groovy</artifactId>
                 <version>${groovy.version}</version>
@@ -270,6 +276,12 @@
                 <groupId>org.apache.calcite</groupId>
                 <artifactId>calcite-core</artifactId>
                 <version>${calcite.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.jayway.jsonpath</groupId>
+                        <artifactId>json-path</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.immutables</groupId>
@@ -360,6 +372,10 @@
                     <exclusion>
                         <groupId>io.netty</groupId>
                         <artifactId>netty-transport-native-epoll</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-core</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
