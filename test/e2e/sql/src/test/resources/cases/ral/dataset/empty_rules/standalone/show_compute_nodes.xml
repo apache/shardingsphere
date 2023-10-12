@@ -18,6 +18,7 @@
 <dataset>
     <metadata>
         <column name="instance_id" assertion="false" />
+        <column name="instance_type" />
         <column name="host" assertion="false" />
         <column name="port" />
         <column name="status" />
@@ -26,5 +27,5 @@
         <column name="labels" />
         <column name="version" assertion="false"/>
     </metadata>
-    <row values=" | | 3307| OK| Standalone| 1| |" />
+    <row values=" | PROXY| | 3307| OK| Standalone| 1| |" />
 </dataset>
