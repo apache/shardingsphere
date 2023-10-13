@@ -26,9 +26,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.delete.DeleteStatementConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.explain.ExplainStatementConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.insert.InsertStatementConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.merge.MergeStatementConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.update.UpdateStatementConverter;
 import org.apache.shardingsphere.sqlfederation.exception.OptimizationSQLNodeConvertException;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.select.SelectStatementConverter;
@@ -61,6 +63,9 @@ public final class SQLNodeConverterEngine {
         }
         if (statement instanceof InsertStatement) {
             return new InsertStatementConverter().convert((InsertStatement) statement);
+        }
+        if (statement instanceof MergeStatement) {
+            return new MergeStatementConverter().convert((MergeStatement) statement);
         }
         throw new OptimizationSQLNodeConvertException(statement);
     }
