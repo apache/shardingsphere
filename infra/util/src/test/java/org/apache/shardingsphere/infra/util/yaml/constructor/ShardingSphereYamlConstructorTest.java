@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.util.yaml.constructor;
 import org.apache.shardingsphere.infra.util.yaml.fixture.pojo.YamlConfigurationFixture;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.ConstructorException;
+import org.yaml.snakeyaml.composer.ComposerException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,7 +53,7 @@ class ShardingSphereYamlConstructorTest {
     @Test
     void assertToObjectWithNotAcceptClass() throws IOException {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("yaml/accepted-class.yaml")) {
-            assertThrows(ConstructorException.class, () -> new Yaml(new ShardingSphereYamlConstructor(Object.class)).loadAs(inputStream, Object.class));
+            assertThrows(ComposerException.class, () -> new Yaml(new ShardingSphereYamlConstructor(Object.class)).loadAs(inputStream, Object.class));
         }
     }
 }
