@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.util.yaml;
 
 import org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts.YamlShortcutsConfigurationFixture;
 import org.junit.jupiter.api.Test;
-import org.yaml.snakeyaml.constructor.ConstructorException;
+import org.yaml.snakeyaml.composer.ComposerException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -101,7 +101,7 @@ class YamlEngineTest {
                 yamlContent.append(line).append(System.lineSeparator());
             }
         }
-        assertThrows(ConstructorException.class, () -> YamlEngine.unmarshal(yamlContent.toString(), Object.class));
+        assertThrows(ComposerException.class, () -> YamlEngine.unmarshal(yamlContent.toString(), Object.class));
     }
     
     @Test
