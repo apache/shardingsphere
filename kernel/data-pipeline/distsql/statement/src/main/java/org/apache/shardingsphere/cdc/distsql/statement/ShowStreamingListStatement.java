@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.cdc.distsql.statement;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.cdc.QueryableCDCRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.cdc.QueryableCDCRALStatement;
 
 /**
  * Show streaming list statement.

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.broadcast.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.create.CreateRuleStatement;
 
 import java.util.Collection;
 

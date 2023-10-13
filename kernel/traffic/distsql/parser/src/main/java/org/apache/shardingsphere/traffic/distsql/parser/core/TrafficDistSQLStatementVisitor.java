@@ -27,7 +27,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.TrafficDistSQLStatementP
 import org.apache.shardingsphere.distsql.parser.autogen.TrafficDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.TrafficDistSQLStatementParser.ShowTrafficRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.TrafficDistSQLStatementParser.TrafficRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;

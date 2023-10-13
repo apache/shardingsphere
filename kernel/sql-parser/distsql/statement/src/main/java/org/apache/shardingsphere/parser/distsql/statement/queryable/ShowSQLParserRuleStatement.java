@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.parser.distsql.statement.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
 /**
  * Show SQL parser rule statement.
