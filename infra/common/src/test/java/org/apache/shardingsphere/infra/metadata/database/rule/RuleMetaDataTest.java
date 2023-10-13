@@ -40,25 +40,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class RuleMetaDataTest {
-
+    
     private final RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(new ShardingSphereRuleFixture()));
-
+    
     @Test
     void assertFindRules() {
         assertThat(ruleMetaData.findRules(ShardingSphereRuleFixture.class).size(), is(1));
     }
-
+    
     @Test
     void assertFindSingleRule() {
         assertTrue(ruleMetaData.findSingleRule(ShardingSphereRuleFixture.class).isPresent());
     }
-
+    
     @Test
     void assertGetSingleRule() {
         assertThat(ruleMetaData.getSingleRule(ShardingSphereRuleFixture.class),
                 instanceOf(ShardingSphereRuleFixture.class));
     }
-
+    
     @Test
     void assertGetInUsedStorageUnitNameAndRulesMapWhenRulesAreEmpty() {
         Collection<ShardingSphereRule> rules = new ArrayList<>();
@@ -67,8 +67,7 @@ class RuleMetaDataTest {
         
         assertEquals(0, actual.size());
     }
-
-
+    
     @Test
     void assertGetInUsedStorageUnitNameAndRulesMapWhenRulesContainDataNodeContainedRule() {
         Collection<ShardingSphereRule> rules = new ArrayList<>();
@@ -82,7 +81,7 @@ class RuleMetaDataTest {
         assertEquals(1, actual.get("testDataNodeSourceName").size());
         assertTrue(actual.get("testDataNodeSourceName").contains(MockDataNodeContainedRule.class));
     }
-
+    
     @Test
     void assertGetInUsedStorageUnitNameAndRulesMapWhenRulesContainBothDataSourceContainedRuleAndDataNodeContainedRule() {
         Collection<ShardingSphereRule> rules = new ArrayList<>();
@@ -92,21 +91,21 @@ class RuleMetaDataTest {
         rules.add(dataNodeContainedRule);
         RuleMetaData r = new RuleMetaData(rules);
         Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = r.getInUsedStorageUnitNameAndRulesMap();
-
+        
         assertEquals(2, actual.size());
         assertTrue(actual.containsKey("testDataSourceName"));
         assertTrue(actual.containsKey("testDataNodeSourceName"));
         assertTrue(actual.get("testDataSourceName").contains(MockDataSourceContainedRule.class));
         assertTrue(actual.get("testDataNodeSourceName").contains(MockDataNodeContainedRule.class));
     }
-
+    
     private static class MockDataSourceContainedRule implements DataSourceContainedRule {
-
+        
         @Override
         public RuleConfiguration getConfiguration() {
             return mock(RuleConfiguration.class);
         }
-
+        
         @Override
         public Map<String, Collection<String>> getDataSourceMapper() {
             Map<String, Collection<String>> result = new LinkedHashMap<>();
@@ -114,43 +113,43 @@ class RuleMetaDataTest {
             return result;
         }
     }
-
+    
     private static class MockDataNodeContainedRule implements DataNodeContainedRule {
-
+        
         @Override
         public RuleConfiguration getConfiguration() {
             return mock(RuleConfiguration.class);
         }
-
+        
         @Override
         public Map<String, Collection<DataNode>> getAllDataNodes() {
             Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
             result.put("test", Arrays.asList(new DataNode("testDataNodeSourceName", "testTableName")));
             return result;
         }
-
+        
         @Override
-        public boolean isNeedAccumulate(Collection<String> tableNames) {
+        public boolean isNeedAccumulate(final Collection<String> tableNames) {
             return false;
         }
-
+        
         @Override
-        public Optional<String> findLogicTableByActualTable(String actualTable) {
+        public Optional<String> findLogicTableByActualTable(final String actualTable) {
             return Optional.empty();
         }
-
+        
         @Override
-        public Optional<String> findFirstActualTable(String logicTable) {
+        public Optional<String> findFirstActualTable(final String logicTable) {
             return Optional.empty();
         }
-
+        
         @Override
-        public Collection<DataNode> getDataNodesByTableName(String tableName) {
+        public Collection<DataNode> getDataNodesByTableName(final String tableName) {
             return null;
         }
-
+        
         @Override
-        public Optional<String> findActualTableByCatalog(String catalog, String logicTable) {
+        public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
             return Optional.empty();
         }
     }
