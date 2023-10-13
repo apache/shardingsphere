@@ -138,7 +138,16 @@ class GovernanceRepositoryAPIImplTest {
         assertThat(shardingItems.size(), is(1));
         assertThat(shardingItems.get(0), is(jobItemContext.getShardingItem()));
     }
-    
+
+    @Test
+    void assertPersistJobOffsetInfo() {
+        assertFalse(governanceRepositoryAPI.getJobOffsetInfo("1").isPresent());
+        governanceRepositoryAPI.persistJobOffsetInfo("1", "testValue");
+        Optional<String> actual = governanceRepositoryAPI.getJobOffsetInfo("1");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("testValue"));
+    }
+
     private MigrationJobItemContext mockJobItemContext() {
         MigrationJobItemContext result = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
         MigrationTaskConfiguration taskConfig = result.getTaskConfig();
