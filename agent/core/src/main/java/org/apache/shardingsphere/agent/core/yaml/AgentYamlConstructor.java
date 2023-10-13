@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.core.yaml;
 
 import org.apache.shardingsphere.agent.core.util.AgentPreconditions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
@@ -28,8 +29,14 @@ public final class AgentYamlConstructor extends Constructor {
     private final Class<?> rootClass;
     
     public AgentYamlConstructor(final Class<?> rootClass) {
-        super(rootClass);
+        super(rootClass, createLoaderOptions());
         this.rootClass = rootClass;
+    }
+    
+    private static LoaderOptions createLoaderOptions() {
+        LoaderOptions result = new LoaderOptions();
+        result.setCodePointLimit(Integer.MAX_VALUE);
+        return result;
     }
     
     @Override
