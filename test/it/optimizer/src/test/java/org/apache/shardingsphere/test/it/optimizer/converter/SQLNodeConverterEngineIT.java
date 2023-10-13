@@ -65,7 +65,7 @@ class SQLNodeConverterEngineIT {
     private static final String UPDATE_STATEMENT_PREFIX = "UPDATE";
     
     private static final String INSERT_STATEMENT_PREFIX = "INSERT";
-
+    
     private static final String MERGE_STATEMENT_PREFIX = "MERGE";
     
     @ParameterizedTest(name = "{0} ({1}) -> {2}")

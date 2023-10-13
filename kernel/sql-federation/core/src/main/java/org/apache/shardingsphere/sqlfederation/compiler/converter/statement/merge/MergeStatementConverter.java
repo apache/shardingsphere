@@ -26,11 +26,12 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.from.T
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.SQLStatementConverter;
 
 public final class MergeStatementConverter implements SQLStatementConverter<MergeStatement, SqlNode> {
+    
     @Override
     public SqlNode convert(final MergeStatement mergeStatement) {
         SqlNode targetTable = new TableConverter().convert(mergeStatement.getTarget()).orElseThrow(IllegalStateException::new);
         SqlNode condition = new ExpressionConverter().convert(mergeStatement.getExpression().getExpr()).get();
         SqlNode sourceTable = new TableConverter().convert(mergeStatement.getSource()).orElseThrow(IllegalStateException::new);
-        return new SqlMerge(SqlParserPos.ZERO, targetTable, condition, sourceTable,  null, null, null, null);
+        return new SqlMerge(SqlParserPos.ZERO, targetTable, condition, sourceTable, null, null, null, null);
     }
 }
