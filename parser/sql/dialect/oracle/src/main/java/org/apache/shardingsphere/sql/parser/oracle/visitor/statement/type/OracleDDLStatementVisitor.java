@@ -1248,7 +1248,6 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         return new OraclePLSQLBlockStatement();
     }
 
-
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
         return new OracleAlterProcedureStatement();
