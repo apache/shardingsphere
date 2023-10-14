@@ -25,6 +25,9 @@ import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expres
 import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.SQLStatementConverter;
 
+/**
+ * Merge statement converter.
+ */
 public final class MergeStatementConverter implements SQLStatementConverter<MergeStatement, SqlNode> {
     
     @Override
