@@ -78,6 +78,14 @@ class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
+    void assertIsExisted() {
+        String testKey = "/testKey1";
+        assertFalse(governanceRepositoryAPI.isExisted(testKey));
+        governanceRepositoryAPI.persist(testKey, "testValue1");
+        assertTrue(governanceRepositoryAPI.isExisted(testKey));
+    }
+    
+    @Test
     void assertPersistJobItemProgress() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
         governanceRepositoryAPI.updateJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue1");
