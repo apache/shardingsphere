@@ -113,7 +113,6 @@ public final class SQLFederationEngine implements AutoCloseable {
      * @param globalRuleMetaData global rule meta data
      * @return use SQL federation or not
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public boolean decide(final SQLStatementContext sqlStatementContext, final List<Object> parameters,
                           final ShardingSphereDatabase database, final RuleMetaData globalRuleMetaData) {
         // TODO BEGIN: move this logic to SQLFederationDecider implement class when we remove sql federation type
@@ -121,18 +120,7 @@ public final class SQLFederationEngine implements AutoCloseable {
             return true;
         }
         // TODO END
-        boolean sqlFederationEnabled = sqlFederationRule.getConfiguration().isSqlFederationEnabled();
-        if (!sqlFederationEnabled || !(sqlStatementContext instanceof SelectStatementContext)) {
-            return false;
-        }
-        Collection<DataNode> includedDataNodes = new HashSet<>();
-        for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
-            boolean isUseSQLFederation = entry.getValue().decide((SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey(), includedDataNodes);
-            if (isUseSQLFederation) {
-                return true;
-            }
-        }
-        return false;
+        return isEnableSqlFederation() && selectDecide(sqlStatementContext, parameters, database, globalRuleMetaData);
     }
     
     private boolean isQuerySystemSchema(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
@@ -140,6 +128,25 @@ public final class SQLFederationEngine implements AutoCloseable {
                 && (SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database)
                         || SystemSchemaUtils.isOpenGaussSystemCatalogQuery(sqlStatementContext.getDatabaseType(),
                                 ((SelectStatementContext) sqlStatementContext).getSqlStatement().getProjections().getProjections()));
+    }
+    
+    private boolean isEnableSqlFederation() {
+        return sqlFederationRule.getConfiguration().isSqlFederationEnabled();
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private boolean selectDecide(final SQLStatementContext sqlStatementContext, final List<Object> parameters,
+                                 final ShardingSphereDatabase database, final RuleMetaData globalRuleMetaData) {
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            Collection<DataNode> includedDataNodes = new HashSet<>();
+            for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
+                boolean isUseSQLFederation = entry.getValue().decide((SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey(), includedDataNodes);
+                if (isUseSQLFederation) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     /**
