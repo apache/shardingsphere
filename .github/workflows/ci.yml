@@ -62,7 +62,7 @@ jobs:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: CI - Compile by JDK 11 and Run on JDK 8
     needs: global-environment
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v3
