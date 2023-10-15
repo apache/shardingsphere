@@ -64,9 +64,6 @@ class RuleMetaDataTest {
         RuleMetaData ruleMetaData = new RuleMetaData(rules);
         Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = ruleMetaData.getInUsedStorageUnitNameAndRulesMap();
         assertThat(actual.size(), is(0));
-        RuleMetaData ruleMetaData = new RuleMetaData(rules);
-        Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = ruleMetaData.getInUsedStorageUnitNameAndRulesMap();
-        assertThat(actual.size(), is(0));
     }
     
     @Test
