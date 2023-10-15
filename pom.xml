@@ -91,7 +91,7 @@
         <bouncycastle.version>1.70</bouncycastle.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
-
+        
         <zookeeper.version>3.9.0</zookeeper.version>
         <curator.version>5.5.0</curator.version>
         <jetcd.version>0.7.5</jetcd.version>
