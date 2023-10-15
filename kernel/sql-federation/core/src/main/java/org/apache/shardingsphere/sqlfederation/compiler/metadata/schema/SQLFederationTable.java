@@ -26,13 +26,19 @@ import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.linq4j.Queryable;
 import org.apache.calcite.linq4j.tree.Expression;
+import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelOptTable.ToRelContext;
+import org.apache.calcite.prepare.Prepare.CatalogReader;
 import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.core.TableModify;
+import org.apache.calcite.rel.core.TableModify.Operation;
+import org.apache.calcite.rel.logical.LogicalTableModify;
 import org.apache.calcite.rel.logical.LogicalTableScan;
+import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.schema.QueryableTable;
+import org.apache.calcite.schema.ModifiableTable;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Schemas;
 import org.apache.calcite.schema.Statistic;
@@ -48,13 +54,16 @@ import org.apache.shardingsphere.sqlfederation.executor.enumerable.EnumerableSca
 import org.apache.shardingsphere.sqlfederation.executor.row.EmptyRowEnumerator;
 
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * SQL federation table.
  */
 @RequiredArgsConstructor
-public final class SQLFederationTable extends AbstractTable implements QueryableTable, TranslatableTable {
+public final class SQLFederationTable extends AbstractTable implements ModifiableTable, TranslatableTable {
     
     private final ShardingSphereTable table;
     
@@ -123,5 +132,17 @@ public final class SQLFederationTable extends AbstractTable implements Queryable
     @Override
     public Statistic getStatistic() {
         return statistic;
+    }
+    
+    @Override
+    public Collection<Object[]> getModifiableCollection() {
+        return new LinkedList<>();
+    }
+    
+    @Override
+    public TableModify toModificationRel(final RelOptCluster relOptCluster, final RelOptTable table, final CatalogReader schema,
+                                         final RelNode relNode, final Operation operation, final List<String> updateColumnList,
+                                         final List<RexNode> sourceExpressionList, final boolean flattened) {
+        return LogicalTableModify.create(table, schema, relNode, operation, updateColumnList, sourceExpressionList, flattened);
     }
 }
