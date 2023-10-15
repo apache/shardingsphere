@@ -66,6 +66,8 @@ class SQLNodeConverterEngineIT {
     
     private static final String INSERT_STATEMENT_PREFIX = "INSERT";
     
+    private static final String MERGE_STATEMENT_PREFIX = "MERGE";
+    
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertConvert(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
@@ -111,7 +113,8 @@ class SQLNodeConverterEngineIT {
                     || testParam.getSqlCaseId().toUpperCase().startsWith(DELETE_STATEMENT_PREFIX)
                     || testParam.getSqlCaseId().toUpperCase().startsWith(EXPLAIN_STATEMENT_PREFIX)
                     || testParam.getSqlCaseId().toUpperCase().startsWith(UPDATE_STATEMENT_PREFIX)
-                    || testParam.getSqlCaseId().toUpperCase().startsWith(INSERT_STATEMENT_PREFIX);
+                    || testParam.getSqlCaseId().toUpperCase().startsWith(INSERT_STATEMENT_PREFIX)
+                    || testParam.getSqlCaseId().toUpperCase().startsWith(MERGE_STATEMENT_PREFIX);
         }
     }
 }
