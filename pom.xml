@@ -113,13 +113,13 @@
         <hbase.client.version>1.7.1</hbase.client.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
-        
-        <junit.version>5.9.2</junit.version>
+
+        <junit.version>5.10.0</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
+        <awaitility.version>4.2.0</awaitility.version>
         
         <protobuf-java.version>3.21.12</protobuf-java.version>
-        <awaitility.version>4.2.0</awaitility.version>
         
         <!-- 3rd party library plugin versions -->
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
