@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.operator.physical;
 
-import org.apache.calcite.adapter.enumerable.*;
+import org.apache.calcite.adapter.enumerable.EnumerableRel;
+import org.apache.calcite.adapter.enumerable.EnumerableRelImplementor;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelTraitSet;
