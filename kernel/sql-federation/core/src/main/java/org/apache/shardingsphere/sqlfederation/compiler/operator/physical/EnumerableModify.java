@@ -22,7 +22,7 @@ import org.apache.calcite.adapter.enumerable.EnumerableRelImplementor;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.prepare.Prepare;
+import org.apache.calcite.prepare.Prepare.CatalogReader;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.TableModify;
 import org.apache.calcite.rex.RexNode;
@@ -34,16 +34,14 @@ import java.util.List;
  */
 public final class EnumerableModify extends TableModify implements EnumerableRel {
     
-    public EnumerableModify(final RelOptCluster cluster, final RelTraitSet traitSet, final RelOptTable table, 
-                            final Prepare.CatalogReader catalogReader, final RelNode input, final Operation operation, 
-                            final List<String> updateColumnList, final List<RexNode> sourceExpressionList, final boolean flattened) {
+    public EnumerableModify(final RelOptCluster cluster, final RelTraitSet traitSet, final RelOptTable table, final CatalogReader catalogReader, 
+                            final RelNode input, final Operation operation, final List<String> updateColumnList, final List<RexNode> sourceExpressionList, final boolean flattened) {
         super(cluster, traitSet, table, catalogReader, input, operation, updateColumnList, sourceExpressionList, flattened);
     }
     
     @Override
     public RelNode copy(final RelTraitSet traitSet, final List<RelNode> inputs) {
-        return new EnumerableModify(getCluster(), traitSet, getTable(), getCatalogReader(), sole(inputs), getOperation(), 
-                getUpdateColumnList(), getSourceExpressionList(), isFlattened());
+        return new EnumerableModify(getCluster(), traitSet, getTable(), getCatalogReader(), sole(inputs), getOperation(), getUpdateColumnList(), getSourceExpressionList(), isFlattened());
     }
     
     @Override
