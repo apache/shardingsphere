@@ -231,9 +231,9 @@ The text of each license is the standard Apache 2.0 license.
     commons-lang 2.4: https://github.com/apache/commons-lang, Apache 2.0
     commons-lang3 3.12.0: https://github.com/apache/commons-lang, Apache 2.0
     commons-logging 1.1.3: https://github.com/apache/commons-logging, Apache 2.0
-    curator-client 5.4.0:  https://github.com/apache/curator, Apache 2.0
-    curator-framework 5.4.0:  https://github.com/apache/curator, Apache 2.0
-    curator-recipes 5.4.0:  https://github.com/apache/curator, Apache 2.0
+    curator-client 5.5.0:  https://github.com/apache/curator, Apache 2.0
+    curator-framework 5.5.0:  https://github.com/apache/curator, Apache 2.0
+    curator-recipes 5.5.0:  https://github.com/apache/curator, Apache 2.0
     error_prone_annotations 2.22.0: https://github.com/google/error-prone, Apache 2.0
     failsafe 2.4.4: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0
@@ -297,8 +297,8 @@ The text of each license is the standard Apache 2.0 license.
     snakeyaml 1.33: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
     transmittable-thread-local 2.14.2: https://github.com/alibaba/transmittable-thread-local, Apache 2.0
     uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
-    zookeeper 3.8.1: https://github.com/apache/zookeeper, Apache 2.0
-    zookeeper-jute 3.8.1: https://github.com/apache/zookeeper, Apache 2.0
+    zookeeper 3.9.0: https://github.com/apache/zookeeper, Apache 2.0
+    zookeeper-jute 3.9.0: https://github.com/apache/zookeeper, Apache 2.0
 
 ========================================================================
 Apache 2.0 licenses
