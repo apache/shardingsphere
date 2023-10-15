@@ -64,6 +64,9 @@ class RuleMetaDataTest {
         RuleMetaData ruleMetaData = new RuleMetaData(rules);
         Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = ruleMetaData.getInUsedStorageUnitNameAndRulesMap();
         assertThat(actual.size(), is(0));
+        RuleMetaData ruleMetaData = new RuleMetaData(rules);
+        Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = ruleMetaData.getInUsedStorageUnitNameAndRulesMap();
+        assertThat(actual.size(), is(0));
     }
     
     @Test
@@ -75,6 +78,7 @@ class RuleMetaDataTest {
         Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = ruleMetaData.getInUsedStorageUnitNameAndRulesMap();
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("testDataNodeSourceName"));
+        assertThat(actual.get("testDataNodeSourceName").size(), is(1));
         assertThat(actual.get("testDataNodeSourceName").size(), is(1));
         assertTrue(actual.get("testDataNodeSourceName").contains(MockDataNodeContainedRule.class));
     }
