@@ -36,7 +36,7 @@ public final class EnumerableModify extends TableModify implements EnumerableRel
     
     public EnumerableModify(final RelOptCluster cluster, final RelTraitSet traitSet, final RelOptTable table, 
                             final Prepare.CatalogReader catalogReader, final RelNode input, final Operation operation, 
-                            final List<String> updateColumnList, final List<RexNode> sourceExpressionList, boolean flattened) {
+                            final List<String> updateColumnList, final List<RexNode> sourceExpressionList, final boolean flattened) {
         super(cluster, traitSet, table, catalogReader, input, operation, updateColumnList, sourceExpressionList, flattened);
     }
     

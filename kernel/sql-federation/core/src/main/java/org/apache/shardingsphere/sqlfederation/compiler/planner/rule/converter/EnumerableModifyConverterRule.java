@@ -32,8 +32,8 @@ import org.apache.shardingsphere.sqlfederation.compiler.operator.physical.Enumer
  */
 public final class EnumerableModifyConverterRule extends ConverterRule {
     
-    public static final Config DEFAULT_CONFIG = Config.INSTANCE.withConversion(LogicalTableModify.class, Convention.NONE, EnumerableConvention.INSTANCE, EnumerableModifyConverterRule.class.getSimpleName())
-            .withRuleFactory(EnumerableModifyConverterRule::new);
+    public static final Config DEFAULT_CONFIG = Config.INSTANCE.withConversion(LogicalTableModify.class, Convention.NONE, EnumerableConvention.INSTANCE, 
+            EnumerableModifyConverterRule.class.getSimpleName()).withRuleFactory(EnumerableModifyConverterRule::new);
     
     private EnumerableModifyConverterRule(final Config config) {
         super(config);
