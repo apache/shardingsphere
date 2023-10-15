@@ -74,7 +74,7 @@ public final class EnumerableScan extends TableScan implements EnumerableRel {
     
     @Override
     public RelWriter explainTerms(final RelWriter relWriter) {
-        return super.explainTerms(relWriter).item("sql", sqlString.getSql().replaceAll("[\r\n]", " ")).item("dynamicParameters", sqlString.getDynamicParameters());
+        return super.explainTerms(relWriter).item("sql", sqlString.getSql().replaceAll(System.lineSeparator(), " ")).item("dynamicParameters", sqlString.getDynamicParameters());
     }
     
     @Override

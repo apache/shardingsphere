@@ -78,6 +78,14 @@ class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
+    void assertIsExisted() {
+        String testKey = "/testKey1";
+        assertFalse(governanceRepositoryAPI.isExisted(testKey));
+        governanceRepositoryAPI.persist(testKey, "testValue1");
+        assertTrue(governanceRepositoryAPI.isExisted(testKey));
+    }
+    
+    @Test
     void assertPersistJobItemProgress() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
         governanceRepositoryAPI.updateJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue1");
@@ -137,6 +145,15 @@ class GovernanceRepositoryAPIImplTest {
         List<Integer> shardingItems = governanceRepositoryAPI.getShardingItems(jobItemContext.getJobId());
         assertThat(shardingItems.size(), is(1));
         assertThat(shardingItems.get(0), is(jobItemContext.getShardingItem()));
+    }
+    
+    @Test
+    void assertPersistJobOffsetInfo() {
+        assertFalse(governanceRepositoryAPI.getJobOffsetInfo("1").isPresent());
+        governanceRepositoryAPI.persistJobOffsetInfo("1", "testValue");
+        Optional<String> actual = governanceRepositoryAPI.getJobOffsetInfo("1");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("testValue"));
     }
     
     private MigrationJobItemContext mockJobItemContext() {
