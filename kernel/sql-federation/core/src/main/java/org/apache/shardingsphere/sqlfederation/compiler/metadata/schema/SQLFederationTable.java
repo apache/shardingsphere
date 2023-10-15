@@ -139,8 +139,8 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
     }
     
     @Override
-    public TableModify toModificationRel(final RelOptCluster relOptCluster, final RelOptTable relOptTable, final Prepare.CatalogReader catalogReader, 
-                                         final RelNode relNode, final TableModify.Operation operation, final List<String> updateColumnList, 
+    public TableModify toModificationRel(final RelOptCluster relOptCluster, final RelOptTable relOptTable, final Prepare.CatalogReader catalogReader,
+                                         final RelNode relNode, final TableModify.Operation operation, final List<String> updateColumnList,
                                          final List<RexNode> sourceExpressionList, final boolean flattened) {
         return LogicalTableModify.create(relOptTable, catalogReader, relNode, operation, updateColumnList, sourceExpressionList, flattened);
     }
