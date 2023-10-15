@@ -35,7 +35,6 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -62,10 +61,9 @@ class RuleMetaDataTest {
     @Test
     void assertGetInUsedStorageUnitNameAndRulesMapWhenRulesAreEmpty() {
         Collection<ShardingSphereRule> rules = new ArrayList<>();
-        RuleMetaData r = new RuleMetaData(rules);
-        Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = r.getInUsedStorageUnitNameAndRulesMap();
-        
-        assertEquals(0, actual.size());
+        RuleMetaData ruleMetaData = new RuleMetaData(rules);
+        Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = ruleMetaData.getInUsedStorageUnitNameAndRulesMap();
+        assertThat(actual.size(), is(0));
     }
     
     @Test
@@ -75,10 +73,9 @@ class RuleMetaDataTest {
         rules.add(rule);
         RuleMetaData r = new RuleMetaData(rules);
         Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = r.getInUsedStorageUnitNameAndRulesMap();
-        
-        assertEquals(1, actual.size());
+        assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("testDataNodeSourceName"));
-        assertEquals(1, actual.get("testDataNodeSourceName").size());
+        assertThat(actual.get("testDataNodeSourceName").size(), is(1));
         assertTrue(actual.get("testDataNodeSourceName").contains(MockDataNodeContainedRule.class));
     }
     
@@ -91,8 +88,7 @@ class RuleMetaDataTest {
         rules.add(dataNodeContainedRule);
         RuleMetaData r = new RuleMetaData(rules);
         Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = r.getInUsedStorageUnitNameAndRulesMap();
-        
-        assertEquals(2, actual.size());
+        assertThat(actual.size(), is(2));
         assertTrue(actual.containsKey("testDataSourceName"));
         assertTrue(actual.containsKey("testDataNodeSourceName"));
         assertTrue(actual.get("testDataSourceName").contains(MockDataSourceContainedRule.class));
