@@ -224,7 +224,7 @@ The text of each license is the standard Apache 2.0 license.
     caffeine 2.9.3: https://github.com/ben-manes/caffeine, Apache 2.0
     calcite-core 1.35.0: https://calcite.apache.org, Apache 2.0
     calcite-linq4j 1.35.0: https://calcite.apache.org, Apache 2.0
-    commons-codec 1.15: https://github.com/apache/commons-codec, Apache 2.0
+    commons-codec 1.16.0: https://github.com/apache/commons-codec, Apache 2.0
     commons-collections4 4.4: https://github.com/apache/commons-collections, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
     commons-io 2.11.0: https://github.com/apache/commons-io, Apache 2.0
