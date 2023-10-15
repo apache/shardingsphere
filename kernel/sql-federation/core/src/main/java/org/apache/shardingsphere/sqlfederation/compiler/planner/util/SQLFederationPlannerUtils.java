@@ -51,6 +51,7 @@ import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.view.ShardingSphereViewExpander;
+import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.converter.EnumerableModifyConverterRule;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.converter.EnumerableScanConverterRule;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.transformation.PushFilterIntoScanRule;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.rule.transformation.PushProjectIntoScanRule;
@@ -125,13 +126,13 @@ public final class SQLFederationPlannerUtils {
         planner.addRule(EnumerableRules.ENUMERABLE_TABLE_SPOOL_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_INTERSECT_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_MINUS_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_TABLE_MODIFICATION_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_VALUES_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_WINDOW_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_TABLE_FUNCTION_SCAN_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_MATCH_RULE);
         planner.addRule(EnumerableScanConverterRule.DEFAULT_CONFIG.toRule());
+        planner.addRule(EnumerableModifyConverterRule.DEFAULT_CONFIG.toRule());
     }
     
     private static Collection<RelOptRule> getSubQueryRules() {
