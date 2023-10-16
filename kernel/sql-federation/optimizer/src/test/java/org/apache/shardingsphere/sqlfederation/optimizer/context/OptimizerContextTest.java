@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.sqlfederation.executor.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.sqlfederation.executor.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
