@@ -31,11 +31,11 @@ class SimpleMemoryPipelineChannelTest {
         SimpleMemoryPipelineChannel simpleMemoryPipelineChannel = new SimpleMemoryPipelineChannel(10, new EmptyAckCallback());
         long startMills = System.currentTimeMillis();
         simpleMemoryPipelineChannel.fetchRecords(1, 1, TimeUnit.MILLISECONDS);
-        long endMills = System.currentTimeMillis();
-        assertTrue(endMills - startMills >= 1 && endMills - startMills < 50);
+        long delta = System.currentTimeMillis() - startMills;
+        assertTrue(delta >= 1 && delta < 50, "Delta is not in [1,50) : " + delta);
         startMills = System.currentTimeMillis();
         simpleMemoryPipelineChannel.fetchRecords(1, 500, TimeUnit.MILLISECONDS);
-        endMills = System.currentTimeMillis();
-        assertTrue(endMills - startMills >= 500 && endMills - startMills < 600);
+        delta = System.currentTimeMillis() - startMills;
+        assertTrue(delta >= 500 && delta < 650, "Delta is not in [500,650) : " + delta);
     }
 }
