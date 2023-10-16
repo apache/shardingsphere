@@ -105,10 +105,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
             flushInternal(dataSource, each.getBatchDeleteDataRecords());
             flushInternal(dataSource, each.getBatchInsertDataRecords());
             flushInternal(dataSource, each.getBatchUpdateDataRecords());
-            if (each.getNonBatchRecords().isEmpty()) {
-                continue;
-            }
-            tryFlush(dataSource, each.getNonBatchRecords(), false);
+            sequentialFlush(dataSource, each.getNonBatchRecords());
         }
         return new PipelineJobProgressUpdatedParameter(insertRecordNumber);
     }
@@ -117,14 +114,14 @@ public final class PipelineDataSourceSink implements PipelineSink {
         if (null == buffer || buffer.isEmpty()) {
             return;
         }
-        tryFlush(dataSource, buffer, true);
+        tryFlush(dataSource, buffer);
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void tryFlush(final DataSource dataSource, final List<DataRecord> buffer, final boolean enableTransaction) {
+    private void tryFlush(final DataSource dataSource, final List<DataRecord> buffer) {
         for (int i = 0; !Thread.interrupted() && i <= importerConfig.getRetryTimes(); i++) {
             try {
-                doFlush(dataSource, buffer, enableTransaction);
+                doFlush(dataSource, buffer);
                 return;
             } catch (final SQLException ex) {
                 log.error("flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
@@ -136,47 +133,37 @@ public final class PipelineDataSourceSink implements PipelineSink {
         }
     }
     
-    private void doFlush(final DataSource dataSource, final List<DataRecord> buffer, final boolean enableTransaction) throws SQLException {
+    private void doFlush(final DataSource dataSource, final List<DataRecord> buffer) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
+            boolean enableTransaction = buffer.size() > 1;
             if (enableTransaction) {
                 connection.setAutoCommit(false);
             }
-            Set<String> dataRecordTypes = buffer.stream().map(DataRecord::getType).collect(Collectors.toSet());
-            if (dataRecordTypes.size() > 1) {
-                for (DataRecord each : buffer) {
-                    execute(connection, Collections.singletonList(each));
-                }
-            } else {
-                execute(connection, buffer);
+            switch (buffer.get(0).getType()) {
+                case IngestDataChangeType.INSERT:
+                    if (null != rateLimitAlgorithm) {
+                        rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
+                    }
+                    executeBatchInsert(connection, buffer);
+                    break;
+                case IngestDataChangeType.UPDATE:
+                    if (null != rateLimitAlgorithm) {
+                        rateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1);
+                    }
+                    executeUpdate(connection, buffer);
+                    break;
+                case IngestDataChangeType.DELETE:
+                    if (null != rateLimitAlgorithm) {
+                        rateLimitAlgorithm.intercept(JobOperationType.DELETE, 1);
+                    }
+                    executeBatchDelete(connection, buffer);
+                    break;
+                default:
+                    break;
             }
             if (enableTransaction) {
                 connection.commit();
             }
-        }
-    }
-    
-    private void execute(final Connection connection, final List<DataRecord> buffer) throws SQLException {
-        switch (buffer.get(0).getType()) {
-            case IngestDataChangeType.INSERT:
-                if (null != rateLimitAlgorithm) {
-                    rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
-                }
-                executeBatchInsert(connection, buffer);
-                break;
-            case IngestDataChangeType.UPDATE:
-                if (null != rateLimitAlgorithm) {
-                    rateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1);
-                }
-                executeUpdate(connection, buffer);
-                break;
-            case IngestDataChangeType.DELETE:
-                if (null != rateLimitAlgorithm) {
-                    rateLimitAlgorithm.intercept(JobOperationType.DELETE, 1);
-                }
-                executeBatchDelete(connection, buffer);
-                break;
-            default:
-                break;
         }
     }
     
@@ -258,6 +245,17 @@ public final class PipelineDataSourceSink implements PipelineSink {
             preparedStatement.executeBatch();
         } finally {
             batchDeleteStatement.set(null);
+        }
+    }
+    
+    private void sequentialFlush(final DataSource dataSource, final List<DataRecord> buffer) {
+        // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL sometimes
+        try {
+            for (DataRecord each : buffer) {
+                doFlush(dataSource, Collections.singletonList(each));
+            }
+        } catch (final SQLException ex) {
+            throw new PipelineImporterJobWriteException(ex);
         }
     }
     
