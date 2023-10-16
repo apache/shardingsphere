@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableDa
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.metadata.schema.table.ScanExecutorContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -61,7 +62,7 @@ class EnumerableScanExecutorTest {
         ShardingSphereTable shardingSphereTable = mock(ShardingSphereTable.class);
         when(shardingSphereTable.getName()).thenReturn("test");
         Enumerable<Object> enumerable = new EnumerableScanExecutor(null, null, null, optimizerContext, null, executorContext, statistics)
-                .execute(shardingSphereTable, mock(EnumerableScanExecutorContext.class));
+                .execute(shardingSphereTable, mock(ScanExecutorContext.class));
         try (Enumerator<Object> actual = enumerable.enumerator()) {
             actual.moveNext();
             Object row = actual.current();
