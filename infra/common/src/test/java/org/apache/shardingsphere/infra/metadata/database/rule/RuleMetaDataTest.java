@@ -37,6 +37,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class RuleMetaDataTest {
     
@@ -54,8 +55,7 @@ class RuleMetaDataTest {
     
     @Test
     void assertGetSingleRule() {
-        assertThat(ruleMetaData.getSingleRule(ShardingSphereRuleFixture.class),
-                instanceOf(ShardingSphereRuleFixture.class));
+        assertThat(ruleMetaData.getSingleRule(ShardingSphereRuleFixture.class), instanceOf(ShardingSphereRuleFixture.class));
     }
     
     @Test
@@ -79,11 +79,12 @@ class RuleMetaDataTest {
         assertThat(actual.get("testDataNodeSourceName").size(), is(1));
         assertTrue(actual.get("testDataNodeSourceName").contains(MockDataNodeContainedRule.class));
     }
-    
+
     @Test
     void assertGetInUsedStorageUnitNameAndRulesMapWhenRulesContainBothDataSourceContainedRuleAndDataNodeContainedRule() {
-        Collection<ShardingSphereRule> rules = new ArrayList<>();
-        DataSourceContainedRule dataSourceContainedRule = new MockDataSourceContainedRule();
+        Collection<ShardingSphereRule> rules = new ArrayList<>(); 
+        DataSourceContainedRule dataSourceContainedRule = mock(DataSourceContainedRule.class);
+        when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("test", Arrays.asList("testDataSourceName")));
         DataNodeContainedRule dataNodeContainedRule = new MockDataNodeContainedRule();
         rules.add(dataSourceContainedRule);
         rules.add(dataNodeContainedRule);
@@ -92,23 +93,8 @@ class RuleMetaDataTest {
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsKey("testDataSourceName"));
         assertTrue(actual.containsKey("testDataNodeSourceName"));
-        assertTrue(actual.get("testDataSourceName").contains(MockDataSourceContainedRule.class));
+        assertTrue(actual.get("testDataSourceName").contains(dataSourceContainedRule.getClass()));
         assertTrue(actual.get("testDataNodeSourceName").contains(MockDataNodeContainedRule.class));
-    }
-    
-    private static class MockDataSourceContainedRule implements DataSourceContainedRule {
-        
-        @Override
-        public RuleConfiguration getConfiguration() {
-            return mock(RuleConfiguration.class);
-        }
-        
-        @Override
-        public Map<String, Collection<String>> getDataSourceMapper() {
-            Map<String, Collection<String>> result = new LinkedHashMap<>();
-            result.put("test", Arrays.asList("testDataSourceName"));
-            return result;
-        }
     }
     
     private static class MockDataNodeContainedRule implements DataNodeContainedRule {
