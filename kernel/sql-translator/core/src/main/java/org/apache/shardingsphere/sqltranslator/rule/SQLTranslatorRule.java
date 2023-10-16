@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqltranslator.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -51,14 +52,15 @@ public final class SQLTranslatorRule implements GlobalRule {
      * @param sqlStatement to be translated SQL statement
      * @param protocolType protocol type
      * @param storageType storage type
+     * @param globalRuleMetaData global rule meta data
      * @return translated SQL
      */
-    public String translate(final String sql, final SQLStatement sqlStatement, final DatabaseType protocolType, final DatabaseType storageType) {
+    public String translate(final String sql, final SQLStatement sqlStatement, final DatabaseType protocolType, final DatabaseType storageType, final RuleMetaData globalRuleMetaData) {
         if (protocolType.equals(storageType) || null == storageType) {
             return sql;
         }
         try {
-            return translator.translate(sql, sqlStatement, protocolType, storageType);
+            return translator.translate(sql, sqlStatement, protocolType, storageType, globalRuleMetaData);
         } catch (final SQLTranslationException ex) {
             if (useOriginalSQLWhenTranslatingFailed) {
                 return sql;

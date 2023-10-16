@@ -24,12 +24,12 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MetaDataHeldRule;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
-import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.context.OptimizerContextFactory;
-import org.apache.shardingsphere.sqlfederation.compiler.context.parser.OptimizerParserContext;
-import org.apache.shardingsphere.sqlfederation.compiler.context.parser.dialect.OptimizerSQLPropertiesBuilder;
-import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.context.planner.OptimizerPlannerContextFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLPropertiesBuilder;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory;
 
 import java.util.Map;
 
