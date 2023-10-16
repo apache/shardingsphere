@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqltranslator.spi;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -35,7 +36,8 @@ public interface SQLTranslator extends TypedSPI {
      * @param sqlStatement to be translated SQL statement
      * @param protocolType protocol type
      * @param storageType storage type
+     * @param globalRuleMetaData global rule meta data
      * @return translated SQL
      */
-    String translate(String sql, SQLStatement sqlStatement, DatabaseType protocolType, DatabaseType storageType);
+    String translate(String sql, SQLStatement sqlStatement, DatabaseType protocolType, DatabaseType storageType, RuleMetaData globalRuleMetaData);
 }
