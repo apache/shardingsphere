@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Write
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -252,7 +253,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         for (int i = 0; i < offset; i++) {
             result[i] = data.get(startPosition + i);
         }
-        return new String(result);
+        return new String(result, StandardCharsets.UTF_8);
     }
     
     private String readNextString(final ByteBuffer data) {
