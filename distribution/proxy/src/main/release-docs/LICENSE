@@ -216,9 +216,10 @@ The following components are provided under the Apache License. See project link
 The text of each license is the standard Apache 2.0 license.
 
     accessors-smart 2.4.7: https://www.minidev.net/, Apache 2.0
-    aggdesigner-algorithm 6.0: Apache 2.0
+    aggdesigner-algorithm 6.0: https://github.com/julianhyde/aggdesigner/tree/main/pentaho-aggdesigner-algorithm, Apache 2.0
     apiguardian-api 1.1.2: https://github.com/apiguardian-team/apiguardian, Apache 2.0
     audience-annotations 0.12.0: https://github.com/apache/yetus, Apache 2.0
+    auto-value-annotations 1.10.2: https://github.com/google/auto, Apache 2.0
     avatica-core 1.23.0: https://calcite.apache.org/avatica, Apache 2.0
     avatica-metrics 1.23.0: https://calcite.apache.org/avatica, Apache 2.0
     caffeine 2.9.3: https://github.com/ben-manes/caffeine, Apache 2.0
@@ -226,10 +227,14 @@ The text of each license is the standard Apache 2.0 license.
     calcite-linq4j 1.35.0: https://calcite.apache.org, Apache 2.0
     commons-codec 1.15: https://github.com/apache/commons-codec, Apache 2.0
     commons-collections4 4.4: https://github.com/apache/commons-collections, Apache 2.0
+    commons-dbcp2 2.6.0: https://commons.apache.org/proper/commons-dbcp, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
     commons-io 2.11.0: https://github.com/apache/commons-io, Apache 2.0
     commons-lang 2.4: https://github.com/apache/commons-lang, Apache 2.0
     commons-lang3 3.12.0: https://github.com/apache/commons-lang, Apache 2.0
+    commons-math3 3.6.1: https://commons.apache.org/proper/commons-math, Apache 2.0
+    commons-pool2 2.6.1: https://commons.apache.org/proper/commons-pool, Apache 2.0
+    conscrypt-openjdk-uber 2.5.2: https://github.com/google/conscrypt, Apache 2.0
     commons-logging 1.1.3: https://github.com/apache/commons-logging, Apache 2.0
     curator-client 5.4.0:  https://github.com/apache/curator, Apache 2.0
     curator-framework 5.4.0:  https://github.com/apache/curator, Apache 2.0
@@ -237,22 +242,36 @@ The text of each license is the standard Apache 2.0 license.
     error_prone_annotations 2.11.0: https://github.com/google/error-prone, Apache 2.0
     failsafe 2.4.4: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0
-    freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
+    freemarker 2.3.31: https://freemarker.apache.org, Apache 2.0
+    google-http-client 1.41.0: https://github.com/googleapis/google-http-java-client, Apache 2.0
+    google-http-client-gson 1.41.0: https://github.com/googleapis/google-http-java-client, Apache 2.0
     groovy 4.0.10: https://groovy.apache.org/, Apache 2.0
+    grpc-all 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-alts 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-api 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-auth 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-context 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-core 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-grpclb 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-inprocess 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-netty 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-okhttp 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-protobuf 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-protobuf-lite 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-rls 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-services 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-servlet 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-stub 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-testing 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-util 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-xds 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
     gson 2.9.1: https://github.com/google/gson, Apache 2.0
     guava 32.1.2-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 4.0.3: https://github.com/brettwooldridge/HikariCP, Apache 2.0
     httpclient5 5.1.3: https://hc.apache.org/httpcomponents-client-5.1.x, Apache 2.0
     httpcore5-h2 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
     httpcore5 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
+    j2objc-annotations 2.8: https://github.com/google/j2objc, Apache 2.0
     jackson-annotations 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-core 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-databind 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
@@ -267,7 +286,7 @@ The text of each license is the standard Apache 2.0 license.
     json-smart 2.4.10: https://www.minidev.net/, Apache 2.0
     json-simple 1.1.1: https://code.google.com/archive/p/json-simple/, Apache 2.0
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
-    memory 0.9.0, Apache 2.0
+    memory 0.9.0: https://github.com/leventov/memory, Apache 2.0
     netty-buffer 4.1.99.Final: https://github.com/netty, Apache 2.0
     netty-codec 4.1.99.Final: https://github.com/netty, Apache 2.0
     netty-codec-http 4.1.99.Final: https://github.com/netty, Apache 2.0
@@ -289,11 +308,15 @@ The text of each license is the standard Apache 2.0 license.
     netty-tcnative-boringssl-static 2.0.59.Final-osx-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final-windows-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-classes 2.0.59.Final: https://github.com/netty/netty-tcnative, Apache 2.0
+    okio 2.10.0: https://github.com/square/okio, Apache 2.0
+    opencensus-api 0.28.0: https://github.com/census-instrumentation/opencensus-java, Apache 2.0
+    opencensus-contrib-http-util 0.28.0: https://github.com/census-instrumentation/opencensus-java, Apache 2.0
+    opencensus-proto 0.2.0: https://github.com/census-instrumentation/opencensus-proto, Apache 2.0
     perfmark-api 0.25.0: https://github.com/perfmark/perfmark, Apache 2.0
     proto-google-common-protos 2.9.0: https://github.com/googleapis/common-protos-java, Apache 2.0
     proj4j 1.1.5: https://github.com/locationtech/proj4j, Apache 2.0
     quartz 2.3.2: https://github.com/quartz-scheduler/quartz, Apache 2.0
-    sketches-core 0.9.0, Apache 2.0
+    sketches-core 0.9.0: https://github.com/satishd/sketches-core, Apache 2.0
     snakeyaml 1.33: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
     transmittable-thread-local 2.14.2: https://github.com/alibaba/transmittable-thread-local, Apache 2.0
     uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
@@ -308,6 +331,8 @@ The following components are provided under the Apache License. See project link
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
     atomikos-util 6.0.0: https://www.atomikos.com, Apache 2.0
+    kotlin-stdlib 1.4.20: https://github.com/JetBrains/kotlin, Apache 2.0
+    kotlin-stdlib-common 1.4.20: https://github.com/JetBrains/kotlin, Apache 2.0
     transactions 6.0.0: https://www.atomikos.com, Apache 2.0
     transactions-api 6.0.0: https://www.atomikos.com, Apache 2.0
     transactions-jdbc 6.0.0: https://www.atomikos.com, Apache 2.0
@@ -323,6 +348,9 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     antlr4-runtime 4.10.1: https://github.com/antlr/antlr4, BSD-3-Clause
     asm 9.1: https://github.com/llbit/ow2-asm, BSD-3-Clause
     commons-compiler 3.1.8: https://github.com/janino-compiler/janino, BSD-3-Clause
+    google-auth-library-credentials 1.4.0: https://github.com/googleapis/google-auth-library-java, BSD-3-Clause
+    google-auth-library-oauth2-http 1.4.0: https://github.com/googleapis/google-auth-library-java, BSD-3-Clause
+    hamcrest-core 1.3: https://github.com/hamcrest/JavaHamcrest, BSD-3-Clause
     janino 3.1.9: https://github.com/janino-compiler/janino, BSD-3-Clause
     opengauss-jdbc 3.1.0-og: https://gitee.com/opengauss/openGauss-connector-jdbc, BSD-2-Clause
     postgresql 42.4.3: https://github.com/pgjdbc/pgjdbc, BSD-2-Clause
@@ -363,6 +391,7 @@ MIT licenses
 The following components are provided under the MIT License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
+    animal-sniffer-annotations 1.23: https://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations, MIT
     bcpkix-jdk15on 1.70: https://www.bouncycastle.org, MIT
     bcprov-jdk15on 1.70: https://www.bouncycastle.org, MIT
     bctls-jdk15on 1.70: https://www.bouncycastle.org, MIT
