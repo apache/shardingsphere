@@ -48,13 +48,11 @@ public final class ResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource create(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeChangedPropsMap) {
-        Map<String, DataSourcePoolProperties> mergedPropsMap = new LinkedHashMap<>(toBeChangedPropsMap.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         Map<String, StorageNode> toBeChangedStorageUnitNodeMap = StorageUnitNodeMapCreator.create(toBeChangedPropsMap);
         Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap = StorageNodeAggregator.aggregateDataSourcePoolProperties(toBeChangedPropsMap);
         Map<StorageNode, DataSource> newDataSources = createNewDataSources(resourceMetaData, toBeChangedStorageUnitNodeMap, dataSourcePoolPropsMap);
-        Map<StorageNode, DataSource> staleDataSources = getStaleDataSources(resourceMetaData, mergedPropsMap);
-        return new SwitchingResource(newDataSources, staleDataSources, getStaleStorageUnitNames(resourceMetaData, toBeChangedStorageUnitNodeMap), mergedPropsMap);
+        Map<StorageNode, DataSource> staleDataSources = getStaleDataSources(resourceMetaData, toBeChangedPropsMap);
+        return new SwitchingResource(newDataSources, staleDataSources, getStaleStorageUnitNames(resourceMetaData, toBeChangedStorageUnitNodeMap), toBeChangedPropsMap);
     }
     
     /**
@@ -81,8 +79,6 @@ public final class ResourceSwitchManager {
      * @return created switching resource
      */
     public SwitchingResource createByAlterDataSourcePoolProperties(final ResourceMetaData resourceMetaData, final Map<String, DataSourcePoolProperties> toBeChangedPropsMap) {
-        Map<String, DataSourcePoolProperties> mergedPropsMap = new LinkedHashMap<>(toBeChangedPropsMap.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         Map<String, StorageNode> toBeChangedStorageUnitNodeMap = StorageUnitNodeMapCreator.create(toBeChangedPropsMap);
         Map<StorageNode, DataSource> staleStorageDataSources = getStaleDataSources(resourceMetaData, toBeChangedPropsMap);
         staleStorageDataSources.putAll(getToBeDeletedDataSources(resourceMetaData.getDataSources(), toBeChangedStorageUnitNodeMap.values()));
@@ -90,7 +86,7 @@ public final class ResourceSwitchManager {
         staleStorageUnitNames.addAll(getToBeDeletedStorageUnitNames(resourceMetaData.getStorageUnits(), toBeChangedStorageUnitNodeMap.keySet()));
         Map<StorageNode, DataSourcePoolProperties> dataSourcePoolPropsMap = StorageNodeAggregator.aggregateDataSourcePoolProperties(toBeChangedPropsMap);
         return new SwitchingResource(
-                createNewDataSources(resourceMetaData, toBeChangedStorageUnitNodeMap, dataSourcePoolPropsMap), staleStorageDataSources, staleStorageUnitNames, mergedPropsMap);
+                createNewDataSources(resourceMetaData, toBeChangedStorageUnitNodeMap, dataSourcePoolPropsMap), staleStorageDataSources, staleStorageUnitNames, toBeChangedPropsMap);
     }
     
     private Map<StorageNode, DataSource> createNewDataSources(final ResourceMetaData resourceMetaData, final Map<String, StorageNode> toBeChangedStorageUnitNodeMap,
