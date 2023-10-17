@@ -1072,7 +1072,7 @@
         <connection>scm:git:https://github.com/apache/shardingsphere.git</connection>
         <developerConnection>scm:git:https://github.com/apache/shardingsphere.git</developerConnection>
         <url>https://github.com/apache/shardingsphere.git</url>
-        <tag>5.4.0</tag>
+        <tag>5.4.1</tag>
     </scm>
     
     <distributionManagement>
