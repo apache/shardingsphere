@@ -27,11 +27,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.ExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.expression.impl.ColumnConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.from.TableConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.segment.where.WhereConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.converter.statement.SQLStatementConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.TableConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.where.WhereConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.SQLStatementConverter;
 
 import java.util.List;
 import java.util.stream.Collectors;
