@@ -56,7 +56,6 @@ import org.apache.shardingsphere.sqlfederation.optimizer.statistic.SQLFederation
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
