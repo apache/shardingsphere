@@ -24,7 +24,7 @@ JDBC: Fix JDBC memory leak with MySQL in the 5.4.0 version
 
 ### Change Log
 
-1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/25)
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/27)
 
 
 ## Release 5.4.0
@@ -97,7 +97,7 @@ Proxy: Fix MySQL packet out of order when client sending pipelining requests
 
 ### Change Log
 
-1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/27)
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/25)
 
 
 ## 5.3.2
