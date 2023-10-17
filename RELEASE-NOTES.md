@@ -1,3 +1,32 @@
+## Release 5.4.1
+
+### New Feature
+Proxy: Supports dbcp and c3p0 connection pools
+Metadata: Standalone mode adapts to metadata new structure
+Governance: Governance supports register instance level data source
+
+### Enhancement
+Mode: Improve Standalone mode JDBC type impl reset data on initialization
+Scaling: Isolate ShardingSphereDataSource Standalone repository in pipeline
+Scaling: Disable system-schema-metadata-enabled in pipeline
+JDBC: Move jdbc core META-INF/services/java.sql.Driver from test to main
+Scaling: Add algorithm columns in SHOW MIGRATION CHECK ALGORITHMS DistSQL result
+Scaling: Add type_aliaes column in SHOW MIGRATION CHECK ALGORITHMS DistSQL result
+Encrypt: Add duplicate name check for derived columns and logical columns
+Encrypt: Deny DDL for cipher columns in Proxy
+Encrypt: Add the default type for derived columns to varchar(4000)
+
+### Bug Fix
+Scaling: Fix get inventory position not correctly on breakpoint resuming when table names are similar
+Scaling: Fix CDC importer not start on breakpoint resuming when first inventory task is finished
+Single Table: Fix not switched active version when CREATE/DROP table modifies the Single rule configuration
+JDBC: Fix JDBC memory leak with MySQL in the 5.4.0 version
+
+### Change Log
+
+1. [MILESTONE](https://github.com/apache/shardingsphere/milestone/27)
+
+
 ## Release 5.4.0
 
 ### API Changes
