@@ -45,7 +45,7 @@ jobs:
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Run SpotBugs
-        run: ./mvnw clean install spotbugs:check -Pcheck -T1C
+        run: ./mvnw clean install spotbugs:check -T1C
 
   check-and-report-sonarcloud:
     if: github.repository == 'apache/shardingsphere'
