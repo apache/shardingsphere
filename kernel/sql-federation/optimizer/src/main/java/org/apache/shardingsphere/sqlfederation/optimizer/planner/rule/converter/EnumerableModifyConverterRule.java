@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.planner.rule.converter;
+package org.apache.shardingsphere.sqlfederation.optimizer.planner.rule.converter;
 
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.Convention;
@@ -25,7 +25,7 @@ import org.apache.calcite.rel.convert.ConverterRule;
 import org.apache.calcite.rel.core.TableModify;
 import org.apache.calcite.rel.logical.LogicalTableModify;
 import org.apache.calcite.schema.ModifiableTable;
-import org.apache.shardingsphere.sqlfederation.compiler.operator.physical.EnumerableModify;
+import org.apache.shardingsphere.sqlfederation.optimizer.operator.physical.EnumerableModify;
 
 /**
  * Enumerable modify converter rule.
