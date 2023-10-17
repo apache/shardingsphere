@@ -19,11 +19,22 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.me
 
 import org.apache.calcite.sql.SqlMerge;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlUpdate;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.TableConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.where.WhereConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.SQLStatementConverter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Merge statement converter.
@@ -35,6 +46,30 @@ public final class MergeStatementConverter implements SQLStatementConverter<Merg
         SqlNode targetTable = new TableConverter().convert(mergeStatement.getTarget()).orElseThrow(IllegalStateException::new);
         SqlNode condition = new ExpressionConverter().convert(mergeStatement.getExpression().getExpr()).get();
         SqlNode sourceTable = new TableConverter().convert(mergeStatement.getSource()).orElseThrow(IllegalStateException::new);
-        return new SqlMerge(SqlParserPos.ZERO, targetTable, condition, sourceTable, null, null, null, null);
+        SqlUpdate sqlUpdate = null;
+        if (null != mergeStatement.getUpdate()) {
+            sqlUpdate = convertUpdate(mergeStatement.getUpdate());
+        }
+        return new SqlMerge(SqlParserPos.ZERO, targetTable, condition, sourceTable, sqlUpdate, null, null, null);
+    }
+    
+    private SqlUpdate convertUpdate(final UpdateStatement updateStatement) {
+        SqlNode table = new TableConverter().convert(updateStatement.getTable()).orElse(SqlNodeList.EMPTY);
+        SqlNode condition = updateStatement.getWhere().flatMap(optional -> new WhereConverter().convert(optional)).orElse(null);
+        SqlNodeList columns = new SqlNodeList(SqlParserPos.ZERO);
+        SqlNodeList expressions = new SqlNodeList(SqlParserPos.ZERO);
+        for (AssignmentSegment each : updateStatement.getAssignmentSegment().orElseThrow(IllegalStateException::new).getAssignments()) {
+            columns.addAll(convertColumn(each.getColumns()));
+            expressions.add(convertExpression(each.getValue()));
+        }
+        return new SqlUpdate(SqlParserPos.ZERO, table, columns, expressions, condition, null, null);
+    }
+    
+    private List<SqlNode> convertColumn(final List<ColumnSegment> columnSegments) {
+        return columnSegments.stream().map(each -> new ColumnConverter().convert(each).orElseThrow(IllegalStateException::new)).collect(Collectors.toList());
+    }
+    
+    private SqlNode convertExpression(final ExpressionSegment expressionSegment) {
+        return new ExpressionConverter().convert(expressionSegment).orElseThrow(IllegalStateException::new);
     }
 }
