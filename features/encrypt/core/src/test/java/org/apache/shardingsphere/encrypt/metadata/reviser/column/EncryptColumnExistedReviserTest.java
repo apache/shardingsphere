@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class EncryptColumnExistedReviserTest {
+class EncryptColumnExistedReviserTest {
     
     @Test
     public void assertIsExistedWithCipherColumn() {
