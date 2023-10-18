@@ -25,18 +25,6 @@ services:
       - "3307:3307"
 ```
 
-- 若你发现构建过程存在缺失的 GraalVM Reachability Metadata,
-  应当在 https://github.com/oracle/graalvm-reachability-metadata 打开新的 issue ，
-  并提交包含 ShardingSphere 自身或依赖的第三方库缺失的 GraalVM Reachability Metadata 的 PR。
-
-- ShardingSphere 的 master 分支尚未准备好处理 Native Image 中的单元测试 ， 你总是需要在构建 GraalVM Native Image 的过程中，
-  加上特定于 `GraalVM Native Build Tools` 的 `-DskipNativeTests` 或 `-DskipTests` 参数跳过 Native Image 中的单元测试。
-
-- 如下的算法类由于涉及到 https://github.com/oracle/graal/issues/5522 ， 暂未可在 GraalVM Native Image 下使用。
-    - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`
-    - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.ComplexInlineShardingAlgorithm`
-    - `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
-
 - 当前阶段，GraalVM Native Image 形态的 ShardingSphere Proxy 不支持使用 `InlineExpressionParser` SPI 的默认实现的 `行表达式`， 
   这首先导致 `数据分片` 功能的`actualDataNodes` 属性只能使用其他 `InlineExpressionParser` SPI 的实现来配置， 例如使用
  `InlineExpressionParser` SPI 实现为 `LITERAL` 的 `行表达式`, 即 `<LITERAL>ds_0.t_order_0, ds_0.t_order_1`
@@ -54,18 +42,12 @@ services:
    或 `GraalVM Community Edition` 的下游发行版。若使用 `SDKMAN!`，
 
 ```shell
-sdk install java 17.0.8-graalce
+sdk install java 17.0.9-graalce
 ```
 
 2. 根据 https://www.graalvm.org/jdk17/reference-manual/native-image/#prerequisites 的要求安装本地工具链。
 
 3. 如果需要构建 Docker Image， 确保 `docker-ce` 已安装。
-
-4. 首先需要在项目的根目录下，执行如下命令以为所有子模块采集 Standard 形态的 GraalVM 可达性元数据。
-
-```shell
-./mvnw -PgenerateStandardMetadata -DskipNativeTests -B -T1C clean test
-```
 
 ## 操作步骤
 
@@ -148,7 +130,7 @@ services:
   另请注意，某些第三方依赖将需要在 `Dockerfile` 安装更多系统库，例如 `libdl`。
   因此请确保根据你的使用情况调整 `distribution/proxy-native` 下的 `pom.xml` 和 `Dockerfile` 的内容。
 
-# 可观察性
+## 可观察性
 
 - 针对 GraalVM Native Image 形态的 ShardingSphere Proxy，其提供的可观察性的能力与
   https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/ 并不一致。
@@ -160,7 +142,7 @@ services:
   https://github.com/oracle/graal/issues/5648 。
 
 - 对于使用 `ShardingSphere Agent` 等 APM Java Agent 的情形， GraalVM 的 `native-image` 组件尚未完全支持在构建 Native
-  Image 时使用 javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065。
+  Image 时使用 javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065 。
 
 - 以下部分采用 `Apache SkyWalking Java Agent` 作为示例，可用于跟踪 GraalVM 社区的对应 issue。
 
