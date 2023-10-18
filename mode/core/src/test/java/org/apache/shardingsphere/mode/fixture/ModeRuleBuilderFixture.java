@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.fixture;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
@@ -28,7 +29,7 @@ import java.util.Map;
 public final class ModeRuleBuilderFixture implements DatabaseRuleBuilder<ModeRuleConfigurationFixture> {
     
     @Override
-    public ModeRuleFixture build(final ModeRuleConfigurationFixture config, final String databaseName, final Map<String, DataSource> dataSources,
+    public ModeRuleFixture build(final ModeRuleConfigurationFixture config, final String databaseName, final DatabaseType databaseType, final Map<String, DataSource> dataSources,
                                  final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
         return new ModeRuleFixture();
     }

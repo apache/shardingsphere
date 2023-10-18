@@ -172,7 +172,7 @@ public final class ConfigurationContextManager {
             ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
             Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
             rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
-            rules.addAll(DatabaseRulesBuilder.build(databaseName,
+            rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(),
                     database.getResourceMetaData().getStorageUnits().entrySet().stream()
                             .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                     database.getRuleMetaData().getRules(), ruleConfig, instanceContext));
@@ -194,7 +194,7 @@ public final class ConfigurationContextManager {
             Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
             rules.removeIf(each -> each.getConfiguration().getClass().isAssignableFrom(ruleConfig.getClass()));
             if (isNotEmptyConfig(ruleConfig)) {
-                rules.addAll(DatabaseRulesBuilder.build(databaseName,
+                rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getProtocolType(),
                         database.getResourceMetaData().getStorageUnits().entrySet().stream()
                                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                         database.getRuleMetaData().getRules(), ruleConfig, instanceContext));

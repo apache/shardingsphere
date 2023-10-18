@@ -68,7 +68,7 @@ public final class ShowUnloadedSingleTableExecutor implements RQLExecutor<ShowUn
                         .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                 database.getRuleMetaData().getRules());
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(database.getRuleMetaData().getRules());
-        return SingleTableDataNodeLoader.load(database.getName(), database.getProtocolType(), aggregateDataSourceMap, excludedTables);
+        return SingleTableDataNodeLoader.load(database.getName(), aggregateDataSourceMap, excludedTables);
     }
     
     @Override
