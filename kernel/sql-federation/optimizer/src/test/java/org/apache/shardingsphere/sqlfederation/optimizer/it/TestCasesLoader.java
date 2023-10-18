@@ -23,6 +23,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Objects;
 
 /**
@@ -49,7 +50,15 @@ public final class TestCasesLoader {
      * @throws JAXBException exception for parse xml file.
      */
     public Collection<TestCase> generate() throws IOException, JAXBException {
-        URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("cases/federation-query-sql-cases.xml"));
+        Collection<TestCase> result = new LinkedList<>();
+        URL queryCaseUrl = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("cases/federation-query-sql-cases.xml"));
+        URL deleteCaseUrl = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("cases/federation-delete-sql-cases.xml"));
+        result.addAll(loadTestCase(queryCaseUrl));
+        result.addAll(loadTestCase(deleteCaseUrl));
+        return result;
+    }
+    
+    private Collection<TestCase> loadTestCase(final URL url) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(url.getFile())) {
             TestCases testCases = (TestCases) JAXBContext.newInstance(TestCases.class).createUnmarshaller().unmarshal(reader);
             return testCases.getTestCases();
