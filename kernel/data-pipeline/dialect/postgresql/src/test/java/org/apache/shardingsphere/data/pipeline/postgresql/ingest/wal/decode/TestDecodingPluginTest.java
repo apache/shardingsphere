@@ -28,6 +28,7 @@ import org.postgresql.jdbc.TimestampUtils;
 import org.postgresql.replication.LogSequenceNumber;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -47,7 +48,7 @@ class TestDecodingPluginTest {
     @Test
     void assertDecodeWriteRowEvent() {
         ByteBuffer data = ByteBuffer.wrap(("table public.test: INSERT: data[character varying]:' 1 2 3'' 😊中' t_json_empty[json]:'{}' t_json[json]:'{\"test\":\"中中{中中}' 中\"}'"
-                + " t_jsonb[jsonb]:'{\"test\":\"😊Emoji中\"}'").getBytes());
+                + " t_jsonb[jsonb]:'{\"test\":\"😊Emoji中\"}'").getBytes(StandardCharsets.UTF_8));
         WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
@@ -59,7 +60,8 @@ class TestDecodingPluginTest {
     
     @Test
     void assertDecodeUpdateRowEvent() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: UPDATE: unicode[character varying]:' 1 2 3'' 😊中 ' t_json_empty[json]:'{}' t_json[json]:'{\"test\":\"中中{中中}' 中\"}'".getBytes());
+        ByteBuffer data = ByteBuffer.wrap("table public.test: UPDATE: unicode[character varying]:' 1 2 3'' 😊中 ' t_json_empty[json]:'{}' t_json[json]:'{\"test\":\"中中{中中}' 中\"}'"
+                .getBytes(StandardCharsets.UTF_8));
         UpdateRowEvent actual = (UpdateRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
@@ -70,7 +72,7 @@ class TestDecodingPluginTest {
     
     @Test
     void assertDecodeDeleteRowEvent() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: DELETE: data[integer]:1".getBytes());
+        ByteBuffer data = ByteBuffer.wrap("table public.test: DELETE: data[integer]:1".getBytes(StandardCharsets.UTF_8));
         DeleteRowEvent actual = (DeleteRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
@@ -79,7 +81,7 @@ class TestDecodingPluginTest {
     
     @Test
     void assertDecodeWriteRowEventWithByteA() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[bytea]:'\\xff00ab'".getBytes());
+        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[bytea]:'\\xff00ab'".getBytes(StandardCharsets.UTF_8));
         WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
@@ -88,13 +90,13 @@ class TestDecodingPluginTest {
     
     @Test
     void assertDecodeUnknownTableType() {
-        ByteBuffer data = ByteBuffer.wrap("unknown".getBytes());
+        ByteBuffer data = ByteBuffer.wrap("unknown".getBytes(StandardCharsets.UTF_8));
         assertThat(new TestDecodingPlugin(null).decode(data, logSequenceNumber), instanceOf(PlaceholderEvent.class));
     }
     
     @Test
     void assertDecodeUnknownRowEventType() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: UNKNOWN: data[character varying]:'1 2 3'''".getBytes());
+        ByteBuffer data = ByteBuffer.wrap("table public.test: UNKNOWN: data[character varying]:'1 2 3'''".getBytes(StandardCharsets.UTF_8));
         assertThrows(IngestException.class, () -> new TestDecodingPlugin(null).decode(data, logSequenceNumber));
     }
     
@@ -102,13 +104,14 @@ class TestDecodingPluginTest {
     void assertDecodeTime() throws SQLException {
         TimestampUtils timestampUtils = mock(TimestampUtils.class);
         when(timestampUtils.toTime(null, "1 2 3'")).thenThrow(new SQLException(""));
-        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[time without time zone]:'1 2 3'''".getBytes());
+        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[time without time zone]:'1 2 3'''".getBytes(StandardCharsets.UTF_8));
         assertThrows(DecodingException.class, () -> new TestDecodingPlugin(new PostgreSQLTimestampUtils(timestampUtils)).decode(data, logSequenceNumber));
     }
     
     @Test
     void assertDecodeInsertWithNullValue() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: id[integer]:123 col0[integer]:null col1[character varying]:null col2[character varying]:'nonnull'".getBytes());
+        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: id[integer]:123 col0[integer]:null col1[character varying]:null col2[character varying]:'nonnull'"
+                .getBytes(StandardCharsets.UTF_8));
         AbstractWALEvent actual = new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual, instanceOf(WriteRowEvent.class));
         WriteRowEvent actualWriteRowEvent = (WriteRowEvent) actual;
@@ -120,7 +123,7 @@ class TestDecodingPluginTest {
     
     @Test
     void assertDecodeJsonValue() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: id[integer]:123 ".getBytes());
+        ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: id[integer]:123 ".getBytes(StandardCharsets.UTF_8));
         AbstractWALEvent actual = new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual, instanceOf(WriteRowEvent.class));
     }
