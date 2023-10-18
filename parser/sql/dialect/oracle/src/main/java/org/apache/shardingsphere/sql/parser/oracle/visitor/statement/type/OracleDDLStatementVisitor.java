@@ -1242,12 +1242,12 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
         return new OracleCreateProcedureStatement();
     }
-
+    
     @Override
     public ASTNode visitPlsqlBlock(final PlsqlBlockContext ctx) {
         return new OraclePLSQLBlockStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
         return new OracleAlterProcedureStatement();
