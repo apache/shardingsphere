@@ -135,7 +135,7 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
     
     @Override
     public Collection<Object[]> getModifiableCollection() {
-        return null;
+        throw new UnsupportedOperationException();
     }
     
     @Override

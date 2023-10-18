@@ -46,7 +46,7 @@ public final class EnumerableModify extends TableModify implements EnumerableRel
     
     @Override
     public Result implement(final EnumerableRelImplementor implementor, final Prefer prefer) {
-        // TODO generate delete statements based on the data set and related table information.
-        return null;
+        // TODO generate modification statements based on dataset and related table information.
+        throw new UnsupportedOperationException();
     }
 }

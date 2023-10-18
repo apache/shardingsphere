@@ -43,7 +43,7 @@ public final class EnumerableModifyConverterRule extends ConverterRule {
     public RelNode convert(final RelNode rel) {
         TableModify modify = (TableModify) rel;
         ModifiableTable modifiableTable = modify.getTable().unwrap(ModifiableTable.class);
-        if (modifiableTable == null) {
+        if (null == modifiableTable) {
             return null;
         } else {
             RelTraitSet traitSet = modify.getTraitSet().replace(EnumerableConvention.INSTANCE);
