@@ -18,6 +18,7 @@
 
 <sql-cases>
     <sql-case id="select_group_by_with_sum" value="SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />
+    <sql-case id="select_group_by_with_sum_where" value="SELECT p.prod_subcategory, SUM(s.amount_sold) AS sum_amount FROM sales s, products p WHERE s.prod_id = p.prod_id GROUP BY p.prod_subcategory" db-types="Oracle" />
     <sql-case id="select_group_by_with_count" value="SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />
     <sql-case id="select_group_by_with_max" value="SELECT MAX(order_id) AS max_order_id, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />
     <sql-case id="select_group_by_with_min" value="SELECT MIN(order_id) AS min_order_id, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />

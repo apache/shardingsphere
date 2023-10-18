@@ -32,7 +32,48 @@
             <column-item name="user_id" start-index="83" stop-index="89" />
         </order-by>
     </select>
-
+    
+    <select sql-case-id="select_group_by_with_sum_where">
+        <from>
+            <join-table join-type="COMMA">
+                <left>
+                    <simple-table name="sales" alias="s" start-index="65" stop-index="71" />
+                </left>
+                <right>
+                    <simple-table name="products" alias="p" start-index="74" stop-index="83" />
+                </right>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="58">
+            <column-projection name="prod_subcategory" start-index="7" stop-index="24">
+                <owner start-index="7" stop-index="7" name="p" />
+            </column-projection>
+            <aggregation-projection type="SUM" alias="sum_amount" expression="SUM(s.amount_sold)" start-index="27" stop-index="44" />
+        </projections>
+        <where start-index="85" stop-index="111">
+            <expr>
+                <binary-operation-expression start-index="91" stop-index="111">
+                    <left>
+                        <column name="prod_id" start-index="91" stop-index="99">
+                            <owner name="s" start-index="91" stop-index="91" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="prod_id" start-index="103" stop-index="111">
+                            <owner name="p" start-index="103" stop-index="103" />
+                        </column>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <group-by>
+            <column-item name="prod_subcategory" start-index="122" stop-index="139">
+                <owner name="p" start-index="122" stop-index="122" />
+            </column-item>
+        </group-by>
+    </select>
+    
     <select sql-case-id="select_group_by_with_count">
         <from>
             <simple-table name="t_order" start-index="53" stop-index="59" />
