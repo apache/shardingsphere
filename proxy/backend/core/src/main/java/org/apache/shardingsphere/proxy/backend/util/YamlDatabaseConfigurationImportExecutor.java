@@ -292,7 +292,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     private void addSingleRuleConfiguration(final SingleRuleConfiguration singleRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
         allRuleConfigs.add(singleRuleConfig);
         database.getRuleMetaData().getRules().add(
-                new SingleRule(singleRuleConfig, database.getName(),
+                new SingleRule(singleRuleConfig, database.getName(), database.getProtocolType(),
                         database.getResourceMetaData().getStorageUnits().entrySet().stream()
                                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)),
                         database.getRuleMetaData().getRules()));
