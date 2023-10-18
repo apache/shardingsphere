@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeModeStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodeModeStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -26,7 +26,6 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -39,7 +38,7 @@ import static org.mockito.Mockito.when;
 class ShowComputeNodeModeExecutorTest {
     
     @Test
-    void assertExecute() throws SQLException {
+    void assertExecute() {
         ShowComputeNodeModeExecutor executor = new ShowComputeNodeModeExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(createInstanceContext(), new ShowComputeNodeModeStatement());
         assertThat(actual.size(), is(1));

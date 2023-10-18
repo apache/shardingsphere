@@ -57,12 +57,17 @@
         <table name="employees" start-index="12" stop-index="20" />
     </alter-table>
     
-    <alter-table sql-case-id="alter_table_set_unused">
+    <alter-table sql-case-id="alter_table_set_unused1">
         <table name="admin_emp" start-index="12" stop-index="23">
             <owner start-index="12" stop-index="13" name="hr" />
         </table>
         <drop-column name="hiredate" start-index="37" stop-index="44" />
         <drop-column name="mgr" start-index="47" stop-index="49" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_set_unused2">
+        <table name="table_name" start-index="12" stop-index="21" />
+        <drop-column name="M_ROW$$" start-index="35" stop-index="41" />
     </alter-table>
     
     <alter-table sql-case-id="alter_table_modify_lob_cache">
@@ -1698,11 +1703,27 @@
         </add-column>
     </alter-table>
     
-    <alter-table sql-case-id="alter_table_modify_lob1">
+    <alter-table sql-case-id="alter_table_modify_lob_keep_duplicates">
         <table name="t1" start-index="12" stop-index="13" />
     </alter-table>
 
-    <alter-table sql-case-id="alter_table_modify_lob2">
+    <alter-table sql-case-id="alter_table_modify_lob_compress_low">
+        <table name="t1" start-index="12" stop-index="13" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_lob_compress_high">
+        <table name="t1" start-index="12" stop-index="13" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_lob_deduplicate">
+        <table name="t1" start-index="12" stop-index="13" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_lob_nocompress">
+        <table name="t1" start-index="12" stop-index="13" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_lob_encrypt_using">
         <table name="t1" start-index="12" stop-index="13" />
     </alter-table>
     
@@ -1717,5 +1738,50 @@
                 <column name="a" />
             </column-definition>
         </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_move_nocompress_parallel">
+        <table name="table_name" start-index="12" stop-index="21" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_constraint_rely1">
+        <table name="time" start-index="12" stop-index="15" />
+        <modify-constraint start-index="35" stop-index="41" constraint-name="pk_time" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_constraint_rely2">
+        <table name="times" start-index="12" stop-index="16" />
+        <modify-constraint start-index="18" stop-index="47" constraint-name="time_pk" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_constraint_rely3">
+        <table name="sales" start-index="12" stop-index="16" />
+        <modify-constraint start-index="18" stop-index="53" constraint-name="sales_time_fk" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_enable_row_movement">
+        <table name="table" start-index="12" stop-index="16" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_set_interval">
+        <table name="transactions" start-index="12" stop-index="23" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_primary_key_xmldata">
+        <table name="xwarehouses" start-index="12" stop-index="22" />
+        <add-constraint start-index="29" stop-index="62">
+            <primary-key-column name="WarehouseId" start-delimiter='"' end-delimiter='"' start-index="41" stop-index="61">
+                <owner start-index="41" stop-index="47" name="XMLDATA" />
+            </primary-key-column>
+        </add-constraint>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_add_unique">
+        <table name="xwarehouses" start-index="12" stop-index="22" />
+        <add-constraint start-index="29" stop-index="57">
+            <index-column name="WarehouseId" start-index="36" stop-index="56" start-delimiter='"' end-delimiter='"'>
+                <owner start-index="36" stop-index="42" name="XMLDATA" />
+            </index-column>
+        </add-constraint>
     </alter-table>
 </sql-parser-test-cases>

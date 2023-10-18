@@ -116,8 +116,12 @@ class ProcessListChangedSubscriberTest {
         subscriber.reportLocalProcesses(new ReportLocalProcessesEvent(instanceId, processId));
         ClusterPersistRepository repository = registryCenter.getRepository();
         verify(repository).persist("/execution_nodes/foo_id/" + instanceId,
-                "processes:" + System.lineSeparator() + "- completedUnitCount: 0\n  heldByConnection: false\n  id: foo_id\n  idle: false\n  startMillis: 0\n  totalUnitCount: 0"
-                        + System.lineSeparator());
+                "processes:" + System.lineSeparator() + "- completedUnitCount: 0" + System.lineSeparator()
+                        + "  heldByConnection: false" + System.lineSeparator()
+                        + "  id: foo_id" + System.lineSeparator()
+                        + "  idle: false" + System.lineSeparator()
+                        + "  startMillis: 0" + System.lineSeparator()
+                        + "  totalUnitCount: 0" + System.lineSeparator());
         verify(repository).delete("/nodes/compute_nodes/show_process_list_trigger/" + instanceId + ":foo_id");
     }
     

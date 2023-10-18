@@ -19,7 +19,7 @@ package org.apache.shardingsphere.single.distsql.statement.rdl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.alter.AlterRuleStatement;
 
 import java.util.Collection;
 

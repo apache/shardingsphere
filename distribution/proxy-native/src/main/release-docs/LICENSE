@@ -215,7 +215,7 @@ Apache 2.0 licenses
 The following components are provided under the Apache License. See project link for details.
 The text of each license is the standard Apache 2.0 license.
 
-    accessors-smart 2.4.7: https://www.minidev.net/, Apache 2.0
+    accessors-smart 2.4.9: https://www.minidev.net/, Apache 2.0
     aggdesigner-algorithm 6.0: Apache 2.0
     apiguardian-api 1.1.2: https://github.com/apiguardian-team/apiguardian, Apache 2.0
     audience-annotations 0.12.0: https://github.com/apache/yetus, Apache 2.0
@@ -224,31 +224,35 @@ The text of each license is the standard Apache 2.0 license.
     caffeine 2.9.3: https://github.com/ben-manes/caffeine, Apache 2.0
     calcite-core 1.35.0: https://calcite.apache.org, Apache 2.0
     calcite-linq4j 1.35.0: https://calcite.apache.org, Apache 2.0
-    commons-codec 1.15: https://github.com/apache/commons-codec, Apache 2.0
+    commons-codec 1.16.0: https://github.com/apache/commons-codec, Apache 2.0
     commons-collections4 4.4: https://github.com/apache/commons-collections, Apache 2.0
+    commons-dbcp2 2.6.0: https://commons.apache.org/proper/commons-dbcp, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
     commons-io 2.11.0: https://github.com/apache/commons-io, Apache 2.0
     commons-lang 2.4: https://github.com/apache/commons-lang, Apache 2.0
     commons-lang3 3.12.0: https://github.com/apache/commons-lang, Apache 2.0
+    commons-math3 3.6.1: https://commons.apache.org/proper/commons-math, Apache 2.0
+    commons-pool2 2.6.1: https://commons.apache.org/proper/commons-pool, Apache 2.0
     commons-logging 1.1.3: https://github.com/apache/commons-logging, Apache 2.0
-    curator-client 5.4.0:  https://github.com/apache/curator, Apache 2.0
-    curator-framework 5.4.0:  https://github.com/apache/curator, Apache 2.0
-    curator-recipes 5.4.0:  https://github.com/apache/curator, Apache 2.0
-    error_prone_annotations 2.11.0: https://github.com/google/error-prone, Apache 2.0
+    curator-client 5.5.0:  https://github.com/apache/curator, Apache 2.0
+    curator-framework 5.5.0:  https://github.com/apache/curator, Apache 2.0
+    curator-recipes 5.5.0:  https://github.com/apache/curator, Apache 2.0
+    error_prone_annotations 2.22.0: https://github.com/google/error-prone, Apache 2.0
     failsafe 2.4.4: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0
     freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
     groovy 4.0.10: https://groovy.apache.org/, Apache 2.0
-    grpc-api 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-context 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-core 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-grpclb 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-netty 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf-lite 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-stub 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
-    gson 2.9.1: https://github.com/google/gson, Apache 2.0
-    guava 30.0-jre: https://github.com/google/guava, Apache 2.0
+    grpc-api 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-context 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-core 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-grpclb 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-netty 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf-lite 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-stub 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-util 1.58.0: https://github.com/grpc/grpc-java, Apache 2.0
+    gson 2.10.1: https://github.com/google/gson, Apache 2.0
+    guava 32.1.2-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 4.0.3: https://github.com/brettwooldridge/HikariCP, Apache 2.0
     httpclient5 5.1.3: https://hc.apache.org/httpcomponents-client-5.1.x, Apache 2.0
     httpcore5-h2 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
@@ -259,24 +263,29 @@ The text of each license is the standard Apache 2.0 license.
     jackson-dataformat-yaml 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-datatype-jsr310 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
     jcl-over-slf4j 1.7.36: https://github.com/qos-ch/slf4j, Apache 2.0
-    jetcd-api 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
-    jetcd-common 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
-    jetcd-core 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
-    jetcd-grpc 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
-    json-path 2.7.0: https://github.com/jayway/JsonPath, Apache 2.0
-    json-smart 2.4.7: https://www.minidev.net/, Apache 2.0
+    jetcd-api 0.7.6: https://github.com/etcd-io/jetcd, Apache 2.0
+    jetcd-common 0.7.6: https://github.com/etcd-io/jetcd, Apache 2.0
+    jetcd-core 0.7.6: https://github.com/etcd-io/jetcd, Apache 2.0
+    jetcd-grpc 0.7.6: https://github.com/etcd-io/jetcd, Apache 2.0
+    json-path 2.8.0: https://github.com/jayway/JsonPath, Apache 2.0
+    json-smart 2.4.10: https://www.minidev.net/, Apache 2.0
     json-simple 1.1.1: https://code.google.com/archive/p/json-simple/, Apache 2.0
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
     memory 0.9.0, Apache 2.0
-    netty-buffer 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-codec 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http2 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-codec-socks 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-common 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-handler 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-handler-proxy 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-resolver 4.1.90.Final: https://github.com/netty, Apache 2.0
+    netty-buffer 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-codec 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http2 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-codec-socks 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-common 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-handler 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-handler-proxy 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-resolver 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-transport 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-transport-classes-epoll 4.1.99.Final: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.99.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.99.Final-linux-x86_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-unix-common 4.1.99.Final: https://github.com/netty, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final-linux-aarch_64: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final-linux-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
@@ -284,21 +293,16 @@ The text of each license is the standard Apache 2.0 license.
     netty-tcnative-boringssl-static 2.0.59.Final-osx-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-boringssl-static 2.0.59.Final-windows-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-tcnative-classes 2.0.59.Final: https://github.com/netty/netty-tcnative, Apache 2.0
-    netty-transport 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-transport-classes-epoll 4.1.90.Final: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.90.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.90.Final-linux-x86_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-unix-common 4.1.90.Final: https://github.com/netty, Apache 2.0
-    perfmark-api 0.25.0: https://github.com/perfmark/perfmark, Apache 2.0
-    proto-google-common-protos 2.9.0: https://github.com/googleapis/common-protos-java, Apache 2.0
-    proj4j 1.1.5: https://github.com/locationtech/proj4j, Apache 2.0
+    perfmark-api 0.26.0: https://github.com/perfmark/perfmark, Apache 2.0
+    proto-google-common-protos 2.22.0: https://github.com/googleapis/common-protos-java, Apache 2.0
+    proj4j 1.2.2: https://github.com/locationtech/proj4j, Apache 2.0
     quartz 2.3.2: https://github.com/quartz-scheduler/quartz, Apache 2.0
     sketches-core 0.9.0, Apache 2.0
     snakeyaml 1.33: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
     transmittable-thread-local 2.14.2: https://github.com/alibaba/transmittable-thread-local, Apache 2.0
     uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
-    zookeeper 3.8.1: https://github.com/apache/zookeeper, Apache 2.0
-    zookeeper-jute 3.8.1: https://github.com/apache/zookeeper, Apache 2.0
+    zookeeper 3.9.0: https://github.com/apache/zookeeper, Apache 2.0
+    zookeeper-jute 3.9.0: https://github.com/apache/zookeeper, Apache 2.0
 
 ========================================================================
 Apache 2.0 licenses
@@ -321,11 +325,11 @@ The following components are provided under a BSD license. See project link for 
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
     antlr4-runtime 4.10.1: https://github.com/antlr/antlr4, BSD-3-Clause
-    asm 9.1: https://github.com/llbit/ow2-asm, BSD-3-Clause
-    commons-compiler 3.1.8: https://github.com/janino-compiler/janino, BSD-3-Clause
+    asm 9.3: https://github.com/llbit/ow2-asm, BSD-3-Clause
+    commons-compiler 3.1.9: https://github.com/janino-compiler/janino, BSD-3-Clause
     janino 3.1.9: https://github.com/janino-compiler/janino, BSD-3-Clause
     opengauss-jdbc 3.1.0-og: https://gitee.com/opengauss/openGauss-connector-jdbc, BSD-2-Clause
-    postgresql 42.4.1: https://github.com/pgjdbc/pgjdbc, BSD-2-Clause
+    postgresql 42.4.3: https://github.com/pgjdbc/pgjdbc, BSD-2-Clause
     protobuf-java 3.21.12: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
     protobuf-java-util 3.21.12: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
     jts-io-common 1.19.0: https://github.com/locationtech/jts, EDL 1.0
@@ -351,10 +355,10 @@ EPL licenses
 The following components are provided under the EPL License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    logback-classic 1.2.11: https://github.com/qos-ch/logback, EPL 1.0
-    logback-core 1.2.11: https://github.com/qos-ch/logback, EPL 1.0
+    logback-classic 1.2.12: https://github.com/qos-ch/logback, EPL 1.0
+    logback-core 1.2.12: https://github.com/qos-ch/logback, EPL 1.0
     mchange-commons-java 0.2.15: https://github.com/swaldman/mchange-commons-java, EPL 1.0
-    h2 2.1.214: https://github.com/h2database/h2database, EPL 1.0
+    h2 2.2.224: https://github.com/h2database/h2database, EPL 1.0
 
 ========================================================================
 MIT licenses
@@ -367,6 +371,6 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     bcprov-jdk15on 1.70: https://www.bouncycastle.org, MIT
     bctls-jdk15on 1.70: https://www.bouncycastle.org, MIT
     bcutil-jdk15on 1.70: https://www.bouncycastle.org, MIT
-    checker-qual 3.5.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
+    checker-qual 3.39.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
     jul-to-slf4j 1.7.36: https://www.slf4j.org, MIT
     slf4j-api 1.7.36: https://www.slf4j.org, MIT

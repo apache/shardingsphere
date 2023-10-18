@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.storage.unit;
 
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
@@ -56,9 +56,9 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (Entry<String, StorageUnit> entry : getToBeShownStorageUnits(database, sqlStatement).entrySet()) {
             ConnectionProperties connectionProps = entry.getValue().getConnectionProperties();
-            DataSourcePoolProperties dataSourcePoolProperties = getDataSourcePoolProperties(entry.getValue());
-            Map<String, Object> poolProps = dataSourcePoolProperties.getPoolPropertySynonyms().getStandardProperties();
-            Map<String, Object> customProps = getCustomProperties(dataSourcePoolProperties.getCustomProperties().getProperties(), connectionProps.getQueryProperties());
+            DataSourcePoolProperties dataSourcePoolProps = getDataSourcePoolProperties(entry.getValue());
+            Map<String, Object> poolProps = dataSourcePoolProps.getPoolPropertySynonyms().getStandardProperties();
+            Map<String, Object> customProps = getCustomProperties(dataSourcePoolProps.getCustomProperties().getProperties(), connectionProps.getQueryProperties());
             result.add(new LocalDataQueryResultRow(entry.getKey(),
                     entry.getValue().getStorageType().getType(),
                     connectionProps.getHostname(),
@@ -109,6 +109,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     
     private Map<String, Object> getCustomProperties(final Map<String, Object> customProps, final Properties queryProps) {
         Map<String, Object> result = new LinkedHashMap<>(customProps);
+        result.remove("dataSourceProperties");
         if (!queryProps.isEmpty()) {
             result.put("queryProperties", queryProps);
         }

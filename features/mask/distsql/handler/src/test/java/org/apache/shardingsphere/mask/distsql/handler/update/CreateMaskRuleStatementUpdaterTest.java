@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.distsql.parser.segment.MaskColumnSegment;
-import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
-import org.apache.shardingsphere.mask.distsql.parser.statement.CreateMaskRuleStatement;
+import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
+import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
+import org.apache.shardingsphere.mask.distsql.statement.CreateMaskRuleStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
