@@ -48,6 +48,10 @@ plsqlProcedureSource
     ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body)
     ;
 
+plsqlBlock
+    : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_)* DECLARE declareSection body
+    ;
+
 createFunction
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
     ;
