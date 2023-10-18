@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment;
 
+/**
+ * Index partition type enum.
+ */
 public enum IndexPartitionTypeEnum {
     GLOBAL, LOCAL
 }

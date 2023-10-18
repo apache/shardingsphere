@@ -24,10 +24,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.partition.PartitionNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 
+/**
+ * Move partition segment.
+ */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class MovePartitionSegment implements SQLSegment {
+public final class MovePartitionSegment implements SQLSegment {
     
     private final int startIndex;
     

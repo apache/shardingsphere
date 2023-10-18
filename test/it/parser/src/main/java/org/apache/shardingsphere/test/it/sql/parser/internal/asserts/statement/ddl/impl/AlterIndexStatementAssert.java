@@ -91,9 +91,7 @@ public final class AlterIndexStatementAssert {
             } else {
                 assertTrue(ogActual.getMovePartition().isPresent(), assertContext.getText("Actual move partition should exist."));
                 MovePartitionSegment actualMovePartition = ogActual.getMovePartition().get();
-                // assert partition
                 assertPartition(assertContext, actualMovePartition.getPartitionName(), expected.getMovePartition().getPartition());
-                // assert tablespace
                 assertTablespace(assertContext, actualMovePartition.getTablespace(), expected.getMovePartition().getTablespace());
                 SQLSegmentAssert.assertIs(assertContext, actualMovePartition, expected.getMovePartition());
             }

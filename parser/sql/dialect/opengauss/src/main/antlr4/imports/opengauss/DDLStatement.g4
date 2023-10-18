@@ -360,8 +360,13 @@ partitionCmd
     ;
 
 alterIndexDefinitionClause
-    : renameIndexSpecification | alterIndexDependsOnExtension | alterIndexSetTableSpace | alterTableCmds | indexPartitionCmd
-    | alterIndexMovePartition | alterIndexRenamePartition
+    : renameIndexSpecification
+    | alterIndexDependsOnExtension
+    | alterIndexSetTableSpace
+    | alterTableCmds
+    | indexPartitionCmd
+    | alterIndexMovePartition
+    | alterIndexRenamePartition
     ;
 
 indexPartitionCmd

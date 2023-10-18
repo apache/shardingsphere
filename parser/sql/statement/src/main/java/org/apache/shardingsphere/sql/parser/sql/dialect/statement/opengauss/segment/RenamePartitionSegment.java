@@ -23,10 +23,13 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.partition.PartitionNameSegment;
 
+/**
+ * Rename partition segment.
+ */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class RenamePartitionSegment implements SQLSegment {
+public final class RenamePartitionSegment implements SQLSegment {
     
     private final int startIndex;
     

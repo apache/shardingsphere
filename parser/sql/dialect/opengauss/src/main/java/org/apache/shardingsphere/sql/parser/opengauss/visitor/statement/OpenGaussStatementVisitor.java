@@ -17,6 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -30,6 +36,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AexprConstContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AliasClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterIndexMovePartitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterIndexRenamePartitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AnyNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AscDescContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AssignmentContext;
@@ -43,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Col
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnrefContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ConstraintNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateIndexPartitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DataTypeNameContext;
@@ -62,6 +71,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Hav
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.InExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IndexNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IndexPartitionElemContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IndexPartitionElemListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IndirectionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.InsertColumnItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.InsertColumnListContext;
@@ -101,6 +112,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Sor
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.TableReferenceContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.TableSpaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.TargetElContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.TargetListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.UnreservedWordContext;
@@ -197,13 +209,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussUpdateStatement;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionTypeEnum;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.segment.IndexPartitionsSegment;
@@ -1423,9 +1428,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     
     @SuppressWarnings("unchecked")
     @Override
-    public ASTNode visitCreateIndexPartitionClause(final OpenGaussStatementParser.CreateIndexPartitionClauseContext ctx) {
+    public ASTNode visitCreateIndexPartitionClause(final CreateIndexPartitionClauseContext ctx) {
         IndexPartitionTypeEnum indexPartitionType = null;
-        if (ctx.LOCAL() != null || ctx.GLOBAL() != null) {
+        if (null != ctx.LOCAL() || null != ctx.GLOBAL()) {
             indexPartitionType = ctx.LOCAL() != null ? IndexPartitionTypeEnum.LOCAL : IndexPartitionTypeEnum.GLOBAL;
         }
         IndexPartitionsSegment result = new IndexPartitionsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), indexPartitionType);
@@ -1436,7 +1441,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     }
     
     @Override
-    public ASTNode visitIndexPartitionElemList(final OpenGaussStatementParser.IndexPartitionElemListContext ctx) {
+    public ASTNode visitIndexPartitionElemList(final IndexPartitionElemListContext ctx) {
         CollectionValue<IndexPartitionSegment> result = new CollectionValue<>();
         for (OpenGaussStatementParser.IndexPartitionElemContext each : ctx.indexPartitionElem()) {
             result.getValue().add((IndexPartitionSegment) visit(each));
@@ -1445,7 +1450,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     }
     
     @Override
-    public ASTNode visitIndexPartitionElem(final OpenGaussStatementParser.IndexPartitionElemContext ctx) {
+    public ASTNode visitIndexPartitionElem(final IndexPartitionElemContext ctx) {
         PartitionNameSegment partitionName =
                 new PartitionNameSegment(ctx.indexPartitionName().getStart().getStartIndex(), ctx.indexPartitionName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.indexPartitionName()));
         IndexPartitionSegment result = new IndexPartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), partitionName);
@@ -1456,12 +1461,12 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     }
     
     @Override
-    public ASTNode visitTableSpace(final OpenGaussStatementParser.TableSpaceContext ctx) {
+    public ASTNode visitTableSpace(final TableSpaceContext ctx) {
         return new TablespaceSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
     }
     
     @Override
-    public ASTNode visitAlterIndexMovePartition(final OpenGaussStatementParser.AlterIndexMovePartitionContext ctx) {
+    public ASTNode visitAlterIndexMovePartition(final AlterIndexMovePartitionContext ctx) {
         PartitionNameSegment partitionName = new PartitionNameSegment(ctx.indexPartitionName().getStart().getStartIndex(), ctx.indexPartitionName().getStop().getStopIndex(),
                 (IdentifierValue) visit(ctx.indexPartitionName().identifier()));
         TablespaceSegment tablespace = new TablespaceSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), (IdentifierValue) visit(ctx.name().identifier()));
@@ -1469,7 +1474,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     }
     
     @Override
-    public ASTNode visitAlterIndexRenamePartition(final OpenGaussStatementParser.AlterIndexRenamePartitionContext ctx) {
+    public ASTNode visitAlterIndexRenamePartition(final AlterIndexRenamePartitionContext ctx) {
         PartitionNameSegment oldPartition = new PartitionNameSegment(ctx.indexPartitionName(0).getStart().getStartIndex(),
                 ctx.indexPartitionName(0).getStop().getStopIndex(), (IdentifierValue) visit(ctx.indexPartitionName(0).identifier()));
         PartitionNameSegment newPartition = new PartitionNameSegment(ctx.indexPartitionName(1).getStart().getStartIndex(),

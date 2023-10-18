@@ -23,9 +23,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 
+/**
+ * Index partitions segment.
+ */
 @RequiredArgsConstructor
 @Getter
-public class IndexPartitionsSegment implements AlterDefinitionSegment {
+public final class IndexPartitionsSegment implements AlterDefinitionSegment {
     
     private final int startIndex;
     

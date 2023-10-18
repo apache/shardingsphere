@@ -25,10 +25,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.partition.PartitionNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 
+/**
+ * Index partition segment.
+ */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class IndexPartitionSegment implements SQLSegment {
+public final class IndexPartitionSegment implements SQLSegment {
     
     private final int startIndex;
     
@@ -37,7 +40,11 @@ public class IndexPartitionSegment implements SQLSegment {
     private final PartitionNameSegment partitionName;
     
     private TablespaceSegment tablespace;
-    
+
+    /**
+     * Get tablespace.
+     * @return tablespace
+     */
     public Optional<TablespaceSegment> getTablespace() {
         return Optional.ofNullable(tablespace);
     }
