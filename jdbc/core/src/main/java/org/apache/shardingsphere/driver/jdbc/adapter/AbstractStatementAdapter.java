@@ -57,7 +57,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     private boolean closed;
     
-    protected final boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final ExecutionContext executionContext) {
+    protected final boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final Collection<ExecutionContext> executionContexts) {
         if (connection.getAutoCommit()) {
             return false;
         }
@@ -66,11 +66,19 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         if (!TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) || isInTransaction) {
             return false;
         }
-        return isModifiedSQL(executionContext) && executionContext.getExecutionUnits().size() > 1;
+        if (1 == executionContexts.size()) {
+            SQLStatement sqlStatement = executionContexts.iterator().next().getSqlStatementContext().getSqlStatement();
+            return isWriteDMLStatement(sqlStatement) && executionContexts.iterator().next().getExecutionUnits().size() > 1;
+        }
+        for (ExecutionContext each : executionContexts) {
+            if (isWriteDMLStatement(each.getSqlStatementContext().getSqlStatement())) {
+                return true;
+            }
+        }
+        return false;
     }
     
-    private boolean isModifiedSQL(final ExecutionContext executionContext) {
-        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
+    private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
         return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement);
     }
     
