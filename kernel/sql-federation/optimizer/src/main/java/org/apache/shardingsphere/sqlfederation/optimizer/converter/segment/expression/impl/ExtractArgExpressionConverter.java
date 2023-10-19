@@ -17,21 +17,28 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExtractArgExpression;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 
 import java.util.Optional;
 
 /**
  * Extract arg expression converter.
  */
-public final class ExtractArgExpressionConverter implements SQLSegmentConverter<ExtractArgExpression, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ExtractArgExpressionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final ExtractArgExpression expression) {
+    /**
+     * Convert extract arg expression to sql node.
+     * 
+     * @param expression extract arg expression
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final ExtractArgExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }

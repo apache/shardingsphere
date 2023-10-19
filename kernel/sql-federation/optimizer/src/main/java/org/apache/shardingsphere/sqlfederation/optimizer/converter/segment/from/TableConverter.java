@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
@@ -24,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Joi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.impl.DeleteMultiTableConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.impl.JoinTableConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.impl.SimpleTableConverter;
@@ -35,24 +36,31 @@ import java.util.Optional;
 /**
  * Table converter.
  */
-public final class TableConverter implements SQLSegmentConverter<TableSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TableConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final TableSegment segment) {
+    /**
+     * Convert table segment to sql node.
+     * 
+     * @param segment table segment
+     * @return sql node
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
+     */
+    public static Optional<SqlNode> convert(final TableSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
         if (segment instanceof SimpleTableSegment) {
-            return new SimpleTableConverter().convert((SimpleTableSegment) segment);
+            return SimpleTableConverter.convert((SimpleTableSegment) segment);
         }
         if (segment instanceof JoinTableSegment) {
-            return new JoinTableConverter().convert((JoinTableSegment) segment);
+            return JoinTableConverter.convert((JoinTableSegment) segment);
         }
         if (segment instanceof SubqueryTableSegment) {
-            return new SubqueryTableConverter().convert((SubqueryTableSegment) segment);
+            return SubqueryTableConverter.convert((SubqueryTableSegment) segment);
         }
         if (segment instanceof DeleteMultiTableSegment) {
-            return new DeleteMultiTableConverter().convert((DeleteMultiTableSegment) segment);
+            return DeleteMultiTableConverter.convert((DeleteMultiTableSegment) segment);
         }
         throw new UnsupportedSQLOperationException("Unsupported segment type: " + segment.getClass());
     }

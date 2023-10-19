@@ -17,21 +17,28 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 
 import java.util.Optional;
 
 /**
  * Variable segment converter.
  */
-public final class VariableSegmentConverter implements SQLSegmentConverter<VariableSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class VariableSegmentConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final VariableSegment segment) {
+    /**
+     * Convert variable segment to sql node.
+     * 
+     * @param segment variable segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final VariableSegment segment) {
         return Optional.of(new SqlIdentifier(segment.getText(), SqlParserPos.ZERO));
     }
 }

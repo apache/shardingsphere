@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.avatica.util.TimeUnit;
 import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlLiteral;
@@ -24,7 +26,6 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlTrimFunction.Flag;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -34,7 +35,8 @@ import java.util.Optional;
 /**
  * Literal expression converter.
  */
-public final class LiteralExpressionConverter implements SQLSegmentConverter<LiteralExpressionSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class LiteralExpressionConverter {
     
     private static final Collection<String> TRIM_FUNCTION_FLAGS = new HashSet<>(3, 1F);
     
@@ -52,8 +54,13 @@ public final class LiteralExpressionConverter implements SQLSegmentConverter<Lit
         TIME_UNIT_NAMES.add("SECOND");
     }
     
-    @Override
-    public Optional<SqlNode> convert(final LiteralExpressionSegment segment) {
+    /**
+     * Convert literal expression segment to sql node.
+     * 
+     * @param segment literal expression segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final LiteralExpressionSegment segment) {
         if (null == segment.getLiterals()) {
             return Optional.of(SqlLiteral.createNull(SqlParserPos.ZERO));
         }

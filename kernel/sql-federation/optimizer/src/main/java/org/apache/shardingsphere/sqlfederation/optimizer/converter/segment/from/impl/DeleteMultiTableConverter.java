@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.TableConverter;
 
 import java.util.Collection;
@@ -34,15 +35,21 @@ import java.util.Optional;
 /**
  * Delete multi table converter.
  */
-public final class DeleteMultiTableConverter implements SQLSegmentConverter<DeleteMultiTableSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DeleteMultiTableConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final DeleteMultiTableSegment segment) {
+    /**
+     * Convert delete multi table segment to sql node.
+     * 
+     * @param segment delete multi table segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final DeleteMultiTableSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
-        new TableConverter().convert(segment.getRelationTable()).ifPresent(sqlNodes::add);
+        TableConverter.convert(segment.getRelationTable()).ifPresent(sqlNodes::add);
         List<String> tableNames = new LinkedList<>();
         for (SimpleTableSegment each : segment.getActualDeleteTables()) {
             tableNames.add(each.getTableName().getIdentifier().getValue());

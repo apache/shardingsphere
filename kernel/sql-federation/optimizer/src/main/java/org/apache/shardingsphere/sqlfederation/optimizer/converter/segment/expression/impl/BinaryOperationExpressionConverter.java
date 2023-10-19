@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
@@ -28,7 +30,6 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.function.dialect.mysql.SQLExtensionOperatorTable;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.Collections;
@@ -40,7 +41,8 @@ import java.util.Optional;
 /**
  * Binary operation expression converter.
  */
-public final class BinaryOperationExpressionConverter implements SQLSegmentConverter<BinaryOperationExpression, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class BinaryOperationExpressionConverter {
     
     private static final Map<String, SqlOperator> REGISTRY = new CaseInsensitiveMap<>();
     
@@ -99,14 +101,19 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         REGISTRY.put("!~*", SqlStdOperatorTable.NEGATED_POSIX_REGEX_CASE_INSENSITIVE);
     }
     
-    @Override
-    public Optional<SqlNode> convert(final BinaryOperationExpression segment) {
+    /**
+     * Convert binary operation expression to sql node.
+     * 
+     * @param segment binary operation expression
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final BinaryOperationExpression segment) {
         SqlOperator operator = convertOperator(segment);
         List<SqlNode> sqlNodes = convertSqlNodes(segment, operator);
         return Optional.of(new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO));
     }
     
-    private SqlOperator convertOperator(final BinaryOperationExpression segment) {
+    private static SqlOperator convertOperator(final BinaryOperationExpression segment) {
         String operator = segment.getOperator();
         if ("IS".equalsIgnoreCase(operator)) {
             String literals = String.valueOf(((LiteralExpressionSegment) segment.getRight()).getLiterals());
@@ -124,13 +131,13 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         return REGISTRY.get(operator);
     }
     
-    private List<SqlNode> convertSqlNodes(final BinaryOperationExpression segment, final SqlOperator operator) {
-        SqlNode left = new ExpressionConverter().convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
+    private static List<SqlNode> convertSqlNodes(final BinaryOperationExpression segment, final SqlOperator operator) {
+        SqlNode left = ExpressionConverter.convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
         List<SqlNode> result = new LinkedList<>();
         result.add(left);
         if (!SqlStdOperatorTable.IS_NULL.equals(operator) && !SqlStdOperatorTable.IS_NOT_NULL.equals(operator) && !SqlStdOperatorTable.IS_FALSE.equals(operator)
                 && !SqlStdOperatorTable.IS_NOT_FALSE.equals(operator)) {
-            SqlNode right = new ExpressionConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
+            SqlNode right = ExpressionConverter.convert(segment.getRight()).orElseThrow(IllegalStateException::new);
             result.addAll(right instanceof SqlNodeList ? ((SqlNodeList) right).getList() : Collections.singletonList(right));
         }
         return result;

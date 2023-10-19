@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.window;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlWindow;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.Collections;
@@ -32,12 +33,18 @@ import java.util.Optional;
 /**
  * Window converter.
  */
-public final class WindowConverter implements SQLSegmentConverter<WindowSegment, SqlNodeList> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class WindowConverter {
     
-    @Override
-    public Optional<SqlNodeList> convert(final WindowSegment segment) {
+    /**
+     * Convert window segment to sql node list.
+     * 
+     * @param segment window segment
+     * @return sql node list
+     */
+    public static Optional<SqlNodeList> convert(final WindowSegment segment) {
         SqlIdentifier sqlIdentifier = new SqlIdentifier(segment.getIdentifierValue().getValue(), SqlParserPos.ZERO);
-        SqlNodeList partitionList = new SqlNodeList(Collections.singletonList(new ExpressionConverter().convert(segment.getPartitionListSegments().iterator().next()).get()), SqlParserPos.ZERO);
+        SqlNodeList partitionList = new SqlNodeList(Collections.singletonList(ExpressionConverter.convert(segment.getPartitionListSegments().iterator().next()).get()), SqlParserPos.ZERO);
         SqlNodeList orderList = new SqlNodeList(SqlParserPos.ZERO);
         SqlWindow sqlWindow = new SqlWindow(SqlParserPos.ZERO, sqlIdentifier, null, partitionList, orderList, SqlLiteral.createBoolean(false, SqlParserPos.ZERO), null, null, null);
         SqlNodeList result = new SqlNodeList(Collections.singletonList(sqlWindow), SqlParserPos.ZERO);

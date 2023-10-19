@@ -48,19 +48,19 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
     @Override
     public SqlNode convert(final UpdateStatement updateStatement) {
         SqlUpdate sqlUpdate = convertUpdate(updateStatement);
-        SqlNodeList orderBy = UpdateStatementHandler.getOrderBySegment(updateStatement).flatMap(optional -> new OrderByConverter().convert(optional)).orElse(SqlNodeList.EMPTY);
+        SqlNodeList orderBy = UpdateStatementHandler.getOrderBySegment(updateStatement).flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = UpdateStatementHandler.getLimitSegment(updateStatement);
         if (limit.isPresent()) {
-            SqlNode offset = limit.get().getOffset().flatMap(optional -> new PaginationValueSQLConverter().convert(optional)).orElse(null);
-            SqlNode rowCount = limit.get().getRowCount().flatMap(optional -> new PaginationValueSQLConverter().convert(optional)).orElse(null);
+            SqlNode offset = limit.get().getOffset().flatMap(PaginationValueSQLConverter::convert).orElse(null);
+            SqlNode rowCount = limit.get().getRowCount().flatMap(PaginationValueSQLConverter::convert).orElse(null);
             return new SqlOrderBy(SqlParserPos.ZERO, sqlUpdate, orderBy, offset, rowCount);
         }
         return orderBy.isEmpty() ? sqlUpdate : new SqlOrderBy(SqlParserPos.ZERO, sqlUpdate, orderBy, null, null);
     }
     
     private SqlUpdate convertUpdate(final UpdateStatement updateStatement) {
-        SqlNode table = new TableConverter().convert(updateStatement.getTable()).orElseThrow(IllegalStateException::new);
-        SqlNode condition = updateStatement.getWhere().flatMap(optional -> new WhereConverter().convert(optional)).orElse(null);
+        SqlNode table = TableConverter.convert(updateStatement.getTable()).orElseThrow(IllegalStateException::new);
+        SqlNode condition = updateStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
         SqlNodeList columns = new SqlNodeList(SqlParserPos.ZERO);
         SqlNodeList expressions = new SqlNodeList(SqlParserPos.ZERO);
         for (AssignmentSegment each : updateStatement.getAssignmentSegment().orElseThrow(IllegalStateException::new).getAssignments()) {
@@ -71,10 +71,10 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
     }
     
     private List<SqlNode> convertColumn(final List<ColumnSegment> columnSegments) {
-        return columnSegments.stream().map(each -> new ColumnConverter().convert(each).orElseThrow(IllegalStateException::new)).collect(Collectors.toList());
+        return columnSegments.stream().map(each -> ColumnConverter.convert(each).orElseThrow(IllegalStateException::new)).collect(Collectors.toList());
     }
     
     private SqlNode convertExpression(final ExpressionSegment expressionSegment) {
-        return new ExpressionConverter().convert(expressionSegment).orElseThrow(IllegalStateException::new);
+        return ExpressionConverter.convert(expressionSegment).orElseThrow(IllegalStateException::new);
     }
 }

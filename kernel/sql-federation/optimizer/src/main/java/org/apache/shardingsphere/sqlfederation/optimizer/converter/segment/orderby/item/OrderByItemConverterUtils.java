@@ -47,11 +47,11 @@ public final class OrderByItemConverterUtils {
         Collection<SqlNode> result = new LinkedList<>();
         for (OrderByItemSegment each : orderByItems) {
             if (each instanceof ColumnOrderByItemSegment) {
-                new ColumnOrderByItemConverter().convert((ColumnOrderByItemSegment) each).ifPresent(result::add);
+                ColumnOrderByItemConverter.convert((ColumnOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof ExpressionOrderByItemSegment) {
-                new ExpressionOrderByItemConverter().convert((ExpressionOrderByItemSegment) each).ifPresent(result::add);
+                ExpressionOrderByItemConverter.convert((ExpressionOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof IndexOrderByItemSegment) {
-                new IndexOrderByItemConverter().convert((IndexOrderByItemSegment) each).ifPresent(result::add);
+                IndexOrderByItemConverter.convert((IndexOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof TextOrderByItemSegment) {
                 throw new UnsupportedSQLOperationException("unsupported TextOrderByItemSegment");
             }

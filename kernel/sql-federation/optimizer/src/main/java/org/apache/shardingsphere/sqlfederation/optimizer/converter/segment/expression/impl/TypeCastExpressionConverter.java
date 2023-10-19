@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlBasicTypeNameSpec;
 import org.apache.calcite.sql.SqlDataTypeSpec;
@@ -25,7 +27,6 @@ import org.apache.calcite.sql.SqlTypeNameSpec;
 import org.apache.calcite.sql.fun.SqlCastFunction;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.type.DataTypeConverter;
 
@@ -35,11 +36,17 @@ import java.util.Optional;
 /**
  * Type cast expression converter.
  */
-public final class TypeCastExpressionConverter implements SQLSegmentConverter<TypeCastExpression, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TypeCastExpressionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final TypeCastExpression segment) {
-        Optional<SqlNode> expression = new ExpressionConverter().convert(segment.getExpression());
+    /**
+     * Convert type cast expression to sql node.
+     * 
+     * @param segment type cast expression
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final TypeCastExpression segment) {
+        Optional<SqlNode> expression = ExpressionConverter.convert(segment.getExpression());
         if (!expression.isPresent()) {
             return Optional.empty();
         }

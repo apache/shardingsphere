@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.ArrayList;
@@ -34,17 +35,22 @@ import java.util.Optional;
 /**
  * In expression converter.
  */
-public final class InExpressionConverter implements SQLSegmentConverter<InExpression, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class InExpressionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final InExpression expression) {
+    /**
+     * Convert in expression to sql node.
+     * 
+     * @param expression in expression
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final InExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
-        ExpressionConverter expressionConverter = new ExpressionConverter();
-        expressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
-        expressionConverter.convert(expression.getRight())
+        ExpressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
+        ExpressionConverter.convert(expression.getRight())
                 .ifPresent(optional -> sqlNodes.add(optional instanceof SqlBasicCall ? new SqlNodeList(((SqlBasicCall) optional).getOperandList(), SqlParserPos.ZERO) : optional));
         return Optional.of(new SqlBasicCall(expression.isNot() ? SqlStdOperatorTable.NOT_IN : SqlStdOperatorTable.IN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO));
     }

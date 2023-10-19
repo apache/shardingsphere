@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -29,10 +30,16 @@ import java.util.Optional;
 /**
  * Distinct converter.
  */
-public final class DistinctConverter implements SQLSegmentConverter<ProjectionsSegment, SqlNodeList> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DistinctConverter {
     
-    @Override
-    public Optional<SqlNodeList> convert(final ProjectionsSegment segment) {
+    /**
+     * Convert projections segment to sql node list.
+     * 
+     * @param segment projections segment
+     * @return sql node list
+     */
+    public static Optional<SqlNodeList> convert(final ProjectionsSegment segment) {
         return segment.isDistinctRow() ? Optional.of(new SqlNodeList(Collections.singletonList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO)) : Optional.empty();
     }
 }

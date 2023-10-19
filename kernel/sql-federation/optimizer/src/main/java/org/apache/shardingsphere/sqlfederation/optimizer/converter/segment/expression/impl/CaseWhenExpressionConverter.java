@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
@@ -26,7 +28,6 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.Arrays;
@@ -37,35 +38,41 @@ import java.util.Optional;
 /**
  * Case when expression converter.
  */
-public final class CaseWhenExpressionConverter implements SQLSegmentConverter<CaseWhenExpression, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CaseWhenExpressionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final CaseWhenExpression segment) {
+    /**
+     * Convert case when expression to sql node.
+     * 
+     * @param segment case when expression
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final CaseWhenExpression segment) {
         Collection<SqlNode> whenExprs = convertWhenExprs(segment.getCaseExpr(), segment.getWhenExprs());
         Collection<SqlNode> thenExprs = new LinkedList<>();
-        segment.getThenExprs().forEach(each -> new ExpressionConverter().convert(each).ifPresent(thenExprs::add));
-        Optional<SqlNode> elseExpr = new ExpressionConverter().convert(segment.getElseExpr());
+        segment.getThenExprs().forEach(each -> ExpressionConverter.convert(each).ifPresent(thenExprs::add));
+        Optional<SqlNode> elseExpr = ExpressionConverter.convert(segment.getElseExpr());
         return Optional.of(new SqlCase(SqlParserPos.ZERO, null, new SqlNodeList(whenExprs, SqlParserPos.ZERO), new SqlNodeList(thenExprs, SqlParserPos.ZERO),
                 elseExpr.orElseGet(() -> SqlLiteral.createCharString("NULL", SqlParserPos.ZERO))));
     }
     
-    private Collection<SqlNode> convertWhenExprs(final ExpressionSegment caseExpr, final Collection<ExpressionSegment> whenExprs) {
+    private static Collection<SqlNode> convertWhenExprs(final ExpressionSegment caseExpr, final Collection<ExpressionSegment> whenExprs) {
         Collection<SqlNode> result = new LinkedList<>();
         for (ExpressionSegment each : whenExprs) {
             if (null != caseExpr) {
                 convertCaseExpr(caseExpr, each).ifPresent(result::add);
             } else {
-                new ExpressionConverter().convert(each).ifPresent(result::add);
+                ExpressionConverter.convert(each).ifPresent(result::add);
             }
         }
         return result;
     }
     
-    private Optional<SqlNode> convertCaseExpr(final ExpressionSegment caseExpr, final ExpressionSegment whenExpr) {
-        Optional<SqlNode> leftExpr = new ExpressionConverter().convert(caseExpr);
-        Optional<SqlNode> rightExpr = new ExpressionConverter().convert(whenExpr);
+    private static Optional<SqlNode> convertCaseExpr(final ExpressionSegment caseExpr, final ExpressionSegment whenExpr) {
+        Optional<SqlNode> leftExpr = ExpressionConverter.convert(caseExpr);
+        Optional<SqlNode> rightExpr = ExpressionConverter.convert(whenExpr);
         if (leftExpr.isPresent() && rightExpr.isPresent()) {
-            return new ExpressionConverter().convert(whenExpr).map(optional -> new SqlBasicCall(SqlStdOperatorTable.EQUALS, Arrays.asList(leftExpr.get(), rightExpr.get()), SqlParserPos.ZERO));
+            return ExpressionConverter.convert(whenExpr).map(optional -> new SqlBasicCall(SqlStdOperatorTable.EQUALS, Arrays.asList(leftExpr.get(), rightExpr.get()), SqlParserPos.ZERO));
         }
         return Optional.empty();
     }

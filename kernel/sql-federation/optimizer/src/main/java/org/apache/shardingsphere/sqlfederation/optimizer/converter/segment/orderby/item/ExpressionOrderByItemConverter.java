@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.orderby.item;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlPostfixOperator;
@@ -24,7 +26,6 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.Collections;
@@ -33,11 +34,17 @@ import java.util.Optional;
 /**
  * Expression of order by item converter.
  */
-public final class ExpressionOrderByItemConverter implements SQLSegmentConverter<ExpressionOrderByItemSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ExpressionOrderByItemConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final ExpressionOrderByItemSegment segment) {
-        Optional<SqlNode> result = null == segment ? Optional.empty() : new ExpressionConverter().convert(segment.getExpr());
+    /**
+     * Convert expression order by item segment to sql node.
+     * 
+     * @param segment expression order by item segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final ExpressionOrderByItemSegment segment) {
+        Optional<SqlNode> result = null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr());
         if (!result.isPresent()) {
             return Optional.empty();
         }

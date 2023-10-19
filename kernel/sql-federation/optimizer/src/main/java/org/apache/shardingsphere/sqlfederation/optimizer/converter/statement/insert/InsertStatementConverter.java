@@ -51,7 +51,7 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
     }
     
     private SqlInsert convertInsert(final InsertStatement insertStatement) {
-        SqlNode table = new TableConverter().convert(insertStatement.getTable()).orElseThrow(IllegalStateException::new);
+        SqlNode table = TableConverter.convert(insertStatement.getTable()).orElseThrow(IllegalStateException::new);
         SqlNodeList keywords = new SqlNodeList(SqlParserPos.ZERO);
         SqlNode source = convertSource(insertStatement);
         SqlNodeList columnList = convertColumn(insertStatement.getColumns());
@@ -78,11 +78,11 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
     }
     
     private SqlNodeList convertColumn(final Collection<ColumnSegment> columnSegments) {
-        List<SqlNode> columns = columnSegments.stream().map(each -> new ColumnConverter().convert(each).orElseThrow(IllegalStateException::new)).collect(Collectors.toList());
+        List<SqlNode> columns = columnSegments.stream().map(each -> ColumnConverter.convert(each).orElseThrow(IllegalStateException::new)).collect(Collectors.toList());
         return columns.isEmpty() ? null : new SqlNodeList(columns, SqlParserPos.ZERO);
     }
     
     private SqlNode convertExpression(final ExpressionSegment expressionSegment) {
-        return new ExpressionConverter().convert(expressionSegment).orElseThrow(IllegalStateException::new);
+        return ExpressionConverter.convert(expressionSegment).orElseThrow(IllegalStateException::new);
     }
 }

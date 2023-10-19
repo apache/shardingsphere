@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.groupby;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.Optional;
@@ -27,10 +28,16 @@ import java.util.Optional;
 /**
  * Having converter.
  */
-public final class HavingConverter implements SQLSegmentConverter<HavingSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class HavingConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final HavingSegment segment) {
-        return null == segment ? Optional.empty() : new ExpressionConverter().convert(segment.getExpr());
+    /**
+     * Convert having segment to sql node.
+     * 
+     * @param segment having segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final HavingSegment segment) {
+        return null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr());
     }
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
@@ -25,7 +27,6 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,10 +36,16 @@ import java.util.Optional;
 /**
  * Simple table converter.
  */
-public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTableSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SimpleTableConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final SimpleTableSegment segment) {
+    /**
+     * Convert simple table segment to sql node.
+     * 
+     * @param segment simple table segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final SimpleTableSegment segment) {
         TableNameSegment tableName = segment.getTableName();
         List<String> names = new ArrayList<>();
         if (segment.getOwner().isPresent()) {
@@ -53,7 +60,7 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
         return Optional.of(tableNameSQLNode);
     }
     
-    private void addOwnerNames(final List<String> names, final OwnerSegment owner) {
+    private static void addOwnerNames(final List<String> names, final OwnerSegment owner) {
         if (null != owner) {
             addOwnerNames(names, owner.getOwner().orElse(null));
             names.add(owner.getIdentifier().getValue());

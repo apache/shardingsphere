@@ -17,20 +17,27 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
 
 import java.util.Optional;
 
 /**
  * Subquery expression converter.
  */
-public final class SubqueryExpressionConverter implements SQLSegmentConverter<SubqueryExpressionSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SubqueryExpressionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final SubqueryExpressionSegment expression) {
+    /**
+     * Convert subquery expression segment to sql node.
+     * 
+     * @param expression subquery expression segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final SubqueryExpressionSegment expression) {
         return null == expression ? Optional.empty() : Optional.of(new SelectStatementConverter().convert(expression.getSubquery().getSelect()));
     }
 }
