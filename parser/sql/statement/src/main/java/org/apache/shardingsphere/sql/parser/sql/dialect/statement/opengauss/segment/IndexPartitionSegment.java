@@ -43,6 +43,7 @@ public final class IndexPartitionSegment implements SQLSegment {
 
     /**
      * Get tablespace.
+     *
      * @return tablespace
      */
     public Optional<TablespaceSegment> getTablespace() {
