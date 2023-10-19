@@ -78,6 +78,7 @@ class SingleTableDataNodeLoaderTest {
         when(connection.getCatalog()).thenReturn(dataSourceName);
         ResultSet resultSet = mockResultSet(tableNames);
         when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})).thenReturn(resultSet);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         return new MockedDataSource(connection);
     }
     

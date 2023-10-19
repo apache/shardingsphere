@@ -17,7 +17,7 @@
   -->
 
 <sql-node-converter-test-cases>
-    <test-cases sql-case-id="select_string_constant_type_cast" expected-sql="SELECT CAST('1' AS INTEGER), CAST('2' AS DECIMAL)" dbtypes="openGauss,PostgreSQL" />
+    <test-cases sql-case-id="select_string_constant_type_cast" expected-sql="SELECT CAST('1' AS INTEGER), CAST('2' AS DECIMAL)" db-types="openGauss,PostgreSQL" />
     <test-cases sql-case-id="select_with_database_name_and_schema_name_in_table" expected-sql="SELECT &quot;order_id&quot; FROM &quot;sharding_db&quot;.&quot;public&quot;.&quot;t_order&quot; WHERE &quot;user_id&quot; = ? AND &quot;order_id&quot; = ?" db-types="PostgreSQL,openGauss" sql-case-types="PLACEHOLDER" />
     <test-cases sql-case-id="select_with_database_name_and_schema_name_in_table" expected-sql="SELECT &quot;order_id&quot; FROM &quot;sharding_db&quot;.&quot;public&quot;.&quot;t_order&quot; WHERE &quot;user_id&quot; = 1 AND &quot;order_id&quot; = 1" db-types="PostgreSQL,openGauss" sql-case-types="LITERAL" />
     <test-cases sql-case-id="select_with_spatial_function" expected-sql="SELECT * FROM `t_order` WHERE `ST_DISTANCE_SPHERE`(`POINT`(113.358772, 23.1273723), `POINT`(`user_id`, `order_id`)) &lt;&gt; 0" db-types="MySQL" />
@@ -33,4 +33,6 @@
     <test-cases sql-case-id="select_with_assignment_operator" expected-sql="SELECT `rn` := 1, `now_code` := '' FROM `t_order`" db-types="MySQL" />
     <test-cases sql-case-id="select_with_assignment_operator_and_keyword" expected-sql="SELECT `KEY` := '', `num` := 123 FROM `t_order`" db-types="MySQL" />
     <test-cases sql-case-id="select_with_json_value_return_type" expected-sql="SELECT * FROM `t_order` WHERE JSON_VALUE(`items`, '''$.name''' 'RETURNING' VARCHAR(100)) = 'jack'" db-types="MySQL" />
+    <test-cases sql-case-id="select_projection_with_parameter" expected-sql="SELECT 1 &quot;id&quot;, ?, &quot;SYSDATE&quot; &quot;create_time&quot;, &quot;TRUNC&quot;(&quot;SYSDATE&quot;) &quot;create_date&quot;" db-types="Oracle" sql-case-types="PLACEHOLDER" />
+    <test-cases sql-case-id="select_projection_with_parameter" expected-sql="SELECT 1 &quot;id&quot;, 'OK' &quot;status&quot;, &quot;SYSDATE&quot; &quot;create_time&quot;, &quot;TRUNC&quot;(&quot;SYSDATE&quot;) &quot;create_date&quot;" db-types="Oracle" sql-case-types="LITERAL" />
 </sql-node-converter-test-cases>

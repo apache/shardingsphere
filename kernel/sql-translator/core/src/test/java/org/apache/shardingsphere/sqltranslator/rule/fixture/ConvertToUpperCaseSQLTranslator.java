@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sqltranslator.rule.fixture;
 
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
 import java.util.Locale;
@@ -26,7 +28,8 @@ import java.util.Locale;
 public final class ConvertToUpperCaseSQLTranslator implements SQLTranslator {
     
     @Override
-    public String translate(final String sql, final SQLStatement sqlStatement, final DatabaseType protocolType, final DatabaseType storageType) {
+    public String translate(final String sql, final SQLStatementContext sqlStatementContext, final DatabaseType storageType, final ShardingSphereDatabase database,
+                            final RuleMetaData globalRuleMetaData) {
         return sql.toUpperCase(Locale.ROOT);
     }
     

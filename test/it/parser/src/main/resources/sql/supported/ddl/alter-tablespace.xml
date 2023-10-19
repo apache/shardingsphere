@@ -58,4 +58,5 @@
                     '/u02/oracle/rbdb1/user2.dbf'
                  TO '/u02/oracle/rbdb1/users01.dbf',
                     '/u02/oracle/rbdb1/users02.dbf'" db-types="Oracle" />
+    <sql-case id="alter_tablespace_autoextend_on_next_g" value="ALTER TABLESPACE bigtbs AUTOEXTEND ON NEXT 20G" db-types="Oracle" />
 </sql-cases>

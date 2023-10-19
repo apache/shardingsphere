@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.core.yaml;
 
 import org.apache.shardingsphere.agent.core.util.AgentPreconditions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
@@ -27,8 +28,8 @@ public final class AgentYamlConstructor extends Constructor {
     
     private final Class<?> rootClass;
     
-    public AgentYamlConstructor(final Class<?> rootClass) {
-        super(rootClass);
+    public AgentYamlConstructor(final Class<?> rootClass, final LoaderOptions loadingConfig) {
+        super(rootClass, loadingConfig);
         this.rootClass = rootClass;
     }
     

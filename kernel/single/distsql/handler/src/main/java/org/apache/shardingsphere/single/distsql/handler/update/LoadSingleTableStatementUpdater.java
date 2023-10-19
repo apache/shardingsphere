@@ -19,6 +19,7 @@ package org.apache.shardingsphere.single.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
@@ -119,7 +120,8 @@ public final class LoadSingleTableStatementUpdater implements RuleDefinitionCrea
                 database.getRuleMetaData().getRules());
         Map<String, Map<String, Collection<String>>> actualTableNodes = new LinkedHashMap<>();
         for (String each : requiredDataSources) {
-            Map<String, Collection<String>> schemaTableNames = SingleTableDataNodeLoader.loadSchemaTableNames(database.getName(), database.getProtocolType(), aggregateDataSourceMap.get(each), each);
+            DataSource dataSource = aggregateDataSourceMap.get(each);
+            Map<String, Collection<String>> schemaTableNames = SingleTableDataNodeLoader.loadSchemaTableNames(database.getName(), DatabaseTypeEngine.getStorageType(dataSource), dataSource, each);
             if (!schemaTableNames.isEmpty()) {
                 actualTableNodes.put(each, schemaTableNames);
             }
