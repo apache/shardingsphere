@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.orderby;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.orderby.item.OrderByItemConverterUtils;
 
 import java.util.Optional;
@@ -28,10 +29,16 @@ import java.util.Optional;
 /**
  * Order by converter. 
  */
-public final class OrderByConverter implements SQLSegmentConverter<OrderBySegment, SqlNodeList> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class OrderByConverter {
     
-    @Override
-    public Optional<SqlNodeList> convert(final OrderBySegment segment) {
+    /**
+     * Convert order by segment to sql node.
+     * 
+     * @param segment order by segment
+     * @return sql node
+     */
+    public static Optional<SqlNodeList> convert(final OrderBySegment segment) {
         return null == segment ? Optional.empty() : Optional.of(new SqlNodeList(OrderByItemConverterUtils.convert(segment.getOrderByItems()), SqlParserPos.ZERO));
     }
 }

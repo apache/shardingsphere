@@ -43,9 +43,9 @@ public final class MergeStatementConverter implements SQLStatementConverter<Merg
     
     @Override
     public SqlNode convert(final MergeStatement mergeStatement) {
-        SqlNode targetTable = new TableConverter().convert(mergeStatement.getTarget()).orElseThrow(IllegalStateException::new);
-        SqlNode condition = new ExpressionConverter().convert(mergeStatement.getExpression().getExpr()).get();
-        SqlNode sourceTable = new TableConverter().convert(mergeStatement.getSource()).orElseThrow(IllegalStateException::new);
+        SqlNode targetTable = TableConverter.convert(mergeStatement.getTarget()).orElseThrow(IllegalStateException::new);
+        SqlNode condition = ExpressionConverter.convert(mergeStatement.getExpression().getExpr()).get();
+        SqlNode sourceTable = TableConverter.convert(mergeStatement.getSource()).orElseThrow(IllegalStateException::new);
         SqlUpdate sqlUpdate = null;
         if (null != mergeStatement.getUpdate()) {
             sqlUpdate = convertUpdate(mergeStatement.getUpdate());
@@ -54,8 +54,8 @@ public final class MergeStatementConverter implements SQLStatementConverter<Merg
     }
     
     private SqlUpdate convertUpdate(final UpdateStatement updateStatement) {
-        SqlNode table = new TableConverter().convert(updateStatement.getTable()).orElse(SqlNodeList.EMPTY);
-        SqlNode condition = updateStatement.getWhere().flatMap(optional -> new WhereConverter().convert(optional)).orElse(null);
+        SqlNode table = TableConverter.convert(updateStatement.getTable()).orElse(SqlNodeList.EMPTY);
+        SqlNode condition = updateStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
         SqlNodeList columns = new SqlNodeList(SqlParserPos.ZERO);
         SqlNodeList expressions = new SqlNodeList(SqlParserPos.ZERO);
         for (AssignmentSegment each : updateStatement.getAssignmentSegment().orElseThrow(IllegalStateException::new).getAssignments()) {
@@ -66,10 +66,10 @@ public final class MergeStatementConverter implements SQLStatementConverter<Merg
     }
     
     private List<SqlNode> convertColumn(final List<ColumnSegment> columnSegments) {
-        return columnSegments.stream().map(each -> new ColumnConverter().convert(each).orElseThrow(IllegalStateException::new)).collect(Collectors.toList());
+        return columnSegments.stream().map(each -> ColumnConverter.convert(each).orElseThrow(IllegalStateException::new)).collect(Collectors.toList());
     }
     
     private SqlNode convertExpression(final ExpressionSegment expressionSegment) {
-        return new ExpressionConverter().convert(expressionSegment).orElseThrow(IllegalStateException::new);
+        return ExpressionConverter.convert(expressionSegment).orElseThrow(IllegalStateException::new);
     }
 }

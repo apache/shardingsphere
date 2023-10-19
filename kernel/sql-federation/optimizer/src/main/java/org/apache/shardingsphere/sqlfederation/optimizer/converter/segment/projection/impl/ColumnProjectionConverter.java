@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlAsOperator;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
 
 import java.util.Arrays;
@@ -32,15 +33,21 @@ import java.util.Optional;
 /**
  * Column projection converter. 
  */
-public final class ColumnProjectionConverter implements SQLSegmentConverter<ColumnProjectionSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ColumnProjectionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final ColumnProjectionSegment segment) {
+    /**
+     * Convert column projection segment to sql node.
+     * 
+     * @param segment column projection segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final ColumnProjectionSegment segment) {
         if (segment.getAliasName().isPresent()) {
-            Optional<SqlNode> column = new ColumnConverter().convert(segment.getColumn());
+            Optional<SqlNode> column = ColumnConverter.convert(segment.getColumn());
             SqlIdentifier alias = new SqlIdentifier(segment.getAliasName().get(), SqlParserPos.ZERO);
             return column.map(optional -> new SqlBasicCall(new SqlAsOperator(), Arrays.asList(optional, alias), SqlParserPos.ZERO));
         }
-        return new ColumnConverter().convert(segment.getColumn());
+        return ColumnConverter.convert(segment.getColumn());
     }
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlLiteral;
@@ -40,20 +42,26 @@ import java.util.Optional;
 /**
  * Window function converter.
  */
-public final class WindowFunctionConverter extends FunctionConverter {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class WindowFunctionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final FunctionSegment segment) {
+    /**
+     * Convert function segment to sql node.
+     * 
+     * @param segment function segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final FunctionSegment segment) {
         SqlIdentifier functionName = new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO);
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.BINARY, functions, SqlNameMatchers.withCaseSensitive(false));
         return Optional.of(new SqlBasicCall(functions.iterator().next(), getWindowFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
     }
     
-    private List<SqlNode> getWindowFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {
+    private static List<SqlNode> getWindowFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {
         List<SqlNode> result = new LinkedList<>();
         for (ExpressionSegment each : sqlSegments) {
-            new ExpressionConverter().convert(each).ifPresent(result::add);
+            ExpressionConverter.convert(each).ifPresent(result::add);
         }
         if (1 == result.size()) {
             result.add(new SqlWindow(SqlParserPos.ZERO, null, null, new SqlNodeList(SqlParserPos.ZERO), new SqlNodeList(SqlParserPos.ZERO), SqlLiteral.createBoolean(false, SqlParserPos.ZERO), null,

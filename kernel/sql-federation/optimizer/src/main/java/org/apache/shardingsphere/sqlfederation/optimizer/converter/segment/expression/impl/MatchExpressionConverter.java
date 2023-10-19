@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlLiteral;
@@ -25,7 +27,6 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.function.dialect.mysql.SQLExtensionOperatorTable;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.ArrayList;
@@ -36,10 +37,16 @@ import java.util.Optional;
 /**
  * Match expression converter.
  */
-public final class MatchExpressionConverter implements SQLSegmentConverter<MatchAgainstExpression, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MatchExpressionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final MatchAgainstExpression segment) {
+    /**
+     * Convert match against expression to sql node.
+     * 
+     * @param segment match against expression
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final MatchAgainstExpression segment) {
         List<SqlNode> sqlNodes = new LinkedList<>();
         List<String> names = new ArrayList<>();
         if (segment.getColumnName().getOwner().isPresent()) {
@@ -47,13 +54,13 @@ public final class MatchExpressionConverter implements SQLSegmentConverter<Match
         }
         names.add(segment.getColumnName().getIdentifier().getValue());
         sqlNodes.add(new SqlIdentifier(names, SqlParserPos.ZERO));
-        new ExpressionConverter().convert(segment.getExpr()).ifPresent(sqlNodes::add);
+        ExpressionConverter.convert(segment.getExpr()).ifPresent(sqlNodes::add);
         SqlNode searchModifier = SqlLiteral.createCharString(segment.getSearchModifier(), SqlParserPos.ZERO);
         sqlNodes.add(searchModifier);
         return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.MATCH_AGAINST, sqlNodes, SqlParserPos.ZERO));
     }
     
-    private void addOwnerNames(final List<String> names, final OwnerSegment owner) {
+    private static void addOwnerNames(final List<String> names, final OwnerSegment owner) {
         if (null != owner) {
             addOwnerNames(names, owner.getOwner().orElse(null));
             names.add(owner.getIdentifier().getValue());

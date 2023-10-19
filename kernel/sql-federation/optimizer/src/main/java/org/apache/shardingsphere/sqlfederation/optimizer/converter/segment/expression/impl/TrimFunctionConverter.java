@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlLiteral;
@@ -39,17 +41,23 @@ import java.util.Optional;
 /**
  * Trim function converter.
  */
-public final class TrimFunctionConverter extends FunctionConverter {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TrimFunctionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final FunctionSegment segment) {
+    /**
+     * Convert function segment to sql node.
+     * 
+     * @param segment function segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final FunctionSegment segment) {
         SqlIdentifier functionName = new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO);
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));
         return Optional.of(new SqlBasicCall(functions.iterator().next(), getTrimFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
     }
     
-    private List<SqlNode> getTrimFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {
+    private static List<SqlNode> getTrimFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {
         List<SqlNode> result = new LinkedList<>();
         if (1 == sqlSegments.size()) {
             result.add(Flag.BOTH.symbol(SqlParserPos.ZERO));
@@ -59,7 +67,7 @@ public final class TrimFunctionConverter extends FunctionConverter {
             result.add(Flag.BOTH.symbol(SqlParserPos.ZERO));
         }
         for (ExpressionSegment each : sqlSegments) {
-            new ExpressionConverter().convert(each).ifPresent(result::add);
+            ExpressionConverter.convert(each).ifPresent(result::add);
         }
         return result;
     }

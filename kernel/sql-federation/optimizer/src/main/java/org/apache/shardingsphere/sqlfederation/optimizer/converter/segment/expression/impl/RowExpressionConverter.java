@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.RowExpression;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.ArrayList;
@@ -32,14 +33,19 @@ import java.util.Optional;
 /**
  * Row expression converter.
  */
-public final class RowExpressionConverter implements SQLSegmentConverter<RowExpression, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class RowExpressionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final RowExpression segment) {
+    /**
+     * Convert row expression to sql node.
+     * 
+     * @param segment row expression
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final RowExpression segment) {
         List<SqlNode> sqlNodes = new ArrayList<>();
-        ExpressionConverter expressionConverter = new ExpressionConverter();
         for (ExpressionSegment each : segment.getItems()) {
-            expressionConverter.convert(each).ifPresent(sqlNodes::add);
+            ExpressionConverter.convert(each).ifPresent(sqlNodes::add);
         }
         return Optional.of(SqlStdOperatorTable.ROW.createCall(SqlParserPos.ZERO, sqlNodes));
     }

@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl;
 
 import com.google.common.collect.ImmutableList;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +34,16 @@ import java.util.stream.IntStream;
 /**
  * Shorthand projection converter. 
  */
-public final class ShorthandProjectionConverter implements SQLSegmentConverter<ShorthandProjectionSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShorthandProjectionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final ShorthandProjectionSegment segment) {
+    /**
+     * Convert shorthand projection segment to sql node.
+     * 
+     * @param segment shorthand projection segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final ShorthandProjectionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
@@ -49,7 +56,7 @@ public final class ShorthandProjectionConverter implements SQLSegmentConverter<S
         return Optional.of(SqlIdentifier.star(SqlParserPos.ZERO));
     }
     
-    private void addOwnerNames(final List<String> names, final OwnerSegment owner) {
+    private static void addOwnerNames(final List<String> names, final OwnerSegment owner) {
         owner.getOwner().ifPresent(optional -> addOwnerNames(names, optional));
         names.add(owner.getIdentifier().getValue());
     }

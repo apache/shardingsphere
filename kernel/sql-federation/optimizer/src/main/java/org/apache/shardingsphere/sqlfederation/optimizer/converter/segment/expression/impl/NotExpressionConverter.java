@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.function.dialect.mysql.SQLExtensionOperatorTable;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.LinkedList;
@@ -33,11 +34,17 @@ import java.util.Optional;
 /**
  * Not expression converter.
  */
-public final class NotExpressionConverter implements SQLSegmentConverter<NotExpression, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class NotExpressionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final NotExpression segment) {
-        SqlNode expression = new ExpressionConverter().convert(segment.getExpression()).orElseThrow(IllegalStateException::new);
+    /**
+     * Convert not expression to sql node.
+     * 
+     * @param segment not expression
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final NotExpression segment) {
+        SqlNode expression = ExpressionConverter.convert(segment.getExpression()).orElseThrow(IllegalStateException::new);
         List<SqlNode> sqlNodes = new LinkedList<>();
         sqlNodes.add(expression);
         if (segment.getNotSign().equals(true)) {

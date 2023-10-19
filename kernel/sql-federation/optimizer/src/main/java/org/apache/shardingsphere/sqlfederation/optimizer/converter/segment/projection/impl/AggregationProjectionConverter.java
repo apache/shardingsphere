@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
@@ -30,7 +32,6 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.Arrays;
@@ -44,7 +45,8 @@ import java.util.Optional;
 /**
  * Aggregation projection converter. 
  */
-public final class AggregationProjectionConverter implements SQLSegmentConverter<AggregationProjectionSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AggregationProjectionConverter {
     
     private static final Map<String, SqlAggFunction> REGISTRY = new CaseInsensitiveMap<>();
     
@@ -61,8 +63,13 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
         REGISTRY.put(sqlAggFunction.getName(), sqlAggFunction);
     }
     
-    @Override
-    public Optional<SqlNode> convert(final AggregationProjectionSegment segment) {
+    /**
+     * Convert aggregation projection segment to sql node.
+     * 
+     * @param segment aggregation projection segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final AggregationProjectionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
@@ -77,19 +84,18 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
         return Optional.of(sqlBasicCall);
     }
     
-    private SqlAggFunction convertOperator(final String operator) {
+    private static SqlAggFunction convertOperator(final String operator) {
         Preconditions.checkState(REGISTRY.containsKey(operator), "Unsupported SQL operator: `%s`", operator);
         return REGISTRY.get(operator);
     }
     
-    private List<SqlNode> convertParameters(final Collection<ExpressionSegment> params, final String expression) {
+    private static List<SqlNode> convertParameters(final Collection<ExpressionSegment> params, final String expression) {
         if (expression.contains("*")) {
             return Collections.singletonList(SqlIdentifier.star(SqlParserPos.ZERO));
         }
         List<SqlNode> result = new LinkedList<>();
-        ExpressionConverter expressionConverter = new ExpressionConverter();
         for (ExpressionSegment each : params) {
-            expressionConverter.convert(each).ifPresent(result::add);
+            ExpressionConverter.convert(each).ifPresent(result::add);
         }
         return result;
     }

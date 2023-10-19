@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
@@ -24,7 +26,6 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
 
 import java.util.ArrayList;
@@ -36,10 +37,16 @@ import java.util.Optional;
 /**
  * Subquery projection converter. 
  */
-public final class SubqueryProjectionConverter implements SQLSegmentConverter<SubqueryProjectionSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SubqueryProjectionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final SubqueryProjectionSegment segment) {
+    /**
+     * Convert subquery projection segment to sql node.
+     * 
+     * @param segment subquery projection segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final SubqueryProjectionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
@@ -52,7 +59,7 @@ public final class SubqueryProjectionConverter implements SQLSegmentConverter<Su
                 : Optional.of(sqlNode);
     }
     
-    private SqlNode convertWithAlias(final SqlNode sqlNode, final String alias) {
+    private static SqlNode convertWithAlias(final SqlNode sqlNode, final String alias) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         sqlNodes.add(sqlNode);
         sqlNodes.add(new SqlIdentifier(alias, SqlParserPos.ZERO));

@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -32,13 +33,19 @@ import java.util.Optional;
 /**
  * List expression converter.
  */
-public final class ListExpressionConverter implements SQLSegmentConverter<ListExpression, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ListExpressionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final ListExpression segment) {
+    /**
+     * Convert list expression to sql node.
+     * 
+     * @param segment list expression
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final ListExpression segment) {
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         for (ExpressionSegment each : segment.getItems()) {
-            Optional<SqlNode> sqlNode = new ExpressionConverter().convert(each);
+            Optional<SqlNode> sqlNode = ExpressionConverter.convert(each);
             sqlNode.ifPresent(sqlNodes::add);
         }
         return sqlNodes.isEmpty() ? Optional.empty() : Optional.of(new SqlNodeList(sqlNodes, SqlParserPos.ZERO));

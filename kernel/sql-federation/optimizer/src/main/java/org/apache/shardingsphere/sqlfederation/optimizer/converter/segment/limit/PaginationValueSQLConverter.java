@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.limit;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
@@ -25,28 +26,32 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 
 import java.util.Optional;
 
 /**
  * Pagination value converter.
  */
-@RequiredArgsConstructor
-public final class PaginationValueSQLConverter implements SQLSegmentConverter<PaginationValueSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PaginationValueSQLConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final PaginationValueSegment segment) {
+    /**
+     * Convert pagination value segment to sql node.
+     * 
+     * @param segment pagination value segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final PaginationValueSegment segment) {
         return Optional.of(segment instanceof NumberLiteralPaginationValueSegment
                 ? getLiteralSQLNode((NumberLiteralPaginationValueSegment) segment)
                 : getParameterMarkerSQLNode((ParameterMarkerLimitValueSegment) segment));
     }
     
-    private SqlNode getLiteralSQLNode(final NumberLiteralPaginationValueSegment segment) {
+    private static SqlNode getLiteralSQLNode(final NumberLiteralPaginationValueSegment segment) {
         return SqlLiteral.createExactNumeric(String.valueOf(segment.getValue()), SqlParserPos.ZERO);
     }
     
-    private SqlNode getParameterMarkerSQLNode(final ParameterMarkerLimitValueSegment segment) {
+    private static SqlNode getParameterMarkerSQLNode(final ParameterMarkerLimitValueSegment segment) {
         return new SqlDynamicParam(segment.getParameterIndex(), SqlParserPos.ZERO);
     }
 }

@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.ArrayList;
@@ -33,18 +34,23 @@ import java.util.Optional;
 /**
  * Between expression converter.
  */
-public final class BetweenExpressionConverter implements SQLSegmentConverter<BetweenExpression, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class BetweenExpressionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final BetweenExpression expression) {
+    /**
+     * Convert between expression to sql node.
+     * 
+     * @param expression between expression
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final BetweenExpression expression) {
         if (null == expression) {
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
-        ExpressionConverter expressionConverter = new ExpressionConverter();
-        expressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
-        expressionConverter.convert(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
-        expressionConverter.convert(expression.getAndExpr()).ifPresent(sqlNodes::add);
+        ExpressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
+        ExpressionConverter.convert(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
+        ExpressionConverter.convert(expression.getAndExpr()).ifPresent(sqlNodes::add);
         return Optional.of(expression.isNot() ? new SqlBasicCall(SqlStdOperatorTable.NOT_BETWEEN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO)
                 : new SqlBasicCall(SqlStdOperatorTable.BETWEEN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO));
     }

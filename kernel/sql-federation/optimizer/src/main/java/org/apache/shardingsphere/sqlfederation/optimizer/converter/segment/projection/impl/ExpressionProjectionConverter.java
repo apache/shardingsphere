@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,14 +34,20 @@ import java.util.Optional;
 /**
  * Expression projection converter.
  */
-public final class ExpressionProjectionConverter implements SQLSegmentConverter<ExpressionProjectionSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ExpressionProjectionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final ExpressionProjectionSegment segment) {
+    /**
+     * Convert expression projection segment to sql node.
+     * 
+     * @param segment expression projection segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final ExpressionProjectionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
-        Optional<SqlNode> result = new ExpressionConverter().convert(segment.getExpr());
+        Optional<SqlNode> result = ExpressionConverter.convert(segment.getExpr());
         if (result.isPresent() && segment.getAliasName().isPresent()) {
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(result.get(),
                     SqlIdentifier.star(Collections.singletonList(segment.getAliasName().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))), SqlParserPos.ZERO));

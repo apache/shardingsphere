@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.function.dialect.mysql.SQLExtensionOperatorTable;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.LinkedList;
@@ -33,13 +34,19 @@ import java.util.Optional;
 /**
  * Collate expression converter.
  */
-public final class CollateExpressionConverter implements SQLSegmentConverter<CollateExpression, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CollateExpressionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final CollateExpression segment) {
+    /**
+     * Convert collate expression to sql node.
+     * 
+     * @param segment collate expression
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final CollateExpression segment) {
         List<SqlNode> sqlNodes = new LinkedList<>();
-        sqlNodes.add(segment.getExpr().flatMap(optional -> new ExpressionConverter().convert(optional)).orElse(SqlNodeList.EMPTY));
-        sqlNodes.add(new ExpressionConverter().convert(segment.getCollateName()).orElse(SqlNodeList.EMPTY));
+        sqlNodes.add(segment.getExpr().flatMap(ExpressionConverter::convert).orElse(SqlNodeList.EMPTY));
+        sqlNodes.add(ExpressionConverter.convert(segment.getCollateName()).orElse(SqlNodeList.EMPTY));
         return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.COLLATE, sqlNodes, SqlParserPos.ZERO));
     }
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
@@ -42,7 +44,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.BetweenExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.BinaryOperationExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.CaseWhenExpressionConverter;
@@ -70,79 +71,86 @@ import java.util.Optional;
 /**
  * Expression converter.
  */
-public final class ExpressionConverter implements SQLSegmentConverter<ExpressionSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ExpressionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final ExpressionSegment segment) {
+    /**
+     * Convert expression segment to sql node.
+     * 
+     * @param segment expression segment
+     * @return sql node
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
+     */
+    public static Optional<SqlNode> convert(final ExpressionSegment segment) {
         if (null == segment) {
             return Optional.empty();
         }
         if (segment instanceof LiteralExpressionSegment) {
-            return new LiteralExpressionConverter().convert((LiteralExpressionSegment) segment);
+            return LiteralExpressionConverter.convert((LiteralExpressionSegment) segment);
         }
         if (segment instanceof CommonExpressionSegment) {
             // TODO
             throw new UnsupportedSQLOperationException("unsupported CommonExpressionSegment");
         }
         if (segment instanceof ListExpression) {
-            return new ListExpressionConverter().convert((ListExpression) segment);
+            return ListExpressionConverter.convert((ListExpression) segment);
         }
         if (segment instanceof BinaryOperationExpression) {
-            return new BinaryOperationExpressionConverter().convert((BinaryOperationExpression) segment);
+            return BinaryOperationExpressionConverter.convert((BinaryOperationExpression) segment);
         }
         if (segment instanceof ColumnSegment) {
-            return new ColumnConverter().convert((ColumnSegment) segment);
+            return ColumnConverter.convert((ColumnSegment) segment);
         }
         if (segment instanceof ExistsSubqueryExpression) {
-            return new ExistsSubqueryExpressionConverter().convert((ExistsSubqueryExpression) segment);
+            return ExistsSubqueryExpressionConverter.convert((ExistsSubqueryExpression) segment);
         }
         if (segment instanceof SubqueryExpressionSegment) {
-            return new SubqueryExpressionConverter().convert((SubqueryExpressionSegment) segment);
+            return SubqueryExpressionConverter.convert((SubqueryExpressionSegment) segment);
         }
         if (segment instanceof InExpression) {
-            return new InExpressionConverter().convert((InExpression) segment);
+            return InExpressionConverter.convert((InExpression) segment);
         }
         if (segment instanceof BetweenExpression) {
-            return new BetweenExpressionConverter().convert((BetweenExpression) segment);
+            return BetweenExpressionConverter.convert((BetweenExpression) segment);
         }
         if (segment instanceof ParameterMarkerExpressionSegment) {
-            return new ParameterMarkerExpressionConverter().convert((ParameterMarkerExpressionSegment) segment);
+            return ParameterMarkerExpressionConverter.convert((ParameterMarkerExpressionSegment) segment);
         }
         if (segment instanceof FunctionSegment) {
-            return new FunctionConverter().convert((FunctionSegment) segment);
+            return FunctionConverter.convert((FunctionSegment) segment);
         }
         if (segment instanceof AggregationProjectionSegment) {
-            return new AggregationProjectionConverter().convert((AggregationProjectionSegment) segment);
+            return AggregationProjectionConverter.convert((AggregationProjectionSegment) segment);
         }
         if (segment instanceof DataTypeSegment) {
-            return new DataTypeConverter().convert((DataTypeSegment) segment);
+            return DataTypeConverter.convert((DataTypeSegment) segment);
         }
         if (segment instanceof CaseWhenExpression) {
-            return new CaseWhenExpressionConverter().convert((CaseWhenExpression) segment);
+            return CaseWhenExpressionConverter.convert((CaseWhenExpression) segment);
         }
         if (segment instanceof NotExpression) {
-            return new NotExpressionConverter().convert((NotExpression) segment);
+            return NotExpressionConverter.convert((NotExpression) segment);
         }
         if (segment instanceof TypeCastExpression) {
-            return new TypeCastExpressionConverter().convert((TypeCastExpression) segment);
+            return TypeCastExpressionConverter.convert((TypeCastExpression) segment);
         }
         if (segment instanceof ExtractArgExpression) {
-            return new ExtractArgExpressionConverter().convert((ExtractArgExpression) segment);
+            return ExtractArgExpressionConverter.convert((ExtractArgExpression) segment);
         }
         if (segment instanceof MatchAgainstExpression) {
-            return new MatchExpressionConverter().convert((MatchAgainstExpression) segment);
+            return MatchExpressionConverter.convert((MatchAgainstExpression) segment);
         }
         if (segment instanceof CollateExpression) {
-            return new CollateExpressionConverter().convert((CollateExpression) segment);
+            return CollateExpressionConverter.convert((CollateExpression) segment);
         }
         if (segment instanceof RowExpression) {
-            return new RowExpressionConverter().convert((RowExpression) segment);
+            return RowExpressionConverter.convert((RowExpression) segment);
         }
         if (segment instanceof VariableSegment) {
-            return new VariableSegmentConverter().convert((VariableSegment) segment);
+            return VariableSegmentConverter.convert((VariableSegment) segment);
         }
         if (segment instanceof UnaryOperationExpression) {
-            return new UnaryOperationExpressionConverter().convert((UnaryOperationExpression) segment);
+            return UnaryOperationExpressionConverter.convert((UnaryOperationExpression) segment);
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }

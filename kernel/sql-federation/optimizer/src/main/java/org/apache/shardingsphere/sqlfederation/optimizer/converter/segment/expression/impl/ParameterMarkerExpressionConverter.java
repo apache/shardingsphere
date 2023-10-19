@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.Optional;
@@ -28,10 +29,16 @@ import java.util.Optional;
 /**
  * Parameter marker expression converter.
  */
-public final class ParameterMarkerExpressionConverter implements SQLSegmentConverter<ParameterMarkerExpressionSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ParameterMarkerExpressionConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final ParameterMarkerExpressionSegment segment) {
+    /**
+     * Convert parameter marker expression segment to sql node.
+     * 
+     * @param segment parameter marker expression segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final ParameterMarkerExpressionSegment segment) {
         return Optional.of(new SqlDynamicParam(segment.getParameterMarkerIndex(), SqlParserPos.ZERO));
     }
 }

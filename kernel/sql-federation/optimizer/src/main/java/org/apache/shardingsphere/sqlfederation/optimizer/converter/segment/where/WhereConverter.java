@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.where;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.Optional;
@@ -27,10 +28,16 @@ import java.util.Optional;
 /**
  * Where converter.
  */
-public final class WhereConverter implements SQLSegmentConverter<WhereSegment, SqlNode> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class WhereConverter {
     
-    @Override
-    public Optional<SqlNode> convert(final WhereSegment segment) {
-        return null == segment ? Optional.empty() : new ExpressionConverter().convert(segment.getExpr());
+    /**
+     * Convert where segment to sql node.
+     * 
+     * @param segment where segment
+     * @return sql node
+     */
+    public static Optional<SqlNode> convert(final WhereSegment segment) {
+        return null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr());
     }
 }
