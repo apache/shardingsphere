@@ -191,14 +191,14 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private ShardingSphereResultSet doExecuteQuery(final Collection<ExecutionContext> executionContexts) throws SQLException {
         ShardingSphereResultSet result = null;
+        // TODO support multi execution context, currently executionContexts.size() always equals 1
         for (ExecutionContext each : executionContexts) {
             List<QueryResult> queryResults = executeQuery0(each);
             MergedResult mergedResult = mergeQuery(queryResults, each.getSqlStatementContext());
             boolean selectContainsEnhancedTable =
                     each.getSqlStatementContext() instanceof SelectStatementContext && ((SelectStatementContext) each.getSqlStatementContext()).isContainsEnhancedTable();
-            if (null == result) {
-                result = new ShardingSphereResultSet(getResultSets(), mergedResult, this, selectContainsEnhancedTable, each);
-            }
+            result = new ShardingSphereResultSet(getResultSets(), mergedResult, this, selectContainsEnhancedTable, each);
+            
         }
         return result;
     }
@@ -363,15 +363,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                                          final Collection<ExecutionContext> executionContexts) throws SQLException {
         Integer result = null;
         Preconditions.checkArgument(!executionContexts.isEmpty());
+        // TODO support multi execution context, currently executionContexts.size() always equals 1
         for (ExecutionContext each : executionContexts) {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(each);
             cacheStatements(executionGroupContext.getInputGroups());
             JDBCExecutorCallback<Integer> callback = createExecuteUpdateCallback(updateCallback, sqlStatementContext);
-            int effectedCount = executor.getRegularExecutor().executeUpdate(executionGroupContext,
+            result = executor.getRegularExecutor().executeUpdate(executionGroupContext,
                     each.getQueryContext(), each.getRouteContext().getRouteUnits(), callback);
-            if (null == result) {
-                result = effectedCount;
-            }
         }
         return result;
     }
@@ -576,15 +574,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private boolean useDriverToExecute(final ExecuteCallback callback, final Collection<ExecutionContext> executionContexts) throws SQLException {
         Boolean result = null;
         Preconditions.checkArgument(!executionContexts.isEmpty());
+        // TODO support multi execution context, currently executionContexts.size() always equals 1
         for (ExecutionContext each : executionContexts) {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(each);
             cacheStatements(executionGroupContext.getInputGroups());
             JDBCExecutorCallback<Boolean> jdbcExecutorCallback = createExecuteCallback(callback, each.getSqlStatementContext().getSqlStatement());
-            boolean isWrite = executor.getRegularExecutor().execute(executionGroupContext,
+            result = executor.getRegularExecutor().execute(executionGroupContext,
                     each.getQueryContext(), each.getRouteContext().getRouteUnits(), jdbcExecutorCallback);
-            if (null == result) {
-                result = isWrite;
-            }
         }
         return result;
     }

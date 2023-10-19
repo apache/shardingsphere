@@ -222,11 +222,9 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private ResponseHeader doExecute(final Collection<ExecutionContext> executionContexts) throws SQLException {
         ResponseHeader result = null;
+        // TODO support multi execution context, currently executionContexts.size() always equals 1
         for (ExecutionContext each : executionContexts) {
-            ResponseHeader responseHeader = doExecute(each);
-            if (null == result) {
-                result = responseHeader;
-            }
+            result = doExecute(each);
         }
         return result;
     }
