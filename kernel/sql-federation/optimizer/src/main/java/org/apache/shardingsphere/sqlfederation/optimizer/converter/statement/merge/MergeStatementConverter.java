@@ -17,23 +17,35 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.merge;
 
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlInsert;
 import org.apache.calcite.sql.SqlMerge;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlUpdate;
+import org.apache.calcite.sql.SqlValuesOperator;
+import org.apache.calcite.sql.fun.SqlRowOperator;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.UpdateStatementHandler;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.where.WhereConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.SQLStatementConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -50,12 +62,23 @@ public final class MergeStatementConverter implements SQLStatementConverter<Merg
         if (null != mergeStatement.getUpdate()) {
             sqlUpdate = convertUpdate(mergeStatement.getUpdate());
         }
-        return new SqlMerge(SqlParserPos.ZERO, targetTable, condition, sourceTable, sqlUpdate, null, null, null);
+        SqlInsert sqlInsert = null;
+        if (null != mergeStatement.getInsert()) {
+            sqlInsert = convertInsert(mergeStatement.getInsert());
+        }
+        SqlMerge sqlMerge = new SqlMerge(SqlParserPos.ZERO, targetTable, condition, sourceTable, sqlUpdate, sqlInsert, null, null);
+        if (UpdateStatementHandler.getDeleteWhereSegment(mergeStatement.getUpdate()).isPresent()) {
+            Optional<WhereSegment> where = UpdateStatementHandler.getDeleteWhereSegment(mergeStatement.getUpdate());
+            SqlNode deleteCondition = where.flatMap(optional -> WhereConverter.convert(optional)).orElse(null);
+            SqlMergeDelete sqlMergeDelete = new SqlMergeDelete(SqlParserPos.ZERO, SqlNodeList.EMPTY, deleteCondition, null, null);
+            return new MergeDeleteOperation(SqlParserPos.ZERO, sqlMerge, sqlMergeDelete);
+        }
+        return sqlMerge;
     }
     
     private SqlUpdate convertUpdate(final UpdateStatement updateStatement) {
         SqlNode table = TableConverter.convert(updateStatement.getTable()).orElse(SqlNodeList.EMPTY);
-        SqlNode condition = updateStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
+        SqlNode condition = updateStatement.getWhere().flatMap(optional -> WhereConverter.convert(optional)).orElse(null);
         SqlNodeList columns = new SqlNodeList(SqlParserPos.ZERO);
         SqlNodeList expressions = new SqlNodeList(SqlParserPos.ZERO);
         for (AssignmentSegment each : updateStatement.getAssignmentSegment().orElseThrow(IllegalStateException::new).getAssignments()) {
@@ -71,5 +94,28 @@ public final class MergeStatementConverter implements SQLStatementConverter<Merg
     
     private SqlNode convertExpression(final ExpressionSegment expressionSegment) {
         return ExpressionConverter.convert(expressionSegment).orElseThrow(IllegalStateException::new);
+    }
+    
+    private SqlInsert convertInsert(final InsertStatement insertStatement) {
+        SqlNode table = TableConverter.convert(insertStatement.getTable()).orElseThrow(IllegalStateException::new);
+        SqlNode source;
+        if (insertStatement.getInsertSelect().isPresent()) {
+            source = new SelectStatementConverter().convert(insertStatement.getInsertSelect().get().getSelect());
+        } else {
+            List<SqlNode> values = new ArrayList<>();
+            for (InsertValuesSegment each : insertStatement.getValues()) {
+                for (ExpressionSegment value : each.getValues()) {
+                    values.add(convertExpression(value));
+                }
+            }
+            List<SqlNode> operands = Collections.singletonList(new SqlBasicCall(new SqlRowOperator("ROW"), values, SqlParserPos.ZERO));
+            source = new SqlBasicCall(new SqlValuesOperator(), operands, SqlParserPos.ZERO);
+        }
+        List<SqlNode> columns = insertStatement.getColumns().stream()
+                .map(each -> ColumnConverter.convert(each).orElseThrow(IllegalStateException::new))
+                .collect(Collectors.toList());
+        SqlNodeList columnList = columns.isEmpty() ? null : new SqlNodeList(columns, SqlParserPos.ZERO);
+        SqlNodeList keywords = new SqlNodeList(SqlParserPos.ZERO);
+        return new SqlInsert(SqlParserPos.ZERO, keywords, table, source, columnList);
     }
 }
