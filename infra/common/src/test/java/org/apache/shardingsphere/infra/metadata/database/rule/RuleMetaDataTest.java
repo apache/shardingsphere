@@ -79,10 +79,10 @@ class RuleMetaDataTest {
         assertThat(actual.get("testDataNodeSourceName").size(), is(1));
         assertTrue(actual.get("testDataNodeSourceName").contains(MockDataNodeContainedRule.class));
     }
-
+    
     @Test
     void assertGetInUsedStorageUnitNameAndRulesMapWhenRulesContainBothDataSourceContainedRuleAndDataNodeContainedRule() {
-        Collection<ShardingSphereRule> rules = new ArrayList<>(); 
+        Collection<ShardingSphereRule> rules = new ArrayList<>();
         DataSourceContainedRule dataSourceContainedRule = mock(DataSourceContainedRule.class);
         when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("test", Arrays.asList("testDataSourceName")));
         DataNodeContainedRule dataNodeContainedRule = new MockDataNodeContainedRule();
