@@ -23,7 +23,6 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -57,8 +56,6 @@ public final class SQLNodeConverterEngine {
         Optional<SqlNode> result = Optional.empty();
         if (sqlStatement instanceof DMLStatement) {
             result = convert((DMLStatement) sqlStatement);
-        } else if (sqlStatement instanceof DDLStatement) {
-            result = convert((DDLStatement) sqlStatement);
         } else if (sqlStatement instanceof DALStatement) {
             result = convert((DALStatement) sqlStatement);
         }
@@ -72,10 +69,6 @@ public final class SQLNodeConverterEngine {
         if (sqlStatement instanceof DeleteStatement) {
             return Optional.of(new DeleteStatementConverter().convert((DeleteStatement) sqlStatement));
         }
-        return Optional.empty();
-    }
-    
-    private static Optional<SqlNode> convert(final DDLStatement sqlStatement) {
         if (sqlStatement instanceof UpdateStatement) {
             return Optional.of(new UpdateStatementConverter().convert((UpdateStatement) sqlStatement));
         }

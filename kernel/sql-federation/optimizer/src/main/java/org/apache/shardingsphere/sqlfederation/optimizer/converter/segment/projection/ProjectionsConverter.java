@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ParameterMarkerExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl.AggregationProjectionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl.ColumnProjectionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl.ExpressionProjectionConverter;
@@ -74,6 +76,9 @@ public final class ProjectionsConverter {
         }
         if (segment instanceof AggregationProjectionSegment) {
             return AggregationProjectionConverter.convert((AggregationProjectionSegment) segment);
+        }
+        if (segment instanceof ParameterMarkerExpressionSegment) {
+            return ParameterMarkerExpressionConverter.convert((ParameterMarkerExpressionSegment) segment);
         }
         // TODO process other projection
         return Optional.empty();

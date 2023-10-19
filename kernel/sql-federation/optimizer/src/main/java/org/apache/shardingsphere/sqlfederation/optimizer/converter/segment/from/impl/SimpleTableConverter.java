@@ -46,6 +46,9 @@ public final class SimpleTableConverter {
      * @return sql node
      */
     public static Optional<SqlNode> convert(final SimpleTableSegment segment) {
+        if ("DUAL".equalsIgnoreCase(segment.getTableName().getIdentifier().getValue())) {
+            return Optional.empty();
+        }
         TableNameSegment tableName = segment.getTableName();
         List<String> names = new ArrayList<>();
         if (segment.getOwner().isPresent()) {
