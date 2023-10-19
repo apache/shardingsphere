@@ -68,12 +68,17 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         }
         if (1 == executionContexts.size()) {
             SQLStatement sqlStatement = executionContexts.iterator().next().getSqlStatementContext().getSqlStatement();
-            return isModifiedSQL(sqlStatement) && executionContexts.iterator().next().getExecutionUnits().size() > 1;
+            return isWriteDMLStatement(sqlStatement) && executionContexts.iterator().next().getExecutionUnits().size() > 1;
         }
-        return executionContexts.stream().anyMatch(each -> isModifiedSQL(each.getSqlStatementContext().getSqlStatement()));
+        for (ExecutionContext each : executionContexts) {
+            if (isWriteDMLStatement(each.getSqlStatementContext().getSqlStatement())) {
+                return true;
+            }
+        }
+        return false;
     }
     
-    private boolean isModifiedSQL(final SQLStatement sqlStatement) {
+    private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
         return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement);
     }
     

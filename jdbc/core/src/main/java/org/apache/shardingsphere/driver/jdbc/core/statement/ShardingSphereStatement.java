@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -195,7 +196,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             MergedResult mergedResult = mergeQuery(queryResults, each.getSqlStatementContext());
             boolean selectContainsEnhancedTable =
                     each.getSqlStatementContext() instanceof SelectStatementContext && ((SelectStatementContext) each.getSqlStatementContext()).isContainsEnhancedTable();
-            result = new ShardingSphereResultSet(getResultSets(), mergedResult, this, selectContainsEnhancedTable, each);
+            if (null == result) {
+                result = new ShardingSphereResultSet(getResultSets(), mergedResult, this, selectContainsEnhancedTable, each);
+            }
         }
         return result;
     }
@@ -358,13 +361,17 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private int useDriverToExecuteUpdate(final ExecuteUpdateCallback updateCallback, final SQLStatementContext sqlStatementContext,
                                          final Collection<ExecutionContext> executionContexts) throws SQLException {
-        int result = 0;
+        Integer result = null;
+        Preconditions.checkArgument(!executionContexts.isEmpty());
         for (ExecutionContext each : executionContexts) {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(each);
             cacheStatements(executionGroupContext.getInputGroups());
             JDBCExecutorCallback<Integer> callback = createExecuteUpdateCallback(updateCallback, sqlStatementContext);
-            result = executor.getRegularExecutor().executeUpdate(executionGroupContext,
+            int effectedCount = executor.getRegularExecutor().executeUpdate(executionGroupContext,
                     each.getQueryContext(), each.getRouteContext().getRouteUnits(), callback);
+            if (null == result) {
+                result = effectedCount;
+            }
         }
         return result;
     }
@@ -567,13 +574,17 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private boolean useDriverToExecute(final ExecuteCallback callback, final Collection<ExecutionContext> executionContexts) throws SQLException {
-        boolean result = false;
+        Boolean result = null;
+        Preconditions.checkArgument(!executionContexts.isEmpty());
         for (ExecutionContext each : executionContexts) {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(each);
             cacheStatements(executionGroupContext.getInputGroups());
             JDBCExecutorCallback<Boolean> jdbcExecutorCallback = createExecuteCallback(callback, each.getSqlStatementContext().getSqlStatement());
-            result = executor.getRegularExecutor().execute(executionGroupContext,
+            boolean isWrite = executor.getRegularExecutor().execute(executionGroupContext,
                     each.getQueryContext(), each.getRouteContext().getRouteUnits(), jdbcExecutorCallback);
+            if (null == result) {
+                result = isWrite;
+            }
         }
         return result;
     }
