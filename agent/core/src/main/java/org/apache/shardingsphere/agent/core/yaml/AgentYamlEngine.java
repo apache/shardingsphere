@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlAdvisorsConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentConfiguration;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -38,7 +39,7 @@ public final class AgentYamlEngine {
      * @return YAML agent configuration
      */
     public static YamlAgentConfiguration unmarshalYamlAgentConfiguration(final InputStream inputStream) {
-        return new Yaml(new AgentYamlConstructor(YamlAgentConfiguration.class)).loadAs(inputStream, YamlAgentConfiguration.class);
+        return new Yaml(new AgentYamlConstructor(YamlAgentConfiguration.class, createLoaderOptions())).loadAs(inputStream, YamlAgentConfiguration.class);
     }
     
     /**
@@ -48,6 +49,12 @@ public final class AgentYamlEngine {
      * @return YAML advisors configuration
      */
     public static YamlAdvisorsConfiguration unmarshalYamlAdvisorsConfiguration(final InputStream inputStream) {
-        return new Yaml(new AgentYamlConstructor(YamlAdvisorsConfiguration.class)).loadAs(inputStream, YamlAdvisorsConfiguration.class);
+        return new Yaml(new AgentYamlConstructor(YamlAdvisorsConfiguration.class, createLoaderOptions())).loadAs(inputStream, YamlAdvisorsConfiguration.class);
+    }
+    
+    private static LoaderOptions createLoaderOptions() {
+        LoaderOptions result = new LoaderOptions();
+        result.setCodePointLimit(Integer.MAX_VALUE);
+        return result;
     }
 }
