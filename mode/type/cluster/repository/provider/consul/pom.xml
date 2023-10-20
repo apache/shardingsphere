@@ -27,8 +27,8 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <consul.api.version>1.4.5</consul.api.version>
-        <httpclient.version>4.5.14</httpclient.version>
+        <consul.api.version>1.4.1</consul.api.version>
+        <httpclient.version>4.5.13</httpclient.version>
     </properties>
     
     <dependencyManagement>
