@@ -88,6 +88,7 @@
         <calcite.version>1.35.0</calcite.version>
         <immutables.version>2.9.3</immutables.version>
         <netty.version>4.1.99.Final</netty.version>
+        <netty-tcnative.version>2.0.62.Final</netty-tcnative.version>
         <bouncycastle.version>1.70</bouncycastle.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
@@ -371,6 +372,11 @@
                 <version>${netty.version}</version>
                 <classifier>linux-aarch_64</classifier>
                 <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-tcnative-boringssl-static</artifactId>
+                <version>${netty-tcnative.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.transaction</groupId>
