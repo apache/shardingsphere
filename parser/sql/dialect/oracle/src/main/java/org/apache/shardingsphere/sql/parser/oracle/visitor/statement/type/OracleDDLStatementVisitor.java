@@ -95,6 +95,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSPFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateSynonymContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateRelationalTableClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTableAsSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateTypeContext;
@@ -183,6 +185,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.al
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.PackageSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.CreateTableWithSelectClauseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
@@ -343,6 +346,9 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
                     result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                } else if (each instanceof CreateTableWithSelectClauseSegment) {
+                    result.setSelectStatement(((CreateTableWithSelectClauseSegment) each).getSelectStatement());
+                    result.addParameterMarkerSegments(getGlobalParameterMarkerSegments());
                 }
             }
         }
@@ -396,13 +402,30 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         return new TypeDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.name().getText(), (DataTypeSegment) visit(ctx.dataType()));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
         CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
-        if (null == ctx.createRelationalTableClause()) {
-            return result;
+        if (null != ctx.createTableAsSelectClause()) {
+            result.getValue().add((CreateDefinitionSegment) visit(ctx.createTableAsSelectClause()));
+        } else if (null != ctx.createRelationalTableClause()) {
+            result.combine((CollectionValue<CreateDefinitionSegment>) visit(ctx.createRelationalTableClause()));
         }
-        for (RelationalPropertyContext each : ctx.createRelationalTableClause().relationalProperties().relationalProperty()) {
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateTableAsSelectClause(final CreateTableAsSelectClauseContext ctx) {
+        OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor();
+        getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
+        getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
+        return new CreateTableWithSelectClauseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visitor.visit(ctx.selectSubquery()));
+    }
+    
+    @Override
+    public ASTNode visitCreateRelationalTableClause(final CreateRelationalTableClauseContext ctx) {
+        CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
+        for (RelationalPropertyContext each : ctx.relationalProperties().relationalProperty()) {
             if (null != each.columnDefinition()) {
                 result.getValue().add((ColumnDefinitionSegment) visit(each.columnDefinition()));
             }
