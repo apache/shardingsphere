@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.CreateT
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
@@ -61,19 +60,6 @@ public final class CreateTableStatementHandler implements SQLStatementHandler {
             return ((OpenGaussCreateTableStatement) createTableStatement).isIfNotExists();
         }
         return false;
-    }
-    
-    /**
-     * Get select statement.
-     *
-     * @param createTableStatement create table statement
-     * @return select statement
-     */
-    public static Optional<SelectStatement> getSelectStatement(final CreateTableStatement createTableStatement) {
-        if (createTableStatement instanceof SQLServerStatement) {
-            return ((SQLServerCreateTableStatement) createTableStatement).getSelectStatement();
-        }
-        return Optional.empty();
     }
     
     /**

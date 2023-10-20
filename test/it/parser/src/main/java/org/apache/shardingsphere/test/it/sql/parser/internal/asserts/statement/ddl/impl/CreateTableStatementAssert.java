@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.CreateT
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
@@ -90,12 +89,11 @@ public final class CreateTableStatementAssert {
     }
     
     private static void assertCreateTableAsSelectStatement(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
-        Optional<SelectStatement> selectStatement = CreateTableStatementHandler.getSelectStatement(actual);
         if (null == expected.getCreateTableAsSelectStatement()) {
-            assertFalse(selectStatement.isPresent(), "actual select statement should not exist");
+            assertFalse(actual.getSelectStatement().isPresent(), "actual select statement should not exist");
         } else {
-            assertTrue(selectStatement.isPresent(), "actual select statement should exist");
-            SelectStatementAssert.assertIs(assertContext, selectStatement.get(), expected.getCreateTableAsSelectStatement());
+            assertTrue(actual.getSelectStatement().isPresent(), "actual select statement should exist");
+            SelectStatementAssert.assertIs(assertContext, actual.getSelectStatement().get(), expected.getCreateTableAsSelectStatement());
         }
     }
     
