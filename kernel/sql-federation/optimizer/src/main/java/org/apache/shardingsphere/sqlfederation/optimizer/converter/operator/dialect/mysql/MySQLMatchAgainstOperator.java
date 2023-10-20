@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.converter.function.dialect.mysql;
+package org.apache.shardingsphere.sqlfederation.optimizer.converter.operator.dialect.mysql;
 
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlFunction;
@@ -38,13 +38,13 @@ import org.apache.calcite.util.Util;
 import java.util.List;
 
 /**
- * MySQL match against function.
+ * MySQL match against operator.
  */
-public final class MySQLMatchAgainstFunction extends SqlFunction {
+public final class MySQLMatchAgainstOperator extends SqlFunction {
     
     private static final FrameType FRAME_TYPE = FrameTypeEnum.create("MATCH");
     
-    public MySQLMatchAgainstFunction() {
+    public MySQLMatchAgainstOperator() {
         super("MATCH_AGAINST", SqlKind.OTHER_FUNCTION, ReturnTypes.DOUBLE, InferTypes.FIRST_KNOWN, OperandTypes.ANY, SqlFunctionCategory.STRING);
     }
     

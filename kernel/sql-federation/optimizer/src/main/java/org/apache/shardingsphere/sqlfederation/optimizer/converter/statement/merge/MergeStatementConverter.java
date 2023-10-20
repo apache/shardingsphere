@@ -44,7 +44,7 @@ public final class MergeStatementConverter implements SQLStatementConverter<Merg
     @Override
     public SqlNode convert(final MergeStatement mergeStatement) {
         SqlNode targetTable = TableConverter.convert(mergeStatement.getTarget()).orElseThrow(IllegalStateException::new);
-        SqlNode condition = ExpressionConverter.convert(mergeStatement.getExpression().getExpr()).get();
+        SqlNode condition = ExpressionConverter.convert(mergeStatement.getExpression().getExpr()).orElseThrow(IllegalStateException::new);
         SqlNode sourceTable = TableConverter.convert(mergeStatement.getSource()).orElseThrow(IllegalStateException::new);
         SqlUpdate sqlUpdate = null;
         if (null != mergeStatement.getUpdate()) {
