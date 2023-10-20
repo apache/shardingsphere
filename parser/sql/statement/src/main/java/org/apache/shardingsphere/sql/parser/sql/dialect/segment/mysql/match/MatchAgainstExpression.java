@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.mysql.match;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
- * Xml table options segment.
+ * Match against expression.
  */
 @RequiredArgsConstructor
 @Getter
-public final class XmlTableOptionsSegment implements ComplexExpressionSegment {
+@Setter
+public final class MatchAgainstExpression implements ExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
+    private final ColumnSegment columnName;
     
-    private final Collection<XmlTableColumnSegment> xmlTableColumnSegments = new LinkedList<>();
+    private final ExpressionSegment expr;
+    
+    private final String searchModifier;
     
     private final String text;
 }

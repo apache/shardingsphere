@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.datetime;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
  * Datetime expression.
  */
-
 @Getter
 @Setter
 public final class DatetimeExpression implements ExpressionSegment {

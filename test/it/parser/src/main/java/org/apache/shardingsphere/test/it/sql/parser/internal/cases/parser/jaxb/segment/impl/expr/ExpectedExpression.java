@@ -105,8 +105,8 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     @XmlElement(name = "match-expression")
     private ExpectedMatchExpression matchExpression;
     
-    @XmlElement(name = "colum-with-join-operator-segment")
-    private ExpectedColumnWithJoinOperatorSegment columnWithJoinOperatorSegment;
+    @XmlElement(name = "outer-join-expression")
+    private ExpectedOuterJoinExpression outerJoinExpression;
     
     @XmlElement(name = "interval-expression")
     private ExpectedIntervalExpression intervalExpression;

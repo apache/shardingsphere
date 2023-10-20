@@ -15,40 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
- * Xml serialize function segment.
+ * Multi table conditional into when then segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class XmlSerializeFunctionSegment implements ComplexExpressionSegment, ProjectionSegment {
+public final class MultiTableConditionalIntoWhenThenSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String functionName;
+    private final ExpressionSegment whenSegment;
     
-    private final ExpressionSegment parameter;
-    
-    private final String dataType;
-    
-    private final String encoding;
-    
-    private final String version;
-    
-    private final String identSize;
-    
-    private final String text;
-    
-    @Override
-    public String getColumnLabel() {
-        return text;
-    }
+    private final MultiTableConditionalIntoThenSegment thenSegment;
 }

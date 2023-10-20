@@ -15,38 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 
 /**
- * Between expression.
+ * Xml table function segment.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class IntervalDayToSecondExpression implements ExpressionSegment {
+public final class XmlTableFunctionSegment implements ComplexExpressionSegment, ProjectionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String day;
+    private final String functionName;
     
-    private final String to;
+    private final XmlNameSpacesClauseSegment xmlNameSpacesClause;
     
-    private final String second;
+    private final String xQueryString;
     
-    @Setter
-    private Integer leadingFieldPrecision;
+    private final XmlTableOptionsSegment xmlTableOption;
     
-    @Setter
-    private Integer fractionalSecondPrecision;
+    private final String text;
     
     @Override
-    public String getText() {
-        return null;
+    public String getColumnLabel() {
+        return text;
     }
 }

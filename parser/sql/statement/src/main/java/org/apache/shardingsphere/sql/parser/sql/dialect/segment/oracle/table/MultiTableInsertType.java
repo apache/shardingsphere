@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
-
-import javax.xml.bind.annotation.XmlElement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table;
 
 /**
- * Expected column with join operator segment.
+ * Multi table insert type.
  */
-@Getter
-@Setter
-public final class ExpectedColumnWithJoinOperatorSegment extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+public enum MultiTableInsertType {
     
-    @XmlElement
-    private ExpectedColumn column;
-    
-    @XmlElement(name = "join-operator")
-    private String joinOperator;
-    
+    ALL, FIRST
 }

@@ -15,26 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.insert;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 
 /**
- * Multi table insert into segment.
+ * Xml serialize function segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MultiTableInsertIntoSegment implements SQLSegment {
+public final class XmlSerializeFunctionSegment implements ComplexExpressionSegment, ProjectionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final Collection<InsertStatement> insertStatements = new LinkedList<>();
+    private final String functionName;
+    
+    private final ExpressionSegment parameter;
+    
+    private final String dataType;
+    
+    private final String encoding;
+    
+    private final String version;
+    
+    private final String identSize;
+    
+    private final String text;
+    
+    @Override
+    public String getColumnLabel() {
+        return text;
+    }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

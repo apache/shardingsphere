@@ -19,28 +19,28 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.co
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ColumnWithJoinOperatorSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.join.OuterJoinExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedColumnWithJoinOperatorSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedOuterJoinExpression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Column with join operator assert.
+ * Outer join expression assert.
  */
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ColumnWithJoinOperatorAssert {
+public final class OuterJoinExpressionAssert {
     
     /**
-     * Assert actual column segment is correct with expected column.
+     * Assert actual outer join expression is correct with expected outer join expression.
      *
      * @param assertContext assert context
-     * @param actual actual column with join operator segment
-     * @param expected expected column with join operator segment
+     * @param actual actual outer join expression 
+     * @param expected expected outer join expression 
      */
     
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ColumnWithJoinOperatorSegment actual, final ExpectedColumnWithJoinOperatorSegment expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final OuterJoinExpression actual, final ExpectedOuterJoinExpression expected) {
         ColumnAssert.assertIs(assertContext, actual.getColumnName(), expected.getColumn());
         assertEquals(actual.getJoinOperator(), expected.getJoinOperator());
     }
