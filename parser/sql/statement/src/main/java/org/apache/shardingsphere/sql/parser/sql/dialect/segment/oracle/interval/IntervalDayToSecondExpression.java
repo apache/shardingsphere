@@ -15,40 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.interval;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
- * Xml element function segment.
+ * Interval day to second expression.
  */
 @RequiredArgsConstructor
 @Getter
-public class XmlElementFunctionSegment implements ComplexExpressionSegment, ProjectionSegment {
+@Setter
+public final class IntervalDayToSecondExpression implements ExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String functionName;
+    private final String day;
     
-    private final IdentifierValue identifier;
+    private final String to;
     
-    private final Collection<ExpressionSegment> xmlAttributes = new LinkedList<>();
+    private final String second;
     
-    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
+    @Setter
+    private Integer leadingFieldPrecision;
     
-    private final String text;
+    @Setter
+    private Integer fractionalSecondPrecision;
     
     @Override
-    public String getColumnLabel() {
-        return text;
+    public String getText() {
+        return null;
     }
 }

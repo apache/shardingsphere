@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.insert;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+
+import java.util.Collection;
 
 /**
- * Multi table conditional into when then segment.
+ * Multi table conditional into then segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MultiTableConditionalIntoWhenThenSegment implements SQLSegment {
+public final class MultiTableConditionalIntoThenSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final ExpressionSegment whenSegment;
-    
-    private final MultiTableConditionalIntoThenSegment thenSegment;
+    private final Collection<InsertStatement> insertStatements;
 }

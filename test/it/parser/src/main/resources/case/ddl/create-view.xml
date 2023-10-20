@@ -206,12 +206,12 @@
                                     </column>
                                 </left>
                                 <right>
-                                    <colum-with-join-operator-segment>
+                                    <outer-join-expression>
                                         <column name="planet_name" start-index="130" stop-index="142">
                                             <owner name="m" start-index="130" stop-index="130" />
                                         </column>
                                         <join-operator>(+)</join-operator>
-                                    </colum-with-join-operator-segment>
+                                    </outer-join-expression>
                                 </right>
                                 <operator>=</operator>
                             </binary-operation-expression>
@@ -219,12 +219,12 @@
                         <right>
                             <binary-operation-expression start-index="151" stop-index="174">
                                 <left>
-                                    <colum-with-join-operator-segment>
+                                    <outer-join-expression>
                                         <column name="name" start-index="151" stop-index="156">
                                             <owner name="m" start-index="151" stop-index="151" />
                                         </column>
                                         <join-operator>(+)</join-operator>
-                                    </colum-with-join-operator-segment>
+                                    </outer-join-expression>
                                 </left>
                                 <right>
                                     <list-expression start-index="170" stop-index="174">

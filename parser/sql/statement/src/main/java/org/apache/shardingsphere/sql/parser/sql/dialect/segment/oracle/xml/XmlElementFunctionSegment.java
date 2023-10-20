@@ -15,25 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.insert;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Multi table conditional into else segment.
+ * Xml element function segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MultiTableConditionalIntoElseSegment implements SQLSegment {
+public final class XmlElementFunctionSegment implements ComplexExpressionSegment, ProjectionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final Collection<InsertStatement> insertStatements;
+    private final String functionName;
+    
+    private final IdentifierValue identifier;
+    
+    private final Collection<ExpressionSegment> xmlAttributes = new LinkedList<>();
+    
+    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
+    
+    private final String text;
+    
+    @Override
+    public String getColumnLabel() {
+        return text;
+    }
 }

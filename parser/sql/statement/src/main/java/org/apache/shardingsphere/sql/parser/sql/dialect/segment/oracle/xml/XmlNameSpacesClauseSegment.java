@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Match against expression.
+ * Xml name spaces segment.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class MatchAgainstExpression implements ExpressionSegment {
+public final class XmlNameSpacesClauseSegment implements ComplexExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final ColumnSegment columnName;
+    private final String defaultString;
     
-    private final ExpressionSegment expr;
-    
-    private final String searchModifier;
+    private final Collection<XmlNameSpaceStringAsIdentifierSegment> stringAsIdentifier = new LinkedList<>();
     
     private final String text;
 }

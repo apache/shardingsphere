@@ -15,12 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.insert;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.multiset;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
- * Multi table insert type.
+ * Multiset expression.
  */
-public enum MultiTableInsertType {
+@RequiredArgsConstructor
+@Getter
+@Setter
+public final class MultisetExpression implements ExpressionSegment {
     
-    ALL, FIRST
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final ExpressionSegment left;
+    
+    private final ExpressionSegment right;
+    
+    private final String operator;
+    
+    private final String keyWord;
+    
+    private final String text;
 }

@@ -15,30 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.interval;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
- * Column with join operator segment.
+ * Interval year to month expression.
  */
 @RequiredArgsConstructor
 @Getter
-public class ColumnWithJoinOperatorSegment implements ExpressionSegment {
+@Setter
+public final class IntervalYearToMonthExpression implements ExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final ColumnSegment columnName;
+    private final String year;
     
-    private final String joinOperator;
+    private final String to;
+    
+    private final String month;
+    
+    @Setter
+    private Integer leadingFieldPrecision;
     
     @Override
     public String getText() {
-        return getColumnName().toString();
+        return null;
     }
 }

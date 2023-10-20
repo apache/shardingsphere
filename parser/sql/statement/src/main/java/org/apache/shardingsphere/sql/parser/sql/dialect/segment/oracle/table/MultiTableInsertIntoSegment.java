@@ -15,35 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Interval year to month expression.
+ * Multi table insert into segment.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class IntervalYearToMonthExpression implements ExpressionSegment {
+public final class MultiTableInsertIntoSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String year;
-    
-    private final String to;
-    
-    private final String month;
-    
-    @Setter
-    private Integer leadingFieldPrecision;
-    
-    @Override
-    public String getText() {
-        return null;
-    }
+    private final Collection<InsertStatement> insertStatements = new LinkedList<>();
 }

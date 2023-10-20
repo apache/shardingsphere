@@ -15,28 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 
+/**
+ * Xml table column segment.
+ */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public class MultisetExpression implements ExpressionSegment {
+public final class XmlTableColumnSegment implements ComplexExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final ExpressionSegment left;
+    private final String columnName;
     
-    private final ExpressionSegment right;
+    private final String dataType;
     
-    private final String operator;
+    private final String path;
     
-    private final String keyWord;
+    private final ExpressionSegment defaultExpr;
     
     private final String text;
 }
