@@ -87,8 +87,7 @@
         
         <calcite.version>1.35.0</calcite.version>
         <immutables.version>2.9.3</immutables.version>
-        <netty.version>4.1.99.Final</netty.version>
-        <netty-tcnative.version>2.0.62.Final</netty-tcnative.version>
+        <netty.version>4.1.100.Final</netty.version>
         <bouncycastle.version>1.70</bouncycastle.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
@@ -306,77 +305,10 @@
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
-                <artifactId>netty-buffer</artifactId>
+                <artifactId>netty-bom</artifactId>
                 <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec-http</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec-http2</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec-socks</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-common</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-handler</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-handler-proxy</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-resolver</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-transport</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-transport-classes-epoll</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-transport-native-epoll</artifactId>
-                <version>${netty.version}</version>
-                <classifier>linux-x86_64</classifier>
-                <scope>runtime</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-transport-native-epoll</artifactId>
-                <version>${netty.version}</version>
-                <classifier>linux-aarch_64</classifier>
-                <scope>runtime</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-tcnative-boringssl-static</artifactId>
-                <version>${netty-tcnative.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>javax.transaction</groupId>
@@ -389,10 +321,6 @@
                 <artifactId>zookeeper</artifactId>
                 <version>${zookeeper.version}</version>
                 <exclusions>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty-transport-native-epoll</artifactId>
-                    </exclusion>
                     <exclusion>
                         <groupId>ch.qos.logback</groupId>
                         <artifactId>logback-core</artifactId>
@@ -426,10 +354,6 @@
                     <exclusion>
                         <groupId>io.vertx</groupId>
                         <artifactId>vertx-grpc</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty-transport-native-unix-common</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
