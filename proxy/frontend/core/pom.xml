@@ -26,10 +26,6 @@
     <artifactId>shardingsphere-proxy-frontend-core</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <netty.tcnative.version>2.0.59.Final</netty.tcnative.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -96,7 +92,6 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-tcnative-boringssl-static</artifactId>
-            <version>${netty.tcnative.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
