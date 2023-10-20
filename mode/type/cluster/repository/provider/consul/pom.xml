@@ -27,8 +27,8 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <consul.api.version>1.4.1</consul.api.version>
-        <httpclient.version>4.5.13</httpclient.version>
+        <consul.api.version>1.4.5</consul.api.version>
+        <httpclient.version>4.5.14</httpclient.version>
     </properties>
     
     <dependencyManagement>
@@ -63,6 +63,10 @@
         <dependency>
             <groupId>com.ecwid.consul</groupId>
             <artifactId>consul-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
         </dependency>
         
         <dependency>
