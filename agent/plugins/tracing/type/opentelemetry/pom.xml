@@ -30,6 +30,7 @@
         <opentelemetry-bom.version>1.22.0</opentelemetry-bom.version>
         <opentelemetry-autoconfigure.version>1.22.0-alpha</opentelemetry-autoconfigure.version>
         <okhttp.version>4.12.0</okhttp.version>
+        <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
     </properties>
     
     <dependencyManagement>
@@ -45,6 +46,21 @@
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>
                 <version>${okhttp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>${kotlin-stdlib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-common</artifactId>
+                <version>${kotlin-stdlib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-jdk8</artifactId>
+                <version>${kotlin-stdlib.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
