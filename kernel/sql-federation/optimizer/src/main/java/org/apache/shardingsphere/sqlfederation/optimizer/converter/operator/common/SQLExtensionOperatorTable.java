@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.converter.function.dialect.mysql;
+package org.apache.shardingsphere.sqlfederation.optimizer.converter.operator.common;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlPrefixOperator;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.operator.dialect.mysql.MySQLMatchAgainstOperator;
 
 /**
  * SQL extension operator table.
@@ -53,11 +54,11 @@ public final class SQLExtensionOperatorTable {
     
     public static final SqlBinaryOperator SOUNDS_LIKE = new SqlBinaryOperator("SOUNDS LIKE", SqlKind.OTHER, 30, true, null, null, null);
     
-    public static final MySQLMatchAgainstFunction MATCH_AGAINST = new MySQLMatchAgainstFunction();
-    
     public static final SqlBinaryOperator COLLATE = new SqlBinaryOperator("COLLATE", SqlKind.OTHER, 30, true, null, null, null);
     
     public static final SqlBinaryOperator ASSIGNMENT = new SqlBinaryOperator(":=", SqlKind.OTHER, 30, true, null, null, null);
     
     public static final SqlPrefixOperator TILDE = new SqlPrefixOperator("~", SqlKind.OTHER, 26, null, null, null);
+    
+    public static final MySQLMatchAgainstOperator MATCH_AGAINST = new MySQLMatchAgainstOperator();
 }
