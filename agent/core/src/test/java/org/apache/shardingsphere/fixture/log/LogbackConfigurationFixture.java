@@ -39,7 +39,7 @@ public final class LogbackConfigurationFixture extends BasicConfigurator {
     public static final String SHARDINGSPHERE_LOGGER_NAME = "org.apache.shardingsphere.agent";
     
     @Override
-    public void configure(final LoggerContext loggerContext) {
+    public ExecutionStatus configure(final LoggerContext loggerContext) {
         Appender<ILoggingEvent> appender = createFileAppender(loggerContext);
         Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(Level.INFO);
@@ -48,6 +48,7 @@ public final class LogbackConfigurationFixture extends BasicConfigurator {
         logger.setLevel(Level.INFO);
         logger.setAdditive(false);
         logger.addAppender(appender);
+        return ExecutionStatus.NEUTRAL;
     }
     
     private FileAppender<ILoggingEvent> createFileAppender(final LoggerContext loggerContext) {
