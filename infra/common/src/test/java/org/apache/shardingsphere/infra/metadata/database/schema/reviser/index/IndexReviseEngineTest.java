@@ -34,8 +34,10 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.equalToObject;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -67,6 +69,7 @@ public class IndexReviseEngineTest<T extends ShardingSphereRule> {
         
         Assertions.assertNotNull(actual);
         assertThat(actual.size(), is(1));
+        assertThat(actual, equalToObject(indexMetaDataCollection));
     }
     
     @Test
@@ -80,10 +83,10 @@ public class IndexReviseEngineTest<T extends ShardingSphereRule> {
         
         Collection<IndexMetaData> indexMetaDataCollection = Arrays.asList(new IndexMetaData("index1"), new IndexMetaData("index2"));
         
-        Collection<IndexMetaData> response = indexReviseEngine.revise("tableName", indexMetaDataCollection);
+        Collection<IndexMetaData> actual = indexReviseEngine.revise("tableName", indexMetaDataCollection);
         
-        assertThat(response.size(), equalTo(1));
-        assertThat(response.contains(indexMetaData), equalTo(Boolean.TRUE));
+        assertThat(actual.size(), equalTo(1));
+        assertTrue(actual.contains(indexMetaData));
     }
     
 }
