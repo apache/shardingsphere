@@ -49,4 +49,9 @@ class NewGlobalNodeTest {
     void assertGetGlobalRuleVersionsNode() {
         assertThat(NewGlobalNode.getGlobalRuleVersionsNode("transaction"), is("/rules/transaction/versions"));
     }
+
+    @Test
+    void assertGetGlobalRuleVersionNode() {
+        assertThat(NewGlobalNode.getGlobalRuleVersionNode("transaction", "0"), is("/rules/transaction/versions/0"));
+    }
 }
