@@ -21,12 +21,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * SQLServer create table statement.
@@ -36,15 +34,4 @@ import java.util.Optional;
 public final class SQLServerCreateTableStatement extends CreateTableStatement implements SQLServerStatement {
     
     private final List<ColumnSegment> columns = new LinkedList<>();
-    
-    private SelectStatement selectStatement;
-    
-    /**
-     * Get select statement.
-     *
-     * @return select statement
-     */
-    public Optional<SelectStatement> getSelectStatement() {
-        return Optional.ofNullable(selectStatement);
-    }
 }

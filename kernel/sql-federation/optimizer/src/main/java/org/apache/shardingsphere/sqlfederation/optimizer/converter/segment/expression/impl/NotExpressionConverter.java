@@ -24,7 +24,7 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.function.dialect.mysql.SQLExtensionOperatorTable;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.operator.common.SQLExtensionOperatorTable;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.LinkedList;

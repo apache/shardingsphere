@@ -574,12 +574,12 @@
             <expr>
                 <binary-operation-expression start-index="47" stop-index="72">
                     <left>
-                        <colum-with-join-operator-segment start-index="47" stop-index="48">
+                        <outer-join-expression start-index="47" stop-index="48">
                             <column name="order_id" start-index="47" stop-index="56">
                                 <owner name="o" start-index="47" stop-index="47" />
                             </column>
                             <join-operator>(+)</join-operator>
-                        </colum-with-join-operator-segment>
+                        </outer-join-expression>
                     </left>
                     <operator>=</operator>
                     <right>

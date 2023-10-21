@@ -21,14 +21,15 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-tracing-type</artifactId>
-        <version>5.4.1-SNAPSHOT</version>
+        <version>5.4.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-tracing-opentelemetry</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
-        <opentelemetry-bom.version>1.22.0</opentelemetry-bom.version>
-        <opentelemetry-autoconfigure.version>1.22.0-alpha</opentelemetry-autoconfigure.version>
+        <opentelemetry-bom.version>1.31.0</opentelemetry-bom.version>
+        <okhttp.version>4.12.0</okhttp.version>
+        <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
     </properties>
     
     <dependencyManagement>
@@ -39,6 +40,26 @@
                 <version>${opentelemetry-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${okhttp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>${kotlin-stdlib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-common</artifactId>
+                <version>${kotlin-stdlib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-jdk8</artifactId>
+                <version>${kotlin-stdlib.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -67,7 +88,6 @@
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId>
-            <version>${opentelemetry-autoconfigure.version}</version>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>

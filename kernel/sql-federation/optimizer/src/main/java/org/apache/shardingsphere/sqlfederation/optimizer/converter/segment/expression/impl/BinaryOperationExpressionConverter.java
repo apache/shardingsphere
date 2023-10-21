@@ -29,7 +29,7 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.function.dialect.mysql.SQLExtensionOperatorTable;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.operator.common.SQLExtensionOperatorTable;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
 import java.util.Collections;
