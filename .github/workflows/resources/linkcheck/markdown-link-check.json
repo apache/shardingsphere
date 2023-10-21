@@ -17,6 +17,9 @@
     },
     {
       "pattern": "^https://starchart.cc/"
+    },
+    {
+      "pattern": "^https://www.apiseven.com"
     }
   ], "replacementPatterns": [
   {

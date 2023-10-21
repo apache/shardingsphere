@@ -22,8 +22,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -133,7 +133,7 @@ class ShardingSphereDataSourceTest {
             ShardingSphereDataSource actual = createShardingSphereDataSource(dataSource);
             actual.close();
             Map<StorageNode, DataSource> dataSourceMap = getContextManager(actual).getMetaDataContexts().getMetaData()
-                    .getDatabase(DefaultDatabase.LOGIC_NAME).getResourceMetaData().getDataSourceMap();
+                    .getDatabase(DefaultDatabase.LOGIC_NAME).getResourceMetaData().getDataSources();
             assertTrue(((HikariDataSource) dataSourceMap.get(new StorageNode("ds"))).isClosed());
         }
     }

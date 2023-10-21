@@ -42,8 +42,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MigrationDataConsistencyCheckerTest {
@@ -66,9 +64,8 @@ class MigrationDataConsistencyCheckerTest {
         Map<String, TableDataConsistencyCheckResult> actual = new MigrationDataConsistencyChecker(jobConfig, new MigrationProcessContext(jobConfig.getJobId(), null),
                 createConsistencyCheckJobItemProgressContext(jobConfig.getJobId())).check("FIXTURE", null);
         String checkKey = "t_order";
-        assertTrue(actual.get(checkKey).getCountCheckResult().isMatched());
-        assertThat(actual.get(checkKey).getCountCheckResult().getSourceRecordsCount(), is(actual.get(checkKey).getCountCheckResult().getTargetRecordsCount()));
-        assertTrue(actual.get(checkKey).getContentCheckResult().isMatched());
+        assertTrue(actual.get(checkKey).isMatched());
+        assertTrue(actual.get(checkKey).isMatched());
     }
     
     private ConsistencyCheckJobItemProgressContext createConsistencyCheckJobItemProgressContext(final String jobId) {

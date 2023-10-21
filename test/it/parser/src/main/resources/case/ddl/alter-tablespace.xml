@@ -21,32 +21,120 @@
         <tablespace start-index="17" stop-index="19" name="ts1" />
         <rename start-index="31" stop-index="33" name="ts2" />
     </alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_read_only"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_read_write"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_add_datafile"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_add_datafile_autoextend_next_maxsize_unlimited"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_add_datafile_size_autoextend_next_maxsize"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_add_datafile_size_reuse"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_add_tempfile_size_autoextend"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_shrink_tempfile"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_shrink_space"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_shrink_space_keep"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_drop_tempfile"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_drop_datafile"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_group_newname"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_group_empty"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_begin_backup"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_end_backup"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_online"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_offline"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_offline_normal"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_offline_immediate"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_offline_temporary"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_flashback_off"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_flashback_on"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_retention_guarantee"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_retention_noguarantee"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_rename_datafile"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_rename_datafile_single"></alter-tablespace>
-    <alter-tablespace sql-case-id="alter_tablespace_rename_datafile_multiple"></alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_read_only">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_read_write">
+        <tablespace start-index="17" stop-index="23" name="sales_1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile_autoextend_next_maxsize_unlimited">
+        <tablespace start-index="17" stop-index="26" name="undotbs_01" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile_size_autoextend_next_maxsize">
+        <tablespace start-index="17" stop-index="22" name="tbs_03" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_add_datafile_size_reuse">
+        <tablespace start-index="17" stop-index="22" name="stocks" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_add_tempfile_size_autoextend">
+        <tablespace start-index="17" stop-index="25" name="temp_demo" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_shrink_tempfile">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_shrink_space">
+        <tablespace start-index="17" stop-index="25" name="temp_demo" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_shrink_space_keep">
+        <tablespace start-index="17" stop-index="23" name="lmtemp1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_drop_tempfile">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_drop_datafile">
+        <tablespace start-index="17" stop-index="19" name="ts1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_group_newname">
+        <tablespace start-index="17" stop-index="23" name="lmtemp2" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_group_empty">
+        <tablespace start-index="17" stop-index="23" name="lmtemp3" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_begin_backup">
+        <tablespace start-index="17" stop-index="22" name="tbs_01" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_end_backup">
+        <tablespace start-index="17" stop-index="21" name="users" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_online">
+        <tablespace start-index="17" stop-index="22" name="tbs_02" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_offline">
+        <tablespace start-index="17" stop-index="21" name="tbs_4" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_offline_normal">
+        <tablespace start-index="17" stop-index="21" name="users" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_offline_immediate">
+        <tablespace start-index="17" stop-index="21" name="users" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_offline_temporary">
+        <tablespace start-index="17" stop-index="21" name="users" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_flashback_off">
+        <tablespace start-index="17" stop-index="21" name="tbs_3" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_flashback_on">
+        <tablespace start-index="17" stop-index="21" name="tbs_3" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_retention_guarantee">
+        <tablespace start-index="17" stop-index="23" name="undots1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_retention_noguarantee">
+        <tablespace start-index="17" stop-index="23" name="undots1" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_rename_datafile">
+        <tablespace start-index="17" stop-index="22" name="tbs_02" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_rename_datafile_single">
+        <tablespace start-index="17" stop-index="21" name="users" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_rename_datafile_multiple">
+        <tablespace start-index="17" stop-index="21" name="users" />
+    </alter-tablespace>
+    
+    <alter-tablespace sql-case-id="alter_tablespace_autoextend_on_next_g">
+        <tablespace start-index="17" stop-index="22" name="bigtbs" />
+    </alter-tablespace>
 </sql-parser-test-cases>

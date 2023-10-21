@@ -19,8 +19,8 @@ package org.apache.shardingsphere.parser.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.ral.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.parser.distsql.parser.segment.CacheOptionSegment;
-import org.apache.shardingsphere.parser.distsql.parser.statement.updatable.AlterSQLParserRuleStatement;
+import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
+import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 /**

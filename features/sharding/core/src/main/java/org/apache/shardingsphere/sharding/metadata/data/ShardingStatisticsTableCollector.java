@@ -81,7 +81,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereSta
                 row.add(each.getLogicTable());
                 row.add(dataNode.getDataSourceName());
                 row.add(dataNode.getTableName());
-                addTableRowsAndDataLength(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits(), dataNode, row);
+                addTableRowsAndDataLength(database.getResourceMetaData().getStorageUnits(), dataNode, row);
                 tableData.getRows().add(new ShardingSphereRowData(row));
             }
         }

@@ -154,7 +154,7 @@ public final class EncryptGeneratorFixtureBuilder {
                 new IdentifierValue("status")));
         projections.getProjections().add(new ColumnProjectionSegment(statusColumn));
         selectStatement.setProjections(projections);
-        result.setInsertSelect(new SubquerySegment(0, 0, selectStatement));
+        result.setInsertSelect(new SubquerySegment(0, 0, selectStatement, ""));
         return result;
     }
     

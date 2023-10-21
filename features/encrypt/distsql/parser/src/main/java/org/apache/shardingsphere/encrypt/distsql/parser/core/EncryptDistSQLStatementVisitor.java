@@ -31,15 +31,15 @@ import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementP
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.ShowEncryptRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.EncryptDistSQLStatementParser.TableNameContext;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnItemSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.CountEncryptRuleStatement;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
-import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnItemSegment;
+import org.apache.shardingsphere.encrypt.distsql.segment.EncryptColumnSegment;
+import org.apache.shardingsphere.encrypt.distsql.segment.EncryptRuleSegment;
+import org.apache.shardingsphere.encrypt.distsql.statement.AlterEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.distsql.statement.CountEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.distsql.statement.CreateEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.distsql.statement.DropEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.distsql.statement.ShowEncryptRulesStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
@@ -84,11 +84,15 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     
     @Override
     public ASTNode visitEncryptColumnDefinition(final EncryptColumnDefinitionContext ctx) {
-        return new EncryptColumnSegment(getIdentifierValue(ctx.columnDefinition().columnName()),
-                new EncryptColumnItemSegment(getIdentifierValue(ctx.cipherColumnDefinition().cipherColumnName()), (AlgorithmSegment) visit(ctx.encryptAlgorithm().algorithmDefinition())),
-                null == ctx.assistedQueryColumnDefinition() ? null
-                        : new EncryptColumnItemSegment(getIdentifierValue(ctx.assistedQueryColumnDefinition().assistedQueryColumnName()), getAssistedEncryptor(ctx)),
-                null == ctx.likeQueryColumnDefinition() ? null : new EncryptColumnItemSegment(getIdentifierValue(ctx.likeQueryColumnDefinition().likeQueryColumnName()), getLikeEncryptor(ctx)));
+        EncryptColumnItemSegment cipher = new EncryptColumnItemSegment(
+                getIdentifierValue(ctx.cipherColumnDefinition().cipherColumnName()), (AlgorithmSegment) visit(ctx.encryptAlgorithm().algorithmDefinition()));
+        EncryptColumnItemSegment assistedQuery = null == ctx.assistedQueryColumnDefinition()
+                ? null
+                : new EncryptColumnItemSegment(getIdentifierValue(ctx.assistedQueryColumnDefinition().assistedQueryColumnName()), getAssistedEncryptor(ctx));
+        EncryptColumnItemSegment likeQuery = null == ctx.likeQueryColumnDefinition()
+                ? null
+                : new EncryptColumnItemSegment(getIdentifierValue(ctx.likeQueryColumnDefinition().likeQueryColumnName()), getLikeEncryptor(ctx));
+        return new EncryptColumnSegment(getIdentifierValue(ctx.columnDefinition().columnName()), cipher, assistedQuery, likeQuery);
     }
     
     private AlgorithmSegment getAssistedEncryptor(final EncryptColumnDefinitionContext ctx) {

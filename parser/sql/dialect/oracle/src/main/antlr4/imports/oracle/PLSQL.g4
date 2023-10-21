@@ -48,6 +48,10 @@ plsqlProcedureSource
     ((defaultCollationClause | invokerRightsClause | accessibleByClause)*)? (IS | AS) (callSpec | declareSection? body)
     ;
 
+plsqlBlock
+    : (SIGNED_LEFT_SHIFT_ label SIGNED_RIGHT_SHIFT_)* DECLARE declareSection body
+    ;
+
 createFunction
     : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? FUNCTION plsqlFunctionSource
     ;
@@ -79,8 +83,39 @@ statement
         | insert
         | lockTable
         | merge
+        | assignmentStatement
+        | basicLoopStatement
+        | closeStatement
+        | fetchStatement
+        | ifStatment
+        | returnStatement
         ) SEMI_
     ;
+
+basicLoopStatement
+    : LOOP (statement (EXIT label? (WHEN booleanPrimary)? SEMI_)?)+ END LOOP label?
+    ;
+
+assignmentStatement
+    : variableName ASSIGNMENT_OPERATOR_ expr
+    ;
+
+closeStatement
+    : CLOSE cursorName
+    ;
+
+fetchStatement
+    : FETCH cursorName INTO identifier
+    ;
+
+ifStatment
+    : IF booleanPrimary THEN statement+ (ELSIF booleanPrimary THEN statement+)? (ELSE statement)? END IF
+    ;
+
+returnStatement
+    : RETURN expr
+    ;
+
 
 exceptionHandler
     : WHEN ((typeName (OR typeName)*)| OTHERS) THEN statement+

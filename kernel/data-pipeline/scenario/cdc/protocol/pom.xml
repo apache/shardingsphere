@@ -46,7 +46,7 @@
                     <additionalProtoPathElements>
                         <additionalProtoPathElement>${project.basedir}/src/main/resources</additionalProtoPathElement>
                     </additionalProtoPathElements>
-                    <protocArtifact>com.google.protobuf:protoc:${protobuf-java.version}:exe:${os.detected.classifier}</protocArtifact>
+                    <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
                 </configuration>
                 <executions>
                     <execution>

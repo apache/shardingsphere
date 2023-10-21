@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
@@ -49,20 +50,22 @@ public final class DatabaseRulesBuilder {
      * Build database rules.
      *
      * @param databaseName database name
+     * @param protocolType protocol type
      * @param databaseConfig database configuration
      * @param instanceContext instance context
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> build(final String databaseName, final DatabaseConfiguration databaseConfig, final InstanceContext instanceContext) {
+    public static Collection<ShardingSphereRule> build(final String databaseName, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig, final InstanceContext instanceContext) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, DatabaseRuleBuilder> entry : getRuleBuilderMap(databaseConfig).entrySet()) {
             RuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(
                     RuleConfigurationChecker.class, Collections.singleton(entry.getKey().getClass())).get(entry.getKey().getClass());
+            Map<String, DataSource> dataSources = databaseConfig.getStorageUnits().entrySet().stream().collect(Collectors.toMap(Entry::getKey, storageUnit -> storageUnit.getValue().getDataSource()));
             if (null != configChecker) {
-                configChecker.check(databaseName, entry.getKey(), databaseConfig.getDataSources(), result);
+                configChecker.check(databaseName, entry.getKey(), dataSources, result);
             }
-            result.add(entry.getValue().build(entry.getKey(), databaseName, databaseConfig.getDataSources(), result, instanceContext));
+            result.add(entry.getValue().build(entry.getKey(), databaseName, protocolType, dataSources, result, instanceContext));
         }
         return result;
     }
@@ -71,6 +74,7 @@ public final class DatabaseRulesBuilder {
      * Build database rules.
      *
      * @param databaseName database name
+     * @param protocolType protocol type
      * @param dataSources data sources
      * @param rules rules
      * @param ruleConfig rule configuration
@@ -78,8 +82,8 @@ public final class DatabaseRulesBuilder {
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> build(final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules,
-                                                       final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
+    public static Collection<ShardingSphereRule> build(final String databaseName, final DatabaseType protocolType, final Map<String, DataSource> dataSources,
+                                                       final Collection<ShardingSphereRule> rules, final RuleConfiguration ruleConfig, final InstanceContext instanceContext) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, DatabaseRuleBuilder> entry : OrderedSPILoader.getServices(DatabaseRuleBuilder.class,
                 Collections.singletonList(ruleConfig), Comparator.reverseOrder()).entrySet()) {
@@ -88,7 +92,7 @@ public final class DatabaseRulesBuilder {
             if (null != configChecker) {
                 configChecker.check(databaseName, entry.getKey(), dataSources, rules);
             }
-            result.add(entry.getValue().build(entry.getKey(), databaseName, dataSources, rules, instanceContext));
+            result.add(entry.getValue().build(entry.getKey(), databaseName, protocolType, dataSources, rules, instanceContext));
         }
         return result;
     }

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStatementSupporter;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowAlgorithmStatement;
+import org.apache.shardingsphere.shadow.distsql.statement.DropShadowAlgorithmStatement;
 
 import java.util.Collection;
 import java.util.Collections;

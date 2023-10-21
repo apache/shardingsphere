@@ -32,8 +32,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -67,16 +67,13 @@ public final class NewViewMetaDataPersistService implements SchemaMetaDataPersis
         for (Entry<String, ShardingSphereView> entry : views.entrySet()) {
             String viewName = entry.getKey().toLowerCase();
             List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getViewVersionsNode(databaseName, schemaName, viewName));
-            String nextActiveVersion = NewDatabaseMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName, versions.isEmpty()
-                    ? DEFAULT_VERSION
-                    : String.valueOf(Integer.parseInt(versions.get(0)) + 1));
+            String nextActiveVersion = versions.isEmpty() ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1);
             repository.persist(NewDatabaseMetaDataNode.getViewVersionNode(databaseName, schemaName, viewName, nextActiveVersion),
                     YamlEngine.marshal(new YamlViewSwapper().swapToYamlConfiguration(entry.getValue())));
             if (Strings.isNullOrEmpty(getActiveVersion(databaseName, schemaName, viewName))) {
                 repository.persist(NewDatabaseMetaDataNode.getViewActiveVersionNode(databaseName, schemaName, viewName), DEFAULT_VERSION);
             }
-            result.add(new MetaDataVersion(NewDatabaseMetaDataNode.getViewNode(databaseName, schemaName, viewName),
-                    getActiveVersion(databaseName, schemaName, viewName), nextActiveVersion));
+            result.add(new MetaDataVersion(NewDatabaseMetaDataNode.getViewNode(databaseName, schemaName, viewName), getActiveVersion(databaseName, schemaName, viewName), nextActiveVersion));
         }
         return result;
     }

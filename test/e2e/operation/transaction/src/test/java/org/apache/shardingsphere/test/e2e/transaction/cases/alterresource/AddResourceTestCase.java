@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.alterresource;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -36,8 +34,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @TransactionTestCase(adapters = TransactionTestConstants.PROXY, scenario = "addResource")
 public final class AddResourceTestCase extends BaseTransactionTestCase {
     
-    public AddResourceTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
-        super(baseTransactionITCase, dataSource);
+    public AddResourceTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override

@@ -23,9 +23,9 @@ import org.apache.shardingsphere.distsql.parser.autogen.SQLParserDistSQLStatemen
 import org.apache.shardingsphere.distsql.parser.autogen.SQLParserDistSQLStatementParser.CacheOptionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLParserDistSQLStatementParser.ShowSQLParserRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLParserDistSQLStatementParser.SqlParserRuleDefinitionContext;
-import org.apache.shardingsphere.parser.distsql.parser.segment.CacheOptionSegment;
-import org.apache.shardingsphere.parser.distsql.parser.statement.queryable.ShowSQLParserRuleStatement;
-import org.apache.shardingsphere.parser.distsql.parser.statement.updatable.AlterSQLParserRuleStatement;
+import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
+import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
+import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;

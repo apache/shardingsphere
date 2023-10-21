@@ -180,7 +180,7 @@ unreservedWord1
     | HOST | PORT | EVERY | MINUTES | HOURS | NORELOCATE | SAVE | DISCARD | APPLICATION | INSTALL
     | MINIMUM | VERSION | UNINSTALL | COMPATIBILITY | MATERIALIZE | SUBTYPE | RECORD | CONSTANT | CURSOR
     | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA | PERCENT_RANK | ROWID
-    | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE | EVALNAME | LEVEL | CONTENT | ON
+    | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE | EVALNAME | LEVEL | CONTENT | ON | LOOP | EXIT | ELSIF
     ;
     
 unreservedWord2
@@ -468,6 +468,10 @@ connectionQualifier
     ;
 
 functionName
+    : identifier
+    ;
+
+cursorName
     : identifier
     ;
 
@@ -2064,5 +2068,45 @@ multisetOperator
     ;
 
 superview
+    : identifier
+    ;
+
+primaryName
+    : identifier
+    ;
+
+directoryObjectName
+    : identifier
+    ;
+
+serverFileName
+    : identifier
+    ;
+
+keyForBlob
+    : identifier
+    ;
+
+sourceText
+    : identifier
+    ;
+
+primaryName
+    : identifier
+    ;
+
+directoryObjectName
+    : identifier
+    ;
+
+serverFileName
+    : identifier
+    ;
+
+keyForBlob
+    : identifier
+    ;
+
+sourceText
     : identifier
     ;

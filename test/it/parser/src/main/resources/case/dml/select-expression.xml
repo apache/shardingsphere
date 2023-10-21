@@ -522,7 +522,7 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="71">
                     <left>
-                        <binary-operation-expression start-index="28" stop-index="52">
+                        <binary-operation-expression start-index="28" stop-index="47">
                             <left>
                                 <column name="order_id" start-index="28" stop-index="43">
                                     <owner name="t_order" start-index="28" stop-index="34" />
@@ -530,25 +530,25 @@
                             </left>
                             <operator>=</operator>
                             <right>
-                                <binary-operation-expression start-index="47" stop-index="52">
-                                    <left>
-                                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
-                                        <literal-expression value="1" start-index="47" stop-index="47" />
-                                    </left>
-                                    <operator>||</operator>
-                                    <right>
-                                        <parameter-marker-expression parameter-index="1" start-index="52" stop-index="52" />
-                                        <literal-expression value="2" start-index="52" stop-index="52" />
-                                    </right>
-                                </binary-operation-expression>
+                                <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
+                                <literal-expression value="1" start-index="47" stop-index="47" />
                             </right>
                         </binary-operation-expression>
                     </left>
-                    <operator>=</operator>
+                    <operator>||</operator>
                     <right>
-                        <column name="order_id" start-index="56" stop-index="71">
-                            <owner name="t_order" start-index="56" stop-index="62" />
-                        </column>
+                        <binary-operation-expression start-index="52" stop-index="71">
+                            <left>
+                                <parameter-marker-expression parameter-index="1" start-index="52" stop-index="52" />
+                                <literal-expression value="2" start-index="52" stop-index="52" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="order_id" start-index="56" stop-index="71">
+                                    <owner name="t_order" start-index="56" stop-index="62" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
                     </right>
                 </binary-operation-expression>
             </expr>

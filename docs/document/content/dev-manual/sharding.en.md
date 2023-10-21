@@ -92,7 +92,8 @@ Row Value Expressions definition
 
 ### Implementation classes
 
-| *Configuration Type* | *Description*                                     | *Fully-qualified class name*                                                 |
-|----------------------|---------------------------------------------------|------------------------------------------------------------------------------|
-| GROOVY               | Row Value Expressions that uses the Groovy syntax | `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`   |
-| LITERAL              | Row Value Expressions that uses a standard list   | `org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser` |
+| *Configuration Type* | *Description*                                                                                        | *Fully-qualified class name*                                                   |
+|----------------------|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| GROOVY               | Row Value Expressions that uses the Groovy syntax                                                    | `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`     |
+| LITERAL              | Row Value Expressions that uses a standard list                                                      | `org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser`   |
+| ESPRESSO             | Row Value Expressions that uses the Groovy syntax based on GraalVM Truffle's Espresso implementation | `org.apache.shardingsphere.infra.expr.espresso.EspressoInlineExpressionParser` |

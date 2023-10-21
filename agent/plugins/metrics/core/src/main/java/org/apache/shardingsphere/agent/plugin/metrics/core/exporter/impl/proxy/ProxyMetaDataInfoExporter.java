@@ -53,6 +53,6 @@ public final class ProxyMetaDataInfoExporter implements MetricsExporter {
     }
     
     private int getStorageUnitCount(final MetaDataContexts metaDataContexts) {
-        return metaDataContexts.getMetaData().getDatabases().values().stream().map(each -> each.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().size()).reduce(0, Integer::sum);
+        return metaDataContexts.getMetaData().getDatabases().values().stream().map(each -> each.getResourceMetaData().getStorageUnits().size()).reduce(0, Integer::sum);
     }
 }

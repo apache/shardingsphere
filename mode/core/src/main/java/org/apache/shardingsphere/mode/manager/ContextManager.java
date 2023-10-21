@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.SchemaManager;
@@ -105,7 +104,7 @@ public final class ContextManager implements AutoCloseable {
      * @return storage units
      */
     public Map<String, StorageUnit> getStorageUnits(final String databaseName) {
-        return metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnitMetaData().getStorageUnits();
+        return metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits();
     }
     
     /**
@@ -116,9 +115,8 @@ public final class ContextManager implements AutoCloseable {
     public void reloadDatabaseMetaData(final String databaseName) {
         try {
             ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-            ResourceMetaData currentResourceMetaData = database.getResourceMetaData();
-            Map<String, DataSourcePoolProperties> props = metaDataContexts.get().getPersistService().getDataSourceUnitService().load(databaseName);
-            SwitchingResource switchingResource = new ResourceSwitchManager().createByAlterDataSourcePoolProperties(currentResourceMetaData, props);
+            Map<String, DataSourcePoolProperties> dataSourcePoolPropsFromRegCenter = metaDataContexts.get().getPersistService().getDataSourceUnitService().load(databaseName);
+            SwitchingResource switchingResource = new ResourceSwitchManager().createByAlterDataSourcePoolProperties(database.getResourceMetaData(), dataSourcePoolPropsFromRegCenter);
             metaDataContexts.get().getMetaData().getDatabases().putAll(configurationContextManager.renewDatabase(database, switchingResource));
             MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(databaseName, switchingResource);
             deletedSchemaNames(databaseName, reloadedMetaDataContexts.getMetaData().getDatabase(databaseName), database);
@@ -182,8 +180,8 @@ public final class ContextManager implements AutoCloseable {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         database.reloadRules(MutableDataNodeRule.class);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
-                Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().get(dataSourceName).getStorageType()),
-                Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().get(dataSourceName).getDataSource()),
+                Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName).getStorageType()),
+                Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName).getDataSource()),
                 database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
         ShardingSphereSchema result = GenericSchemaBuilder.build(material).get(schemaName);
         result.getViews().putAll(metaDataContexts.get().getPersistService().getDatabaseMetaDataService().getViewMetaDataPersistService().load(database.getName(), schemaName));
@@ -200,7 +198,7 @@ public final class ContextManager implements AutoCloseable {
     public void reloadTable(final String databaseName, final String schemaName, final String tableName) {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(),
-                database.getResourceMetaData().getStorageUnitMetaData(), database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
+                database.getResourceMetaData().getStorageUnits(), database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
         try {
             persistTable(database, schemaName, tableName, material);
         } catch (final SQLException ex) {
@@ -218,7 +216,7 @@ public final class ContextManager implements AutoCloseable {
      */
     public void reloadTable(final String databaseName, final String schemaName, final String dataSourceName, final String tableName) {
         ShardingSphereDatabase database = metaDataContexts.get().getMetaData().getDatabase(databaseName);
-        StorageUnit storageUnit = database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits().get(dataSourceName);
+        StorageUnit storageUnit = database.getResourceMetaData().getStorageUnits().get(dataSourceName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getProtocolType(), Collections.singletonMap(dataSourceName, storageUnit.getStorageType()),
                 Collections.singletonMap(dataSourceName, storageUnit.getDataSource()), database.getRuleMetaData().getRules(), metaDataContexts.get().getMetaData().getProps(), schemaName);
         try {

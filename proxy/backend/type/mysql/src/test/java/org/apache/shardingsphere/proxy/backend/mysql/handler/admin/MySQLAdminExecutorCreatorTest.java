@@ -264,7 +264,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithOtherSelectStatementForDatabaseName() {
-        ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", Collections.singletonMap("ds", new MockedDataSource()));
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyMap());
         Map<String, ShardingSphereDatabase> result = Collections.singletonMap("db_0", database);
         initProxyContext(result);
@@ -282,7 +282,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithOtherSelectStatementForNullDatabaseName() {
-        ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", Collections.singletonMap("ds_0", new MockedDataSource()));
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds_0", new MockedDataSource()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyMap());
         Map<String, ShardingSphereDatabase> result = Collections.singletonMap("db_0", database);
         initProxyContext(result);

@@ -56,7 +56,7 @@ class YamlProxyConfigurationSwapperTest {
     private void assertDataSources(final ProxyConfiguration proxyConfig) {
         Map<String, DatabaseConfiguration> actual = proxyConfig.getDatabaseConfigurations();
         assertThat(actual.size(), is(1));
-        HikariDataSource dataSource = (HikariDataSource) actual.get("swapper_test").getStorageResource().getDataSourceMap().get(new StorageNode("foo_db"));
+        HikariDataSource dataSource = (HikariDataSource) actual.get("swapper_test").getDataSources().get(new StorageNode("foo_db"));
         assertThat(dataSource.getJdbcUrl(), is("jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1"));
         assertThat(dataSource.getUsername(), is("sa"));
         assertThat(dataSource.getPassword(), is(""));

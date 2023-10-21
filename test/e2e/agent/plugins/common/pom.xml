@@ -27,7 +27,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <okhttp.version>3.7.0</okhttp.version>
+        <okhttp.version>4.12.0</okhttp.version>
     </properties>
     
     <dependencies>

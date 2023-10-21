@@ -23,7 +23,7 @@ on:
   workflow_dispatch:
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
 
 jobs:
   global-environment:
@@ -45,7 +45,7 @@ jobs:
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Run SpotBugs
-        run: ./mvnw clean install spotbugs:check -T1C
+        run: ./mvnw clean install spotbugs:check -Pcheck -T1C
 
   check-and-report-sonarcloud:
     if: github.repository == 'apache/shardingsphere'
@@ -82,7 +82,7 @@ jobs:
     name: Checkstyle - SonarCloud
     needs: global-environment
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 100
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -101,7 +101,8 @@ jobs:
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Aggregate checkstyle report
-        run:
+        run: |
+          export MAVEN_OPTS='-Xmx4g -Xms512m'
           ./mvnw clean verify checkstyle:checkstyle-aggregate
       - name: Upload checkstyle report to SonarCloud
         env:
@@ -192,4 +193,3 @@ jobs:
           stale-issue-message: >
             There hasn't been any activity on this issue recently, and in order to prioritize active issues, it will be
             marked as stale.
-

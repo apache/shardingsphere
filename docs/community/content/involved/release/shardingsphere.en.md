@@ -231,7 +231,7 @@ export GPG_TTY=$(tty)
 ```
 
 ```shell
-./mvnw release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
+./mvnw release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
 ```
 
 -Prelease: choose release profile, which will pack all the source codes, jar files and executable binary packages of ShardingSphere-Proxy.
@@ -251,7 +251,7 @@ First, clean local pre-release check information.
 Then, prepare to execute the release.
 
 ```shell
-./mvnw release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github username}
+./mvnw release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github username}
 ```
 
 It is basically the same as the previous rehearsal command, but deleting -DdryRun=true parameter.
@@ -267,7 +267,7 @@ git push origin ${RELEASE.VERSION}
 ### 4. Deploy the Release
 
 ```shell
-./mvnw release:perform -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DlocalCheckout=true -Dusername=${Github username}
+./mvnw release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DlocalCheckout=true -Dusername=${Github username}
 ```
 
 -DlocalCheckout=true: checkout code from local repository instead of remote repository.

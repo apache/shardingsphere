@@ -21,18 +21,19 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
-import org.apache.shardingsphere.infra.state.datasource.exception.UnavailableDataSourceException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.state.datasource.exception.UnavailableDataSourceException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * Data source state manager.
@@ -62,14 +63,14 @@ public final class DataSourceStateManager {
      * Set data source states when bootstrap.
      *
      * @param databaseName database name
-     * @param dataSources data sources
+     * @param storageUnits storage units
      * @param storageDataSourceStates storage node data source state
      * @param forceStart whether to force start
      */
-    public void initStates(final String databaseName, final Map<String, DataSource> dataSources, final Map<String, DataSourceState> storageDataSourceStates, final boolean forceStart) {
+    public void initStates(final String databaseName, final Map<String, StorageUnit> storageUnits, final Map<String, DataSourceState> storageDataSourceStates, final boolean forceStart) {
         this.forceStart = forceStart;
         if (initialized.compareAndSet(false, true)) {
-            dataSources.forEach((key, value) -> initState(databaseName, storageDataSourceStates, key, value));
+            storageUnits.forEach((key, value) -> initState(databaseName, storageDataSourceStates, key, value.getDataSource()));
         }
     }
     
@@ -98,8 +99,10 @@ public final class DataSourceStateManager {
      * @param databaseConfig database config
      * @return enabled data sources
      */
-    public Collection<DataSource> getEnabledDataSources(final String databaseName, final DatabaseConfiguration databaseConfig) {
-        return databaseConfig.getDataSources().isEmpty() ? Collections.emptyList() : getEnabledDataSources(databaseName, databaseConfig.getDataSources()).values();
+    public Map<String, DataSource> getEnabledDataSources(final String databaseName, final DatabaseConfiguration databaseConfig) {
+        Map<String, DataSource> dataSources = databaseConfig.getStorageUnits().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return getEnabledDataSources(databaseName, dataSources);
     }
     
     /**

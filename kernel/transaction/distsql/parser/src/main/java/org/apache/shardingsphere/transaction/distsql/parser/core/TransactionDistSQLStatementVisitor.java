@@ -28,9 +28,9 @@ import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatem
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.transaction.distsql.parser.segment.TransactionProviderSegment;
-import org.apache.shardingsphere.transaction.distsql.parser.statement.updatable.AlterTransactionRuleStatement;
-import org.apache.shardingsphere.transaction.distsql.parser.statement.queryable.ShowTransactionRuleStatement;
+import org.apache.shardingsphere.transaction.distsql.segment.TransactionProviderSegment;
+import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 
 import java.util.Properties;
 

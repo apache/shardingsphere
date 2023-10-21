@@ -20,10 +20,16 @@ package org.apache.shardingsphere.infra.metadata.database.rule;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -89,5 +95,41 @@ public final class RuleMetaData {
         Collection<T> foundRules = findRules(clazz);
         Preconditions.checkState(1 == foundRules.size(), "Rule `%s` should have and only have one instance.", clazz.getSimpleName());
         return foundRules.iterator().next();
+    }
+    
+    /**
+     * Get in used storage units name and used rule classes map.
+     *
+     * @return in used storage units name and used rule classes map
+     */
+    public Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitNameAndRulesMap() {
+        Map<String, Collection<Class<? extends ShardingSphereRule>>> result = new LinkedHashMap<>();
+        for (ShardingSphereRule each : rules) {
+            if (each instanceof DataSourceContainedRule) {
+                result.putAll(getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames((DataSourceContainedRule) each)));
+            } else if (each instanceof DataNodeContainedRule) {
+                result.putAll(getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames((DataNodeContainedRule) each)));
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, Collection<Class<? extends ShardingSphereRule>>> getInUsedStorageUnitNameAndRulesMap(final ShardingSphereRule rule, final Collection<String> inUsedStorageUnitNames) {
+        Map<String, Collection<Class<? extends ShardingSphereRule>>> result = new LinkedHashMap<>();
+        for (String each : inUsedStorageUnitNames) {
+            if (!result.containsKey(each)) {
+                result.put(each, new LinkedHashSet<>());
+            }
+            result.get(each).add(rule.getClass());
+        }
+        return result;
+    }
+    
+    private Collection<String> getInUsedStorageUnitNames(final DataSourceContainedRule rule) {
+        return rule.getDataSourceMapper().values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+    }
+    
+    private Collection<String> getInUsedStorageUnitNames(final DataNodeContainedRule rule) {
+        return rule.getAllDataNodes().values().stream().flatMap(each -> each.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()).stream()).collect(Collectors.toSet());
     }
 }

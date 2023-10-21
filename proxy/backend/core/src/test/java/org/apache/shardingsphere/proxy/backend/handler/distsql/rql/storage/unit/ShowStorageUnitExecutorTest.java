@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.storage.unit;
 
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -61,7 +61,7 @@ class ShowStorageUnitExecutorTest {
     
     @BeforeEach
     void before() {
-        ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", createDataSources());
+        ResourceMetaData resourceMetaData = new ResourceMetaData(createDataSources());
         RuleMetaData metaData = new RuleMetaData(Collections.singleton(createShardingRule()));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData()).thenReturn(metaData);

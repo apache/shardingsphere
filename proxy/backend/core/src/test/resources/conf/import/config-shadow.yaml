@@ -19,7 +19,8 @@ databaseName: shadow_db
 
 dataSources:
   ds:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
+    url: jdbc:mock://127.0.0.1/demo_ds_0
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -28,7 +29,8 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 1
   shadow_ds:
-    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
+    url: jdbc:mock://127.0.0.1/demo_ds_1
     username: root
     password:
     connectionTimeoutMilliseconds: 30000

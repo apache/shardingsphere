@@ -51,7 +51,8 @@ public final class FrontDatabaseProtocolTypeFactory {
             return TypedSPILoader.getService(DatabaseType.class, DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
         }
         Optional<ShardingSphereDatabase> database = metaDataContexts.getMetaData().getDatabases().values().stream().filter(ShardingSphereDatabase::containsDataSource).findFirst();
-        return database.isPresent() ? database.get().getResourceMetaData().getStorageUnitMetaData().getStorageUnits().values().iterator().next().getStorageType()
+        return database.isPresent()
+                ? database.get().getResourceMetaData().getStorageUnits().values().iterator().next().getStorageType()
                 : TypedSPILoader.getService(DatabaseType.class, DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
     }
     

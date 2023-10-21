@@ -91,7 +91,7 @@ class SQLRewriteEntryTest {
         storageUnits.put("ds_0", storageUnit1);
         storageUnits.put("ds_1", storageUnit2);
         ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
+        when(result.getStorageUnits()).thenReturn(storageUnits);
         return result;
     }
 }

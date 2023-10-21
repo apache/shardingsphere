@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.distsql.statement.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
 /**
  * Show SQL federation rule statement.

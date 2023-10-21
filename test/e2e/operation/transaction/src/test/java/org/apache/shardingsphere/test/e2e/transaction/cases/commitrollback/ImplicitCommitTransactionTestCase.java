@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Implicit commit transaction integration test.
@@ -37,8 +36,8 @@ public final class ImplicitCommitTransactionTestCase extends BaseTransactionTest
     
     private static final String T_ADDRESS = "t_address";
     
-    public ImplicitCommitTransactionTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
-        super(baseTransactionITCase, dataSource);
+    public ImplicitCommitTransactionTestCase(final TransactionTestCaseParameter testCaseParam) {
+        super(testCaseParam);
     }
     
     @Override
@@ -61,7 +60,9 @@ public final class ImplicitCommitTransactionTestCase extends BaseTransactionTest
     
     private void assertBroadcastTableImplicitCommit() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
+            assertTrue(connection.getAutoCommit());
             executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'Nanjing')");
+            assertTrue(connection.getAutoCommit());
             assertThrows(SQLException.class, () -> executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'Nanjing')"));
         }
         try (Connection connection = getDataSource().getConnection()) {
@@ -71,7 +72,9 @@ public final class ImplicitCommitTransactionTestCase extends BaseTransactionTest
     
     private void assertShardingTableImplicitCommit() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
+            assertTrue(connection.getAutoCommit());
             executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES (1, 1, 1), (2, 2, 2)");
+            assertTrue(connection.getAutoCommit());
             assertThrows(SQLException.class, () -> executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES (1, 1, 1), (2, 2, 2)"));
         }
         try (Connection connection = getDataSource().getConnection()) {

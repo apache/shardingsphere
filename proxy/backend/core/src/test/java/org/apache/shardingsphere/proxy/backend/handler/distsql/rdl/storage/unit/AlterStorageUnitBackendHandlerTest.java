@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
-import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.statement.rdl.alter.AlterStorageUnitStatement;
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -80,9 +80,10 @@ class AlterStorageUnitBackendHandlerTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        StorageUnit storageUnit = mock(StorageUnit.class);
-        when(storageUnit.getDataSource()).thenReturn(mockHikariDataSource("ds_0"));
-        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
+        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+        ConnectionProperties connectionProperties = mockConnectionProperties("ds_0");
+        when(storageUnit.getConnectionProperties()).thenReturn(connectionProperties);
+        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         assertThat(handler.execute("foo_db", createAlterStorageUnitStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
     }
@@ -107,9 +108,10 @@ class AlterStorageUnitBackendHandlerTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        StorageUnit storageUnit = mock(StorageUnit.class);
-        when(storageUnit.getDataSource()).thenReturn(mockHikariDataSource("ds_1"));
-        when(resourceMetaData.getStorageUnitMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
+        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+        ConnectionProperties connectionProperties = mockConnectionProperties("ds_1");
+        when(storageUnit.getConnectionProperties()).thenReturn(connectionProperties);
+        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         assertThrows(InvalidStorageUnitsException.class, () -> handler.execute("foo_db", createAlterStorageUnitStatement("ds_0")));
     }
@@ -131,9 +133,11 @@ class AlterStorageUnitBackendHandlerTest {
         return new AlterStorageUnitStatement(result);
     }
     
-    private HikariDataSource mockHikariDataSource(final String database) {
-        HikariDataSource result = new HikariDataSource();
-        result.setJdbcUrl(String.format("jdbc:mysql://127.0.0.1:3306/%s?serverTimezone=UTC&useSSL=false", database));
+    private ConnectionProperties mockConnectionProperties(final String catalog) {
+        ConnectionProperties result = mock(ConnectionProperties.class);
+        when(result.getHostname()).thenReturn("127.0.0.1");
+        when(result.getPort()).thenReturn(3306);
+        when(result.getCatalog()).thenReturn(catalog);
         return result;
     }
 }

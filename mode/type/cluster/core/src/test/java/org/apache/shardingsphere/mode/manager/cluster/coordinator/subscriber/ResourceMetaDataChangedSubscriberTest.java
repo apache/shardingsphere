@@ -114,7 +114,7 @@ class ResourceMetaDataChangedSubscriberTest {
         when(persistService.getDataSourceUnitService().load("db_added")).thenReturn(createDataSourcePoolPropertiesMap());
         when(persistService.getDatabaseRulePersistService().load("db_added")).thenReturn(Collections.emptyList());
         subscriber.renew(new DatabaseAddedEvent("db_added"));
-        assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db_added").getResourceMetaData().getStorageUnitMetaData().getStorageUnits());
+        assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db_added").getResourceMetaData().getStorageUnits());
     }
     
     private Map<String, DataSourcePoolProperties> createDataSourcePoolPropertiesMap() {

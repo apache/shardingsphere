@@ -24,8 +24,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.GlobalClockDistSQLStatem
 import org.apache.shardingsphere.distsql.parser.autogen.GlobalClockDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.GlobalClockDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.GlobalClockDistSQLStatementParser.ShowGlobalClockRuleContext;
-import org.apache.shardingsphere.globalclock.distsql.parser.statement.queryable.ShowGlobalClockRuleStatement;
-import org.apache.shardingsphere.globalclock.distsql.parser.statement.updatable.AlterGlobalClockRuleStatement;
+import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlobalClockRuleStatement;
+import org.apache.shardingsphere.globalclock.distsql.statement.updatable.AlterGlobalClockRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;

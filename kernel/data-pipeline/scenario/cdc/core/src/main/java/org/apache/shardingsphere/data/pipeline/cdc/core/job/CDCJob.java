@@ -36,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
@@ -44,6 +43,7 @@ import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -114,17 +114,15 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             for (PipelineJobItemContext each : jobItemContexts) {
-                processFailed(each, ex);
+                processFailed(each.getJobId(), each.getShardingItem(), ex);
             }
             throw ex;
         }
     }
     
-    @Override
-    protected void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
-        String jobId = jobItemContext.getJobId();
-        log.error("job prepare failed, {}-{}", jobId, jobItemContext.getShardingItem(), ex);
-        jobAPI.updateJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
+    private void processFailed(final String jobId, final int shardingItem, final Exception ex) {
+        log.error("job execution failed, {}-{}", jobId, shardingItem, ex);
+        jobAPI.updateJobItemErrorMessage(jobId, shardingItem, ex);
         PipelineJobCenter.stop(jobId);
         jobAPI.updateJobConfigurationDisabled(jobId, true);
     }

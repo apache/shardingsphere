@@ -86,8 +86,3 @@ Connect ShardingSphere-Proxy with openGauss client:
 ```bash 
 gsql -r -h ${proxy_host} -p ${proxy_port} -U ${proxy_username} -W ${proxy_password}
 ```
-
-## Sample
-
-Please refer to samples on ShardingSphere repository for complete configuration:
-<https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-proxy-example>

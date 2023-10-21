@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportStorageNodesStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.ExportStorageNodesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -54,6 +54,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -129,7 +130,7 @@ class ExportStorageNodesExecutorTest {
     void assertExecute() {
         when(database.getName()).thenReturn("normal_db");
         Map<String, StorageUnit> storageUnits = createStorageUnits();
-        when(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -143,7 +144,7 @@ class ExportStorageNodesExecutorTest {
     void assertExecuteWithDatabaseName() {
         when(database.getName()).thenReturn("normal_db");
         Map<String, StorageUnit> storageUnits = createStorageUnits();
-        when(database.getResourceMetaData().getStorageUnitMetaData().getStorageUnits()).thenReturn(storageUnits);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -164,21 +165,23 @@ class ExportStorageNodesExecutorTest {
     }
     
     private Map<String, StorageUnit> createStorageUnits() {
+        StorageUnit storageUnit1 = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+        when(storageUnit1.getDataSource()).thenReturn(createDataSource("ds_0"));
+        StorageUnit storageUnit2 = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+        when(storageUnit2.getDataSource()).thenReturn(createDataSource("ds_2"));
         Map<String, StorageUnit> result = new LinkedHashMap<>(2, 1F);
-        result.put("ds_0", createStorageUnit("demo_ds_0"));
-        result.put("ds_1", createStorageUnit("demo_ds_1"));
+        result.put("ds_0", storageUnit1);
+        result.put("ds_1", storageUnit2);
         return result;
     }
     
-    private StorageUnit createStorageUnit(final String name) {
-        MockedDataSource dataSource = new MockedDataSource();
-        dataSource.setUrl(String.format("jdbc:mock://127.0.0.1/%s", name));
-        dataSource.setUsername("root");
-        dataSource.setPassword("test");
-        dataSource.setMaxPoolSize(50);
-        dataSource.setMinPoolSize(1);
-        StorageUnit result = mock(StorageUnit.class);
-        when(result.getDataSource()).thenReturn(dataSource);
+    private DataSource createDataSource(final String name) {
+        MockedDataSource result = new MockedDataSource();
+        result.setUrl(String.format("jdbc:mock://127.0.0.1/%s", name));
+        result.setUsername("root");
+        result.setPassword("test");
+        result.setMaxPoolSize(50);
+        result.setMinPoolSize(1);
         return result;
     }
     

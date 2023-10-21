@@ -5,7 +5,7 @@ weight = 3
 
 ### Description
 
-The `SHOW COMPUTE NODES` syntax is used to query proxy instance information.
+The `SHOW COMPUTE NODES` syntax is used to query compute nodes information.
 ### Syntax
 
 {{< tabs >}}
@@ -22,32 +22,27 @@ ShowComputeNodes ::=
 
 ### Return Value Description
 
-| Columns        | Description           |
-|----------------|-----------------------|
-| instance_id    | proxy instance id     |
-| host           | host address          |
-| port           | port number           |
-| status         | proxy instance status |
-| mode_type      | proxy instance mode   |
-| worker_id      | worker id             |
-| labels         | labels                |
-| version        | version               |
+| Columns       | Description   |
+|---------------|---------------|
+| instance_id   | instance id   |
+| instance_type | instance type |
+| host          | host          |
+| port          | port          |
+| status        | status        |
+| mode_type     | mode type     |
+| worker_id     | worker id     |
+| labels        | labels        |
+| version       | version       |
 
 ### Example
 
-- Query proxy instance information
-
-```sql
-SHOW COMPUTE NODES;
-```
-
 ```sql
 mysql> SHOW COMPUTE NODES;
-+--------------------------------------+---------------+------+--------+-----------+-----------+--------+---------+
-| instance_id                          | host          | port | status | mode_type | worker_id | labels | version |
-+--------------------------------------+---------------+------+--------+-----------+-----------+--------+---------+
-| 734bb036-b15d-4af0-be87-2372d8b6a0cd | 192.168.5.163 | 3307 | OK     | Cluster   | -1        |        | 5.3.0   |
-+--------------------------------------+---------------+------+--------+-----------+-----------+--------+---------+
++--------------------------------------+---------------+------------+------+--------+------------+-----------+--------+----------+
+| instance_id                          | instance_type | host       | port | status | mode_type  | worker_id | labels | version  |
++--------------------------------------+---------------+------------+------+--------+------------+-----------+--------+----------+
+| 3e84d33e-cb97-42f2-b6ce-f78fea0ded89 | PROXY         | 127.0.0.1  | 3307 | OK     | Cluster    | -1        |        | 5.4.2    |
++--------------------------------------+---------------+------------+------+--------+------------+-----------+--------+----------+
 1 row in set (0.01 sec)
 ```
 

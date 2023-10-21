@@ -52,7 +52,7 @@ public final class InlineExpressionParserFactory {
         }
         Integer typeBeginIndex = inlineExpression.indexOf(TYPE_NAME_BEGIN_SYMBOL);
         Integer typeEndIndex = inlineExpression.indexOf(TYPE_NAME_END_SYMBOL);
-        props.setProperty(InlineExpressionParser.INLINE_EXPRESSION_KEY, removeTypeNameInExpr(inlineExpression, typeBeginIndex, typeEndIndex));
+        props.setProperty(InlineExpressionParser.INLINE_EXPRESSION_KEY, getExprWithoutTypeName(inlineExpression, typeBeginIndex, typeEndIndex));
         return TypedSPILoader.getService(InlineExpressionParser.class, getTypeName(inlineExpression, typeBeginIndex, typeEndIndex), props);
     }
     
@@ -60,7 +60,7 @@ public final class InlineExpressionParserFactory {
         return beginIndex.equals(-1) || endIndex.equals(-1) ? "GROOVY" : inlineExpression.substring(beginIndex + 1, endIndex);
     }
     
-    private static String removeTypeNameInExpr(final String inlineExpression, final Integer beginIndex, final Integer endIndex) {
+    private static String getExprWithoutTypeName(final String inlineExpression, final Integer beginIndex, final Integer endIndex) {
         return inlineExpression.substring(0, beginIndex) + inlineExpression.substring(endIndex + 1);
     }
 }

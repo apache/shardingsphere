@@ -16,12 +16,6 @@ Follow the steps below to deploy ShardingSphere website,
 
 1. If you modify `docs/build.sh`, please test it locally.
 
-> shardingsphere-doc support docker hugo to build the website, you can use the following command to build:
-> 1. Go to the root directory of `shardingsphere-doc`
-> 2. Execute docker build command `docker build .github/docker/ -t docker-hugo:latest`
-> 3. Execute `build-with-docker.sh` like `build.sh`
-> 4. If test it locally, go to the directory container config.toml and execute command `docker run --rm -it -p1313:1313 --volume $(pwd):/opt/input docker-hugo:latest server --bind 0.0.0.0`
-
 ## HOW to insert a video of Bilibili or YouTube?
 
 1. First please make sure you get the correct url of the video you want to add.

@@ -18,24 +18,19 @@
 package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
+import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
-import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager;
 
 import javax.sql.DataSource;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Storage unit.
@@ -43,55 +38,32 @@ import java.util.stream.Collectors;
 @Getter
 public final class StorageUnit {
     
-    private final DataSourcePoolProperties dataSourcePoolProperties;
-    
-    private final StorageUnitNodeMapper unitNodeMapper;
-    
-    private final DataSource dataSource;
+    private final StorageNode storageNode;
     
     private final DatabaseType storageType;
     
+    private final String catalog;
+    
+    private final DataSource dataSource;
+    
+    private final DataSourcePoolProperties dataSourcePoolProperties;
+    
     private final ConnectionProperties connectionProperties;
     
-    public StorageUnit(final String databaseName, final Map<StorageNode, DataSource> storageNodeDataSources,
-                       final DataSourcePoolProperties props, final StorageUnitNodeMapper unitNodeMapper) {
-        this.dataSourcePoolProperties = props;
-        this.unitNodeMapper = unitNodeMapper;
-        dataSource = getStorageUnitDataSource(storageNodeDataSources, unitNodeMapper);
-        Map<StorageNode, DataSource> enabledStorageNodeDataSources = getEnabledStorageNodeDataSources(databaseName, storageNodeDataSources);
-        storageType = createStorageType(enabledStorageNodeDataSources, unitNodeMapper);
-        connectionProperties = createConnectionProperties(enabledStorageNodeDataSources, unitNodeMapper, storageType).orElse(null);
+    public StorageUnit(final StorageNode storageNode, final DataSourcePoolProperties dataSourcePoolProperties, final DataSource dataSource) {
+        this.storageNode = storageNode;
+        Map<String, Object> standardProps = dataSourcePoolProperties.getConnectionPropertySynonyms().getStandardProperties();
+        String url = standardProps.get("url").toString();
+        storageType = DatabaseTypeFactory.get(url);
+        boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
+        catalog = isInstanceConnectionAvailable ? new StandardJdbcUrlParser().parse(url).getDatabase() : null;
+        this.dataSource = new CatalogSwitchableDataSource(dataSource, catalog, url);
+        this.dataSourcePoolProperties = dataSourcePoolProperties;
+        connectionProperties = createConnectionProperties(standardProps);
     }
     
-    private DataSource getStorageUnitDataSource(final Map<StorageNode, DataSource> storageNodeDataSources, final StorageUnitNodeMapper unitNodeMapper) {
-        DataSource dataSource = storageNodeDataSources.get(unitNodeMapper.getStorageNode());
-        return new CatalogSwitchableDataSource(dataSource, unitNodeMapper.getCatalog(), unitNodeMapper.getUrl());
-    }
-    
-    private Map<StorageNode, DataSource> getEnabledStorageNodeDataSources(final String databaseName, final Map<StorageNode, DataSource> storageNodeDataSources) {
-        Map<String, DataSource> toBeCheckedDataSources = new LinkedHashMap<>(storageNodeDataSources.size(), 1F);
-        for (Entry<StorageNode, DataSource> entry : storageNodeDataSources.entrySet()) {
-            toBeCheckedDataSources.put(entry.getKey().getName(), entry.getValue());
-        }
-        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSources(databaseName, toBeCheckedDataSources);
-        return storageNodeDataSources.entrySet().stream()
-                .filter(entry -> enabledDataSources.containsKey(entry.getKey().getName())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-    }
-    
-    private DatabaseType createStorageType(final Map<StorageNode, DataSource> enabledStorageNodeDataSources, final StorageUnitNodeMapper unitNodeMapper) {
-        return DatabaseTypeEngine.getStorageType(enabledStorageNodeDataSources.containsKey(unitNodeMapper.getStorageNode())
-                ? Collections.singleton(enabledStorageNodeDataSources.get(unitNodeMapper.getStorageNode()))
-                : Collections.emptyList());
-    }
-    
-    private Optional<ConnectionProperties> createConnectionProperties(final Map<StorageNode, DataSource> enabledStorageNodeDataSources,
-                                                                      final StorageUnitNodeMapper unitNodeMapper, final DatabaseType storageType) {
-        if (!enabledStorageNodeDataSources.containsKey(unitNodeMapper.getStorageNode())) {
-            return Optional.empty();
-        }
-        Map<String, Object> standardProps = DataSourcePoolPropertiesCreator.create(
-                enabledStorageNodeDataSources.get(unitNodeMapper.getStorageNode())).getConnectionPropertySynonyms().getStandardProperties();
+    private ConnectionProperties createConnectionProperties(final Map<String, Object> standardProps) {
         ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType);
-        return Optional.of(parser.parse(standardProps.get("url").toString(), standardProps.get("username").toString(), unitNodeMapper.getCatalog()));
+        return parser.parse(standardProps.get("url").toString(), standardProps.getOrDefault("username", "").toString(), catalog);
     }
 }

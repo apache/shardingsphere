@@ -92,7 +92,8 @@ chapter = true
 
 ### 已知实现
 
-| *配置标识*  | *详细说明*            | *全限定类名*                                                                      |
-|---------|-------------------|------------------------------------------------------------------------------|
-| GROOVY  | 使用 Groovy 语法的行表达式 | `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`   |
-| LITERAL | 使用标准列表的行表达式       | `org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser` |
+| *配置标识*   | *详细说明*                                             | *全限定类名*                                                                        |
+|----------|----------------------------------------------------|--------------------------------------------------------------------------------|
+| GROOVY   | 使用 Groovy 语法的行表达式                                  | `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`     |
+| LITERAL  | 使用标准列表的行表达式                                        | `org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser`   |
+| ESPRESSO | 基于 GraalVM Truffle 的 Espresso 实现的使用 Groovy 语法的行表达式 | `org.apache.shardingsphere.infra.expr.espresso.EspressoInlineExpressionParser` |

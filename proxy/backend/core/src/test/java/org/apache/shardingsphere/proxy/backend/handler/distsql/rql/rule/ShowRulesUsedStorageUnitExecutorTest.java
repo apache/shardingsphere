@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.rql.show.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -94,7 +94,7 @@ class ShowRulesUsedStorageUnitExecutorTest {
         RuleMetaData ruleMetaData = new RuleMetaData(
                 Arrays.asList(mockShardingRule(), mockReadwriteSplittingRule(), mockEncryptRule(), mockShadowRule(), mockMaskRule()));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
-        ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource()));
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         return result;
     }
@@ -154,7 +154,7 @@ class ShowRulesUsedStorageUnitExecutorTest {
     private ShardingSphereDatabase mockEmptyDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
-        ResourceMetaData resourceMetaData = new ResourceMetaData("sharding_db", Collections.singletonMap("empty_ds", new MockedDataSource()));
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("empty_ds", new MockedDataSource()));
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         return result;
     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.migration.distsql.statement;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.migration.QueryableMigrationRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.QueryableMigrationRALStatement;
 
 /**
  * Show migration list statement.

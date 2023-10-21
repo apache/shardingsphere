@@ -19,7 +19,7 @@ package org.apache.shardingsphere.cdc.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.cdc.QueryableCDCRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.cdc.QueryableCDCRALStatement;
 
 /**
  * Show streaming status statement.
