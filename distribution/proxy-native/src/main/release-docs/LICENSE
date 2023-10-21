@@ -257,6 +257,7 @@ The text of each license is the standard Apache 2.0 license.
     httpclient5 5.1.3: https://hc.apache.org/httpcomponents-client-5.1.x, Apache 2.0
     httpcore5-h2 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
     httpcore5 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
+    j2objc-annotations 1.3 https://github.com/google/j2objc/, Apache 2.0
     jackson-annotations 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-core 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-databind 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
