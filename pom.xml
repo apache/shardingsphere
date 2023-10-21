@@ -87,11 +87,12 @@
         
         <calcite.version>1.35.0</calcite.version>
         <immutables.version>2.9.3</immutables.version>
-        <bouncycastle.version>1.70</bouncycastle.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
         
         <netty.version>4.1.99.Final</netty.version>
+        <bouncycastle.version>1.70</bouncycastle.version>
+        
         <zookeeper.version>3.9.0</zookeeper.version>
         <curator.version>5.5.0</curator.version>
         <jetcd.version>0.7.6</jetcd.version>
@@ -289,6 +290,7 @@
                 <version>${immutables.version}</version>
                 <scope>provided</scope>
             </dependency>
+            
             <dependency>
                 <groupId>javax.transaction</groupId>
                 <artifactId>jta</artifactId>
@@ -302,6 +304,18 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk15on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bctls-jdk15on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+            
             <dependency>
                 <groupId>org.apache.zookeeper</groupId>
                 <artifactId>zookeeper</artifactId>
