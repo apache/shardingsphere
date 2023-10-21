@@ -101,7 +101,7 @@
         <elasticjob.version>3.0.4</elasticjob.version>
         
         <slf4j.version>2.0.9</slf4j.version>
-        <logback.version>1.4.11</logback.version>
+        <logback.version>1.2.12</logback.version>
         <commons-logging.version>1.2</commons-logging.version>
         
         <lombok.version>1.18.30</lombok.version>
