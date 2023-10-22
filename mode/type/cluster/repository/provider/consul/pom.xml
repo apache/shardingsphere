@@ -26,11 +26,6 @@
     <artifactId>shardingsphere-cluster-mode-repository-consul</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <consul.api.version>1.4.1</consul.api.version>
-        <httpclient.version>4.5.13</httpclient.version>
-    </properties>
-    
     <dependencyManagement>
         <dependencies>
             <dependency>

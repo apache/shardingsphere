@@ -91,14 +91,24 @@
         <immutables.version>2.9.3</immutables.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
+        <atomikos.version>6.0.0</atomikos.version>
+        <narayana.version>5.12.4.Final</narayana.version>
+        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
+        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
+        <seata.version>1.6.1</seata.version>
         
         <netty.version>4.1.99.Final</netty.version>
         <bouncycastle.version>1.70</bouncycastle.version>
         
         <zookeeper.version>3.9.0</zookeeper.version>
         <curator.version>5.5.0</curator.version>
+        <jetcd.version>0.7.6</jetcd.version>
+        <consul.api.version>1.4.1</consul.api.version>
+        
         <grpc.version>1.58.0</grpc.version>
         <protobuf.version>3.21.12</protobuf.version>
+        <httpclient.version>4.5.13</httpclient.version>
+        <okhttp.version>4.12.0</okhttp.version>
         
         <elasticjob.version>3.0.4</elasticjob.version>
         
@@ -118,10 +128,22 @@
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
         
+        <jooq.version>3.14.15</jooq.version>
+        
+        <prometheus.version>0.11.0</prometheus.version>
+        <prometheus.jmx.version>0.16.1</prometheus.jmx.version>
+        <opentelemetry-bom.version>1.31.0</opentelemetry-bom.version>
+        <okhttp.version>4.12.0</okhttp.version>
+        <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
+        
         <junit.version>5.10.0</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
         <awaitility.version>4.2.0</awaitility.version>
+        <testcontainers.version>1.17.3</testcontainers.version>
+        <commons-csv.version>1.9.0</commons-csv.version>
+        
+        <graalvm.version>21.2.0</graalvm.version>
         
         <!-- 3rd party library plugin versions -->
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
@@ -131,6 +153,8 @@
         <native-maven-plugin.version>0.9.27</native-maven-plugin.version>
         
         <!-- Compile plugin versions -->
+        <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
+        <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
@@ -147,6 +171,7 @@
         <maven-release-plugin.version>3.0.0</maven-release-plugin.version>
         <maven-assembly-plugin.version>3.5.0</maven-assembly-plugin.version>
         <maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
+        <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
         
         <!-- Check plugin versions -->
         <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
