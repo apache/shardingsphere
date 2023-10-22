@@ -97,7 +97,6 @@
         
         <zookeeper.version>3.9.0</zookeeper.version>
         <curator.version>5.5.0</curator.version>
-        <jetcd.version>0.7.6</jetcd.version>
         <grpc.version>1.58.0</grpc.version>
         <protobuf.version>3.21.12</protobuf.version>
         
@@ -345,21 +344,6 @@
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-recipes</artifactId>
                 <version>${curator.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.etcd</groupId>
-                <artifactId>jetcd-core</artifactId>
-                <version>${jetcd.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.android</groupId>
-                        <artifactId>annotations</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>io.vertx</groupId>
-                        <artifactId>vertx-grpc</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>io.grpc</groupId>
