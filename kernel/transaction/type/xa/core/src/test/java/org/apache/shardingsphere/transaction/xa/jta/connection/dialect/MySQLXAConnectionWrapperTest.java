@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
+import com.mysql.cj.jdbc.JdbcConnection;
 import com.mysql.cj.jdbc.MysqlXAConnection;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
@@ -57,7 +58,7 @@ class MySQLXAConnectionWrapperTest {
     
     private Connection mockConnection() throws SQLException {
         Connection result = mock(Connection.class);
-        when(result.unwrap(com.mysql.cj.jdbc.JdbcConnection.class)).thenReturn(mock(com.mysql.cj.jdbc.JdbcConnection.class, RETURNS_DEEP_STUBS));
+        when(result.unwrap(JdbcConnection.class)).thenReturn(mock(JdbcConnection.class, RETURNS_DEEP_STUBS));
         return result;
     }
 }
