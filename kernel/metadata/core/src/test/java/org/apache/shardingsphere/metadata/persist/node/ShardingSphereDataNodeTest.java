@@ -62,73 +62,72 @@ class ShardingSphereDataNodeTest {
     }
     
     @Test
-    void assertGetDatabaseName_HappyPath() {
+    void assertGetDatabaseNameHappyPath() {
         assertThat(ShardingSphereDataNode.getDatabaseName("/statistics/db_name"), is(Optional.of("db_name")));
     }
     
     @Test
-    void assertGetDatabaseName_DbNameNotFoundScenario() {
+    void assertGetDatabaseNameDbNameNotFoundScenario() {
         assertThat(ShardingSphereDataNode.getDatabaseName("/statistics"), is(Optional.empty()));
     }
     
     @Test
-    void assertGetSchemaName_HappyPath() {
+    void assertGetSchemaNameHappyPath() {
         assertThat(ShardingSphereDataNode.getSchemaName("/statistics/db_name/schemas/db_schema"), is(Optional.of("db_schema")));
     }
     
     @Test
-    void assertGetSchemaName_SchemaNameNotFoundScenario() {
+    void assertGetSchemaNameSchemaNameNotFoundScenario() {
         assertThat(ShardingSphereDataNode.getSchemaName("/statistics/db_name"), is(Optional.empty()));
     }
     
     @Test
-    void assertGetDatabaseNameByDatabasePath_HappyPath() {
+    void assertGetDatabaseNameByDatabasePathHappyPath() {
         assertThat(ShardingSphereDataNode.getDatabaseNameByDatabasePath("/statistics/db_name"), is(Optional.of("db_name")));
     }
     
     @Test
-    void assertGetDatabaseNameByDatabasePath_DbNameNotFoundScenario() {
+    void assertGetDatabaseNameByDatabasePathDbNameNotFoundScenario() {
         assertThat(ShardingSphereDataNode.getDatabaseNameByDatabasePath("/statistics"), is(Optional.empty()));
     }
     
     @Test
-    void assertGetSchemaNameBySchemaPath_HappyPath() {
+    void assertGetSchemaNameBySchemaPathHappyPath() {
         assertThat(ShardingSphereDataNode.getSchemaNameBySchemaPath("/statistics/db_name/schemas/db_schema"), is(Optional.of("db_schema")));
     }
     
     @Test
-    void assertGetSchemaNameBySchemaPath_SchemaNameNotFoundScenario() {
+    void assertGetSchemaNameBySchemaPathSchemaNameNotFoundScenario() {
         assertThat(ShardingSphereDataNode.getSchemaNameBySchemaPath("/statistics/db_name"), is(Optional.empty()));
     }
     
     @Test
-    void assertGetTableName_HappyPath() {
+    void assertGetTableNameHappyPath() {
         assertThat(ShardingSphereDataNode.getTableName("/statistics/db_name/schemas/db_schema/tables/tbl_name"), is(Optional.of("tbl_name")));
     }
     
     @Test
-    void assertGetTableName_TableNameNotFoundScenario() {
+    void assertGetTableNameTableNameNotFoundScenario() {
         assertThat(ShardingSphereDataNode.getTableName("/statistics/db_name/schemas/db_schema"), is(Optional.empty()));
     }
     
     @Test
-    void assertGetTableNameByRowPath_HappyPath() {
+    void assertGetTableNameByRowPathHappyPath() {
         assertThat(ShardingSphereDataNode.getTableNameByRowPath("/statistics/db_name/schemas/db_schema/tables/tbl_name"), is(Optional.of("tbl_name")));
     }
     
     @Test
-    void assertGetTableNameByRowPath_TableNameNotFoundScenario() {
+    void assertGetTableNameByRowPathTableNameNotFoundScenario() {
         assertThat(ShardingSphereDataNode.getTableNameByRowPath("/statistics/db_name/schemas/db_schema"), is(Optional.empty()));
     }
     
     @Test
-    void assertGetRowUniqueKey_HappyPath() {
+    void assertGetRowUniqueKeyHappyPath() {
         assertThat(ShardingSphereDataNode.getRowUniqueKey("/statistics/db_name/schemas/db_schema/tables/tbl_name/key"), is(Optional.of("key")));
     }
     
     @Test
-    void assertGetRowUniqueKey_UniqueKeyNotFoundScenario() {
+    void assertGetRowUniqueKeyUniqueKeyNotFoundScenario() {
         assertThat(ShardingSphereDataNode.getRowUniqueKey("/statistics/db_name/schemas/db_schema/tables/tbl_name"), is(Optional.empty()));
     }
-    
 }
