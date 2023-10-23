@@ -158,7 +158,7 @@ class GovernanceRepositoryAPIImplTest {
     }
 
     @Test
-    void testGovernanceRepositoryAPIImplMethods() {
+    void assertLatestCheckJobIdPersistenceDeletion() {
         String parentJobId = "testParentJob";
         String expectedCheckJobId = "testCheckJob";
         governanceRepositoryAPI.persistLatestCheckJobId(parentJobId, expectedCheckJobId);
