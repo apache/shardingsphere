@@ -156,7 +156,7 @@ class GovernanceRepositoryAPIImplTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("testValue"));
     }
-
+    
     @Test
     void assertLatestCheckJobIdPersistenceDeletion() {
         String parentJobId = "testParentJob";
@@ -168,7 +168,7 @@ class GovernanceRepositoryAPIImplTest {
         governanceRepositoryAPI.deleteLatestCheckJobId(parentJobId);
         assertFalse(governanceRepositoryAPI.getLatestCheckJobId(parentJobId).isPresent(), "Expected no checkJobId to be present after deletion");
     }
-
+    
     private MigrationJobItemContext mockJobItemContext() {
         MigrationJobItemContext result = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
         MigrationTaskConfiguration taskConfig = result.getTaskConfig();
