@@ -26,10 +26,6 @@
     <artifactId>shardingsphere-sql-translator-jooq-provider</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <jooq.version>3.14.15</jooq.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

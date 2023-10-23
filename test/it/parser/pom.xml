@@ -28,8 +28,6 @@
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-        
-        <commons-csv.version>1.9.0</commons-csv.version>
     </properties>
     
     <dependencies>

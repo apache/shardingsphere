@@ -37,8 +37,6 @@
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-        
-        <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
     </properties>
     
     <build>

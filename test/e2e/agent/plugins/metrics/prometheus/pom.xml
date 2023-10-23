@@ -28,7 +28,6 @@
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-        <mysql-connector-java.version>8.0.31</mysql-connector-java.version>
         
         <docker.proxy.context.directory>target/proxy</docker.proxy.context.directory>
         <docker.proxy.compose.file>${project.basedir}/src/test/resources/docker/proxy/docker-compose.yml</docker.proxy.compose.file>

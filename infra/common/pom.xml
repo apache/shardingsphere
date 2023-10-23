@@ -26,11 +26,6 @@
     <artifactId>shardingsphere-infra-common</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
-        <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
