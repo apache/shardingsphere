@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.infra.binder.statement;
 
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.SubqueryProjection;
+import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -40,18 +45,84 @@ import org.junit.jupiter.api.Test;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SelectStatementBinderTest {
+    
+    @Test
+    void assertFindColumnProjectionWithoutExpandProjections() {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        
+        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.emptyList());
+        
+        Optional<ColumnProjection> result = selectStatementContext.findColumnProjection(1);
+        
+        assertFalse(result.isPresent());
+    }
+    
+    @Test
+    void assertFindColumnProjectionInvalidColumnIndex() {
+        Projection projection = mock(Projection.class);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        
+        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(projection));
+        
+        Optional<ColumnProjection> result = selectStatementContext.findColumnProjection(2);
+        
+        assertFalse(result.isPresent());
+    }
+    
+    @Test
+    void assertFindColumnProjectionInvalidProjectionType() {
+        ExpressionProjection projection = mock(ExpressionProjection.class);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        
+        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(projection));
+        
+        Optional<ColumnProjection> result = selectStatementContext.findColumnProjection(1);
+        
+        assertFalse(result.isPresent());
+    }
+    
+    @Test
+    void assertFindColumnProjectionFromColumnProjection() {
+        ColumnProjection projection = mock(ColumnProjection.class);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        
+        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(projection));
+        
+        Optional<ColumnProjection> result = selectStatementContext.findColumnProjection(1);
+        
+        assertTrue(result.isPresent());
+        assertThat(result.get(), is(projection));
+    }
+    
+    @Test
+    void assertFindColumnProjectionFromSubqueryProjection() {
+        SubqueryProjection projection = mock(SubqueryProjection.class, RETURNS_DEEP_STUBS);
+        ColumnProjection columnProjection = mock(ColumnProjection.class);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        
+        when(projection.getProjection()).thenReturn(columnProjection);
+        when(selectStatementContext.getProjectionsContext().getExpandProjections()).thenReturn(Collections.singletonList(projection));
+        
+        Optional<ColumnProjection> result = selectStatementContext.findColumnProjection(1);
+        
+        assertTrue(result.isPresent());
+        assertThat(result.get(), is(columnProjection));
+    }
     
     @Test
     void assertBind() {
