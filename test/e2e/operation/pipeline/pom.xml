@@ -79,6 +79,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <!-- TODO Remove version definition and use the same 8.x version after proxy support pipeline E2E operations -->
             <version>5.1.49</version>
         </dependency>
         
