@@ -36,7 +36,7 @@ public final class DataSourceEnvironment {
             case "H2":
                 return "org.h2.Driver";
             case "MySQL":
-                return "com.mysql.jdbc.Driver";
+                return "com.mysql.cj.jdbc.Driver";
             case "PostgreSQL":
                 return "org.postgresql.Driver";
             case "openGauss":
