@@ -160,11 +160,11 @@ class GovernanceRepositoryAPIImplTest {
     @Test
     void testGovernanceRepositoryAPIImplMethods() {
         String parentJobId = "testParentJob";
-        String checkJobId = "testCheckJob";
-        governanceRepositoryAPI.persistLatestCheckJobId(parentJobId, checkJobId);
-        Optional<String> retrievedCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
-        assertTrue(retrievedCheckJobId.isPresent(), "Expected a checkJobId to be present");
-        assertEquals(checkJobId, retrievedCheckJobId.get(), "The retrieved checkJobId does not match the expected one");
+        String expectedCheckJobId = "testCheckJob";
+        governanceRepositoryAPI.persistLatestCheckJobId(parentJobId, expectedCheckJobId);
+        Optional<String> actualCheckJobIdOpt = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
+        assertTrue(actualCheckJobIdOpt.isPresent(), "Expected a checkJobId to be present");
+        assertEquals(expectedCheckJobId, actualCheckJobIdOpt.get(), "The retrieved checkJobId does not match the expected one");
         governanceRepositoryAPI.deleteLatestCheckJobId(parentJobId);
         assertFalse(governanceRepositoryAPI.getLatestCheckJobId(parentJobId).isPresent(), "Expected no checkJobId to be present after deletion");
     }
