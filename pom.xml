@@ -169,7 +169,8 @@
         <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
         <maven-release-plugin.version>3.0.0</maven-release-plugin.version>
         <maven-assembly-plugin.version>3.5.0</maven-assembly-plugin.version>
-        <maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
+        
+        <maven-shade-plugin.version>3.5.1</maven-shade-plugin.version>
         <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
         
         <!-- Check plugin versions -->
