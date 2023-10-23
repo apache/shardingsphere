@@ -51,6 +51,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 class GovernanceRepositoryAPIImplTest {
@@ -154,6 +155,18 @@ class GovernanceRepositoryAPIImplTest {
         Optional<String> actual = governanceRepositoryAPI.getJobOffsetInfo("1");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("testValue"));
+    }
+    
+    @Test
+    void assertLatestCheckJobIdPersistenceDeletion() {
+        String parentJobId = "testParentJob";
+        String expectedCheckJobId = "testCheckJob";
+        governanceRepositoryAPI.persistLatestCheckJobId(parentJobId, expectedCheckJobId);
+        Optional<String> actualCheckJobIdOpt = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
+        assertTrue(actualCheckJobIdOpt.isPresent(), "Expected a checkJobId to be present");
+        assertEquals(expectedCheckJobId, actualCheckJobIdOpt.get(), "The retrieved checkJobId does not match the expected one");
+        governanceRepositoryAPI.deleteLatestCheckJobId(parentJobId);
+        assertFalse(governanceRepositoryAPI.getLatestCheckJobId(parentJobId).isPresent(), "Expected no checkJobId to be present after deletion");
     }
     
     private MigrationJobItemContext mockJobItemContext() {
