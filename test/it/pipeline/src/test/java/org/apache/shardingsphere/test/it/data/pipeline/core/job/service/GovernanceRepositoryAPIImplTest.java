@@ -48,9 +48,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class GovernanceRepositoryAPIImplTest {
@@ -155,7 +153,39 @@ class GovernanceRepositoryAPIImplTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("testValue"));
     }
-    
+
+    @Test
+    void assertPersistLatestCheckJobId() {
+        String parentJobId = "parentJob123";
+        String checkJobId = "checkJob456";
+        governanceRepositoryAPI.persistLatestCheckJobId(parentJobId, checkJobId);
+        Optional<String> retrievedCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
+        assertTrue(retrievedCheckJobId.isPresent(), "Expected a checkJobId to be present");
+        assertEquals(retrievedCheckJobId.get(), checkJobId, "The retrieved checkJobId does not match the persisted one");
+    }
+
+    @Test
+    void assertGetLatestCheckJobId() {
+        String parentJobId = "parentJob789";
+        String checkJobId = "checkJob012";
+        governanceRepositoryAPI.persistLatestCheckJobId(parentJobId, checkJobId);
+        Optional<String> retrievedCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
+        assertTrue(retrievedCheckJobId.isPresent(), "Expected a checkJobId to be present");
+        assertEquals(checkJobId, retrievedCheckJobId.get(), "The retrieved checkJobId does not match the expected one");
+        governanceRepositoryAPI.deleteLatestCheckJobId(parentJobId);
+        assertFalse(governanceRepositoryAPI.getLatestCheckJobId(parentJobId).isPresent(), "Expected no checkJobId to be present after deletion");
+    }
+
+    @Test
+    void assertDeleteLatestCheckJobId() {
+        String parentJobId = "parentJob123";
+        String checkJobId = "checkJob456";
+        governanceRepositoryAPI.persistLatestCheckJobId(parentJobId, checkJobId);
+        assertTrue(governanceRepositoryAPI.getLatestCheckJobId(parentJobId).isPresent(), "Expected checkJobId to be present before deletion");
+        governanceRepositoryAPI.deleteLatestCheckJobId(parentJobId);
+        assertFalse(governanceRepositoryAPI.getLatestCheckJobId(parentJobId).isPresent(), "Expected no checkJobId to be present after deletion");
+    }
+
     private MigrationJobItemContext mockJobItemContext() {
         MigrationJobItemContext result = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
         MigrationTaskConfiguration taskConfig = result.getTaskConfig();
