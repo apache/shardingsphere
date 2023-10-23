@@ -187,4 +187,9 @@ class NewDatabaseMetaDataNodeTest {
     void assertGetViewNode() {
         assertThat(NewDatabaseMetaDataNode.getViewNode("foo_db", "foo_schema", "foo_view"), is("/metadata/foo_db/schemas/foo_schema/views/foo_view"));
     }
+    
+    @Test
+    void assertGetDataSourceNodeVersionsNode() {
+        assertThat(NewDatabaseMetaDataNode.getDataSourceNodeVersionsNode("foo_db", "foo_ds"), is("/metadata/foo_db/data_sources/nodes/foo_ds/versions"));
+    }
 }
