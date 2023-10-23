@@ -3957,8 +3957,8 @@ permanentTablespaceClause
     ;
 
 alterTablespace
-	: ALTER TABLESPACE tablespaceName
-	( defaultTablespaceParams
+    : ALTER TABLESPACE tablespaceName
+    ( defaultTablespaceParams
     | MINIMUM EXTENT sizeClause
     | RESIZE sizeClause
     | COALESCE
@@ -3974,20 +3974,20 @@ alterTablespace
     | tablespaceRetentionClause
     | alterTablespaceEncryption
     | lostWriteProtection
-	)
-	;
+    )
+    ;
 
 defaultTablespaceParams
-	: DEFAULT defaultTableCompression? defaultIndexCompression? inmemoryClause? ilmClause? storageClause?
-	;
+    : DEFAULT defaultTableCompression? defaultIndexCompression? inmemoryClause? ilmClause? storageClause?
+    ;
 
 defaultTableCompression
-	: TABLE (COMPRESS FOR OLTP | COMPRESS FOR QUERY (LOW | HIGH) | COMPRESS FOR ARCHIVE (LOW | HIGH) | NOCOMPRESS)
-	;
+    : TABLE (COMPRESS FOR OLTP | COMPRESS FOR QUERY (LOW | HIGH) | COMPRESS FOR ARCHIVE (LOW | HIGH) | NOCOMPRESS)
+    ;
 
 defaultIndexCompression
-	: INDEX (COMPRESS ADVANCED (LOW | HIGH) | NOCOMPRESS)
-	;
+    : INDEX (COMPRESS ADVANCED (LOW | HIGH) | NOCOMPRESS)
+    ;
 
 datafileTempfileClauses
     : ADD (DATAFILE | TEMPFILE) (fileSpecification (COMMA_ fileSpecification)*)?
