@@ -159,22 +159,15 @@ class GovernanceRepositoryAPIImplTest {
 
     @Test
     void testGovernanceRepositoryAPIImplMethods() {
-        String parentJobId1 = "parentJob123";
-        String checkJobId1 = "checkJob456";
-        governanceRepositoryAPI.persistLatestCheckJobId(parentJobId1, checkJobId1);
-        Optional<String> retrievedCheckJobId1 = governanceRepositoryAPI.getLatestCheckJobId(parentJobId1);
-        assertTrue(retrievedCheckJobId1.isPresent(), "Expected a checkJobId to be present");
-        assertEquals(retrievedCheckJobId1.get(), checkJobId1, "The retrieved checkJobId does not match the persisted one");
-        String parentJobId2 = "parentJob789";
-        String checkJobId2 = "checkJob012";
-        governanceRepositoryAPI.persistLatestCheckJobId(parentJobId2, checkJobId2);
-        Optional<String> retrievedCheckJobId2 = governanceRepositoryAPI.getLatestCheckJobId(parentJobId2);
-        assertTrue(retrievedCheckJobId2.isPresent(), "Expected a checkJobId to be present");
-        assertEquals(checkJobId2, retrievedCheckJobId2.get(), "The retrieved checkJobId does not match the expected one");
-        governanceRepositoryAPI.deleteLatestCheckJobId(parentJobId2);
-        assertFalse(governanceRepositoryAPI.getLatestCheckJobId(parentJobId2).isPresent(), "Expected no checkJobId to be present after deletion");
+        String parentJobId = "testParentJob";
+        String checkJobId = "testCheckJob";
+        governanceRepositoryAPI.persistLatestCheckJobId(parentJobId, checkJobId);
+        Optional<String> retrievedCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
+        assertTrue(retrievedCheckJobId.isPresent(), "Expected a checkJobId to be present");
+        assertEquals(checkJobId, retrievedCheckJobId.get(), "The retrieved checkJobId does not match the expected one");
+        governanceRepositoryAPI.deleteLatestCheckJobId(parentJobId);
+        assertFalse(governanceRepositoryAPI.getLatestCheckJobId(parentJobId).isPresent(), "Expected no checkJobId to be present after deletion");
     }
-
 
     private MigrationJobItemContext mockJobItemContext() {
         MigrationJobItemContext result = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
