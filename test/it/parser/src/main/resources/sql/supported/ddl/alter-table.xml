@@ -235,6 +235,7 @@
     <sql-case id="alter_table_modify_lob_deduplicate" value="ALTER TABLE t1 MODIFY LOB(a) (DEDUPLICATE)" db-types="Oracle" />
     <sql-case id="alter_table_modify_lob_nocompress" value="ALTER TABLE t1 MODIFY LOB(a) (NOCOMPRESS)" db-types="Oracle" />
     <sql-case id="alter_table_modify_lob_encrypt_using" value="ALTER TABLE t1 MODIFY LOB(a) (ENCRYPT USING '3DES168')" db-types="Oracle" />
+    <sql-case id="alter_table_modify_lob_storage_maxsize_cache" value="ALTER TABLE xml_lob_tab MODIFY LOB (XMLDATA) (STORAGE (MAXSIZE 2G) CACHE)" db-types="Oracle" />
     <sql-case id="alter_table_move_compress_for_oltp" value="ALTER TABLE table_name MOVE COMPRESS FOR OLTP" db-types="Oracle" />
     <sql-case id="alter_table_modify_encrypt_identified_by_password" value="ALTER TABLE t1 MODIFY ( a CLOB ENCRYPT IDENTIFIED BY foo)" db-types="Oracle" />
     <sql-case id="alter_table_move_nocompress_parallel" value="ALTER TABLE table_name MOVE NOCOMPRESS PARALLEL" db-types="Oracle" />

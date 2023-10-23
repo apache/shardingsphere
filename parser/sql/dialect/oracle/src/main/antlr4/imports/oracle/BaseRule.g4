@@ -439,6 +439,10 @@ tablespaceName
     : identifier
     ;
 
+newTablespaceName
+    : identifier
+    ;
+
 subprogramName
     : identifier
     ;
@@ -1724,6 +1728,10 @@ nationalCharset
     ;
 
 filenamePattern
+    : STRING_
+    ;
+
+replacementFilenamePattern
     : STRING_
     ;
 

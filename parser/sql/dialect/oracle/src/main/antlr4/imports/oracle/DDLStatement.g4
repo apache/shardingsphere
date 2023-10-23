@@ -3922,7 +3922,7 @@ segmentManagementClause
     ;
 
 tablespaceGroupClause
-    : TABLESPACE GROUP tablespaceGroupName
+    : TABLESPACE GROUP (tablespaceGroupName | SQ_ SQ_)
     ;
 
 temporaryTablespaceClause
@@ -3957,13 +3957,14 @@ permanentTablespaceClause
     ;
 
 alterTablespace
-    : ALTER TABLESPACE tablespaceName
-    ( MINIMUM EXTENT sizeClause
+	: ALTER TABLESPACE tablespaceName
+	( defaultTablespaceParams
+    | MINIMUM EXTENT sizeClause
     | RESIZE sizeClause
     | COALESCE
     | SHRINK SPACE (KEEP sizeClause)?
     | RENAME TO newTablespaceName
-    | (BEGIN|END) BACKUP
+    | (BEGIN | END) BACKUP
     | datafileTempfileClauses
     | tablespaceLoggingClauses
     | tablespaceGroupClause
@@ -3973,53 +3974,45 @@ alterTablespace
     | tablespaceRetentionClause
     | alterTablespaceEncryption
     | lostWriteProtection
-    )
-    ;
+	)
+	;
 
-newTablespaceName
-    : identifier
-    ;
+defaultTablespaceParams
+	: DEFAULT defaultTableCompression? defaultIndexCompression? inmemoryClause? ilmClause? storageClause?
+	;
+
+defaultTableCompression
+	: TABLE (COMPRESS FOR OLTP | COMPRESS FOR QUERY (LOW | HIGH) | COMPRESS FOR ARCHIVE (LOW | HIGH) | NOCOMPRESS)
+	;
+
+defaultIndexCompression
+	: INDEX (COMPRESS ADVANCED (LOW | HIGH) | NOCOMPRESS)
+	;
 
 datafileTempfileClauses
-    : ADD (datafileSpecification | tempfileSpecification)
-    | DROP (DATAFILE | TEMPFILE) (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
-    | SHRINK TEMPFILE (fileSpecification | UNSIGNED_INTEGER) (KEEP sizeClause)?
-    | RENAME DATAFILE fileSpecification (COMMA_ fileSpecification)* TO fileSpecification (COMMA_ fileSpecification)*
-    | (DATAFILE | TEMPFILE) (ONLINE|OFFLINE)
-    ;
-
-datafileSpecification
-    : DATAFILE
-      (COMMA_? datafileTempfileSpec)
-    ;
-
-tempfileSpecification
-    : TEMPFILE
-      (COMMA_? datafileTempfileSpec)
+    : ADD (DATAFILE | TEMPFILE) (fileSpecification (COMMA_ fileSpecification)*)?
+    | DROP (DATAFILE | TEMPFILE) (fileName | fileNumber)
+    | SHRINK TEMPFILE (fileName | fileNumber) (KEEP sizeClause)?
+    | RENAME DATAFILE fileName (COMMA_ fileName)* TO fileName (COMMA_ fileName)*
+    | (DATAFILE | TEMPFILE) (ONLINE | OFFLINE)
     ;
 
 tablespaceLoggingClauses
-    : loggingClause
-    | NO? FORCE LOGGING
+    : loggingClause | NO? FORCE LOGGING
     ;
 
 tablespaceStateClauses
-    : ONLINE
-    | OFFLINE (NORMAL | TEMPORARY | IMMEDIATE)?
-    | READ (ONLY | WRITE)
-    | PERMANENT
-    | TEMPORARY
+    : ONLINE | OFFLINE (NORMAL | TEMPORARY | IMMEDIATE)? | READ (ONLY | WRITE) | (PERMANENT | TEMPORARY)
     ;
 
 tablespaceFileNameConvert
-    : FILE_NAME_CONVERT EQ_ LP_ CHAR_STRING COMMA_ CHAR_STRING (COMMA_ CHAR_STRING COMMA_ CHAR_STRING)* RP_ KEEP?
+    : FILE_NAME_CONVERT EQ_ LP_ filenamePattern COMMA_ replacementFilenamePattern (COMMA_ filenamePattern COMMA_ replacementFilenamePattern)* RP_ KEEP?
     ;
 
 alterTablespaceEncryption
-    : ENCRYPTION ( OFFLINE (tablespaceEncryptionSpec? ENCRYPT | DECRYPT)
-                 | ONLINE (tablespaceEncryptionSpec? (ENCRYPT | REKEY) | DECRYPT) tablespaceFileNameConvert?
-                 | FINISH (ENCRYPT | REKEY | DECRYPT) tablespaceFileNameConvert?
-                 )
+    : ENCRYPTION(OFFLINE (tablespaceEncryptionSpec? ENCRYPT | DECRYPT) 
+    | ONLINE (tablespaceEncryptionSpec? (ENCRYPT | REKEY) | DECRYPT) tablespaceFileNameConvert?
+    | FINISH (ENCRYPT | REKEY | DECRYPT) tablespaceFileNameConvert?)
     ;
 
 dropFunction
