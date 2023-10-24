@@ -4121,3 +4121,17 @@ fileType
     | CLOB
     | BLOB
     ;
+
+switch
+    : SWITCH switchClause TO COPY
+    ;
+
+switchClause
+    : DATABASE
+    | DATAFILE datafileSpecClause (COMMA_ datafileSpecClause)*
+    | TABLESPACE SQ_? tablespaceName SQ_? (COMMA_ SQ_? tablespaceName SQ_?)*
+    ;
+
+datafileSpecClause
+    : SQ_ fileName SQ_ | INTEGER_
+    ;
