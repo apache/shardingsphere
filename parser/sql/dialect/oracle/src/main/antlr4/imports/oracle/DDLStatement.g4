@@ -2268,7 +2268,7 @@ auditingByClause
 
 auditOperationClause
     : (sqlStatementShortcut | ALL | ALL STATEMENTS) (COMMA_ sqlStatementShortcut | ALL | ALL STATEMENTS)*
-    | (systemPrivilege | ALL PRIVILEGES) (COMMA_ systemPrivilege | ALL PRIVILEGES) 
+    | (systemPrivilege | ALL PRIVILEGES) (COMMA_ systemPrivilege | ALL PRIVILEGES)*
     ;
 
 sqlStatementShortcut

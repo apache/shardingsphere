@@ -160,4 +160,9 @@
     <audit sql-case-id="audit_all_on_default_by_access" />
     <audit sql-case-id="audit_all_statements_by_by_access_whenever_successful" />
     <audit sql-case-id="audit_all_statements_in_session_current" />
+    <audit sql-case-id="audit_create_any_directory" />
+    <audit sql-case-id="audit_create_alter" />
+    <audit sql-case-id="audit_delete_any_table_by_access" />
+    <audit sql-case-id="audit_crete_table_by_access_whenever_not_successful" />
+    <audit sql-case-id="audit_select_table_by" />
 </sql-parser-test-cases>
