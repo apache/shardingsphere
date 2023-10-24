@@ -1727,6 +1727,10 @@
         <table name="t1" start-index="12" stop-index="13" />
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_modify_lob_storage_maxsize_cache">
+        <table name="xml_lob_tab" start-index="12" stop-index="22" />
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_move_compress_for_oltp">
         <table name="table_name" start-index="12" stop-index="21" />
     </alter-table>
