@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.primarykey;
 
 import lombok.SneakyThrows;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
@@ -39,6 +40,7 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -90,12 +92,13 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
             // TODO PostgreSQL update delete events not support if table without unique keys at increment task.
-            final Consumer<Void> incrementalTaskFn = unused -> {
+            final Consumer<DataSource> incrementalTaskFn = dataSource -> {
                 if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
                     doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
                 }
                 Object orderId = keyGenerateAlgorithm.generateKey();
                 insertOneOrder(containerComposer, orderId);
+                containerComposer.assertOrderRecordExist(dataSource, "t_order", orderId);
             };
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, incrementalTaskFn);
         }
@@ -169,9 +172,10 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
             Object uniqueKey = keyGenerateAlgorithm.generateKey();
-            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, unused -> {
+            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
                 doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
+                containerComposer.assertOrderRecordExist(dataSource, "t_order", uniqueKey);
             });
         }
     }
@@ -191,9 +195,10 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
             Object uniqueKey = keyGenerateAlgorithm.generateKey();
-            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, unused -> {
+            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
                 doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
+                containerComposer.assertOrderRecordExist(dataSource, "t_order", uniqueKey);
             });
         }
     }
@@ -215,12 +220,16 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
             // TODO Insert binary string in VARBINARY column. But KeyGenerateAlgorithm.generateKey() require returning Comparable, and byte[] is not Comparable
             byte[] uniqueKey = new byte[]{-1, 0, 1};
-            assertMigrationSuccess(containerComposer, sql, "order_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, unused -> insertOneOrder(containerComposer, uniqueKey));
+            assertMigrationSuccess(containerComposer, sql, "order_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
+                insertOneOrder(containerComposer, uniqueKey);
+                // TODO Select by byte[] from proxy doesn't work, so unhex function is used for now
+                containerComposer.assertOrderRecordExist(dataSource, String.format("SELECT 1 FROM t_order WHERE order_id=UNHEX('%s')", Hex.encodeHexString(uniqueKey)));
+            });
         }
     }
     
     private void assertMigrationSuccess(final PipelineContainerComposer containerComposer, final String sqlPattern, final String shardingColumn, final KeyGenerateAlgorithm keyGenerateAlgorithm,
-                                        final String consistencyCheckAlgorithmType, final Consumer<Void> incrementalTaskFn) throws Exception {
+                                        final String consistencyCheckAlgorithmType, final Consumer<DataSource> incrementalTaskFn) throws Exception {
         containerComposer.sourceExecuteWithLog(String.format(sqlPattern, SOURCE_TABLE_NAME));
         try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
             PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, SOURCE_TABLE_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
@@ -232,12 +241,14 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
         String jobId = listJobId(containerComposer).get(0);
         containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        incrementalTaskFn.accept(null);
+        DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
+        incrementalTaskFn.accept(jdbcDataSource);
         containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         if (null != consistencyCheckAlgorithmType) {
             assertCheckMigrationSuccess(containerComposer, jobId, consistencyCheckAlgorithmType);
         }
         commitMigrationByJobId(containerComposer, jobId);
+        assertThat(containerComposer.getTargetTableRecordsCount(jdbcDataSource, SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));
         List<String> lastJobIds = listJobId(containerComposer);
         assertTrue(lastJobIds.isEmpty());
     }

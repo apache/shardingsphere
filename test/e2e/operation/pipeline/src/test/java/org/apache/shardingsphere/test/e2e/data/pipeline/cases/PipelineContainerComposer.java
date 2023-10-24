@@ -61,6 +61,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -420,9 +421,11 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     public List<Map<String, Object>> queryForListWithLog(final DataSource dataSource, final String sql) {
         log.info("Query SQL: {}", sql);
-        try (Connection connection = dataSource.getConnection()) {
-            ResultSet resultSet = connection.createStatement().executeQuery(sql);
-            return transformResultSetToList(resultSet);
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+            return transformResultSetToList(statement.getResultSet());
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
