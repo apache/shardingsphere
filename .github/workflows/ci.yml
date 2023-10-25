@@ -40,7 +40,7 @@ jobs:
         timeout-minutes: 5
         env:
           ACTIONS_FEISHU_TAG: 'v1.3.1'
-          INPUT_WEBHOOK: "${{ secrets.FEISHU_ROBOT_NIGHTLY_BUILD }}"
+          INPUT_WEBHOOK: "${{ secrets.FEISHU_ROBOT_PR_BUILD }}"
           INPUT_MESSAGE_TYPE: "post"
           INPUT_TITLE: "Warning"
           INPUT_CONTENT: "The CI job failed. Please check the log for details."
