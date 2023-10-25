@@ -47,3 +47,4 @@ jobs:
           wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
           tar zxf linux-amd64-actions-feishu.tar.gz feishu
           ./feishu
+
