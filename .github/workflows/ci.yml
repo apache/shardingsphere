@@ -57,32 +57,22 @@ jobs:
   global-environment:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
-
-  ci:
-    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
-    name: CI - Compile by JDK 11 and Run on JDK 8
-    needs: global-environment
+  
+  send-failure-message:
+    name: Send Failure Message
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 25
+    if: always()
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup JDK 11 for Build
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 11
-      - uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
-      - name: Build Project with Maven
-        run: ./mvnw clean install -B -ntp -DskipTests -T1C
-      - name: Setup JDK 8 for Test
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Run Tests with JDK 8
-        run: ./mvnw install -T1C -B -ntp -fae
+      - name: Send Failure Message
+        timeout-minutes: 5
+        env:
+          ACTIONS_FEISHU_TAG: 'v1.3.1'
+          INPUT_WEBHOOK: "${{ secrets.FEISHU_ROBOT_NIGHTLY_BUILD }}"
+          INPUT_MESSAGE_TYPE: "post"
+          INPUT_TITLE: "Warning"
+          INPUT_CONTENT: "The CI job failed. Please check the log for details."
+        run: |
+          wget -q https://github.com/xiachufang/actions-feishu/releases/download/${{ env.ACTIONS_FEISHU_TAG }}/linux-amd64-actions-feishu.tar.gz
+          tar zxf linux-amd64-actions-feishu.tar.gz feishu
+          ./feishu
