@@ -28,9 +28,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.In
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.TableConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.with.WithConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.SQLStatementConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
 
@@ -47,7 +49,8 @@ public final class InsertStatementConverter implements SQLStatementConverter<Ins
     
     @Override
     public SqlNode convert(final InsertStatement insertStatement) {
-        return convertInsert(insertStatement);
+        SqlInsert sqlInsert = convertInsert(insertStatement);
+        return InsertStatementHandler.getWithSegment(insertStatement).flatMap(optional -> WithConverter.convert(optional, sqlInsert)).orElse(sqlInsert);
     }
     
     private SqlInsert convertInsert(final InsertStatement insertStatement) {
