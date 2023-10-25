@@ -18,6 +18,7 @@
 name: Nightly - E2E Operation
 
 on:
+  pull_request:
   schedule:
     - cron: '0 21 */1 * *'  # once a day. UTC time
   workflow_dispatch:
