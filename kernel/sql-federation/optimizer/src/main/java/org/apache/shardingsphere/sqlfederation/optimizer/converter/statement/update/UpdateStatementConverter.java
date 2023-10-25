@@ -20,12 +20,12 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.up
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOrderBy;
-import org.apache.calcite.sql.SqlUpdate;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.UpdateStatementHandler;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.limit.PaginationValueSQLConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.orderby.OrderByConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.where.WhereConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.with.WithConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.SQLStatementConverter;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
     
     @Override
     public SqlNode convert(final UpdateStatement updateStatement) {
-        SqlUpdate sqlUpdate = convertUpdate(updateStatement);
+        SqlNode sqlUpdate = convertUpdate(updateStatement);
         SqlNodeList orderBy = UpdateStatementHandler.getOrderBySegment(updateStatement).flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = UpdateStatementHandler.getLimitSegment(updateStatement);
         if (limit.isPresent()) {
@@ -58,8 +59,9 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
         return orderBy.isEmpty() ? sqlUpdate : new SqlOrderBy(SqlParserPos.ZERO, sqlUpdate, orderBy, null, null);
     }
     
-    private SqlUpdate convertUpdate(final UpdateStatement updateStatement) {
+    private SqlNode convertUpdate(final UpdateStatement updateStatement) {
         SqlNode table = TableConverter.convert(updateStatement.getTable()).orElseThrow(IllegalStateException::new);
+        SqlNode from = convertTable(updateStatement.getAssignmentSegment().orElse(null).getFrom());
         SqlNode condition = updateStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
         SqlNodeList columns = new SqlNodeList(SqlParserPos.ZERO);
         SqlNodeList expressions = new SqlNodeList(SqlParserPos.ZERO);
@@ -67,7 +69,8 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
             columns.addAll(convertColumn(each.getColumns()));
             expressions.add(convertExpression(each.getValue()));
         }
-        return new SqlUpdate(SqlParserPos.ZERO, table, columns, expressions, condition, null, null);
+        CustomSqlUpdate sqlUpdate = new CustomSqlUpdate(SqlParserPos.ZERO, table, columns, expressions, condition, null, null, from);
+        return UpdateStatementHandler.getWithSegment(updateStatement).flatMap(optional -> WithConverter.convert(optional, sqlUpdate)).orElse(sqlUpdate);
     }
     
     private List<SqlNode> convertColumn(final List<ColumnSegment> columnSegments) {
@@ -76,5 +79,9 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
     
     private SqlNode convertExpression(final ExpressionSegment expressionSegment) {
         return ExpressionConverter.convert(expressionSegment).orElseThrow(IllegalStateException::new);
+    }
+    
+    private SqlNode convertTable(final TableSegment tableSegment) {
+        return TableConverter.convert(tableSegment).orElse(null);
     }
 }

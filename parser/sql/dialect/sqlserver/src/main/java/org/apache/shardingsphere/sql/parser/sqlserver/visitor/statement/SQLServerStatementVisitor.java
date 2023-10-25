@@ -995,8 +995,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitSetAssignmentsClause(final SetAssignmentsClauseContext ctx) {
         Collection<AssignmentSegment> assignments = new LinkedList<>();
+        TableSegment from;
         for (AssignmentContext each : ctx.assignment()) {
             assignments.add((AssignmentSegment) visit(each));
+        }
+        if (null != ctx.fromClause()) {
+            from = (TableSegment) visit(ctx.fromClause().tableReferences());
+            return new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments, from);
         }
         return new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
     }
@@ -1017,7 +1022,6 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         columnSegments.add(column);
         ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
         AssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
-        result.getColumns().add(column);
         return result;
     }
     
