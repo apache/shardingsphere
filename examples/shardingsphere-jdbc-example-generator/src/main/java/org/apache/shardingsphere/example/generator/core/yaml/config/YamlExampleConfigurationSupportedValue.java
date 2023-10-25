@@ -31,11 +31,11 @@ import java.util.Set;
 @Getter
 public enum YamlExampleConfigurationSupportedValue {
     
-    MODES("modes", new HashSet<>(Arrays.asList("memory", "proxy", "cluster-zookeeper", "cluster-etcd", "standalone"))),
+    MODES("modes", new HashSet<>(Arrays.asList("proxy", "cluster-zookeeper", "cluster-etcd", "standalone"))),
     
     TRANSACTIONS("transactions", new HashSet<>(Arrays.asList("local", "xa-atomikos", "xa-narayana", "base-seata"))),
     
-    FEATURES("features", new HashSet<>(Arrays.asList("shadow", "sharding", "readwrite-splitting", "encrypt", "db-discovery", "mask"))),
+    FEATURES("features", new HashSet<>(Arrays.asList("shadow", "sharding", "readwrite-splitting", "encrypt", "mask"))),
     
     FRAMEWORKS("frameworks", new HashSet<>(Arrays.asList("jdbc", "spring-boot-starter-jdbc", "spring-boot-starter-jpa", "spring-boot-starter-mybatis", "spring-namespace-jdbc", "spring-namespace-jpa", "spring-namespace-mybatis")));
     
