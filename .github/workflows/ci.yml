@@ -19,31 +19,6 @@ name: CI
 
 on:
   push:
-    branches: [ dev ]
-    paths:
-      - '.github/workflows/ci.yml'
-      - '**/pom.xml'
-      - '**/src/main/**'
-      - '**/src/test/**'
-      - '!distribution/**'
-      - 'test/it/**'
-      - '!test/e2e/**'
-      - 'test/e2e/driver/**'
-      - '!*.md'
-  pull_request:
-    branches: [ master ]
-    paths:
-      - '.github/workflows/ci.yml'
-      - '**/pom.xml'
-      - '**/src/main/**'
-      - '**/src/test/**'
-      - '!distribution/**'
-      - 'test/it/**'
-      - '!test/e2e/**'
-      - 'test/e2e/driver/**'
-      - '!*.md'
-  repository_dispatch:
-    types: ci-completed
   workflow_dispatch:
 
 concurrency:
@@ -54,10 +29,6 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
 
 jobs:
-  global-environment:
-    name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
-  
   send-failure-message:
     name: Send Failure Message
     runs-on: ubuntu-latest
