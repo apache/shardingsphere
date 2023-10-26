@@ -124,7 +124,8 @@ class RALE2EIT {
     }
     
     private void assertResultSet(final SingleE2EContainerComposer containerComposer, final Statement statement, final String sql) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(sql)) {
+        statement.execute(sql);
+        try (ResultSet resultSet = statement.getResultSet()) {
             assertResultSet(containerComposer, resultSet);
         }
     }
