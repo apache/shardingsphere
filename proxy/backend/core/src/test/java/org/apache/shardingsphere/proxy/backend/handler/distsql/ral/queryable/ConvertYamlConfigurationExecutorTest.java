@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -37,7 +37,6 @@ import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ConvertYamlConfigurationExecutorTest {
     
@@ -97,11 +96,11 @@ class ConvertYamlConfigurationExecutorTest {
     }
     
     private void assertParseSQL(final String actual) {
-        Splitter.on(";").trimResults().splitToList(actual).forEach(each -> {
-            if (!Strings.isNullOrEmpty(each)) {
-                assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(each, false));
-            }
-        });
+        Splitter.on(";").trimResults().omitEmptyStrings().splitToList(actual).forEach(this::assertNotNull);
+    }
+    
+    private void assertNotNull(final String sql) {
+        Assertions.assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false));
     }
     
     @SneakyThrows(IOException.class)

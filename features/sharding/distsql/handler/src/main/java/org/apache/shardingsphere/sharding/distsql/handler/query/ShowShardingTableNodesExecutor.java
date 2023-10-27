@@ -34,7 +34,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show sharding table nodes.
+ * Show sharding table nodes executor.
  */
 public final class ShowShardingTableNodesExecutor implements RQLExecutor<ShowShardingTableNodesStatement> {
     
