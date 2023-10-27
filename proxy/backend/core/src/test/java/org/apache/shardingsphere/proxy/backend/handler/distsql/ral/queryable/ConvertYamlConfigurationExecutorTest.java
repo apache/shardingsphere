@@ -96,8 +96,8 @@ class ConvertYamlConfigurationExecutorTest {
     }
     
     private void assertParseSQL(final String distSQLs) {
-        Splitter.on(";").trimResults().omitEmptyStrings().splitToList(distSQLs).forEach(each ->
-                assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(each, false)));
+        Splitter.on(";").trimResults().omitEmptyStrings().splitToList(distSQLs)
+                .forEach(each -> assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(each, false)));
     }
     
     @SneakyThrows(IOException.class)
