@@ -99,8 +99,8 @@ class ConvertYamlConfigurationExecutorTest {
         Splitter.on(";").trimResults().omitEmptyStrings().splitToList(actual).forEach(this::assertNotNull);
     }
     
-    private void assertNotNull(String each) {
-        Assertions.assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(each, false));
+    private void assertNotNull(final String sql) {
+        Assertions.assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false));
     }
     
     @SneakyThrows(IOException.class)
