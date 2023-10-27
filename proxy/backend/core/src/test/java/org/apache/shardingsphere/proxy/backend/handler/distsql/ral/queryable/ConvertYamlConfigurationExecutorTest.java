@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -37,6 +36,7 @@ import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ConvertYamlConfigurationExecutorTest {
     
@@ -95,12 +95,9 @@ class ConvertYamlConfigurationExecutorTest {
         assertParseSQL((String) actual.getCell(1));
     }
     
-    private void assertParseSQL(final String actual) {
-        Splitter.on(";").trimResults().omitEmptyStrings().splitToList(actual).forEach(this::assertNotNull);
-    }
-    
-    private void assertNotNull(final String sql) {
-        Assertions.assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false));
+    private void assertParseSQL(final String distSQLs) {
+        Splitter.on(";").trimResults().omitEmptyStrings().splitToList(distSQLs)
+                .forEach(each -> assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(each, false)));
     }
     
     @SneakyThrows(IOException.class)
