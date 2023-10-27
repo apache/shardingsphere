@@ -22,22 +22,7 @@ class PipelineJobCenterTest {
 
     @Test
     void addJob(){
-        PipelineJob pipelineJob=new PipelineJob() {
-            @Override
-            public Optional<PipelineTasksRunner> getTasksRunner(int shardingItem) {
-                return Optional.empty();
-            }
-
-            @Override
-            public Collection<Integer> getShardingItems() {
-                return null;
-            }
-
-            @Override
-            public void stop() {
-
-            }
-        };
+        PipelineJob pipelineJob=mock(PipelineJob.class);
         PipelineJobCenter.addJob("12",pipelineJob);
         Assertions.assertEquals(pipelineJob,PipelineJobCenter.getJob("12"));
         Assertions.assertTrue(PipelineJobCenter.isJobExisting("12"));
@@ -45,46 +30,17 @@ class PipelineJobCenterTest {
 
     @Test
     void isJobExisting() {
-        PipelineJob pipelineJob=new PipelineJob() {
-            @Override
-            public Optional<PipelineTasksRunner> getTasksRunner(int shardingItem) {
-                return Optional.empty();
-            }
-
-            @Override
-            public Collection<Integer> getShardingItems() {
-                return null;
-            }
-
-            @Override
-            public void stop() {
-
-            }
-        };
+        PipelineJob pipelineJob=mock(PipelineJob.class);
         PipelineJobCenter.addJob("12",pipelineJob);
         Assertions.assertTrue(PipelineJobCenter.isJobExisting("12"));
-
+        assertNotNull(PipelineJobCenter.getJob("12"));
     }
 
     @Test
     void getJob() {
-        PipelineJob pipelineJob=new PipelineJob() {
-            @Override
-            public Optional<PipelineTasksRunner> getTasksRunner(int shardingItem) {
-                return Optional.empty();
-            }
-
-            @Override
-            public Collection<Integer> getShardingItems() {
-                return null;
-            }
-
-            @Override
-            public void stop() {
-
-            }
-        };
+        PipelineJob pipelineJob=mock(PipelineJob.class);
         PipelineJobCenter.addJob("13",pipelineJob);
+        assertTrue(PipelineJobCenter.isJobExisting("13"));
         Assertions.assertEquals(pipelineJob,PipelineJobCenter.getJob("13"));
     }
 
