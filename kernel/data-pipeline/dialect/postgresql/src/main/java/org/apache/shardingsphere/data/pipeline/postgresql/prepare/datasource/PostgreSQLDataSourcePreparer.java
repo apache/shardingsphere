@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource;
 
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.common.config.CreateTableConfiguration.CreateTableEntry;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.AbstractDataSourcePreparer;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PrepareT
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.stream.Collectors;
 
 /**
  * Data source preparer for PostgreSQL.
