@@ -39,7 +39,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         for (CreateTableEntry each : param.getCreateTableConfig().getCreateTableEntries()) {
             String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine());
             try (Connection targetConnection = getCachedDataSource(dataSourceManager, each.getTargetDataSourceConfig()).getConnection()) {
-                for (String sql : Splitter.on(";").trimResults().splitToList(createTargetTableSQL).stream().filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList())) {
+                for (String sql : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(createTargetTableSQL)) {
                     executeTargetTableSQL(targetConnection, sql);
                 }
             }
