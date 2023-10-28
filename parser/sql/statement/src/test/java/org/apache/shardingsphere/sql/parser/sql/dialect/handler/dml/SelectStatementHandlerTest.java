@@ -188,6 +188,16 @@ class SelectStatementHandlerTest {
     }
     
     @Test
+    void assertGetWithSegmentForMysql() {
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        selectStatement.setWithSegment(new WithSegment(0, 2, new LinkedList<>()));
+        Optional<WithSegment> withSegment = SelectStatementHandler.getWithSegment(selectStatement);
+        assertTrue(withSegment.isPresent());
+        assertThat(withSegment.get(), is(selectStatement.getWithSegment().get()));
+        assertFalse(SelectStatementHandler.getWithSegment(new OracleSelectStatement()).isPresent());
+    }
+    
+    @Test
     void assertGetWithSegmentForSQLServer() {
         SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
         selectStatement.setWithSegment(new WithSegment(0, 2, new LinkedList<>()));
