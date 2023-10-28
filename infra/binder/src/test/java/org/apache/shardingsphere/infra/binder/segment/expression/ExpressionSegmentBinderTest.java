@@ -39,46 +39,48 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ExpressionSegmentBinderTest {
     
     @Test
-    void testBindWithBinaryOperationExpression() {
+    void assertBindWithBinaryOperationExpression() {
         BinaryOperationExpression binaryOperationExpression = new BinaryOperationExpression(0, 0, null, null, "+", "text");
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), "db", new MockedDatabaseType(), Collections.emptyList());
         ExpressionSegment actual = ExpressionSegmentBinder.bind(binaryOperationExpression, SegmentType.INSERT_COLUMNS, statementBinderContext, Collections.emptyMap(), Collections.emptyMap());
         assertTrue(actual instanceof BinaryOperationExpression);
-        assertEquals(binaryOperationExpression.getLeft(), ((BinaryOperationExpression) actual).getLeft());
-        assertEquals(binaryOperationExpression.getOperator(), ((BinaryOperationExpression) actual).getOperator());
-        assertEquals(binaryOperationExpression.getRight(), ((BinaryOperationExpression) actual).getRight());
+        assertThat(binaryOperationExpression.getLeft(), is(((BinaryOperationExpression) actual).getLeft()));
+        assertThat(binaryOperationExpression.getOperator(), is(((BinaryOperationExpression) actual).getOperator()));
+        assertThat(binaryOperationExpression.getRight(), is(((BinaryOperationExpression) actual).getRight()));
     }
     
     @Test
-    void testBindWithExistsSubqueryExpression() {
+    void assertBindWithExistsSubqueryExpression() {
         MySQLSelectStatement mySQLSelectStatement = new MySQLSelectStatement();
         mySQLSelectStatement.setProjections(new ProjectionsSegment(0, 0));
         ExistsSubqueryExpression existsSubqueryExpression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, mySQLSelectStatement, "test"));
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), "db", new MockedDatabaseType(), Collections.emptyList());
         ExpressionSegment actual = ExpressionSegmentBinder.bind(existsSubqueryExpression, SegmentType.INSERT_COLUMNS, statementBinderContext, Collections.emptyMap(), Collections.emptyMap());
         assertTrue(actual instanceof ExistsSubqueryExpression);
-        assertEquals(existsSubqueryExpression.getSubquery().getClass(), ((ExistsSubqueryExpression) actual).getSubquery().getClass());
+        assertThat(existsSubqueryExpression.getSubquery().getClass(), is(((ExistsSubqueryExpression) actual).getSubquery().getClass()));
     }
     
     @Test
-    void testBindWithSubqueryExpressionSegment() {
+    void assertBindWithSubqueryExpressionSegment() {
         MySQLSelectStatement mySQLSelectStatement = new MySQLSelectStatement();
         mySQLSelectStatement.setProjections(new ProjectionsSegment(0, 0));
         SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(new SubquerySegment(0, 0, mySQLSelectStatement, "test"));
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), "db", new MockedDatabaseType(), Collections.emptyList());
         ExpressionSegment actual = ExpressionSegmentBinder.bind(subqueryExpressionSegment, SegmentType.INSERT_COLUMNS, statementBinderContext, Collections.emptyMap(), Collections.emptyMap());
         assertTrue(actual instanceof SubqueryExpressionSegment);
-        assertEquals(subqueryExpressionSegment.getSubquery().getClass(), ((SubqueryExpressionSegment) actual).getSubquery().getClass());
+        assertThat(subqueryExpressionSegment.getSubquery().getClass(), is(((SubqueryExpressionSegment) actual).getSubquery().getClass()));
     }
     
     @Test
-    void testBindWithInExpression() {
+    void assertBindWithInExpression() {
         Collection<String> variables = new ArrayList<>();
         variables.add("t_order");
         MySQLSelectStatement mySQLSelectStatement = new MySQLSelectStatement();
@@ -87,38 +89,38 @@ class ExpressionSegmentBinderTest {
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), "db", new MockedDatabaseType(), variables);
         ExpressionSegment actual = ExpressionSegmentBinder.bind(inExpression, SegmentType.INSERT_COLUMNS, statementBinderContext, Collections.emptyMap(), Collections.emptyMap());
         assertTrue(actual instanceof InExpression);
-        assertEquals(inExpression.getStopIndex(), ((InExpression) actual).getStopIndex());
+        assertThat(inExpression.getStopIndex(), is(((InExpression) actual).getStopIndex()));
     }
     
     @Test
-    void testBindWithNotExpression() {
+    void assertBindWithNotExpression() {
         Collection<String> variables = new ArrayList<>();
         variables.add("t_order");
         NotExpression notExpression = new NotExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("t_order")), null);
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), "db", new MockedDatabaseType(), variables);
         ExpressionSegment actual = ExpressionSegmentBinder.bind(notExpression, SegmentType.INSERT_COLUMNS, statementBinderContext, Collections.emptyMap(), Collections.emptyMap());
         assertTrue(actual instanceof NotExpression);
-        assertEquals(notExpression.getExpression().getClass(), ((NotExpression) actual).getExpression().getClass());
+        assertThat(notExpression.getExpression().getClass(), is(((NotExpression) actual).getExpression().getClass()));
     }
     
     @Test
-    void testBindWithColumnSegment() {
+    void assertBindWithColumnSegment() {
         Collection<String> variables = new ArrayList<>();
         variables.add("t_order");
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("t_order"));
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), "db", new MockedDatabaseType(), variables);
         ExpressionSegment actual = ExpressionSegmentBinder.bind(columnSegment, SegmentType.INSERT_COLUMNS, statementBinderContext, Collections.emptyMap(), Collections.emptyMap());
         assertTrue(actual instanceof ColumnSegment);
-        assertEquals(columnSegment.getIdentifier().getValue(), ((ColumnSegment) actual).getIdentifier().getValue());
+        assertThat(columnSegment.getIdentifier().getValue(), is(((ColumnSegment) actual).getIdentifier().getValue()));
     }
     
     @Test
-    void testBindWithFunctionSegment() {
+    void assertBindWithFunctionSegment() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "SUM(*)", "text");
         SQLStatementBinderContext statementBinderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), "db", new MockedDatabaseType(), Collections.emptyList());
         ExpressionSegment actual = ExpressionSegmentBinder.bind(functionSegment, SegmentType.INSERT_COLUMNS, statementBinderContext, Collections.emptyMap(), Collections.emptyMap());
         assertTrue(actual instanceof FunctionSegment);
         assertEquals(functionSegment.getFunctionName(), ((FunctionSegment) actual).getFunctionName());
-        assertEquals(functionSegment.getParameters().size(), ((FunctionSegment) actual).getParameters().size());
+        assertThat(functionSegment.getParameters().size(), is(((FunctionSegment) actual).getParameters().size()));
     }
 }
