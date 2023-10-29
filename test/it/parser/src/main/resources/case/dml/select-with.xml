@@ -508,7 +508,7 @@
                                                     </right>
                                                 </binary-operation-expression>
                                             </left>
-                                            <operator>and</operator>
+                                            <operator>AND</operator>
                                             <right>
                                                 <binary-operation-expression start-index="70" stop-index="83">
                                                     <left>
@@ -550,7 +550,7 @@
                                                         <operator>=</operator>
                                                     </binary-operation-expression>
                                                 </left>
-                                                <operator>and</operator>
+                                                <operator>AND</operator>
                                                 <right>
                                                     <binary-operation-expression start-index="197" stop-index="216">
                                                         <left>
