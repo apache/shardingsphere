@@ -194,7 +194,7 @@ class SelectStatementHandlerTest {
         Optional<WithSegment> withSegment = SelectStatementHandler.getWithSegment(selectStatement);
         assertTrue(withSegment.isPresent());
         assertThat(withSegment.get(), is(selectStatement.getWithSegment().get()));
-        assertFalse(SelectStatementHandler.getWithSegment(new OracleSelectStatement()).isPresent());
+        assertFalse(SelectStatementHandler.getWithSegment(new MySQLSelectStatement()).isPresent());
     }
     
     @Test
