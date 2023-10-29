@@ -436,4 +436,16 @@
     <test-case sql="SELECT * FROM multi_types_first first JOIN multi_types_second second ON first.id = second.id WHERE second.long_varchar_column = '1'">
         <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE `long_varchar_column` = '1'], dynamicParameters=[null]) " />
     </test-case>
+    
+    <test-case sql="WITH cte AS (SELECT 1 AS col1, 2 AS col2 UNION ALL SELECT 3, 4) SELECT col1, col2 FROM cte">
+        <assertion expected-result="EnumerableUnion(all=[true])   EnumerableValues(tuples=[[{ 1, 2 }]])   EnumerableValues(tuples=[[{ 3, 4 }]]) " />
+    </test-case>
+    
+    <test-case sql="WITH cte1(col1, col2, col3) AS (SELECT id, bit_column, tiny_int_column FROM multi_types_first), cte2(col1, col2, col3) AS (SELECT id, bit_column, tiny_int_column FROM multi_types_second) SELECT * FROM cte1 inner join cte2 on cte1.col1 = cte2.col1">
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT `id`, `bit_column`, `tiny_int_column` FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT `id`, `bit_column`, `tiny_int_column` FROM `federate_jdbc`.`multi_types_second`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="WITH cte1(col1, col2, col3) AS (SELECT 1, 2, 3 UNION ALL SELECT 4, 5, 6), cte2(col1, col2, col3) AS (SELECT 1, 2, 3 UNION ALL SELECT 4, 5, 6) SELECT cte1.* FROM cte1 inner join cte2 on cte1.col1 = cte2.col1 WHERE cte1.col1 = 1">
+        <assertion expected-result="EnumerableCalc(expr#0..3=[{inputs}], proj#0..2=[{exprs}])   EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])     EnumerableUnion(all=[true])       EnumerableCalc(expr#0..2=[{inputs}], expr#3=[1], expr#4=[=($t0, $t3)], proj#0..2=[{exprs}], $condition=[$t4])         EnumerableValues(tuples=[[{ 1, 2, 3 }]])       EnumerableCalc(expr#0..2=[{inputs}], expr#3=[1], expr#4=[=($t0, $t3)], proj#0..2=[{exprs}], $condition=[$t4])         EnumerableValues(tuples=[[{ 4, 5, 6 }]])     EnumerableUnion(all=[true])       EnumerableCalc(expr#0..2=[{inputs}], expr#3=[1], expr#4=[=($t0, $t3)], EXPR$0=[$t0], $condition=[$t4])         EnumerableValues(tuples=[[{ 1, 2, 3 }]])       EnumerableCalc(expr#0..2=[{inputs}], expr#3=[1], expr#4=[=($t0, $t3)], EXPR$0=[$t0], $condition=[$t4])         EnumerableValues(tuples=[[{ 4, 5, 6 }]]) " />
+    </test-case>
 </test-cases>
