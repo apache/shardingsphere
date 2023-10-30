@@ -35,19 +35,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
-
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,8 +47,7 @@ class DeleteMultiTableSegmentBinderTest {
 
     @Test
     void assertBind() {
-        DeleteMultiTableSegment deleteMultiTableSegment = mock(DeleteMultiTableSegment.class,
-            RETURNS_DEEP_STUBS);
+        DeleteMultiTableSegment deleteMultiTableSegment = mock(DeleteMultiTableSegment.class, RETURNS_DEEP_STUBS);
         SQLStatementBinderContext sqlStatementBinderContext = mock(SQLStatementBinderContext.class);
         TableSegmentBinderContext tableSegmentBinderContext = mock(TableSegmentBinderContext.class);
         Map<String, TableSegmentBinderContext> map = mock(Map.class);
@@ -68,8 +58,7 @@ class DeleteMultiTableSegmentBinderTest {
 
     @Test
     void assertBindWithJoinTableSegment() {
-        DeleteMultiTableSegment deleteMultiTableSegment = mock(DeleteMultiTableSegment.class,
-            RETURNS_DEEP_STUBS);
+        DeleteMultiTableSegment deleteMultiTableSegment = mock(DeleteMultiTableSegment.class, RETURNS_DEEP_STUBS);
         SQLStatementBinderContext sqlStatementBinderContext = mock(SQLStatementBinderContext.class);
         TableSegmentBinderContext tableSegmentBinderContext = mock(TableSegmentBinderContext.class);
         Map<String, TableSegmentBinderContext> map = mock(Map.class);
@@ -102,8 +91,7 @@ class DeleteMultiTableSegmentBinderTest {
 
     @Test
     void assertBindWithJoinTableSegmentAndAliasSegmentIsAbsent() {
-        DeleteMultiTableSegment deleteMultiTableSegment = mock(DeleteMultiTableSegment.class,
-            RETURNS_DEEP_STUBS);
+        DeleteMultiTableSegment deleteMultiTableSegment = mock(DeleteMultiTableSegment.class, RETURNS_DEEP_STUBS);
         SQLStatementBinderContext sqlStatementBinderContext = mock(SQLStatementBinderContext.class);
         TableSegmentBinderContext tableSegmentBinderContext = mock(TableSegmentBinderContext.class);
         Map<String, TableSegmentBinderContext> map = mock(Map.class);
