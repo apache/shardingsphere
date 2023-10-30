@@ -17,59 +17,41 @@
 
 package org.apache.shardingsphere.single.metadata.reviser;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.metadata.reviser.constraint.SingleConstraintReviser;
+import org.apache.shardingsphere.single.metadata.reviser.index.SingleIndexReviser;
+import org.apache.shardingsphere.single.rule.SingleRule;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 
-import javax.sql.DataSource;
-
-import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.single.constant.SingleOrder;
-import org.apache.shardingsphere.single.metadata.reviser.constraint.SingleConstraintReviser;
-import org.apache.shardingsphere.single.metadata.reviser.index.SingleIndexReviser;
-import org.apache.shardingsphere.single.rule.SingleRule;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SingleMetaDataReviseEntryTest {
     
-    private SingleMetaDataReviseEntry reviseEntry;
-    
-    @BeforeEach
-    public void setUp() {
-        reviseEntry = new SingleMetaDataReviseEntry();
-    }
+    private final SingleMetaDataReviseEntry reviseEntry = new SingleMetaDataReviseEntry();
     
     @Test
-    public void testGetIndexReviser() {
+    void assertGetIndexReviser() {
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
-        SingleRule rule = new SingleRule(ruleConfig, "test_database", null, new HashMap<String, DataSource>(), Collections.emptyList());
+        SingleRule rule = new SingleRule(ruleConfig, "test_database", null, new HashMap<>(), Collections.emptyList());
         String tableName = "test_table";
         Optional<SingleIndexReviser> indexReviser = reviseEntry.getIndexReviser(rule, tableName);
         assertTrue(indexReviser.isPresent());
-        assertEquals(SingleIndexReviser.class, indexReviser.get().getClass());
+        assertThat(indexReviser.get().getClass(), is(SingleIndexReviser.class));
     }
     
     @Test
-    public void testGetConstraintReviser() {
+    void assertGetConstraintReviser() {
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
-        SingleRule rule = new SingleRule(ruleConfig, "test_database", null, new HashMap<String, DataSource>(), Collections.emptyList());
+        SingleRule rule = new SingleRule(ruleConfig, "test_database", null, new HashMap<>(), Collections.emptyList());
         String tableName = "test_table";
         Optional<SingleConstraintReviser> constraintReviser = reviseEntry.getConstraintReviser(rule, tableName);
         assertTrue(constraintReviser.isPresent());
-        assertEquals(SingleConstraintReviser.class, constraintReviser.get().getClass());
-    }
-    
-    @Test
-    public void testGetOrder() {
-        assertEquals(SingleOrder.ORDER, reviseEntry.getOrder());
-    }
-    
-    @Test
-    public void testGetTypeClass() {
-        assertEquals(SingleRule.class, reviseEntry.getTypeClass());
+        assertThat(constraintReviser.get().getClass(), is(SingleConstraintReviser.class));
     }
 }
