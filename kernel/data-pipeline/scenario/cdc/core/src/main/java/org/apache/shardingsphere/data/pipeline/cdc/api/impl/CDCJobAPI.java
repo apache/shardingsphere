@@ -359,6 +359,17 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
             stop(jobId);
         }
         dropJob(jobId);
+        cleanup(jobConfig);
+    }
+    
+    private void cleanup(final CDCJobConfiguration jobConfig) {
+        for (Entry<String, Map<String, Object>> entry : jobConfig.getDataSourceConfig().getRootConfig().getDataSources().entrySet()) {
+            try {
+                PipelineJobPreparerUtils.destroyPosition(jobConfig.getJobId(), new StandardPipelineDataSourceConfiguration(entry.getValue()));
+            } catch (final SQLException ex) {
+                log.warn("job destroying failed, jobId={}, dataSourceName={}", jobConfig.getJobId(), entry.getKey(), ex);
+            }
+        }
     }
     
     @Override
