@@ -101,11 +101,29 @@ class DeleteMultiTableSegmentBinderTest {
     }
 
     @Test
-    void assertBindWithJoinTableSegmentWithLeft() {
+    void assertBindWithJoinTableSegmentAndAliasSegmentIsAbsent() {
         DeleteMultiTableSegment deleteMultiTableSegment = mock(DeleteMultiTableSegment.class,
             RETURNS_DEEP_STUBS);
         SQLStatementBinderContext sqlStatementBinderContext = mock(SQLStatementBinderContext.class);
         TableSegmentBinderContext tableSegmentBinderContext = mock(TableSegmentBinderContext.class);
-        Map < String,
+        Map<String, TableSegmentBinderContext> map = mock(Map.class);
+        JoinTableSegment joinTableSegment = mock(JoinTableSegment.class);
+        SimpleTableSegment simpleTableSegment = mock(SimpleTableSegment.class);
+        TableNameSegment tableNameSegment = mock(TableNameSegment.class);
+        when(deleteMultiTableSegment.getRelationTable()).thenReturn(joinTableSegment);
+        when(joinTableSegment.getLeft()).thenReturn(simpleTableSegment);
+        when(simpleTableSegment.getTableName()).thenReturn(tableNameSegment);
+        when(tableNameSegment.getIdentifier().getValue()).thenReturn("test");
+        when(joinTableSegment.getJoinType()).thenReturn(JoinType.INNER);
+        when(joinTableSegment.getRight()).thenReturn(simpleTableSegment);
+        when(simpleTableSegment.getTableName()).thenReturn(tableNameSegment);
+        when(tableNameSegment.getIdentifier().getValue()).thenReturn("test");
+        when(joinTableSegment.getOnCondition().isPresent()).thenReturn(true);
+        when(joinTableSegment.getOnCondition().get().getStartIndex()).thenReturn(1);
+        when(joinTableSegment.getOnCondition().get().getStopIndex()).thenReturn(2);
+        when(joinTableSegment.getAlias().isPresent()).thenReturn(false);
+        DeleteMultiTableSegment actual = DeleteMultiTableSegmentBinder.bind(deleteMultiTableSegment,
+            sqlStatementBinderContext, map);
+        assertThat(actual, is(deleteMultiTableSegment));
     }
 }
