@@ -56,17 +56,20 @@ class DeleteMultiTableSegmentBinderTest {
 
     @Test
     void assertBind() {
-        DeleteMultiTableSegment deleteMultiTableSegment = mock(DeleteMultiTableSegment.class, RETURNS_DEEP_STUBS);
+        DeleteMultiTableSegment deleteMultiTableSegment = mock(DeleteMultiTableSegment.class,
+            RETURNS_DEEP_STUBS);
         SQLStatementBinderContext sqlStatementBinderContext = mock(SQLStatementBinderContext.class);
         TableSegmentBinderContext tableSegmentBinderContext = mock(TableSegmentBinderContext.class);
         Map<String, TableSegmentBinderContext> map = mock(Map.class);
-        DeleteMultiTableSegment actual = DeleteMultiTableSegmentBinder.bind(deleteMultiTableSegment, sqlStatementBinderContext, map);
+        DeleteMultiTableSegment actual = DeleteMultiTableSegmentBinder.bind(deleteMultiTableSegment,
+            sqlStatementBinderContext, map);
         assertThat(actual, is(deleteMultiTableSegment));
     }
 
     @Test
     void assertBindWithJoinTableSegment() {
-        DeleteMultiTableSegment deleteMultiTableSegment = mock(DeleteMultiTableSegment.class, RETURNS_DEEP_STUBS);
+        DeleteMultiTableSegment deleteMultiTableSegment = mock(DeleteMultiTableSegment.class,
+            RETURNS_DEEP_STUBS);
         SQLStatementBinderContext sqlStatementBinderContext = mock(SQLStatementBinderContext.class);
         TableSegmentBinderContext tableSegmentBinderContext = mock(TableSegmentBinderContext.class);
         Map<String, TableSegmentBinderContext> map = mock(Map.class);
@@ -92,14 +95,17 @@ class DeleteMultiTableSegmentBinderTest {
         when(joinTableSegment.getAlias().get()).thenReturn(aliasSegment);
         when(aliasSegment.getStartIndex()).thenReturn(1);
         when(aliasSegment.getStopIndex()).thenReturn(2);
-        DeleteMultiTableSegment actual = DeleteMultiTableSegmentBinder.bind(deleteMultiTableSegment, sqlStatementBinderContext, map);
+        DeleteMultiTableSegment actual = DeleteMultiTableSegmentBinder.bind(deleteMultiTableSegment,
+            sqlStatementBinderContext, map);
         assertThat(actual, is(deleteMultiTableSegment));
     }
 
     @Test
     void assertBindWithJoinTableSegmentWithLeft() {
-        DeleteMultiTableSegment deleteMultiTableSegment = mock(DeleteMultiTableSegment.class, RETURNS_DEEP_STUBS);
+        DeleteMultiTableSegment deleteMultiTableSegment = mock(DeleteMultiTableSegment.class,
+            RETURNS_DEEP_STUBS);
         SQLStatementBinderContext sqlStatementBinderContext = mock(SQLStatementBinderContext.class);
         TableSegmentBinderContext tableSegmentBinderContext = mock(TableSegmentBinderContext.class);
-        Map<String,
+        Map < String,
+    }
 }
