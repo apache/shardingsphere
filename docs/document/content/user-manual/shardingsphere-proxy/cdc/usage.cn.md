@@ -3,6 +3,38 @@ title = "使用手册"
 weight = 2
 +++
 
+## CDC 功能介绍
+
+### CDC 协议介绍
+
+CDC 协议使用 Protobuf，对应的 Protobuf 类型是根据 Java 中的类型来映射的。
+
+这里以 openGauss 为例，CDC 协议的数据类型和数据库类型的映射关系如下
+
+| openGauss 类型                             | Java 数据类型          | CDC 对应的 protobuf 类型 | 备注             |
+|------------------------------------------|--------------------|---------------------|----------------|
+| INT1、INT2、INT4                           | Integer            | int32               |                |
+| INT8                                     | Long               | int64               |                |
+| NUMERIC                                  | BigDecimal         | string              |                |
+| FLOAT4                                   | Float              | float               |                |
+| FLOAT8                                   | Double             | double              |                |
+| BOOLEAN                                  | Boolean            | bool                |                |
+| CHAR、VARCHAR、TEXT、CLOB                   | String             | string              |                |
+| BLOB、RAW、BYTEA                           | byte[]             | bytes               |                |
+| DATE、TIMESTAMP，TIMESTAMPTZ、SMALLDATETIME | java.sql.Timestamp | Timestamp           | 不带时区信息         |
+| TIME，TIMETZ                              | java.sql.Time      | int64               | 代表当天的纳秒数（时区无关） |
+| INTERVAL、reltime、abstime                 | String             | string              |                |
+| point、lseg、box、path、polygon、circle       | String             | string              |                |
+| cidr、inet、macaddr                        | String             | string              |                |
+| tsvector                                 | String             | string              |                |
+| UUID                                     | String             | string              |                |
+| JSON、JSONB                               | String             | string              |                |
+| HLL                                      | String             | string              |                |
+| 范围类型（int4range等）                         | String             | string              |                |
+| HASH16、HASH32                            | String             | string              |                |
+
+> 需要注意对时间类型的处理，为了屏蔽时区的差异，CDC 返回的数据都是时区无关的
+
 ## openGauss 使用手册
 
 ### 环境要求
@@ -63,172 +95,7 @@ GRANT ALL PRIVILEGES TO cdc_user;
 
 详情请参见 [openGauss GRANT](https://docs.opengauss.org/zh/docs/2.0.1/docs/Developerguide/GRANT.html)
 
-
 ### 完整流程示例
-
-#### 前提条件
-
-1. 在 MySQL 已准备好源端库、表、数据。
-
-```sql
-DROP DATABASE IF EXISTS migration_ds_0;
-CREATE DATABASE migration_ds_0 DEFAULT CHARSET utf8;
-
-USE migration_ds_0;
-
-CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
-
-INSERT INTO t_order (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok');
-```
-
-2. 在 MySQL 准备目标端库。
-
-```sql
-DROP DATABASE IF EXISTS migration_ds_10;
-CREATE DATABASE migration_ds_10 DEFAULT CHARSET utf8;
-
-DROP DATABASE IF EXISTS migration_ds_11;
-CREATE DATABASE migration_ds_11 DEFAULT CHARSET utf8;
-
-DROP DATABASE IF EXISTS migration_ds_12;
-CREATE DATABASE migration_ds_12 DEFAULT CHARSET utf8;
-```
-
-#### 操作步骤
-
-1. 在 proxy 新建逻辑数据库并配置好存储单元和规则。
-
-```sql
-CREATE DATABASE sharding_db;
-
-USE sharding_db
-
-REGISTER STORAGE UNIT ds_2 (
-    URL="jdbc:mysql://127.0.0.1:3306/migration_ds_10?serverTimezone=UTC&useSSL=false",
-    USER="root",
-    PASSWORD="root",
-    PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
-), ds_3 (
-    URL="jdbc:mysql://127.0.0.1:3306/migration_ds_11?serverTimezone=UTC&useSSL=false",
-    USER="root",
-    PASSWORD="root",
-    PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
-), ds_4 (
-    URL="jdbc:mysql://127.0.0.1:3306/migration_ds_12?serverTimezone=UTC&useSSL=false",
-    USER="root",
-    PASSWORD="root",
-    PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
-);
-
-CREATE SHARDING TABLE RULE t_order(
-STORAGE_UNITS(ds_2,ds_3,ds_4),
-SHARDING_COLUMN=order_id,
-TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
-KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
-);
-```
-
-如果是迁移到异构数据库，那目前需要在 proxy 执行建表语句。
-
-2. 在 proxy 配置源端存储单元。
-
-```sql
-REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
-    URL="jdbc:mysql://127.0.0.1:3306/migration_ds_0?serverTimezone=UTC&useSSL=false",
-    USER="root",
-    PASSWORD="root",
-    PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
-);
-```
-
-3. 启动数据迁移。
-
-```sql
-MIGRATE TABLE ds_0.t_order INTO t_order;
-```
-
-或者指定目标端逻辑库：
-
-```sql
-MIGRATE TABLE ds_0.t_order INTO sharding_db.t_order;
-```
-
-4. 查看数据迁移作业列表。
-
-```sql
-SHOW MIGRATION LIST;
-```
-
-示例结果：
-```
-+--------------------------------------------+--------------+----------------+--------+---------------------+-----------+
-| id                                         | tables       | job_item_count | active | create_time         | stop_time |
-+--------------------------------------------+--------------+----------------+--------+---------------------+-----------+
-| j0102p00002333dcb3d9db141cef14bed6fbf1ab54 | ds_0.t_order | 1              | true   | 2023-09-20 14:41:32 | NULL      |
-+--------------------------------------------+--------------+----------------+--------+---------------------+-----------+
-```
-
-5. 查看数据迁移详情。
-
-```sql
-SHOW MIGRATION STATUS 'j0102p00002333dcb3d9db141cef14bed6fbf1ab54';
-```
-
-示例结果：
-```
-+------+-------------+--------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
-| item | data_source | tables       | status                   | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message |
-+------+-------------+--------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
-| 0    | ds_0        | ds_0.t_order | EXECUTE_INCREMENTAL_TASK | true   | 6                       | 100                           |                          |               |
-+------+-------------+--------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
-```
-
-6. 执行数据一致性校验。
-
-```sql
-CHECK MIGRATION 'j0102p00002333dcb3d9db141cef14bed6fbf1ab54' BY TYPE (NAME='DATA_MATCH');
-```
-
-数据一致性校验算法类型来自：
-```sql
-SHOW MIGRATION CHECK ALGORITHMS;
-```
-
-示例结果：
-```
-+-------------+--------------+--------------------------------------------------------------+----------------------------+
-| type        | type_aliases | supported_database_types                                     | description                |
-+-------------+--------------+--------------------------------------------------------------+----------------------------+
-| CRC32_MATCH |              | MySQL,MariaDB,H2                                             | Match CRC32 of records.    |
-| DATA_MATCH  |              | SQL92,MySQL,PostgreSQL,openGauss,Oracle,SQLServer,MariaDB,H2 | Match raw data of records. |
-+-------------+--------------+--------------------------------------------------------------+----------------------------+
-```
-
-目标端开启数据加密的情况需要使用`DATA_MATCH`。
-
-异构迁移需要使用`DATA_MATCH`。
-
-查询数据一致性校验进度：
-```sql
-SHOW MIGRATION CHECK STATUS 'j0102p00002333dcb3d9db141cef14bed6fbf1ab54';
-```
-
-示例结果：
-```
-+--------------+--------+---------------------+--------+-------------------------------+-----------------------------+--------------------------+-------------------------+-------------------------+------------------+----------------+-----------------+---------------+
-| tables       | result | check_failed_tables | active | inventory_finished_percentage | inventory_remaining_seconds | incremental_idle_seconds | check_begin_time        | check_end_time          | duration_seconds | algorithm_type | algorithm_props | error_message |
-+--------------+--------+---------------------+--------+-------------------------------+-----------------------------+--------------------------+-------------------------+-------------------------+------------------+----------------+-----------------+---------------+
-| ds_0.t_order | true   |                     | false  | 100                           | 0                           |                          | 2023-09-20 14:45:31.992 | 2023-09-20 14:45:33.519 | 1                | DATA_MATCH     |                 |               |
-+--------------+--------+---------------------+--------+-------------------------------+-----------------------------+--------------------------+-------------------------+-------------------------+------------------+----------------+-----------------+---------------+
-```
-
-7. 完成作业。
-
-```sql
-COMMIT MIGRATION 'j0102p00002333dcb3d9db141cef14bed6fbf1ab54';
-```
-
-更多 DistSQL 请参见 [RAL #数据迁移](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/#%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB)。
 
 #### 前提条件
 
@@ -335,18 +202,80 @@ INSERT INTO t_order (id, user_id, status) VALUES (1,1,'ok1'),(2,2,'ok2'),(3,3,'o
 
 3. 启动 CDC Client
 
-引入 CDC Client 依赖，然后按照 [Example](https://github.com/apache/shardingsphere/blob/master/kernel/data-pipeline/scenario/cdc/client/src/test/java/org/apache/shardingsphere/data/pipeline/cdc/client/example/Bootstrap.java) 启动 CDC Client。
+先引入 CDC Client 依赖，在代码
 
-观察 CDC Client 启动后，是否有如下的日志
+这里先介绍下 `CDCClientConfiguration` 参数，构造 CDCClient 的时候需要传入该参数，该参数包含了 CDC Server 的地址，端口，以及 CDC 数据的消费逻辑。
 
-```
- records: [before {
-  name: "id"
-  value {
-    type_url: "type.googleapis.com/google.protobuf.Empty"
-  }
+```java
+@RequiredArgsConstructor
+@Getter
+public final class CDCClientConfiguration {
+    
+    // CDC 的地址，和Proxy一致
+    private final String address;
+    
+    // CDC 端口，和 server.yaml 的一致
+    private final int port;
+    
+    // 数据消费的逻辑, 需要用户自行实现
+    private final Consumer<List<Record>> dataConsumer;
+    
+    // 异常处理 handler，有个默认的实现 org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoggerExceptionHandler，也可以自行实现相应的处理逻辑，比如出现错误后重连，或者停止
+    private final ExceptionHandler exceptionHandler;
+    
+    // 超时时间，超过这个时间没收到服务器的响应，会认为请求失败。
+    private final int timeoutMills;
 }
 ```
+
+下面是一个简单的启动 CDC Client 的示例。
+
+```java
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
+import org.apache.shardingsphere.data.pipeline.cdc.client.config.CDCClientConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoggerExceptionHandler;
+import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.CDCLoginParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartStreamingParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
+
+import java.util.Collections;
+
+@Slf4j
+public final class Bootstrap {
+    
+    @SneakyThrows(InterruptedException.class)
+    public static void main(final String[] args) {
+        // TODO records 的消费逻辑需要用户自行实现，这里只是简单打印下
+        CDCClientConfiguration clientConfig = new CDCClientConfiguration("127.0.0.1", 33071, records -> log.info("records: {}", records), new LoggerExceptionHandler());
+        try (CDCClient cdcClient = new CDCClient(clientConfig)) {
+            // 1. 先调用 connect 连接到 CDC Server
+            cdcClient.connect();
+            // 2. 调用登陆的逻辑，用户名密码和 server.yaml 配置文件中的一致
+            cdcClient.login(new CDCLoginParameter("root", "root"));
+            // 3. 开启 CDC 数据订阅，用户只需要传入逻辑库和逻辑表，不需要关注底层数据分片情况，CDC Server 会将数据聚合后推送
+            String streamingId = cdcClient.startStreaming(new StartStreamingParameter("sharding_db", Collections.singleton(SchemaTable.newBuilder().setTable("t_order").build()), true));
+            log.info("Streaming id={}", streamingId);
+            // stopStreaming 和 restartStreaming 非必需的操作，分别表示停止订阅和重启订阅
+            // cdcClient.stopStreaming(streamingId);
+            // cdcClient.restartStreaming(streamingId);
+            // 4. 这里是阻塞线程，确保 CDC Client 一直运行。
+            cdcClient.await();
+        }
+    }
+}
+```
+
+主要有4个步骤
+1. 构造 CDCClient，传入 CDCClientConfiguration
+2. 调用 CDCClient.connect，这一步是和 CDC Server 建立连接
+3. 调用 CDCClient.login，使用 server.yaml 中配置好的用户名和密码登录
+4. 调用 CDCClient.startStreaming，开启订阅，需要保证订阅的库和表在 ShardingSphere-Proxy 存在，否则会报错。
+
+> CDCClient.await 是阻塞主线程，非必需的步骤，用其他方式也可以，只要保证 CDC 线程一直在工作就行。
+
+如果需要更复杂数据消费的实现，例如写入到数据库，可以参考 [DataSourceRecordConsumer](https://github.com/apache/shardingsphere/blob/master/test/e2e/operation/pipeline/src/test/java/org/apache/shardingsphere/test/e2e/data/pipeline/cases/cdc/DataSourceRecordConsumer.java)
 
 4. 通过 DistSQL 查看 CDC 任务状态
 
