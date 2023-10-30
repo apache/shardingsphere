@@ -42,3 +42,47 @@ STATUS
 DROP
     : D R O P
     ;
+
+TYPE
+    : T Y P E
+    ;
+
+NAME
+    : N A M E
+    ;
+
+PROPERTIES
+    : P R O P E R T I E S
+    ;
+
+ALTER
+    : A L T E R
+    ;
+
+RULE
+    :  R U L E
+    ;
+
+READ
+    : R E A D
+    ;
+
+WORKER_THREAD
+    : W O R K E R UL_ T H R E A D
+    ;
+
+BATCH_SIZE
+    : B A T C H UL_ S I Z E
+    ;
+
+SHARDING_SIZE
+    : S H A R D I N G UL_ S I Z E
+    ;
+
+RATE_LIMITER
+    : R A T E UL_ L I M I T E R
+    ;
+
+STREAM_CHANNEL
+    : S T R E A M UL_ C H A N N E L
+    ;
