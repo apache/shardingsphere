@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.rewrite.sql.impl.DefaultSQLBuilder;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
 import java.util.Map;
@@ -46,14 +47,14 @@ public final class GenericSQLRewriteEngine {
      * Rewrite SQL and parameters.
      *
      * @param sqlRewriteContext SQL rewrite context
+     * @param queryContext query context
      * @return SQL rewrite result
      */
-    public GenericSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
+    public GenericSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext, final QueryContext queryContext) {
         DatabaseType protocolType = database.getProtocolType();
         Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         DatabaseType storageType = storageUnits.isEmpty() ? protocolType : storageUnits.values().iterator().next().getStorageType();
-        String sql = translatorRule.translate(
-                new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getSqlStatementContext(), storageType, database, globalRuleMetaData);
+        String sql = translatorRule.translate(new DefaultSQLBuilder(sqlRewriteContext).toSQL(), queryContext, storageType, database, globalRuleMetaData);
         return new GenericSQLRewriteResult(new SQLRewriteUnit(sql, sqlRewriteContext.getParameterBuilder().getParameters()));
     }
 }

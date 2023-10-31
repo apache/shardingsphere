@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,7 @@ class RouteSQLRewriteEngineTest {
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(routeUnit);
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext);
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext, mock(QueryContext.class));
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("SELECT ?"));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getParameters(), is(Collections.singletonList(1)));
@@ -92,7 +93,7 @@ class RouteSQLRewriteEngineTest {
         routeContext.getRouteUnits().add(firstRouteUnit);
         routeContext.getRouteUnits().add(secondRouteUnit);
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext);
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext, mock(QueryContext.class));
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(firstRouteUnit).getSql(), is("SELECT ? UNION ALL SELECT ?"));
         assertThat(actual.getSqlRewriteUnits().get(firstRouteUnit).getParameters(), is(Arrays.asList(1, 1)));
@@ -113,7 +114,7 @@ class RouteSQLRewriteEngineTest {
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(routeUnit);
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext);
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext, mock(QueryContext.class));
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getParameters(), is(Collections.singletonList(1)));
@@ -136,7 +137,7 @@ class RouteSQLRewriteEngineTest {
         // TODO check why data node is "ds.tbl_0", not "ds_0.tbl_0"
         routeContext.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds.tbl_0")));
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext);
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext, mock(QueryContext.class));
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getParameters(), is(Collections.singletonList(1)));
@@ -158,7 +159,7 @@ class RouteSQLRewriteEngineTest {
         routeContext.getRouteUnits().add(routeUnit);
         routeContext.getOriginalDataNodes().add(Collections.emptyList());
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext);
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext, mock(QueryContext.class));
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getParameters(), is(Collections.singletonList(1)));
@@ -180,7 +181,7 @@ class RouteSQLRewriteEngineTest {
         routeContext.getRouteUnits().add(routeUnit);
         routeContext.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_1.tbl_1")));
         RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext);
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext, mock(QueryContext.class));
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getSql(), is("INSERT INTO tbl VALUES (?)"));
         assertTrue(actual.getSqlRewriteUnits().get(routeUnit).getParameters().isEmpty());

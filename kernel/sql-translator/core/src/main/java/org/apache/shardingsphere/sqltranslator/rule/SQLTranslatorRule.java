@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.sqltranslator.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
@@ -50,20 +50,20 @@ public final class SQLTranslatorRule implements GlobalRule {
      * Translate SQL.
      * 
      * @param sql to be translated SQL
-     * @param sqlStatementContext SQL statement context
+     * @param queryContext query context
      * @param storageType storage type
      * @param database database
      * @param globalRuleMetaData global rule meta data
      * @return translated SQL
      */
-    public String translate(final String sql, final SQLStatementContext sqlStatementContext, final DatabaseType storageType, final ShardingSphereDatabase database,
+    public String translate(final String sql, final QueryContext queryContext, final DatabaseType storageType, final ShardingSphereDatabase database,
                             final RuleMetaData globalRuleMetaData) {
         DatabaseType protocolType = database.getProtocolType();
         if (protocolType.equals(storageType) || null == storageType) {
             return sql;
         }
         try {
-            return translator.translate(sql, sqlStatementContext, storageType, database, globalRuleMetaData);
+            return translator.translate(sql, queryContext, storageType, database, globalRuleMetaData);
         } catch (final SQLTranslationException ex) {
             if (useOriginalSQLWhenTranslatingFailed) {
                 return sql;

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sqltranslator.rule;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.exception.syntax.UnsupportedTranslatedDatabaseException;
@@ -42,7 +42,7 @@ class SQLTranslatorRuleTest {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getProtocolType()).thenReturn(databaseType);
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, mock(SQLStatementContext.class), databaseType, database,
+        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, mock(QueryContext.class), databaseType, database,
                 mock(RuleMetaData.class));
         assertThat(actual, is(expected));
     }
@@ -53,7 +53,7 @@ class SQLTranslatorRuleTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         when(database.getProtocolType()).thenReturn(protocolType);
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, mock(SQLStatementContext.class), null, database,
+        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, mock(QueryContext.class), null, database,
                 mock(RuleMetaData.class));
         assertThat(actual, is(expected));
     }
@@ -65,7 +65,7 @@ class SQLTranslatorRuleTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getProtocolType()).thenReturn(protocolType);
         DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(input, mock(SQLStatementContext.class), storageType, database,
+        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(input, mock(QueryContext.class), storageType, database,
                 mock(RuleMetaData.class));
         assertThat(actual, is(input.toUpperCase(Locale.ROOT)));
     }
@@ -78,7 +78,7 @@ class SQLTranslatorRuleTest {
         when(database.getProtocolType()).thenReturn(protocolType);
         DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         String actual =
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", true)).translate(expected, mock(SQLStatementContext.class), storageType, database, mock(RuleMetaData.class));
+                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", true)).translate(expected, mock(QueryContext.class), storageType, database, mock(RuleMetaData.class));
         assertThat(actual, is(expected));
     }
     
@@ -89,7 +89,7 @@ class SQLTranslatorRuleTest {
         when(database.getProtocolType()).thenReturn(protocolType);
         DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         assertThrows(UnsupportedTranslatedDatabaseException.class,
-                () -> new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", false)).translate("", mock(SQLStatementContext.class), storageType, database,
+                () -> new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", false)).translate("", mock(QueryContext.class), storageType, database,
                         mock(RuleMetaData.class)));
     }
     
