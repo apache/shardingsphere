@@ -58,8 +58,8 @@ public final class SQLTranslatorRule implements GlobalRule {
      */
     public String translate(final String sql, final QueryContext queryContext, final DatabaseType storageType, final ShardingSphereDatabase database,
                             final RuleMetaData globalRuleMetaData) {
-        DatabaseType protocolType = database.getProtocolType();
-        if (protocolType.equals(storageType) || null == storageType) {
+        DatabaseType sqlParserType = queryContext.getSqlStatementContext().getDatabaseType();
+        if (sqlParserType.equals(storageType) || null == storageType) {
             return sql;
         }
         try {

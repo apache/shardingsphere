@@ -35,7 +35,7 @@ public final class JooQSQLTranslator implements SQLTranslator {
     public String translate(final String sql, final QueryContext queryContext, final DatabaseType storageType, final ShardingSphereDatabase database,
                             final RuleMetaData globalRuleMetaData) {
         try {
-            Query query = DSL.using(JooQDialectRegistry.getSQLDialect(database.getProtocolType())).parser().parseQuery(sql);
+            Query query = DSL.using(JooQDialectRegistry.getSQLDialect(queryContext.getSqlStatementContext().getDatabaseType())).parser().parseQuery(sql);
             return DSL.using(JooQDialectRegistry.getSQLDialect(storageType)).render(query);
             // CHECKSTYLE:OFF
         } catch (final Exception ignored) {

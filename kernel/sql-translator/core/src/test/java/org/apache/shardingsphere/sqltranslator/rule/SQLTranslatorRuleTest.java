@@ -31,6 +31,7 @@ import java.util.Locale;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,9 +41,9 @@ class SQLTranslatorRuleTest {
     void assertTranslateWhenProtocolSameAsStorage() {
         String expected = "select 1";
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getProtocolType()).thenReturn(databaseType);
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, mock(QueryContext.class), databaseType, database,
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext().getDatabaseType()).thenReturn(databaseType);
+        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, queryContext, databaseType, mock(ShardingSphereDatabase.class),
                 mock(RuleMetaData.class));
         assertThat(actual, is(expected));
     }
@@ -50,10 +51,10 @@ class SQLTranslatorRuleTest {
     @Test
     void assertTranslateWhenNoStorage() {
         String expected = "select 1";
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        when(database.getProtocolType()).thenReturn(protocolType);
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, mock(QueryContext.class), null, database,
+        DatabaseType sqlParserType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext().getDatabaseType()).thenReturn(sqlParserType);
+        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, queryContext, null, mock(ShardingSphereDatabase.class),
                 mock(RuleMetaData.class));
         assertThat(actual, is(expected));
     }
@@ -61,11 +62,11 @@ class SQLTranslatorRuleTest {
     @Test
     void assertTranslateWithProtocolDifferentWithStorage() {
         String input = "select 1";
-        DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getProtocolType()).thenReturn(protocolType);
+        DatabaseType sqlParserType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext().getDatabaseType()).thenReturn(sqlParserType);
         DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(input, mock(QueryContext.class), storageType, database,
+        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(input, queryContext, storageType, mock(ShardingSphereDatabase.class),
                 mock(RuleMetaData.class));
         assertThat(actual, is(input.toUpperCase(Locale.ROOT)));
     }
@@ -73,24 +74,23 @@ class SQLTranslatorRuleTest {
     @Test
     void assertUseOriginalSQLWhenTranslatingFailed() {
         String expected = "select 1";
-        DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getProtocolType()).thenReturn(protocolType);
+        DatabaseType sqlParserType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext().getDatabaseType()).thenReturn(sqlParserType);
         DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        String actual =
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", true)).translate(expected, mock(QueryContext.class), storageType, database, mock(RuleMetaData.class));
+        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", true)).translate(expected, queryContext, storageType, mock(ShardingSphereDatabase.class),
+                mock(RuleMetaData.class));
         assertThat(actual, is(expected));
     }
     
     @Test
     void assertNotUseOriginalSQLWhenTranslatingFailed() {
-        DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getProtocolType()).thenReturn(protocolType);
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        DatabaseType sqlParserType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        when(queryContext.getSqlStatementContext().getDatabaseType()).thenReturn(sqlParserType);
         DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        assertThrows(UnsupportedTranslatedDatabaseException.class,
-                () -> new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", false)).translate("", mock(QueryContext.class), storageType, database,
-                        mock(RuleMetaData.class)));
+        assertThrows(UnsupportedTranslatedDatabaseException.class, () -> new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", false)).translate("", queryContext, storageType,
+                mock(ShardingSphereDatabase.class), mock(RuleMetaData.class)));
     }
     
     @Test

@@ -70,6 +70,7 @@ class SQLRewriteEntryTest {
         when(result.getSql()).thenReturn("SELECT ?");
         when(result.getParameters()).thenReturn(Collections.singletonList(1));
         CommonSQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class);
+        when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "H2"));
         when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
         when(result.getHintValueContext()).thenReturn(new HintValueContext());
         return result;
