@@ -209,10 +209,8 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitUnregisterStorageUnit(final UnregisterStorageUnitContext ctx) {
-        boolean ignoreSingleTables = null != ctx.ignoreTables() 
-                && (ctx.ignoreTables() instanceof IgnoreSingleAndBroadcastTablesContext || ctx.ignoreTables() instanceof IgnoreSingleTablesContext);
-        boolean ignoreBroadcastTables = null != ctx.ignoreTables() 
-                && (ctx.ignoreTables() instanceof IgnoreSingleAndBroadcastTablesContext || ctx.ignoreTables() instanceof IgnoreBroadcastTablesContext);
+        boolean ignoreSingleTables = ctx.ignoreTables() instanceof IgnoreSingleAndBroadcastTablesContext || ctx.ignoreTables() instanceof IgnoreSingleTablesContext;
+        boolean ignoreBroadcastTables = ctx.ignoreTables() instanceof IgnoreSingleAndBroadcastTablesContext || ctx.ignoreTables() instanceof IgnoreBroadcastTablesContext;
         return new UnregisterStorageUnitStatement(null != ctx.ifExists(),
                 ctx.storageUnitName().stream().map(ParseTree::getText).map(each -> new IdentifierValue(each).getValue()).collect(Collectors.toList()),
                 ignoreSingleTables, ignoreBroadcastTables);
