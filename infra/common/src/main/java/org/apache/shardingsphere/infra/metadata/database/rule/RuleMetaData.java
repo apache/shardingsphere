@@ -134,17 +134,17 @@ public final class RuleMetaData {
         return rule.getAllDataNodes().values().stream().flatMap(each -> each.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()).stream()).collect(Collectors.toSet());
     }
     
-    private void mergeInUsedStorageUnitNameAndRules(final Map<String, Collection<Class<? extends ShardingSphereRule>>> storageUnitNameAndRulesMap,
-                                                    final Map<String, Collection<Class<? extends ShardingSphereRule>>> toBeMergeStorageUnitNameAndRulesMap) {
-        for (Entry<String, Collection<Class<? extends ShardingSphereRule>>> entry : toBeMergeStorageUnitNameAndRulesMap.entrySet()) {
-            if (storageUnitNameAndRulesMap.containsKey(entry.getKey())) {
+    private void mergeInUsedStorageUnitNameAndRules(final Map<String, Collection<Class<? extends ShardingSphereRule>>> storageUnitNameAndRules,
+                                                    final Map<String, Collection<Class<? extends ShardingSphereRule>>> toBeMergedStorageUnitNameAndRules) {
+        for (Entry<String, Collection<Class<? extends ShardingSphereRule>>> entry : toBeMergedStorageUnitNameAndRules.entrySet()) {
+            if (storageUnitNameAndRules.containsKey(entry.getKey())) {
                 for (Class<? extends ShardingSphereRule> each : entry.getValue()) {
-                    if (!storageUnitNameAndRulesMap.get(entry.getKey()).contains(each)) {
-                        storageUnitNameAndRulesMap.get(entry.getKey()).add(each);
+                    if (!storageUnitNameAndRules.get(entry.getKey()).contains(each)) {
+                        storageUnitNameAndRules.get(entry.getKey()).add(each);
                     }
                 }
             } else {
-                storageUnitNameAndRulesMap.put(entry.getKey(), entry.getValue());
+                storageUnitNameAndRules.put(entry.getKey(), entry.getValue());
             }
         }
     }
