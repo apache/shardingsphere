@@ -2098,3 +2098,19 @@ keyForBlob
 sourceText
     : identifier
     ;
+
+fullPathName
+    : STRING_
+    ;
+
+directoryObject
+    : identifier
+    ;
+
+credentialName
+    : identifier
+    ;
+
+agentDblink
+    : STRING_
+    ;

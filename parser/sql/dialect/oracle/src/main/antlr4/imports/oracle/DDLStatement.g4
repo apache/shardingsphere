@@ -4114,3 +4114,15 @@ fileType
     | CLOB
     | BLOB
     ;
+
+createLibrary
+    : CREATE (OR REPLACE)? (EDITIONABLE | NONEDITIONABLE)? LIBRARY plsqlLibrarySource
+    ;
+
+plsqlLibrarySource
+    : libraryName sharingClause? (IS | AS) (fullPathName | (fileName IN directoryObject)) agentClause
+    ;
+
+agentClause
+    : (AGENT agentDblink)? (CREDENTIAL credentialName)?
+    ;
