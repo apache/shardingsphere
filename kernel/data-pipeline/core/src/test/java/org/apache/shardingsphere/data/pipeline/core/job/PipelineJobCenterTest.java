@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -38,7 +40,7 @@ import static org.mockito.Mockito.when;
 class PipelineJobCenterTest {
     
     @Test
-    void testPipelineJobCenter() {
+    void assertPipelineJobCenter() {
         PipelineJob pipelineJob = mock(PipelineJob.class);
         PipelineJobCenter.addJob("Job1", pipelineJob);
         assertTrue(PipelineJobCenter.isJobExisting("Job1"));
@@ -50,7 +52,7 @@ class PipelineJobCenterTest {
     }
     
     @Test
-    void getJobItemContext() {
+    void assertGetJobItemContext() {
         PipelineJob pipelineJob = mock(PipelineJob.class);
         PipelineTasksRunner pipelineTasksRunner = mock(PipelineTasksRunner.class);
         PipelineJobItemContext pipelineJobItemContext = mock(PipelineJobItemContext.class);
@@ -66,7 +68,7 @@ class PipelineJobCenterTest {
     }
     
     @Test
-    void getShardingItems() {
+    void assertGetShardingItems() {
         PipelineJob pipelineJob = mock(PipelineJob.class);
         PipelineJobCenter.addJob("Job1", pipelineJob);
         when(pipelineJob.getShardingItems()).thenReturn(Arrays.asList(1, 2, 3));
