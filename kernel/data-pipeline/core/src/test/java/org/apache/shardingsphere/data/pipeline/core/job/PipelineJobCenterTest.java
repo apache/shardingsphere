@@ -17,25 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.util.Assert;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -59,11 +54,11 @@ class PipelineJobCenterTest {
         PipelineJob pipelineJob = mock(PipelineJob.class);
         PipelineTasksRunner pipelineTasksRunner = mock(PipelineTasksRunner.class);
         PipelineJobItemContext pipelineJobItemContext = mock(PipelineJobItemContext.class);
-        Optional<PipelineJobItemContext> optionalPipelineJobItemContext = Optional.ofNullable(pipelineJobItemContext);
         when(pipelineJob.getTasksRunner(anyInt())).thenReturn(Optional.of(pipelineTasksRunner));
         when(pipelineTasksRunner.getJobItemContext()).thenReturn(pipelineJobItemContext);
         PipelineJobCenter.addJob("Job1", pipelineJob);
         Optional<PipelineJobItemContext> result = PipelineJobCenter.getJobItemContext("Job1", 1);
+        Optional<PipelineJobItemContext> optionalPipelineJobItemContext = Optional.ofNullable(pipelineJobItemContext);
         assertTrue(result.isPresent());
         assertEquals(Optional.empty(), PipelineJobCenter.getJobItemContext("Job2", 1));
         assertEquals(optionalPipelineJobItemContext, result);
