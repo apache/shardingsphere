@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
@@ -72,7 +72,7 @@ class PostgreSQLWALDumperTest {
     
     private WALPosition position;
     
-    private DumperConfiguration dumperConfig;
+    private IncrementalDumperConfiguration dumperConfig;
     
     private PostgreSQLWALDumper walDumper;
     
@@ -103,8 +103,8 @@ class PostgreSQLWALDumperTest {
         }
     }
     
-    private DumperConfiguration createDumperConfiguration(final String jdbcUrl, final String username, final String password) {
-        DumperConfiguration result = new DumperConfiguration();
+    private IncrementalDumperConfiguration createDumperConfiguration(final String jdbcUrl, final String username, final String password) {
+        IncrementalDumperConfiguration result = new IncrementalDumperConfiguration();
         result.setJobId("0101123456");
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration(jdbcUrl, username, password));
         result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order_0"), new LogicTableName("t_order")));

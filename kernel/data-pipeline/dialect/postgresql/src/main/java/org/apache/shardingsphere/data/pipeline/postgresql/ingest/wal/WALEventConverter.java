@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
@@ -43,11 +43,11 @@ import java.util.List;
  */
 public final class WALEventConverter {
     
-    private final DumperConfiguration dumperConfig;
+    private final IncrementalDumperConfiguration dumperConfig;
     
     private final PipelineTableMetaDataLoader metaDataLoader;
     
-    public WALEventConverter(final DumperConfiguration dumperConfig, final PipelineTableMetaDataLoader metaDataLoader) {
+    public WALEventConverter(final IncrementalDumperConfiguration dumperConfig, final PipelineTableMetaDataLoader metaDataLoader) {
         this.dumperConfig = dumperConfig;
         this.metaDataLoader = metaDataLoader;
     }

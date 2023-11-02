@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
@@ -60,7 +60,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
     
-    private final DumperConfiguration dumperConfig;
+    private final IncrementalDumperConfiguration dumperConfig;
     
     private final AtomicReference<WALPosition> walPosition;
     
@@ -74,7 +74,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     private List<AbstractRowEvent> rowEvents = new LinkedList<>();
     
-    public PostgreSQLWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
+    public PostgreSQLWALDumper(final IncrementalDumperConfiguration dumperConfig, final IngestPosition position,
                                final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("PostgreSQLWALDumper only support PipelineDataSourceConfiguration"));

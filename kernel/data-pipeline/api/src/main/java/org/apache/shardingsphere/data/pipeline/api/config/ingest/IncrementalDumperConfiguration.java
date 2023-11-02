@@ -22,12 +22,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Dumper configuration.
+ * Incremental dumper configuration.
  */
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class DumperConfiguration extends BaseDumperConfiguration {
+public class IncrementalDumperConfiguration extends BaseDumperConfiguration {
     
     private String jobId;
     
