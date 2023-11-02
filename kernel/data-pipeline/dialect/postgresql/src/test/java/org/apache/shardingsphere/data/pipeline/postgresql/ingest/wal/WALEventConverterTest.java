@@ -54,11 +54,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -131,7 +131,7 @@ class WALEventConverterTest {
         assertWriteRowEvent0(mockTargetTableColumnsMap(), 1);
     }
     
-    private void assertWriteRowEvent0(final Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
+    private void assertWriteRowEvent0(final Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
         dumperConfig.setTargetTableColumnsMap(targetTableColumnsMap);
         WriteRowEvent rowsEvent = new WriteRowEvent();
         rowsEvent.setSchemaName("");
@@ -143,7 +143,7 @@ class WALEventConverterTest {
         assertThat(actual.getColumnCount(), is(expectedColumnCount));
     }
     
-    private Map<LogicTableName, Set<ColumnName>> mockTargetTableColumnsMap() {
+    private Map<LogicTableName, Collection<ColumnName>> mockTargetTableColumnsMap() {
         return Collections.singletonMap(new LogicTableName("t_order"), Collections.singleton(new ColumnName("order_id")));
     }
     
