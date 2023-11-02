@@ -31,8 +31,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString(callSuper = true)
-// TODO fields final
-public final class InventoryDumperConfiguration extends DumperConfiguration {
+public final class InventoryDumperConfiguration extends BaseDumperConfiguration {
     
     private String actualTableName;
     
@@ -52,7 +51,7 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     
     private JobRateLimitAlgorithm rateLimitAlgorithm;
     
-    public InventoryDumperConfiguration(final DumperConfiguration dumperConfig) {
+    public InventoryDumperConfiguration(final BaseDumperConfiguration dumperConfig) {
         setDataSourceName(dumperConfig.getDataSourceName());
         setDataSourceConfig(dumperConfig.getDataSourceConfig());
         setTableNameMap(dumperConfig.getTableNameMap());

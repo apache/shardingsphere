@@ -17,114 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.ingest;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ColumnName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Dumper configuration.
  */
 @Getter
 @Setter
-@ToString(exclude = {"dataSourceConfig", "tableNameSchemaNameMapping"})
-// TODO it should be final and not extends by sub-class
-// TODO fields final
-public class DumperConfiguration {
+@ToString(callSuper = true)
+public class DumperConfiguration extends BaseDumperConfiguration {
     
     private String jobId;
     
-    private String dataSourceName;
-    
-    private PipelineDataSourceConfiguration dataSourceConfig;
-    
-    private IngestPosition position;
-    
-    private Map<ActualTableName, LogicTableName> tableNameMap;
-    
-    private TableNameSchemaNameMapping tableNameSchemaNameMapping;
-    
-    // LinkedHashSet is required
-    @Getter(AccessLevel.PROTECTED)
-    private Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap = new HashMap<>();
-    
     private boolean decodeWithTX;
-    
-    /**
-     * Get logic table name.
-     *
-     * @param actualTableName actual table name
-     * @return logic table name
-     */
-    public LogicTableName getLogicTableName(final String actualTableName) {
-        return tableNameMap.get(new ActualTableName(actualTableName));
-    }
-    
-    private LogicTableName getLogicTableName(final ActualTableName actualTableName) {
-        return tableNameMap.get(actualTableName);
-    }
-    
-    /**
-     * Whether contains table.
-     *
-     * @param actualTableName actual table name
-     * @return contains or not
-     */
-    public boolean containsTable(final String actualTableName) {
-        return tableNameMap.containsKey(new ActualTableName(actualTableName));
-    }
-    
-    /**
-     * Get schema name.
-     *
-     * @param logicTableName logic table name
-     * @return schema name. nullable
-     */
-    public String getSchemaName(final LogicTableName logicTableName) {
-        return tableNameSchemaNameMapping.getSchemaName(logicTableName);
-    }
-    
-    /**
-     * Get schema name.
-     *
-     * @param actualTableName actual table name
-     * @return schema name. nullable
-     */
-    public String getSchemaName(final ActualTableName actualTableName) {
-        return tableNameSchemaNameMapping.getSchemaName(getLogicTableName(actualTableName));
-    }
-    
-    /**
-     * Get column names.
-     *
-     * @param logicTableName logic table name
-     * @return column names
-     */
-    public Collection<String> getColumnNames(final LogicTableName logicTableName) {
-        return targetTableColumnsMap.containsKey(logicTableName)
-                ? targetTableColumnsMap.get(logicTableName).stream().map(ColumnName::getOriginal).collect(Collectors.toList())
-                : Collections.singleton("*");
-    }
-    
-    /**
-     * Get column names.
-     *
-     * @param actualTableName actual table name
-     * @return column names
-     */
-    public Collection<ColumnName> getColumnNames(final String actualTableName) {
-        return targetTableColumnsMap.getOrDefault(getLogicTableName(actualTableName), Collections.emptySet());
-    }
 }
