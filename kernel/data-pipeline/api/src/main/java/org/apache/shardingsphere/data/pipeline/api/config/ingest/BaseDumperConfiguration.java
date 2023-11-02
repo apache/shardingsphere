@@ -45,14 +45,14 @@ public abstract class BaseDumperConfiguration {
     
     private PipelineDataSourceConfiguration dataSourceConfig;
     
-    private IngestPosition position;
-    
     private Map<ActualTableName, LogicTableName> tableNameMap;
     
     private TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
     // LinkedHashSet is required
     private Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap = new HashMap<>();
+    
+    private IngestPosition position;
     
     /**
      * Get logic table name.
@@ -92,7 +92,7 @@ public abstract class BaseDumperConfiguration {
      * Get schema name.
      *
      * @param actualTableName actual table name
-     * @return schema name. nullable
+     * @return schema name, can be nullable 
      */
     public String getSchemaName(final ActualTableName actualTableName) {
         return tableNameSchemaNameMapping.getSchemaName(getLogicTableName(actualTableName));
