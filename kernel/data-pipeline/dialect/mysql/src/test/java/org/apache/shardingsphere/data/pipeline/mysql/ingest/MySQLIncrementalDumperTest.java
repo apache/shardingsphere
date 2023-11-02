@@ -55,11 +55,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -129,7 +129,7 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertWriteRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowsEvent0(null, 3);
+        assertWriteRowsEvent0(Collections.emptyMap(), 3);
     }
     
     @Test
@@ -137,7 +137,7 @@ class MySQLIncrementalDumperTest {
         assertWriteRowsEvent0(mockTargetTableColumnsMap(), 1);
     }
     
-    private void assertWriteRowsEvent0(final Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
+    private void assertWriteRowsEvent0(final Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
         dumperConfig.setTargetTableColumnsMap(targetTableColumnsMap);
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
         rowsEvent.setDatabaseName("");
@@ -151,13 +151,13 @@ class MySQLIncrementalDumperTest {
         assertThat(((DataRecord) actual.get(0)).getColumnCount(), is(expectedColumnCount));
     }
     
-    private Map<LogicTableName, Set<ColumnName>> mockTargetTableColumnsMap() {
+    private Map<LogicTableName, Collection<ColumnName>> mockTargetTableColumnsMap() {
         return Collections.singletonMap(new LogicTableName("t_order"), Collections.singleton(new ColumnName("order_id")));
     }
     
     @Test
     void assertUpdateRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertUpdateRowsEvent0(null, 3);
+        assertUpdateRowsEvent0(Collections.emptyMap(), 3);
     }
     
     @Test
@@ -165,7 +165,7 @@ class MySQLIncrementalDumperTest {
         assertUpdateRowsEvent0(mockTargetTableColumnsMap(), 1);
     }
     
-    private void assertUpdateRowsEvent0(final Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
+    private void assertUpdateRowsEvent0(final Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
         dumperConfig.setTargetTableColumnsMap(targetTableColumnsMap);
         UpdateRowsEvent rowsEvent = new UpdateRowsEvent();
         rowsEvent.setDatabaseName("test");
@@ -182,7 +182,7 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertDeleteRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertDeleteRowsEvent0(null, 3);
+        assertDeleteRowsEvent0(Collections.emptyMap(), 3);
     }
     
     @Test
@@ -190,7 +190,7 @@ class MySQLIncrementalDumperTest {
         assertDeleteRowsEvent0(mockTargetTableColumnsMap(), 1);
     }
     
-    private void assertDeleteRowsEvent0(final Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
+    private void assertDeleteRowsEvent0(final Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
         dumperConfig.setTargetTableColumnsMap(targetTableColumnsMap);
         DeleteRowsEvent rowsEvent = new DeleteRowsEvent();
         rowsEvent.setDatabaseName("");
