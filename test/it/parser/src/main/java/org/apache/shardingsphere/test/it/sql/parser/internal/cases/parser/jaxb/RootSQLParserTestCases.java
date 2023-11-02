@@ -1719,7 +1719,7 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "switch")
     private final List<SwitchStatementTestCase> switchStatementTestCases = new LinkedList<>();
-
+    
     /**
      * Get all SQL parser test cases.
      *

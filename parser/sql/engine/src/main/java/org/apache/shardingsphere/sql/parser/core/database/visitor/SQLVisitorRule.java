@@ -700,7 +700,7 @@ public enum SQLVisitorRule {
     PLSQL_BLOCK("PlsqlBlock", SQLStatementType.DDL),
     
     SWITCH("Switch", SQLStatementType.DDL);
-
+    
     private final String name;
     
     @Getter
