@@ -700,7 +700,7 @@ public enum SQLVisitorRule {
     PLSQL_BLOCK("PlsqlBlock", SQLStatementType.DDL),
     
     CREATE_LIBRARY("CreateLibrary", SQLStatementType.DDL);
-
+    
     private final String name;
     
     @Getter
