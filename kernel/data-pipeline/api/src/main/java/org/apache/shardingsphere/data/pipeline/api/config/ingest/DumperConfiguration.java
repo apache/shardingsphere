@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,7 +59,7 @@ public class DumperConfiguration {
     
     // LinkedHashSet is required
     @Getter(AccessLevel.PROTECTED)
-    private Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap;
+    private Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap = new HashMap<>();
     
     private boolean decodeWithTX;
     
@@ -113,8 +114,9 @@ public class DumperConfiguration {
      * @return column names
      */
     public Collection<String> getColumnNames(final LogicTableName logicTableName) {
-        Collection<ColumnName> columnNames = null == targetTableColumnsMap ? null : targetTableColumnsMap.get(logicTableName);
-        return null == columnNames ? Collections.singleton("*") : columnNames.stream().map(ColumnName::getOriginal).collect(Collectors.toList());
+        return targetTableColumnsMap.containsKey(logicTableName)
+                ? targetTableColumnsMap.get(logicTableName).stream().map(ColumnName::getOriginal).collect(Collectors.toList())
+                : Collections.singleton("*");
     }
     
     /**
@@ -124,7 +126,6 @@ public class DumperConfiguration {
      * @return column names
      */
     public Collection<ColumnName> getColumnNames(final String actualTableName) {
-        Set<ColumnName> result = null == targetTableColumnsMap ? null : targetTableColumnsMap.get(getLogicTableName(actualTableName));
-        return null == result ? Collections.emptySet() : result;
+        return targetTableColumnsMap.getOrDefault(getLogicTableName(actualTableName), Collections.emptySet());
     }
 }
