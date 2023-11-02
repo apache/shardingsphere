@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.common.sqlbuilder;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +42,7 @@ public final class PipelineInventoryDumpSQLBuilder {
      * @param uniqueKey unique key
      * @return built SQL
      */
-    public String buildDivisibleSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
+    public String buildDivisibleSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
         String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
         return String.format("SELECT %s FROM %s WHERE %s>=? AND %s<=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, escapedUniqueKey, escapedUniqueKey);
@@ -57,7 +57,7 @@ public final class PipelineInventoryDumpSQLBuilder {
      * @param uniqueKey unique key
      * @return built SQL
      */
-    public String buildUnlimitedDivisibleSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
+    public String buildUnlimitedDivisibleSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
         String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
         return String.format("SELECT %s FROM %s WHERE %s>=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, escapedUniqueKey);
@@ -72,13 +72,13 @@ public final class PipelineInventoryDumpSQLBuilder {
      * @param uniqueKey unique key
      * @return built SQL
      */
-    public String buildIndivisibleSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
+    public String buildIndivisibleSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
         String quotedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
         return String.format("SELECT %s FROM %s ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey);
     }
     
-    private String buildQueryColumns(final List<String> columnNames) {
+    private String buildQueryColumns(final Collection<String> columnNames) {
         return columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
     }
     

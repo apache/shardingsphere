@@ -35,8 +35,8 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Updat
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * WAL event converter.
@@ -128,10 +128,10 @@ public final class WALEventConverter {
     }
     
     private void putColumnsIntoDataRecord(final DataRecord dataRecord, final PipelineTableMetaData tableMetaData, final String actualTableName, final List<Object> values) {
-        Set<ColumnName> columnNameSet = dumperConfig.getColumnNameSet(actualTableName).orElse(null);
+        Collection<ColumnName> columnNames = dumperConfig.getColumnNames(actualTableName);
         for (int i = 0, count = values.size(); i < count; i++) {
             PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
-            if (isColumnUnneeded(columnNameSet, columnMetaData.getName())) {
+            if (isColumnUnneeded(columnNames, columnMetaData.getName())) {
                 continue;
             }
             boolean isUniqueKey = columnMetaData.isUniqueKey();
@@ -141,7 +141,7 @@ public final class WALEventConverter {
         }
     }
     
-    private boolean isColumnUnneeded(final Set<ColumnName> columnNameSet, final String columnName) {
-        return null != columnNameSet && !columnNameSet.contains(new ColumnName(columnName));
+    private boolean isColumnUnneeded(final Collection<ColumnName> columnNames, final String columnName) {
+        return !columnNames.isEmpty() && !columnNames.contains(new ColumnName(columnName));
     }
 }

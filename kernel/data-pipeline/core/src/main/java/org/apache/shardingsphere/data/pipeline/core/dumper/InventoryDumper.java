@@ -57,6 +57,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -162,7 +163,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         }
         PrimaryKeyPosition<?> primaryKeyPosition = (PrimaryKeyPosition<?>) dumperConfig.getPosition();
         PipelineColumnMetaData firstColumn = dumperConfig.getUniqueKeyColumns().get(0);
-        List<String> columnNames = dumperConfig.getColumnNames(logicTableName).orElse(Collections.singletonList("*"));
+        Collection<String> columnNames = dumperConfig.getColumnNames(logicTableName);
         if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType()) || PipelineJdbcUtils.isStringColumn(firstColumn.getDataType())) {
             if (null != primaryKeyPosition.getBeginValue() && null != primaryKeyPosition.getEndValue()) {
                 return inventoryDumpSQLBuilder.buildDivisibleSQL(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());

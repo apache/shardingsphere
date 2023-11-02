@@ -28,9 +28,9 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ColumnName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -112,22 +112,19 @@ public class DumperConfiguration {
      * @param logicTableName logic table name
      * @return column names
      */
-    public Optional<List<String>> getColumnNames(final LogicTableName logicTableName) {
-        Set<ColumnName> columnNames = null == targetTableColumnsMap ? null : targetTableColumnsMap.get(logicTableName);
-        if (null == columnNames) {
-            return Optional.empty();
-        }
-        return Optional.of(columnNames.stream().map(ColumnName::getOriginal).collect(Collectors.toList()));
+    public Collection<String> getColumnNames(final LogicTableName logicTableName) {
+        Collection<ColumnName> columnNames = null == targetTableColumnsMap ? null : targetTableColumnsMap.get(logicTableName);
+        return null == columnNames ? Collections.singleton("*") : columnNames.stream().map(ColumnName::getOriginal).collect(Collectors.toList());
     }
     
     /**
-     * Get column name set of table.
+     * Get column names.
      *
      * @param actualTableName actual table name
-     * @return column names of table
+     * @return column names
      */
-    public Optional<Set<ColumnName>> getColumnNameSet(final String actualTableName) {
+    public Collection<ColumnName> getColumnNames(final String actualTableName) {
         Set<ColumnName> result = null == targetTableColumnsMap ? null : targetTableColumnsMap.get(getLogicTableName(actualTableName));
-        return Optional.ofNullable(result);
+        return null == result ? Collections.emptySet() : result;
     }
 }
