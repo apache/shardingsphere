@@ -129,7 +129,7 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertWriteRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowsEvent0(null, 3);
+        assertWriteRowsEvent0(Collections.emptyMap(), 3);
     }
     
     @Test
@@ -157,7 +157,7 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertUpdateRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertUpdateRowsEvent0(null, 3);
+        assertUpdateRowsEvent0(Collections.emptyMap(), 3);
     }
     
     @Test
@@ -182,7 +182,7 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertDeleteRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertDeleteRowsEvent0(null, 3);
+        assertDeleteRowsEvent0(Collections.emptyMap(), 3);
     }
     
     @Test
