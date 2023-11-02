@@ -123,7 +123,7 @@ class WALEventConverterTest {
     
     @Test
     void assertWriteRowEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowEvent0(null, 3);
+        assertWriteRowEvent0(Collections.emptyMap(), 3);
     }
     
     @Test
