@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +58,7 @@ public class DumperConfiguration {
     
     // LinkedHashSet is required
     @Getter(AccessLevel.PROTECTED)
-    private Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap = new HashMap<>();
+    private Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap = new HashMap<>();
     
     private boolean decodeWithTX;
     
