@@ -76,7 +76,7 @@ class InventoryTaskTest {
         initTableData(taskConfig.getDumperContext());
         // TODO use t_order_0, and also others
         InventoryDumperContext inventoryDumperContext = createInventoryDumperContext("t_order", "t_order");
-        AtomicReference<IngestPosition> position = new AtomicReference<>(inventoryDumperContext.getPosition());
+        AtomicReference<IngestPosition> position = new AtomicReference<>(inventoryDumperContext.getCommonContext().getPosition());
         InventoryTask inventoryTask = new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(inventoryDumperContext),
                 PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(), mock(Dumper.class), mock(Importer.class), position);
         CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS);
@@ -102,7 +102,7 @@ class InventoryTaskTest {
         result.setLogicTableName(logicTableName);
         result.setActualTableName(actualTableName);
         result.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
-        result.setPosition(
+        result.getCommonContext().setPosition(
                 null == taskConfig.getDumperContext().getCommonContext().getPosition() ? new IntegerPrimaryKeyPosition(0, 1000) : taskConfig.getDumperContext().getCommonContext().getPosition());
         return result;
     }
