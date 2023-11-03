@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public final class InventoryDumperContext extends BaseDumperContext {
+public final class InventoryDumperContext extends DumperCommonContext {
     
     private String actualTableName;
     
@@ -51,7 +51,7 @@ public final class InventoryDumperContext extends BaseDumperContext {
     
     private JobRateLimitAlgorithm rateLimitAlgorithm;
     
-    public InventoryDumperContext(final BaseDumperContext dumperContext) {
+    public InventoryDumperContext(final DumperCommonContext dumperContext) {
         setDataSourceName(dumperContext.getDataSourceName());
         setDataSourceConfig(dumperContext.getDataSourceConfig());
         setTableNameMap(dumperContext.getTableNameMap());

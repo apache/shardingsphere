@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.prepare;
 
-import org.apache.shardingsphere.data.pipeline.api.context.ingest.BaseDumperContext;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.api.context.ingest.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
@@ -143,7 +143,7 @@ class InventoryTaskSplitterTest {
         }
     }
     
-    private void initEmptyTablePrimaryEnvironment(final BaseDumperContext dumperContext) throws SQLException {
+    private void initEmptyTablePrimaryEnvironment(final DumperCommonContext dumperContext) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
         try (
                 Connection connection = dataSource.getConnection();
@@ -153,7 +153,7 @@ class InventoryTaskSplitterTest {
         }
     }
     
-    private void initIntPrimaryEnvironment(final BaseDumperContext dumperContext) throws SQLException {
+    private void initIntPrimaryEnvironment(final DumperCommonContext dumperContext) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
         try (
                 Connection connection = dataSource.getConnection();
@@ -166,7 +166,7 @@ class InventoryTaskSplitterTest {
         }
     }
     
-    private void initCharPrimaryEnvironment(final BaseDumperContext dumperContext) throws SQLException {
+    private void initCharPrimaryEnvironment(final DumperCommonContext dumperContext) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
         try (
                 Connection connection = dataSource.getConnection();
@@ -177,7 +177,7 @@ class InventoryTaskSplitterTest {
         }
     }
     
-    private void initUnionPrimaryEnvironment(final BaseDumperContext dumperContext) throws SQLException {
+    private void initUnionPrimaryEnvironment(final DumperCommonContext dumperContext) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
         try (
                 Connection connection = dataSource.getConnection();
@@ -188,7 +188,7 @@ class InventoryTaskSplitterTest {
         }
     }
     
-    private void initNoPrimaryEnvironment(final BaseDumperContext dumperContext) throws SQLException {
+    private void initNoPrimaryEnvironment(final DumperCommonContext dumperContext) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
         try (
                 Connection connection = dataSource.getConnection();
@@ -199,7 +199,7 @@ class InventoryTaskSplitterTest {
         }
     }
     
-    private void initUniqueIndexOnNotNullColumnEnvironment(final BaseDumperContext dumperContext) throws SQLException {
+    private void initUniqueIndexOnNotNullColumnEnvironment(final DumperCommonContext dumperContext) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
         try (
                 Connection connection = dataSource.getConnection();
