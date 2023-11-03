@@ -34,12 +34,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Base dumper context.
+ * Dumper common context.
  */
 @Getter
 @Setter
 @ToString(exclude = {"dataSourceConfig", "tableNameSchemaNameMapping"})
-public abstract class BaseDumperContext {
+public abstract class DumperCommonContext {
     
     private String dataSourceName;
     
