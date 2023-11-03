@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.api.context.ingest;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
@@ -29,7 +28,6 @@ import java.util.List;
 /**
  * Inventory dumper context.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -54,6 +52,11 @@ public final class InventoryDumperContext {
     private int batchSize = 1000;
     
     private JobRateLimitAlgorithm rateLimitAlgorithm;
+    
+    public InventoryDumperContext(final DumperCommonContext commonContext) {
+        this.commonContext = commonContext;
+        commonContext.setPosition(null);
+    }
     
     /**
      * Has unique key or not.
