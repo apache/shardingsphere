@@ -30,19 +30,16 @@ class SingleIndexReviserTest {
     
     @Test
     void assertReviserReturnsRevisedIndex() {
-        SingleIndexReviser reviser = new SingleIndexReviser();
         IndexMetaData originalMetaData = new IndexMetaData("test_idx_tableName");
         originalMetaData.getColumns().add("column1");
         originalMetaData.getColumns().add("column2");
         originalMetaData.setUnique(true);
-        
+        SingleIndexReviser reviser = new SingleIndexReviser();
         Optional<IndexMetaData> optionalRevised = reviser.revise("tableName", originalMetaData, null);
-        
         assertTrue(optionalRevised.isPresent());
         IndexMetaData actual = optionalRevised.get();
         assertThat(originalMetaData.isUnique(), is(actual.isUnique()));
         assertThat(originalMetaData.getColumns(), is(actual.getColumns()));
         assertThat("test_idx", is(actual.getName()));
     }
-    
 }
