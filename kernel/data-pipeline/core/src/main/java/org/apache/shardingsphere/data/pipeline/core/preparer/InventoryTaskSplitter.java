@@ -84,7 +84,7 @@ public final class InventoryTaskSplitter {
         long startTimeMillis = System.currentTimeMillis();
         InventoryIncrementalProcessContext processContext = jobItemContext.getJobProcessContext();
         for (InventoryDumperContext each : splitInventoryDumperContext(jobItemContext)) {
-            AtomicReference<IngestPosition> position = new AtomicReference<>(each.getPosition());
+            AtomicReference<IngestPosition> position = new AtomicReference<>(each.getCommonContext().getPosition());
             PipelineChannel channel = PipelineTaskUtils.createInventoryChannel(processContext.getPipelineChannelCreator(), importerConfig.getBatchSize(), position);
             Dumper dumper = new InventoryDumper(each, channel, sourceDataSource, jobItemContext.getSourceMetaDataLoader());
             Importer importer = new SingleChannelConsumerImporter(channel, importerConfig.getBatchSize(), 3, TimeUnit.SECONDS, jobItemContext.getSink(), jobItemContext);
@@ -111,12 +111,12 @@ public final class InventoryTaskSplitter {
     
     private Collection<InventoryDumperContext> splitByTable(final InventoryDumperContext dumperContext) {
         Collection<InventoryDumperContext> result = new LinkedList<>();
-        dumperContext.getTableNameMap().forEach((key, value) -> {
-            InventoryDumperContext inventoryDumperContext = new InventoryDumperContext(dumperContext);
+        dumperContext.getCommonContext().getTableNameMap().forEach((key, value) -> {
+            InventoryDumperContext inventoryDumperContext = new InventoryDumperContext(dumperContext.getCommonContext());
+            inventoryDumperContext.getCommonContext().setPosition(new PlaceholderPosition());
             // use original table name, for metadata loader, since some database table name case-sensitive
             inventoryDumperContext.setActualTableName(key.getOriginal());
             inventoryDumperContext.setLogicTableName(value.getOriginal());
-            inventoryDumperContext.setPosition(new PlaceholderPosition());
             inventoryDumperContext.setInsertColumnNames(dumperContext.getInsertColumnNames());
             inventoryDumperContext.setUniqueKeyColumns(dumperContext.getUniqueKeyColumns());
             result.add(inventoryDumperContext);
@@ -127,7 +127,7 @@ public final class InventoryTaskSplitter {
     private Collection<InventoryDumperContext> splitByPrimaryKey(final InventoryDumperContext dumperContext, final InventoryIncrementalJobItemContext jobItemContext,
                                                                  final PipelineDataSourceWrapper dataSource) {
         if (null == dumperContext.getUniqueKeyColumns()) {
-            String schemaName = dumperContext.getSchemaName(new LogicTableName(dumperContext.getLogicTableName()));
+            String schemaName = dumperContext.getCommonContext().getSchemaName(new LogicTableName(dumperContext.getLogicTableName()));
             String actualTableName = dumperContext.getActualTableName();
             List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtils.getUniqueKeyColumns(schemaName, actualTableName, jobItemContext.getSourceMetaDataLoader());
             dumperContext.setUniqueKeyColumns(uniqueKeyColumns);
@@ -140,8 +140,8 @@ public final class InventoryTaskSplitter {
         Collection<IngestPosition> inventoryPositions = getInventoryPositions(dumperContext, jobItemContext, dataSource);
         int i = 0;
         for (IngestPosition each : inventoryPositions) {
-            InventoryDumperContext splitDumperContext = new InventoryDumperContext(dumperContext);
-            splitDumperContext.setPosition(each);
+            InventoryDumperContext splitDumperContext = new InventoryDumperContext(dumperContext.getCommonContext());
+            splitDumperContext.getCommonContext().setPosition(each);
             splitDumperContext.setShardingItem(i++);
             splitDumperContext.setActualTableName(dumperContext.getActualTableName());
             splitDumperContext.setLogicTableName(dumperContext.getLogicTableName());
@@ -205,7 +205,7 @@ public final class InventoryTaskSplitter {
         String uniqueKey = dumperContext.getUniqueKeyColumns().get(0).getName();
         PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(jobItemContext.getJobConfig().getSourceDatabaseType());
         String sql = pipelineSQLBuilder.buildUniqueKeyMinMaxValuesSQL(
-                dumperContext.getSchemaName(new LogicTableName(dumperContext.getLogicTableName())), dumperContext.getActualTableName(), uniqueKey);
+                dumperContext.getCommonContext().getSchemaName(new LogicTableName(dumperContext.getLogicTableName())), dumperContext.getActualTableName(), uniqueKey);
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();

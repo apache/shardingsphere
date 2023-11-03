@@ -18,16 +18,20 @@
 package org.apache.shardingsphere.data.pipeline.api.context.ingest;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
  * Incremental dumper context.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-@ToString(callSuper = true)
-public class IncrementalDumperContext extends DumperCommonContext {
+@ToString
+public class IncrementalDumperContext {
+    
+    private final DumperCommonContext commonContext;
     
     private String jobId;
     

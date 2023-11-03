@@ -74,7 +74,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     public OpenGaussWALDumper(final IncrementalDumperContext dumperContext, final IngestPosition position,
                               final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperContext.getDataSourceConfig().getClass()),
+        ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperContext.getCommonContext().getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("PostgreSQLWALDumper only support PipelineDataSourceConfiguration"));
         this.dumperContext = dumperContext;
         walPosition = new AtomicReference<>((WALPosition) position);
@@ -137,7 +137,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     }
     
     private PgConnection getReplicationConnectionUnwrap() throws SQLException {
-        return logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperContext.getDataSourceConfig()).unwrap(PgConnection.class);
+        return logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig()).unwrap(PgConnection.class);
     }
     
     private void processEventWithTX(final AbstractWALEvent event) {

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api.context.ingest;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
@@ -28,10 +29,13 @@ import java.util.List;
 /**
  * Inventory dumper context.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-@ToString(callSuper = true)
-public final class InventoryDumperContext extends DumperCommonContext {
+@ToString
+public final class InventoryDumperContext {
+    
+    private final DumperCommonContext commonContext;
     
     private String actualTableName;
     
@@ -50,14 +54,6 @@ public final class InventoryDumperContext extends DumperCommonContext {
     private int batchSize = 1000;
     
     private JobRateLimitAlgorithm rateLimitAlgorithm;
-    
-    public InventoryDumperContext(final DumperCommonContext dumperContext) {
-        setDataSourceName(dumperContext.getDataSourceName());
-        setDataSourceConfig(dumperContext.getDataSourceConfig());
-        setTableNameMap(dumperContext.getTableNameMap());
-        setTableNameSchemaNameMapping(dumperContext.getTableNameSchemaNameMapping());
-        setTargetTableColumnsMap(dumperContext.getTargetTableColumnsMap());
-    }
     
     /**
      * Has unique key or not.

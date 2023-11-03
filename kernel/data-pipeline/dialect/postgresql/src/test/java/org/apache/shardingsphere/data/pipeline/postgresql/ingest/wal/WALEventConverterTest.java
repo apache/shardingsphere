@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.context.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.api.context.ingest.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
@@ -83,24 +84,24 @@ class WALEventConverterTest {
     void setUp() {
         dumperContext = mockDumperContext();
         PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
-        walEventConverter = new WALEventConverter(dumperContext, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperContext.getDataSourceConfig())));
+        walEventConverter = new WALEventConverter(dumperContext, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig())));
         initTableData(dumperContext);
         pipelineTableMetaData = new PipelineTableMetaData("t_order", mockOrderColumnsMetaDataMap(), Collections.emptyList());
     }
     
     private IncrementalDumperContext mockDumperContext() {
-        IncrementalDumperContext result = new IncrementalDumperContext();
-        result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
-        result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
-        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
-        return result;
+        DumperCommonContext commonContext = new DumperCommonContext();
+        commonContext.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
+        commonContext.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
+        commonContext.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
+        return new IncrementalDumperContext(commonContext);
     }
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final IncrementalDumperContext dumperContext) {
         try (
                 PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
-                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -132,7 +133,7 @@ class WALEventConverterTest {
     }
     
     private void assertWriteRowEvent0(final Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
-        dumperContext.setTargetTableColumnsMap(targetTableColumnsMap);
+        dumperContext.getCommonContext().setTargetTableColumnsMap(targetTableColumnsMap);
         WriteRowEvent rowsEvent = new WriteRowEvent();
         rowsEvent.setSchemaName("");
         rowsEvent.setTableName("t_order");

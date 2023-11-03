@@ -177,7 +177,7 @@ class GovernanceRepositoryAPIImplTest {
     }
     
     private InventoryTask mockInventoryTask(final MigrationTaskConfiguration taskConfig) {
-        InventoryDumperContext dumperContext = new InventoryDumperContext(taskConfig.getDumperContext());
+        InventoryDumperContext dumperContext = new InventoryDumperContext(taskConfig.getDumperContext().getCommonContext());
         dumperContext.setPosition(new PlaceholderPosition());
         dumperContext.setActualTableName("t_order");
         dumperContext.setLogicTableName("t_order");

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.context.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.api.context.ingest.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
@@ -85,7 +86,7 @@ class MySQLIncrementalDumperTest {
     void setUp() {
         dumperContext = mockDumperContext();
         initTableData(dumperContext);
-        dumperContext.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:mock://127.0.0.1:3306/test", "root", "root"));
+        dumperContext.getCommonContext().setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:mock://127.0.0.1:3306/test", "root", "root"));
         PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
         SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10000, new EmptyAckCallback());
         incrementalDumper = new MySQLIncrementalDumper(dumperContext, new BinlogPosition("binlog-000001", 4L, 0L), channel, metaDataLoader);
@@ -94,19 +95,19 @@ class MySQLIncrementalDumperTest {
     }
     
     private IncrementalDumperContext mockDumperContext() {
-        IncrementalDumperContext result = new IncrementalDumperContext();
-        result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
-        result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
-        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
-        result.setTargetTableColumnsMap(Collections.singletonMap(new LogicTableName("t_order"), Collections.singleton(new ColumnName("order_id"))));
-        return result;
+        DumperCommonContext commonContext = new DumperCommonContext();
+        commonContext.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
+        commonContext.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
+        commonContext.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
+        commonContext.setTargetTableColumnsMap(Collections.singletonMap(new LogicTableName("t_order"), Collections.singleton(new ColumnName("order_id"))));
+        return new IncrementalDumperContext(commonContext);
     }
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final IncrementalDumperContext dumperContext) {
         try (
                 PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
-                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -138,7 +139,7 @@ class MySQLIncrementalDumperTest {
     }
     
     private void assertWriteRowsEvent0(final Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
-        dumperContext.setTargetTableColumnsMap(targetTableColumnsMap);
+        dumperContext.getCommonContext().setTargetTableColumnsMap(targetTableColumnsMap);
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
         rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
@@ -166,7 +167,7 @@ class MySQLIncrementalDumperTest {
     }
     
     private void assertUpdateRowsEvent0(final Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
-        dumperContext.setTargetTableColumnsMap(targetTableColumnsMap);
+        dumperContext.getCommonContext().setTargetTableColumnsMap(targetTableColumnsMap);
         UpdateRowsEvent rowsEvent = new UpdateRowsEvent();
         rowsEvent.setDatabaseName("test");
         rowsEvent.setTableName("t_order");
@@ -191,7 +192,7 @@ class MySQLIncrementalDumperTest {
     }
     
     private void assertDeleteRowsEvent0(final Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
-        dumperContext.setTargetTableColumnsMap(targetTableColumnsMap);
+        dumperContext.getCommonContext().setTargetTableColumnsMap(targetTableColumnsMap);
         DeleteRowsEvent rowsEvent = new DeleteRowsEvent();
         rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
@@ -217,8 +218,8 @@ class MySQLIncrementalDumperTest {
         rowsEvent.setDatabaseName("test");
         rowsEvent.setTableName("t_order");
         rowsEvent.setAfterRows(Collections.singletonList(new Serializable[]{1}));
-        List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", AbstractBinlogEvent.class),
-                incrementalDumper, rowsEvent);
+        List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(
+                MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", AbstractBinlogEvent.class), incrementalDumper, rowsEvent);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
     }

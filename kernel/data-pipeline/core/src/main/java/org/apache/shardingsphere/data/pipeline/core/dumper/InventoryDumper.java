@@ -89,7 +89,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         this.dumperContext = dumperContext;
         this.channel = channel;
         this.dataSource = dataSource;
-        DatabaseType databaseType = dumperContext.getDataSourceConfig().getDatabaseType();
+        DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
         inventoryDumpSQLBuilder = new PipelineInventoryDumpSQLBuilder(databaseType);
         columnValueReaderEngine = new ColumnValueReaderEngine(databaseType);
         this.metaDataLoader = metaDataLoader;
@@ -97,12 +97,13 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     @Override
     protected void runBlocking() {
-        IngestPosition position = dumperContext.getPosition();
+        IngestPosition position = dumperContext.getCommonContext().getPosition();
         if (position instanceof FinishedPosition) {
             log.info("Ignored because of already finished.");
             return;
         }
-        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(dumperContext.getSchemaName(new LogicTableName(dumperContext.getLogicTableName())), dumperContext.getActualTableName());
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(
+                dumperContext.getCommonContext().getSchemaName(new LogicTableName(dumperContext.getLogicTableName())), dumperContext.getActualTableName());
         try (Connection connection = dataSource.getConnection()) {
             dump(tableMetaData, connection);
         } catch (final SQLException ex) {
@@ -114,7 +115,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     @SuppressWarnings("MagicConstant")
     private void dump(final PipelineTableMetaData tableMetaData, final Connection connection) throws SQLException {
         int batchSize = dumperContext.getBatchSize();
-        DatabaseType databaseType = dumperContext.getDataSourceConfig().getDatabaseType();
+        DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
         if (null != dumperContext.getTransactionIsolation()) {
             connection.setTransactionIsolation(dumperContext.getTransactionIsolation());
         }
@@ -157,13 +158,13 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
             return dumperContext.getQuerySQL();
         }
         LogicTableName logicTableName = new LogicTableName(dumperContext.getLogicTableName());
-        String schemaName = dumperContext.getSchemaName(logicTableName);
+        String schemaName = dumperContext.getCommonContext().getSchemaName(logicTableName);
         if (!dumperContext.hasUniqueKey()) {
             return inventoryDumpSQLBuilder.buildFetchAllSQL(schemaName, dumperContext.getActualTableName());
         }
-        PrimaryKeyPosition<?> primaryKeyPosition = (PrimaryKeyPosition<?>) dumperContext.getPosition();
+        PrimaryKeyPosition<?> primaryKeyPosition = (PrimaryKeyPosition<?>) dumperContext.getCommonContext().getPosition();
         PipelineColumnMetaData firstColumn = dumperContext.getUniqueKeyColumns().get(0);
-        Collection<String> columnNames = dumperContext.getColumnNames(logicTableName);
+        Collection<String> columnNames = dumperContext.getCommonContext().getColumnNames(logicTableName);
         if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType()) || PipelineJdbcUtils.isStringColumn(firstColumn.getDataType())) {
             if (null != primaryKeyPosition.getBeginValue() && null != primaryKeyPosition.getEndValue()) {
                 return inventoryDumpSQLBuilder.buildDivisibleSQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName());
@@ -180,7 +181,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
             return;
         }
         PipelineColumnMetaData firstColumn = dumperContext.getUniqueKeyColumns().get(0);
-        PrimaryKeyPosition<?> position = (PrimaryKeyPosition<?>) dumperContext.getPosition();
+        PrimaryKeyPosition<?> position = (PrimaryKeyPosition<?>) dumperContext.getCommonContext().getPosition();
         if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType()) && null != position.getBeginValue() && null != position.getEndValue()) {
             preparedStatement.setObject(1, position.getBeginValue());
             preparedStatement.setObject(2, position.getEndValue());
@@ -213,7 +214,8 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     private IngestPosition newPosition(final ResultSet resultSet) throws SQLException {
         return dumperContext.hasUniqueKey()
-                ? PrimaryKeyPositionFactory.newInstance(resultSet.getObject(dumperContext.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyPosition<?>) dumperContext.getPosition()).getEndValue())
+                ? PrimaryKeyPositionFactory.newInstance(
+                        resultSet.getObject(dumperContext.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyPosition<?>) dumperContext.getCommonContext().getPosition()).getEndValue())
                 : new PlaceholderPosition();
     }
     

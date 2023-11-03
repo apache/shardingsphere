@@ -82,7 +82,7 @@ public final class WALEventConverter {
     private boolean filter(final AbstractWALEvent event) {
         if (event instanceof AbstractRowEvent) {
             AbstractRowEvent rowEvent = (AbstractRowEvent) event;
-            return !dumperContext.containsTable(rowEvent.getTableName());
+            return !dumperContext.getCommonContext().containsTable(rowEvent.getTableName());
         }
         return false;
     }
@@ -92,7 +92,7 @@ public final class WALEventConverter {
     }
     
     private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
-        return metaDataLoader.getTableMetaData(dumperContext.getSchemaName(new ActualTableName(actualTableName)), actualTableName);
+        return metaDataLoader.getTableMetaData(dumperContext.getCommonContext().getSchemaName(new ActualTableName(actualTableName)), actualTableName);
     }
     
     private DataRecord handleWriteRowEvent(final WriteRowEvent writeRowEvent, final PipelineTableMetaData tableMetaData) {
@@ -120,7 +120,7 @@ public final class WALEventConverter {
     }
     
     private DataRecord createDataRecord(final String type, final AbstractRowEvent rowsEvent, final int columnCount) {
-        String tableName = dumperContext.getLogicTableName(rowsEvent.getTableName()).getOriginal();
+        String tableName = dumperContext.getCommonContext().getLogicTableName(rowsEvent.getTableName()).getOriginal();
         DataRecord result = new DataRecord(type, rowsEvent.getSchemaName(), tableName, new WALPosition(rowsEvent.getLogSequenceNumber()), columnCount);
         result.setActualTableName(rowsEvent.getTableName());
         result.setCsn(rowsEvent.getCsn());
@@ -128,7 +128,7 @@ public final class WALEventConverter {
     }
     
     private void putColumnsIntoDataRecord(final DataRecord dataRecord, final PipelineTableMetaData tableMetaData, final String actualTableName, final List<Object> values) {
-        Collection<ColumnName> columnNames = dumperContext.getColumnNames(actualTableName);
+        Collection<ColumnName> columnNames = dumperContext.getCommonContext().getColumnNames(actualTableName);
         for (int i = 0, count = values.size(); i < count; i++) {
             PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
             if (isColumnUnneeded(columnNames, columnMetaData.getName())) {

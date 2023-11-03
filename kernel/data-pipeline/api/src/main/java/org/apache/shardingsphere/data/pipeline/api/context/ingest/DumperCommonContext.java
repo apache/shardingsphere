@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @ToString(exclude = {"dataSourceConfig", "tableNameSchemaNameMapping"})
-public abstract class DumperCommonContext {
+public final class DumperCommonContext {
     
     private String dataSourceName;
     

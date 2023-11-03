@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.config.ingest
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.context.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.api.context.ingest.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
@@ -48,12 +49,13 @@ public final class MigrationIncrementalDumperContextCreator implements Increment
     
     private IncrementalDumperContext buildDumperContext(final String jobId, final String dataSourceName, final PipelineDataSourceConfiguration sourceDataSource,
                                                         final Map<ActualTableName, LogicTableName> tableNameMap, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
-        IncrementalDumperContext result = new IncrementalDumperContext();
+        DumperCommonContext commonContext = new DumperCommonContext();
+        commonContext.setDataSourceName(dataSourceName);
+        commonContext.setDataSourceConfig(sourceDataSource);
+        commonContext.setTableNameMap(tableNameMap);
+        commonContext.setTableNameSchemaNameMapping(tableNameSchemaNameMapping);
+        IncrementalDumperContext result = new IncrementalDumperContext(commonContext);
         result.setJobId(jobId);
-        result.setDataSourceName(dataSourceName);
-        result.setDataSourceConfig(sourceDataSource);
-        result.setTableNameMap(tableNameMap);
-        result.setTableNameSchemaNameMapping(tableNameSchemaNameMapping);
         return result;
     }
 }

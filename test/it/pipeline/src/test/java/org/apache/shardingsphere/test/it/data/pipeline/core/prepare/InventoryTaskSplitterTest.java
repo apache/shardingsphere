@@ -66,7 +66,7 @@ class InventoryTaskSplitterTest {
     @BeforeEach
     void setUp() {
         initJobItemContext();
-        dumperContext = new InventoryDumperContext(jobItemContext.getTaskConfig().getDumperContext());
+        dumperContext = new InventoryDumperContext(jobItemContext.getTaskConfig().getDumperContext().getCommonContext());
         PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "int", false, true, true);
         dumperContext.setUniqueKeyColumns(Collections.singletonList(columnMetaData));
         inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), dumperContext, jobItemContext.getTaskConfig().getImporterConfig());

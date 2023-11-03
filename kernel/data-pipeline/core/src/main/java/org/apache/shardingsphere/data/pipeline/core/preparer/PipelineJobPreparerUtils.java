@@ -131,8 +131,8 @@ public final class PipelineJobPreparerUtils {
                 return position.get();
             }
         }
-        DatabaseType databaseType = dumperContext.getDataSourceConfig().getDatabaseType();
-        DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
+        DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
+        DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
         return DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType).init(dataSource, dumperContext.getJobId());
     }
     

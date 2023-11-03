@@ -264,18 +264,19 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         MigrationJobConfiguration jobConfig = (MigrationJobConfiguration) pipelineJobConfig;
         IncrementalDumperContext incrementalDumperContext = new MigrationIncrementalDumperContextCreator(
                 jobConfig).createDumperContext(jobConfig.getJobShardingDataNodes().get(jobShardingItem));
-        CreateTableConfiguration createTableConfig = buildCreateTableConfiguration(jobConfig, incrementalDumperContext.getTableNameSchemaNameMapping());
+        CreateTableConfiguration createTableConfig = buildCreateTableConfiguration(jobConfig, incrementalDumperContext.getCommonContext().getTableNameSchemaNameMapping());
         Set<LogicTableName> targetTableNames = jobConfig.getTargetTableNames().stream().map(LogicTableName::new).collect(Collectors.toSet());
         Map<LogicTableName, Set<String>> shardingColumnsMap = new ShardingColumnsExtractor().getShardingColumnsMap(
                 ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), targetTableNames);
-        ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, pipelineProcessConfig, shardingColumnsMap, incrementalDumperContext.getTableNameSchemaNameMapping());
-        MigrationTaskConfiguration result = new MigrationTaskConfiguration(incrementalDumperContext.getDataSourceName(), createTableConfig, incrementalDumperContext, importerConfig);
+        ImporterConfiguration importerConfig = buildImporterConfiguration(
+                jobConfig, pipelineProcessConfig, shardingColumnsMap, incrementalDumperContext.getCommonContext().getTableNameSchemaNameMapping());
+        MigrationTaskConfiguration result = new MigrationTaskConfiguration(
+                incrementalDumperContext.getCommonContext().getDataSourceName(), createTableConfig, incrementalDumperContext, importerConfig);
         log.info("buildTaskConfiguration, result={}", result);
         return result;
     }
     
-    private CreateTableConfiguration buildCreateTableConfiguration(final MigrationJobConfiguration jobConfig,
-                                                                   final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
+    private CreateTableConfiguration buildCreateTableConfiguration(final MigrationJobConfiguration jobConfig, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
         Collection<CreateTableEntry> createTableEntries = new LinkedList<>();
         for (JobDataNodeEntry each : jobConfig.getTablesFirstDataNodes().getEntries()) {
             String sourceSchemaName = tableNameSchemaNameMapping.getSchemaName(each.getLogicTableName());
