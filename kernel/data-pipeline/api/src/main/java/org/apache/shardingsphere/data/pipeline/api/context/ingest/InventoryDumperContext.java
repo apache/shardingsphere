@@ -55,7 +55,7 @@ public final class InventoryDumperContext {
     
     public InventoryDumperContext(final DumperCommonContext commonContext) {
         this.commonContext = commonContext;
-        commonContext.setPosition(null);
+        this.commonContext.setPosition(null);
     }
     
     /**
