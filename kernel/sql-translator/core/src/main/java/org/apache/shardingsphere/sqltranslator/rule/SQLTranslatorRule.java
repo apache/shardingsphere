@@ -42,7 +42,7 @@ public final class SQLTranslatorRule implements GlobalRule {
     
     public SQLTranslatorRule(final SQLTranslatorRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        translator = TypedSPILoader.getService(SQLTranslator.class, ruleConfig.getType());
+        translator = TypedSPILoader.getService(SQLTranslator.class, ruleConfig.getType(), ruleConfig.getProps());
         useOriginalSQLWhenTranslatingFailed = ruleConfig.isUseOriginalSQLWhenTranslatingFailed();
     }
     

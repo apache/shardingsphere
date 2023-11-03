@@ -70,6 +70,6 @@ class ShowSQLTranslatorRuleExecutorTest {
     }
     
     private SQLTranslatorRuleConfiguration createSQLTranslatorRuleConfiguration() {
-        return new SQLTranslatorRuleConfiguration("NATIVE", true);
+        return new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true);
     }
 }
