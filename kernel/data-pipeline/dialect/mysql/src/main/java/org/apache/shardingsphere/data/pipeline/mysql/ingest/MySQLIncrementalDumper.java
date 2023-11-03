@@ -82,12 +82,13 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     
     public MySQLIncrementalDumper(final IncrementalDumperContext dumperContext, final IngestPosition binlogPosition,
                                   final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        Preconditions.checkArgument(dumperContext.getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration, "MySQLBinlogDumper only support StandardPipelineDataSourceConfiguration");
+        Preconditions.checkArgument(
+                dumperContext.getCommonContext().getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration, "MySQLBinlogDumper only support StandardPipelineDataSourceConfiguration");
         this.dumperContext = dumperContext;
         this.binlogPosition = (BinlogPosition) binlogPosition;
         this.channel = channel;
         this.metaDataLoader = metaDataLoader;
-        YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperContext.getDataSourceConfig()).getJdbcConfig();
+        YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig()).getJdbcConfig();
         ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ConnectionProperties connectionProps = parser.parse(jdbcConfig.getUrl(), null, null);
         ConnectInfo connectInfo = new ConnectInfo(generateServerId(), connectionProps.getHostname(), connectionProps.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword());
@@ -134,7 +135,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
             return Collections.singletonList(createPlaceholderRecord(event));
         }
         AbstractRowsEvent rowsEvent = (AbstractRowsEvent) event;
-        if (!rowsEvent.getDatabaseName().equals(catalog) || !dumperContext.containsTable(rowsEvent.getTableName())) {
+        if (!rowsEvent.getDatabaseName().equals(catalog) || !dumperContext.getCommonContext().containsTable(rowsEvent.getTableName())) {
             return Collections.singletonList(createPlaceholderRecord(event));
         }
         PipelineTableMetaData tableMetaData = getPipelineTableMetaData(rowsEvent.getTableName());
@@ -157,11 +158,11 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     }
     
     private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
-        return metaDataLoader.getTableMetaData(dumperContext.getSchemaName(new ActualTableName(actualTableName)), actualTableName);
+        return metaDataLoader.getTableMetaData(dumperContext.getCommonContext().getSchemaName(new ActualTableName(actualTableName)), actualTableName);
     }
     
     private List<DataRecord> handleWriteRowsEvent(final WriteRowsEvent event, final PipelineTableMetaData tableMetaData) {
-        Collection<ColumnName> columnNames = dumperContext.getColumnNames(event.getTableName());
+        Collection<ColumnName> columnNames = dumperContext.getCommonContext().getColumnNames(event.getTableName());
         List<DataRecord> result = new LinkedList<>();
         for (Serializable[] each : event.getAfterRows()) {
             DataRecord dataRecord = createDataRecord(IngestDataChangeType.INSERT, event, each.length);
@@ -182,7 +183,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     }
     
     private List<DataRecord> handleUpdateRowsEvent(final UpdateRowsEvent event, final PipelineTableMetaData tableMetaData) {
-        Collection<ColumnName> columnNames = dumperContext.getColumnNames(event.getTableName());
+        Collection<ColumnName> columnNames = dumperContext.getCommonContext().getColumnNames(event.getTableName());
         List<DataRecord> result = new LinkedList<>();
         for (int i = 0; i < event.getBeforeRows().size(); i++) {
             Serializable[] beforeValues = event.getBeforeRows().get(i);
@@ -206,7 +207,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     }
     
     private List<DataRecord> handleDeleteRowsEvent(final DeleteRowsEvent event, final PipelineTableMetaData tableMetaData) {
-        Collection<ColumnName> columnNames = dumperContext.getColumnNames(event.getTableName());
+        Collection<ColumnName> columnNames = dumperContext.getCommonContext().getColumnNames(event.getTableName());
         List<DataRecord> result = new LinkedList<>();
         for (Serializable[] each : event.getBeforeRows()) {
             DataRecord dataRecord = createDataRecord(IngestDataChangeType.DELETE, event, each.length);
@@ -234,7 +235,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     }
     
     private DataRecord createDataRecord(final String type, final AbstractRowsEvent rowsEvent, final int columnCount) {
-        String tableName = dumperContext.getLogicTableName(rowsEvent.getTableName()).getOriginal();
+        String tableName = dumperContext.getCommonContext().getLogicTableName(rowsEvent.getTableName()).getOriginal();
         IngestPosition position = new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId());
         DataRecord result = new DataRecord(type, tableName, position, columnCount);
         result.setActualTableName(rowsEvent.getTableName());
