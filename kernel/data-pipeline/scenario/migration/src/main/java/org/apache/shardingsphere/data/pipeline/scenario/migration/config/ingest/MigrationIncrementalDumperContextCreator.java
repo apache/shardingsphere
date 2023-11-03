@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.config.ingest;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.data.pipeline.common.config.ingest.IncrementalDumperConfigurationCreator;
+import org.apache.shardingsphere.data.pipeline.common.config.ingest.IncrementalDumperContextCreator;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLineConvertUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
@@ -34,21 +34,21 @@ import java.util.Map;
  * Migration incremental dumper configuration creator.
  */
 @RequiredArgsConstructor
-public final class MigrationIncrementalDumperConfigurationCreator implements IncrementalDumperConfigurationCreator {
+public final class MigrationIncrementalDumperContextCreator implements IncrementalDumperContextCreator {
     
     private final MigrationJobConfiguration jobConfig;
     
     @Override
-    public IncrementalDumperConfiguration createDumperConfiguration(final JobDataNodeLine jobDataNodeLine) {
+    public IncrementalDumperContext createDumperContext(final JobDataNodeLine jobDataNodeLine) {
         Map<ActualTableName, LogicTableName> tableNameMap = JobDataNodeLineConvertUtils.buildTableNameMap(jobDataNodeLine);
         TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(jobConfig.getTargetTableSchemaMap());
         String dataSourceName = jobDataNodeLine.getEntries().get(0).getDataNodes().get(0).getDataSourceName();
-        return buildDumperConfiguration(jobConfig.getJobId(), dataSourceName, jobConfig.getSources().get(dataSourceName), tableNameMap, tableNameSchemaNameMapping);
+        return buildDumperContext(jobConfig.getJobId(), dataSourceName, jobConfig.getSources().get(dataSourceName), tableNameMap, tableNameSchemaNameMapping);
     }
     
-    private IncrementalDumperConfiguration buildDumperConfiguration(final String jobId, final String dataSourceName, final PipelineDataSourceConfiguration sourceDataSource,
-                                                                    final Map<ActualTableName, LogicTableName> tableNameMap, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
-        IncrementalDumperConfiguration result = new IncrementalDumperConfiguration();
+    private IncrementalDumperContext buildDumperContext(final String jobId, final String dataSourceName, final PipelineDataSourceConfiguration sourceDataSource,
+                                                        final Map<ActualTableName, LogicTableName> tableNameMap, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
+        IncrementalDumperContext result = new IncrementalDumperContext();
         result.setJobId(jobId);
         result.setDataSourceName(dataSourceName);
         result.setDataSourceConfig(sourceDataSource);

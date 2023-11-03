@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.job.service;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.common.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
@@ -177,13 +177,13 @@ class GovernanceRepositoryAPIImplTest {
     }
     
     private InventoryTask mockInventoryTask(final MigrationTaskConfiguration taskConfig) {
-        InventoryDumperConfiguration dumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
-        dumperConfig.setPosition(new PlaceholderPosition());
-        dumperConfig.setActualTableName("t_order");
-        dumperConfig.setLogicTableName("t_order");
-        dumperConfig.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
-        dumperConfig.setShardingItem(0);
-        return new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(dumperConfig), PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(),
+        InventoryDumperContext dumperContext = new InventoryDumperContext(taskConfig.getDumperContext());
+        dumperContext.setPosition(new PlaceholderPosition());
+        dumperContext.setActualTableName("t_order");
+        dumperContext.setLogicTableName("t_order");
+        dumperContext.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
+        dumperContext.setShardingItem(0);
+        return new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(dumperContext), PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(),
                 mock(Dumper.class), mock(Importer.class), new AtomicReference<>(new PlaceholderPosition()));
     }
 }

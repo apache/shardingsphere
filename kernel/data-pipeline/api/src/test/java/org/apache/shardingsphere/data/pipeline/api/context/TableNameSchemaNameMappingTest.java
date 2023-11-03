@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config;
+package org.apache.shardingsphere.data.pipeline.api.context;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,17 +35,11 @@ class TableNameSchemaNameMappingTest {
     
     @Test
     void assertConstructFromValueNullMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put("t_order", null);
-        TableNameSchemaNameMapping mapping = new TableNameSchemaNameMapping(map);
-        assertNull(mapping.getSchemaName("t_order"));
+        assertNull(new TableNameSchemaNameMapping(Collections.singletonMap("t_order", null)).getSchemaName("t_order"));
     }
     
     @Test
     void assertConstructFromMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put("t_order", "public");
-        TableNameSchemaNameMapping mapping = new TableNameSchemaNameMapping(map);
-        assertThat(mapping.getSchemaName("t_order"), is("public"));
+        assertThat(new TableNameSchemaNameMapping(Collections.singletonMap("t_order", "public")).getSchemaName("t_order"), is("public"));
     }
 }

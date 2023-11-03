@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.ingest;
+package org.apache.shardingsphere.data.pipeline.api.context.ingest;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Incremental dumper configuration.
+ * Incremental dumper context.
  */
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class IncrementalDumperConfiguration extends BaseDumperConfiguration {
+public class IncrementalDumperContext extends BaseDumperContext {
     
     private String jobId;
     

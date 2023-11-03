@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.ingest;
+package org.apache.shardingsphere.data.pipeline.api.context.ingest;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.api.context.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
@@ -34,12 +34,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Base dumper configuration.
+ * Base dumper context.
  */
 @Getter
 @Setter
 @ToString(exclude = {"dataSourceConfig", "tableNameSchemaNameMapping"})
-public abstract class BaseDumperConfiguration {
+public abstract class BaseDumperContext {
     
     private String dataSourceName;
     

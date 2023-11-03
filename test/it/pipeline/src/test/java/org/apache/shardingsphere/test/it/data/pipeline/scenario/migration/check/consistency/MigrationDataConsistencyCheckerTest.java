@@ -74,7 +74,7 @@ class MigrationDataConsistencyCheckerTest {
     
     private MigrationJobConfiguration createJobConfiguration() throws SQLException {
         MigrationJobItemContext jobItemContext = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
-        initTableData(jobItemContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
+        initTableData(jobItemContext.getTaskConfig().getDumperContext().getDataSourceConfig());
         initTableData(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
         return jobItemContext.getJobConfig();
     }

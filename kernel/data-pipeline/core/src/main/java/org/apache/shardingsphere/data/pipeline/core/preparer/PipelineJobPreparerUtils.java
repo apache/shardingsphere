@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.preparer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
@@ -118,12 +118,12 @@ public final class PipelineJobPreparerUtils {
      * Get incremental position.
      *
      * @param initIncremental init incremental
-     * @param dumperConfig dumper config
+     * @param dumperContext dumper config
      * @param dataSourceManager data source manager
      * @return ingest position
      * @throws SQLException sql exception
      */
-    public static IngestPosition getIncrementalPosition(final JobItemIncrementalTasksProgress initIncremental, final IncrementalDumperConfiguration dumperConfig,
+    public static IngestPosition getIncrementalPosition(final JobItemIncrementalTasksProgress initIncremental, final IncrementalDumperContext dumperContext,
                                                         final PipelineDataSourceManager dataSourceManager) throws SQLException {
         if (null != initIncremental) {
             Optional<IngestPosition> position = initIncremental.getIncrementalPosition();
@@ -131,9 +131,9 @@ public final class PipelineJobPreparerUtils {
                 return position.get();
             }
         }
-        DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-        return DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType).init(dataSource, dumperConfig.getJobId());
+        DatabaseType databaseType = dumperContext.getDataSourceConfig().getDatabaseType();
+        DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
+        return DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType).init(dataSource, dumperContext.getJobId());
     }
     
     /**

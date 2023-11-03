@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.ingest;
+package org.apache.shardingsphere.data.pipeline.api.context.ingest;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,12 +26,12 @@ import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorit
 import java.util.List;
 
 /**
- * Inventory dumper configuration.
+ * Inventory dumper context.
  */
 @Getter
 @Setter
 @ToString(callSuper = true)
-public final class InventoryDumperConfiguration extends BaseDumperConfiguration {
+public final class InventoryDumperContext extends BaseDumperContext {
     
     private String actualTableName;
     
@@ -51,12 +51,12 @@ public final class InventoryDumperConfiguration extends BaseDumperConfiguration 
     
     private JobRateLimitAlgorithm rateLimitAlgorithm;
     
-    public InventoryDumperConfiguration(final BaseDumperConfiguration dumperConfig) {
-        setDataSourceName(dumperConfig.getDataSourceName());
-        setDataSourceConfig(dumperConfig.getDataSourceConfig());
-        setTableNameMap(dumperConfig.getTableNameMap());
-        setTableNameSchemaNameMapping(dumperConfig.getTableNameSchemaNameMapping());
-        setTargetTableColumnsMap(dumperConfig.getTargetTableColumnsMap());
+    public InventoryDumperContext(final BaseDumperContext dumperContext) {
+        setDataSourceName(dumperContext.getDataSourceName());
+        setDataSourceConfig(dumperContext.getDataSourceConfig());
+        setTableNameMap(dumperContext.getTableNameMap());
+        setTableNameSchemaNameMapping(dumperContext.getTableNameSchemaNameMapping());
+        setTargetTableColumnsMap(dumperContext.getTargetTableColumnsMap());
     }
     
     /**

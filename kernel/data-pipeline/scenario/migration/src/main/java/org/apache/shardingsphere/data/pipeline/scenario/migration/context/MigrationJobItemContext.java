@@ -80,7 +80,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         
         @Override
         protected PipelineDataSourceWrapper initialize() {
-            return dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
+            return dataSourceManager.getDataSource(taskConfig.getDumperContext().getDataSourceConfig());
         }
     };
     
