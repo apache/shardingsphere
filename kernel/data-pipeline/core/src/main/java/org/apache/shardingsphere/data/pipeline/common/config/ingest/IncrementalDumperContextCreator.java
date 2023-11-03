@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.common.config.ingest;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
 
 /**
- * Incremental dumper configuration creator.
+ * Incremental dumper context creator.
  */
-public interface IncrementalDumperConfigurationCreator {
+public interface IncrementalDumperContextCreator {
     
     /**
-     * Create dumper configuration.
+     * Create incremental dumper context.
      *
      * @param jobDataNodeLine job data node line
-     * @return dumper configuration
+     * @return created incremental dumper context
      */
-    IncrementalDumperConfiguration createDumperConfiguration(JobDataNodeLine jobDataNodeLine);
+    IncrementalDumperContext createDumperContext(JobDataNodeLine jobDataNodeLine);
 }

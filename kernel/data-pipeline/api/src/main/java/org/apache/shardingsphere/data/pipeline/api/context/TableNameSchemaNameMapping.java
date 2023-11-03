@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config;
+package org.apache.shardingsphere.data.pipeline.api.context;
 
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.cdc.core.prepare;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
@@ -104,7 +104,7 @@ public final class CDCJobPreparer {
         CDCTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         JobItemIncrementalTasksProgress initIncremental = null == jobItemContext.getInitProgress() ? null : jobItemContext.getInitProgress().getIncremental();
         try {
-            taskConfig.getDumperConfig().setPosition(PipelineJobPreparerUtils.getIncrementalPosition(initIncremental, taskConfig.getDumperConfig(), jobItemContext.getDataSourceManager()));
+            taskConfig.getDumperContext().setPosition(PipelineJobPreparerUtils.getIncrementalPosition(initIncremental, taskConfig.getDumperContext(), jobItemContext.getDataSourceManager()));
         } catch (final SQLException ex) {
             throw new PrepareJobWithGetBinlogPositionException(jobItemContext.getJobId(), ex);
         }
@@ -115,15 +115,15 @@ public final class CDCJobPreparer {
         CDCTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         ImporterConfiguration importerConfig = taskConfig.getImporterConfig();
         CDCProcessContext processContext = jobItemContext.getJobProcessContext();
-        for (InventoryDumperConfiguration each : new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), new InventoryDumperConfiguration(taskConfig.getDumperConfig()), importerConfig)
-                .splitInventoryDumperConfig(jobItemContext)) {
+        for (InventoryDumperContext each : new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), new InventoryDumperContext(taskConfig.getDumperContext()), importerConfig)
+                .splitInventoryDumperContext(jobItemContext)) {
             AtomicReference<IngestPosition> position = new AtomicReference<>(each.getPosition());
             PipelineChannel channel = PipelineTaskUtils.createInventoryChannel(processContext.getPipelineChannelCreator(), importerConfig.getBatchSize(), position);
             channelProgressPairs.add(new CDCChannelProgressPair(channel, jobItemContext));
             Dumper dumper = new InventoryDumper(each, channel, jobItemContext.getSourceDataSource(), jobItemContext.getSourceMetaDataLoader());
             Importer importer = importerUsed.get() ? null
                     : new CDCImporter(channelProgressPairs, importerConfig.getBatchSize(), 3, TimeUnit.SECONDS, jobItemContext.getSink(),
-                            needSorting(ImporterType.INVENTORY, hasGlobalCSN(taskConfig.getDumperConfig().getDataSourceConfig().getDatabaseType())),
+                            needSorting(ImporterType.INVENTORY, hasGlobalCSN(taskConfig.getDumperContext().getDataSourceConfig().getDatabaseType())),
                             importerConfig.getRateLimitAlgorithm());
             jobItemContext.getInventoryTasks().add(new CDCInventoryTask(PipelineTaskUtils.generateInventoryTaskId(each), processContext.getInventoryDumperExecuteEngine(),
                     processContext.getInventoryImporterExecuteEngine(), dumper, importer, position));
@@ -144,18 +144,18 @@ public final class CDCJobPreparer {
     
     private void initIncrementalTask(final CDCJobItemContext jobItemContext, final AtomicBoolean importerUsed, final List<CDCChannelProgressPair> channelProgressPairs) {
         CDCTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
-        IncrementalDumperConfiguration dumperConfig = taskConfig.getDumperConfig();
+        IncrementalDumperContext dumperContext = taskConfig.getDumperContext();
         ImporterConfiguration importerConfig = taskConfig.getImporterConfig();
-        IncrementalTaskProgress taskProgress = PipelineTaskUtils.createIncrementalTaskProgress(dumperConfig.getPosition(), jobItemContext.getInitProgress());
+        IncrementalTaskProgress taskProgress = PipelineTaskUtils.createIncrementalTaskProgress(dumperContext.getPosition(), jobItemContext.getInitProgress());
         PipelineChannel channel = PipelineTaskUtils.createIncrementalChannel(importerConfig.getConcurrency(), jobItemContext.getJobProcessContext().getPipelineChannelCreator(), taskProgress);
         channelProgressPairs.add(new CDCChannelProgressPair(channel, jobItemContext));
-        Dumper dumper = DatabaseTypedSPILoader.getService(IncrementalDumperCreator.class, dumperConfig.getDataSourceConfig().getDatabaseType())
-                .createIncrementalDumper(dumperConfig, dumperConfig.getPosition(), channel, jobItemContext.getSourceMetaDataLoader());
+        Dumper dumper = DatabaseTypedSPILoader.getService(IncrementalDumperCreator.class, dumperContext.getDataSourceConfig().getDatabaseType())
+                .createIncrementalDumper(dumperContext, dumperContext.getPosition(), channel, jobItemContext.getSourceMetaDataLoader());
         boolean needSorting = needSorting(ImporterType.INCREMENTAL, hasGlobalCSN(importerConfig.getDataSourceConfig().getDatabaseType()));
         Importer importer = importerUsed.get() ? null
                 : new CDCImporter(channelProgressPairs, importerConfig.getBatchSize(), 300, TimeUnit.MILLISECONDS,
                         jobItemContext.getSink(), needSorting, importerConfig.getRateLimitAlgorithm());
-        PipelineTask incrementalTask = new CDCIncrementalTask(dumperConfig.getDataSourceName(), jobItemContext.getJobProcessContext().getIncrementalExecuteEngine(), dumper, importer, taskProgress);
+        PipelineTask incrementalTask = new CDCIncrementalTask(dumperContext.getDataSourceName(), jobItemContext.getJobProcessContext().getIncrementalExecuteEngine(), dumper, importer, taskProgress);
         jobItemContext.getIncrementalTasks().add(incrementalTask);
         importerUsed.set(true);
     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDump
 public final class FixtureIncrementalDumperCreator implements IncrementalDumperCreator {
     
     @Override
-    public IncrementalDumper createIncrementalDumper(final IncrementalDumperConfiguration config, final IngestPosition position,
+    public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context, final IngestPosition position,
                                                      final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         return new FixtureIncrementalDumper();
     }

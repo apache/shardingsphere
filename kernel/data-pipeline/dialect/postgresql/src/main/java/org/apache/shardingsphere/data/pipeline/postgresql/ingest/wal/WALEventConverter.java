@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
@@ -43,12 +43,12 @@ import java.util.List;
  */
 public final class WALEventConverter {
     
-    private final IncrementalDumperConfiguration dumperConfig;
+    private final IncrementalDumperContext dumperContext;
     
     private final PipelineTableMetaDataLoader metaDataLoader;
     
-    public WALEventConverter(final IncrementalDumperConfiguration dumperConfig, final PipelineTableMetaDataLoader metaDataLoader) {
-        this.dumperConfig = dumperConfig;
+    public WALEventConverter(final IncrementalDumperContext dumperContext, final PipelineTableMetaDataLoader metaDataLoader) {
+        this.dumperContext = dumperContext;
         this.metaDataLoader = metaDataLoader;
     }
     
@@ -82,7 +82,7 @@ public final class WALEventConverter {
     private boolean filter(final AbstractWALEvent event) {
         if (event instanceof AbstractRowEvent) {
             AbstractRowEvent rowEvent = (AbstractRowEvent) event;
-            return !dumperConfig.containsTable(rowEvent.getTableName());
+            return !dumperContext.containsTable(rowEvent.getTableName());
         }
         return false;
     }
@@ -92,7 +92,7 @@ public final class WALEventConverter {
     }
     
     private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
-        return metaDataLoader.getTableMetaData(dumperConfig.getSchemaName(new ActualTableName(actualTableName)), actualTableName);
+        return metaDataLoader.getTableMetaData(dumperContext.getSchemaName(new ActualTableName(actualTableName)), actualTableName);
     }
     
     private DataRecord handleWriteRowEvent(final WriteRowEvent writeRowEvent, final PipelineTableMetaData tableMetaData) {
@@ -120,7 +120,7 @@ public final class WALEventConverter {
     }
     
     private DataRecord createDataRecord(final String type, final AbstractRowEvent rowsEvent, final int columnCount) {
-        String tableName = dumperConfig.getLogicTableName(rowsEvent.getTableName()).getOriginal();
+        String tableName = dumperContext.getLogicTableName(rowsEvent.getTableName()).getOriginal();
         DataRecord result = new DataRecord(type, rowsEvent.getSchemaName(), tableName, new WALPosition(rowsEvent.getLogSequenceNumber()), columnCount);
         result.setActualTableName(rowsEvent.getTableName());
         result.setCsn(rowsEvent.getCsn());
@@ -128,7 +128,7 @@ public final class WALEventConverter {
     }
     
     private void putColumnsIntoDataRecord(final DataRecord dataRecord, final PipelineTableMetaData tableMetaData, final String actualTableName, final List<Object> values) {
-        Collection<ColumnName> columnNames = dumperConfig.getColumnNames(actualTableName);
+        Collection<ColumnName> columnNames = dumperContext.getColumnNames(actualTableName);
         for (int i = 0, count = values.size(); i < count; i++) {
             PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
             if (isColumnUnneeded(columnNames, columnMetaData.getName())) {

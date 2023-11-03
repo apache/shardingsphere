@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
@@ -67,7 +67,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobTy
 import org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency.MigrationDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.config.ingest.MigrationIncrementalDumperConfigurationCreator;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.ingest.MigrationIncrementalDumperContextCreator;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationProcessContext;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
@@ -262,14 +262,14 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     @Override
     public MigrationTaskConfiguration buildTaskConfiguration(final PipelineJobConfiguration pipelineJobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
         MigrationJobConfiguration jobConfig = (MigrationJobConfiguration) pipelineJobConfig;
-        IncrementalDumperConfiguration incrementalDumperConfig = new MigrationIncrementalDumperConfigurationCreator(
-                jobConfig).createDumperConfiguration(jobConfig.getJobShardingDataNodes().get(jobShardingItem));
-        CreateTableConfiguration createTableConfig = buildCreateTableConfiguration(jobConfig, incrementalDumperConfig.getTableNameSchemaNameMapping());
+        IncrementalDumperContext incrementalDumperContext = new MigrationIncrementalDumperContextCreator(
+                jobConfig).createDumperContext(jobConfig.getJobShardingDataNodes().get(jobShardingItem));
+        CreateTableConfiguration createTableConfig = buildCreateTableConfiguration(jobConfig, incrementalDumperContext.getTableNameSchemaNameMapping());
         Set<LogicTableName> targetTableNames = jobConfig.getTargetTableNames().stream().map(LogicTableName::new).collect(Collectors.toSet());
         Map<LogicTableName, Set<String>> shardingColumnsMap = new ShardingColumnsExtractor().getShardingColumnsMap(
                 ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), targetTableNames);
-        ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, pipelineProcessConfig, shardingColumnsMap, incrementalDumperConfig.getTableNameSchemaNameMapping());
-        MigrationTaskConfiguration result = new MigrationTaskConfiguration(incrementalDumperConfig.getDataSourceName(), createTableConfig, incrementalDumperConfig, importerConfig);
+        ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, pipelineProcessConfig, shardingColumnsMap, incrementalDumperContext.getTableNameSchemaNameMapping());
+        MigrationTaskConfiguration result = new MigrationTaskConfiguration(incrementalDumperContext.getDataSourceName(), createTableConfig, incrementalDumperContext, importerConfig);
         log.info("buildTaskConfiguration, result={}", result);
         return result;
     }

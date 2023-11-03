@@ -80,7 +80,7 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
         
         @Override
         protected PipelineDataSourceWrapper initialize() {
-            return dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
+            return dataSourceManager.getDataSource(taskConfig.getDumperContext().getDataSourceConfig());
         }
     };
     
@@ -99,7 +99,7 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     @Override
     public String getDataSourceName() {
-        return taskConfig.getDumperConfig().getDataSourceName();
+        return taskConfig.getDumperContext().getDataSourceName();
     }
     
     @Override

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.prepare;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.BaseDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.BaseDumperContext;
+import org.apache.shardingsphere.data.pipeline.api.context.ingest.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
@@ -52,7 +52,7 @@ class InventoryTaskSplitterTest {
     
     private MigrationJobItemContext jobItemContext;
     
-    private InventoryDumperConfiguration dumperConfig;
+    private InventoryDumperContext dumperContext;
     
     private PipelineDataSourceManager dataSourceManager;
     
@@ -66,10 +66,10 @@ class InventoryTaskSplitterTest {
     @BeforeEach
     void setUp() {
         initJobItemContext();
-        dumperConfig = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
+        dumperContext = new InventoryDumperContext(jobItemContext.getTaskConfig().getDumperContext());
         PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "int", false, true, true);
-        dumperConfig.setUniqueKeyColumns(Collections.singletonList(columnMetaData));
-        inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), dumperConfig, jobItemContext.getTaskConfig().getImporterConfig());
+        dumperContext.setUniqueKeyColumns(Collections.singletonList(columnMetaData));
+        inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), dumperContext, jobItemContext.getTaskConfig().getImporterConfig());
     }
     
     private void initJobItemContext() {
@@ -85,7 +85,7 @@ class InventoryTaskSplitterTest {
     
     @Test
     void assertSplitInventoryDataWithEmptyTable() throws SQLException {
-        initEmptyTablePrimaryEnvironment(dumperConfig);
+        initEmptyTablePrimaryEnvironment(dumperContext);
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(1));
         InventoryTask task = actual.get(0);
@@ -95,7 +95,7 @@ class InventoryTaskSplitterTest {
     
     @Test
     void assertSplitInventoryDataWithIntPrimary() throws SQLException {
-        initIntPrimaryEnvironment(dumperConfig);
+        initIntPrimaryEnvironment(dumperContext);
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(10));
         InventoryTask task = actual.get(9);
@@ -105,7 +105,7 @@ class InventoryTaskSplitterTest {
     
     @Test
     void assertSplitInventoryDataWithCharPrimary() throws SQLException {
-        initCharPrimaryEnvironment(dumperConfig);
+        initCharPrimaryEnvironment(dumperContext);
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getTaskId(), is("ds_0.t_order#0"));
@@ -116,17 +116,17 @@ class InventoryTaskSplitterTest {
     
     @Test
     void assertSplitInventoryDataWithoutPrimaryButWithUniqueIndex() throws SQLException {
-        initUniqueIndexOnNotNullColumnEnvironment(dumperConfig);
+        initUniqueIndexOnNotNullColumnEnvironment(dumperContext);
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(1));
     }
     
     @Test
     void assertSplitInventoryDataWithMultipleColumnsKey() throws SQLException {
-        initUnionPrimaryEnvironment(dumperConfig);
-        try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig())) {
+        initUnionPrimaryEnvironment(dumperContext);
+        try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig())) {
             List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtils.getUniqueKeyColumns(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
-            dumperConfig.setUniqueKeyColumns(uniqueKeyColumns);
+            dumperContext.setUniqueKeyColumns(uniqueKeyColumns);
             List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
             assertThat(actual.size(), is(1));
         }
@@ -134,8 +134,8 @@ class InventoryTaskSplitterTest {
     
     @Test
     void assertSplitInventoryDataWithoutPrimaryAndUniqueIndex() throws SQLException {
-        initNoPrimaryEnvironment(dumperConfig);
-        try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig())) {
+        initNoPrimaryEnvironment(dumperContext);
+        try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig())) {
             List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtils.getUniqueKeyColumns(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
             assertTrue(uniqueKeyColumns.isEmpty());
             List<InventoryTask> inventoryTasks = inventoryTaskSplitter.splitInventoryData(jobItemContext);
@@ -143,8 +143,8 @@ class InventoryTaskSplitterTest {
         }
     }
     
-    private void initEmptyTablePrimaryEnvironment(final BaseDumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+    private void initEmptyTablePrimaryEnvironment(final BaseDumperContext dumperContext) throws SQLException {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -153,8 +153,8 @@ class InventoryTaskSplitterTest {
         }
     }
     
-    private void initIntPrimaryEnvironment(final BaseDumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+    private void initIntPrimaryEnvironment(final BaseDumperContext dumperContext) throws SQLException {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -166,8 +166,8 @@ class InventoryTaskSplitterTest {
         }
     }
     
-    private void initCharPrimaryEnvironment(final BaseDumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+    private void initCharPrimaryEnvironment(final BaseDumperContext dumperContext) throws SQLException {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -177,8 +177,8 @@ class InventoryTaskSplitterTest {
         }
     }
     
-    private void initUnionPrimaryEnvironment(final BaseDumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+    private void initUnionPrimaryEnvironment(final BaseDumperContext dumperContext) throws SQLException {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -188,8 +188,8 @@ class InventoryTaskSplitterTest {
         }
     }
     
-    private void initNoPrimaryEnvironment(final BaseDumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+    private void initNoPrimaryEnvironment(final BaseDumperContext dumperContext) throws SQLException {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -199,8 +199,8 @@ class InventoryTaskSplitterTest {
         }
     }
     
-    private void initUniqueIndexOnNotNullColumnEnvironment(final BaseDumperConfiguration dumperConfig) throws SQLException {
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+    private void initUniqueIndexOnNotNullColumnEnvironment(final BaseDumperContext dumperContext) throws SQLException {
+        DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {

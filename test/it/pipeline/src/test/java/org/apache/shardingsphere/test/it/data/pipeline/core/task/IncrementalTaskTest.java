@@ -54,7 +54,7 @@ class IncrementalTaskTest {
     @BeforeEach
     void setUp() {
         MigrationTaskConfiguration taskConfig = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
-        taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
+        taskConfig.getDumperContext().setPosition(new PlaceholderPosition());
         incrementalTask = new IncrementalTask("ds_0", PipelineContextUtils.getExecuteEngine(), mock(Dumper.class),
                 Collections.singletonList(mock(Importer.class)), new IncrementalTaskProgress(new PlaceholderPosition()));
     }
