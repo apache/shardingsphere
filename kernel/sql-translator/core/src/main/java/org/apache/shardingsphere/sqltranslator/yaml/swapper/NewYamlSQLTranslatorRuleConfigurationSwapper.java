@@ -43,6 +43,7 @@ public final class NewYamlSQLTranslatorRuleConfigurationSwapper implements NewYa
     private YamlSQLTranslatorRuleConfiguration swapToYamlConfiguration(final SQLTranslatorRuleConfiguration data) {
         YamlSQLTranslatorRuleConfiguration result = new YamlSQLTranslatorRuleConfiguration();
         result.setType(data.getType());
+        result.setProps(data.getProps());
         result.setUseOriginalSQLWhenTranslatingFailed(data.isUseOriginalSQLWhenTranslatingFailed());
         return result;
     }
@@ -60,7 +61,7 @@ public final class NewYamlSQLTranslatorRuleConfigurationSwapper implements NewYa
     }
     
     private SQLTranslatorRuleConfiguration swapToObject(final YamlSQLTranslatorRuleConfiguration yamlConfig) {
-        return new SQLTranslatorRuleConfiguration(yamlConfig.getType(), yamlConfig.isUseOriginalSQLWhenTranslatingFailed());
+        return new SQLTranslatorRuleConfiguration(yamlConfig.getType(), yamlConfig.getProps(), yamlConfig.isUseOriginalSQLWhenTranslatingFailed());
     }
     
     @Override
