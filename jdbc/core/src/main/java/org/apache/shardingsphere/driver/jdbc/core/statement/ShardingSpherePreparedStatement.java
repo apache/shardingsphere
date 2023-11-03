@@ -382,9 +382,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private int useDriverToExecuteUpdate(final Collection<ExecutionContext> executionContexts) throws SQLException {
         Integer result = null;
-        Preconditions.checkArgument(!this.executionContexts.isEmpty());
+        Preconditions.checkArgument(!executionContexts.isEmpty());
         // TODO support multi execution context, currently executionContexts.size() always equals 1
-        for (ExecutionContext each : this.executionContexts) {
+        for (ExecutionContext each : executionContexts) {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(each);
             cacheStatements(executionGroupContext.getInputGroups());
             result = executor.getRegularExecutor().executeUpdate(executionGroupContext,
