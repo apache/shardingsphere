@@ -85,6 +85,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateInmemoryJoinGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateJavaContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateLibraryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateLockdownProfileContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CreateMaterializedViewLogContext;
@@ -248,6 +249,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateInmemoryJoinGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateJavaStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateLibraryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateLockdownProfileStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateMaterializedViewLogStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateMaterializedViewStatement;
@@ -1341,5 +1343,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitCreateJava(final CreateJavaContext ctx) {
         return new OracleCreateJavaStatement();
+    }
+    
+    @Override
+    public ASTNode visitCreateLibrary(final CreateLibraryContext ctx) {
+        return new OracleCreateLibraryStatement();
     }
 }
