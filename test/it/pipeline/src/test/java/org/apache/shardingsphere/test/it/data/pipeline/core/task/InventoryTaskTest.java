@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.task;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
@@ -84,7 +84,7 @@ class InventoryTaskTest {
         inventoryTask.close();
     }
     
-    private void initTableData(final DumperConfiguration dumperConfig) throws SQLException {
+    private void initTableData(final IncrementalDumperConfiguration dumperConfig) throws SQLException {
         PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         try (
                 PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());

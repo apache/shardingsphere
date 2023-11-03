@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.config.task;
+package org.apache.shardingsphere.data.pipeline.api.config.ingest;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.PipelineTaskConfiguration;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * CDC task configuration.
+ * Incremental dumper configuration.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CDCTaskConfiguration implements PipelineTaskConfiguration {
+@Setter
+@ToString(callSuper = true)
+public class IncrementalDumperConfiguration extends BaseDumperConfiguration {
     
-    private final IncrementalDumperConfiguration dumperConfig;
+    private String jobId;
     
-    private final ImporterConfiguration importerConfig;
+    private boolean decodeWithTX;
 }

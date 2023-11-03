@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
@@ -58,7 +58,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
     
-    private final DumperConfiguration dumperConfig;
+    private final IncrementalDumperConfiguration dumperConfig;
     
     private final AtomicReference<WALPosition> walPosition;
     
@@ -72,7 +72,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     private List<AbstractRowEvent> rowEvents = new LinkedList<>();
     
-    public OpenGaussWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
+    public OpenGaussWALDumper(final IncrementalDumperConfiguration dumperConfig, final IngestPosition position,
                               final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("PostgreSQLWALDumper only support PipelineDataSourceConfiguration"));

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.ingest;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -35,32 +34,25 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Dumper configuration.
+ * Base dumper configuration.
  */
 @Getter
 @Setter
 @ToString(exclude = {"dataSourceConfig", "tableNameSchemaNameMapping"})
-// TODO it should be final and not extends by sub-class
-// TODO fields final
-public class DumperConfiguration {
-    
-    private String jobId;
+public abstract class BaseDumperConfiguration {
     
     private String dataSourceName;
     
     private PipelineDataSourceConfiguration dataSourceConfig;
-    
-    private IngestPosition position;
     
     private Map<ActualTableName, LogicTableName> tableNameMap;
     
     private TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
     // LinkedHashSet is required
-    @Getter(AccessLevel.PROTECTED)
     private Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap = new HashMap<>();
     
-    private boolean decodeWithTX;
+    private IngestPosition position;
     
     /**
      * Get logic table name.
@@ -100,7 +92,7 @@ public class DumperConfiguration {
      * Get schema name.
      *
      * @param actualTableName actual table name
-     * @return schema name. nullable
+     * @return schema name, can be nullable 
      */
     public String getSchemaName(final ActualTableName actualTableName) {
         return tableNameSchemaNameMapping.getSchemaName(getLogicTableName(actualTableName));

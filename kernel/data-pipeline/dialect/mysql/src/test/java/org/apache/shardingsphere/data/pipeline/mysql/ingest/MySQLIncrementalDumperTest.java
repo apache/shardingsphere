@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.ingest.IncrementalDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
@@ -75,7 +75,7 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("unchecked")
 class MySQLIncrementalDumperTest {
     
-    private DumperConfiguration dumperConfig;
+    private IncrementalDumperConfiguration dumperConfig;
     
     private MySQLIncrementalDumper incrementalDumper;
     
@@ -93,8 +93,8 @@ class MySQLIncrementalDumperTest {
         when(metaDataLoader.getTableMetaData(any(), any())).thenReturn(pipelineTableMetaData);
     }
     
-    private DumperConfiguration mockDumperConfiguration() {
-        DumperConfiguration result = new DumperConfiguration();
+    private IncrementalDumperConfiguration mockDumperConfiguration() {
+        IncrementalDumperConfiguration result = new IncrementalDumperConfiguration();
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
         result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
         result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
@@ -103,7 +103,7 @@ class MySQLIncrementalDumperTest {
     }
     
     @SneakyThrows(SQLException.class)
-    private void initTableData(final DumperConfiguration dumperConfig) {
+    private void initTableData(final IncrementalDumperConfiguration dumperConfig) {
         try (
                 PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
                 PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
