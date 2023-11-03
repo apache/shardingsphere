@@ -369,7 +369,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 }
                 return accumulate(results);
             }
-            return isNeedImplicitCommitTransaction(connection, executionContexts) ? executeUpdateWithImplicitCommitTransaction() : useDriverToExecuteUpdate();
+            return executeUpdateWithExecutionContexts(executionContexts);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -380,11 +380,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
     }
     
-    private int useDriverToExecuteUpdate() throws SQLException {
+    private int useDriverToExecuteUpdate(final Collection<ExecutionContext> executionContexts) throws SQLException {
         Integer result = null;
-        Preconditions.checkArgument(!executionContexts.isEmpty());
+        Preconditions.checkArgument(!this.executionContexts.isEmpty());
         // TODO support multi execution context, currently executionContexts.size() always equals 1
-        for (ExecutionContext each : executionContexts) {
+        for (ExecutionContext each : this.executionContexts) {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(each);
             cacheStatements(executionGroupContext.getInputGroups());
             result = executor.getRegularExecutor().executeUpdate(executionGroupContext,
@@ -448,7 +448,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 }
                 return results.iterator().next() instanceof QueryResult;
             }
-            return isNeedImplicitCommitTransaction(connection, executionContexts) ? executeWithImplicitCommitTransaction() : useDriverToExecute();
+            return executeWithExecutionContexts(executionContexts);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -474,11 +474,15 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 .prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(databaseName));
     }
     
-    private boolean executeWithImplicitCommitTransaction() throws SQLException {
+    private boolean executeWithExecutionContexts(final Collection<ExecutionContext> executionContexts) throws SQLException {
+        return isNeedImplicitCommitTransaction(connection, executionContexts) ? executeWithImplicitCommitTransaction(executionContexts) : useDriverToExecute(executionContexts);
+    }
+    
+    private boolean executeWithImplicitCommitTransaction(final Collection<ExecutionContext> executionContexts) throws SQLException {
         boolean result;
         try {
             connection.setAutoCommit(false);
-            result = useDriverToExecute();
+            result = useDriverToExecute(executionContexts);
             connection.commit();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -491,11 +495,15 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return result;
     }
     
-    private int executeUpdateWithImplicitCommitTransaction() throws SQLException {
+    private int executeUpdateWithExecutionContexts(final Collection<ExecutionContext> executionContexts) throws SQLException {
+        return isNeedImplicitCommitTransaction(connection, executionContexts) ? executeUpdateWithImplicitCommitTransaction(executionContexts) : useDriverToExecuteUpdate(executionContexts);
+    }
+    
+    private int executeUpdateWithImplicitCommitTransaction(final Collection<ExecutionContext> executionContexts) throws SQLException {
         int result;
         try {
             connection.setAutoCommit(false);
-            result = useDriverToExecuteUpdate();
+            result = useDriverToExecuteUpdate(executionContexts);
             connection.commit();
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
@@ -508,7 +516,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return result;
     }
     
-    private boolean useDriverToExecute() throws SQLException {
+    private boolean useDriverToExecute(final Collection<ExecutionContext> executionContexts) throws SQLException {
         Boolean result = null;
         Preconditions.checkArgument(!executionContexts.isEmpty());
         // TODO support multi execution context, currently executionContexts.size() always equals 1
@@ -554,18 +562,19 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (useFederation) {
             return executor.getSqlFederationEngine().getResultSet();
         }
-        if (executionContexts.iterator().next().getSqlStatementContext() instanceof SelectStatementContext
-                || executionContexts.iterator().next().getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
+        ExecutionContext executionContext = executionContexts.iterator().next();
+        if (executionContext.getSqlStatementContext() instanceof SelectStatementContext
+                || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
             if (resultSets.isEmpty()) {
                 return currentResultSet;
             }
-            SQLStatementContext sqlStatementContext = executionContexts.iterator().next().getSqlStatementContext();
+            SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets), sqlStatementContext);
             if (null == columnLabelAndIndexMap) {
                 columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, selectContainsEnhancedTable, resultSets.get(0).getMetaData());
             }
-            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContexts.iterator().next(), columnLabelAndIndexMap);
+            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContext, columnLabelAndIndexMap);
         }
         return currentResultSet;
     }
