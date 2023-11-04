@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.context;
+package org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.mapper;
 
 import org.junit.jupiter.api.Test;
 
