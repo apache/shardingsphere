@@ -25,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ColumnName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
@@ -54,7 +53,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,8 +69,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WALEventConverterTest {
     
-    private IncrementalDumperContext dumperContext;
-    
     private WALEventConverter walEventConverter;
     
     private final LogSequenceNumber logSequenceNumber = LogSequenceNumber.valueOf("0/14EFDB8");
@@ -81,7 +77,7 @@ class WALEventConverterTest {
     
     @BeforeEach
     void setUp() {
-        dumperContext = mockDumperContext();
+        IncrementalDumperContext dumperContext = mockDumperContext();
         PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         walEventConverter = new WALEventConverter(dumperContext, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperContext.getDataSourceConfig())));
         initTableData(dumperContext);
@@ -123,16 +119,10 @@ class WALEventConverterTest {
     
     @Test
     void assertWriteRowEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowEvent0(Collections.emptyMap(), 3);
+        assertWriteRowEvent0(3);
     }
     
-    @Test
-    void assertWriteRowEventWithCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowEvent0(mockTargetTableColumnsMap(), 1);
-    }
-    
-    private void assertWriteRowEvent0(final Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
-        dumperContext.setTargetTableColumnsMap(targetTableColumnsMap);
+    private void assertWriteRowEvent0(final int expectedColumnCount) throws ReflectiveOperationException {
         WriteRowEvent rowsEvent = new WriteRowEvent();
         rowsEvent.setSchemaName("");
         rowsEvent.setTableName("t_order");
@@ -141,10 +131,6 @@ class WALEventConverterTest {
         DataRecord actual = (DataRecord) Plugins.getMemberAccessor().invoke(method, walEventConverter, rowsEvent, pipelineTableMetaData);
         assertThat(actual.getType(), is(IngestDataChangeType.INSERT));
         assertThat(actual.getColumnCount(), is(expectedColumnCount));
-    }
-    
-    private Map<LogicTableName, Collection<ColumnName>> mockTargetTableColumnsMap() {
-        return Collections.singletonMap(new LogicTableName("t_order"), Collections.singleton(new ColumnName("order_id")));
     }
     
     @Test

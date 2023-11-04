@@ -163,7 +163,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         }
         PrimaryKeyPosition<?> primaryKeyPosition = (PrimaryKeyPosition<?>) dumperContext.getPosition();
         PipelineColumnMetaData firstColumn = dumperContext.getUniqueKeyColumns().get(0);
-        Collection<String> columnNames = dumperContext.getColumnNames(logicTableName);
+        Collection<String> columnNames = Collections.singleton("*");
         if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType()) || PipelineJdbcUtils.isStringColumn(firstColumn.getDataType())) {
             if (null != primaryKeyPosition.getBeginValue() && null != primaryKeyPosition.getEndValue()) {
                 return inventoryDumpSQLBuilder.buildDivisibleSQL(schemaName, dumperContext.getActualTableName(), columnNames, firstColumn.getName());
