@@ -96,7 +96,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
                 int times = reconnectTimes.incrementAndGet();
                 log.error("Connect failed, reconnect times={}", times, ex);
                 if (isRunning()) {
-                    Thread.sleep(5000);
+                    Thread.sleep(5000L);
                 }
                 if (times >= 5) {
                     throw new IngestException(ex);

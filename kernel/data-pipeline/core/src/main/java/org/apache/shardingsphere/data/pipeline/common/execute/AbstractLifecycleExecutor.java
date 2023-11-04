@@ -53,9 +53,6 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
         runBlocking();
     }
     
-    /**
-     * Run blocking.
-     */
     protected abstract void runBlocking();
     
     @Override
