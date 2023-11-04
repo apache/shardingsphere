@@ -24,14 +24,9 @@ import org.apache.shardingsphere.data.pipeline.api.context.TableNameSchemaNameMa
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ColumnName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Base dumper context.
@@ -48,9 +43,6 @@ public abstract class DumperCommonContext {
     private Map<ActualTableName, LogicTableName> tableNameMap;
     
     private TableNameSchemaNameMapping tableNameSchemaNameMapping;
-    
-    // LinkedHashSet is required
-    private Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap = new HashMap<>();
     
     private IngestPosition position;
     
@@ -96,27 +88,5 @@ public abstract class DumperCommonContext {
      */
     public String getSchemaName(final ActualTableName actualTableName) {
         return tableNameSchemaNameMapping.getSchemaName(getLogicTableName(actualTableName));
-    }
-    
-    /**
-     * Get column names.
-     *
-     * @param logicTableName logic table name
-     * @return column names
-     */
-    public Collection<String> getColumnNames(final LogicTableName logicTableName) {
-        return targetTableColumnsMap.containsKey(logicTableName)
-                ? targetTableColumnsMap.get(logicTableName).stream().map(ColumnName::getOriginal).collect(Collectors.toList())
-                : Collections.singleton("*");
-    }
-    
-    /**
-     * Get column names.
-     *
-     * @param actualTableName actual table name
-     * @return column names
-     */
-    public Collection<ColumnName> getColumnNames(final String actualTableName) {
-        return targetTableColumnsMap.getOrDefault(getLogicTableName(actualTableName), Collections.emptySet());
     }
 }

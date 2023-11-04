@@ -75,15 +75,13 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("unchecked")
 class MySQLIncrementalDumperTest {
     
-    private IncrementalDumperContext dumperContext;
-    
     private MySQLIncrementalDumper incrementalDumper;
     
     private PipelineTableMetaData pipelineTableMetaData;
     
     @BeforeEach
     void setUp() {
-        dumperContext = mockDumperContext();
+        IncrementalDumperContext dumperContext = mockDumperContext();
         initTableData(dumperContext);
         dumperContext.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:mock://127.0.0.1:3306/test", "root", "root"));
         PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
@@ -98,7 +96,6 @@ class MySQLIncrementalDumperTest {
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
         result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
         result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
-        result.setTargetTableColumnsMap(Collections.singletonMap(new LogicTableName("t_order"), Collections.singleton(new ColumnName("order_id"))));
         return result;
     }
     
@@ -129,16 +126,10 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertWriteRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowsEvent0(Collections.emptyMap(), 3);
+        assertWriteRowsEvent0(3);
     }
     
-    @Test
-    void assertWriteRowsEventWithCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowsEvent0(mockTargetTableColumnsMap(), 1);
-    }
-    
-    private void assertWriteRowsEvent0(final Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
-        dumperContext.setTargetTableColumnsMap(targetTableColumnsMap);
+    private void assertWriteRowsEvent0(final int expectedColumnCount) throws ReflectiveOperationException {
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
         rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
@@ -157,16 +148,10 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertUpdateRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertUpdateRowsEvent0(Collections.emptyMap(), 3);
+        assertUpdateRowsEvent0(3);
     }
     
-    @Test
-    void assertUpdateRowsEventWithCustomColumns() throws ReflectiveOperationException {
-        assertUpdateRowsEvent0(mockTargetTableColumnsMap(), 1);
-    }
-    
-    private void assertUpdateRowsEvent0(final Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
-        dumperContext.setTargetTableColumnsMap(targetTableColumnsMap);
+    private void assertUpdateRowsEvent0(final int expectedColumnCount) throws ReflectiveOperationException {
         UpdateRowsEvent rowsEvent = new UpdateRowsEvent();
         rowsEvent.setDatabaseName("test");
         rowsEvent.setTableName("t_order");
@@ -182,16 +167,10 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertDeleteRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertDeleteRowsEvent0(Collections.emptyMap(), 3);
+        assertDeleteRowsEvent0(3);
     }
     
-    @Test
-    void assertDeleteRowsEventWithCustomColumns() throws ReflectiveOperationException {
-        assertDeleteRowsEvent0(mockTargetTableColumnsMap(), 1);
-    }
-    
-    private void assertDeleteRowsEvent0(final Map<LogicTableName, Collection<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
-        dumperContext.setTargetTableColumnsMap(targetTableColumnsMap);
+    private void assertDeleteRowsEvent0(final int expectedColumnCount) throws ReflectiveOperationException {
         DeleteRowsEvent rowsEvent = new DeleteRowsEvent();
         rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");

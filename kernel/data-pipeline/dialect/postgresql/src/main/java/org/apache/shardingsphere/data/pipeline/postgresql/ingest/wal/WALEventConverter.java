@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ColumnName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Updat
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnsupportedSQLOperationException;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -97,14 +95,13 @@ public final class WALEventConverter {
     
     private DataRecord handleWriteRowEvent(final WriteRowEvent writeRowEvent, final PipelineTableMetaData tableMetaData) {
         DataRecord result = createDataRecord(IngestDataChangeType.INSERT, writeRowEvent, writeRowEvent.getAfterRow().size());
-        putColumnsIntoDataRecord(result, tableMetaData, writeRowEvent.getTableName(), writeRowEvent.getAfterRow());
+        putColumnsIntoDataRecord(result, tableMetaData, writeRowEvent.getAfterRow());
         return result;
     }
     
     private DataRecord handleUpdateRowEvent(final UpdateRowEvent updateRowEvent, final PipelineTableMetaData tableMetaData) {
         DataRecord result = createDataRecord(IngestDataChangeType.UPDATE, updateRowEvent, updateRowEvent.getAfterRow().size());
-        String actualTableName = updateRowEvent.getTableName();
-        putColumnsIntoDataRecord(result, tableMetaData, actualTableName, updateRowEvent.getAfterRow());
+        putColumnsIntoDataRecord(result, tableMetaData, updateRowEvent.getAfterRow());
         return result;
     }
     
@@ -127,21 +124,13 @@ public final class WALEventConverter {
         return result;
     }
     
-    private void putColumnsIntoDataRecord(final DataRecord dataRecord, final PipelineTableMetaData tableMetaData, final String actualTableName, final List<Object> values) {
-        Collection<ColumnName> columnNames = dumperContext.getColumnNames(actualTableName);
+    private void putColumnsIntoDataRecord(final DataRecord dataRecord, final PipelineTableMetaData tableMetaData, final List<Object> values) {
         for (int i = 0, count = values.size(); i < count; i++) {
             PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
-            if (isColumnUnneeded(columnNames, columnMetaData.getName())) {
-                continue;
-            }
             boolean isUniqueKey = columnMetaData.isUniqueKey();
             Object uniqueKeyOldValue = isUniqueKey && IngestDataChangeType.UPDATE.equals(dataRecord.getType()) ? values.get(i) : null;
             Column column = new Column(columnMetaData.getName(), uniqueKeyOldValue, values.get(i), true, isUniqueKey);
             dataRecord.addColumn(column);
         }
-    }
-    
-    private boolean isColumnUnneeded(final Collection<ColumnName> columnNames, final String columnName) {
-        return !columnNames.isEmpty() && !columnNames.contains(new ColumnName(columnName));
     }
 }
