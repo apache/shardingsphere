@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.context.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.context.ingest.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
@@ -76,7 +75,7 @@ class WALEventConverterTest {
     private PipelineTableMetaData pipelineTableMetaData;
     
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
         IncrementalDumperContext dumperContext = mockDumperContext();
         PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         walEventConverter = new WALEventConverter(dumperContext, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperContext.getDataSourceConfig())));
@@ -92,8 +91,7 @@ class WALEventConverterTest {
         return result;
     }
     
-    @SneakyThrows(SQLException.class)
-    private void initTableData(final IncrementalDumperContext dumperContext) {
+    private void initTableData(final IncrementalDumperContext dumperContext) throws SQLException {
         try (
                 PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
                 PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
@@ -118,19 +116,23 @@ class WALEventConverterTest {
     }
     
     @Test
-    void assertWriteRowEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowEvent0(3);
+    void assertWriteRowEvent() throws ReflectiveOperationException {
+        DataRecord actual = getDataRecord(createWriteRowEvent());
+        assertThat(actual.getType(), is(IngestDataChangeType.INSERT));
+        assertThat(actual.getColumnCount(), is(3));
     }
     
-    private void assertWriteRowEvent0(final int expectedColumnCount) throws ReflectiveOperationException {
-        WriteRowEvent rowsEvent = new WriteRowEvent();
-        rowsEvent.setSchemaName("");
-        rowsEvent.setTableName("t_order");
-        rowsEvent.setAfterRow(Arrays.asList(101, 1, "OK"));
+    private WriteRowEvent createWriteRowEvent() {
+        WriteRowEvent result = new WriteRowEvent();
+        result.setSchemaName("");
+        result.setTableName("t_order");
+        result.setAfterRow(Arrays.asList(101, 1, "OK"));
+        return result;
+    }
+    
+    private DataRecord getDataRecord(final WriteRowEvent rowsEvent) throws ReflectiveOperationException {
         Method method = WALEventConverter.class.getDeclaredMethod("handleWriteRowEvent", WriteRowEvent.class, PipelineTableMetaData.class);
-        DataRecord actual = (DataRecord) Plugins.getMemberAccessor().invoke(method, walEventConverter, rowsEvent, pipelineTableMetaData);
-        assertThat(actual.getType(), is(IngestDataChangeType.INSERT));
-        assertThat(actual.getColumnCount(), is(expectedColumnCount));
+        return (DataRecord) Plugins.getMemberAccessor().invoke(method, walEventConverter, rowsEvent, pipelineTableMetaData);
     }
     
     @Test
