@@ -32,21 +32,21 @@ class TableNameSchemaNameMappingTest {
     
     @Test
     void assertConstructFromNull() {
-        assertDoesNotThrow(() -> new TableNameSchemaNameMapping((Map<String, String>) null));
+        assertDoesNotThrow(() -> new TableAndSchemaNameMapper((Map<String, String>) null));
     }
     
     @Test
     void assertConstructFromValueNullMap() {
-        assertNull(new TableNameSchemaNameMapping(Collections.singletonMap("t_order", null)).getSchemaName("t_order"));
+        assertNull(new TableAndSchemaNameMapper(Collections.singletonMap("t_order", null)).getSchemaName("t_order"));
     }
     
     @Test
     void assertConstructFromMap() {
-        assertThat(new TableNameSchemaNameMapping(Collections.singletonMap("t_order", "public")).getSchemaName("t_order"), is("public"));
+        assertThat(new TableAndSchemaNameMapper(Collections.singletonMap("t_order", "public")).getSchemaName("t_order"), is("public"));
     }
     
     @Test
     void assertConstructFromCollection() {
-        assertThat(new TableNameSchemaNameMapping(Arrays.asList("public.t_order", "t_order_item")).getSchemaName("t_order"), is("public"));
+        assertThat(new TableAndSchemaNameMapper(Arrays.asList("public.t_order", "t_order_item")).getSchemaName("t_order"), is("public"));
     }
 }

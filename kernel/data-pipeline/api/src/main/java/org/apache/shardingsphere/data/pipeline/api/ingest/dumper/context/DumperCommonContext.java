@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.context.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.api.context.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
@@ -33,7 +33,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@ToString(exclude = {"dataSourceConfig", "tableNameSchemaNameMapping"})
+@ToString(exclude = {"dataSourceConfig", "tableAndSchemaNameMapper"})
 public abstract class DumperCommonContext {
     
     private String dataSourceName;
@@ -42,7 +42,7 @@ public abstract class DumperCommonContext {
     
     private Map<ActualTableName, LogicTableName> tableNameMap;
     
-    private TableNameSchemaNameMapping tableNameSchemaNameMapping;
+    private TableAndSchemaNameMapper tableAndSchemaNameMapper;
     
     private IngestPosition position;
     
@@ -77,7 +77,7 @@ public abstract class DumperCommonContext {
      * @return schema name. nullable
      */
     public String getSchemaName(final LogicTableName logicTableName) {
-        return tableNameSchemaNameMapping.getSchemaName(logicTableName);
+        return tableAndSchemaNameMapper.getSchemaName(logicTableName);
     }
     
     /**
@@ -87,6 +87,6 @@ public abstract class DumperCommonContext {
      * @return schema name, can be nullable 
      */
     public String getSchemaName(final ActualTableName actualTableName) {
-        return tableNameSchemaNameMapping.getSchemaName(getLogicTableName(actualTableName));
+        return tableAndSchemaNameMapper.getSchemaName(getLogicTableName(actualTableName));
     }
 }

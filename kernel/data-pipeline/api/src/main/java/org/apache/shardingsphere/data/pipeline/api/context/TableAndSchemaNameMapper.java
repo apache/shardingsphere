@@ -28,18 +28,18 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Table name and schema name mapping.
+ * Table and schema name mapper.
  */
 @ToString
-public final class TableNameSchemaNameMapping {
+public final class TableAndSchemaNameMapper {
     
     private final Map<LogicTableName, String> mapping;
     
-    public TableNameSchemaNameMapping(final Map<String, String> tableSchemaMap) {
+    public TableAndSchemaNameMapper(final Map<String, String> tableSchemaMap) {
         mapping = null == tableSchemaMap ? Collections.emptyMap() : getLogicTableNameMap(tableSchemaMap);
     }
     
-    public TableNameSchemaNameMapping(final Collection<String> tableNames) {
+    public TableAndSchemaNameMapper(final Collection<String> tableNames) {
         Map<String, String> tableNameSchemaMap = tableNames.stream().map(each -> each.split("\\.")).filter(split -> split.length > 1).collect(Collectors.toMap(split -> split[1], split -> split[0]));
         mapping = getLogicTableNameMap(tableNameSchemaMap);
     }
