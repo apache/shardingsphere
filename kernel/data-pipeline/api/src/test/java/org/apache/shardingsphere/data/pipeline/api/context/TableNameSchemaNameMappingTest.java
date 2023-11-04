@@ -19,7 +19,9 @@ package org.apache.shardingsphere.data.pipeline.api.context;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,7 +32,7 @@ class TableNameSchemaNameMappingTest {
     
     @Test
     void assertConstructFromNull() {
-        assertDoesNotThrow(() -> new TableNameSchemaNameMapping(null));
+        assertDoesNotThrow(() -> new TableNameSchemaNameMapping((Map<String, String>) null));
     }
     
     @Test
@@ -41,5 +43,10 @@ class TableNameSchemaNameMappingTest {
     @Test
     void assertConstructFromMap() {
         assertThat(new TableNameSchemaNameMapping(Collections.singletonMap("t_order", "public")).getSchemaName("t_order"), is("public"));
+    }
+    
+    @Test
+    void assertConstructFromCollection() {
+        assertThat(new TableNameSchemaNameMapping(Arrays.asList("public.t_order", "t_order_item")).getSchemaName("t_order"), is("public"));
     }
 }
