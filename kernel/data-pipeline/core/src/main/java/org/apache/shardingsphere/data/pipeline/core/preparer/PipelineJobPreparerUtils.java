@@ -166,7 +166,7 @@ public final class PipelineJobPreparerUtils {
         }
         DataSourceCheckEngine dataSourceCheckEngine = new DataSourceCheckEngine(databaseType);
         dataSourceCheckEngine.checkConnection(targetDataSources);
-        dataSourceCheckEngine.checkTargetTable(targetDataSources, importerConfig.getTableNameSchemaNameMapping(), importerConfig.getLogicTableNames());
+        dataSourceCheckEngine.checkTargetTable(targetDataSources, importerConfig.getTableAndSchemaNameMapper(), importerConfig.getLogicTableNames());
     }
     
     /**

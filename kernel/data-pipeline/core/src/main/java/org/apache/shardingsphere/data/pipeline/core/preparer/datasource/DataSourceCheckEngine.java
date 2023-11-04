@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
-import org.apache.shardingsphere.data.pipeline.api.context.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.api.context.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
@@ -66,17 +66,17 @@ public final class DataSourceCheckEngine {
      * Check table is empty.
      *
      * @param dataSources data sources
-     * @param tableNameSchemaNameMapping mapping
+     * @param tableAndSchemaNameMapper mapping
      * @param logicTableNames logic table names
      * @throws PrepareJobWithInvalidConnectionException prepare job with invalid connection exception
      */
     // TODO rename to common usage name
     // TODO Merge schemaName and tableNames
-    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final TableNameSchemaNameMapping tableNameSchemaNameMapping, final Collection<String> logicTableNames) {
+    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final TableAndSchemaNameMapper tableAndSchemaNameMapper, final Collection<String> logicTableNames) {
         try {
             for (DataSource each : dataSources) {
                 for (String tableName : logicTableNames) {
-                    if (!checkEmpty(each, tableNameSchemaNameMapping.getSchemaName(tableName), tableName)) {
+                    if (!checkEmpty(each, tableAndSchemaNameMapper.getSchemaName(tableName), tableName)) {
                         throw new PrepareJobWithTargetTableNotEmptyException(tableName);
                     }
                 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.common.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.context.TableNameSchemaNameMapping;
+import org.apache.shardingsphere.data.pipeline.api.context.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString(exclude = {"dataSourceConfig", "tableNameSchemaNameMapping"})
+@ToString(exclude = {"dataSourceConfig", "tableAndSchemaNameMapper"})
 public final class ImporterConfiguration {
     
     private final PipelineDataSourceConfiguration dataSourceConfig;
@@ -46,7 +47,7 @@ public final class ImporterConfiguration {
     // TODO columnName case-insensitive?
     private final Map<LogicTableName, Set<String>> shardingColumnsMap;
     
-    private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
+    private final TableAndSchemaNameMapper tableAndSchemaNameMapper;
     
     private final int batchSize;
     
@@ -76,13 +77,13 @@ public final class ImporterConfiguration {
     }
     
     /**
-     * Get schema name.
+     * Find schema name.
      *
      * @param logicTableName logic table name
-     * @return schema name. nullable
+     * @return schema name
      */
-    public String getSchemaName(final LogicTableName logicTableName) {
+    public Optional<String> findSchemaName(final String logicTableName) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(dataSourceConfig.getDatabaseType()).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.isSchemaAvailable() ? tableNameSchemaNameMapping.getSchemaName(logicTableName) : null;
+        return dialectDatabaseMetaData.isSchemaAvailable() ? Optional.of(tableAndSchemaNameMapper.getSchemaName(logicTableName)) : Optional.empty();
     }
 }
