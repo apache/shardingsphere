@@ -28,7 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class TableNameSchemaNameMappingTest {
+class TableAndSchemaNameMapperTest {
     
     @Test
     void assertConstructFromNull() {
