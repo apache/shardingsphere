@@ -20,19 +20,18 @@ package org.apache.shardingsphere.data.pipeline.core.preparer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Range;
-import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type.StringPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type.UnsupportedKeyPosition;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
@@ -111,7 +110,7 @@ public final class InventoryTaskSplitter {
     
     private Collection<InventoryDumperContext> splitByTable(final InventoryDumperContext dumperContext) {
         Collection<InventoryDumperContext> result = new LinkedList<>();
-        dumperContext.getTableNameMap().forEach((key, value) -> {
+        dumperContext.getTableNameMapper().getTableNameMap().forEach((key, value) -> {
             InventoryDumperContext inventoryDumperContext = new InventoryDumperContext(dumperContext);
             // use original table name, for metadata loader, since some database table name case-sensitive
             inventoryDumperContext.setActualTableName(key.getOriginal());
@@ -127,7 +126,7 @@ public final class InventoryTaskSplitter {
     private Collection<InventoryDumperContext> splitByPrimaryKey(final InventoryDumperContext dumperContext, final InventoryIncrementalJobItemContext jobItemContext,
                                                                  final PipelineDataSourceWrapper dataSource) {
         if (null == dumperContext.getUniqueKeyColumns()) {
-            String schemaName = dumperContext.getSchemaName(new LogicTableName(dumperContext.getLogicTableName()));
+            String schemaName = dumperContext.getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
             String actualTableName = dumperContext.getActualTableName();
             List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtils.getUniqueKeyColumns(schemaName, actualTableName, jobItemContext.getSourceMetaDataLoader());
             dumperContext.setUniqueKeyColumns(uniqueKeyColumns);
@@ -205,7 +204,7 @@ public final class InventoryTaskSplitter {
         String uniqueKey = dumperContext.getUniqueKeyColumns().get(0).getName();
         PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(jobItemContext.getJobConfig().getSourceDatabaseType());
         String sql = pipelineSQLBuilder.buildUniqueKeyMinMaxValuesSQL(
-                dumperContext.getSchemaName(new LogicTableName(dumperContext.getLogicTableName())), dumperContext.getActualTableName(), uniqueKey);
+                dumperContext.getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName()), dumperContext.getActualTableName(), uniqueKey);
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();

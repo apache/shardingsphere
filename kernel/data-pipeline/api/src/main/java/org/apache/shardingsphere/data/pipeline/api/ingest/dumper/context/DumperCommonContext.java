@@ -20,16 +20,13 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.context.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.mapper.ActualAndLogicTableNameMapper;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-
-import java.util.Map;
 
 /**
- * Base dumper context.
+ * Dumper common context.
  */
 @Getter
 @Setter
@@ -40,53 +37,9 @@ public abstract class DumperCommonContext {
     
     private PipelineDataSourceConfiguration dataSourceConfig;
     
-    private Map<ActualTableName, LogicTableName> tableNameMap;
+    private ActualAndLogicTableNameMapper tableNameMapper;
     
     private TableAndSchemaNameMapper tableAndSchemaNameMapper;
     
     private IngestPosition position;
-    
-    /**
-     * Get logic table name.
-     *
-     * @param actualTableName actual table name
-     * @return logic table name
-     */
-    public LogicTableName getLogicTableName(final String actualTableName) {
-        return tableNameMap.get(new ActualTableName(actualTableName));
-    }
-    
-    private LogicTableName getLogicTableName(final ActualTableName actualTableName) {
-        return tableNameMap.get(actualTableName);
-    }
-    
-    /**
-     * Whether contains table.
-     *
-     * @param actualTableName actual table name
-     * @return contains or not
-     */
-    public boolean containsTable(final String actualTableName) {
-        return tableNameMap.containsKey(new ActualTableName(actualTableName));
-    }
-    
-    /**
-     * Get schema name.
-     *
-     * @param logicTableName logic table name
-     * @return schema name. nullable
-     */
-    public String getSchemaName(final LogicTableName logicTableName) {
-        return tableAndSchemaNameMapper.getSchemaName(logicTableName);
-    }
-    
-    /**
-     * Get schema name.
-     *
-     * @param actualTableName actual table name
-     * @return schema name, can be nullable 
-     */
-    public String getSchemaName(final ActualTableName actualTableName) {
-        return tableAndSchemaNameMapper.getSchemaName(getLogicTableName(actualTableName));
-    }
 }

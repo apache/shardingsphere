@@ -54,7 +54,7 @@ public final class InventoryDumperContext extends DumperCommonContext {
     public InventoryDumperContext(final DumperCommonContext dumperContext) {
         setDataSourceName(dumperContext.getDataSourceName());
         setDataSourceConfig(dumperContext.getDataSourceConfig());
-        setTableNameMap(dumperContext.getTableNameMap());
+        setTableNameMapper(dumperContext.getTableNameMapper());
         setTableAndSchemaNameMapper(dumperContext.getTableAndSchemaNameMapper());
     }
     
