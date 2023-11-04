@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.config.ingest;
 
-import org.apache.shardingsphere.data.pipeline.api.context.ingest.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
 
 /**

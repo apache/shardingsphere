@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.preparer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Range;
-import org.apache.shardingsphere.data.pipeline.api.context.ingest.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;

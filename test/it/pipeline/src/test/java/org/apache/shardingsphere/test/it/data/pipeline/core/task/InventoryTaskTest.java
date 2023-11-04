@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.task;
 
-import org.apache.shardingsphere.data.pipeline.api.context.ingest.IncrementalDumperContext;
-import org.apache.shardingsphere.data.pipeline.api.context.ingest.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;

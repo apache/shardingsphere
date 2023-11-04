@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.job.service;
 
-import org.apache.shardingsphere.data.pipeline.api.context.ingest.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.common.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;

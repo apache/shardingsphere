@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.prepare;
 
-import org.apache.shardingsphere.data.pipeline.api.context.ingest.DumperCommonContext;
-import org.apache.shardingsphere.data.pipeline.api.context.ingest.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.DumperCommonContext;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;

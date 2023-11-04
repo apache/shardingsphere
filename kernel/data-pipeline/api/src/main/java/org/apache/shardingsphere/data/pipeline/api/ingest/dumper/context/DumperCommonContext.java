@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.context.ingest;
+package org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context;
 
 import lombok.Getter;
 import lombok.Setter;
