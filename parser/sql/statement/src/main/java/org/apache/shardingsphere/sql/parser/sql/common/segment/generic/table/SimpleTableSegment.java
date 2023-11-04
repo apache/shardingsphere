@@ -46,6 +46,12 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     @Setter
     private PivotSegment pivot;
     
+    @Setter
+    private IdentifierValue dbLink;
+    
+    @Setter
+    private IdentifierValue at;
+    
     @Override
     public int getStartIndex() {
         if (null == owner) {
@@ -62,6 +68,14 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     @Override
     public Optional<OwnerSegment> getOwner() {
         return Optional.ofNullable(owner);
+    }
+    
+    public Optional<IdentifierValue> getDbLink() {
+        return Optional.ofNullable(dbLink);
+    }
+    
+    public Optional<IdentifierValue> getAt() {
+        return Optional.ofNullable(at);
     }
     
     @Override
