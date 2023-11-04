@@ -42,14 +42,4 @@ public abstract class DumperCommonContext {
     private TableAndSchemaNameMapper tableAndSchemaNameMapper;
     
     private IngestPosition position;
-    
-    /**
-     * Get schema name.
-     *
-     * @param actualTableName actual table name
-     * @return schema name, can be nullable
-     */
-    public String getSchemaName(final String actualTableName) {
-        return tableAndSchemaNameMapper.getSchemaName(tableNameMapper.getLogicTableName(actualTableName));
-    }
 }
