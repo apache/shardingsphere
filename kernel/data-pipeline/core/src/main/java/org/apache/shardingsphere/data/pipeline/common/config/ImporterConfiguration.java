@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -76,13 +77,13 @@ public final class ImporterConfiguration {
     }
     
     /**
-     * Get schema name.
+     * Find schema name.
      *
      * @param logicTableName logic table name
-     * @return schema name. nullable
+     * @return schema name
      */
-    public String getSchemaName(final LogicTableName logicTableName) {
+    public Optional<String> findSchemaName(final String logicTableName) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(dataSourceConfig.getDatabaseType()).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.isSchemaAvailable() ? tableNameSchemaNameMapping.getSchemaName(logicTableName) : null;
+        return dialectDatabaseMetaData.isSchemaAvailable() ? Optional.of(tableNameSchemaNameMapping.getSchemaName(logicTableName)) : Optional.empty();
     }
 }
