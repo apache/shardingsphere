@@ -27,7 +27,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class IncrementalDumperContext extends BaseDumperContext {
+public final class IncrementalDumperContext extends DumperCommonContext {
     
     private String jobId;
     
