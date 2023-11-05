@@ -41,6 +41,8 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -78,11 +80,15 @@ class MySQLIncrementalDumperTest {
     
     private PipelineTableMetaData pipelineTableMetaData;
     
+    @BeforeAll
+    static void init() throws ClassNotFoundException {
+        Class.forName(MockedDriver.class.getName());
+    }
+    
     @BeforeEach
     void setUp() throws SQLException {
         IncrementalDumperContext dumperContext = createDumperContext();
         initTableData(dumperContext);
-        dumperContext.getCommonContext().setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:mock://127.0.0.1:3306/test", "root", "root"));
         PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
         SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10000, new EmptyAckCallback());
         incrementalDumper = new MySQLIncrementalDumper(dumperContext, new BinlogPosition("binlog-000001", 4L, 0L), channel, metaDataLoader);
@@ -92,7 +98,7 @@ class MySQLIncrementalDumperTest {
     
     private IncrementalDumperContext createDumperContext() {
         DumperCommonContext commonContext = new DumperCommonContext();
-        commonContext.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
+        commonContext.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:mock://127.0.0.1:3306/test", "root", "root"));
         commonContext.setTableNameMapper(new ActualAndLogicTableNameMapper(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order"))));
         commonContext.setTableAndSchemaNameMapper(new TableAndSchemaNameMapper(Collections.emptyMap()));
         return new IncrementalDumperContext(commonContext);
