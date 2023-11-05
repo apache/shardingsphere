@@ -78,13 +78,21 @@ public final class DataSourceExecuteUtils {
     public static void execute(final DataSource dataSource, final String sql, final List<Object[]> parameters) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            int batchSize = 1000;
+            int count = 0;
             for (Object[] each : parameters) {
                 for (int i = 0; i < each.length; i++) {
                     preparedStatement.setObject(i + 1, each[i]);
                 }
                 preparedStatement.addBatch();
+                ++count;
+                if (0 == count % batchSize) {
+                    preparedStatement.executeBatch();
+                }
             }
-            preparedStatement.executeBatch();
+            if (count % batchSize > 0) {
+                preparedStatement.executeBatch();
+            }
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.job.service;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.common.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
@@ -51,6 +51,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 class GovernanceRepositoryAPIImplTest {
@@ -156,6 +157,18 @@ class GovernanceRepositoryAPIImplTest {
         assertThat(actual.get(), is("testValue"));
     }
     
+    @Test
+    void assertLatestCheckJobIdPersistenceDeletion() {
+        String parentJobId = "testParentJob";
+        String expectedCheckJobId = "testCheckJob";
+        governanceRepositoryAPI.persistLatestCheckJobId(parentJobId, expectedCheckJobId);
+        Optional<String> actualCheckJobIdOpt = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
+        assertTrue(actualCheckJobIdOpt.isPresent(), "Expected a checkJobId to be present");
+        assertEquals(expectedCheckJobId, actualCheckJobIdOpt.get(), "The retrieved checkJobId does not match the expected one");
+        governanceRepositoryAPI.deleteLatestCheckJobId(parentJobId);
+        assertFalse(governanceRepositoryAPI.getLatestCheckJobId(parentJobId).isPresent(), "Expected no checkJobId to be present after deletion");
+    }
+    
     private MigrationJobItemContext mockJobItemContext() {
         MigrationJobItemContext result = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
         MigrationTaskConfiguration taskConfig = result.getTaskConfig();
@@ -164,13 +177,13 @@ class GovernanceRepositoryAPIImplTest {
     }
     
     private InventoryTask mockInventoryTask(final MigrationTaskConfiguration taskConfig) {
-        InventoryDumperConfiguration dumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
-        dumperConfig.setPosition(new PlaceholderPosition());
-        dumperConfig.setActualTableName("t_order");
-        dumperConfig.setLogicTableName("t_order");
-        dumperConfig.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
-        dumperConfig.setShardingItem(0);
-        return new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(dumperConfig), PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(),
+        InventoryDumperContext dumperContext = new InventoryDumperContext(taskConfig.getDumperContext().getCommonContext());
+        dumperContext.getCommonContext().setPosition(new PlaceholderPosition());
+        dumperContext.setActualTableName("t_order");
+        dumperContext.setLogicTableName("t_order");
+        dumperContext.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
+        dumperContext.setShardingItem(0);
+        return new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(dumperContext), PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(),
                 mock(Dumper.class), mock(Importer.class), new AtomicReference<>(new PlaceholderPosition()));
     }
 }

@@ -342,3 +342,7 @@ CLUSTER
 LOCK_STRATEGY
     : L O C K UL_ S T R A T E G Y
     ;
+
+BROADCAST
+    : B R O A D C A S T
+    ;

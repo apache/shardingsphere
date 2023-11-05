@@ -155,6 +155,7 @@ execute
     | createCluster
     | createJava
     | plsqlBlock
+    | createLibrary
     | switch
     ) SEMI_?
     ;

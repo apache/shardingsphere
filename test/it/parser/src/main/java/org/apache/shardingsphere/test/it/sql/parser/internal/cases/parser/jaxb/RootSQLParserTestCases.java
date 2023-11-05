@@ -183,6 +183,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateInmemoryJoinGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateJavaStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateLanguageStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateLibraryStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateLockdownProfileStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateMaterializedViewLogStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateMaterializedViewStatementTestCase;
@@ -1717,9 +1718,12 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "create-java")
     private final List<CreateJavaStatementTestCase> createJavaStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "create-library")
+    private final List<CreateLibraryStatementTestCase> createLibraryStatementTestCases = new LinkedList<>();
+
     @XmlElement(name = "switch")
     private final List<SwitchStatementTestCase> switchStatementTestCases = new LinkedList<>();
-    
+
     /**
      * Get all SQL parser test cases.
      *

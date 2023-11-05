@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.config.ingest;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Incremental dumper configuration creator.
+ * Create library statement test case.
  */
-public interface IncrementalDumperConfigurationCreator {
-    
-    /**
-     * Create dumper configuration.
-     *
-     * @param jobDataNodeLine job data node line
-     * @return dumper configuration
-     */
-    DumperConfiguration createDumperConfiguration(JobDataNodeLine jobDataNodeLine);
+public final class CreateLibraryStatementTestCase extends SQLParserTestCase {
 }

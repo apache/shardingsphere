@@ -61,6 +61,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -420,9 +421,11 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     public List<Map<String, Object>> queryForListWithLog(final DataSource dataSource, final String sql) {
         log.info("Query SQL: {}", sql);
-        try (Connection connection = dataSource.getConnection()) {
-            ResultSet resultSet = connection.createStatement().executeQuery(sql);
-            return transformResultSetToList(resultSet);
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+            return transformResultSetToList(statement.getResultSet());
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
@@ -558,7 +561,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     // TODO proxy support for some fields still needs to be optimized, such as binary of MySQL, after these problems are optimized, Proxy dataSource can be used.
     public DataSource generateShardingSphereDataSourceFromProxy() {
-        Awaitility.await().atMost(5L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> null != getYamlRootConfig().getRules());
+        Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> null != getYamlRootConfig().getRules());
         YamlRootConfiguration rootConfig = getYamlRootConfig();
         ShardingSpherePreconditions.checkNotNull(rootConfig.getDataSources(), () -> new IllegalStateException("dataSources is null"));
         ShardingSpherePreconditions.checkNotNull(rootConfig.getRules(), () -> new IllegalStateException("rules is null"));

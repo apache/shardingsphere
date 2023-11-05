@@ -28,11 +28,6 @@
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-        
-        <atomikos.version>6.0.0</atomikos.version>
-        <narayana.version>5.12.4.Final</narayana.version>
-        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
-        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
     </properties>
     
     <dependencies>
@@ -71,8 +66,8 @@
         </dependency>
         
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>

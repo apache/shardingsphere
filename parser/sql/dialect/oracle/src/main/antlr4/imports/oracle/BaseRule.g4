@@ -439,6 +439,10 @@ tablespaceName
     : identifier
     ;
 
+newTablespaceName
+    : identifier
+    ;
+
 subprogramName
     : identifier
     ;
@@ -1727,6 +1731,10 @@ filenamePattern
     : STRING_
     ;
 
+replacementFilenamePattern
+    : STRING_
+    ;
+
 connectString
     : STRING_
     ;
@@ -2091,22 +2099,18 @@ sourceText
     : identifier
     ;
 
-primaryName
+fullPathName
+    : STRING_
+    ;
+
+directoryObject
     : identifier
     ;
 
-directoryObjectName
+credentialName
     : identifier
     ;
 
-serverFileName
-    : identifier
-    ;
-
-keyForBlob
-    : identifier
-    ;
-
-sourceText
-    : identifier
+agentDblink
+    : STRING_
     ;

@@ -26,10 +26,6 @@
     <artifactId>shardingsphere-infra-expr-espresso</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <graalvm.version>21.2.0</graalvm.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -63,7 +59,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>${maven-dependency-plugin.version}</version>
                 <executions>

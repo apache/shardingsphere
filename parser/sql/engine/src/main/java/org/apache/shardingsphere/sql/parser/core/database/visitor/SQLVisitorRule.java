@@ -698,7 +698,9 @@ public enum SQLVisitorRule {
     CREATE_JAVA("CreateJava", SQLStatementType.DDL),
     
     PLSQL_BLOCK("PlsqlBlock", SQLStatementType.DDL),
-    
+
+    CREATE_LIBRARY("CreateLibrary", SQLStatementType.DDL),
+
     SWITCH("Switch", SQLStatementType.DDL);
     
     private final String name;

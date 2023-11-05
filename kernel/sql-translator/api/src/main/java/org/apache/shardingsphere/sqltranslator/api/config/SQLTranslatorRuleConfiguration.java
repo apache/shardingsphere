@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
+import java.util.Properties;
+
 /**
  * SQL translator rule configuration.
  */
@@ -30,9 +32,11 @@ public final class SQLTranslatorRuleConfiguration implements GlobalRuleConfigura
     
     private final String type;
     
+    private final Properties props;
+    
     private final boolean useOriginalSQLWhenTranslatingFailed;
     
     public SQLTranslatorRuleConfiguration() {
-        this(null, true);
+        this(null, new Properties(), true);
     }
 }

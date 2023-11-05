@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config;
+package org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.mapper;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,26 +28,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class TableNameSchemaNameMappingTest {
+class TableAndSchemaNameMapperTest {
     
     @Test
     void assertConstructFromNull() {
-        assertDoesNotThrow(() -> new TableNameSchemaNameMapping(null));
+        assertDoesNotThrow(() -> new TableAndSchemaNameMapper((Map<String, String>) null));
     }
     
     @Test
     void assertConstructFromValueNullMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put("t_order", null);
-        TableNameSchemaNameMapping mapping = new TableNameSchemaNameMapping(map);
-        assertNull(mapping.getSchemaName("t_order"));
+        assertNull(new TableAndSchemaNameMapper(Collections.singletonMap("t_order", null)).getSchemaName("t_order"));
     }
     
     @Test
     void assertConstructFromMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put("t_order", "public");
-        TableNameSchemaNameMapping mapping = new TableNameSchemaNameMapping(map);
-        assertThat(mapping.getSchemaName("t_order"), is("public"));
+        assertThat(new TableAndSchemaNameMapper(Collections.singletonMap("t_order", "public")).getSchemaName("t_order"), is("public"));
+    }
+    
+    @Test
+    void assertConstructFromCollection() {
+        assertThat(new TableAndSchemaNameMapper(Arrays.asList("public.t_order", "t_order_item")).getSchemaName("t_order"), is("public"));
     }
 }

@@ -78,11 +78,11 @@ public final class CDCServer extends Thread {
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new CDCServerHandlerInitializer());
-        List<ChannelFuture> futures = new ArrayList<>();
-        for (String address : addresses) {
-            futures.add(bootstrap.bind(address, port).sync());
+        List<ChannelFuture> result = new ArrayList<>();
+        for (String each : addresses) {
+            result.add(bootstrap.bind(each, port).sync());
         }
-        return futures;
+        return result;
     }
     
     private void createEventLoopGroup() {

@@ -44,8 +44,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
-import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
-import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings;
@@ -99,10 +97,7 @@ class CDCE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertCDCDataImportSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
-        if (TimeZone.getDefault() != TimeZone.getTimeZone("UTC") && PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {
-            // make sure the time zone of locally running program same with the database server at CI.
-            TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        }
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new CDCJobType())) {
             for (String each : Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)) {
                 containerComposer.registerStorageUnit(each);
@@ -111,11 +106,11 @@ class CDCE2EIT {
             try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
                 initSchemaAndTable(containerComposer, connection, 3);
             }
-            DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
+            DataSource dataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
             Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(containerComposer.getDatabaseType(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             log.info("init data begin: {}", LocalDateTime.now());
-            DataSourceExecuteUtils.execute(jdbcDataSource, containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), dataPair.getLeft());
-            DataSourceExecuteUtils.execute(jdbcDataSource, "INSERT INTO t_address(id, address_name) VALUES (?,?)", Arrays.asList(new Object[]{1, "a"}, new Object[]{2, "b"}));
+            DataSourceExecuteUtils.execute(dataSource, containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), dataPair.getLeft());
+            DataSourceExecuteUtils.execute(dataSource, "INSERT INTO t_address(id, address_name) VALUES (?,?)", Arrays.asList(new Object[]{1, "a"}, new Object[]{2, "b"}));
             log.info("init data end: {}", LocalDateTime.now());
             try (
                     Connection connection = DriverManager.getConnection(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
@@ -128,10 +123,10 @@ class CDCE2EIT {
             String jobId = containerComposer.queryForListWithLog("SHOW STREAMING LIST").get(0).get("id").toString();
             containerComposer.waitIncrementTaskFinished(String.format("SHOW STREAMING STATUS '%s'", jobId));
             String tableName = dialectDatabaseMetaData.isSchemaAvailable() ? String.join(".", "test", SOURCE_TABLE_NAME) : SOURCE_TABLE_NAME;
-            containerComposer.startIncrementTask(new E2EIncrementalTask(jdbcDataSource, tableName, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20));
+            containerComposer.startIncrementTask(new E2EIncrementalTask(dataSource, tableName, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20));
             containerComposer.getIncreaseTaskThread().join(10000L);
             List<Map<String, Object>> actualProxyList;
-            try (Connection connection = jdbcDataSource.getConnection()) {
+            try (Connection connection = dataSource.getConnection()) {
                 ResultSet resultSet = connection.createStatement().executeQuery(String.format("SELECT * FROM %s ORDER BY order_id ASC", getOrderTableNameWithSchema(dialectDatabaseMetaData)));
                 actualProxyList = containerComposer.transformResultSetToList(resultSet);
             }
@@ -140,7 +135,7 @@ class CDCE2EIT {
             SchemaTableName orderSchemaTableName = dialectDatabaseMetaData.isSchemaAvailable()
                     ? new SchemaTableName(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME)
                     : new SchemaTableName(null, SOURCE_TABLE_NAME);
-            PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(jdbcDataSource, containerComposer.getDatabaseType());
+            PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(dataSource, containerComposer.getDatabaseType());
             PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(createStandardDataSource(containerComposer, PipelineContainerComposer.DS_4),
                     containerComposer.getDatabaseType());
             assertDataMatched(sourceDataSource, targetDataSource, orderSchemaTableName);

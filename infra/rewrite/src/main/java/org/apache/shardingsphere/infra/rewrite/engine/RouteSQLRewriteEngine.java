@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardPa
 import org.apache.shardingsphere.infra.rewrite.sql.impl.RouteSQLBuilder;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -62,9 +63,10 @@ public final class RouteSQLRewriteEngine {
      *
      * @param sqlRewriteContext SQL rewrite context
      * @param routeContext route context
+     * @param queryContext query context
      * @return SQL rewrite result
      */
-    public RouteSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
+    public RouteSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final QueryContext queryContext) {
         Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits = new LinkedHashMap<>(routeContext.getRouteUnits().size(), 1F);
         for (Entry<String, Collection<RouteUnit>> entry : aggregateRouteUnitGroups(routeContext.getRouteUnits()).entrySet()) {
             Collection<RouteUnit> routeUnits = entry.getValue();
@@ -74,7 +76,7 @@ public final class RouteSQLRewriteEngine {
                 addSQLRewriteUnits(sqlRewriteUnits, sqlRewriteContext, routeContext, routeUnits);
             }
         }
-        return new RouteSQLRewriteResult(translate(sqlRewriteContext.getSqlStatementContext(), sqlRewriteUnits));
+        return new RouteSQLRewriteResult(translate(queryContext, sqlRewriteUnits));
     }
     
     private SQLRewriteUnit createSQLRewriteUnit(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final Collection<RouteUnit> routeUnits) {
@@ -155,12 +157,12 @@ public final class RouteSQLRewriteEngine {
         return false;
     }
     
-    private Map<RouteUnit, SQLRewriteUnit> translate(final SQLStatementContext sqlStatementContext, final Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits) {
+    private Map<RouteUnit, SQLRewriteUnit> translate(final QueryContext queryContext, final Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits) {
         Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(sqlRewriteUnits.size(), 1F);
         Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         for (Entry<RouteUnit, SQLRewriteUnit> entry : sqlRewriteUnits.entrySet()) {
             DatabaseType storageType = storageUnits.get(entry.getKey().getDataSourceMapper().getActualName()).getStorageType();
-            String sql = translatorRule.translate(entry.getValue().getSql(), sqlStatementContext, storageType, database, globalRuleMetaData);
+            String sql = translatorRule.translate(entry.getValue().getSql(), queryContext, storageType, database, globalRuleMetaData);
             SQLRewriteUnit sqlRewriteUnit = new SQLRewriteUnit(sql, entry.getValue().getParameters());
             result.put(entry.getKey(), sqlRewriteUnit);
         }

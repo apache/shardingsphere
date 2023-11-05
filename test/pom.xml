@@ -37,8 +37,6 @@
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-        
-        <testcontainers.version>1.17.3</testcontainers.version>
     </properties>
     
     <dependencyManagement>

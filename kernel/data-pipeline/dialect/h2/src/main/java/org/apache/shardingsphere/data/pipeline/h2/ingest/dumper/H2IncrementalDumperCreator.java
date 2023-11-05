@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.h2.ingest.dumper;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDump
 public final class H2IncrementalDumperCreator implements IncrementalDumperCreator {
     
     @Override
-    public IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
+    public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context, final IngestPosition position,
                                                      final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         throw new UnsupportedOperationException("H2 database can not support incremental dump.");
     }

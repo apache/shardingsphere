@@ -36,7 +36,9 @@ public final class UnregisterStorageUnitStatement extends StorageUnitDefinitionS
     
     private final boolean ignoreSingleTables;
     
-    public UnregisterStorageUnitStatement(final Collection<String> storageUnitNames, final boolean ignoreSingleTables) {
-        this(false, storageUnitNames, ignoreSingleTables);
+    private final boolean ignoreBroadcastTables;
+    
+    public UnregisterStorageUnitStatement(final Collection<String> storageUnitNames, final boolean ignoreSingleTables, final boolean ignoreBroadcastTables) {
+        this(false, storageUnitNames, ignoreSingleTables, ignoreBroadcastTables);
     }
 }

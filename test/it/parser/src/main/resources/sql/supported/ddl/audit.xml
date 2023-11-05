@@ -160,4 +160,36 @@
     <sql-case id="audit_all_on_default_by_access" value="AUDIT ALL ON DEFAULT BY ACCESS" db-types="Oracle" />
     <sql-case id="audit_all_statements_by_by_access_whenever_successful" value="AUDIT ALL STATEMENTS BY jward, jsmith BY ACCESS WHENEVER SUCCESSFUL" db-types="Oracle" />
     <sql-case id="audit_all_statements_in_session_current" value="AUDIT ALL STATEMENTS IN SESSION CURRENT" db-types="Oracle" />
+    <sql-case id="audit_create_any_directory" value="AUDIT CREATE ANY DIRECTORY" db-types="Oracle" />
+    <sql-case id="audit_create_alter" value="AUDIT CREATE TABLE, CREATE SEQUENCE, CREATE SYNONYM, CREATE DATABASE LINK, CREATE CLUSTER, CREATE VIEW, ALTER SESSION" db-types="Oracle" />
+    <sql-case id="audit_delete_any_table_by_access" value="AUDIT DELETE ANY TABLE BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_crete_table_by_access_whenever_not_successful" value="AUDIT CREATE TABLE BY ACCESS WHENEVER NOT SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_select_table_by" value="AUDIT SELECT TABLE BY jackson" db-types="Oracle" />
+    <sql-case id="audit_delete_any_table" value="AUDIT DELETE ANY TABLE" db-types="Oracle" />
+    <sql-case id="audit_delete_on_by_access" value="AUDIT DELETE ON laurel.emp BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_execute_on_by_access_whenever_successful" value="AUDIT EXECUTE ON sales_data.check_work BY ACCESS WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_insert_any_table_by_system_by_access" value="AUDIT INSERT ANY TABLE BY SYSTEM BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_insert_table_by_access" value="AUDIT INSERT TABLE BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_role_whenever_not_successful" value="AUDIT ROLE WHENEVER NOT SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_role_whenever_success" value="AUDIT ROLE WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_select_on_default_by_access_whenever_not_successful" value="AUDIT SELECT ON DEFAULT BY ACCESS WHENEVER NOT SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_select_on_whenever_successful" value="AUDIT SELECT ON hr.employees WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_cluster" value="AUDIT CLUSTER" db-types="Oracle" />
+    <sql-case id="audit_alter_delete_on_default_by_access" value="AUDIT ALTER, DELETE ON DEFAULT BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_alter_index_rename_on_default" value="AUDIT ALTER, INDEX, RENAME ON DEFAULT" db-types="Oracle" />
+    <sql-case id="audit_session_by" value="AUDIT SESSION BY jward, swilliams" db-types="Oracle" />
+    <sql-case id="audit_lock_table_by_access_whenever_successful" value="AUDIT LOCK TABLE BY ACCESS WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_delete_on_by_access_whenever_success" value="AUDIT DELETE ON laurel.emp BY ACCESS WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_select_on_by_access1" value="AUDIT SELECT ON employees_departments BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_select_on_by_access2" value="AUDIT SELECT ON SYS.AUD$ BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_select_on_by_access3" value="AUDIT SELECT ON SYS.FGA$ BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_select_whenever_not_successful" value="AUDIT SELECT ON hr.employees WHENEVER NOT SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_select_table_by_access" value="AUDIT SELECT TABLE BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_select_insert_delete_table_by_access_whenever_not_successful" value="AUDIT SELECT TABLE, INSERT TABLE, DELETE TABLE BY ACCESS WHENEVER NOT SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_select_update_table" value="AUDIT SELECT TABLE, UPDATE TABLE" db-types="Oracle" />
+    <sql-case id="audit_select_update_table_by" value="AUDIT SELECT TABLE, UPDATE TABLE BY hr, oe" db-types="Oracle" />
+    <sql-case id="audit_select_update_table_by_access" value="AUDIT SELECT TABLE, UPDATE TABLE BY scott, blake BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_session_by_access" value="AUDIT SESSION BY ACCESS" db-types="Oracle" />
+    <sql-case id="audit_select_insert_delete_on_access_whenever_successful" value="AUDIT SELECT, INSERT, DELETE ON jward.dept BY ACCESS WHENEVER SUCCESSFUL" db-types="Oracle" />
+    <sql-case id="audit_session_by_by_access" value="AUDIT SESSION BY jward, jsmith BY ACCESS" db-types="Oracle" />
 </sql-cases>

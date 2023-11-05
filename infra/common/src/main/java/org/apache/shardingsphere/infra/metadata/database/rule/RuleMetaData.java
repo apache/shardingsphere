@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -106,9 +107,9 @@ public final class RuleMetaData {
         Map<String, Collection<Class<? extends ShardingSphereRule>>> result = new LinkedHashMap<>();
         for (ShardingSphereRule each : rules) {
             if (each instanceof DataSourceContainedRule) {
-                result.putAll(getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames((DataSourceContainedRule) each)));
+                mergeInUsedStorageUnitNameAndRules(result, getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames((DataSourceContainedRule) each)));
             } else if (each instanceof DataNodeContainedRule) {
-                result.putAll(getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames((DataNodeContainedRule) each)));
+                mergeInUsedStorageUnitNameAndRules(result, getInUsedStorageUnitNameAndRulesMap(each, getInUsedStorageUnitNames((DataNodeContainedRule) each)));
             }
         }
         return result;
@@ -131,5 +132,20 @@ public final class RuleMetaData {
     
     private Collection<String> getInUsedStorageUnitNames(final DataNodeContainedRule rule) {
         return rule.getAllDataNodes().values().stream().flatMap(each -> each.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()).stream()).collect(Collectors.toSet());
+    }
+    
+    private void mergeInUsedStorageUnitNameAndRules(final Map<String, Collection<Class<? extends ShardingSphereRule>>> storageUnitNameAndRules,
+                                                    final Map<String, Collection<Class<? extends ShardingSphereRule>>> toBeMergedStorageUnitNameAndRules) {
+        for (Entry<String, Collection<Class<? extends ShardingSphereRule>>> entry : toBeMergedStorageUnitNameAndRules.entrySet()) {
+            if (storageUnitNameAndRules.containsKey(entry.getKey())) {
+                for (Class<? extends ShardingSphereRule> each : entry.getValue()) {
+                    if (!storageUnitNameAndRules.get(entry.getKey()).contains(each)) {
+                        storageUnitNameAndRules.get(entry.getKey()).add(each);
+                    }
+                }
+            } else {
+                storageUnitNameAndRules.put(entry.getKey(), entry.getValue());
+            }
+        }
     }
 }

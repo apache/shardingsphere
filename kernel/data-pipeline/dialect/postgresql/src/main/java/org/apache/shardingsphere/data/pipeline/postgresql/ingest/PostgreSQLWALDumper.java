@@ -19,9 +19,9 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.common.execute.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
@@ -60,7 +60,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
     
-    private final DumperConfiguration dumperConfig;
+    private final IncrementalDumperContext dumperContext;
     
     private final AtomicReference<WALPosition> walPosition;
     
@@ -74,16 +74,16 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     private List<AbstractRowEvent> rowEvents = new LinkedList<>();
     
-    public PostgreSQLWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
+    public PostgreSQLWALDumper(final IncrementalDumperContext dumperContext, final IngestPosition position,
                                final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
+        ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperContext.getCommonContext().getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("PostgreSQLWALDumper only support PipelineDataSourceConfiguration"));
-        this.dumperConfig = dumperConfig;
+        this.dumperContext = dumperContext;
         walPosition = new AtomicReference<>((WALPosition) position);
         this.channel = channel;
-        walEventConverter = new WALEventConverter(dumperConfig, metaDataLoader);
+        walEventConverter = new WALEventConverter(dumperContext, metaDataLoader);
         logicalReplication = new PostgreSQLLogicalReplication();
-        this.decodeWithTX = dumperConfig.isDecodeWithTX();
+        this.decodeWithTX = dumperContext.isDecodeWithTX();
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -111,8 +111,8 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     private void dump() throws SQLException {
         // TODO use unified PgConnection
         try (
-                Connection connection = logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig());
-                PGReplicationStream stream = logicalReplication.createReplicationStream(connection, PostgreSQLPositionInitializer.getUniqueSlotName(connection, dumperConfig.getJobId()),
+                Connection connection = logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig());
+                PGReplicationStream stream = logicalReplication.createReplicationStream(connection, PostgreSQLPositionInitializer.getUniqueSlotName(connection, dumperContext.getJobId()),
                         walPosition.get().getLogSequenceNumber())) {
             PostgreSQLTimestampUtils utils = new PostgreSQLTimestampUtils(connection.unwrap(PgConnection.class).getTimestampUtils());
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(utils);

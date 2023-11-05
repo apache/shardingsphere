@@ -1,4 +1,5 @@
-<#--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
   ~ this work for additional information regarding copyright ownership.
@@ -14,21 +15,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-- !DB_DISCOVERY
-  dataSources:
-    group_0:
-      dataSourceNames:
-        - ds_0
-        - ds_1
-        - ds_2
-      discoveryHeartbeatName: mgr_heartbeat
-      discoveryTypeName: mgr_type
-    discoveryHeartbeats:
-      mgr_heartbeat:
-        props:
-          keep-alive-cron: '0/5 * * * * ?'
-    discoveryTypes:
-      mgr_type:
-        type: MySQL.MGR
-        props:
-          group-name: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+
+<sql-cases>
+    <sql-case id="create_library" value="CREATE LIBRARY app_lib as '${ORACLE_HOME}/lib/app_lib.so' AGENT 'sales.hq.example.com';" db-types="Oracle" />
+</sql-cases>

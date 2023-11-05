@@ -63,6 +63,9 @@ public final class PipelineJobProgressDetector {
     }
     
     private static boolean isAllInventoryTasksCompleted(final Collection<InventoryIncrementalJobItemProgress> jobItemProgresses) {
+        if (jobItemProgresses.stream().allMatch(each -> each.getInventory().getProgresses().isEmpty())) {
+            return false;
+        }
         return jobItemProgresses.stream().flatMap(each -> each.getInventory().getProgresses().values().stream()).allMatch(each -> each.getPosition() instanceof FinishedPosition);
     }
 }
