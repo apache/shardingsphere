@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -27,13 +26,12 @@ import lombok.ToString;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
 public final class IncrementalDumperContext {
     
     private final DumperCommonContext commonContext;
     
-    private String jobId;
+    private final String jobId;
     
-    private boolean decodeWithTX;
+    private final boolean decodeWithTX;
 }

@@ -97,11 +97,11 @@ class MySQLIncrementalDumperTest {
     }
     
     private IncrementalDumperContext createDumperContext() {
-        DumperCommonContext commonContext = new DumperCommonContext();
-        commonContext.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:mock://127.0.0.1:3306/test", "root", "root"));
-        commonContext.setTableNameMapper(new ActualAndLogicTableNameMapper(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order"))));
-        commonContext.setTableAndSchemaNameMapper(new TableAndSchemaNameMapper(Collections.emptyMap()));
-        return new IncrementalDumperContext(commonContext);
+        DumperCommonContext commonContext = new DumperCommonContext(null,
+                new StandardPipelineDataSourceConfiguration("jdbc:mock://127.0.0.1:3306/test", "root", "root"),
+                new ActualAndLogicTableNameMapper(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order"))),
+                new TableAndSchemaNameMapper(Collections.emptyMap()));
+        return new IncrementalDumperContext(commonContext, null, false);
     }
     
     private void initTableData(final IncrementalDumperContext dumperContext) throws SQLException {
