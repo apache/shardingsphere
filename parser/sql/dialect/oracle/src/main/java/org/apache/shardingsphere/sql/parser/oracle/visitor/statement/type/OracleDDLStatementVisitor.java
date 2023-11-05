@@ -1346,15 +1346,15 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitCreateJava(final CreateJavaContext ctx) {
         return new OracleCreateJavaStatement();
     }
-
+    
     @Override
     public ASTNode visitCreateLibrary(final CreateLibraryContext ctx) {
         return new OracleCreateLibraryStatement();
     }
-
+    
     @Override
     public ASTNode visitSwitch(final SwitchContext ctx) {
         return new OracleSwitchStatement();
     }
-
+    
 }

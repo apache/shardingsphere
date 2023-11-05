@@ -1720,10 +1720,10 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "create-library")
     private final List<CreateLibraryStatementTestCase> createLibraryStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "switch")
     private final List<SwitchStatementTestCase> switchStatementTestCases = new LinkedList<>();
-
+    
     /**
      * Get all SQL parser test cases.
      *
