@@ -283,11 +283,9 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         StandardPipelineDataSourceConfiguration actualDataSourceConfig = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(dataSourceName);
         Map<ActualTableName, LogicTableName> tableNameMap = new LinkedHashMap<>();
         dataNodeLine.getEntries().forEach(each -> each.getDataNodes().forEach(node -> tableNameMap.put(new ActualTableName(node.getTableName()), new LogicTableName(each.getLogicTableName()))));
-        IncrementalDumperContext result = new IncrementalDumperContext(
-                new DumperCommonContext(dataSourceName, actualDataSourceConfig, new ActualAndLogicTableNameMapper(tableNameMap), tableAndSchemaNameMapper));
-        result.setJobId(jobConfig.getJobId());
-        result.setDecodeWithTX(jobConfig.isDecodeWithTX());
-        return result;
+        return new IncrementalDumperContext(
+                new DumperCommonContext(dataSourceName, actualDataSourceConfig, new ActualAndLogicTableNameMapper(tableNameMap), tableAndSchemaNameMapper),
+                jobConfig.getJobId(), jobConfig.isDecodeWithTX());
     }
     
     private ImporterConfiguration buildImporterConfiguration(final CDCJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig, final Collection<String> schemaTableNames,

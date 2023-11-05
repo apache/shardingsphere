@@ -90,7 +90,7 @@ class WALEventConverterTest {
                 new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"),
                 new ActualAndLogicTableNameMapper(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order"))),
                 new TableAndSchemaNameMapper(Collections.emptyMap()));
-        return new IncrementalDumperContext(commonContext);
+        return new IncrementalDumperContext(commonContext, null, false);
     }
     
     private void initTableData(final IncrementalDumperContext dumperContext) throws SQLException {

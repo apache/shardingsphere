@@ -101,7 +101,7 @@ class MySQLIncrementalDumperTest {
                 new StandardPipelineDataSourceConfiguration("jdbc:mock://127.0.0.1:3306/test", "root", "root"),
                 new ActualAndLogicTableNameMapper(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order"))),
                 new TableAndSchemaNameMapper(Collections.emptyMap()));
-        return new IncrementalDumperContext(commonContext);
+        return new IncrementalDumperContext(commonContext, null, false);
     }
     
     private void initTableData(final IncrementalDumperContext dumperContext) throws SQLException {

@@ -111,9 +111,7 @@ class PostgreSQLWALDumperTest {
                 new StandardPipelineDataSourceConfiguration(jdbcUrl, username, password),
                 new ActualAndLogicTableNameMapper(Collections.singletonMap(new ActualTableName("t_order_0"), new LogicTableName("t_order"))),
                 new TableAndSchemaNameMapper(Collections.emptyMap()));
-        IncrementalDumperContext result = new IncrementalDumperContext(commonContext);
-        result.setJobId("0101123456");
-        return result;
+        return new IncrementalDumperContext(commonContext, "0101123456", false);
     }
     
     @AfterEach
