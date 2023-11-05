@@ -76,7 +76,7 @@ class InventoryTaskTest {
         initTableData(taskConfig.getDumperContext());
         // TODO use t_order_0, and also others
         InventoryDumperContext inventoryDumperContext = createInventoryDumperContext("t_order", "t_order");
-        AtomicReference<IngestPosition> position = new AtomicReference<>(inventoryDumperContext.getPosition());
+        AtomicReference<IngestPosition> position = new AtomicReference<>(inventoryDumperContext.getCommonContext().getPosition());
         InventoryTask inventoryTask = new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(inventoryDumperContext),
                 PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(), mock(Dumper.class), mock(Importer.class), position);
         CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS);
@@ -87,7 +87,7 @@ class InventoryTaskTest {
     private void initTableData(final IncrementalDumperContext dumperContext) throws SQLException {
         PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         try (
-                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig());
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -98,11 +98,12 @@ class InventoryTaskTest {
     }
     
     private InventoryDumperContext createInventoryDumperContext(final String logicTableName, final String actualTableName) {
-        InventoryDumperContext result = new InventoryDumperContext(taskConfig.getDumperContext());
+        InventoryDumperContext result = new InventoryDumperContext(taskConfig.getDumperContext().getCommonContext());
         result.setLogicTableName(logicTableName);
         result.setActualTableName(actualTableName);
         result.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
-        result.setPosition(null == taskConfig.getDumperContext().getPosition() ? new IntegerPrimaryKeyPosition(0, 1000) : taskConfig.getDumperContext().getPosition());
+        result.getCommonContext().setPosition(
+                null == taskConfig.getDumperContext().getCommonContext().getPosition() ? new IntegerPrimaryKeyPosition(0, 1000) : taskConfig.getDumperContext().getCommonContext().getPosition());
         return result;
     }
 }

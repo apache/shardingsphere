@@ -66,7 +66,7 @@ class InventoryTaskSplitterTest {
     @BeforeEach
     void setUp() {
         initJobItemContext();
-        dumperContext = new InventoryDumperContext(jobItemContext.getTaskConfig().getDumperContext());
+        dumperContext = new InventoryDumperContext(jobItemContext.getTaskConfig().getDumperContext().getCommonContext());
         PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "int", false, true, true);
         dumperContext.setUniqueKeyColumns(Collections.singletonList(columnMetaData));
         inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), dumperContext, jobItemContext.getTaskConfig().getImporterConfig());
@@ -85,7 +85,7 @@ class InventoryTaskSplitterTest {
     
     @Test
     void assertSplitInventoryDataWithEmptyTable() throws SQLException {
-        initEmptyTablePrimaryEnvironment(dumperContext);
+        initEmptyTablePrimaryEnvironment(dumperContext.getCommonContext());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(1));
         InventoryTask task = actual.get(0);
@@ -95,7 +95,7 @@ class InventoryTaskSplitterTest {
     
     @Test
     void assertSplitInventoryDataWithIntPrimary() throws SQLException {
-        initIntPrimaryEnvironment(dumperContext);
+        initIntPrimaryEnvironment(dumperContext.getCommonContext());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(10));
         InventoryTask task = actual.get(9);
@@ -105,7 +105,7 @@ class InventoryTaskSplitterTest {
     
     @Test
     void assertSplitInventoryDataWithCharPrimary() throws SQLException {
-        initCharPrimaryEnvironment(dumperContext);
+        initCharPrimaryEnvironment(dumperContext.getCommonContext());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getTaskId(), is("ds_0.t_order#0"));
@@ -116,15 +116,15 @@ class InventoryTaskSplitterTest {
     
     @Test
     void assertSplitInventoryDataWithoutPrimaryButWithUniqueIndex() throws SQLException {
-        initUniqueIndexOnNotNullColumnEnvironment(dumperContext);
+        initUniqueIndexOnNotNullColumnEnvironment(dumperContext.getCommonContext());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(1));
     }
     
     @Test
     void assertSplitInventoryDataWithMultipleColumnsKey() throws SQLException {
-        initUnionPrimaryEnvironment(dumperContext);
-        try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig())) {
+        initUnionPrimaryEnvironment(dumperContext.getCommonContext());
+        try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig())) {
             List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtils.getUniqueKeyColumns(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
             dumperContext.setUniqueKeyColumns(uniqueKeyColumns);
             List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
@@ -134,8 +134,8 @@ class InventoryTaskSplitterTest {
     
     @Test
     void assertSplitInventoryDataWithoutPrimaryAndUniqueIndex() throws SQLException {
-        initNoPrimaryEnvironment(dumperContext);
-        try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getDataSourceConfig())) {
+        initNoPrimaryEnvironment(dumperContext.getCommonContext());
+        try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig())) {
             List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtils.getUniqueKeyColumns(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
             assertTrue(uniqueKeyColumns.isEmpty());
             List<InventoryTask> inventoryTasks = inventoryTaskSplitter.splitInventoryData(jobItemContext);

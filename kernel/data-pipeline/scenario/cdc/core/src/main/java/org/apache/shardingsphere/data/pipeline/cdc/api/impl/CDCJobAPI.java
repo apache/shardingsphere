@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.mapper.ActualAndLogicTableNameMapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
@@ -193,7 +194,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
                                                                                               final IncrementalDumperContext incrementalDumperContext) throws SQLException {
         InventoryIncrementalJobItemProgress result = new InventoryIncrementalJobItemProgress();
         result.setSourceDatabaseType(jobConfig.getSourceDatabaseType());
-        result.setDataSourceName(incrementalDumperContext.getDataSourceName());
+        result.setDataSourceName(incrementalDumperContext.getCommonContext().getDataSourceName());
         IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(PipelineJobPreparerUtils.getIncrementalPosition(null, incrementalDumperContext, dataSourceManager));
         result.setIncremental(new JobItemIncrementalTasksProgress(incrementalTaskProgress));
         return result;
@@ -282,12 +283,13 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         dataNodeLine.getEntries().forEach(each -> each.getDataNodes().forEach(node -> tableNameMap.put(new ActualTableName(node.getTableName()), new LogicTableName(each.getLogicTableName()))));
         String dataSourceName = dataNodeLine.getEntries().iterator().next().getDataNodes().iterator().next().getDataSourceName();
         StandardPipelineDataSourceConfiguration actualDataSourceConfig = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(dataSourceName);
-        IncrementalDumperContext result = new IncrementalDumperContext();
+        DumperCommonContext commonContext = new DumperCommonContext();
+        commonContext.setDataSourceName(dataSourceName);
+        commonContext.setDataSourceConfig(actualDataSourceConfig);
+        commonContext.setTableNameMapper(new ActualAndLogicTableNameMapper(tableNameMap));
+        commonContext.setTableAndSchemaNameMapper(tableAndSchemaNameMapper);
+        IncrementalDumperContext result = new IncrementalDumperContext(commonContext);
         result.setJobId(jobConfig.getJobId());
-        result.setDataSourceName(dataSourceName);
-        result.setDataSourceConfig(actualDataSourceConfig);
-        result.setTableNameMapper(new ActualAndLogicTableNameMapper(tableNameMap));
-        result.setTableAndSchemaNameMapper(tableAndSchemaNameMapper);
         result.setDecodeWithTX(jobConfig.isDecodeWithTX());
         return result;
     }
