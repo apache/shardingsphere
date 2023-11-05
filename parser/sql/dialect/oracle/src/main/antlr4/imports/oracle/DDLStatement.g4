@@ -4126,3 +4126,7 @@ plsqlLibrarySource
 agentClause
     : (AGENT agentDblink)? (CREDENTIAL credentialName)?
     ;
+
+createProfile
+    : CREATE MANDATORY? PROFILE profileName LIMIT (resourceParameters | passwordParameters)+ (CONTAINER EQ_ (CURRENT | ALL))?
+    ;
