@@ -55,10 +55,10 @@ public final class InventoryDumperContext {
     
     public InventoryDumperContext(final DumperCommonContext commonContext) {
         this.commonContext = new DumperCommonContext();
-        commonContext.setDataSourceName(commonContext.getDataSourceName());
-        commonContext.setDataSourceConfig(commonContext.getDataSourceConfig());
-        commonContext.setTableNameMapper(commonContext.getTableNameMapper());
-        commonContext.setTableAndSchemaNameMapper(commonContext.getTableAndSchemaNameMapper());
+        this.commonContext.setDataSourceName(commonContext.getDataSourceName());
+        this.commonContext.setDataSourceConfig(commonContext.getDataSourceConfig());
+        this.commonContext.setTableNameMapper(commonContext.getTableNameMapper());
+        this.commonContext.setTableAndSchemaNameMapper(commonContext.getTableAndSchemaNameMapper());
     }
     
     /**
