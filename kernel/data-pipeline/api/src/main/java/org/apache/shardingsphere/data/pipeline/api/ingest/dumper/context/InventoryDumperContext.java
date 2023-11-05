@@ -54,11 +54,8 @@ public final class InventoryDumperContext {
     private JobRateLimitAlgorithm rateLimitAlgorithm;
     
     public InventoryDumperContext(final DumperCommonContext commonContext) {
-        this.commonContext = new DumperCommonContext();
-        this.commonContext.setDataSourceName(commonContext.getDataSourceName());
-        this.commonContext.setDataSourceConfig(commonContext.getDataSourceConfig());
-        this.commonContext.setTableNameMapper(commonContext.getTableNameMapper());
-        this.commonContext.setTableAndSchemaNameMapper(commonContext.getTableAndSchemaNameMapper());
+        this.commonContext = new DumperCommonContext(
+                commonContext.getDataSourceName(), commonContext.getDataSourceConfig(), commonContext.getTableNameMapper(), commonContext.getTableAndSchemaNameMapper());
     }
     
     /**

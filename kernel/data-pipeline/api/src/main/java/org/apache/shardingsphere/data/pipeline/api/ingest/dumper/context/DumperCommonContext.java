@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -28,18 +29,19 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 /**
  * Dumper common context.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString(exclude = {"dataSourceConfig", "tableAndSchemaNameMapper"})
 public final class DumperCommonContext {
     
-    private String dataSourceName;
+    private final String dataSourceName;
     
-    private PipelineDataSourceConfiguration dataSourceConfig;
+    private final PipelineDataSourceConfiguration dataSourceConfig;
     
-    private ActualAndLogicTableNameMapper tableNameMapper;
+    private final ActualAndLogicTableNameMapper tableNameMapper;
     
-    private TableAndSchemaNameMapper tableAndSchemaNameMapper;
+    private final TableAndSchemaNameMapper tableAndSchemaNameMapper;
     
     private IngestPosition position;
 }

@@ -279,16 +279,12 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     private IncrementalDumperContext buildDumperContext(final CDCJobConfiguration jobConfig, final int jobShardingItem, final TableAndSchemaNameMapper tableAndSchemaNameMapper) {
         JobDataNodeLine dataNodeLine = jobConfig.getJobShardingDataNodes().get(jobShardingItem);
-        Map<ActualTableName, LogicTableName> tableNameMap = new LinkedHashMap<>();
-        dataNodeLine.getEntries().forEach(each -> each.getDataNodes().forEach(node -> tableNameMap.put(new ActualTableName(node.getTableName()), new LogicTableName(each.getLogicTableName()))));
         String dataSourceName = dataNodeLine.getEntries().iterator().next().getDataNodes().iterator().next().getDataSourceName();
         StandardPipelineDataSourceConfiguration actualDataSourceConfig = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(dataSourceName);
-        DumperCommonContext commonContext = new DumperCommonContext();
-        commonContext.setDataSourceName(dataSourceName);
-        commonContext.setDataSourceConfig(actualDataSourceConfig);
-        commonContext.setTableNameMapper(new ActualAndLogicTableNameMapper(tableNameMap));
-        commonContext.setTableAndSchemaNameMapper(tableAndSchemaNameMapper);
-        IncrementalDumperContext result = new IncrementalDumperContext(commonContext);
+        Map<ActualTableName, LogicTableName> tableNameMap = new LinkedHashMap<>();
+        dataNodeLine.getEntries().forEach(each -> each.getDataNodes().forEach(node -> tableNameMap.put(new ActualTableName(node.getTableName()), new LogicTableName(each.getLogicTableName()))));
+        IncrementalDumperContext result = new IncrementalDumperContext(
+                new DumperCommonContext(dataSourceName, actualDataSourceConfig, new ActualAndLogicTableNameMapper(tableNameMap), tableAndSchemaNameMapper));
         result.setJobId(jobConfig.getJobId());
         result.setDecodeWithTX(jobConfig.isDecodeWithTX());
         return result;
