@@ -31,7 +31,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 @Getter
 @Setter
 @ToString(exclude = {"dataSourceConfig", "tableAndSchemaNameMapper"})
-public abstract class DumperCommonContext {
+public final class DumperCommonContext {
     
     private String dataSourceName;
     

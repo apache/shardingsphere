@@ -30,8 +30,10 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
-public final class InventoryDumperContext extends DumperCommonContext {
+@ToString
+public final class InventoryDumperContext {
+    
+    private final DumperCommonContext commonContext;
     
     private String actualTableName;
     
@@ -51,11 +53,12 @@ public final class InventoryDumperContext extends DumperCommonContext {
     
     private JobRateLimitAlgorithm rateLimitAlgorithm;
     
-    public InventoryDumperContext(final DumperCommonContext dumperContext) {
-        setDataSourceName(dumperContext.getDataSourceName());
-        setDataSourceConfig(dumperContext.getDataSourceConfig());
-        setTableNameMapper(dumperContext.getTableNameMapper());
-        setTableAndSchemaNameMapper(dumperContext.getTableAndSchemaNameMapper());
+    public InventoryDumperContext(final DumperCommonContext commonContext) {
+        this.commonContext = new DumperCommonContext();
+        commonContext.setDataSourceName(commonContext.getDataSourceName());
+        commonContext.setDataSourceConfig(commonContext.getDataSourceConfig());
+        commonContext.setTableNameMapper(commonContext.getTableNameMapper());
+        commonContext.setTableAndSchemaNameMapper(commonContext.getTableAndSchemaNameMapper());
     }
     
     /**

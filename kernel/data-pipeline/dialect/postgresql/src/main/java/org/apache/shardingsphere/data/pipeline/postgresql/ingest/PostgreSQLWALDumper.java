@@ -76,7 +76,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     public PostgreSQLWALDumper(final IncrementalDumperContext dumperContext, final IngestPosition position,
                                final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperContext.getDataSourceConfig().getClass()),
+        ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperContext.getCommonContext().getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("PostgreSQLWALDumper only support PipelineDataSourceConfiguration"));
         this.dumperContext = dumperContext;
         walPosition = new AtomicReference<>((WALPosition) position);
@@ -111,7 +111,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     private void dump() throws SQLException {
         // TODO use unified PgConnection
         try (
-                Connection connection = logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperContext.getDataSourceConfig());
+                Connection connection = logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig());
                 PGReplicationStream stream = logicalReplication.createReplicationStream(connection, PostgreSQLPositionInitializer.getUniqueSlotName(connection, dumperContext.getJobId()),
                         walPosition.get().getLogSequenceNumber())) {
             PostgreSQLTimestampUtils utils = new PostgreSQLTimestampUtils(connection.unwrap(PgConnection.class).getTimestampUtils());

@@ -51,7 +51,7 @@ public final class InventoryRecordsCountCalculator {
      * @throws SplitPipelineJobByUniqueKeyException if there's exception from database
      */
     public static long getTableRecordsCount(final InventoryDumperContext dumperContext, final PipelineDataSourceWrapper dataSource) {
-        String schemaName = dumperContext.getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
+        String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
         String actualTableName = dumperContext.getActualTableName();
         PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(dataSource.getDatabaseType());
         Optional<String> sql = pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, actualTableName);

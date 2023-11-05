@@ -80,12 +80,13 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     
     public MySQLIncrementalDumper(final IncrementalDumperContext dumperContext, final IngestPosition binlogPosition,
                                   final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        Preconditions.checkArgument(dumperContext.getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration, "MySQLBinlogDumper only support StandardPipelineDataSourceConfiguration");
+        Preconditions.checkArgument(dumperContext.getCommonContext().getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration,
+                "MySQLBinlogDumper only support StandardPipelineDataSourceConfiguration");
         this.dumperContext = dumperContext;
         this.binlogPosition = (BinlogPosition) binlogPosition;
         this.channel = channel;
         this.metaDataLoader = metaDataLoader;
-        YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperContext.getDataSourceConfig()).getJdbcConfig();
+        YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig()).getJdbcConfig();
         ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ConnectionProperties connectionProps = parser.parse(jdbcConfig.getUrl(), null, null);
         ConnectInfo connectInfo = new ConnectInfo(generateServerId(), connectionProps.getHostname(), connectionProps.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword());
@@ -132,7 +133,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
             return Collections.singletonList(createPlaceholderRecord(event));
         }
         AbstractRowsEvent rowsEvent = (AbstractRowsEvent) event;
-        if (!rowsEvent.getDatabaseName().equals(catalog) || !dumperContext.getTableNameMapper().containsTable(rowsEvent.getTableName())) {
+        if (!rowsEvent.getDatabaseName().equals(catalog) || !dumperContext.getCommonContext().getTableNameMapper().containsTable(rowsEvent.getTableName())) {
             return Collections.singletonList(createPlaceholderRecord(event));
         }
         PipelineTableMetaData tableMetaData = getPipelineTableMetaData(rowsEvent.getTableName());
@@ -155,8 +156,8 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     }
     
     private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
-        LogicTableName logicTableName = dumperContext.getTableNameMapper().getLogicTableName(actualTableName);
-        return metaDataLoader.getTableMetaData(dumperContext.getTableAndSchemaNameMapper().getSchemaName(logicTableName), actualTableName);
+        LogicTableName logicTableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(actualTableName);
+        return metaDataLoader.getTableMetaData(dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(logicTableName), actualTableName);
     }
     
     private List<DataRecord> handleWriteRowsEvent(final WriteRowsEvent event, final PipelineTableMetaData tableMetaData) {
@@ -217,7 +218,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     }
     
     private DataRecord createDataRecord(final String type, final AbstractRowsEvent rowsEvent, final int columnCount) {
-        String tableName = dumperContext.getTableNameMapper().getLogicTableName(rowsEvent.getTableName()).getOriginal();
+        String tableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(rowsEvent.getTableName()).getOriginal();
         IngestPosition position = new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId());
         DataRecord result = new DataRecord(type, tableName, position, columnCount);
         result.setActualTableName(rowsEvent.getTableName());

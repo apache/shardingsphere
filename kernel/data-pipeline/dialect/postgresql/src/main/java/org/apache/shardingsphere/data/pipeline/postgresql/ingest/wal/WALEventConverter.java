@@ -80,7 +80,7 @@ public final class WALEventConverter {
     private boolean filter(final AbstractWALEvent event) {
         if (event instanceof AbstractRowEvent) {
             AbstractRowEvent rowEvent = (AbstractRowEvent) event;
-            return !dumperContext.getTableNameMapper().containsTable(rowEvent.getTableName());
+            return !dumperContext.getCommonContext().getTableNameMapper().containsTable(rowEvent.getTableName());
         }
         return false;
     }
@@ -90,8 +90,8 @@ public final class WALEventConverter {
     }
     
     private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
-        LogicTableName logicTableName = dumperContext.getTableNameMapper().getLogicTableName(actualTableName);
-        return metaDataLoader.getTableMetaData(dumperContext.getTableAndSchemaNameMapper().getSchemaName(logicTableName), actualTableName);
+        LogicTableName logicTableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(actualTableName);
+        return metaDataLoader.getTableMetaData(dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(logicTableName), actualTableName);
     }
     
     private DataRecord handleWriteRowEvent(final WriteRowEvent writeRowEvent, final PipelineTableMetaData tableMetaData) {
@@ -118,7 +118,7 @@ public final class WALEventConverter {
     }
     
     private DataRecord createDataRecord(final String type, final AbstractRowEvent rowsEvent, final int columnCount) {
-        String tableName = dumperContext.getTableNameMapper().getLogicTableName(rowsEvent.getTableName()).getOriginal();
+        String tableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(rowsEvent.getTableName()).getOriginal();
         DataRecord result = new DataRecord(type, rowsEvent.getSchemaName(), tableName, new WALPosition(rowsEvent.getLogSequenceNumber()), columnCount);
         result.setActualTableName(rowsEvent.getTableName());
         result.setCsn(rowsEvent.getCsn());
