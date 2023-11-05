@@ -835,3 +835,7 @@ ANYDATASET
 AUTONOMOUS_TRANSACTION
     : A U T O N O M O U S UL_ T R A N S A C T I O N
     ;
+
+WM_CONCAT
+    : W M UL_ C O N C A T
+    ;

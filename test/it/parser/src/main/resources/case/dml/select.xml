@@ -7032,4 +7032,146 @@
                           literal-stop-index="32"/>
         </from>
     </select>
+    
+    <select sql-case-id="select_wm_concat_function1">
+        <projections start-index="7" stop-index="72">
+            <expression-projection alias="ID" text="TO_CHAR(WM_CONCAT(DISTINCT TEST_ID) OVER(PARTITION BY TEST_ID))" start-index="7" stop-index="72">
+                <expr>
+                    <function alias="ID" function-name="TO_CHAR" text="TO_CHAR(WM_CONCAT(DISTINCT TEST_ID) OVER(PARTITION BY TEST_ID))" start-index="7" stop-index="69">
+                        <parameter>
+                            <function alias="ID" function-name="WM_CONCAT" text="WM_CONCAT(DISTINCT TEST_ID) OVER(PARTITION BY TEST_ID)" start-index="15" stop-index="68">
+                                <parameter>
+                                    <column name="TEST_ID" start-index="34" stop-index="40" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="TEST_TABLE" start-index="79" stop-index="88" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_wm_concat_function2">
+        <projections start-index="7" stop-index="26">
+            <expression-projection alias="NAME" text="WM_CONCAT(NAME)" start-index="7" stop-index="26">
+                <expr>
+                    <function alias="ID" function-name="WM_CONCAT" text="WM_CONCAT(NAME)" start-index="7" stop-index="21">
+                        <parameter>
+                            <column name="NAME" start-index="17" stop-index="20" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="TEST_TABLE" start-index="33" stop-index="42" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_wm_concat_function3">
+        <projections start-index="7" stop-index="38">
+            <expression-projection text="REPLACE(WM_CONCAT(NAME),',','|')" start-index="7" stop-index="38">
+                <expr>
+                    <function function-name="REPLACE" text="REPLACE(WM_CONCAT(NAME),',','|')" start-index="7" stop-index="38">
+                        <parameter>
+                            <function alias="ID" function-name="WM_CONCAT" text="WM_CONCAT(NAME)" start-index="15" stop-index="29">
+                                <parameter>
+                                    <column name="NAME" start-index="25" stop-index="28" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="31" stop-index="33" value="," />
+                        </parameter>
+                        <parameter>
+                            <literal-expression start-index="35" stop-index="37" value="|" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="TEST_TABLE" start-index="45" stop-index="54" />
+        </from>
+    </select>
+    
+    <select sql-case-id="select_wm_concat_function4">
+        <projections start-index="7" stop-index="102">
+            <column-projection name="NAME" start-index="7" stop-index="10" />
+            <expression-projection alias="WM_NAME" text="WM_CONCAT(DECODE(SUBSTR((TO_CHAR(NAME)),0,1),'.','0'||TO_CHAR(NAME),TO_CHAR(NAME)))" start-index="12" stop-index="102">
+                <expr>
+                    <function function-name="WM_CONCAT" text="WM_CONCAT(DECODE(SUBSTR((TO_CHAR(NAME)),0,1),'.','0'||TO_CHAR(NAME),TO_CHAR(NAME)))" start-index="12" stop-index="94">
+                        <parameter>
+                            <function function-name="DECODE" text="DECODE(SUBSTR((TO_CHAR(NAME)),0,1),'.','0'||TO_CHAR(NAME),TO_CHAR(NAME))" start-index="22" stop-index="93">
+                                <parameter>
+                                    <function function-name="SUBSTR" text="SUBSTR((TO_CHAR(NAME)),0,1)" start-index="29" stop-index="55">
+                                        <parameter>
+                                            <function function-name="TO_CHAR" text="TO_CHAR(NAME)" start-index="37" stop-index="49">
+                                                <parameter>
+                                                    <column name="NAME" start-index="45" stop-index="48" />
+                                                </parameter>
+                                            </function>
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression start-index="52" stop-index="52" value="0" />
+                                        </parameter>
+                                        <parameter>
+                                            <literal-expression start-index="54" stop-index="54" value="1" />
+                                        </parameter>
+                                    </function>
+                                </parameter>
+                                <parameter>
+                                    <literal-expression start-index="57" stop-index="59" value="." />
+                                </parameter>
+                                <parameter>
+                                    <binary-operation-expression text="'0'||TO_CHAR(NAME)" start-index="61" stop-index="78">
+                                        <left>
+                                            <literal-expression start-index="61" stop-index="63" value="0" />
+                                        </left>
+                                        <right>
+                                            <function start-index="66" stop-index="78" text="TO_CHAR(NAME)" function-name="TO_CHAR">
+                                                <parameter>
+                                                    <column name="NAME" start-index="74" stop-index="77" />
+                                                </parameter>
+                                            </function>
+                                        </right>
+                                        <operator>||</operator>
+                                    </binary-operation-expression>
+                                </parameter>
+                                <parameter>
+                                    <function function-name="TO_CHAR" text="TO_CHAR(NAME)" start-index="80" stop-index="92">
+                                        <parameter>
+                                            <column name="NAME" start-index="88" stop-index="91" />
+                                        </parameter>
+                                    </function>
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="TEST_TABLE" start-index="109" stop-index="118" />
+        </from>
+        <where start-index="120" stop-index="137">
+            <expr>
+                <binary-operation-expression text="NAME ='TEST'" start-index="126" stop-index="137">
+                    <left>
+                        <column name="NAME" start-index="126" stop-index="129" />
+                    </left>
+                    <right>
+                        <literal-expression start-index="132" stop-index="137" value="TEST" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <group-by>
+            <column-item name="NAME" order-direction="ASC" start-index="148" stop-index="151" />
+        </group-by>
+    </select>
 </sql-parser-test-cases>
