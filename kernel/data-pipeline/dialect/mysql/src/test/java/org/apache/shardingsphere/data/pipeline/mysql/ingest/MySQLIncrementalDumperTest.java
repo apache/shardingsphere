@@ -41,6 +41,8 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteR
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -77,6 +79,11 @@ class MySQLIncrementalDumperTest {
     private MySQLIncrementalDumper incrementalDumper;
     
     private PipelineTableMetaData pipelineTableMetaData;
+    
+    @BeforeAll
+    static void init() throws ClassNotFoundException {
+        Class.forName(MockedDriver.class.getName());
+    }
     
     @BeforeEach
     void setUp() throws SQLException {

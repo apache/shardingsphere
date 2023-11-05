@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.datasource.pool.props.validator;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -26,6 +28,11 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataSourcePoolPropertiesValidatorTest {
+    
+    @BeforeAll
+    static void setUp() throws ClassNotFoundException {
+        Class.forName(MockedDriver.class.getName());
+    }
     
     @Test
     void assertValidate() {
