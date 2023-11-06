@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.data.pipeline.common.metadata.SchemaTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.datanode.DataNodeUtils;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeEntry;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.util;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.common.config.process.yaml.YamlPipelineProcessConfiguration;
@@ -156,15 +156,6 @@ public final class PipelineContextUtils {
      */
     public static ExecuteEngine getExecuteEngine() {
         return EXECUTE_ENGINE;
-    }
-    
-    /**
-     * Get pipeline channel factory.
-     *
-     * @return channel factory
-     */
-    public static PipelineChannelCreator getPipelineChannelCreator() {
-        return PIPELINE_CHANNEL_CREATOR;
     }
     
     /**

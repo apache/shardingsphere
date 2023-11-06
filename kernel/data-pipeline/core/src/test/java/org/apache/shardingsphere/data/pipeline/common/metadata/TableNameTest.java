@@ -15,14 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.metadata;
+package org.apache.shardingsphere.data.pipeline.common.metadata;
 
-/**
- * Logic table name.
- */
-public final class LogicTableName extends TableName {
+import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class TableNameTest {
     
-    public LogicTableName(final String tableName) {
-        super(tableName);
+    @Test
+    void assertGetLowercase() {
+        for (String tableName : Arrays.asList("t_order", "T_ORDER")) {
+            TableName actual = new TableName(tableName);
+            assertThat(actual.getLowercase(), is("t_order"));
+        }
+    }
+    
+    @Test
+    void assertToString() {
+        TableName actual = new TableName("T_ORDER");
+        assertThat(actual.toString(), is("T_ORDER"));
     }
 }

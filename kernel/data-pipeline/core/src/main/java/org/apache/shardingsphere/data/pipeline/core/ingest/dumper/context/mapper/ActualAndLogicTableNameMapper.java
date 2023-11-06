@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mappe
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.ActualTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.LogicTableName;
 
 import java.util.Map;
 

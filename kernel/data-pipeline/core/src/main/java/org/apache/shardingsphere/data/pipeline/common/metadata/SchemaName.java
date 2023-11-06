@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.metadata.loader;
+package org.apache.shardingsphere.data.pipeline.common.metadata;
 
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
+import javax.annotation.Nullable;
 
 /**
- * Pipeline table meta data loader.
+ * Schema name.
+ * <p>It might be null.</p>
+ * <p>It's case-insensitive.</p>
  */
-public interface PipelineTableMetaDataLoader {
+public class SchemaName extends IdentifierName {
     
-    /**
-     * Get table meta data, load if meta data absent.
-     *
-     * @param schemaName schema name, can be nullable
-     * @param tableName dedicated table name, not table name pattern
-     * @return got table meta data
-     */
-    PipelineTableMetaData getTableMetaData(String schemaName, String tableName);
+    public SchemaName(@Nullable final String schemaName) {
+        super(schemaName);
+    }
 }
