@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.metadata;
+package org.apache.shardingsphere.data.pipeline.common.metadata;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

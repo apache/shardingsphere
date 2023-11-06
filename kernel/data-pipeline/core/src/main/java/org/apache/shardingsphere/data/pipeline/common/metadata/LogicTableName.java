@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.metadata;
-
-import javax.annotation.Nullable;
+package org.apache.shardingsphere.data.pipeline.common.metadata;
 
 /**
- * Schema name.
- * <p>It might be null.</p>
- * <p>It's case-insensitive.</p>
+ * Logic table name.
  */
-public class SchemaName extends IdentifierName {
+public final class LogicTableName extends TableName {
     
-    public SchemaName(@Nullable final String schemaName) {
-        super(schemaName);
+    public LogicTableName(final String tableName) {
+        super(tableName);
     }
 }

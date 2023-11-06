@@ -15,23 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.metadata.model;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
-import java.util.List;
+package org.apache.shardingsphere.data.pipeline.common.metadata;
 
 /**
- * Pipeline meta data of index.
+ * Actual table name.
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class PipelineIndexMetaData {
+public final class ActualTableName extends TableName {
     
-    private final String name;
-    
-    private final List<PipelineColumnMetaData> columns;
+    public ActualTableName(final String tableName) {
+        super(tableName);
+    }
 }

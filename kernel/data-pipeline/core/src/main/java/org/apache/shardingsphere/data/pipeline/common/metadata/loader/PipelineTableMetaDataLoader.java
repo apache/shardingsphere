@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.metadata;
+package org.apache.shardingsphere.data.pipeline.common.metadata.loader;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineTableMetaData;
 
-import java.util.Arrays;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class TableNameTest {
+/**
+ * Pipeline table meta data loader.
+ */
+public interface PipelineTableMetaDataLoader {
     
-    @Test
-    void assertGetLowercase() {
-        for (String tableName : Arrays.asList("t_order", "T_ORDER")) {
-            TableName actual = new TableName(tableName);
-            assertThat(actual.getLowercase(), is("t_order"));
-        }
-    }
-    
-    @Test
-    void assertToString() {
-        TableName actual = new TableName("T_ORDER");
-        assertThat(actual.toString(), is("T_ORDER"));
-    }
+    /**
+     * Get table meta data, load if meta data absent.
+     *
+     * @param schemaName schema name, can be nullable
+     * @param tableName dedicated table name, not table name pattern
+     * @return got table meta data
+     */
+    PipelineTableMetaData getTableMetaData(String schemaName, String tableName);
 }

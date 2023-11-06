@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.metadata;
+package org.apache.shardingsphere.data.pipeline.common.metadata;
 
 /**
- * Actual table name.
+ * Table name.
+ * 
+ * <p>It might be logic table name or actual table name.</p>
+ * <p>It's case-insensitive.</p>
  */
-public final class ActualTableName extends TableName {
+public class TableName extends IdentifierName {
     
-    public ActualTableName(final String tableName) {
+    public TableName(final String tableName) {
         super(tableName);
     }
 }
