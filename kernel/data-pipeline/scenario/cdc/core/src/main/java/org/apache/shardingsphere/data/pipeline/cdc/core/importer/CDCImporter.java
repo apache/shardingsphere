@@ -25,7 +25,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.common.execute.AbstractLifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.common.execute.AbstractPipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class CDCImporter extends AbstractLifecycleExecutor implements Importer {
+public final class CDCImporter extends AbstractPipelineLifecycleRunnable implements Importer {
     
     @Getter
     private final String importerId = RandomStringUtils.randomAlphanumeric(8);

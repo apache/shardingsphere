@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
-import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.api.runnable.PipelineLifecycleRunnable;
 
 /**
  * Importer.
  */
-public interface Importer extends LifecycleExecutor {
+public interface Importer extends PipelineLifecycleRunnable {
 }

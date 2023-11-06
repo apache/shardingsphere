@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.api.ingest.dumper;
 
-import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.api.runnable.PipelineLifecycleRunnable;
 
 /**
  * Dumper interface.
  */
-public interface Dumper extends LifecycleExecutor {
+public interface Dumper extends PipelineLifecycleRunnable {
 }

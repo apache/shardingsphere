@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.execute.AbstractLifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.common.execute.AbstractPipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.InventoryDumperContext;
@@ -67,7 +67,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Inventory dumper.
  */
 @Slf4j
-public final class InventoryDumper extends AbstractLifecycleExecutor implements Dumper {
+public final class InventoryDumper extends AbstractPipelineLifecycleRunnable implements Dumper {
     
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperContext dumperContext;
