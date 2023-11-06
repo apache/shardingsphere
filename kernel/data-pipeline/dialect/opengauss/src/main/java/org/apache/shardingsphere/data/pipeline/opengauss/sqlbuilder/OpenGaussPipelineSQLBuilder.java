@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineSQLSegmentBuilder;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.common.spi.sqlbuilder.DialectPipelineSQLBuilder;
 
 import java.util.Optional;
 import java.util.stream.Collectors;

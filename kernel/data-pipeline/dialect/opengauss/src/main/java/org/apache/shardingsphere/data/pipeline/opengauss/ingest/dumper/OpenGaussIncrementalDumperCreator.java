@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDump
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWALDumper;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
+import org.apache.shardingsphere.data.pipeline.common.spi.ingest.dumper.IncrementalDumperCreator;
 
 /**
  * OpenGauss incremental dumper creator.

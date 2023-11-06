@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.common.metadata.generator;
 
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.common.spi.ddlgenerator.CreateTableSQLGenerator;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CommentStatementContext;
