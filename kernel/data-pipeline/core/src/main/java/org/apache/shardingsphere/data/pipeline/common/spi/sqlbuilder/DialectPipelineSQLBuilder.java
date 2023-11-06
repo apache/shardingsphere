@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.spi.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 
 import java.util.Optional;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.task.progress;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 import java.util.concurrent.atomic.AtomicReference;
 

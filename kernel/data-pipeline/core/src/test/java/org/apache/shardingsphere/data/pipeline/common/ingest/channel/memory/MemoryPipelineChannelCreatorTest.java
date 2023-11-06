@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.ingest.channel.memory;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.common.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;

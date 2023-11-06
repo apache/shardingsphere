@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.datasource.creator;
 
-import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
+import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
 
 import javax.sql.DataSource;
 

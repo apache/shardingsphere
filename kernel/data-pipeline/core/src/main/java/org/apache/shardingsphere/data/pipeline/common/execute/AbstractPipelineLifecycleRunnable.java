@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.common.execute;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.runnable.PipelineLifecycleRunnable;
 
 import java.sql.SQLException;
 import java.time.Instant;
