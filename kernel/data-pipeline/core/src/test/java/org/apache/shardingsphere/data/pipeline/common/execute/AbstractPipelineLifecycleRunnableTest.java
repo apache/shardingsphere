@@ -26,11 +26,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AbstractLifecycleExecutorTest {
+class AbstractPipelineLifecycleRunnableTest {
     
     @Test
     void assertRunning() {
-        FixtureLifecycleExecutor executor = new FixtureLifecycleExecutor();
+        FixturePipelineLifecycleRunnable executor = new FixturePipelineLifecycleRunnable();
         assertFalse(executor.isRunning());
         executor.start();
         assertTrue(executor.isRunning());
@@ -40,7 +40,7 @@ class AbstractLifecycleExecutorTest {
     
     @Test
     void assertStartRunOnce() {
-        FixtureLifecycleExecutor executor = new FixtureLifecycleExecutor();
+        FixturePipelineLifecycleRunnable executor = new FixturePipelineLifecycleRunnable();
         executor.start();
         executor.start();
         assertThat(executor.runBlockingCount.get(), is(1));
@@ -48,7 +48,7 @@ class AbstractLifecycleExecutorTest {
     
     @Test
     void assertStopRunOnce() {
-        FixtureLifecycleExecutor executor = new FixtureLifecycleExecutor();
+        FixturePipelineLifecycleRunnable executor = new FixturePipelineLifecycleRunnable();
         executor.start();
         executor.stop();
         executor.stop();
@@ -57,7 +57,7 @@ class AbstractLifecycleExecutorTest {
     
     @Test
     void assertNoStopBeforeStarting() {
-        FixtureLifecycleExecutor executor = new FixtureLifecycleExecutor();
+        FixturePipelineLifecycleRunnable executor = new FixturePipelineLifecycleRunnable();
         executor.stop();
         executor.stop();
         assertThat(executor.doStopCount.get(), is(0));
@@ -65,14 +65,14 @@ class AbstractLifecycleExecutorTest {
     
     @Test
     void assertStopStart() {
-        FixtureLifecycleExecutor executor = new FixtureLifecycleExecutor();
+        FixturePipelineLifecycleRunnable executor = new FixturePipelineLifecycleRunnable();
         executor.stop();
         executor.start();
         assertThat(executor.doStopCount.get(), is(0));
         assertThat(executor.runBlockingCount.get(), is(0));
     }
     
-    private static class FixtureLifecycleExecutor extends AbstractLifecycleExecutor {
+    private static class FixturePipelineLifecycleRunnable extends AbstractPipelineLifecycleRunnable {
         
         private final AtomicInteger runBlockingCount = new AtomicInteger();
         

@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.api.executor;
 
 /**
- * Lifecycle executor.
+ * Pipeline lifecycle runnable.
  */
-// TODO task?
-public interface LifecycleExecutor extends Runnable {
+public interface PipelineLifecycleRunnable extends Runnable {
     
     /**
      * Start run execute.

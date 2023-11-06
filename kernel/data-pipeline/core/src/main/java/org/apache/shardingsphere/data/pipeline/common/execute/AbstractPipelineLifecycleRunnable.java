@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.common.execute;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.api.executor.PipelineLifecycleRunnable;
 
 import java.sql.SQLException;
 import java.time.Instant;
@@ -28,10 +28,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Abstract lifecycle executor.
+ * Abstract pipeline lifecycle runnable.
  */
 @Slf4j
-public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
+public abstract class AbstractPipelineLifecycleRunnable implements PipelineLifecycleRunnable {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
