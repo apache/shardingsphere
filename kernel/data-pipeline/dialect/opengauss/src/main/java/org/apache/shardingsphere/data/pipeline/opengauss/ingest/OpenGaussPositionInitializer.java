@@ -22,7 +22,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.pojo.ReplicationSlotInfo;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.common.spi.ingest.position.PositionInitializer;
 import org.opengauss.replication.LogSequenceNumber;
 
 import javax.sql.DataSource;

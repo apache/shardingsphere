@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord.Key;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord.Key;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
 
 import java.util.ArrayList;

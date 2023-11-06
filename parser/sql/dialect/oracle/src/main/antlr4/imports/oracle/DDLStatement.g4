@@ -4010,7 +4010,7 @@ tablespaceFileNameConvert
     ;
 
 alterTablespaceEncryption
-    : ENCRYPTION(OFFLINE (tablespaceEncryptionSpec? ENCRYPT | DECRYPT) 
+    : ENCRYPTION(OFFLINE (tablespaceEncryptionSpec? ENCRYPT | DECRYPT)
     | ONLINE (tablespaceEncryptionSpec? (ENCRYPT | REKEY) | DECRYPT) tablespaceFileNameConvert?
     | FINISH (ENCRYPT | REKEY | DECRYPT) tablespaceFileNameConvert?)
     ;
@@ -4125,6 +4125,20 @@ plsqlLibrarySource
 
 agentClause
     : (AGENT agentDblink)? (CREDENTIAL credentialName)?
+    ;
+
+switch
+    : SWITCH switchClause TO COPY
+    ;
+
+switchClause
+    : DATABASE
+    | DATAFILE datafileSpecClause (COMMA_ datafileSpecClause)*
+    | TABLESPACE SQ_? tablespaceName SQ_? (COMMA_ SQ_? tablespaceName SQ_?)*
+    ;
+
+datafileSpecClause
+    : SQ_ fileName SQ_ | INTEGER_
     ;
 
 createProfile

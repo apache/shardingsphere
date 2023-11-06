@@ -286,6 +286,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.RenameStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.RenameTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.SecurityLabelStmtStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.SwitchStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.UnlistenStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.CallStatementTestCase;
@@ -1721,9 +1722,12 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "create-library")
     private final List<CreateLibraryStatementTestCase> createLibraryStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "switch")
+    private final List<SwitchStatementTestCase> switchStatementTestCases = new LinkedList<>();
+
     @XmlElement(name = "create-profile")
     private final List<CreateProfileStatementTestCase> createProfileStatementTestCases = new LinkedList<>();
-    
+
     /**
      * Get all SQL parser test cases.
      *

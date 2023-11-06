@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.common.task.progress;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 /**
  * Inventory task progress.

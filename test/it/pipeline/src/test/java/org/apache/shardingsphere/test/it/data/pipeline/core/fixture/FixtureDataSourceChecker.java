@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.spi.check.DialectDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.common.spi.check.DialectDataSourceChecker;
 
 import javax.sql.DataSource;
 

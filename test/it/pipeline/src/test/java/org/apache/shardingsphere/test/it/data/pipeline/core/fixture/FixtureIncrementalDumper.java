@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.common.execute.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
+import org.apache.shardingsphere.data.pipeline.common.execute.AbstractPipelineLifecycleRunnable;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumper;
 
-public final class FixtureIncrementalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
+public final class FixtureIncrementalDumper extends AbstractPipelineLifecycleRunnable implements IncrementalDumper {
     
     @Override
     protected void runBlocking() {

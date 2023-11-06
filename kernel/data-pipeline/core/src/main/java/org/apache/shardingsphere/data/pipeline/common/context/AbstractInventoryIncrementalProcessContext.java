@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineWri
 import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.common.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineLazyInitializer;
-import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.common.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
