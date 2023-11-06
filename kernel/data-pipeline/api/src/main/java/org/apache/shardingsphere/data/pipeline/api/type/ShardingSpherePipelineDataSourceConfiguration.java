@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.datasource.config.impl;
+package org.apache.shardingsphere.data.pipeline.api.type;
 
 import com.google.common.base.Preconditions;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
 import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;

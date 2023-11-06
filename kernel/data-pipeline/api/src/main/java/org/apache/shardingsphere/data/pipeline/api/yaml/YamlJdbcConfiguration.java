@@ -15,40 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.datasource.config;
+package org.apache.shardingsphere.data.pipeline.api.yaml;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Pipeline data source configuration.
+ * JDBC configuration for YAML.
  */
-public interface PipelineDataSourceConfiguration {
+@Getter
+@Setter
+public final class YamlJdbcConfiguration implements YamlConfiguration {
     
-    /**
-     * Get type.
-     *
-     * @return type
-     */
-    String getType();
+    private String dataSourceClassName;
     
-    /**
-     * Get parameter.
-     *
-     * @return parameter
-     */
-    String getParameter();
+    private String url;
     
-    /**
-     * Get data source configuration, related to {@link #getParameter()}.
-     *
-     * @return data source configuration
-     */
-    Object getDataSourceConfiguration();
+    private String username;
     
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
+    private String password;
 }

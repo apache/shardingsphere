@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.datasource.config.impl;
+package org.apache.shardingsphere.data.pipeline.api.type;
 
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.junit.jupiter.api.Test;

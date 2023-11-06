@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.it.data.pipeline.scenario.migration.api.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
