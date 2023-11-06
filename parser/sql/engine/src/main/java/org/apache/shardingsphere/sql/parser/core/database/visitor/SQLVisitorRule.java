@@ -699,7 +699,9 @@ public enum SQLVisitorRule {
     
     PLSQL_BLOCK("PlsqlBlock", SQLStatementType.DDL),
     
-    CREATE_LIBRARY("CreateLibrary", SQLStatementType.DDL);
+    CREATE_LIBRARY("CreateLibrary", SQLStatementType.DDL),
+    
+    SWITCH("Switch", SQLStatementType.DDL);
     
     private final String name;
     
