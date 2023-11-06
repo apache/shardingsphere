@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.executor;
+package org.apache.shardingsphere.data.pipeline.api.runnable;
 
 /**
  * Pipeline lifecycle runnable.

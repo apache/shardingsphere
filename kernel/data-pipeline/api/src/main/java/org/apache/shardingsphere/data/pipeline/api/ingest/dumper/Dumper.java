@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.ingest.dumper;
 
-import org.apache.shardingsphere.data.pipeline.api.executor.PipelineLifecycleRunnable;
+import org.apache.shardingsphere.data.pipeline.api.runnable.PipelineLifecycleRunnable;
 
 /**
  * Dumper interface.
