@@ -7745,5 +7745,5 @@ DB_RECOVERY_FILE_DEST_SIZE
     ;
 
 MANDATORY
-    : M A N D A  T O R Y
+    : M A N D A T O R Y
     ;

@@ -1724,10 +1724,10 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "switch")
     private final List<SwitchStatementTestCase> switchStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "create-profile")
     private final List<CreateProfileStatementTestCase> createProfileStatementTestCases = new LinkedList<>();
-
+    
     /**
      * Get all SQL parser test cases.
      *
