@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
 import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.common.spi.ddlgenerator.CreateTableSQLGenerator;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

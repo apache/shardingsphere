@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.common.spi.ingest.position.PositionInitializer;
 
 import javax.sql.DataSource;
 

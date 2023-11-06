@@ -15,39 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.ingest.dumper;
+package org.apache.shardingsphere.data.pipeline.common.spi.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.context.IncrementalDumperContext;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
+
 /**
- * Incremental dumper creator.
+ * Position initializer.
  */
 @SingletonSPI
-public interface IncrementalDumperCreator extends DatabaseTypedSPI {
+public interface PositionInitializer extends DatabaseTypedSPI {
     
     /**
-     * Create incremental dumper.
+     * Init position by data source.
      *
-     * @param context incremental dumper context
-     * @param position position
-     * @param channel channel
-     * @param metaDataLoader meta data loader
-     * @return incremental dumper
+     * @param dataSource data source
+     * @param slotNameSuffix slot name suffix
+     * @return position
+     * @throws SQLException SQL exception
      */
-    IncrementalDumper createIncrementalDumper(IncrementalDumperContext context, IngestPosition position, PipelineChannel channel, PipelineTableMetaDataLoader metaDataLoader);
+    IngestPosition init(DataSource dataSource, String slotNameSuffix) throws SQLException;
     
     /**
-     * Whether support incremental dump.
-     * 
-     * @return support incremental dump or not
+     * Init position by string data.
+     *
+     * @param data string data
+     * @return position
      */
-    default boolean isSupportIncrementalDump() {
-        return true;
+    IngestPosition init(String data);
+    
+    /**
+     * Clean up by data source if necessary.
+     *
+     * @param dataSource data source
+     * @param slotNameSuffix slot name suffix
+     * @throws SQLException SQL exception
+     */
+    default void destroy(DataSource dataSource, final String slotNameSuffix) throws SQLException {
     }
 }

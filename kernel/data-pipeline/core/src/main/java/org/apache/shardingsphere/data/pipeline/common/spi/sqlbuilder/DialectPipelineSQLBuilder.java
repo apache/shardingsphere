@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
+package org.apache.shardingsphere.data.pipeline.common.spi.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;

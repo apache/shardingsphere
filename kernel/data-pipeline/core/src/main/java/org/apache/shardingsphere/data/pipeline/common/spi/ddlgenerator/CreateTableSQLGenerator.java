@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.check;
+package org.apache.shardingsphere.data.pipeline.common.spi.ddlgenerator;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
- * Dialect data source checker.
+ * Create table SQL generator.
  */
 @SingletonSPI
-public interface DialectDataSourceChecker extends DatabaseTypedSPI {
+public interface CreateTableSQLGenerator extends DatabaseTypedSPI {
     
     /**
-     * Check user privileges.
-     *
-     * @param dataSource data source to be checked
-     */
-    void checkPrivilege(DataSource dataSource);
-    
-    /**
-     * Check variables.
-     *
-     * @param dataSource data source to be checked
-     */
-    void checkVariable(DataSource dataSource);
+    * Generate create table SQLs.
+    * 
+    * @param dataSource dataSource
+    * @param schemaName schema name
+    * @param tableName table name
+    * @return generated SQLs
+    * @throws SQLException SQL exception
+    */
+    Collection<String> generate(DataSource dataSource, String schemaName, String tableName) throws SQLException;
 }
