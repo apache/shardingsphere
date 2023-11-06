@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 @RequiredArgsConstructor
