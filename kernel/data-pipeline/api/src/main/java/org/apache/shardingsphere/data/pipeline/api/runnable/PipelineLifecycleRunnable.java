@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.executor;
+package org.apache.shardingsphere.data.pipeline.api.runnable;
 
 /**
- * Lifecycle executor.
+ * Pipeline lifecycle runnable.
  */
-// TODO task?
-public interface LifecycleExecutor extends Runnable {
+public interface PipelineLifecycleRunnable extends Runnable {
     
     /**
      * Start run execute.

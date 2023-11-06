@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.common.execute;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.api.runnable.PipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
@@ -73,12 +73,12 @@ public final class ExecuteEngine {
     /**
      * Submit a {@code LifecycleExecutor} with callback {@code ExecuteCallback} to execute.
      *
-     * @param lifecycleExecutor lifecycle executor
+     * @param pipelineLifecycleRunnable lifecycle executor
      * @param executeCallback execute callback
      * @return execute future
      */
-    public CompletableFuture<?> submit(final LifecycleExecutor lifecycleExecutor, final ExecuteCallback executeCallback) {
-        return CompletableFuture.runAsync(lifecycleExecutor, executorService).whenCompleteAsync((unused, throwable) -> {
+    public CompletableFuture<?> submit(final PipelineLifecycleRunnable pipelineLifecycleRunnable, final ExecuteCallback executeCallback) {
+        return CompletableFuture.runAsync(pipelineLifecycleRunnable, executorService).whenCompleteAsync((unused, throwable) -> {
             if (null == throwable) {
                 executeCallback.onSuccess();
             } else {
@@ -91,11 +91,11 @@ public final class ExecuteEngine {
     /**
      * Submit a {@code LifecycleExecutor} to execute.
      *
-     * @param lifecycleExecutor lifecycle executor
+     * @param pipelineLifecycleRunnable lifecycle executor
      * @return execute future
      */
-    public CompletableFuture<?> submit(final LifecycleExecutor lifecycleExecutor) {
-        return CompletableFuture.runAsync(lifecycleExecutor, executorService);
+    public CompletableFuture<?> submit(final PipelineLifecycleRunnable pipelineLifecycleRunnable) {
+        return CompletableFuture.runAsync(pipelineLifecycleRunnable, executorService);
     }
     
     /**

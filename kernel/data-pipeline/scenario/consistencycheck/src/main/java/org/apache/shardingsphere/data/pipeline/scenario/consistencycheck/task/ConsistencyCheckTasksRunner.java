@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.task;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.execute.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.common.execute.AbstractPipelineLifecycleRunnable;
+import org.apache.shardingsphere.data.pipeline.api.runnable.PipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
@@ -60,7 +60,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
     private final String parentJobId;
     
-    private final LifecycleExecutor checkExecutor;
+    private final PipelineLifecycleRunnable checkExecutor;
     
     private final AtomicReference<PipelineDataConsistencyChecker> consistencyChecker = new AtomicReference<>();
     
@@ -69,7 +69,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         checkJobConfig = jobItemContext.getJobConfig();
         checkJobId = checkJobConfig.getJobId();
         parentJobId = checkJobConfig.getParentJobId();
-        checkExecutor = new CheckLifecycleExecutor();
+        checkExecutor = new CheckPipelineLifecycleRunnable();
     }
     
     @Override
@@ -88,7 +88,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         checkExecutor.stop();
     }
     
-    private final class CheckLifecycleExecutor extends AbstractLifecycleExecutor {
+    private final class CheckPipelineLifecycleRunnable extends AbstractPipelineLifecycleRunnable {
         
         @Override
         protected void runBlocking() {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.common.execute;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.api.runnable.PipelineLifecycleRunnable;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -45,24 +45,24 @@ class ExecuteEngineTest {
     
     @Test
     void assertSubmitAndTaskSucceeded() {
-        LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
+        PipelineLifecycleRunnable pipelineLifecycleRunnable = mock(PipelineLifecycleRunnable.class);
         ExecuteCallback callback = mock(ExecuteCallback.class);
         ExecuteEngine executeEngine = ExecuteEngine.newCachedThreadInstance(ExecuteEngineTest.class.getSimpleName());
-        Future<?> future = executeEngine.submit(lifecycleExecutor, callback);
+        Future<?> future = executeEngine.submit(pipelineLifecycleRunnable, callback);
         assertTimeout(Duration.ofSeconds(30L), () -> future.get());
         shutdownAndAwaitTerminal(executeEngine);
-        verify(lifecycleExecutor).run();
+        verify(pipelineLifecycleRunnable).run();
         verify(callback).onSuccess();
     }
     
     @Test
     void assertSubmitAndTaskFailed() {
-        LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
+        PipelineLifecycleRunnable pipelineLifecycleRunnable = mock(PipelineLifecycleRunnable.class);
         RuntimeException expectedException = new RuntimeException("Expected");
-        doThrow(expectedException).when(lifecycleExecutor).run();
+        doThrow(expectedException).when(pipelineLifecycleRunnable).run();
         ExecuteCallback callback = mock(ExecuteCallback.class);
         ExecuteEngine executeEngine = ExecuteEngine.newCachedThreadInstance(ExecuteEngineTest.class.getSimpleName());
-        Future<?> future = executeEngine.submit(lifecycleExecutor, callback);
+        Future<?> future = executeEngine.submit(pipelineLifecycleRunnable, callback);
         Optional<Throwable> actualCause = assertTimeout(Duration.ofSeconds(30L), () -> execute(future));
         assertTrue(actualCause.isPresent());
         assertThat(actualCause.get(), is(expectedException));
