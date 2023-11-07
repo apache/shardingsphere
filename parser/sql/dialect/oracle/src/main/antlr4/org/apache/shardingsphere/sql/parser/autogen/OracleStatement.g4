@@ -157,5 +157,6 @@ execute
     | plsqlBlock
     | createLibrary
     | switch
+    | createProfile
     ) SEMI_?
     ;
