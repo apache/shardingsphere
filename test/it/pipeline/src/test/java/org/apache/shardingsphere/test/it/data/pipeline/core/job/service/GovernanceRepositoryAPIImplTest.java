@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.job.service;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
-import org.apache.shardingsphere.data.pipeline.common.metadata.node.DataPipelineDataNodeConstants;
+import org.apache.shardingsphere.data.pipeline.common.metadata.node.DataPipelineNodePath;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
@@ -70,8 +70,8 @@ class GovernanceRepositoryAPIImplTest {
     }
     
     private static void watch() {
-        governanceRepositoryAPI.watch(DataPipelineDataNodeConstants.DATA_PIPELINE_ROOT, event -> {
-            if ((DataPipelineDataNodeConstants.DATA_PIPELINE_ROOT + "/1").equals(event.getKey())) {
+        governanceRepositoryAPI.watch(DataPipelineNodePath.DATA_PIPELINE_ROOT, event -> {
+            if ((DataPipelineNodePath.DATA_PIPELINE_ROOT + "/1").equals(event.getKey())) {
                 EVENT_ATOMIC_REFERENCE.set(event);
                 COUNT_DOWN_LATCH.countDown();
             }
@@ -114,7 +114,7 @@ class GovernanceRepositoryAPIImplTest {
     
     @Test
     void assertDeleteJob() {
-        governanceRepositoryAPI.persist(DataPipelineDataNodeConstants.DATA_PIPELINE_ROOT + "/1", "");
+        governanceRepositoryAPI.persist(DataPipelineNodePath.DATA_PIPELINE_ROOT + "/1", "");
         governanceRepositoryAPI.deleteJob("1");
         Optional<String> actual = governanceRepositoryAPI.getJobItemProgress("1", 0);
         assertFalse(actual.isPresent());
@@ -122,15 +122,15 @@ class GovernanceRepositoryAPIImplTest {
     
     @Test
     void assertGetChildrenKeys() {
-        governanceRepositoryAPI.persist(DataPipelineDataNodeConstants.DATA_PIPELINE_ROOT + "/1", "");
-        List<String> actual = governanceRepositoryAPI.getChildrenKeys(DataPipelineDataNodeConstants.DATA_PIPELINE_ROOT);
+        governanceRepositoryAPI.persist(DataPipelineNodePath.DATA_PIPELINE_ROOT + "/1", "");
+        List<String> actual = governanceRepositoryAPI.getChildrenKeys(DataPipelineNodePath.DATA_PIPELINE_ROOT);
         assertFalse(actual.isEmpty());
         assertTrue(actual.contains("1"));
     }
     
     @Test
     void assertWatch() throws InterruptedException {
-        String key = DataPipelineDataNodeConstants.DATA_PIPELINE_ROOT + "/1";
+        String key = DataPipelineNodePath.DATA_PIPELINE_ROOT + "/1";
         governanceRepositoryAPI.persist(key, "");
         boolean awaitResult = COUNT_DOWN_LATCH.await(10, TimeUnit.SECONDS);
         assertTrue(awaitResult);

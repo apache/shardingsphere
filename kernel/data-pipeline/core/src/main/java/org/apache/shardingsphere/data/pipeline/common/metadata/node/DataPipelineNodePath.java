@@ -21,10 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Data pipeline data node constants.
+ * Data pipeline node path.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataPipelineDataNodeConstants {
+public final class DataPipelineNodePath {
     
     /**
      * Data pipeline root path.
