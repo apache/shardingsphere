@@ -29,7 +29,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class SchemaTableName {
+public final class SchemaTableName {
     
     private final CaseInsensitiveIdentifier schemaName;
     
