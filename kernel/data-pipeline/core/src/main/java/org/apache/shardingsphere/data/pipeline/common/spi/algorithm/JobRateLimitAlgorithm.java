@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.spi.check;
+package org.apache.shardingsphere.data.pipeline.common.spi.algorithm;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-
-import javax.sql.DataSource;
+import org.apache.shardingsphere.data.pipeline.common.job.JobOperationType;
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 
 /**
- * Dialect data source checker.
+ * Job rate limit algorithm.
  */
-@SingletonSPI
-public interface DialectDataSourceChecker extends DatabaseTypedSPI {
+public interface JobRateLimitAlgorithm extends ShardingSphereAlgorithm {
     
     /**
-     * Check user privileges.
+     * Intercept.
      *
-     * @param dataSource data source to be checked
+     * @param type job operation type
+     * @param data delta value for how much changed
      */
-    void checkPrivilege(DataSource dataSource);
-    
-    /**
-     * Check variables.
-     *
-     * @param dataSource data source to be checked
-     */
-    void checkVariable(DataSource dataSource);
+    void intercept(JobOperationType type, Number data);
 }
