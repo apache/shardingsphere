@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.common.metadata;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
@@ -32,14 +31,12 @@ import lombok.ToString;
 @ToString
 public class SchemaTableName {
     
-    @NonNull
-    private final SchemaName schemaName;
+    private final CaseInsensitiveIdentifier schemaName;
     
-    @NonNull
     private final TableName tableName;
     
     public SchemaTableName(final String schemaName, final String tableName) {
-        this.schemaName = new SchemaName(schemaName);
+        this.schemaName = new CaseInsensitiveIdentifier(schemaName);
         this.tableName = new TableName(tableName);
     }
     
