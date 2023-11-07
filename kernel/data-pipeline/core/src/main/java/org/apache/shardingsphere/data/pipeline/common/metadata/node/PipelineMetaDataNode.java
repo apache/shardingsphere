@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.common.metadata.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.common.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 
 import java.util.regex.Pattern;
@@ -30,7 +29,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineMetaDataNode {
     
-    private static final String JOB_PATTERN_PREFIX = DataPipelineConstants.DATA_PIPELINE_ROOT + "/jobs/(j\\d{2}\\d{2}[0-9a-z]+)";
+    private static final String JOB_PATTERN_PREFIX = DataPipelineDataNodeConstants.DATA_PIPELINE_ROOT + "/jobs/(j\\d{2}\\d{2}[0-9a-z]+)";
     
     public static final Pattern CONFIG_PATTERN = Pattern.compile(JOB_PATTERN_PREFIX + "/config");
     
@@ -48,8 +47,8 @@ public final class PipelineMetaDataNode {
     
     private static String getMetaDataRootPath(final JobType jobType) {
         return null == jobType
-                ? String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, "metadata")
-                : String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobType.getType().toLowerCase(), "metadata");
+                ? String.join("/", DataPipelineDataNodeConstants.DATA_PIPELINE_ROOT, "metadata")
+                : String.join("/", DataPipelineDataNodeConstants.DATA_PIPELINE_ROOT, jobType.getType().toLowerCase(), "metadata");
     }
     
     /**
@@ -73,7 +72,7 @@ public final class PipelineMetaDataNode {
     }
     
     private static String getJobsPath() {
-        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, "jobs");
+        return String.join("/", DataPipelineDataNodeConstants.DATA_PIPELINE_ROOT, "jobs");
     }
     
     /**
