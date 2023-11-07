@@ -19,11 +19,11 @@ package org.apache.shardingsphere.data.pipeline.common.metadata.loader;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.metadata.TableName;
+import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -53,11 +53,11 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
     // It doesn't support ShardingSphereDataSource
     private final PipelineDataSourceWrapper dataSource;
     
-    private final Map<TableName, PipelineTableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
+    private final Map<CaseInsensitiveIdentifier, PipelineTableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
     
     @Override
     public PipelineTableMetaData getTableMetaData(final String schemaName, final String tableName) {
-        PipelineTableMetaData result = tableMetaDataMap.get(new TableName(tableName));
+        PipelineTableMetaData result = tableMetaDataMap.get(new CaseInsensitiveIdentifier(tableName));
         if (null != result) {
             return result;
         }
@@ -66,7 +66,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
         } catch (final SQLException ex) {
             throw new PipelineInternalException(String.format("Load meta data for schema '%s' and table '%s' failed", schemaName, tableName), ex);
         }
-        result = tableMetaDataMap.get(new TableName(tableName));
+        result = tableMetaDataMap.get(new CaseInsensitiveIdentifier(tableName));
         if (null == result) {
             log.warn("getTableMetaData, can not load meta data for table '{}'", tableName);
         }
@@ -76,12 +76,12 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
     private void loadTableMetaData(final String schemaName, final String tableNamePattern) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(dataSource.getDatabaseType()).getDialectDatabaseMetaData();
-            Map<TableName, PipelineTableMetaData> tableMetaDataMap = loadTableMetaData0(connection, dialectDatabaseMetaData.isSchemaAvailable() ? schemaName : null, tableNamePattern);
+            Map<CaseInsensitiveIdentifier, PipelineTableMetaData> tableMetaDataMap = loadTableMetaData0(connection, dialectDatabaseMetaData.isSchemaAvailable() ? schemaName : null, tableNamePattern);
             this.tableMetaDataMap.putAll(tableMetaDataMap);
         }
     }
     
-    private Map<TableName, PipelineTableMetaData> loadTableMetaData0(final Connection connection, final String schemaName, final String tableNamePattern) throws SQLException {
+    private Map<CaseInsensitiveIdentifier, PipelineTableMetaData> loadTableMetaData0(final Connection connection, final String schemaName, final String tableNamePattern) throws SQLException {
         Collection<String> tableNames = new LinkedList<>();
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, tableNamePattern, null)) {
             while (resultSet.next()) {
@@ -89,7 +89,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
                 tableNames.add(tableName);
             }
         }
-        Map<TableName, PipelineTableMetaData> result = new LinkedHashMap<>();
+        Map<CaseInsensitiveIdentifier, PipelineTableMetaData> result = new LinkedHashMap<>();
         for (String each : tableNames) {
             Set<String> primaryKeys = loadPrimaryKeys(connection, schemaName, each);
             Map<String, Collection<String>> uniqueKeys = loadUniqueIndexesOfTable(connection, schemaName, each);
@@ -112,7 +112,7 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
             }
             Collection<PipelineIndexMetaData> uniqueIndexMetaData = uniqueKeys.entrySet().stream()
                     .map(entry -> new PipelineIndexMetaData(entry.getKey(), entry.getValue().stream().map(columnMetaDataMap::get).collect(Collectors.toList()))).collect(Collectors.toList());
-            result.put(new TableName(each), new PipelineTableMetaData(each, columnMetaDataMap, uniqueIndexMetaData));
+            result.put(new CaseInsensitiveIdentifier(each), new PipelineTableMetaData(each, columnMetaDataMap, uniqueIndexMetaData));
         }
         return result;
     }

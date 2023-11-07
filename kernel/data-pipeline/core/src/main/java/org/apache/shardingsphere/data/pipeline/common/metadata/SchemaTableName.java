@@ -33,11 +33,11 @@ public class SchemaTableName {
     
     private final CaseInsensitiveIdentifier schemaName;
     
-    private final TableName tableName;
+    private final CaseInsensitiveIdentifier tableName;
     
     public SchemaTableName(final String schemaName, final String tableName) {
         this.schemaName = new CaseInsensitiveIdentifier(schemaName);
-        this.tableName = new TableName(tableName);
+        this.tableName = new CaseInsensitiveIdentifier(tableName);
     }
     
     /**

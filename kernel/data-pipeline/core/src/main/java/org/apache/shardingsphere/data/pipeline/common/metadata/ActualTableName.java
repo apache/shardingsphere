@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.common.metadata;
 /**
  * Actual table name.
  */
-public final class ActualTableName extends TableName {
+public final class ActualTableName extends CaseInsensitiveIdentifier {
     
     public ActualTableName(final String tableName) {
         super(tableName);

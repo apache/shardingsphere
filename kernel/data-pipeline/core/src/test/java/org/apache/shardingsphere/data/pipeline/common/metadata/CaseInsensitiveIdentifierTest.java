@@ -17,15 +17,21 @@
 
 package org.apache.shardingsphere.data.pipeline.common.metadata;
 
-/**
- * Table name.
- * 
- * <p>It might be logic table name or actual table name.</p>
- * <p>It's case-insensitive.</p>
- */
-public class TableName extends CaseInsensitiveIdentifier {
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class CaseInsensitiveIdentifierTest {
     
-    public TableName(final String tableName) {
-        super(tableName);
+    @Test
+    void assertEquals() {
+        assertThat(new CaseInsensitiveIdentifier("t_order"), is(new CaseInsensitiveIdentifier("T_ORDER")));
+    }
+    
+    @Test
+    void assertToString() {
+        CaseInsensitiveIdentifier actual = new CaseInsensitiveIdentifier("T_ORDER");
+        assertThat(actual.toString(), is("T_ORDER"));
     }
 }

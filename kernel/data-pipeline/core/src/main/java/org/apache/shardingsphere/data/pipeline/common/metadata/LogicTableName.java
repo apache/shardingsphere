@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.common.metadata;
 /**
  * Logic table name.
  */
-public final class LogicTableName extends TableName {
+public final class LogicTableName extends CaseInsensitiveIdentifier {
     
     public LogicTableName(final String tableName) {
         super(tableName);
