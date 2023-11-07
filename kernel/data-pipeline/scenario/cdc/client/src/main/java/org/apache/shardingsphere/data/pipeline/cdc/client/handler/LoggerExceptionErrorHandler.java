@@ -23,19 +23,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.ServerErrorResult;
 
 /**
- * Logger exception handler, just print error.
+ * Logger exception error handler.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class LoggerExceptionHandler implements ExceptionHandler {
+public final class LoggerExceptionErrorHandler implements ExceptionHandler, ServerErrorResultHandler {
     
     @Override
-    public void handleServerException(final ChannelHandlerContext ctx, final ServerErrorResult result) {
+    public void handleServerError(final ChannelHandlerContext ctx, final ServerErrorResult result) {
         log.error("Server error, code: {}, message: {}", result.getErrorCode(), result.getErrorMessage());
     }
     
     @Override
-    public void handleSocketException(final ChannelHandlerContext ctx, final Throwable throwable) {
-        log.error("Socket error: ", throwable);
+    public void handleException(final ChannelHandlerContext ctx, final Throwable throwable) {
+        log.error("Exception error: ", throwable);
     }
 }

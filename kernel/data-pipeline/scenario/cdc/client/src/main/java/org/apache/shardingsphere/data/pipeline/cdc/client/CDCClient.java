@@ -35,6 +35,8 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.config.CDCClientConfig
 import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.CDCRequestHandler;
+import org.apache.shardingsphere.data.pipeline.cdc.client.handler.ExceptionHandler;
+import org.apache.shardingsphere.data.pipeline.cdc.client.handler.ServerErrorResultHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.CDCLoginParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartStreamingParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtils;
@@ -49,6 +51,10 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartStreami
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StopStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * CDC client.
@@ -65,9 +71,6 @@ public final class CDCClient implements AutoCloseable {
     public CDCClient(final CDCClientConfiguration config) {
         validateParameter(config);
         this.config = config;
-        if (null != config.getExceptionHandler()) {
-            config.getExceptionHandler().setCDCClient(this);
-        }
     }
     
     private void validateParameter(final CDCClientConfiguration parameter) {
@@ -81,9 +84,13 @@ public final class CDCClient implements AutoCloseable {
     
     /**
      * Connect.
+     *
+     * @param dataConsumer data consumer
+     * @param exceptionHandler exception handler
+     * @param errorResultHandler error result handler
      */
     @SneakyThrows(InterruptedException.class)
-    public void connect() {
+    public void connect(final Consumer<List<Record>> dataConsumer, final ExceptionHandler exceptionHandler, final ServerErrorResultHandler errorResultHandler) {
         Bootstrap bootstrap = new Bootstrap();
         group = new NioEventLoopGroup(1);
         bootstrap.channel(NioSocketChannel.class)
@@ -98,7 +105,7 @@ public final class CDCClient implements AutoCloseable {
                         channel.pipeline().addLast(new ProtobufDecoder(CDCResponse.getDefaultInstance()));
                         channel.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
                         channel.pipeline().addLast(new ProtobufEncoder());
-                        channel.pipeline().addLast(new CDCRequestHandler(config.getDataConsumer(), config.getExceptionHandler()));
+                        channel.pipeline().addLast(new CDCRequestHandler(dataConsumer, exceptionHandler, errorResultHandler));
                     }
                 });
         channel = bootstrap.connect(config.getAddress(), config.getPort()).sync().channel();

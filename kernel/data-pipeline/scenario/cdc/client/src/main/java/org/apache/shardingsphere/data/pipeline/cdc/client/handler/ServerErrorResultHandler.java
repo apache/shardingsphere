@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.data.pipeline.cdc.client.handler;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.ServerErrorResult;
 
 /**
- * Exception handler.
+ * Server error result handler.
  */
-public interface ExceptionHandler {
+public interface ServerErrorResultHandler {
     
     /**
-     * Handle exception.
+     * Handle server ERROR.
      *
      * @param ctx channel handler context
-     * @param throwable throwable
+     * @param result error result
      */
-    void handleException(ChannelHandlerContext ctx, Throwable throwable);
+    void handleServerError(ChannelHandlerContext ctx, ServerErrorResult result);
 }

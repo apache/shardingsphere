@@ -19,11 +19,6 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.cdc.client.handler.ExceptionHandler;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
-
-import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * CDC client configuration.
@@ -36,17 +31,5 @@ public final class CDCClientConfiguration {
     
     private final int port;
     
-    private final Consumer<List<Record>> dataConsumer;
-    
-    private final ExceptionHandler exceptionHandler;
-    
     private final int timeoutMills;
-    
-    public CDCClientConfiguration(final String address, final int port, final Consumer<List<Record>> dataConsumer, final ExceptionHandler exceptionHandler) {
-        this.address = address;
-        this.port = port;
-        this.dataConsumer = dataConsumer;
-        this.exceptionHandler = exceptionHandler;
-        this.timeoutMills = 5000;
-    }
 }
