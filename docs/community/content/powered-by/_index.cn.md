@@ -69,7 +69,7 @@ chapter = true
 <ul>
     <li><a href="http://www.dangdang.com/" rel="nofollow">当当</a>：<a href="https://mp.weixin.qq.com/s/Dcs_2Mkdvd49_s40rlOHvw" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">转转</a>：<a href="https://mp.weixin.qq.com/s/WftCu5oD4TZ-Xcf4uELtKA" rel="nofollow">用户案例</a></li>
-    <li><a href="https://www.dewu.com/" rel="nofollow">得物</a>：<a href="https://mp.weixin.qq.com/s/mYWKF0Ipso4GqSLmF4C3tg" rel="nofollow">用户案例 1</a> & <a href="https://mp.weixin.qq.com/s/ZyMBRJqbDQWYxjqlGAquKQ" rel="nofollow">用户案例 2</a></li>
+    <li><a href="https://www.dewu.com/" rel="nofollow">得物</a>：<a href="https://mp.weixin.qq.com/s/mYWKF0Ipso4GqSLmF4C3tg" rel="nofollow">用户案例 1</a> & <a href="https://mp.weixin.qq.com/s/ZyMBRJqbDQWYxjqlGAquKQ" rel="nofollow">用户案例 2</a> & <a href="https://mp.weixin.qq.com/s/QxtCyNSvxzvJHxwdJzQKzw" rel="nofollow">用户案例 3</a></li>
     <li><a href="http://game.163.com/" rel="nofollow">网易游戏</a></li>
     <li><a href="https://www.vip.com/" rel="nofollow">唯品会</a></li>
     <li><a href="https://www.joybuy.com/" rel="nofollow">京东商城海外站</a></li>
@@ -147,7 +147,7 @@ chapter = true
 
 ### 物流
 <ul>
-    <li><a href="https://www.jdl.cn/" rel="nofollow">京东物流</a></li>
+    <li><a href="https://www.jdl.cn/" rel="nofollow">京东物流</a>：<a href="https://mp.weixin.qq.com/s/vFmBi3qnDdttUVlWA3jGXA" rel="nofollow">用户案例 1</a> & <a href="https://mp.weixin.qq.com/s/sFiLurNwC4ggBN7D-GWbYw" rel="nofollow">用户案例 2</a></li>
     <li><a href="https://www.zto.com/" rel="nofollow">中通快递</a></li>
     <li><a href="https://www.ishansong.com/" rel="nofollow">闪送</a></li>
     <li><a href="http://www.yundaex.com/cn/index.php" rel="nofollow">韵达科技</a></li>
