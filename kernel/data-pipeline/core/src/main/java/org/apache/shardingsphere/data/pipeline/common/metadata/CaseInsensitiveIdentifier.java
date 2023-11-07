@@ -24,7 +24,7 @@ import lombok.EqualsAndHashCode;
  */
 // TODO table name case-sensitive for some database
 @EqualsAndHashCode(of = "lowercase")
-public class CaseInsensitiveIdentifier {
+public final class CaseInsensitiveIdentifier {
     
     private final String original;
     

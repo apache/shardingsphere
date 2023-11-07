@@ -20,8 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mappe
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.common.metadata.ActualTableName;
-import org.apache.shardingsphere.data.pipeline.common.metadata.LogicTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
 
 import java.util.Map;
 
@@ -33,7 +32,7 @@ import java.util.Map;
 @ToString
 public final class ActualAndLogicTableNameMapper {
     
-    private final Map<ActualTableName, LogicTableName> tableNameMap;
+    private final Map<CaseInsensitiveIdentifier, CaseInsensitiveIdentifier> tableNameMap;
     
     /**
      * Get logic table name.
@@ -41,8 +40,8 @@ public final class ActualAndLogicTableNameMapper {
      * @param actualTableName actual table name
      * @return logic table name
      */
-    public LogicTableName getLogicTableName(final String actualTableName) {
-        return tableNameMap.get(new ActualTableName(actualTableName));
+    public CaseInsensitiveIdentifier getLogicTableName(final String actualTableName) {
+        return tableNameMap.get(new CaseInsensitiveIdentifier(actualTableName));
     }
     
     /**
@@ -52,6 +51,6 @@ public final class ActualAndLogicTableNameMapper {
      * @return contains or not
      */
     public boolean containsTable(final String actualTableName) {
-        return tableNameMap.containsKey(new ActualTableName(actualTableName));
+        return tableNameMap.containsKey(new CaseInsensitiveIdentifier(actualTableName));
     }
 }

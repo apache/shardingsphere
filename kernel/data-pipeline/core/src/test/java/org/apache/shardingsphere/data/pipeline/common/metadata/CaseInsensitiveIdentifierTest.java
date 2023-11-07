@@ -17,12 +17,21 @@
 
 package org.apache.shardingsphere.data.pipeline.common.metadata;
 
-/**
- * Actual table name.
- */
-public final class ActualTableName extends TableName {
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class CaseInsensitiveIdentifierTest {
     
-    public ActualTableName(final String tableName) {
-        super(tableName);
+    @Test
+    void assertEquals() {
+        assertThat(new CaseInsensitiveIdentifier("t_order"), is(new CaseInsensitiveIdentifier("T_ORDER")));
+    }
+    
+    @Test
+    void assertToString() {
+        CaseInsensitiveIdentifier actual = new CaseInsensitiveIdentifier("T_ORDER");
+        assertThat(actual.toString(), is("T_ORDER"));
     }
 }
