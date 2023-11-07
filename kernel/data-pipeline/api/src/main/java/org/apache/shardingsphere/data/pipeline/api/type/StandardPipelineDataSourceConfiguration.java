@@ -68,21 +68,21 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         this(YamlEngine.marshal(poolProps), new HashMap<>(poolProps));
     }
     
-    private StandardPipelineDataSourceConfiguration(final String param, final Map<String, Object> yamlConfig) {
+    private StandardPipelineDataSourceConfiguration(final String param, final Map<String, Object> poolProps) {
         parameter = param;
         for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
-            yamlConfig.put(each, "1");
+            poolProps.put(each, "1");
         }
-        if (yamlConfig.containsKey("jdbcUrl")) {
-            yamlConfig.put("url", yamlConfig.get("jdbcUrl"));
-            yamlConfig.remove("jdbcUrl");
+        if (poolProps.containsKey("jdbcUrl")) {
+            poolProps.put("url", poolProps.get("jdbcUrl"));
+            poolProps.remove("jdbcUrl");
         }
-        yamlConfig.remove(DATA_SOURCE_CLASS_NAME);
-        jdbcConfig = YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), YamlJdbcConfiguration.class, true);
+        poolProps.remove(DATA_SOURCE_CLASS_NAME);
+        jdbcConfig = YamlEngine.unmarshal(YamlEngine.marshal(poolProps), YamlJdbcConfiguration.class, true);
         databaseType = DatabaseTypeFactory.get(jdbcConfig.getUrl());
-        yamlConfig.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
-        appendJdbcQueryProperties(databaseType, yamlConfig);
-        dataSourcePoolProps = new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(yamlConfig);
+        poolProps.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
+        appendJdbcQueryProperties(databaseType, poolProps);
+        dataSourcePoolProps = new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(poolProps);
     }
     
     public StandardPipelineDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {

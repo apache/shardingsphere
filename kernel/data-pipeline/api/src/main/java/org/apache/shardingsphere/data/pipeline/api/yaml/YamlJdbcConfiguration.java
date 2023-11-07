@@ -28,8 +28,6 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlJdbcConfiguration implements YamlConfiguration {
     
-    private String dataSourceClassName;
-    
     private String url;
     
     private String username;
