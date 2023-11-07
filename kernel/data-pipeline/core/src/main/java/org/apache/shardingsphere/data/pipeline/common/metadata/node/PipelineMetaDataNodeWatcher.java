@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.common.metadata.node;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.event.handler.PipelineMetaDataChangedEventHandler;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
@@ -51,7 +50,7 @@ public final class PipelineMetaDataNodeWatcher {
     private PipelineMetaDataNodeWatcher(final PipelineContextKey contextKey) {
         listenerMap.putAll(ShardingSphereServiceLoader.getServiceInstances(PipelineMetaDataChangedEventHandler.class)
                 .stream().collect(Collectors.toMap(PipelineMetaDataChangedEventHandler::getKeyPattern, each -> each)));
-        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).watch(DataPipelineConstants.DATA_PIPELINE_ROOT, this::dispatchEvent);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).watch(DataPipelineDataNodeConstants.DATA_PIPELINE_ROOT, this::dispatchEvent);
     }
     
     private void dispatchEvent(final DataChangedEvent event) {

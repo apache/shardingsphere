@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.constant;
+package org.apache.shardingsphere.data.pipeline.common.metadata.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Data pipeline constants.
+ * Data pipeline data node constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataPipelineConstants {
-    
-    /**
-     * Data pipeline node name.
-     */
-    public static final String DATA_PIPELINE_NODE_NAME = "pipeline";
+public final class DataPipelineDataNodeConstants {
     
     /**
      * Data pipeline root path.
      */
-    public static final String DATA_PIPELINE_ROOT = "/" + DATA_PIPELINE_NODE_NAME;
+    public static final String DATA_PIPELINE_ROOT = "/pipeline";
 }
