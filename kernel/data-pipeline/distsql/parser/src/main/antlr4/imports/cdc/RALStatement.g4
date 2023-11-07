@@ -47,6 +47,10 @@ rateLimiter
     : RATE_LIMITER LP_ algorithmDefinition RP_
     ;
 
+writeDefinition
+    : WRITE LP_ workerThread? (COMMA_? batchSize)? (COMMA_? rateLimiter)? RP_
+    ;
+
 streamChannel
     : STREAM_CHANNEL LP_ algorithmDefinition RP_
     ;

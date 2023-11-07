@@ -36,6 +36,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParse
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.ShowStreamingStatusContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.StreamChannelContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.WorkerThreadContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.WriteDefinitionContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.segment.InventoryIncrementalRuleSegment;
 import org.apache.shardingsphere.distsql.segment.ReadOrWriteSegment;
@@ -108,6 +109,11 @@ public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVis
     
     private AlgorithmSegment getAlgorithmSegment(final RateLimiterContext ctx) {
         return null == ctx ? null : (AlgorithmSegment) visit(ctx);
+    }
+    
+    @Override
+    public ASTNode visitWriteDefinition(final WriteDefinitionContext ctx) {
+        return new ReadOrWriteSegment(getWorkerThread(ctx.workerThread()), getBatchSize(ctx.batchSize()), getAlgorithmSegment(ctx.rateLimiter()));
     }
     
     @Override

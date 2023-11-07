@@ -86,3 +86,7 @@ RATE_LIMITER
 STREAM_CHANNEL
     : S T R E A M UL_ C H A N N E L
     ;
+
+WRITE
+    : W R I T E
+    ;
