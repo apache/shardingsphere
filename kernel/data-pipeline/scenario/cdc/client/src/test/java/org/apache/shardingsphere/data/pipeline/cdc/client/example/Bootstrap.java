@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
 import org.apache.shardingsphere.data.pipeline.cdc.client.config.CDCClientConfiguration;
-import org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoggerExceptionHandler;
+import org.apache.shardingsphere.data.pipeline.cdc.client.handler.RetryStreamingExceptionHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.CDCLoginParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartStreamingParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
@@ -41,13 +41,24 @@ public final class Bootstrap {
         // Pay attention to the time zone, to avoid the problem of incorrect time zone, it is best to ensure that the time zone of the program is consistent with the time zone of the database server
         // TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         String address = "127.0.0.1";
-        CDCClientConfiguration clientConfig = new CDCClientConfiguration(address, 33071, records -> log.info("records: {}", records), new LoggerExceptionHandler());
-        try (CDCClient cdcClient = new CDCClient(clientConfig)) {
-            cdcClient.connect();
-            cdcClient.login(new CDCLoginParameter("root", "root"));
-            String streamingId = cdcClient.startStreaming(new StartStreamingParameter("sharding_db", Collections.singleton(SchemaTable.newBuilder().setTable("t_order").build()), true));
-            log.info("Streaming id={}", streamingId);
-            cdcClient.await();
+        CDCClientConfiguration clientConfig = new CDCClientConfiguration(address, 33071, records -> log.info("records: {}", records), new RetryStreamingExceptionHandler(3, 5000));
+        int reconnectCount = 0;
+        int maxReconnectCount = 5;
+        while (reconnectCount < maxReconnectCount) {
+            try (CDCClient cdcClient = new CDCClient(clientConfig)) {
+                cdcClient.connect();
+                cdcClient.login(new CDCLoginParameter("root", "root"));
+                String streamingId = cdcClient.startStreaming(new StartStreamingParameter("sharding_db", Collections.singleton(SchemaTable.newBuilder().setTable("t_order").build()), true));
+                log.info("Streaming id={}", streamingId);
+                cdcClient.await();
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error("Exception occur: {}", ex.getMessage());
+            }
+            Thread.sleep(5000);
+            log.info("Reconnect count: {}", reconnectCount);
+            reconnectCount++;
         }
     }
 }

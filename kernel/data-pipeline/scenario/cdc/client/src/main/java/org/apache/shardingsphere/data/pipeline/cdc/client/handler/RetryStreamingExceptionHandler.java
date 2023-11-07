@@ -36,9 +36,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class RetryStreamingExceptionHandler implements ExceptionHandler {
     
-    private final AtomicInteger retryTimes = new AtomicInteger(0);
+    private final AtomicInteger retryCount = new AtomicInteger(0);
+    
+    private final int retryIntervalMills;
     
     private CDCClient cdcClient;
+    
+    public RetryStreamingExceptionHandler(final int retryCount, final int retryIntervalMills) {
+        this.retryCount.set(retryCount);
+        this.retryIntervalMills = retryIntervalMills;
+    }
     
     @Override
     public void setCDCClient(final CDCClient cdcClient) {
@@ -47,25 +54,31 @@ public class RetryStreamingExceptionHandler implements ExceptionHandler {
     
     @Override
     public void handleServerException(final ChannelHandlerContext ctx, final ServerErrorResult result) {
-        // Server exception maybe not be resolved by retrying
         log.error("Server error, code: {}, message: {}", result.getErrorCode(), result.getErrorMessage());
+        reconnect(ctx);
+    }
+    
+    @Override
+    public void handleSocketException(final ChannelHandlerContext ctx, final Throwable throwable) {
+        log.error("Socket error: {}", throwable.getMessage());
+        reconnect(ctx);
     }
     
     @SneakyThrows(InterruptedException.class)
-    @Override
-    public void handleSocketException(final ChannelHandlerContext ctx, final Throwable throwable) {
+    private void reconnect(final ChannelHandlerContext ctx) {
+        retryCount.incrementAndGet();
         if (null == cdcClient) {
             log.warn("CDC client is null, could not retry");
             return;
         }
         ClientConnectionContext connectionContext = ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).get();
-        if (retryTimes.get() > 5) {
+        if (retryCount.get() > 5) {
             log.warn("Retry times exceed 5, stop streaming");
             connectionContext.getStreamingIds().forEach(each -> CompletableFuture.runAsync(() -> cdcClient.stopStreaming(each)));
             return;
         }
-        retryTimes.incrementAndGet();
-        TimeUnit.SECONDS.sleep(Math.min(5 >> retryTimes.get(), 10));
+        TimeUnit.MILLISECONDS.sleep(retryIntervalMills);
+        log.info("Retry to restart streaming, retry count: {}", retryCount.get());
         connectionContext.getStreamingIds().forEach(each -> CompletableFuture.runAsync(() -> cdcClient.restartStreaming(each)));
     }
 }
