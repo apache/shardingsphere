@@ -15,21 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.spi.ratelimit;
+package org.apache.shardingsphere.data.pipeline.common.spi.sql;
 
-import org.apache.shardingsphere.data.pipeline.common.job.JobOperationType;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
- * Job rate limit algorithm.
+ * Create table SQL generator.
  */
-public interface JobRateLimitAlgorithm extends ShardingSphereAlgorithm {
+@SingletonSPI
+public interface CreateTableSQLGenerator extends DatabaseTypedSPI {
     
     /**
-     * Intercept.
-     *
-     * @param type job operation type
-     * @param data delta value for how much changed
-     */
-    void intercept(JobOperationType type, Number data);
+    * Generate create table SQLs.
+    * 
+    * @param dataSource dataSource
+    * @param schemaName schema name
+    * @param tableName table name
+    * @return generated SQLs
+    * @throws SQLException SQL exception
+    */
+    Collection<String> generate(DataSource dataSource, String schemaName, String tableName) throws SQLException;
 }

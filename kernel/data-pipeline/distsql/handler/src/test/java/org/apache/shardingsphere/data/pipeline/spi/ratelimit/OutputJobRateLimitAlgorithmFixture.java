@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
 
 import org.apache.shardingsphere.data.pipeline.common.job.JobOperationType;
-import org.apache.shardingsphere.data.pipeline.common.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.common.spi.algorithm.JobRateLimitAlgorithm;
 
 public final class OutputJobRateLimitAlgorithmFixture implements JobRateLimitAlgorithm {
     
