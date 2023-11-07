@@ -55,6 +55,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -75,7 +76,7 @@ public final class CDCJobPreparer {
     public void initTasks(final Collection<CDCJobItemContext> jobItemContexts) {
         // TODO Use pipeline tree to build it
         AtomicBoolean inventoryImporterUsed = new AtomicBoolean();
-        List<CDCChannelProgressPair> inventoryChannelProgressPairs = new LinkedList<>();
+        List<CDCChannelProgressPair> inventoryChannelProgressPairs = new CopyOnWriteArrayList<>();
         AtomicBoolean incrementalImporterUsed = new AtomicBoolean();
         List<CDCChannelProgressPair> incrementalChannelProgressPairs = new LinkedList<>();
         for (CDCJobItemContext each : jobItemContexts) {
