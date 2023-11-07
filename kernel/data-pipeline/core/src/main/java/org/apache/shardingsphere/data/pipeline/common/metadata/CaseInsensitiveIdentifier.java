@@ -18,25 +18,21 @@
 package org.apache.shardingsphere.data.pipeline.common.metadata;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 /**
- * Identifier name.
- * <p>It might be schema name or table name, etc.</p>
- * <p>It's case-insensitive.</p>
+ * Case insensitive identifier.
  */
-@Getter
 // TODO table name case-sensitive for some database
 @EqualsAndHashCode(of = "lowercase")
-public class IdentifierName {
+public class CaseInsensitiveIdentifier {
     
     private final String original;
     
     private final String lowercase;
     
-    public IdentifierName(final String identifierName) {
-        original = identifierName;
-        lowercase = null == identifierName ? null : identifierName.toLowerCase();
+    public CaseInsensitiveIdentifier(final String identifier) {
+        original = identifier;
+        lowercase = null == identifier ? null : identifier.toLowerCase();
     }
     
     @Override
