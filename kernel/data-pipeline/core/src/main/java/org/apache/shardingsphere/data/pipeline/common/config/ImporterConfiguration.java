@@ -20,10 +20,10 @@ package org.apache.shardingsphere.data.pipeline.common.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.metadata.LogicTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.data.pipeline.common.spi.algorithm.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
@@ -45,7 +45,7 @@ public final class ImporterConfiguration {
     private final PipelineDataSourceConfiguration dataSourceConfig;
     
     // TODO columnName case-insensitive?
-    private final Map<LogicTableName, Set<String>> shardingColumnsMap;
+    private final Map<CaseInsensitiveIdentifier, Set<String>> shardingColumnsMap;
     
     private final TableAndSchemaNameMapper tableAndSchemaNameMapper;
     
@@ -63,7 +63,7 @@ public final class ImporterConfiguration {
      * @return logic table names
      */
     public Collection<String> getLogicTableNames() {
-        return Collections.unmodifiableList(shardingColumnsMap.keySet().stream().map(LogicTableName::toString).collect(Collectors.toList()));
+        return Collections.unmodifiableList(shardingColumnsMap.keySet().stream().map(CaseInsensitiveIdentifier::toString).collect(Collectors.toList()));
     }
     
     /**
@@ -73,7 +73,7 @@ public final class ImporterConfiguration {
      * @return sharding columns
      */
     public Set<String> getShardingColumns(final String logicTableName) {
-        return shardingColumnsMap.getOrDefault(new LogicTableName(logicTableName), Collections.emptySet());
+        return shardingColumnsMap.getOrDefault(new CaseInsensitiveIdentifier(logicTableName), Collections.emptySet());
     }
     
     /**

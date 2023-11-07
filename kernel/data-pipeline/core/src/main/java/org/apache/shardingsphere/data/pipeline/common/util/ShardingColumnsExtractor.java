@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.util;
 
-import org.apache.shardingsphere.data.pipeline.common.metadata.LogicTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -48,16 +48,16 @@ public final class ShardingColumnsExtractor {
      * @param logicTableNames logic table names
      * @return sharding columns map
      */
-    public Map<LogicTableName, Set<String>> getShardingColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs, final Set<LogicTableName> logicTableNames) {
+    public Map<CaseInsensitiveIdentifier, Set<String>> getShardingColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs, final Set<CaseInsensitiveIdentifier> logicTableNames) {
         Optional<ShardingRuleConfiguration> shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRuleConfigs);
         if (!shardingRuleConfig.isPresent()) {
             return Collections.emptyMap();
         }
         Set<String> defaultDatabaseShardingColumns = extractShardingColumns(shardingRuleConfig.get().getDefaultDatabaseShardingStrategy());
         Set<String> defaultTableShardingColumns = extractShardingColumns(shardingRuleConfig.get().getDefaultTableShardingStrategy());
-        Map<LogicTableName, Set<String>> result = new ConcurrentHashMap<>();
+        Map<CaseInsensitiveIdentifier, Set<String>> result = new ConcurrentHashMap<>();
         for (ShardingTableRuleConfiguration each : shardingRuleConfig.get().getTables()) {
-            LogicTableName logicTableName = new LogicTableName(each.getLogicTable());
+            CaseInsensitiveIdentifier logicTableName = new CaseInsensitiveIdentifier(each.getLogicTable());
             if (!logicTableNames.contains(logicTableName)) {
                 continue;
             }
@@ -67,7 +67,7 @@ public final class ShardingColumnsExtractor {
             result.put(logicTableName, shardingColumns);
         }
         for (ShardingAutoTableRuleConfiguration each : shardingRuleConfig.get().getAutoTables()) {
-            LogicTableName logicTableName = new LogicTableName(each.getLogicTable());
+            CaseInsensitiveIdentifier logicTableName = new CaseInsensitiveIdentifier(each.getLogicTable());
             if (!logicTableNames.contains(logicTableName)) {
                 continue;
             }

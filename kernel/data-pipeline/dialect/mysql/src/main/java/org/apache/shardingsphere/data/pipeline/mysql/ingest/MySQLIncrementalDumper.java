@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.execute.AbstractPipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.common.metadata.LogicTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineTableMetaData;
@@ -156,7 +156,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     }
     
     private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
-        LogicTableName logicTableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(actualTableName);
+        CaseInsensitiveIdentifier logicTableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(actualTableName);
         return metaDataLoader.getTableMetaData(dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(logicTableName), actualTableName);
     }
     
