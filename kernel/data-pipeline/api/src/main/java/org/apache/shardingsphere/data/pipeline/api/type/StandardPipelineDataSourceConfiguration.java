@@ -20,14 +20,13 @@ package org.apache.shardingsphere.data.pipeline.api.type;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
 import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 
@@ -54,10 +53,16 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
     private final DataSourcePoolProperties dataSourcePoolProps;
     
     @Getter
-    private final YamlJdbcConfiguration jdbcConfig;
+    private final DatabaseType databaseType;
     
     @Getter
-    private final DatabaseType databaseType;
+    private final String url;
+    
+    @Getter
+    private final String username;
+    
+    @Getter
+    private final String password;
     
     @SuppressWarnings("unchecked")
     public StandardPipelineDataSourceConfiguration(final String param) {
@@ -68,21 +73,23 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         this(YamlEngine.marshal(poolProps), new HashMap<>(poolProps));
     }
     
-    private StandardPipelineDataSourceConfiguration(final String param, final Map<String, Object> yamlConfig) {
+    private StandardPipelineDataSourceConfiguration(final String param, final Map<String, Object> poolProps) {
         parameter = param;
         for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
-            yamlConfig.put(each, "1");
+            poolProps.put(each, "1");
         }
-        if (yamlConfig.containsKey("jdbcUrl")) {
-            yamlConfig.put("url", yamlConfig.get("jdbcUrl"));
-            yamlConfig.remove("jdbcUrl");
+        if (poolProps.containsKey("jdbcUrl")) {
+            poolProps.put("url", poolProps.get("jdbcUrl"));
+            poolProps.remove("jdbcUrl");
         }
-        yamlConfig.remove(DATA_SOURCE_CLASS_NAME);
-        jdbcConfig = YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), YamlJdbcConfiguration.class, true);
-        databaseType = DatabaseTypeFactory.get(jdbcConfig.getUrl());
-        yamlConfig.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
-        appendJdbcQueryProperties(databaseType, yamlConfig);
-        dataSourcePoolProps = new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(yamlConfig);
+        poolProps.remove(DATA_SOURCE_CLASS_NAME);
+        databaseType = DatabaseTypeFactory.get(String.valueOf(poolProps.get("url")));
+        poolProps.put(DATA_SOURCE_CLASS_NAME, "com.zaxxer.hikari.HikariDataSource");
+        appendJdbcQueryProperties(databaseType, poolProps);
+        username = String.valueOf(poolProps.get("username"));
+        password = String.valueOf(poolProps.get("password"));
+        url = String.valueOf(poolProps.get("url"));
+        dataSourcePoolProps = new YamlDataSourceConfigurationSwapper().swapToDataSourcePoolProperties(poolProps);
     }
     
     public StandardPipelineDataSourceConfiguration(final String jdbcUrl, final String username, final String password) {
@@ -98,17 +105,16 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         return result;
     }
     
-    private void appendJdbcQueryProperties(final DatabaseType databaseType, final Map<String, Object> yamlConfig) {
+    private void appendJdbcQueryProperties(final DatabaseType databaseType, final Map<String, Object> poolProps) {
         Optional<JdbcQueryPropertiesExtension> extension = DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType);
         if (!extension.isPresent()) {
             return;
         }
-        String jdbcUrl = jdbcConfig.getUrl();
+        String jdbcUrl = String.valueOf(poolProps.get("url"));
         Properties queryProps = new StandardJdbcUrlParser().parseQueryProperties(jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?") + 1) : "");
         extension.get().extendQueryProperties(queryProps);
         String url = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, queryProps);
-        jdbcConfig.setUrl(url);
-        yamlConfig.put("url", url);
+        poolProps.put("url", url);
     }
     
     @Override

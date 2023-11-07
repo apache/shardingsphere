@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
@@ -52,18 +51,17 @@ public final class OpenGaussLogicalReplication {
      */
     public Connection createConnection(final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         Properties props = new Properties();
-        YamlJdbcConfiguration jdbcConfig = pipelineDataSourceConfig.getJdbcConfig();
-        PGProperty.USER.set(props, jdbcConfig.getUsername());
-        PGProperty.PASSWORD.set(props, jdbcConfig.getPassword());
+        PGProperty.USER.set(props, pipelineDataSourceConfig.getUsername());
+        PGProperty.PASSWORD.set(props, pipelineDataSourceConfig.getPassword());
         PGProperty.ASSUME_MIN_SERVER_VERSION.set(props, "9.4");
         PGProperty.REPLICATION.set(props, "database");
         PGProperty.PREFER_QUERY_MODE.set(props, "simple");
         try {
-            return DriverManager.getConnection(jdbcConfig.getUrl(), props);
+            return DriverManager.getConnection(pipelineDataSourceConfig.getUrl(), props);
         } catch (final SQLException ex) {
             if (failedBecauseOfNonHAPort(ex)) {
                 log.info("Failed to connect to openGauss caused by: {} - {}. Try connecting to HA port.", ex.getSQLState(), ex.getMessage());
-                return tryConnectingToHAPort(jdbcConfig.getUrl(), props);
+                return tryConnectingToHAPort(pipelineDataSourceConfig.getUrl(), props);
             }
             throw ex;
         }
