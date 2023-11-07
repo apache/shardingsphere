@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.api.type;
 
-import org.apache.shardingsphere.data.pipeline.api.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.junit.jupiter.api.Test;
@@ -78,14 +77,10 @@ class StandardPipelineDataSourceConfigurationTest {
         assertThat(actual.getType(), is(StandardPipelineDataSourceConfiguration.TYPE));
         DataSourcePoolProperties props = (DataSourcePoolProperties) actual.getDataSourceConfiguration();
         assertThat(props.getPoolClassName(), is("com.zaxxer.hikari.HikariDataSource"));
-        assertGetJdbcConfig(actual.getJdbcConfig());
-        assertDataSourcePoolProperties(props);
-    }
-    
-    private void assertGetJdbcConfig(final YamlJdbcConfiguration actual) {
         assertThat(actual.getUrl(), is(JDBC_URL));
         assertThat(actual.getUsername(), is(USERNAME));
         assertThat(actual.getPassword(), is(PASSWORD));
+        assertDataSourcePoolProperties(props);
     }
     
     private void assertDataSourcePoolProperties(final DataSourcePoolProperties props) {
