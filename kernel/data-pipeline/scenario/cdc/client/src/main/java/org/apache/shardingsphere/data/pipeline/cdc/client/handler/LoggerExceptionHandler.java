@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.client.handler;
 
+import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.ServerErrorResult;
@@ -26,15 +27,15 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.util.ServerErrorResult
  */
 @RequiredArgsConstructor
 @Slf4j
-public class LoggerExceptionHandler implements ExceptionHandler {
+public final class LoggerExceptionHandler implements ExceptionHandler {
     
     @Override
-    public void handleServerException(final ServerErrorResult result) {
+    public void handleServerException(final ChannelHandlerContext ctx, final ServerErrorResult result) {
         log.error("Server error, code: {}, message: {}", result.getErrorCode(), result.getErrorMessage());
     }
     
     @Override
-    public void handleSocketException(final Throwable throwable) {
+    public void handleSocketException(final ChannelHandlerContext ctx, final Throwable throwable) {
         log.error("Socket error: ", throwable);
     }
 }

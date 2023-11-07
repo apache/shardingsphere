@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableM
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
 import org.apache.shardingsphere.data.pipeline.cdc.client.config.CDCClientConfiguration;
-import org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoggerExceptionHandler;
+import org.apache.shardingsphere.data.pipeline.cdc.client.handler.RetryStreamingExceptionHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.CDCLoginParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartStreamingParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
@@ -169,7 +169,7 @@ class CDCE2EIT {
     private void startCDCClient(final PipelineContainerComposer containerComposer, final DialectDatabaseMetaData dialectDatabaseMetaData) {
         DataSource dataSource = createStandardDataSource(containerComposer, PipelineContainerComposer.DS_4);
         DataSourceRecordConsumer recordConsumer = new DataSourceRecordConsumer(dataSource, containerComposer.getDatabaseType());
-        CDCClientConfiguration cdcConfig = new CDCClientConfiguration("localhost", containerComposer.getContainerComposer().getProxyCDCPort(), recordConsumer, new LoggerExceptionHandler());
+        CDCClientConfiguration cdcConfig = new CDCClientConfiguration("localhost", containerComposer.getContainerComposer().getProxyCDCPort(), recordConsumer, new RetryStreamingExceptionHandler());
         String schema = dialectDatabaseMetaData.isSchemaAvailable() ? "test" : "";
         CDCClient cdcClient = new CDCClient(cdcConfig);
         cdcClient.connect();

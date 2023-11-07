@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.client.handler;
 
+import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.ServerErrorResult;
 
 /**
@@ -27,14 +29,24 @@ public interface ExceptionHandler {
     /**
      * Handle server exception.
      *
+     * @param ctx channel handler context
      * @param result error result
      */
-    void handleServerException(ServerErrorResult result);
+    void handleServerException(ChannelHandlerContext ctx, ServerErrorResult result);
     
     /**
      * Handle socket exception.
      *
+     * @param ctx channel handler context
      * @param throwable throwable
      */
-    void handleSocketException(Throwable throwable);
+    void handleSocketException(ChannelHandlerContext ctx, Throwable throwable);
+    
+    /**
+     * Set CDC client.
+     *
+     * @param cdcClient cdc client
+     */
+    default void setCDCClient(CDCClient cdcClient) {
+    }
 }

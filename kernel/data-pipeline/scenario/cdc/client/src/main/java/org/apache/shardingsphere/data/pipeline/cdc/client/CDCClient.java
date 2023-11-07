@@ -65,6 +65,9 @@ public final class CDCClient implements AutoCloseable {
     public CDCClient(final CDCClientConfiguration config) {
         validateParameter(config);
         this.config = config;
+        if (null != config.getExceptionHandler()) {
+            config.getExceptionHandler().setCDCClient(this);
+        }
     }
     
     private void validateParameter(final CDCClientConfiguration parameter) {
@@ -165,9 +168,6 @@ public final class CDCClient implements AutoCloseable {
      * @param streamingId streaming id
      */
     public void restartStreaming(final String streamingId) {
-        if (checkStreamingIdExist(streamingId)) {
-            stopStreaming(streamingId);
-        }
         String requestId = RequestIdUtils.generateRequestId();
         StartStreamingRequestBody body = StartStreamingRequestBody.newBuilder().setStreamingId(streamingId).build();
         CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setType(Type.START_STREAMING).setStartStreamingRequestBody(body).build();
@@ -177,16 +177,6 @@ public final class CDCClient implements AutoCloseable {
         channel.writeAndFlush(request);
         responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
         log.info("Restart streaming success, streaming id: {}", streamingId);
-    }
-    
-    private boolean checkStreamingIdExist(final String streamingId) {
-        checkChannelActive();
-        ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
-        if (null == connectionContext) {
-            log.warn("The connection context not exist");
-            return true;
-        }
-        return connectionContext.getStreamingIds().contains(streamingId);
     }
     
     /**
