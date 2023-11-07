@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.common.query.JDBCStreamQueryBuild
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineDataConsistencyCalculateSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.RecordSingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
-import org.apache.shardingsphere.data.pipeline.core.dumper.ColumnValueReaderEngine;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.ColumnValueReaderEngine;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.check.datasource;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithCheckPrivilegeFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidSourceDataSourceException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
-import org.apache.shardingsphere.data.pipeline.spi.check.DialectDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.common.spi.datasource.DialectDataSourceChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;

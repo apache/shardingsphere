@@ -477,8 +477,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 }
                 return results.iterator().next() instanceof QueryResult;
             }
-            return isNeedImplicitCommitTransaction(connection, executionContexts) ? executeWithImplicitCommitTransaction(executeCallback, executionContexts)
-                    : useDriverToExecute(executeCallback, executionContexts);
+            return executeWithExecutionContexts(executeCallback, executionContexts);
         } finally {
             currentResultSet = null;
         }
@@ -554,6 +553,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 .prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(databaseName));
     }
     
+    private boolean executeWithExecutionContexts(final ExecuteCallback executeCallback, final Collection<ExecutionContext> executionContexts) throws SQLException {
+        return isNeedImplicitCommitTransaction(connection, executionContexts) ? executeWithImplicitCommitTransaction(executeCallback, executionContexts)
+                : useDriverToExecute(executeCallback, executionContexts);
+    }
+    
     private boolean executeWithImplicitCommitTransaction(final ExecuteCallback callback, final Collection<ExecutionContext> executionContexts) throws SQLException {
         boolean result;
         try {
@@ -626,16 +630,17 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (useFederation) {
             return executor.getSqlFederationEngine().getResultSet();
         }
-        if (executionContexts.iterator().next().getSqlStatementContext() instanceof SelectStatementContext
-                || executionContexts.iterator().next().getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
+        ExecutionContext executionContext = executionContexts.iterator().next();
+        if (executionContext.getSqlStatementContext() instanceof SelectStatementContext
+                || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
             if (resultSets.isEmpty()) {
                 return currentResultSet;
             }
-            SQLStatementContext sqlStatementContext = executionContexts.iterator().next().getSqlStatementContext();
+            SQLStatementContext sqlStatementContext = executionContext.getSqlStatementContext();
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets), sqlStatementContext);
             boolean selectContainsEnhancedTable = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsEnhancedTable();
-            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContexts.iterator().next());
+            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, selectContainsEnhancedTable, executionContext);
         }
         return currentResultSet;
     }
@@ -712,8 +717,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {
-        return executionContexts.iterator().next().getSqlStatementContext() instanceof InsertStatementContext
-                ? ((InsertStatementContext) executionContexts.iterator().next().getSqlStatementContext()).getGeneratedKeyContext()
+        ExecutionContext executionContext = executionContexts.iterator().next();
+        return executionContext.getSqlStatementContext() instanceof InsertStatementContext
+                ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext()
                 : Optional.empty();
     }
     

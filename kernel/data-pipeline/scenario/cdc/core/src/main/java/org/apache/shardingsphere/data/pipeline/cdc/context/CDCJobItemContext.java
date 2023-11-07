@@ -23,7 +23,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
@@ -80,7 +80,7 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
         
         @Override
         protected PipelineDataSourceWrapper initialize() {
-            return dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
+            return dataSourceManager.getDataSource(taskConfig.getDumperContext().getCommonContext().getDataSourceConfig());
         }
     };
     
@@ -99,7 +99,7 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     @Override
     public String getDataSourceName() {
-        return taskConfig.getDumperConfig().getDataSourceName();
+        return taskConfig.getDumperContext().getCommonContext().getDataSourceName();
     }
     
     @Override

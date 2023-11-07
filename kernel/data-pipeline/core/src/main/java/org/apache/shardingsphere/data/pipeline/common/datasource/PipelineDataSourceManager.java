@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.datasource;
 
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 
 /**
  * Pipeline data source manager.

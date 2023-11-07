@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 
 import java.util.List;
 

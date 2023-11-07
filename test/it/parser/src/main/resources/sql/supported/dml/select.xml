@@ -213,4 +213,8 @@
     <sql-case id="select_numeric_operator" value="SELECT 5! AS RESULT;" db-types="openGauss" />
     <sql-case id="select_with_custom_distinct_function" value="select custom_concat(distinct a.P1) From TEST a;" db-types="Oracle" />
     <sql-case id="select_with_unicode_string" value="SELECT u'test', U'test' from DUAL" db-types="Oracle" />
+    <sql-case id="select_wm_concat_function1" value="SELECT TO_CHAR(WM_CONCAT(DISTINCT TEST_ID) OVER(PARTITION BY TEST_ID)) ID FROM TEST_TABLE" db-types="Oracle" />
+    <sql-case id="select_wm_concat_function2" value="SELECT WM_CONCAT(NAME) NAME FROM TEST_TABLE" db-types="Oracle" />
+    <sql-case id="select_wm_concat_function3" value="SELECT REPLACE(WM_CONCAT(NAME),',','|') FROM TEST_TABLE" db-types="Oracle" />
+    <sql-case id="select_wm_concat_function4" value="SELECT NAME,WM_CONCAT(DECODE(SUBSTR((TO_CHAR(NAME)),0,1),'.','0'||TO_CHAR(NAME),TO_CHAR(NAME))) WM_NAME FROM TEST_TABLE WHERE NAME ='TEST' GROUP BY NAME" db-types="Oracle" />
 </sql-cases>

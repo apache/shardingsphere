@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.common.ingest.channel;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.AckCallback;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 
 import java.util.List;
 

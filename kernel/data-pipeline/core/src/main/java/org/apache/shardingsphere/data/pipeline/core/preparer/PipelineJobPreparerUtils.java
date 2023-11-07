@@ -20,11 +20,11 @@ package org.apache.shardingsphere.data.pipeline.core.preparer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.common.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
@@ -33,8 +33,8 @@ import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSour
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.common.spi.ingest.dumper.IncrementalDumperCreator;
+import org.apache.shardingsphere.data.pipeline.common.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
@@ -118,12 +118,12 @@ public final class PipelineJobPreparerUtils {
      * Get incremental position.
      *
      * @param initIncremental init incremental
-     * @param dumperConfig dumper config
+     * @param dumperContext dumper config
      * @param dataSourceManager data source manager
      * @return ingest position
      * @throws SQLException sql exception
      */
-    public static IngestPosition getIncrementalPosition(final JobItemIncrementalTasksProgress initIncremental, final DumperConfiguration dumperConfig,
+    public static IngestPosition getIncrementalPosition(final JobItemIncrementalTasksProgress initIncremental, final IncrementalDumperContext dumperContext,
                                                         final PipelineDataSourceManager dataSourceManager) throws SQLException {
         if (null != initIncremental) {
             Optional<IngestPosition> position = initIncremental.getIncrementalPosition();
@@ -131,9 +131,9 @@ public final class PipelineJobPreparerUtils {
                 return position.get();
             }
         }
-        DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
-        DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-        return DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType).init(dataSource, dumperConfig.getJobId());
+        DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
+        DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
+        return DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType).init(dataSource, dumperContext.getJobId());
     }
     
     /**
@@ -166,7 +166,7 @@ public final class PipelineJobPreparerUtils {
         }
         DataSourceCheckEngine dataSourceCheckEngine = new DataSourceCheckEngine(databaseType);
         dataSourceCheckEngine.checkConnection(targetDataSources);
-        dataSourceCheckEngine.checkTargetTable(targetDataSources, importerConfig.getTableNameSchemaNameMapping(), importerConfig.getLogicTableNames());
+        dataSourceCheckEngine.checkTargetTable(targetDataSources, importerConfig.getTableAndSchemaNameMapper(), importerConfig.getLogicTableNames());
     }
     
     /**

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
@@ -68,7 +69,7 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
         if (LoggingConstants.SQL_SHOW_VARIABLE_NAME.equalsIgnoreCase(variableName) || LoggingConstants.SQL_SIMPLE_VARIABLE_NAME.equalsIgnoreCase(variableName)) {
             return getLoggingPropsValue(metaData, variableName);
         }
-        return metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)).toString();
+        return getStringResult(metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)));
     }
     
     private String getLoggingPropsValue(final ShardingSphereMetaData metaData, final String variableName) {
@@ -85,7 +86,7 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
                 default:
             }
         }
-        return metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)).toString();
+        return getStringResult(metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)));
     }
     
     private boolean isTemporaryConfigurationKey(final String variableName) {
@@ -103,6 +104,13 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
             return String.valueOf(connectionSize);
         }
         throw new UnsupportedVariableException(variableName);
+    }
+    
+    private String getStringResult(final Object value) {
+        if (null == value) {
+            return "";
+        }
+        return value instanceof TypedSPI ? ((TypedSPI) value).getType().toString() : value.toString();
     }
     
     @Override

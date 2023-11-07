@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.DumperCommonContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.ActualAndLogicTableNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
+import org.apache.shardingsphere.data.pipeline.common.metadata.ActualTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.ingest.channel.EmptyAckCallback;
@@ -72,7 +74,7 @@ class PostgreSQLWALDumperTest {
     
     private WALPosition position;
     
-    private DumperConfiguration dumperConfig;
+    private IncrementalDumperContext dumperContext;
     
     private PostgreSQLWALDumper walDumper;
     
@@ -88,8 +90,9 @@ class PostgreSQLWALDumperTest {
         String username = "root";
         String password = "root";
         createTable(jdbcUrl, username, password);
-        dumperConfig = createDumperConfiguration(jdbcUrl, username, password);
-        walDumper = new PostgreSQLWALDumper(dumperConfig, position, channel, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig())));
+        dumperContext = createDumperContext(jdbcUrl, username, password);
+        walDumper = new PostgreSQLWALDumper(dumperContext, position, channel,
+                new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig())));
     }
     
     private void createTable(final String jdbcUrl, final String username, final String password) {
@@ -103,13 +106,12 @@ class PostgreSQLWALDumperTest {
         }
     }
     
-    private DumperConfiguration createDumperConfiguration(final String jdbcUrl, final String username, final String password) {
-        DumperConfiguration result = new DumperConfiguration();
-        result.setJobId("0101123456");
-        result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration(jdbcUrl, username, password));
-        result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order_0"), new LogicTableName("t_order")));
-        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
-        return result;
+    private IncrementalDumperContext createDumperContext(final String jdbcUrl, final String username, final String password) {
+        DumperCommonContext commonContext = new DumperCommonContext(null,
+                new StandardPipelineDataSourceConfiguration(jdbcUrl, username, password),
+                new ActualAndLogicTableNameMapper(Collections.singletonMap(new ActualTableName("t_order_0"), new LogicTableName("t_order"))),
+                new TableAndSchemaNameMapper(Collections.emptyMap()));
+        return new IncrementalDumperContext(commonContext, "0101123456", false);
     }
     
     @AfterEach
@@ -119,7 +121,7 @@ class PostgreSQLWALDumperTest {
     
     @Test
     void assertStart() throws SQLException, ReflectiveOperationException {
-        StandardPipelineDataSourceConfiguration dataSourceConfig = (StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig();
+        StandardPipelineDataSourceConfiguration dataSourceConfig = (StandardPipelineDataSourceConfiguration) dumperContext.getCommonContext().getDataSourceConfig();
         try {
             Plugins.getMemberAccessor().set(PostgreSQLWALDumper.class.getDeclaredField("logicalReplication"), walDumper, logicalReplication);
             when(logicalReplication.createConnection(dataSourceConfig)).thenReturn(pgConnection);

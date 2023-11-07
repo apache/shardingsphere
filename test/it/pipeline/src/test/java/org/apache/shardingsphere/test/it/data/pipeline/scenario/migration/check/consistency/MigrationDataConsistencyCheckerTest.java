@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.scenario.migration.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
@@ -74,7 +74,7 @@ class MigrationDataConsistencyCheckerTest {
     
     private MigrationJobConfiguration createJobConfiguration() throws SQLException {
         MigrationJobItemContext jobItemContext = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
-        initTableData(jobItemContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
+        initTableData(jobItemContext.getTaskConfig().getDumperContext().getCommonContext().getDataSourceConfig());
         initTableData(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
         return jobItemContext.getJobConfig();
     }

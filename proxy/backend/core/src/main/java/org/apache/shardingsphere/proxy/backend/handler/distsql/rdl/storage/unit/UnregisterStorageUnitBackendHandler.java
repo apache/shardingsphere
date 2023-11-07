@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
@@ -37,6 +38,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -82,8 +84,9 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
         Collection<String> inUsedStorageUnitNames = inUsedStorageUnits.keySet();
         inUsedStorageUnitNames.retainAll(sqlStatement.getStorageUnitNames());
         if (!inUsedStorageUnitNames.isEmpty()) {
-            if (sqlStatement.isIgnoreSingleTables()) {
-                checkInUsedIgnoreSingleTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits);
+            Collection<Class<? extends ShardingSphereRule>> ignoreShardingSphereRules = getIgnoreShardingSphereRules(sqlStatement);
+            if (!ignoreShardingSphereRules.isEmpty()) {
+                checkInUsedIgnoreTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits, ignoreShardingSphereRules);
             } else {
                 String firstResource = inUsedStorageUnitNames.iterator().next();
                 throw new StorageUnitInUsedException(firstResource, inUsedStorageUnits.get(firstResource));
@@ -91,10 +94,23 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
         }
     }
     
-    private void checkInUsedIgnoreSingleTables(final Collection<String> inUsedResourceNames, final Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnits) {
+    private Collection<Class<? extends ShardingSphereRule>> getIgnoreShardingSphereRules(final UnregisterStorageUnitStatement sqlStatement) {
+        Collection<Class<? extends ShardingSphereRule>> result = new LinkedList<>();
+        if (sqlStatement.isIgnoreSingleTables()) {
+            result.add(SingleRule.class);
+        }
+        if (sqlStatement.isIgnoreBroadcastTables()) {
+            result.add(BroadcastRule.class);
+        }
+        return result;
+    }
+    
+    private void checkInUsedIgnoreTables(final Collection<String> inUsedResourceNames,
+                                         final Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnits,
+                                         final Collection<Class<? extends ShardingSphereRule>> ignoreShardingSphereRules) {
         for (String each : inUsedResourceNames) {
             Collection<Class<? extends ShardingSphereRule>> inUsedRules = inUsedStorageUnits.get(each);
-            inUsedRules.remove(SingleRule.class);
+            ignoreShardingSphereRules.forEach(inUsedRules::remove);
             ShardingSpherePreconditions.checkState(inUsedRules.isEmpty(), () -> new StorageUnitInUsedException(each, inUsedRules));
         }
     }

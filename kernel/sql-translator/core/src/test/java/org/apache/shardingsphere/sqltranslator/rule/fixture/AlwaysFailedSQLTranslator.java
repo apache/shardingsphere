@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.sqltranslator.rule.fixture;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sqltranslator.exception.syntax.UnsupportedTranslatedDatabaseException;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
 public final class AlwaysFailedSQLTranslator implements SQLTranslator {
     
     @Override
-    public String translate(final String sql, final SQLStatementContext sqlStatementContext, final DatabaseType storageType, final ShardingSphereDatabase database,
+    public String translate(final String sql, final QueryContext queryContext, final DatabaseType storageType, final ShardingSphereDatabase database,
                             final RuleMetaData globalRuleMetaData) {
         throw new UnsupportedTranslatedDatabaseException(storageType);
     }

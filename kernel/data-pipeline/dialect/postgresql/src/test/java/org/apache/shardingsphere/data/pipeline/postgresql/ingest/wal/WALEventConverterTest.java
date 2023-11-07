@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.ColumnName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.DumperCommonContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.ActualAndLogicTableNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.common.metadata.ActualTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.LogicTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
@@ -58,7 +58,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,8 +70,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WALEventConverterTest {
     
-    private DumperConfiguration dumperConfig;
-    
     private WALEventConverter walEventConverter;
     
     private final LogSequenceNumber logSequenceNumber = LogSequenceNumber.valueOf("0/14EFDB8");
@@ -80,27 +77,26 @@ class WALEventConverterTest {
     private PipelineTableMetaData pipelineTableMetaData;
     
     @BeforeEach
-    void setUp() {
-        dumperConfig = mockDumperConfiguration();
+    void setUp() throws SQLException {
+        IncrementalDumperContext dumperContext = mockDumperContext();
         PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
-        walEventConverter = new WALEventConverter(dumperConfig, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig())));
-        initTableData(dumperConfig);
+        walEventConverter = new WALEventConverter(dumperContext, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig())));
+        initTableData(dumperContext);
         pipelineTableMetaData = new PipelineTableMetaData("t_order", mockOrderColumnsMetaDataMap(), Collections.emptyList());
     }
     
-    private DumperConfiguration mockDumperConfiguration() {
-        DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
-        result.setTableNameMap(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order")));
-        result.setTableNameSchemaNameMapping(new TableNameSchemaNameMapping(Collections.emptyMap()));
-        return result;
+    private IncrementalDumperContext mockDumperContext() {
+        DumperCommonContext commonContext = new DumperCommonContext(null,
+                new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"),
+                new ActualAndLogicTableNameMapper(Collections.singletonMap(new ActualTableName("t_order"), new LogicTableName("t_order"))),
+                new TableAndSchemaNameMapper(Collections.emptyMap()));
+        return new IncrementalDumperContext(commonContext, null, false);
     }
     
-    @SneakyThrows(SQLException.class)
-    private void initTableData(final DumperConfiguration dumperConfig) {
+    private void initTableData(final IncrementalDumperContext dumperContext) throws SQLException {
         try (
                 PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
-                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -122,29 +118,23 @@ class WALEventConverterTest {
     }
     
     @Test
-    void assertWriteRowEventWithoutCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowEvent0(null, 3);
-    }
-    
-    @Test
-    void assertWriteRowEventWithCustomColumns() throws ReflectiveOperationException {
-        assertWriteRowEvent0(mockTargetTableColumnsMap(), 1);
-    }
-    
-    private void assertWriteRowEvent0(final Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap, final int expectedColumnCount) throws ReflectiveOperationException {
-        dumperConfig.setTargetTableColumnsMap(targetTableColumnsMap);
-        WriteRowEvent rowsEvent = new WriteRowEvent();
-        rowsEvent.setSchemaName("");
-        rowsEvent.setTableName("t_order");
-        rowsEvent.setAfterRow(Arrays.asList(101, 1, "OK"));
-        Method method = WALEventConverter.class.getDeclaredMethod("handleWriteRowEvent", WriteRowEvent.class, PipelineTableMetaData.class);
-        DataRecord actual = (DataRecord) Plugins.getMemberAccessor().invoke(method, walEventConverter, rowsEvent, pipelineTableMetaData);
+    void assertWriteRowEvent() throws ReflectiveOperationException {
+        DataRecord actual = getDataRecord(createWriteRowEvent());
         assertThat(actual.getType(), is(IngestDataChangeType.INSERT));
-        assertThat(actual.getColumnCount(), is(expectedColumnCount));
+        assertThat(actual.getColumnCount(), is(3));
     }
     
-    private Map<LogicTableName, Set<ColumnName>> mockTargetTableColumnsMap() {
-        return Collections.singletonMap(new LogicTableName("t_order"), Collections.singleton(new ColumnName("order_id")));
+    private WriteRowEvent createWriteRowEvent() {
+        WriteRowEvent result = new WriteRowEvent();
+        result.setSchemaName("");
+        result.setTableName("t_order");
+        result.setAfterRow(Arrays.asList(101, 1, "OK"));
+        return result;
+    }
+    
+    private DataRecord getDataRecord(final WriteRowEvent rowsEvent) throws ReflectiveOperationException {
+        Method method = WALEventConverter.class.getDeclaredMethod("handleWriteRowEvent", WriteRowEvent.class, PipelineTableMetaData.class);
+        return (DataRecord) Plugins.getMemberAccessor().invoke(method, walEventConverter, rowsEvent, pipelineTableMetaData);
     }
     
     @Test
