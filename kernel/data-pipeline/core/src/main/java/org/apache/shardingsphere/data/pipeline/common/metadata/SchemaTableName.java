@@ -49,7 +49,7 @@ public class SchemaTableName {
      * @return text
      */
     public String marshal() {
-        String schemaName = this.schemaName.getOriginal();
-        return null == schemaName ? tableName.getOriginal() : schemaName + "." + tableName.getOriginal();
+        String schemaName = this.schemaName.toString();
+        return null == schemaName ? tableName.toString() : schemaName + "." + tableName;
     }
 }

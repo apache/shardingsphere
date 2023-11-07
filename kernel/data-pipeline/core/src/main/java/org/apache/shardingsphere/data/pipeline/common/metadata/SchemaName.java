@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
  * <p>It might be null.</p>
  * <p>It's case-insensitive.</p>
  */
-public class SchemaName extends IdentifierName {
+public class SchemaName extends CaseInsensitiveIdentifier {
     
     public SchemaName(@Nullable final String schemaName) {
         super(schemaName);

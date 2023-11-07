@@ -113,8 +113,8 @@ public final class InventoryTaskSplitter {
         dumperContext.getCommonContext().getTableNameMapper().getTableNameMap().forEach((key, value) -> {
             InventoryDumperContext inventoryDumperContext = new InventoryDumperContext(dumperContext.getCommonContext());
             // use original table name, for metadata loader, since some database table name case-sensitive
-            inventoryDumperContext.setActualTableName(key.getOriginal());
-            inventoryDumperContext.setLogicTableName(value.getOriginal());
+            inventoryDumperContext.setActualTableName(key.toString());
+            inventoryDumperContext.setLogicTableName(value.toString());
             inventoryDumperContext.getCommonContext().setPosition(new PlaceholderPosition());
             inventoryDumperContext.setInsertColumnNames(dumperContext.getInsertColumnNames());
             inventoryDumperContext.setUniqueKeyColumns(dumperContext.getUniqueKeyColumns());

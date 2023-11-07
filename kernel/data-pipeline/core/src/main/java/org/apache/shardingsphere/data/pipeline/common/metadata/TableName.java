@@ -23,7 +23,7 @@ package org.apache.shardingsphere.data.pipeline.common.metadata;
  * <p>It might be logic table name or actual table name.</p>
  * <p>It's case-insensitive.</p>
  */
-public class TableName extends IdentifierName {
+public class TableName extends CaseInsensitiveIdentifier {
     
     public TableName(final String tableName) {
         super(tableName);

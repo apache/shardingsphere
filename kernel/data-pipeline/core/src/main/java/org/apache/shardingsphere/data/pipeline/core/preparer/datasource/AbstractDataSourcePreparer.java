@@ -61,7 +61,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(targetDatabaseType);
         Collection<String> createdSchemaNames = new HashSet<>();
         for (CreateTableEntry each : createTableConfig.getCreateTableEntries()) {
-            String targetSchemaName = each.getTargetName().getSchemaName().getOriginal();
+            String targetSchemaName = each.getTargetName().getSchemaName().toString();
             if (null == targetSchemaName || targetSchemaName.equalsIgnoreCase(defaultSchema) || createdSchemaNames.contains(targetSchemaName)) {
                 continue;
             }
@@ -117,9 +117,9 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
                                                    final SQLParserEngine sqlParserEngine) throws SQLException {
         DatabaseType databaseType = createTableEntry.getSourceDataSourceConfig().getDatabaseType();
         DataSource sourceDataSource = dataSourceManager.getDataSource(createTableEntry.getSourceDataSourceConfig());
-        String schemaName = createTableEntry.getSourceName().getSchemaName().getOriginal();
-        String sourceTableName = createTableEntry.getSourceName().getTableName().getOriginal();
-        String targetTableName = createTableEntry.getTargetName().getTableName().getOriginal();
+        String schemaName = createTableEntry.getSourceName().getSchemaName().toString();
+        String sourceTableName = createTableEntry.getSourceName().getTableName().toString();
+        String targetTableName = createTableEntry.getTargetName().getTableName().toString();
         PipelineDDLGenerator generator = new PipelineDDLGenerator();
         return generator.generateLogicDDL(databaseType, sourceDataSource, schemaName, sourceTableName, targetTableName, sqlParserEngine);
     }

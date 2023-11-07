@@ -218,7 +218,7 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     }
     
     private DataRecord createDataRecord(final String type, final AbstractRowsEvent rowsEvent, final int columnCount) {
-        String tableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(rowsEvent.getTableName()).getOriginal();
+        String tableName = dumperContext.getCommonContext().getTableNameMapper().getLogicTableName(rowsEvent.getTableName()).toString();
         IngestPosition position = new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId());
         DataRecord result = new DataRecord(type, tableName, position, columnCount);
         result.setActualTableName(rowsEvent.getTableName());
