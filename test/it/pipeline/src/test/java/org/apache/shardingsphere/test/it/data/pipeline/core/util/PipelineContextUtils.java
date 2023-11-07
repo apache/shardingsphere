@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.test.it.data.pipeline.core.util;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.common.config.process.yaml.YamlPipelineProcessConfiguration;
@@ -30,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.common.ingest.channel.PipelineChannelCreator;
+import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
@@ -69,8 +68,6 @@ public final class PipelineContextUtils {
     private static final PipelineContextKey CONTEXT_KEY = PipelineContextKey.buildForProxy();
     
     private static final ExecuteEngine EXECUTE_ENGINE = ExecuteEngine.newCachedThreadInstance(PipelineContextUtils.class.getSimpleName());
-    
-    private static final PipelineChannelCreator PIPELINE_CHANNEL_CREATOR = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY");
     
     /**
      * Mock mode configuration and context manager.
@@ -156,15 +153,6 @@ public final class PipelineContextUtils {
      */
     public static ExecuteEngine getExecuteEngine() {
         return EXECUTE_ENGINE;
-    }
-    
-    /**
-     * Get pipeline channel factory.
-     *
-     * @return channel factory
-     */
-    public static PipelineChannelCreator getPipelineChannelCreator() {
-        return PIPELINE_CHANNEL_CREATOR;
     }
     
     /**

@@ -701,7 +701,9 @@ public enum SQLVisitorRule {
     
     CREATE_LIBRARY("CreateLibrary", SQLStatementType.DDL),
     
-    SWITCH("Switch", SQLStatementType.DDL);
+    SWITCH("Switch", SQLStatementType.DDL),
+    
+    CREATE_PROFILE("CreateProfile", SQLStatementType.DDL);
     
     private final String name;
     

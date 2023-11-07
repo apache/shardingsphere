@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.common.datasource;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 
 import java.sql.SQLException;
 import java.util.Map;

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.common.execute;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.data.pipeline.api.runnable.PipelineLifecycleRunnable;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.datasource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerVersion;
-import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
+import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
 
 import java.util.Collections;
 import java.util.List;

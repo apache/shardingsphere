@@ -4140,3 +4140,8 @@ switchClause
 datafileSpecClause
     : SQ_ fileName SQ_ | INTEGER_
     ;
+
+createProfile
+    : CREATE MANDATORY? PROFILE profileName LIMIT (resourceParameters | passwordParameters)+ (CONTAINER EQ_ (CURRENT | ALL))?
+    ;
+
