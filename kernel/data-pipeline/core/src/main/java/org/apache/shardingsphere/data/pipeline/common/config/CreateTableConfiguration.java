@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.metadata.SchemaTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveQualifiedTable;
 
 /**
  * Create table configuration.
@@ -33,9 +33,9 @@ public final class CreateTableConfiguration {
     
     private final PipelineDataSourceConfiguration sourceDataSourceConfig;
     
-    private final SchemaTableName sourceName;
+    private final CaseInsensitiveQualifiedTable sourceName;
     
     private final PipelineDataSourceConfiguration targetDataSourceConfig;
     
-    private final SchemaTableName targetName;
+    private final CaseInsensitiveQualifiedTable targetName;
 }

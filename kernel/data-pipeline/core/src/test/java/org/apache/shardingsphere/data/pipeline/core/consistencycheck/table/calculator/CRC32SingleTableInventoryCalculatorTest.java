@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
-import org.apache.shardingsphere.data.pipeline.common.metadata.SchemaTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
@@ -65,7 +65,8 @@ class CRC32SingleTableInventoryCalculatorTest {
     void setUp() throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true, true));
-        parameter = new SingleTableInventoryCalculateParameter(pipelineDataSource, new SchemaTableName(null, "foo_tbl"), Arrays.asList("foo_col", "bar_col"), uniqueKeys, Collections.emptyMap());
+        parameter = new SingleTableInventoryCalculateParameter(pipelineDataSource,
+                new CaseInsensitiveQualifiedTable(null, "foo_tbl"), Arrays.asList("foo_col", "bar_col"), uniqueKeys, Collections.emptyMap());
         when(pipelineDataSource.getDatabaseType()).thenReturn(databaseType);
         when(pipelineDataSource.getConnection()).thenReturn(connection);
     }
