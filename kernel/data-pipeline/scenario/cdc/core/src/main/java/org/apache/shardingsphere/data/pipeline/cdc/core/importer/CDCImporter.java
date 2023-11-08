@@ -41,7 +41,6 @@ import org.apache.shardingsphere.data.pipeline.common.spi.algorithm.JobRateLimit
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -79,23 +78,20 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
     @Override
     protected void runBlocking() {
         CDCImporterManager.putImporter(this);
-        List<CDCChannelProgressPair> channelProgressPairs = new ArrayList<>(originalChannelProgressPairs);
         while (isRunning()) {
             if (needSorting) {
-                doWithSorting(channelProgressPairs);
+                doWithSorting(originalChannelProgressPairs);
             } else {
-                doWithoutSorting(channelProgressPairs);
+                doWithoutSorting(originalChannelProgressPairs);
             }
-            if (channelProgressPairs.isEmpty()) {
+            if (originalChannelProgressPairs.isEmpty()) {
                 break;
             }
         }
     }
     
     private void doWithoutSorting(final List<CDCChannelProgressPair> channelProgressPairs) {
-        Iterator<CDCChannelProgressPair> channelProgressPairsIterator = channelProgressPairs.iterator();
-        while (channelProgressPairsIterator.hasNext()) {
-            CDCChannelProgressPair channelProgressPair = channelProgressPairsIterator.next();
+        for (final CDCChannelProgressPair channelProgressPair : channelProgressPairs) {
             PipelineChannel channel = channelProgressPair.getChannel();
             List<Record> records = channel.fetchRecords(batchSize, timeout, timeUnit).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
             if (records.isEmpty()) {
@@ -108,9 +104,6 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
             ackCache.put(ackId, Collections.singletonList(Pair.of(channelProgressPair, new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records)))));
             sink.write(ackId, records);
             Record lastRecord = records.get(records.size() - 1);
-            if (lastRecord instanceof FinishedRecord) {
-                channelProgressPairsIterator.remove();
-            }
             if (lastRecord instanceof FinishedRecord && records.stream().noneMatch(DataRecord.class::isInstance)) {
                 channel.ack(records);
                 channelProgressPair.getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
@@ -236,9 +229,14 @@ public final class CDCImporter extends AbstractPipelineLifecycleRunnable impleme
         }
         for (Pair<CDCChannelProgressPair, CDCAckPosition> each : channelPositionPairList) {
             CDCAckPosition ackPosition = each.getRight();
-            each.getLeft().getChannel().ack(Collections.singletonList(ackPosition.getLastRecord()));
+            Record lastRecord = ackPosition.getLastRecord();
+            each.getLeft().getChannel().ack(Collections.singletonList(lastRecord));
+            if (lastRecord instanceof FinishedRecord) {
+                originalChannelProgressPairs.remove(each.getKey());
+            }
             each.getLeft().getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(ackPosition.getDataRecordCount()));
         }
+        ackCache.invalidate(ackId);
     }
     
     @Override

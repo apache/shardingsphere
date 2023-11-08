@@ -17,24 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.client.handler;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.ServerErrorResult;
 
 /**
- * Logger exception handler, just print error.
+ * Server error result handler.
  */
-@RequiredArgsConstructor
-@Slf4j
-public class LoggerExceptionHandler implements ExceptionHandler {
+public interface ServerErrorResultHandler {
     
-    @Override
-    public void handleServerException(final ServerErrorResult result) {
-        log.error("Server error, code: {}, message: {}", result.getErrorCode(), result.getErrorMessage());
-    }
-    
-    @Override
-    public void handleSocketException(final Throwable throwable) {
-        log.error("Socket error: ", throwable);
-    }
+    /**
+     * Handle server ERROR.
+     *
+     * @param ctx channel handler context
+     * @param result error result
+     */
+    void handleServerError(ChannelHandlerContext ctx, ServerErrorResult result);
 }
