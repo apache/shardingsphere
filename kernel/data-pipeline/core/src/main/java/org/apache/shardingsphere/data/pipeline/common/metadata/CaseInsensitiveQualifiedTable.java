@@ -41,6 +41,6 @@ public final class CaseInsensitiveQualifiedTable {
     
     @Override
     public String toString() {
-        return null == schemaName ? tableName.toString() : String.join(".", schemaName.toString(), tableName.toString());
+        return null == schemaName.toString() ? tableName.toString() : String.join(".", schemaName.toString(), tableName.toString());
     }
 }
