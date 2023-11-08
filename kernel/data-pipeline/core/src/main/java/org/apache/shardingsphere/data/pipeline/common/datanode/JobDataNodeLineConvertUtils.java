@@ -75,12 +75,12 @@ public final class JobDataNodeLineConvertUtils {
      * @return actual and logic table name mapper
      */
     public static ActualAndLogicTableNameMapper buildTableNameMapper(final JobDataNodeLine dataNodeLine) {
-        Map<CaseInsensitiveIdentifier, CaseInsensitiveIdentifier> result = new LinkedHashMap<>();
+        Map<CaseInsensitiveIdentifier, CaseInsensitiveIdentifier> map = new LinkedHashMap<>();
         for (JobDataNodeEntry each : dataNodeLine.getEntries()) {
             for (DataNode dataNode : each.getDataNodes()) {
-                result.put(new CaseInsensitiveIdentifier(dataNode.getTableName()), new CaseInsensitiveIdentifier(each.getLogicTableName()));
+                map.put(new CaseInsensitiveIdentifier(dataNode.getTableName()), new CaseInsensitiveIdentifier(each.getLogicTableName()));
             }
         }
-        return new ActualAndLogicTableNameMapper(result);
+        return new ActualAndLogicTableNameMapper(map);
     }
 }

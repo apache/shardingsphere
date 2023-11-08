@@ -68,7 +68,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWith
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.ActualAndLogicTableNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
@@ -89,7 +88,6 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -280,11 +278,8 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         JobDataNodeLine dataNodeLine = jobConfig.getJobShardingDataNodes().get(jobShardingItem);
         String dataSourceName = dataNodeLine.getEntries().iterator().next().getDataNodes().iterator().next().getDataSourceName();
         StandardPipelineDataSourceConfiguration actualDataSourceConfig = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(dataSourceName);
-        Map<CaseInsensitiveIdentifier, CaseInsensitiveIdentifier> tableNameMap = new LinkedHashMap<>();
-        dataNodeLine.getEntries()
-                .forEach(each -> each.getDataNodes().forEach(node -> tableNameMap.put(new CaseInsensitiveIdentifier(node.getTableName()), new CaseInsensitiveIdentifier(each.getLogicTableName()))));
         return new IncrementalDumperContext(
-                new DumperCommonContext(dataSourceName, actualDataSourceConfig, new ActualAndLogicTableNameMapper(tableNameMap), tableAndSchemaNameMapper),
+                new DumperCommonContext(dataSourceName, actualDataSourceConfig, JobDataNodeLineConvertUtils.buildTableNameMapper(dataNodeLine), tableAndSchemaNameMapper),
                 jobConfig.getJobId(), jobConfig.isDecodeWithTX());
     }
     
