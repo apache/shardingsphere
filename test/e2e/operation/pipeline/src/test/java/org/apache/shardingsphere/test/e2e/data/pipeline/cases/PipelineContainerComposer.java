@@ -229,13 +229,14 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public void registerStorageUnit(final String storageUnitName) throws SQLException {
-        String username = getDatabaseType() instanceof OracleDatabaseType ? storageUnitName : getUsername();
+        String username = databaseType instanceof OracleDatabaseType ? storageUnitName : getUsername();
         String registerStorageUnitTemplate = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
                 .replace("${user}", username)
                 .replace("${password}", getPassword())
                 .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, true));
         proxyExecuteWithLog(registerStorageUnitTemplate, 0);
-        Awaitility.await().ignoreExceptions().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
+        int timeout = databaseType instanceof OpenGaussDatabaseType ? 60 : 10;
+        Awaitility.await().ignoreExceptions().atMost(timeout, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
     }
     
     /**

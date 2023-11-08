@@ -56,9 +56,10 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
     private static final List<String> POSTGRESQL_COLUMN_NAMES = Arrays.asList("order_id", "user_id", "status", "t_int2", "t_numeric", "t_bool", "t_bytea", "t_char", "t_varchar", "t_float",
             "t_double", "t_json", "t_jsonb", "t_text", "t_date", "t_time", "t_timestamp", "t_timestamptz");
     
-    private static final List<String> OPENGAUSS_COLUMN_NAMES = Arrays.asList("order_id", "user_id", "status", "c_int", "c_smallint", "c_float", "c_double", "c_numeric", "c_boolean", "c_char",
-            "c_text", "c_bytea", "c_date", "c_time", "c_smalldatetime", "c_timestamp", "c_timestamptz", "c_interval", "c_array", "c_json", "c_jsonb", "c_uuid", "c_hash32", "c_tsvector", "c_bit",
-            "c_int4range", "c_reltime", "c_abstime", "c_point", "c_lseg", "c_box", "c_circle", "c_bitvarying", "c_cidr", "c_inet", "c_macaddr", "c_hll");
+    private static final List<String> OPENGAUSS_COLUMN_NAMES = Arrays.asList("order_id", "user_id", "status", "c_int", "c_smallint", "c_float", "c_double", "c_numeric", "c_boolean",
+            "c_char", "c_text", "c_bytea", "c_raw", "c_date", "c_time", "c_smalldatetime", "c_timestamp", "c_timestamptz", "c_interval", "c_array", "c_json", "c_jsonb", "c_uuid", "c_hash32",
+            "c_tsvector", "c_tsquery", "c_bit", "c_int4range", "c_daterange", "c_tsrange", "c_reltime", "c_abstime", "c_point", "c_lseg", "c_box", "c_circle", "c_bitvarying", "c_cidr", "c_inet",
+            "c_macaddr", "c_hll", "c_money");
     
     private final DataSource dataSource;
     
@@ -132,11 +133,11 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
             LocalDateTime now = LocalDateTime.now();
             String sql = SQLBuilderUtils.buildUpdateSQL(ignoreShardingColumns(OPENGAUSS_COLUMN_NAMES), orderTableName, "?");
             Object[] parameters = {"中文测试", randomInt, random.nextInt(-999, 999), PipelineCaseHelper.generateFloat(), PipelineCaseHelper.generateDouble(), BigDecimal.valueOf(10000),
-                    random.nextBoolean(), "update-char", "update-text", "update-bytea".getBytes(), now.toLocalDate().plusDays(1), now.toLocalTime().plusHours(6), "2023-03-01", now,
+                    random.nextBoolean(), "update-char", "update-text", new byte[]{0, 0, 1}, new byte[]{1, 0}, now.toLocalDate().plusDays(1), now.toLocalTime().plusHours(6), "2023-03-01", now,
                     OffsetDateTime.now(), "1 years 1 mons 1 days 1 hours 1 mins 1 secs", "{4, 5, 6}", PipelineCaseHelper.generateJsonString(1, true), PipelineCaseHelper.generateJsonString(1, false),
-                    UUID.fromString("00000000-000-0000-0000-000000000001").toString(),
-                    DigestUtils.md5Hex(now.toString()), null, "1111", "[1,10000)", "2 years 2 mons 2 days 06:00:00", "2023-01-01 00:00:00+00", "(2.0,2.0)",
-                    "[(0.0,0.0),(3.0,3.0)]", "(1.0,1.0),(3.0,3.0)", "<(5.0,5.0),1.0>", "1010", "192.168.0.0/24", "192.168.1.1", "08:00:3b:01:02:03", null, orderId};
+                    UUID.fromString("00000000-000-0000-0000-000000000001").toString(), DigestUtils.md5Hex(now.toString()), "aaa", "bbb", "1111", "[1,10000)", "[2020-01-02,2021-01-01)",
+                    "[2020-01-01 00:00:00,2021-01-01 00:00:00)", "2 years 2 mons 2 days 06:00:00", "2023-01-01 00:00:00+00", "(2.0,2.0)", "[(0.0,0.0),(3.0,3.0)]", "(1.0,1.0),(3.0,3.0)",
+                    "<(5.0,5.0),1.0>", "1010", "192.168.0.0/24", "192.168.1.1", "08:00:3b:01:02:03", null, 1000, orderId};
             log.info("update sql: {}, params: {}", sql, parameters);
             DataSourceExecuteUtils.execute(dataSource, sql, parameters);
         }
