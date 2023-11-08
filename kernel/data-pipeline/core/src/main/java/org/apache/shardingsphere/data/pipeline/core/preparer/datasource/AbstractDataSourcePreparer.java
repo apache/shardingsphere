@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.CreateTableConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.CreateTableConfiguration.CreateTableEntry;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.metadata.generator.PipelineDDLGenerator;
@@ -56,11 +55,11 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         if (!dialectDatabaseMetaData.isSchemaAvailable()) {
             return;
         }
-        CreateTableConfiguration createTableConfig = param.getCreateTableConfig();
+        Collection<CreateTableConfiguration> createTableConfigs = param.getCreateTableConfigurations();
         String defaultSchema = dialectDatabaseMetaData.getDefaultSchema().orElse(null);
         PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(targetDatabaseType);
         Collection<String> createdSchemaNames = new HashSet<>();
-        for (CreateTableEntry each : createTableConfig.getCreateTableEntries()) {
+        for (CreateTableConfiguration each : createTableConfigs) {
             String targetSchemaName = each.getTargetName().getSchemaName().toString();
             if (null == targetSchemaName || targetSchemaName.equalsIgnoreCase(defaultSchema) || createdSchemaNames.contains(targetSchemaName)) {
                 continue;
@@ -113,13 +112,13 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
     }
     
-    protected final String getCreateTargetTableSQL(final CreateTableEntry createTableEntry, final PipelineDataSourceManager dataSourceManager,
+    protected final String getCreateTargetTableSQL(final CreateTableConfiguration createTableConfig, final PipelineDataSourceManager dataSourceManager,
                                                    final SQLParserEngine sqlParserEngine) throws SQLException {
-        DatabaseType databaseType = createTableEntry.getSourceDataSourceConfig().getDatabaseType();
-        DataSource sourceDataSource = dataSourceManager.getDataSource(createTableEntry.getSourceDataSourceConfig());
-        String schemaName = createTableEntry.getSourceName().getSchemaName().toString();
-        String sourceTableName = createTableEntry.getSourceName().getTableName().toString();
-        String targetTableName = createTableEntry.getTargetName().getTableName().toString();
+        DatabaseType databaseType = createTableConfig.getSourceDataSourceConfig().getDatabaseType();
+        DataSource sourceDataSource = dataSourceManager.getDataSource(createTableConfig.getSourceDataSourceConfig());
+        String schemaName = createTableConfig.getSourceName().getSchemaName().toString();
+        String sourceTableName = createTableConfig.getSourceName().getTableName().toString();
+        String targetTableName = createTableConfig.getTargetName().getTableName().toString();
         PipelineDDLGenerator generator = new PipelineDDLGenerator();
         return generator.generateLogicDDL(databaseType, sourceDataSource, schemaName, sourceTableName, targetTableName, sqlParserEngine);
     }

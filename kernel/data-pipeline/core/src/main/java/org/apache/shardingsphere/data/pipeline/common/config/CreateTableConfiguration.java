@@ -23,29 +23,19 @@ import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.metadata.SchemaTableName;
 
-import java.util.Collection;
-
 /**
  * Create table configuration.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
+@ToString(exclude = {"sourceDataSourceConfig", "targetDataSourceConfig"})
 public final class CreateTableConfiguration {
     
-    private final Collection<CreateTableEntry> createTableEntries;
+    private final PipelineDataSourceConfiguration sourceDataSourceConfig;
     
-    @RequiredArgsConstructor
-    @Getter
-    @ToString(exclude = {"sourceDataSourceConfig", "targetDataSourceConfig"})
-    public static final class CreateTableEntry {
-        
-        private final PipelineDataSourceConfiguration sourceDataSourceConfig;
-        
-        private final SchemaTableName sourceName;
-        
-        private final PipelineDataSourceConfiguration targetDataSourceConfig;
-        
-        private final SchemaTableName targetName;
-    }
+    private final SchemaTableName sourceName;
+    
+    private final PipelineDataSourceConfiguration targetDataSourceConfig;
+    
+    private final SchemaTableName targetName;
 }

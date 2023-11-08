@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
 
 import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.config.CreateTableConfiguration.CreateTableEntry;
+import org.apache.shardingsphere.data.pipeline.common.config.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PrepareTargetSchemasParameter;
@@ -50,7 +50,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter param) throws SQLException {
         PipelineDataSourceManager dataSourceManager = param.getDataSourceManager();
-        for (CreateTableEntry each : param.getCreateTableConfig().getCreateTableEntries()) {
+        for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
             String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine());
             try (Connection targetConnection = getCachedDataSource(dataSourceManager, each.getTargetDataSourceConfig()).getConnection()) {
                 for (String sql : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(createTargetTableSQL)) {

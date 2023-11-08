@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfigurati
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.CreateTableConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.CreateTableConfiguration.CreateTableEntry;
 import org.apache.shardingsphere.data.pipeline.common.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipelineJobConfiguration;
@@ -264,34 +263,32 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         MigrationJobConfiguration jobConfig = (MigrationJobConfiguration) pipelineJobConfig;
         IncrementalDumperContext incrementalDumperContext = new MigrationIncrementalDumperContextCreator(
                 jobConfig).createDumperContext(jobConfig.getJobShardingDataNodes().get(jobShardingItem));
-        CreateTableConfiguration createTableConfig = buildCreateTableConfiguration(jobConfig, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
+        Collection<CreateTableConfiguration> createTableConfigs = buildCreateTableConfigurations(jobConfig, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
         Set<CaseInsensitiveIdentifier> targetTableNames = jobConfig.getTargetTableNames().stream().map(CaseInsensitiveIdentifier::new).collect(Collectors.toSet());
         Map<CaseInsensitiveIdentifier, Set<String>> shardingColumnsMap = new ShardingColumnsExtractor().getShardingColumnsMap(
                 ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), targetTableNames);
         ImporterConfiguration importerConfig = buildImporterConfiguration(
                 jobConfig, pipelineProcessConfig, shardingColumnsMap, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
         MigrationTaskConfiguration result = new MigrationTaskConfiguration(
-                incrementalDumperContext.getCommonContext().getDataSourceName(), createTableConfig, incrementalDumperContext, importerConfig);
+                incrementalDumperContext.getCommonContext().getDataSourceName(), createTableConfigs, incrementalDumperContext, importerConfig);
         log.info("buildTaskConfiguration, result={}", result);
         return result;
     }
     
-    private CreateTableConfiguration buildCreateTableConfiguration(final MigrationJobConfiguration jobConfig,
-                                                                   final TableAndSchemaNameMapper tableAndSchemaNameMapper) {
-        Collection<CreateTableEntry> createTableEntries = new LinkedList<>();
+    private Collection<CreateTableConfiguration> buildCreateTableConfigurations(final MigrationJobConfiguration jobConfig, final TableAndSchemaNameMapper tableAndSchemaNameMapper) {
+        Collection<CreateTableConfiguration> result = new LinkedList<>();
         for (JobDataNodeEntry each : jobConfig.getTablesFirstDataNodes().getEntries()) {
             String sourceSchemaName = tableAndSchemaNameMapper.getSchemaName(each.getLogicTableName());
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(jobConfig.getTargetDatabaseType()).getDialectDatabaseMetaData();
             String targetSchemaName = dialectDatabaseMetaData.isSchemaAvailable() ? sourceSchemaName : null;
             DataNode dataNode = each.getDataNodes().get(0);
             PipelineDataSourceConfiguration sourceDataSourceConfig = jobConfig.getSources().get(dataNode.getDataSourceName());
-            CreateTableEntry createTableEntry = new CreateTableEntry(
+            CreateTableConfiguration createTableConfig = new CreateTableConfiguration(
                     sourceDataSourceConfig, new SchemaTableName(sourceSchemaName, dataNode.getTableName()),
                     jobConfig.getTarget(), new SchemaTableName(targetSchemaName, each.getLogicTableName()));
-            createTableEntries.add(createTableEntry);
+            result.add(createTableConfig);
         }
-        CreateTableConfiguration result = new CreateTableConfiguration(createTableEntries);
-        log.info("getCreateTableConfiguration, result={}", result);
+        log.info("buildCreateTableConfigurations, result={}", result);
         return result;
     }
     
