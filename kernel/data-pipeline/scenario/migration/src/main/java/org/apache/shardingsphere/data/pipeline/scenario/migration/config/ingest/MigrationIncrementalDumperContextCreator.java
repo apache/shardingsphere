@@ -38,7 +38,7 @@ public final class MigrationIncrementalDumperContextCreator implements Increment
     @Override
     public IncrementalDumperContext createDumperContext(final JobDataNodeLine jobDataNodeLine) {
         String dataSourceName = jobDataNodeLine.getEntries().get(0).getDataNodes().get(0).getDataSourceName();
-        ActualAndLogicTableNameMapper tableNameMapper = new ActualAndLogicTableNameMapper(JobDataNodeLineConvertUtils.buildTableNameMap(jobDataNodeLine));
+        ActualAndLogicTableNameMapper tableNameMapper = JobDataNodeLineConvertUtils.buildTableNameMapper(jobDataNodeLine);
         TableAndSchemaNameMapper tableAndSchemaNameMapper = new TableAndSchemaNameMapper(jobConfig.getTargetTableSchemaMap());
         return new IncrementalDumperContext(
                 new DumperCommonContext(dataSourceName, jobConfig.getSources().get(dataSourceName), tableNameMapper, tableAndSchemaNameMapper), jobConfig.getJobId(), false);
