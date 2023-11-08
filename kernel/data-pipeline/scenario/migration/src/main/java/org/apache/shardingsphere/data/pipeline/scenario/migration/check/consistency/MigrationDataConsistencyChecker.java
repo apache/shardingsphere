@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.metadata.SchemaTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineTableMetaData;
@@ -86,7 +86,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         progressContext.setRecordsCount(getRecordsCount());
         progressContext.getTableNames().addAll(sourceTableNames);
         progressContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
-        Map<SchemaTableName, TableDataConsistencyCheckResult> result = new LinkedHashMap<>();
+        Map<CaseInsensitiveQualifiedTable, TableDataConsistencyCheckResult> result = new LinkedHashMap<>();
         try (
                 PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
                 TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps)) {
@@ -94,7 +94,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
                 checkTableInventoryData(each, tableChecker, result, dataSourceManager);
             }
         }
-        return result.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().marshal(), Entry::getValue));
+        return result.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue));
     }
     
     private long getRecordsCount() {
@@ -103,11 +103,11 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     }
     
     private void checkTableInventoryData(final JobDataNodeLine jobDataNodeLine, final TableDataConsistencyChecker tableChecker,
-                                         final Map<SchemaTableName, TableDataConsistencyCheckResult> checkResultMap, final PipelineDataSourceManager dataSourceManager) {
+                                         final Map<CaseInsensitiveQualifiedTable, TableDataConsistencyCheckResult> checkResultMap, final PipelineDataSourceManager dataSourceManager) {
         for (JobDataNodeEntry entry : jobDataNodeLine.getEntries()) {
             for (DataNode each : entry.getDataNodes()) {
                 TableDataConsistencyCheckResult checkResult = checkSingleTableInventoryData(entry.getLogicTableName(), each, tableChecker, dataSourceManager);
-                checkResultMap.put(new SchemaTableName(each.getSchemaName(), each.getTableName()), checkResult);
+                checkResultMap.put(new CaseInsensitiveQualifiedTable(each.getSchemaName(), each.getTableName()), checkResult);
                 if (!checkResult.isMatched() && tableChecker.isBreakOnInventoryCheckNotMatched()) {
                     log.info("Unmatched on table '{}', ignore left tables", DataNodeUtils.formatWithSchema(each));
                     return;
@@ -118,8 +118,8 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     
     private TableDataConsistencyCheckResult checkSingleTableInventoryData(final String targetTableName, final DataNode dataNode,
                                                                           final TableDataConsistencyChecker tableChecker, final PipelineDataSourceManager dataSourceManager) {
-        SchemaTableName sourceTable = new SchemaTableName(dataNode.getSchemaName(), dataNode.getTableName());
-        SchemaTableName targetTable = new SchemaTableName(dataNode.getSchemaName(), targetTableName);
+        CaseInsensitiveQualifiedTable sourceTable = new CaseInsensitiveQualifiedTable(dataNode.getSchemaName(), dataNode.getTableName());
+        CaseInsensitiveQualifiedTable targetTable = new CaseInsensitiveQualifiedTable(dataNode.getSchemaName(), targetTableName);
         PipelineDataSourceWrapper sourceDataSource = dataSourceManager.getDataSource(jobConfig.getSources().get(dataNode.getDataSourceName()));
         PipelineDataSourceWrapper targetDataSource = dataSourceManager.getDataSource(jobConfig.getTarget());
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);

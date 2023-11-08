@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.consistencycheck.ta
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.shardingsphere.data.pipeline.common.metadata.SchemaTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
@@ -108,6 +108,6 @@ class RecordSingleTableInventoryCalculatorTest {
     
     private SingleTableInventoryCalculateParameter generateParameter(final PipelineDataSourceWrapper dataSource, final Object dataCheckPosition) {
         List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "integer", false, true, true));
-        return new SingleTableInventoryCalculateParameter(dataSource, new SchemaTableName(null, "t_order"), Collections.emptyList(), uniqueKeys, dataCheckPosition);
+        return new SingleTableInventoryCalculateParameter(dataSource, new CaseInsensitiveQualifiedTable(null, "t_order"), Collections.emptyList(), uniqueKeys, dataCheckPosition);
     }
 }

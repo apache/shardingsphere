@@ -41,7 +41,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobCodeRegistry;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
-import org.apache.shardingsphere.data.pipeline.common.metadata.SchemaTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineSchemaUtils;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.data.pipeline.common.pojo.TableBasedPipelineJobInfo;
@@ -284,8 +284,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
             DataNode dataNode = each.getDataNodes().get(0);
             PipelineDataSourceConfiguration sourceDataSourceConfig = jobConfig.getSources().get(dataNode.getDataSourceName());
             CreateTableConfiguration createTableConfig = new CreateTableConfiguration(
-                    sourceDataSourceConfig, new SchemaTableName(sourceSchemaName, dataNode.getTableName()),
-                    jobConfig.getTarget(), new SchemaTableName(targetSchemaName, each.getLogicTableName()));
+                    sourceDataSourceConfig, new CaseInsensitiveQualifiedTable(sourceSchemaName, dataNode.getTableName()),
+                    jobConfig.getTarget(), new CaseInsensitiveQualifiedTable(targetSchemaName, each.getLogicTableName()));
             result.add(createTableConfig);
         }
         log.info("buildCreateTableConfigurations, result={}", result);

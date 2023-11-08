@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartStreami
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.common.metadata.SchemaTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineTableMetaData;
@@ -132,14 +132,14 @@ class CDCE2EIT {
             }
             Awaitility.await().atMost(20L, TimeUnit.SECONDS).pollInterval(2L, TimeUnit.SECONDS)
                     .until(() -> listOrderRecords(containerComposer, getOrderTableNameWithSchema(dialectDatabaseMetaData)).size() == actualProxyList.size());
-            SchemaTableName orderSchemaTableName = dialectDatabaseMetaData.isSchemaAvailable()
-                    ? new SchemaTableName(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME)
-                    : new SchemaTableName(null, SOURCE_TABLE_NAME);
+            CaseInsensitiveQualifiedTable orderSchemaTableName = dialectDatabaseMetaData.isSchemaAvailable()
+                    ? new CaseInsensitiveQualifiedTable(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME)
+                    : new CaseInsensitiveQualifiedTable(null, SOURCE_TABLE_NAME);
             PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(dataSource, containerComposer.getDatabaseType());
             PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(createStandardDataSource(containerComposer, PipelineContainerComposer.DS_4),
                     containerComposer.getDatabaseType());
             assertDataMatched(sourceDataSource, targetDataSource, orderSchemaTableName);
-            assertDataMatched(sourceDataSource, targetDataSource, new SchemaTableName(null, "t_address"));
+            assertDataMatched(sourceDataSource, targetDataSource, new CaseInsensitiveQualifiedTable(null, "t_address"));
             containerComposer.proxyExecuteWithLog(String.format("DROP STREAMING '%s'", jobId), 0);
             assertTrue(containerComposer.queryForListWithLog("SHOW STREAMING LIST").isEmpty());
         }
@@ -191,7 +191,7 @@ class CDCE2EIT {
         return dialectDatabaseMetaData.isSchemaAvailable() ? String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME) : SOURCE_TABLE_NAME;
     }
     
-    private void assertDataMatched(final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource, final SchemaTableName schemaTableName) {
+    private void assertDataMatched(final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource, final CaseInsensitiveQualifiedTable schemaTableName) {
         StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaTableName.getSchemaName().toString(), schemaTableName.getTableName().toString());
         List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0)));
