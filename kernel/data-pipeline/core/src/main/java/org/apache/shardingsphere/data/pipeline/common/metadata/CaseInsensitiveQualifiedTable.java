@@ -20,33 +20,27 @@ package org.apache.shardingsphere.data.pipeline.common.metadata;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 /**
- * Schema name and table name.
+ * Case insensitive qualified table.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-@ToString
-public final class SchemaTableName {
+// TODO should merge with QualifiedTable
+public final class CaseInsensitiveQualifiedTable {
     
     private final CaseInsensitiveIdentifier schemaName;
     
     private final CaseInsensitiveIdentifier tableName;
     
-    public SchemaTableName(final String schemaName, final String tableName) {
+    public CaseInsensitiveQualifiedTable(final String schemaName, final String tableName) {
         this.schemaName = new CaseInsensitiveIdentifier(schemaName);
         this.tableName = new CaseInsensitiveIdentifier(tableName);
     }
     
-    /**
-     * Marshal to text.
-     *
-     * @return text
-     */
-    public String marshal() {
-        String schemaName = this.schemaName.toString();
-        return null == schemaName ? tableName.toString() : schemaName + "." + tableName;
+    @Override
+    public String toString() {
+        return null == schemaName.toString() ? tableName.toString() : String.join(".", schemaName.toString(), tableName.toString());
     }
 }

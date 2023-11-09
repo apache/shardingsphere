@@ -23,6 +23,8 @@ import org.apache.shardingsphere.data.pipeline.common.config.CreateTableConfigur
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 
+import java.util.Collection;
+
 /**
  * Prepare target tables parameter.
  */
@@ -30,7 +32,7 @@ import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 @Getter
 public final class PrepareTargetTablesParameter {
     
-    private final CreateTableConfiguration createTableConfig;
+    private final Collection<CreateTableConfiguration> createTableConfigurations;
     
     private final PipelineDataSourceManager dataSourceManager;
     

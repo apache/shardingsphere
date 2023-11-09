@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calc
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.common.metadata.SchemaTableName;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -40,7 +40,7 @@ public final class SingleTableInventoryCalculateParameter {
      */
     private final PipelineDataSourceWrapper dataSource;
     
-    private final SchemaTableName table;
+    private final CaseInsensitiveQualifiedTable table;
     
     private final List<String> columnNames;
     

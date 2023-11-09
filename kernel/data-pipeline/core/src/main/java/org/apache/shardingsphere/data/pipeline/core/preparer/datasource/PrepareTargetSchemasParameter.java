@@ -23,6 +23,8 @@ import org.apache.shardingsphere.data.pipeline.common.config.CreateTableConfigur
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
+import java.util.Collection;
+
 /**
  * Prepare target schemas parameter.
  */
@@ -32,7 +34,7 @@ public final class PrepareTargetSchemasParameter {
     
     private final DatabaseType targetDatabaseType;
     
-    private final CreateTableConfiguration createTableConfig;
+    private final Collection<CreateTableConfiguration> createTableConfigurations;
     
     private final PipelineDataSourceManager dataSourceManager;
 }

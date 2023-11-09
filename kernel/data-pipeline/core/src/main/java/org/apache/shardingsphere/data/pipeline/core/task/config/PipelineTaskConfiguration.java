@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.config;
+package org.apache.shardingsphere.data.pipeline.core.task.config;
 
 /**
  * Pipeline task configuration.
