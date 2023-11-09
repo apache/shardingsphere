@@ -491,7 +491,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     @Override
     public JobType getJobType() {
-        return TypedSPILoader.getService(JobType.class, JobCodeRegistry.getJobType(MigrationJobType.TYPE_CODE));
+        return JobCodeRegistry.getJobType(MigrationJobType.TYPE_CODE);
     }
     
     @Override

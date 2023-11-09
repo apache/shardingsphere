@@ -33,12 +33,12 @@ import java.util.Map;
 @Slf4j
 public final class JobCodeRegistry {
     
-    private static final Map<String, String> JOB_CODE_AND_TYPE_MAP = new HashMap<>();
+    private static final Map<String, JobType> JOB_CODE_AND_TYPE_MAP = new HashMap<>();
     
     static {
         for (JobType each : ShardingSphereServiceLoader.getServiceInstances(JobType.class)) {
             Preconditions.checkArgument(2 == each.getCode().length(), "Job type code length is not 2.");
-            JOB_CODE_AND_TYPE_MAP.put(each.getCode(), each.getType());
+            JOB_CODE_AND_TYPE_MAP.put(each.getCode(), each);
         }
     }
     
@@ -48,9 +48,8 @@ public final class JobCodeRegistry {
      * @param jobTypeCode job type code
      * @return job type
      */
-    public static String getJobType(final String jobTypeCode) {
-        String result = JOB_CODE_AND_TYPE_MAP.get(jobTypeCode);
-        Preconditions.checkNotNull(result, "Can not get job type by `%s`.", jobTypeCode);
-        return result;
+    public static JobType getJobType(final String jobTypeCode) {
+        Preconditions.checkArgument(JOB_CODE_AND_TYPE_MAP.containsKey(jobTypeCode), "Can not get job type by `%s`.", jobTypeCode);
+        return JOB_CODE_AND_TYPE_MAP.get(jobTypeCode);
     }
 }

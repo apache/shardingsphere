@@ -406,6 +406,6 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
     
     @Override
     public JobType getJobType() {
-        return TypedSPILoader.getService(JobType.class, JobCodeRegistry.getJobType(ConsistencyCheckJobType.TYPE_CODE));
+        return JobCodeRegistry.getJobType(ConsistencyCheckJobType.TYPE_CODE);
     }
 }
