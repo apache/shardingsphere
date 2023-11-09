@@ -15,11 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.spi.job;
+package org.apache.shardingsphere.data.pipeline.common.job.type;
 
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobCodeRegistry;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,7 +26,6 @@ class JobCodeRegistryTest {
     
     @Test
     void assertGetJobType() {
-        assertThat(JobCodeRegistry.getJobType(MigrationJobType.TYPE_CODE), is("MIGRATION"));
-        assertThat(JobCodeRegistry.getJobType(ConsistencyCheckJobType.TYPE_CODE), is("CONSISTENCY_CHECK"));
+        assertThat(JobCodeRegistry.getJobType("00").getType(), is("FIXTURE"));
     }
 }

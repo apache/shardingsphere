@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.common.job.type.JobCodeRegistry;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.common.util.InstanceTypeUtils;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.nio.charset.StandardCharsets;
 
@@ -63,8 +62,7 @@ public final class PipelineJobIdUtils {
      */
     public static JobType parseJobType(final String jobId) {
         verifyJobId(jobId);
-        String jobTypeCode = jobId.substring(1, 3);
-        return TypedSPILoader.getService(JobType.class, JobCodeRegistry.getJobType(jobTypeCode));
+        return JobCodeRegistry.getJobType(jobId.substring(1, 3));
     }
     
     private static void verifyJobId(final String jobId) {
