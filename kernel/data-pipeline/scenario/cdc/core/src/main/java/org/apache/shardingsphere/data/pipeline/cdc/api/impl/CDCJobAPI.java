@@ -63,6 +63,7 @@ import org.apache.shardingsphere.data.pipeline.common.task.progress.IncrementalT
 import org.apache.shardingsphere.data.pipeline.common.util.ShardingColumnsExtractor;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
@@ -328,17 +329,14 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     }
     
     /**
-     * Stop and drop job.
+     * Drop streaming job.
      *
      * @param jobId job id
      */
-    public void stopAndDrop(final String jobId) {
-        CDCJobConfiguration jobConfig = getJobConfiguration(jobId);
-        if (CDCSinkType.SOCKET == jobConfig.getSinkConfig().getSinkType()) {
-            PipelineJobCenter.stop(jobId);
-        } else {
-            stop(jobId);
-        }
+    public void dropStreaming(final String jobId) {
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        CDCJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
+        ShardingSpherePreconditions.checkState(jobConfigPOJO.isDisabled(), () -> new PipelineInternalException("Can't drop streaming job which is active"));
         dropJob(jobId);
         cleanup(jobConfig);
     }
