@@ -36,7 +36,10 @@ public final class JobCodeRegistry {
     private static final Map<String, String> JOB_CODE_AND_TYPE_MAP = new HashMap<>();
     
     static {
-        ShardingSphereServiceLoader.getServiceInstances(JobType.class).forEach(each -> JOB_CODE_AND_TYPE_MAP.put(each.getCode(), each.getType()));
+        for (JobType each : ShardingSphereServiceLoader.getServiceInstances(JobType.class)) {
+            Preconditions.checkArgument(2 == each.getCode().length(), "Job type code length is not 2.");
+            JOB_CODE_AND_TYPE_MAP.put(each.getCode(), each.getType());
+        }
     }
     
     /**

@@ -17,16 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.api.job.type;
 
-import org.apache.shardingsphere.data.pipeline.common.job.type.AbstractJobType;
+import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 
 /**
  * CDC job type.
  */
-public final class CDCJobType extends AbstractJobType {
+public final class CDCJobType implements JobType {
     
-    public static final String TYPE_CODE = "03";
+    @Override
+    public String getCode() {
+        return "03";
+    }
     
-    public CDCJobType() {
-        super("STREAMING", TYPE_CODE);
+    @Override
+    public String getType() {
+        return "STREAMING";
     }
 }
