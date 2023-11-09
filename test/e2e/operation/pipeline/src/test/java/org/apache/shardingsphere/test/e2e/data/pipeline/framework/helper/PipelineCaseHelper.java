@@ -107,8 +107,8 @@ public final class PipelineCaseHelper {
         if (databaseType instanceof OpenGaussDatabaseType) {
             for (int i = 0; i < insertRows; i++) {
                 Object orderId = keyGenerateAlgorithm.generateKey();
-                result.add(new Object[]{orderId, generateInt(0, 1000), "'status'" + i, generateInt(-1000, 9999), generateInt(0, 100), generateInt(-64, 64), generateFloat(), generateDouble(),
-                        BigDecimal.valueOf(generateDouble()), false, generateString(6), "texts", "bytea".getBytes(), LocalDate.now(), LocalTime.now(), "2001-10-01",
+                result.add(new Object[]{orderId, generateInt(0, 1000), "'status'" + i, generateInt(-1000, 9999), generateInt(0, 100), generateFloat(), generateDouble(),
+                        BigDecimal.valueOf(generateDouble()), false, generateString(6), "texts", "bytea".getBytes(), new byte[]{0, 1, 2}, LocalDate.now(), LocalTime.now(), "2001-10-01",
                         Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now(), "0 years 0 mons 1 days 2 hours 3 mins 4 secs", "{1, 2, 3}", generateJsonString(8, false),
                         generateJsonString(8, true), UUID.randomUUID().toString(), DigestUtils.md5Hex(orderId.toString()), "'rat' 'sat'", "tsquery", "0000", "[1,1000)",
                         "[2020-01-02,2021-01-01)", "[2020-01-01 00:00:00,2021-01-01 00:00:00)", "1 years 1 mons 10 days -06:00:00", "2000-01-02 00:00:00+00", "(1.0,1.0)", "[(0.0,0.0),(2.0,2.0)]",
