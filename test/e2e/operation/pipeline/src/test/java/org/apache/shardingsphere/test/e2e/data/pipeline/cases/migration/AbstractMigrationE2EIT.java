@@ -76,8 +76,7 @@ public abstract class AbstractMigrationE2EIT {
                 .replace("${ds3}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_3, true))
                 .replace("${ds4}", containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, true));
         containerComposer.proxyExecuteWithLog(addTargetResource, 0);
-        long timeout = containerComposer.getDatabaseType() instanceof OpenGaussDatabaseType ? 60L : 10L;
-        Awaitility.await().ignoreExceptions().atMost(timeout, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> 3 == containerComposer.showStorageUnitsName().size());
+        Awaitility.await().ignoreExceptions().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> 3 == containerComposer.showStorageUnitsName().size());
     }
     
     protected void createSourceSchema(final PipelineContainerComposer containerComposer, final String schemaName) throws SQLException {

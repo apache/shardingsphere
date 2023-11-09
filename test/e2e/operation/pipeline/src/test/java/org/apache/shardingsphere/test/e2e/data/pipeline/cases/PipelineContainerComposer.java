@@ -235,7 +235,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
                 .replace("${password}", getPassword())
                 .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, true));
         proxyExecuteWithLog(registerStorageUnitTemplate, 0);
-        long timeout = databaseType instanceof OpenGaussDatabaseType ? 40L : 10L;
+        int timeout = databaseType instanceof OpenGaussDatabaseType ? 60 : 10;
         Awaitility.await().ignoreExceptions().atMost(timeout, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
     }
     
