@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.common.context;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,7 +48,7 @@ public final class PipelineContextManager {
      * @return context
      */
     public static PipelineContext getProxyContext() {
-        return CONTEXT_MAP.get(PipelineContextKey.buildForProxy());
+        return CONTEXT_MAP.get(new PipelineContextKey(InstanceType.PROXY));
     }
     
     /**
