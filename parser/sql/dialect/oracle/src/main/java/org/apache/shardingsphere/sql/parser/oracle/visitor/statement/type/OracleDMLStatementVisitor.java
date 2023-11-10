@@ -670,20 +670,17 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     }
     
     private void setSelectCombineClause(final SelectCombineClauseContext ctx, final OracleSelectStatement result, final OracleSelectStatement left) {
-        for (int i = 0; i < ctx.selectSubquery().size(); i++) {
-            CombineType combineType;
-            if (null != ctx.UNION(i) && null != ctx.ALL(i)) {
-                combineType = CombineType.UNION_ALL;
-            } else if (null != ctx.UNION(i)) {
-                combineType = CombineType.UNION;
-            } else if (null != ctx.INTERSECT(i)) {
-                combineType = CombineType.INTERSECT;
-            } else {
-                combineType = CombineType.MINUS;
-            }
-            result.setCombine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left,
-                    combineType, (OracleSelectStatement) visit(ctx.selectSubquery(i))));
+        CombineType combineType;
+        if (null != ctx.UNION(0) && null != ctx.ALL(0)) {
+            combineType = CombineType.UNION_ALL;
+        } else if (null != ctx.UNION(0)) {
+            combineType = CombineType.UNION;
+        } else if (null != ctx.INTERSECT(0)) {
+            combineType = CombineType.INTERSECT;
+        } else {
+            combineType = CombineType.MINUS;
         }
+        result.setCombine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left, combineType, (OracleSelectStatement) visit(ctx.selectSubquery(0))));
     }
     
     @Override
