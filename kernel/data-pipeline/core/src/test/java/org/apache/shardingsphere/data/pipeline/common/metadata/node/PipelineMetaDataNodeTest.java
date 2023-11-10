@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.common.metadata.node;
 
-import org.apache.shardingsphere.data.pipeline.common.job.type.FixtureJobType;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
@@ -38,12 +37,12 @@ class PipelineMetaDataNodeTest {
     
     @Test
     void assertGetMetaDataDataSourcesPath() {
-        MatcherAssert.assertThat(PipelineMetaDataNode.getMetaDataDataSourcesPath(new FixtureJobType()), is(migrationMetaDataRootPath + "/data_sources"));
+        MatcherAssert.assertThat(PipelineMetaDataNode.getMetaDataDataSourcesPath("FIXTURE"), is(migrationMetaDataRootPath + "/data_sources"));
     }
     
     @Test
     void assertGetMetaDataProcessConfigPath() {
-        assertThat(PipelineMetaDataNode.getMetaDataProcessConfigPath(new FixtureJobType()), is(migrationMetaDataRootPath + "/process_config"));
+        assertThat(PipelineMetaDataNode.getMetaDataProcessConfigPath("FIXTURE"), is(migrationMetaDataRootPath + "/process_config"));
     }
     
     @Test

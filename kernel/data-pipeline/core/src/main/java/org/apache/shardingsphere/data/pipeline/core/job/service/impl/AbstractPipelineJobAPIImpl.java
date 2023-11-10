@@ -71,7 +71,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     private Stream<JobBriefInfo> getJobBriefInfos(final PipelineContextKey contextKey) {
         return PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"))
-                .filter(each -> PipelineJobIdUtils.parseJobType(each.getJobName()).getCode().equals(getJobType().getCode()));
+                .filter(each -> PipelineJobIdUtils.parseJobType(each.getJobName()).getType().equals(getType()));
     }
     
     // TODO Add getJobInfo
