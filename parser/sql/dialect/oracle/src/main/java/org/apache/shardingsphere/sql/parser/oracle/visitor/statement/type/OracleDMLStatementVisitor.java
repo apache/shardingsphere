@@ -108,6 +108,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UsingC
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
@@ -117,6 +118,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.In
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
@@ -649,17 +651,15 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitSelectCombineClause(final SelectCombineClauseContext ctx) {
-        OracleSelectStatement result;
-        if (null != ctx.queryBlock()) {
-            result = (OracleSelectStatement) visit(ctx.queryBlock());
-        } else {
-            result = (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
+        OracleSelectStatement result = new OracleSelectStatement();
+        OracleSelectStatement left = null != ctx.queryBlock() ? (OracleSelectStatement) visit(ctx.queryBlock()) : (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
+        if (null != ctx.selectSubquery()) {
+            result.setProjections(left.getProjections());
+            result.setFrom(left.getFrom());
+            visitSelectCombineClause(ctx, result, left);
         }
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
-        }
-        for (SelectSubqueryContext each : ctx.selectSubquery()) {
-            visit(each);
         }
         return result;
     }
@@ -667,6 +667,23 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitParenthesisSelectSubquery(final ParenthesisSelectSubqueryContext ctx) {
         return visit(ctx.selectSubquery());
+    }
+    
+    private void visitSelectCombineClause(final SelectCombineClauseContext ctx, final OracleSelectStatement result, final OracleSelectStatement left) {
+        for (int i = 0 ; i < ctx.selectSubquery().size(); i++) {
+            CombineType combineType;
+            if (null != ctx.UNION(i) && null != ctx.ALL(i)) {
+                combineType = CombineType.UNION_ALL;
+            } else if (null != ctx.UNION(i)) {
+                combineType = CombineType.UNION;
+            } else if (null != ctx.INTERSECT(i)) {
+                combineType = CombineType.INTERSECT;
+            } else {
+                combineType = CombineType.MINUS;
+            }
+            result.setCombine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left,
+                    combineType, (OracleSelectStatement) visit(ctx.selectSubquery(i))));
+        }
     }
     
     @Override
