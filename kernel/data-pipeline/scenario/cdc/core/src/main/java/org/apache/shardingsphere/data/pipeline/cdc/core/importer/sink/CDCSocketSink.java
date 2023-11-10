@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink;
 
 import io.netty.channel.Channel;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
@@ -55,6 +56,7 @@ public final class CDCSocketSink implements PipelineSink {
     
     private final ShardingSphereDatabase database;
     
+    @Getter
     private final Channel channel;
     
     private final Map<String, String> tableNameSchemaMap = new HashMap<>();

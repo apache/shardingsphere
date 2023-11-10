@@ -163,8 +163,8 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
             return decodeString(data.substring(1));
         }
         switch (columnType) {
+            case "tinyint":
             case "smallint":
-                return Short.parseShort(data);
             case "integer":
                 return Integer.parseInt(data);
             case "bigint":

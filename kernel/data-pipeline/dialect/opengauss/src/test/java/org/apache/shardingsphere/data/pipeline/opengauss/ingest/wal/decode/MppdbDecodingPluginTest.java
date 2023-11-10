@@ -304,4 +304,18 @@ class MppdbDecodingPluginTest {
         Object byteaObj = actual.getAfterRow().get(0);
         assertThat(byteaObj.toString(), is("'fff' | 'faa'"));
     }
+    
+    @Test
+    void assertDecodeWitTinyint() {
+        MppTableData tableData = new MppTableData();
+        tableData.setTableName("public.test");
+        tableData.setOpType("INSERT");
+        tableData.setColumnsName(new String[]{"data"});
+        tableData.setColumnsType(new String[]{"tinyint"});
+        tableData.setColumnsVal(new String[]{"255"});
+        ByteBuffer data = ByteBuffer.wrap(toJSON(tableData).getBytes());
+        WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null).decode(data, logSequenceNumber);
+        Object byteaObj = actual.getAfterRow().get(0);
+        assertThat(byteaObj, is(255));
+    }
 }
