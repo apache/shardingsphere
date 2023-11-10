@@ -656,7 +656,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.selectSubquery()) {
             result.setProjections(left.getProjections());
             result.setFrom(left.getFrom());
-            visitSelectCombineClause(ctx, result, left);
+            setSelectCombineClause(ctx, result, left);
         }
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
@@ -669,8 +669,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         return visit(ctx.selectSubquery());
     }
     
-    private void visitSelectCombineClause(final SelectCombineClauseContext ctx, final OracleSelectStatement result, final OracleSelectStatement left) {
-        for (int i = 0 ; i < ctx.selectSubquery().size(); i++) {
+    private void setSelectCombineClause(final SelectCombineClauseContext ctx, final OracleSelectStatement result, final OracleSelectStatement left) {
+        for (int i = 0; i < ctx.selectSubquery().size(); i++) {
             CombineType combineType;
             if (null != ctx.UNION(i) && null != ctx.ALL(i)) {
                 combineType = CombineType.UNION_ALL;
