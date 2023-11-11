@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.common.metadata.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 
 import java.util.regex.Pattern;
 
@@ -41,14 +40,14 @@ public final class PipelineMetaDataNode {
      * @param jobType job type
      * @return data sources path
      */
-    public static String getMetaDataDataSourcesPath(final JobType jobType) {
+    public static String getMetaDataDataSourcesPath(final String jobType) {
         return String.join("/", getMetaDataRootPath(jobType), "data_sources");
     }
     
-    private static String getMetaDataRootPath(final JobType jobType) {
+    private static String getMetaDataRootPath(final String jobType) {
         return null == jobType
                 ? String.join("/", PipelineNodePath.DATA_PIPELINE_ROOT, "metadata")
-                : String.join("/", PipelineNodePath.DATA_PIPELINE_ROOT, jobType.getType().toLowerCase(), "metadata");
+                : String.join("/", PipelineNodePath.DATA_PIPELINE_ROOT, jobType.toLowerCase(), "metadata");
     }
     
     /**
@@ -57,7 +56,7 @@ public final class PipelineMetaDataNode {
      * @param jobType job type
      * @return data sources path
      */
-    public static String getMetaDataProcessConfigPath(final JobType jobType) {
+    public static String getMetaDataProcessConfigPath(final String jobType) {
         return String.join("/", getMetaDataRootPath(jobType), "process_config");
     }
     

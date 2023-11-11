@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
 
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
@@ -192,7 +191,7 @@ public interface GovernanceRepositoryAPI {
      * @param jobType job type
      * @return data source properties
      */
-    String getMetaDataDataSources(JobType jobType);
+    String getMetaDataDataSources(String jobType);
     
     /**
      * Persist meta data data sources.
@@ -200,7 +199,7 @@ public interface GovernanceRepositoryAPI {
      * @param jobType job type
      * @param metaDataDataSources data source properties
      */
-    void persistMetaDataDataSources(JobType jobType, String metaDataDataSources);
+    void persistMetaDataDataSources(String jobType, String metaDataDataSources);
     
     /**
      * Get meta data process configuration.
@@ -208,7 +207,7 @@ public interface GovernanceRepositoryAPI {
      * @param jobType job type, nullable
      * @return process configuration YAML text
      */
-    String getMetaDataProcessConfiguration(JobType jobType);
+    String getMetaDataProcessConfiguration(String jobType);
     
     /**
      * Persist meta data process configuration.
@@ -216,7 +215,7 @@ public interface GovernanceRepositoryAPI {
      * @param jobType job type, nullable
      * @param processConfigYamlText process configuration YAML text
      */
-    void persistMetaDataProcessConfiguration(JobType jobType, String processConfigYamlText);
+    void persistMetaDataProcessConfiguration(String jobType, String processConfigYamlText);
     
     /**
      * Get job item error msg.
