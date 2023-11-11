@@ -38,4 +38,7 @@
     <sql-case id="select_except_intersect" value="SELECT * FROM table1 EXCEPT SELECT * FROM table2 INTERSECT SELECT * FROM table3" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_except_intersect_union" value="SELECT * FROM table1 EXCEPT SELECT * FROM table2 INTERSECT SELECT * FROM table3 UNION SELECT * FROM table4" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_sub_union" value="SELECT * FROM table1 UNION (SELECT * FROM table2 UNION SELECT * FROM table3)" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_union_all_where" value="SELECT * FROM TEST_TABLE_1 WHERE ID = 1 UNION ALL SELECT * FROM TEST_TABLE_2 WHERE ID = 2" db-types="Oracle" />
+    <sql-case id="select_union_all_minus" value="SELECT * FROM TEST_TABLE_1 UNION ALL SELECT * FROM TEST_TABLE_2 MINUS SELECT * FROM TEST_TABLE_3" db-types="Oracle" />
+    <sql-case id="select_union_subquery" value="(SELECT TEST_ID FROM  TEST_TABLE) UNION (SELECT TEST_ID FROM TEST_TABLE)" db-types="Oracle" />
 </sql-cases>

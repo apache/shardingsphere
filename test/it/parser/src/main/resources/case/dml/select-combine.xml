@@ -893,4 +893,129 @@
             </right>
         </combine>
     </select>
+    
+    <select sql-case-id="select_union_all_where">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="TEST_TABLE_1" start-index="14" stop-index="25" />
+        </from>
+        <combine combine-type="UNION_ALL" start-index="0" stop-index="88">
+            <left>
+                <projections start-index="7" stop-index="7">
+                    <shorthand-projection start-index="7" stop-index="7" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_TABLE_1" start-index="14" stop-index="25" />
+                </from>
+                <where start-index="27" stop-index="38">
+                    <expr>
+                        <binary-operation-expression start-index="33" stop-index="38">
+                            <left>
+                                <column name="ID" start-index="33" stop-index="34" />
+                            </left>
+                            <right>
+                                <literal-expression value="1" start-index="38" stop-index="38" />
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </expr>
+                </where>
+            </left>
+            <right>
+                <projections start-index="57" stop-index="57">
+                    <shorthand-projection start-index="57" stop-index="57" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_TABLE_2" start-index="64" stop-index="75" />
+                </from>
+                <where start-index="77" stop-index="88">
+                    <expr>
+                        <binary-operation-expression start-index="83" stop-index="88">
+                            <left>
+                                <column name="ID" start-index="83" stop-index="84" />
+                            </left>
+                            <right>
+                                <literal-expression value="2" start-index="88" stop-index="88" />
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </expr>
+                </where>
+            </right>
+        </combine>
+    </select>
+    
+    <select sql-case-id="select_union_all_minus">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="TEST_TABLE_1" start-index="14" stop-index="25" />
+        </from>
+        <combine combine-type="UNION_ALL" start-index="0" stop-index="95">
+            <left>
+                <projections start-index="7" stop-index="7">
+                    <shorthand-projection start-index="7" stop-index="7" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_TABLE_1" start-index="14" stop-index="25" />
+                </from>
+            </left>
+            <right>
+                <projections start-index="44" stop-index="44">
+                    <shorthand-projection start-index="44" stop-index="44" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_TABLE_2" start-index="51" stop-index="62" />
+                </from>
+                <combine combine-type="MINUS" start-index="37" stop-index="95">
+                    <left>
+                        <projections start-index="44" stop-index="44">
+                            <shorthand-projection start-index="44" stop-index="44" />
+                        </projections>
+                        <from>
+                            <simple-table name="TEST_TABLE_2" start-index="51" stop-index="62" />
+                        </from>
+                    </left>
+                    <right>
+                        <projections start-index="77" stop-index="77">
+                            <shorthand-projection start-index="77" stop-index="77" />
+                        </projections>
+                        <from>
+                            <simple-table name="TEST_TABLE_3" start-index="84" stop-index="95" />
+                        </from>
+                    </right>
+                </combine>
+            </right>
+        </combine>
+    </select>
+    
+    <select sql-case-id="select_union_subquery">
+        <projections start-index="8" stop-index="14">
+            <column-projection name="TEST_ID" start-index="8" stop-index="14" />
+        </projections>
+        <from>
+            <simple-table name="TEST_TABLE" start-index="22" stop-index="31" />
+        </from>
+        <combine combine-type="UNION" start-index="0" stop-index="71">
+            <left>
+                <projections start-index="8" stop-index="14">
+                    <column-projection name="TEST_ID" start-index="8" stop-index="14" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_TABLE" start-index="22" stop-index="31" />
+                </from>
+            </left>
+            <right>
+                <projections start-index="48" stop-index="54">
+                    <column-projection name="TEST_ID" start-index="48" stop-index="54" />
+                </projections>
+                <from>
+                    <simple-table name="TEST_TABLE" start-index="61" stop-index="70" />
+                </from>
+            </right>
+        </combine>
+    </select>
 </sql-parser-test-cases>
