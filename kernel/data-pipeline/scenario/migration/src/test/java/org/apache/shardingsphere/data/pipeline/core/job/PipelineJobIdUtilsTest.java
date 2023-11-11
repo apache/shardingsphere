@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.junit.jupiter.api.Test;
 
@@ -41,8 +40,7 @@ class PipelineJobIdUtilsTest {
     
     private void assertParse0(final InstanceType instanceType) {
         PipelineContextKey contextKey = new PipelineContextKey("sharding_db", instanceType);
-        MigrationJobId pipelineJobId = new MigrationJobId(contextKey, Collections.singletonList("t_order:ds_0.t_order_0,ds_0.t_order_1"));
-        String jobId = new MigrationJobAPI().marshalJobId(pipelineJobId);
+        String jobId = new MigrationJobId(contextKey, Collections.singletonList("t_order:ds_0.t_order_0,ds_0.t_order_1")).marshal();
         assertThat(PipelineJobIdUtils.parseJobType(jobId), instanceOf(MigrationJobType.class));
         PipelineContextKey actualContextKey = PipelineJobIdUtils.parseContextKey(jobId);
         assertThat(actualContextKey.getInstanceType(), is(instanceType));

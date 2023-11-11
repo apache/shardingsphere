@@ -45,4 +45,11 @@ public interface PipelineJobId {
      * @return context key
      */
     PipelineContextKey getContextKey();
+    
+    /**
+     * Marshal job ID.
+     * 
+     * @return job ID
+     */
+    String marshal();
 }

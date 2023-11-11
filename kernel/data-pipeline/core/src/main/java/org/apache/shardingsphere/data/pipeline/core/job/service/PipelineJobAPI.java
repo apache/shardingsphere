@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
@@ -39,14 +38,6 @@ import java.util.Optional;
  */
 @SingletonSPI
 public interface PipelineJobAPI extends TypedSPI {
-    
-    /**
-     * Marshal pipeline job id.
-     *
-     * @param pipelineJobId pipeline job id
-     * @return marshaled text
-     */
-    String marshalJobId(PipelineJobId pipelineJobId);
     
     /**
      * Extend YAML job configuration.

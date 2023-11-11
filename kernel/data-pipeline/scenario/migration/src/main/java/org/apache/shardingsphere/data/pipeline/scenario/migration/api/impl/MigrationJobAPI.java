@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
@@ -37,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLineCo
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.datasource.yaml.YamlPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineSchemaUtils;
@@ -91,7 +89,6 @@ import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStateme
 import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEntry;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -212,12 +209,6 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     @Override
-    protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
-        String text = JsonUtils.toJsonString(pipelineJobId);
-        return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
-    }
-    
-    @Override
     protected TableBasedPipelineJobInfo getJobInfo(final String jobId) {
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         PipelineJobMetaData jobMetaData = buildPipelineJobMetaData(jobConfigPOJO);
@@ -231,13 +222,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     public void extendYamlJobConfiguration(final PipelineContextKey contextKey, final YamlPipelineJobConfiguration yamlJobConfig) {
         YamlMigrationJobConfiguration config = (YamlMigrationJobConfiguration) yamlJobConfig;
         if (null == yamlJobConfig.getJobId()) {
-            config.setJobId(generateJobId(contextKey, config));
+            config.setJobId(new MigrationJobId(contextKey, config.getJobShardingDataNodes()).marshal());
         }
-    }
-    
-    private String generateJobId(final PipelineContextKey contextKey, final YamlMigrationJobConfiguration config) {
-        MigrationJobId jobId = new MigrationJobId(contextKey, config.getJobShardingDataNodes());
-        return marshalJobId(jobId);
     }
     
     @Override

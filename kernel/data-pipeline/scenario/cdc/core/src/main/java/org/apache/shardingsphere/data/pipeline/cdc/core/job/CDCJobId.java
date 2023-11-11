@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.job;
 
+import com.google.common.base.Joiner;
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -43,5 +47,10 @@ public final class CDCJobId extends AbstractPipelineJobId {
         this.schemaTableNames = schemaTableNames;
         this.full = full;
         this.sinkType = sinkType;
+    }
+    
+    @Override
+    public String marshal() {
+        return PipelineJobIdUtils.marshalJobIdCommonPrefix(this) + DigestUtils.md5Hex(Joiner.on('|').join(getContextKey().getDatabaseName(), schemaTableNames, full).getBytes(StandardCharsets.UTF_8));
     }
 }
