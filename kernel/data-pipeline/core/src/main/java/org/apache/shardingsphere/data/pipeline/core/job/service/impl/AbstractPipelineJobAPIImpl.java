@@ -22,7 +22,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.listener.PipelineElasticJobListener;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
@@ -56,13 +55,6 @@ import java.util.stream.Stream;
 public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    
-    @Override
-    public final String marshalJobId(final PipelineJobId pipelineJobId) {
-        return PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + marshalJobIdLeftPart(pipelineJobId);
-    }
-    
-    protected abstract String marshalJobIdLeftPart(PipelineJobId pipelineJobId);
     
     @Override
     public List<PipelineJobInfo> list(final PipelineContextKey contextKey) {

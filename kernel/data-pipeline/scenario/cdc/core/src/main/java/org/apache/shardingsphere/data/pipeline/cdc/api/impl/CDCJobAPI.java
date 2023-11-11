@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.api.impl;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
@@ -48,7 +46,6 @@ import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipeline
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.yaml.YamlPipelineDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
@@ -84,7 +81,6 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -242,25 +238,13 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     public void extendYamlJobConfiguration(final PipelineContextKey contextKey, final YamlPipelineJobConfiguration yamlJobConfig) {
         YamlCDCJobConfiguration config = (YamlCDCJobConfiguration) yamlJobConfig;
         if (null == yamlJobConfig.getJobId()) {
-            config.setJobId(generateJobId(contextKey, config));
+            config.setJobId(new CDCJobId(contextKey, config.getSchemaTableNames(), config.isFull(), config.getSinkConfig().getSinkType()).marshal());
         }
         if (Strings.isNullOrEmpty(config.getSourceDatabaseType())) {
             PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(config.getDataSourceConfiguration().getType(),
                     config.getDataSourceConfiguration().getParameter());
             config.setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getType());
         }
-    }
-    
-    private String generateJobId(final PipelineContextKey contextKey, final YamlCDCJobConfiguration config) {
-        CDCJobId jobId = new CDCJobId(contextKey, config.getSchemaTableNames(), config.isFull(), config.getSinkConfig().getSinkType());
-        return marshalJobId(jobId);
-    }
-    
-    @Override
-    protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
-        CDCJobId jobId = (CDCJobId) pipelineJobId;
-        String text = Joiner.on('|').join(jobId.getContextKey().getDatabaseName(), jobId.getSchemaTableNames(), jobId.isFull());
-        return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
     }
     
     @Override

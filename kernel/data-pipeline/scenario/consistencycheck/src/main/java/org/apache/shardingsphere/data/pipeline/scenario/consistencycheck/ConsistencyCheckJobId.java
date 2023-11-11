@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 
 /**
@@ -56,5 +57,10 @@ public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
      */
     public static int parseSequence(final String checkJobId) {
         return Integer.parseInt(checkJobId.substring(checkJobId.length() - 1));
+    }
+    
+    @Override
+    public String marshal() {
+        return PipelineJobIdUtils.marshalJobIdCommonPrefix(this) + parentJobId + sequence;
     }
 }
