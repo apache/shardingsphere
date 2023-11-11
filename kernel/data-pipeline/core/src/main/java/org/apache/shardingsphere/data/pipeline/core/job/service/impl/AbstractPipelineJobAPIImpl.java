@@ -169,11 +169,6 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     @Override
-    public String getType() {
-        return getJobType().getType();
-    }
-    
-    @Override
     public String getJobItemErrorMessage(final String jobId, final int shardingItem) {
         return Optional.ofNullable(PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemErrorMessage(jobId, shardingItem)).orElse("");
     }

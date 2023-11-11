@@ -24,11 +24,9 @@ import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
  */
 public final class MigrationJobType implements JobType {
     
-    public static final String TYPE_CODE = "01";
-    
     @Override
     public String getCode() {
-        return TYPE_CODE;
+        return "01";
     }
     
     @Override
