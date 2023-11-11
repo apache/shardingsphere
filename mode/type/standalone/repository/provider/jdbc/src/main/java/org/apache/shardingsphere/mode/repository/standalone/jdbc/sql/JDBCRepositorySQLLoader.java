@@ -26,8 +26,11 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +39,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Objects;
@@ -77,7 +81,36 @@ public final class JDBCRepositorySQLLoader {
         return result;
     }
     
+    /**
+     * Under the GraalVM Native Image corresponding to GraalVM CE 21.0.1, although there is
+     * `com.oracle.svm.core.jdk.resources.NativeImageResourceFileSystemProvider`, the corresponding
+     * `com.oracle.svm.core.jdk.resources.NativeImageResourceFileSystem` does not autoload. This is mainly to align the
+     * behavior of `ZipFileSystemProvider`, so ShardingSphere need to manually open and close the FileSystem
+     * corresponding to the `resource:/` scheme. For more background reference <a href="https://github.com/oracle/graal/issues/7682">oracle/graal#7682</a>.
+     * <p/>
+     * ShardingSphere use the System Property of `org.graalvm.nativeimage.imagecode` to identify whether this class is in the
+     * GraalVM Native Image environment. The background of this property comes from
+     * <a href="https://junit.org/junit5/docs/5.10.0/api/org.junit.jupiter.api/org/junit/jupiter/api/condition/DisabledInNativeImage.html">Annotation Interface DisabledInNativeImage</a>.
+     *
+     * @param url  url
+     * @param type type of JDBC repository SQL
+     * @return loaded JDBC repository SQL
+     * @throws URISyntaxException Checked exception thrown to indicate that a string could not be parsed as a URI reference
+     * @throws IOException        Signals that an I/O exception to some sort has occurred
+     * @see jdk.nio.zipfs.ZipFileSystemProvider
+     * @see sun.nio.fs.UnixFileSystemProvider
+     */
     private static JDBCRepositorySQL loadFromDirectory(final URL url, final String type) throws URISyntaxException, IOException {
+        if (null != System.getProperty("org.graalvm.nativeimage.imagecode")) {
+            try (FileSystem ignored = FileSystems.newFileSystem(URI.create("resource:/"), Collections.singletonMap("create", "true"))) {
+                return loadFromDirectoryLegacy(url, type);
+            }
+        } else {
+            return loadFromDirectoryLegacy(url, type);
+        }
+    }
+    
+    private static JDBCRepositorySQL loadFromDirectoryLegacy(final URL url, final String type) throws URISyntaxException, IOException {
         final JDBCRepositorySQL[] result = new JDBCRepositorySQL[1];
         Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
             
