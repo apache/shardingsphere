@@ -209,7 +209,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     @Override
-    protected TableBasedPipelineJobInfo getJobInfo(final String jobId) {
+    public TableBasedPipelineJobInfo getJobInfo(final String jobId) {
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         PipelineJobMetaData jobMetaData = buildPipelineJobMetaData(jobConfigPOJO);
         List<String> sourceTables = new LinkedList<>();

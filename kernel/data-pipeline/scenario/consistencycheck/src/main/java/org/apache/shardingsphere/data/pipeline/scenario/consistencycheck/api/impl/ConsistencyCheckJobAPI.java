@@ -385,7 +385,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
     }
     
     @Override
-    protected PipelineJobInfo getJobInfo(final String jobId) {
+    public PipelineJobInfo getJobInfo(final String jobId) {
         throw new UnsupportedOperationException();
     }
     
