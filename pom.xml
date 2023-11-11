@@ -117,8 +117,8 @@
         
         <elasticjob.version>3.0.4</elasticjob.version>
         
-        <slf4j.version>2.0.9</slf4j.version>
-        <logback.version>1.3.11</logback.version>
+        <slf4j.version>1.7.36</slf4j.version>
+        <logback.version>1.2.12</logback.version>
         <commons-logging.version>1.2</commons-logging.version>
         
         <lombok.version>1.18.30</lombok.version>
@@ -441,10 +441,18 @@
             
             <dependency>
                 <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-bom</artifactId>
+                <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>${slf4j.version}</version>
             </dependency>
             
             <dependency>
