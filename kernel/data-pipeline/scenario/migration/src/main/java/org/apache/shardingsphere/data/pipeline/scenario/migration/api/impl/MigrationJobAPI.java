@@ -211,7 +211,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     @Override
     public TableBasedPipelineJobInfo getJobInfo(final String jobId) {
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        PipelineJobMetaData jobMetaData = buildPipelineJobMetaData(jobConfigPOJO);
+        PipelineJobMetaData jobMetaData = new PipelineJobMetaData(jobConfigPOJO);
         List<String> sourceTables = new LinkedList<>();
         getJobConfiguration(jobConfigPOJO).getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes()
                 .forEach(dataNode -> sourceTables.add(DataNodeUtils.formatWithSchema(dataNode)))));
