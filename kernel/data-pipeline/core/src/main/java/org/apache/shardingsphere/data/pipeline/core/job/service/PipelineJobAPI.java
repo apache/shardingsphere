@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
@@ -159,6 +160,13 @@ public interface PipelineJobAPI extends TypedSPI {
      * @param shardingItem sharding item
      */
     void cleanJobItemErrorMessage(String jobId, int shardingItem);
+    
+    /**
+     * Get pipeline job class.
+     * 
+     * @return pipeline job class
+     */
+    Class<? extends PipelineJob> getPipelineJobClass();
     
     @Override
     String getType();
