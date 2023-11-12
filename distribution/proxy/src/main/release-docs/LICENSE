@@ -345,9 +345,8 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
 
     javax.activation-api 1.2.0: https://github.com/javaee/javax.annotation, CDDL
     jta 1.1: http://jta-spec.java.net, CDDL
-    jaxb-api 2.3.0: http://www.oracle.com, CDDL
-    jaxb-core 2.3.0: http://www.oracle.com, CDDL
-    jaxb-impl 2.3.0 http://www.oracle.com, CDDL
+    jaxb-api 2.3.1: http://www.oracle.com, CDDL
+    jaxb-runtime 2.3.1 https://javaee.github.io/jaxb-v2/, CDDL
 
 ========================================================================
 EPL licenses

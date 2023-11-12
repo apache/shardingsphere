@@ -87,7 +87,8 @@
         <freemarker.version>2.3.31</freemarker.version>
         <bytebuddy.version>1.14.8</bytebuddy.version>
         
-        <jaxb.version>2.3.0</jaxb.version>
+        <jaxb-api.version>2.3.1</jaxb-api.version>
+        <jaxb-runtime.version>2.3.1</jaxb-runtime.version>
         <annotation-api.version>1.3.2</annotation-api.version>
         <activation-api.version>1.2.0</activation-api.version>
         
@@ -298,17 +299,12 @@
             <dependency>
                 <groupId>javax.xml.bind</groupId>
                 <artifactId>jaxb-api</artifactId>
-                <version>${jaxb.version}</version>
+                <version>${jaxb-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>${jaxb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${jaxb.version}</version>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${jaxb-runtime.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.annotation</groupId>
