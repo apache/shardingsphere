@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConf
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -97,11 +96,11 @@ public interface PipelineJobAPI extends TypedSPI {
     
     /**
      * Get pipeline job info.
-     *
-     * @param contextKey context key
-     * @return job info list
+     * 
+     * @param jobId job ID
+     * @return pipeline job info
      */
-    List<PipelineJobInfo> list(PipelineContextKey contextKey);
+    PipelineJobInfo getJobInfo(String jobId);
     
     /**
      * Persist job item progress.
