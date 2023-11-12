@@ -105,9 +105,44 @@ public final class JDBCRepositorySQLLoader {
             return loadFromDirectoryLegacy(url, type);
         } else {
             try (FileSystem ignored = FileSystems.newFileSystem(URI.create("resource:/"), Collections.emptyMap())) {
-                return loadFromDirectoryLegacy(url, type);
+                return loadFromDirectoryInNativeImage(url, type);
             }
         }
+    }
+    
+    /**
+     * Affected by <a href="https://github.com/oracle/graal/issues/7804">oracle/graal#7804</a>, ShardingSphere needs to
+     * avoid the use of `java.nio.file.Path#toFile` in GraalVM Native Image.
+     *
+     * @param url  url
+     * @param type type of JDBC repository SQL
+     * @return loaded JDBC repository SQL
+     * @throws URISyntaxException Checked exception thrown to indicate that a string could not be parsed as a URI reference
+     * @throws IOException        Signals that an I/O exception to some sort has occurred
+     * @see java.nio.file.Path
+     * @see java.io.File
+     */
+    private static JDBCRepositorySQL loadFromDirectoryInNativeImage(final URL url, final String type) throws URISyntaxException, IOException {
+        final JDBCRepositorySQL[] result = new JDBCRepositorySQL[1];
+        Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
+            
+            @SneakyThrows(JAXBException.class)
+            @Override
+            public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes) throws IOException {
+                if (file.toString().endsWith(FILE_EXTENSION)) {
+                    JDBCRepositorySQL provider = (JDBCRepositorySQL) JAXBContext.newInstance(JDBCRepositorySQL.class).createUnmarshaller().unmarshal(Files.newInputStream(file.toAbsolutePath()));
+                    if (provider.isDefault()) {
+                        result[0] = provider;
+                    }
+                    if (Objects.equals(provider.getType(), type)) {
+                        result[0] = provider;
+                        return FileVisitResult.TERMINATE;
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        return result[0];
     }
     
     private static JDBCRepositorySQL loadFromDirectoryLegacy(final URL url, final String type) throws URISyntaxException, IOException {
