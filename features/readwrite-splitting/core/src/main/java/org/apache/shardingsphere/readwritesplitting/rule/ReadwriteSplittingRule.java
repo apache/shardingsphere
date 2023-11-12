@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.groovy.GroovyUtils;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -56,6 +57,8 @@ import java.util.stream.Collectors;
  * Readwrite-splitting rule.
  */
 public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceContainedRule, StaticDataSourceContainedRule, ExportableRule, StorageConnectorReusableRule {
+    
+    private final String inlineExpressionTypePrefix = "<LITERAL>";
     
     private final String databaseName;
     
@@ -103,10 +106,19 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     private Map<String, ReadwriteSplittingDataSourceRule> createStaticDataSourceRules(final ReadwriteSplittingDataSourceRuleConfiguration config,
                                                                                       final ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm) {
-        List<String> inlineReadwriteDataSourceNames = InlineExpressionParserFactory.newInstance(config.getName()).splitAndEvaluate();
-        List<String> inlineWriteDatasourceNames = InlineExpressionParserFactory.newInstance(config.getWriteDataSourceName()).splitAndEvaluate();
+        String resultConfigNameInlineExpression = GroovyUtils.isNotRuntimeInGraalVMNativeImage()
+                ? config.getName()
+                : inlineExpressionTypePrefix + config.getName();
+        List<String> inlineReadwriteDataSourceNames = InlineExpressionParserFactory.newInstance(resultConfigNameInlineExpression).splitAndEvaluate();
+        String resultConfigWriteDataSourceNameInlineExpression = GroovyUtils.isNotRuntimeInGraalVMNativeImage()
+                ? config.getWriteDataSourceName()
+                : inlineExpressionTypePrefix + config.getWriteDataSourceName();
+        List<String> inlineWriteDatasourceNames = InlineExpressionParserFactory.newInstance(resultConfigWriteDataSourceNameInlineExpression).splitAndEvaluate();
         List<List<String>> inlineReadDatasourceNames = config.getReadDataSourceNames().stream()
-                .map(each -> InlineExpressionParserFactory.newInstance(each).splitAndEvaluate()).collect(Collectors.toList());
+                .map(each -> {
+                    String resultInlineExpression = GroovyUtils.isNotRuntimeInGraalVMNativeImage() ? each : inlineExpressionTypePrefix + each;
+                    return InlineExpressionParserFactory.newInstance(resultInlineExpression).splitAndEvaluate();
+                }).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(inlineWriteDatasourceNames.size() == inlineReadwriteDataSourceNames.size(),
                 () -> new InvalidInlineExpressionDataSourceNameException("Inline expression write data source names size error."));
         inlineReadDatasourceNames.forEach(each -> ShardingSpherePreconditions.checkState(each.size() == inlineReadwriteDataSourceNames.size(),

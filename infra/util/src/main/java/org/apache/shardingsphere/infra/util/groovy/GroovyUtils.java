@@ -28,6 +28,20 @@ import java.util.List;
 public class GroovyUtils {
     
     /**
+     * If the context class is in the GraalVM Native Image Runtime, this function returns `false`.
+     * This function returns `true` when the context class is in GraalVM Native Image BuildTime or under Hotspot JVM.
+     * <p/>
+     * ShardingSphere use the System Property of `org.graalvm.nativeimage.imagecode` to identify whether this class is
+     * in the GraalVM Native Image environment. The background of this property comes from
+     * <a href="https://junit.org/junit5/docs/5.10.0/api/org.junit.jupiter.api/org/junit/jupiter/api/condition/DisabledInNativeImage.html">Annotation Interface DisabledInNativeImage</a>.
+     *
+     * @return The judgment result of the environment where the context class is located
+     */
+    public static Boolean isNotRuntimeInGraalVMNativeImage() {
+        return null == System.getProperty("org.graalvm.nativeimage.imagecode") || !"runtime".equals(System.getProperty("org.graalvm.nativeimage.imagecode"));
+    }
+    
+    /**
      * Split GroovyShell expression to a ArrayList.
      *
      * @param inlineExpression GroovySHell expression.
