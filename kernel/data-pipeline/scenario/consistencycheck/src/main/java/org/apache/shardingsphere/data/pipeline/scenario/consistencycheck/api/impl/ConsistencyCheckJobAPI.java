@@ -390,8 +390,8 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
     }
     
     @Override
-    protected String getJobClassName() {
-        return ConsistencyCheckJob.class.getName();
+    public Class<ConsistencyCheckJob> getPipelineJobClass() {
+        return ConsistencyCheckJob.class;
     }
     
     @Override
