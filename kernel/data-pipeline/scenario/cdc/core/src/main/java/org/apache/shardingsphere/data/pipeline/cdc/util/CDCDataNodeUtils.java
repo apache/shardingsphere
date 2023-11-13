@@ -52,8 +52,8 @@ public final class CDCDataNodeUtils {
     public static Map<String, List<DataNode>> buildDataNodesMap(final ShardingSphereDatabase database, final Collection<String> tableNames) {
         Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         Optional<SingleRule> singleRule = database.getRuleMetaData().findSingleRule(SingleRule.class);
-        Map<String, List<DataNode>> result = new HashMap<>();
         Optional<BroadcastRule> broadcastRule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
+        Map<String, List<DataNode>> result = new HashMap<>();
         // TODO support virtual data source name
         for (String each : tableNames) {
             if (singleRule.isPresent() && singleRule.get().getAllDataNodes().containsKey(each)) {

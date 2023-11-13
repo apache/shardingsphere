@@ -611,7 +611,7 @@
     </delete>
 
     <delete sql-case-id="delete_with_remote_database_table">
-        <table name="locations" start-index="12" stop-index="23">
+        <table name="locations" start-index="12" stop-index="30">
             <owner name="hr" start-index="12" stop-index="13" />
         </table>
         <where start-index="32" stop-index="55">
