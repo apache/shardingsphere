@@ -20,9 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.listener.PipelineElasticJobListener;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBarrier;
@@ -38,7 +36,6 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -61,24 +58,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
             return Optional.of(jobId);
         }
         repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), getPipelineJobClass().getName());
-        repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(convertJobConfiguration(jobConfig)));
+        repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfig.convertToJobConfigurationPOJO()));
         return Optional.of(jobId);
     }
-    
-    protected JobConfigurationPOJO convertJobConfiguration(final PipelineJobConfiguration jobConfig) {
-        JobConfigurationPOJO result = new JobConfigurationPOJO();
-        result.setJobName(jobConfig.getJobId());
-        result.setShardingTotalCount(jobConfig.getJobShardingCount());
-        result.setJobParameter(YamlEngine.marshal(swapToYamlJobConfiguration(jobConfig)));
-        String createTimeFormat = LocalDateTime.now().format(DATE_TIME_FORMATTER);
-        result.getProps().setProperty("create_time", createTimeFormat);
-        result.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
-        result.getProps().setProperty("run_count", "1");
-        result.setJobListenerTypes(Collections.singletonList(PipelineElasticJobListener.class.getName()));
-        return result;
-    }
-    
-    protected abstract YamlPipelineJobConfiguration swapToYamlJobConfiguration(PipelineJobConfiguration jobConfig);
     
     protected abstract PipelineJobConfiguration getJobConfiguration(JobConfigurationPOJO jobConfigPOJO);
     
