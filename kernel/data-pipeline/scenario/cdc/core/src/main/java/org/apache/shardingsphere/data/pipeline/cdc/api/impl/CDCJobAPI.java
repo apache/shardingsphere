@@ -123,7 +123,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
             log.warn("CDC job already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
         } else {
             repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobConfig.getJobId()), getPipelineJobClass().getName());
-            JobConfigurationPOJO jobConfigPOJO = convertJobConfiguration(jobConfig);
+            JobConfigurationPOJO jobConfigPOJO = jobConfig.convertToJobConfigurationPOJO();
             jobConfigPOJO.setDisabled(true);
             repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfigPOJO));
             if (!param.isFull()) {
@@ -190,13 +190,6 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         result.setDataSourceName(incrementalDumperContext.getCommonContext().getDataSourceName());
         IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(PipelineJobPreparerUtils.getIncrementalPosition(null, incrementalDumperContext, dataSourceManager));
         result.setIncremental(new JobItemIncrementalTasksProgress(incrementalTaskProgress));
-        return result;
-    }
-    
-    @Override
-    protected JobConfigurationPOJO convertJobConfiguration(final PipelineJobConfiguration jobConfig) {
-        JobConfigurationPOJO result = super.convertJobConfiguration(jobConfig);
-        result.setShardingTotalCount(1);
         return result;
     }
     
@@ -292,11 +285,6 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     @Override
     protected CDCJobConfiguration getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
         return new YamlCDCJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter());
-    }
-    
-    @Override
-    protected YamlPipelineJobConfiguration swapToYamlJobConfiguration(final PipelineJobConfiguration jobConfig) {
-        return new YamlCDCJobConfigurationSwapper().swapToYamlConfiguration((CDCJobConfiguration) jobConfig);
     }
     
     @Override

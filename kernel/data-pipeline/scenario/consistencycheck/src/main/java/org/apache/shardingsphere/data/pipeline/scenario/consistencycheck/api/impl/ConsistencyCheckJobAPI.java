@@ -366,11 +366,6 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
     }
     
     @Override
-    protected YamlPipelineJobConfiguration swapToYamlJobConfiguration(final PipelineJobConfiguration jobConfig) {
-        return new YamlConsistencyCheckJobConfigurationSwapper().swapToYamlConfiguration((ConsistencyCheckJobConfiguration) jobConfig);
-    }
-    
-    @Override
     public void extendYamlJobConfiguration(final PipelineContextKey contextKey, final YamlPipelineJobConfiguration yamlJobConfig) {
     }
     
