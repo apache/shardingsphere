@@ -69,8 +69,14 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
                 return result;
             }
             DataNode dataNode = shardingRule.getDataNode(logicTableName);
+            //use allDataNode
+            Collection<DataNode> dataNodes = shardingRule.getAllDataNodes().get(logicTableName);
+            List<RouteMapper> list = new ArrayList<>();
+            for (DataNode node : dataNodes) {
+                list.add(new RouteMapper(logicTableName, node.getTableName()));
+            }
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(dataNode.getDataSourceName(), dataNode.getDataSourceName()),
-                    Collections.singletonList(new RouteMapper(logicTableName, dataNode.getTableName()))));
+                    list));
         } else {
             routeWithMultipleTables(result, shardingRule);
         }
