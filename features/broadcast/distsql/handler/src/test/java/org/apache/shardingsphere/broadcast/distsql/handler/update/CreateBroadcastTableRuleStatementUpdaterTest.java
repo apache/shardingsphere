@@ -40,6 +40,16 @@ class CreateBroadcastTableRuleStatementUpdaterTest {
     private final CreateBroadcastTableRuleStatementUpdater updater = new CreateBroadcastTableRuleStatementUpdater();
     
     @Test
+    void assertCreatedRuleConfigurationWithNoStorageUnits() {
+        BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
+        when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
+        CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
+        assertThrows(EmptyStorageUnitException.class, () -> updater.checkSQLStatement(database, statement, currentConfig));
+    }
+    
+    @Test
     void assertCheckSQLStatementWithDuplicateBroadcastRule() {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
@@ -63,15 +73,5 @@ class CreateBroadcastTableRuleStatementUpdaterTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
         return database;
-    }
-    
-    @Test
-    void assertCreatedRuleConfigurationWithNoStorageUnits() {
-        BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
-        when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
-        CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
-        assertThrows(EmptyStorageUnitException.class, () -> updater.checkSQLStatement(database, statement, currentConfig));
     }
 }
