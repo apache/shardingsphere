@@ -32,7 +32,7 @@ public final class BroadcastDatabaseBroadcastRoutingEngine implements BroadcastR
     
     @Override
     public RouteContext route(final RouteContext routeContext, final BroadcastRule broadcastRule) {
-        for (String each : broadcastRule.getAvailableDataSourceNames()) {
+        for (String each : broadcastRule.getDataSourceNames()) {
             routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
         return routeContext;

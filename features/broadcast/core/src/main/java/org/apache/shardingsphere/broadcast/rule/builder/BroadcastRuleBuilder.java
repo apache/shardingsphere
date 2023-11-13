@@ -37,7 +37,7 @@ public final class BroadcastRuleBuilder implements DatabaseRuleBuilder<Broadcast
     @Override
     public BroadcastRule build(final BroadcastRuleConfiguration config, final String databaseName, final DatabaseType protocolType,
                                final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new BroadcastRule(config, databaseName, dataSources);
+        return new BroadcastRule(config, databaseName, dataSources, builtRules);
     }
     
     @Override
