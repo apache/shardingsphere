@@ -65,29 +65,29 @@ public final class BroadcastRule implements DatabaseRule, DataNodeContainedRule,
         tableDataNodes = createShardingTableDataNodes(dataSourceNames, tables);
     }
     
-    private Collection<String> getAggregatedDataSourceNames(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        Collection<String> result = new LinkedList<>();
+    private Collection<String> getAggregatedDataSourceNames(final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
+        Collection<String> result = new LinkedList<>(dataSources.keySet());
         for (ShardingSphereRule each : builtRules) {
             if (each instanceof DataSourceContainedRule) {
-                result = getAggregatedDataSourceNames(dataSourceMap, (DataSourceContainedRule) each);
+                result = getAggregatedDataSourceNames(result, (DataSourceContainedRule) each);
             }
         }
         return result;
     }
     
-    private Collection<String> getAggregatedDataSourceNames(final Map<String, DataSource> dataSourceMap, final DataSourceContainedRule builtRule) {
+    private Collection<String> getAggregatedDataSourceNames(final Collection<String> dataSourceNames, final DataSourceContainedRule builtRule) {
         Collection<String> result = new LinkedList<>();
         for (Entry<String, Collection<String>> entry : builtRule.getDataSourceMapper().entrySet()) {
             for (String each : entry.getValue()) {
-                if (dataSourceMap.containsKey(each)) {
-                    dataSourceMap.remove(each);
+                if (dataSourceNames.contains(each)) {
+                    dataSourceNames.remove(each);
                     if (!result.contains(entry.getKey())) {
                         result.add(entry.getKey());
                     }
                 }
             }
         }
-        result.addAll(dataSourceMap.keySet());
+        result.addAll(dataSourceNames);
         return result;
     }
     
