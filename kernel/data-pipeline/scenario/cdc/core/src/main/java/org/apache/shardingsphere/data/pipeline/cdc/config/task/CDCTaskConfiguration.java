@@ -19,9 +19,9 @@ package org.apache.shardingsphere.data.pipeline.cdc.config.task;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.common.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.PipelineTaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
 
 /**
  * CDC task configuration.
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.common.config.PipelineTaskConfigu
 @Getter
 public final class CDCTaskConfiguration implements PipelineTaskConfiguration {
     
-    private final DumperConfiguration dumperConfig;
+    private final IncrementalDumperContext dumperContext;
     
     private final ImporterConfiguration importerConfig;
 }

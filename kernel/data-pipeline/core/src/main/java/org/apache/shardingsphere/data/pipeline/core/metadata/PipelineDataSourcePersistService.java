@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.metadata;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -39,7 +38,7 @@ public final class PipelineDataSourcePersistService implements PipelineMetaDataP
     
     @Override
     @SuppressWarnings("unchecked")
-    public Map<String, DataSourcePoolProperties> load(final PipelineContextKey contextKey, final JobType jobType) {
+    public Map<String, DataSourcePoolProperties> load(final PipelineContextKey contextKey, final String jobType) {
         String dataSourcesProps = PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).getMetaDataDataSources(jobType);
         if (Strings.isNullOrEmpty(dataSourcesProps)) {
             return Collections.emptyMap();
@@ -51,7 +50,7 @@ public final class PipelineDataSourcePersistService implements PipelineMetaDataP
     }
     
     @Override
-    public void persist(final PipelineContextKey contextKey, final JobType jobType, final Map<String, DataSourcePoolProperties> propsMap) {
+    public void persist(final PipelineContextKey contextKey, final String jobType, final Map<String, DataSourcePoolProperties> propsMap) {
         Map<String, Map<String, Object>> dataSourceMap = new LinkedHashMap<>(propsMap.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             dataSourceMap.put(entry.getKey(), swapper.swapToMap(entry.getValue()));

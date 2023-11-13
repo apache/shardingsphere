@@ -85,6 +85,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TrimFu
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ViewNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WmConcatFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlAggFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlCdataFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlColattvalFunctionContext;
@@ -710,6 +711,13 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
                 : createAggregationFunctionSegment(ctx, aggregationType);
     }
     
+    @Override
+    public ASTNode visitWmConcatFunction(final WmConcatFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.WM_CONCAT().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        return result;
+    }
+    
     private FunctionSegment createAggregationFunctionSegment(final AggregationFunctionContext ctx, final String aggregationType) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), aggregationType, getOriginalText(ctx));
         result.getParameters().addAll(getExpressions(ctx.expr()));
@@ -981,6 +989,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         }
         if (null != ctx.approxRank()) {
             return visit(ctx.approxRank());
+        }
+        if (null != ctx.wmConcatFunction()) {
+            return visit(ctx.wmConcatFunction());
         }
         throw new IllegalStateException(
                 "SpecialFunctionContext must have castFunction, charFunction, extractFunction, formatFunction, firstOrLastValueFunction, trimFunction, toDateFunction, approxCount"

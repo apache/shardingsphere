@@ -20,16 +20,17 @@ package org.apache.shardingsphere.data.pipeline.common.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.data.pipeline.common.spi.algorithm.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,15 +39,15 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString(exclude = {"dataSourceConfig", "tableNameSchemaNameMapping"})
+@ToString(exclude = {"dataSourceConfig", "tableAndSchemaNameMapper"})
 public final class ImporterConfiguration {
     
     private final PipelineDataSourceConfiguration dataSourceConfig;
     
     // TODO columnName case-insensitive?
-    private final Map<LogicTableName, Set<String>> shardingColumnsMap;
+    private final Map<CaseInsensitiveIdentifier, Set<String>> shardingColumnsMap;
     
-    private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
+    private final TableAndSchemaNameMapper tableAndSchemaNameMapper;
     
     private final int batchSize;
     
@@ -62,7 +63,7 @@ public final class ImporterConfiguration {
      * @return logic table names
      */
     public Collection<String> getLogicTableNames() {
-        return Collections.unmodifiableList(shardingColumnsMap.keySet().stream().map(LogicTableName::getOriginal).collect(Collectors.toList()));
+        return Collections.unmodifiableList(shardingColumnsMap.keySet().stream().map(CaseInsensitiveIdentifier::toString).collect(Collectors.toList()));
     }
     
     /**
@@ -72,17 +73,17 @@ public final class ImporterConfiguration {
      * @return sharding columns
      */
     public Set<String> getShardingColumns(final String logicTableName) {
-        return shardingColumnsMap.getOrDefault(new LogicTableName(logicTableName), Collections.emptySet());
+        return shardingColumnsMap.getOrDefault(new CaseInsensitiveIdentifier(logicTableName), Collections.emptySet());
     }
     
     /**
-     * Get schema name.
+     * Find schema name.
      *
      * @param logicTableName logic table name
-     * @return schema name. nullable
+     * @return schema name
      */
-    public String getSchemaName(final LogicTableName logicTableName) {
+    public Optional<String> findSchemaName(final String logicTableName) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(dataSourceConfig.getDatabaseType()).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.isSchemaAvailable() ? tableNameSchemaNameMapping.getSchemaName(logicTableName) : null;
+        return dialectDatabaseMetaData.isSchemaAvailable() ? Optional.of(tableAndSchemaNameMapper.getSchemaName(logicTableName)) : Optional.empty();
     }
 }

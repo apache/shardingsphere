@@ -136,7 +136,7 @@ select
     ;
 
 selectSubquery
-    : (queryBlock | selectCombineClause | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause
+    : (selectCombineClause | queryBlock | parenthesisSelectSubquery) pivotClause? orderByClause? rowLimitingClause
     ;
 
 selectCombineClause

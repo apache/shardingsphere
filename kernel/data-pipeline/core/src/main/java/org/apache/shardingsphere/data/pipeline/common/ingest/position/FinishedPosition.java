@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 /**
  * Finished inventory position.

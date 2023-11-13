@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.h2.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.common.spi.sql.DialectPipelineSQLBuilder;
 
 public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
     

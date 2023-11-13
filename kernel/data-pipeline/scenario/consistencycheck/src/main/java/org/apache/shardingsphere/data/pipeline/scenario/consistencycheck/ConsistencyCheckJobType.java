@@ -17,16 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import org.apache.shardingsphere.data.pipeline.common.job.type.AbstractJobType;
+import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 
 /**
  * Consistency check job type.
  */
-public final class ConsistencyCheckJobType extends AbstractJobType {
+public final class ConsistencyCheckJobType implements JobType {
     
-    public static final String TYPE_CODE = "02";
+    @Override
+    public String getCode() {
+        return "02";
+    }
     
-    public ConsistencyCheckJobType() {
-        super("CONSISTENCY_CHECK", TYPE_CODE);
+    @Override
+    public String getType() {
+        return "CONSISTENCY_CHECK";
     }
 }

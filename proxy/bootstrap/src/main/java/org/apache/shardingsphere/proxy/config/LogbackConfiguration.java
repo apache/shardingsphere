@@ -39,13 +39,12 @@ public class LogbackConfiguration extends BasicConfigurator {
     public static final String NETTY_LOGGER_NAME = "io.netty";
     
     @Override
-    public ExecutionStatus configure(final LoggerContext loggerContext) {
+    public void configure(final LoggerContext loggerContext) {
         ConsoleAppender<ILoggingEvent> consoleAppender = createConsoleAppender(loggerContext);
         Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(Level.INFO);
         rootLogger.addAppender(consoleAppender);
         initBasicLogger(loggerContext);
-        return ExecutionStatus.NEUTRAL;
     }
     
     private ConsoleAppender<ILoggingEvent> createConsoleAppender(final LoggerContext loggerContext) {

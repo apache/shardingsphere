@@ -20,32 +20,22 @@ package org.apache.shardingsphere.data.pipeline.common.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
-
-import java.util.Collection;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveQualifiedTable;
 
 /**
  * Create table configuration.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
+@ToString(exclude = {"sourceDataSourceConfig", "targetDataSourceConfig"})
 public final class CreateTableConfiguration {
     
-    private final Collection<CreateTableEntry> createTableEntries;
+    private final PipelineDataSourceConfiguration sourceDataSourceConfig;
     
-    @RequiredArgsConstructor
-    @Getter
-    @ToString(exclude = {"sourceDataSourceConfig", "targetDataSourceConfig"})
-    public static final class CreateTableEntry {
-        
-        private final PipelineDataSourceConfiguration sourceDataSourceConfig;
-        
-        private final SchemaTableName sourceName;
-        
-        private final PipelineDataSourceConfiguration targetDataSourceConfig;
-        
-        private final SchemaTableName targetName;
-    }
+    private final CaseInsensitiveQualifiedTable sourceName;
+    
+    private final PipelineDataSourceConfiguration targetDataSourceConfig;
+    
+    private final CaseInsensitiveQualifiedTable targetName;
 }

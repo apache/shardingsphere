@@ -19,9 +19,9 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.channel.AckCallbacks;
 import org.apache.shardingsphere.data.pipeline.common.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
@@ -39,12 +39,12 @@ public final class PipelineTaskUtils {
     /**
      * Generate inventory task id.
      *
-     * @param inventoryDumperConfig inventory dumper configuration
+     * @param inventoryDumperContext inventory dumper context
      * @return inventory task id
      */
-    public static String generateInventoryTaskId(final InventoryDumperConfiguration inventoryDumperConfig) {
-        String result = String.format("%s.%s", inventoryDumperConfig.getDataSourceName(), inventoryDumperConfig.getActualTableName());
-        return result + "#" + inventoryDumperConfig.getShardingItem();
+    public static String generateInventoryTaskId(final InventoryDumperContext inventoryDumperContext) {
+        String result = String.format("%s.%s", inventoryDumperContext.getCommonContext().getDataSourceName(), inventoryDumperContext.getActualTableName());
+        return result + "#" + inventoryDumperContext.getShardingItem();
     }
     
     /**

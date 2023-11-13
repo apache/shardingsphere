@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.task;
 
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
@@ -73,21 +73,21 @@ class InventoryTaskTest {
     
     @Test
     void assertGetProgress() throws SQLException, ExecutionException, InterruptedException, TimeoutException {
-        initTableData(taskConfig.getDumperConfig());
+        initTableData(taskConfig.getDumperContext());
         // TODO use t_order_0, and also others
-        InventoryDumperConfiguration inventoryDumperConfig = createInventoryDumperConfiguration("t_order", "t_order");
-        AtomicReference<IngestPosition> position = new AtomicReference<>(inventoryDumperConfig.getPosition());
-        InventoryTask inventoryTask = new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(inventoryDumperConfig),
+        InventoryDumperContext inventoryDumperContext = createInventoryDumperContext("t_order", "t_order");
+        AtomicReference<IngestPosition> position = new AtomicReference<>(inventoryDumperContext.getCommonContext().getPosition());
+        InventoryTask inventoryTask = new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(inventoryDumperContext),
                 PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(), mock(Dumper.class), mock(Importer.class), position);
         CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS);
         assertThat(inventoryTask.getTaskProgress().getPosition(), instanceOf(IntegerPrimaryKeyPosition.class));
         inventoryTask.close();
     }
     
-    private void initTableData(final DumperConfiguration dumperConfig) throws SQLException {
+    private void initTableData(final IncrementalDumperContext dumperContext) throws SQLException {
         PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         try (
-                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
+                PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -97,12 +97,13 @@ class InventoryTaskTest {
         dataSourceManager.close();
     }
     
-    private InventoryDumperConfiguration createInventoryDumperConfiguration(final String logicTableName, final String actualTableName) {
-        InventoryDumperConfiguration result = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
+    private InventoryDumperContext createInventoryDumperContext(final String logicTableName, final String actualTableName) {
+        InventoryDumperContext result = new InventoryDumperContext(taskConfig.getDumperContext().getCommonContext());
         result.setLogicTableName(logicTableName);
         result.setActualTableName(actualTableName);
         result.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
-        result.setPosition(null == taskConfig.getDumperConfig().getPosition() ? new IntegerPrimaryKeyPosition(0, 1000) : taskConfig.getDumperConfig().getPosition());
+        result.getCommonContext().setPosition(
+                null == taskConfig.getDumperContext().getCommonContext().getPosition() ? new IntegerPrimaryKeyPosition(0, 1000) : taskConfig.getDumperContext().getCommonContext().getPosition());
         return result;
     }
 }

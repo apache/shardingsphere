@@ -125,7 +125,7 @@ class MppdbDecodingPluginTest {
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
         Object byteaObj = actual.getAfterRow().get(0);
-        assertThat(byteaObj.toString(), is("1.08"));
+        assertThat(byteaObj, is("1.08"));
     }
     
     @Test
@@ -183,8 +183,8 @@ class MppdbDecodingPluginTest {
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
         Object byteaObj = actual.getAfterRow().get(0);
-        assertThat(byteaObj, instanceOf(PGobject.class));
-        assertThat(byteaObj.toString(), is(new String(new byte[]{(byte) 0xff, (byte) 0, (byte) 0xab})));
+        assertThat(byteaObj, instanceOf(byte[].class));
+        assertThat(byteaObj, is(new byte[]{(byte) 0xff, (byte) 0, (byte) 0xab}));
     }
     
     @Test
@@ -259,5 +259,63 @@ class MppdbDecodingPluginTest {
         assertTrue(actualLastEvent instanceof CommitTXEvent);
         assertThat(((CommitTXEvent) actualLastEvent).getCsn(), is(3468L));
         assertThat(((CommitTXEvent) actualLastEvent).getXid(), is(1L));
+    }
+    
+    @Test
+    void assertDecodeWithTsrange() {
+        MppTableData tableData = new MppTableData();
+        tableData.setTableName("public.test");
+        tableData.setOpType("INSERT");
+        tableData.setColumnsName(new String[]{"data"});
+        tableData.setColumnsType(new String[]{"tsrange"});
+        tableData.setColumnsVal(new String[]{"'[\"2020-01-01 00:00:00\",\"2021-01-01 00:00:00\")'"});
+        ByteBuffer data = ByteBuffer.wrap(toJSON(tableData).getBytes());
+        WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null).decode(data, logSequenceNumber);
+        Object byteaObj = actual.getAfterRow().get(0);
+        assertThat(byteaObj, instanceOf(PGobject.class));
+        assertThat(byteaObj.toString(), is("[\"2020-01-01 00:00:00\",\"2021-01-01 00:00:00\")"));
+    }
+    
+    @Test
+    void assertDecodeWithDaterange() {
+        MppTableData tableData = new MppTableData();
+        tableData.setTableName("public.test");
+        tableData.setOpType("INSERT");
+        tableData.setColumnsName(new String[]{"data"});
+        tableData.setColumnsType(new String[]{"daterange"});
+        tableData.setColumnsVal(new String[]{"'[2020-01-02,2021-01-02)'"});
+        ByteBuffer data = ByteBuffer.wrap(toJSON(tableData).getBytes());
+        WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null).decode(data, logSequenceNumber);
+        Object byteaObj = actual.getAfterRow().get(0);
+        assertThat(byteaObj, instanceOf(PGobject.class));
+        assertThat(byteaObj.toString(), is("[2020-01-02,2021-01-02)"));
+    }
+    
+    @Test
+    void assertDecodeWithTsquery() {
+        MppTableData tableData = new MppTableData();
+        tableData.setTableName("public.test");
+        tableData.setOpType("INSERT");
+        tableData.setColumnsName(new String[]{"data"});
+        tableData.setColumnsType(new String[]{"tsquery"});
+        tableData.setColumnsVal(new String[]{"'''fff'' | ''faa'''"});
+        ByteBuffer data = ByteBuffer.wrap(toJSON(tableData).getBytes());
+        WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null).decode(data, logSequenceNumber);
+        Object byteaObj = actual.getAfterRow().get(0);
+        assertThat(byteaObj.toString(), is("'fff' | 'faa'"));
+    }
+    
+    @Test
+    void assertDecodeWitTinyint() {
+        MppTableData tableData = new MppTableData();
+        tableData.setTableName("public.test");
+        tableData.setOpType("INSERT");
+        tableData.setColumnsName(new String[]{"data"});
+        tableData.setColumnsType(new String[]{"tinyint"});
+        tableData.setColumnsVal(new String[]{"255"});
+        ByteBuffer data = ByteBuffer.wrap(toJSON(tableData).getBytes());
+        WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null).decode(data, logSequenceNumber);
+        Object byteaObj = actual.getAfterRow().get(0);
+        assertThat(byteaObj, is(255));
     }
 }

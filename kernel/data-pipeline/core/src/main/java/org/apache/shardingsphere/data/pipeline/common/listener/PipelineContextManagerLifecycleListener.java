@@ -47,7 +47,7 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         if (DefaultDatabase.LOGIC_NAME.equals(databaseName)) {
             return;
         }
-        PipelineContextKey contextKey = PipelineContextKey.build(databaseName, contextManager.getInstanceContext().getInstance().getMetaData().getType());
+        PipelineContextKey contextKey = new PipelineContextKey(databaseName, contextManager.getInstanceContext().getInstance().getMetaData().getType());
         PipelineContextManager.putContext(contextKey, new PipelineContext(modeConfig, contextManager));
         PipelineMetaDataNodeWatcher.getInstance(contextKey);
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
@@ -55,6 +55,6 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
     
     @Override
     public void onDestroyed(final String databaseName, final InstanceType instanceType) {
-        PipelineContextManager.removeContext(PipelineContextKey.build(databaseName, instanceType));
+        PipelineContextManager.removeContext(new PipelineContextKey(databaseName, instanceType));
     }
 }

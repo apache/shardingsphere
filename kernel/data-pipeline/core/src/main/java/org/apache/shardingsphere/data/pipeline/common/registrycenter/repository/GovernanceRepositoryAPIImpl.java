@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult;
@@ -167,22 +166,22 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public String getMetaDataDataSources(final JobType jobType) {
+    public String getMetaDataDataSources(final String jobType) {
         return repository.getDirectly(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType));
     }
     
     @Override
-    public void persistMetaDataDataSources(final JobType jobType, final String metaDataDataSources) {
+    public void persistMetaDataDataSources(final String jobType, final String metaDataDataSources) {
         repository.persist(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType), metaDataDataSources);
     }
     
     @Override
-    public String getMetaDataProcessConfiguration(final JobType jobType) {
+    public String getMetaDataProcessConfiguration(final String jobType) {
         return repository.getDirectly(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType));
     }
     
     @Override
-    public void persistMetaDataProcessConfiguration(final JobType jobType, final String processConfigYamlText) {
+    public void persistMetaDataProcessConfiguration(final String jobType, final String processConfigYamlText) {
         repository.persist(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType), processConfigYamlText);
     }
     

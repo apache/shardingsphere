@@ -19,8 +19,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
 
 import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.curator.shaded.com.google.common.base.Strings;
-import org.apache.shardingsphere.data.pipeline.common.config.CreateTableConfiguration.CreateTableEntry;
+import org.apache.shardingsphere.data.pipeline.common.config.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.AbstractDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PrepareTargetSchemasParameter;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PrepareT
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.stream.Collectors;
 
 /**
  * Data source preparer for openGauss.
@@ -52,10 +50,10 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter param) throws SQLException {
         PipelineDataSourceManager dataSourceManager = param.getDataSourceManager();
-        for (CreateTableEntry each : param.getCreateTableConfig().getCreateTableEntries()) {
+        for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
             String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine());
             try (Connection targetConnection = getCachedDataSource(dataSourceManager, each.getTargetDataSourceConfig()).getConnection()) {
-                for (String sql : Splitter.on(";").trimResults().splitToList(createTargetTableSQL).stream().filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList())) {
+                for (String sql : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(createTargetTableSQL)) {
                     executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(sql));
                 }
             }

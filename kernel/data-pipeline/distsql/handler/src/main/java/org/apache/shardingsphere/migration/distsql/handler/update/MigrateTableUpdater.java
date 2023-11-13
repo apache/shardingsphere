@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequire
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 
 /**
@@ -37,7 +38,7 @@ public final class MigrateTableUpdater implements RALUpdater<MigrateTableStateme
     public void executeUpdate(final String databaseName, final MigrateTableStatement sqlStatement) {
         String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? databaseName : sqlStatement.getTargetDatabaseName();
         ShardingSpherePreconditions.checkNotNull(targetDatabaseName, MissingRequiredTargetDatabaseException::new);
-        jobAPI.createJobAndStart(PipelineContextKey.buildForProxy(), new MigrateTableStatement(sqlStatement.getSourceTargetEntries(), targetDatabaseName));
+        jobAPI.createJobAndStart(new PipelineContextKey(InstanceType.PROXY), new MigrateTableStatement(sqlStatement.getSourceTargetEntries(), targetDatabaseName));
     }
     
     @Override

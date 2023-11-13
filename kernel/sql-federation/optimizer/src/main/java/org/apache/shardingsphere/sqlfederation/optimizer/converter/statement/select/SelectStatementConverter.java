@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.proje
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.ProjectionsConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.where.WhereConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.window.WindowConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.with.WithConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.SQLStatementConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.type.CombineOperatorConverter;
 
@@ -50,7 +51,8 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
     @Override
     public SqlNode convert(final SelectStatement selectStatement) {
         SqlSelect sqlSelect = convertSelect(selectStatement);
-        SqlNode sqlCombine = convertCombine(sqlSelect, selectStatement);
+        SqlNode sqlWith = convertWith(sqlSelect, selectStatement);
+        SqlNode sqlCombine = convertCombine(null != sqlWith ? sqlWith : sqlSelect, selectStatement);
         SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(OrderByConverter::convert).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
         if (limit.isPresent()) {
@@ -59,6 +61,10 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
             return new SqlOrderBy(SqlParserPos.ZERO, sqlCombine, orderBy, offset, rowCount);
         }
         return orderBy.isEmpty() ? sqlCombine : new SqlOrderBy(SqlParserPos.ZERO, sqlCombine, orderBy, null, null);
+    }
+    
+    private SqlNode convertWith(final SqlNode sqlSelect, final SelectStatement selectStatement) {
+        return SelectStatementHandler.getWithSegment(selectStatement).flatMap(segment -> WithConverter.convert(segment, sqlSelect)).orElse(null);
     }
     
     private SqlSelect convertSelect(final SelectStatement selectStatement) {

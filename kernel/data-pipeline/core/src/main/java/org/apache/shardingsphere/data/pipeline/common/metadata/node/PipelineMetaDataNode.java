@@ -19,8 +19,6 @@ package org.apache.shardingsphere.data.pipeline.common.metadata.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.common.constant.DataPipelineConstants;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 
 import java.util.regex.Pattern;
 
@@ -30,7 +28,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineMetaDataNode {
     
-    private static final String JOB_PATTERN_PREFIX = DataPipelineConstants.DATA_PIPELINE_ROOT + "/jobs/(j\\d{2}\\d{2}[0-9a-z]+)";
+    private static final String JOB_PATTERN_PREFIX = PipelineNodePath.DATA_PIPELINE_ROOT + "/jobs/(j\\d{2}\\d{2}[0-9a-z]+)";
     
     public static final Pattern CONFIG_PATTERN = Pattern.compile(JOB_PATTERN_PREFIX + "/config");
     
@@ -42,14 +40,14 @@ public final class PipelineMetaDataNode {
      * @param jobType job type
      * @return data sources path
      */
-    public static String getMetaDataDataSourcesPath(final JobType jobType) {
+    public static String getMetaDataDataSourcesPath(final String jobType) {
         return String.join("/", getMetaDataRootPath(jobType), "data_sources");
     }
     
-    private static String getMetaDataRootPath(final JobType jobType) {
+    private static String getMetaDataRootPath(final String jobType) {
         return null == jobType
-                ? String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, "metadata")
-                : String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobType.getType().toLowerCase(), "metadata");
+                ? String.join("/", PipelineNodePath.DATA_PIPELINE_ROOT, "metadata")
+                : String.join("/", PipelineNodePath.DATA_PIPELINE_ROOT, jobType.toLowerCase(), "metadata");
     }
     
     /**
@@ -58,7 +56,7 @@ public final class PipelineMetaDataNode {
      * @param jobType job type
      * @return data sources path
      */
-    public static String getMetaDataProcessConfigPath(final JobType jobType) {
+    public static String getMetaDataProcessConfigPath(final String jobType) {
         return String.join("/", getMetaDataRootPath(jobType), "process_config");
     }
     
@@ -73,7 +71,7 @@ public final class PipelineMetaDataNode {
     }
     
     private static String getJobsPath() {
-        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, "jobs");
+        return String.join("/", PipelineNodePath.DATA_PIPELINE_ROOT, "jobs");
     }
     
     /**

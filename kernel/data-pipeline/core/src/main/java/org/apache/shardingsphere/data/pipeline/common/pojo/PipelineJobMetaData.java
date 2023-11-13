@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.common.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 
 /**
  * Pipeline job meta data.
@@ -38,4 +39,9 @@ public final class PipelineJobMetaData {
     private final String stopTime;
     
     private final String jobParameter;
+    
+    public PipelineJobMetaData(final JobConfigurationPOJO jobConfigPOJO) {
+        this(jobConfigPOJO.getJobName(), !jobConfigPOJO.isDisabled(),
+                jobConfigPOJO.getShardingTotalCount(), jobConfigPOJO.getProps().getProperty("create_time"), jobConfigPOJO.getProps().getProperty("stop_time"), jobConfigPOJO.getJobParameter());
+    }
 }

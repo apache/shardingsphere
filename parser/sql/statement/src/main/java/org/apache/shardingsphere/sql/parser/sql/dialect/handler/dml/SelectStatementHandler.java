@@ -183,6 +183,9 @@ public final class SelectStatementHandler implements SQLStatementHandler {
         if (selectStatement instanceof SQLServerSelectStatement) {
             return ((SQLServerSelectStatement) selectStatement).getWithSegment();
         }
+        if (selectStatement instanceof MySQLSelectStatement) {
+            return ((MySQLSelectStatement) selectStatement).getWithSegment();
+        }
         return Optional.empty();
     }
     
@@ -198,6 +201,9 @@ public final class SelectStatementHandler implements SQLStatementHandler {
         }
         if (selectStatement instanceof SQLServerSelectStatement) {
             ((SQLServerSelectStatement) selectStatement).setWithSegment(withSegment);
+        }
+        if (selectStatement instanceof MySQLSelectStatement) {
+            ((MySQLSelectStatement) selectStatement).setWithSegment(withSegment);
         }
     }
     

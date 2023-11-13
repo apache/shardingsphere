@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -96,12 +95,9 @@ class ConvertYamlConfigurationExecutorTest {
         assertParseSQL((String) actual.getCell(1));
     }
     
-    private void assertParseSQL(final String actual) {
-        Splitter.on(";").trimResults().splitToList(actual).forEach(each -> {
-            if (!Strings.isNullOrEmpty(each)) {
-                assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(each, false));
-            }
-        });
+    private void assertParseSQL(final String distSQLs) {
+        Splitter.on(";").trimResults().omitEmptyStrings().splitToList(distSQLs)
+                .forEach(each -> assertNotNull(sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(each, false)));
     }
     
     @SneakyThrows(IOException.class)

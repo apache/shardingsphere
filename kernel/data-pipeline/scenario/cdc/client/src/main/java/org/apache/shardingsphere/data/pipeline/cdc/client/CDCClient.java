@@ -35,12 +35,15 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.config.CDCClientConfig
 import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.CDCRequestHandler;
+import org.apache.shardingsphere.data.pipeline.cdc.client.handler.ExceptionHandler;
+import org.apache.shardingsphere.data.pipeline.cdc.client.handler.ServerErrorResultHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.CDCLoginParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartStreamingParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.ResponseFuture;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.DropStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody.BasicBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody.LoginType;
@@ -48,6 +51,10 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartStreami
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StopStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * CDC client.
@@ -77,9 +84,13 @@ public final class CDCClient implements AutoCloseable {
     
     /**
      * Connect.
+     *
+     * @param dataConsumer data consumer
+     * @param exceptionHandler exception handler
+     * @param errorResultHandler error result handler
      */
     @SneakyThrows(InterruptedException.class)
-    public void connect() {
+    public void connect(final Consumer<List<Record>> dataConsumer, final ExceptionHandler exceptionHandler, final ServerErrorResultHandler errorResultHandler) {
         Bootstrap bootstrap = new Bootstrap();
         group = new NioEventLoopGroup(1);
         bootstrap.channel(NioSocketChannel.class)
@@ -94,7 +105,7 @@ public final class CDCClient implements AutoCloseable {
                         channel.pipeline().addLast(new ProtobufDecoder(CDCResponse.getDefaultInstance()));
                         channel.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
                         channel.pipeline().addLast(new ProtobufEncoder());
-                        channel.pipeline().addLast(new CDCRequestHandler(config.getDataConsumer(), config.getExceptionHandler()));
+                        channel.pipeline().addLast(new CDCRequestHandler(dataConsumer, exceptionHandler, errorResultHandler));
                     }
                 });
         channel = bootstrap.connect(config.getAddress(), config.getPort()).sync().channel();
@@ -164,9 +175,6 @@ public final class CDCClient implements AutoCloseable {
      * @param streamingId streaming id
      */
     public void restartStreaming(final String streamingId) {
-        if (checkStreamingIdExist(streamingId)) {
-            stopStreaming(streamingId);
-        }
         String requestId = RequestIdUtils.generateRequestId();
         StartStreamingRequestBody body = StartStreamingRequestBody.newBuilder().setStreamingId(streamingId).build();
         CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setType(Type.START_STREAMING).setStartStreamingRequestBody(body).build();
@@ -176,16 +184,6 @@ public final class CDCClient implements AutoCloseable {
         channel.writeAndFlush(request);
         responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
         log.info("Restart streaming success, streaming id: {}", streamingId);
-    }
-    
-    private boolean checkStreamingIdExist(final String streamingId) {
-        checkChannelActive();
-        ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
-        if (null == connectionContext) {
-            log.warn("The connection context not exist");
-            return true;
-        }
-        return connectionContext.getStreamingIds().contains(streamingId);
     }
     
     /**
@@ -204,6 +202,24 @@ public final class CDCClient implements AutoCloseable {
         responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
         connectionContext.getStreamingIds().remove(streamingId);
         log.info("Stop streaming success, streaming id: {}", streamingId);
+    }
+    
+    /**
+     * Drop streaming.
+     *
+     * @param streamingId streaming id
+     */
+    public void dropStreaming(final String streamingId) {
+        String requestId = RequestIdUtils.generateRequestId();
+        DropStreamingRequestBody body = DropStreamingRequestBody.newBuilder().setStreamingId(streamingId).build();
+        CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setType(Type.DROP_STREAMING).setDropStreamingRequestBody(body).build();
+        ResponseFuture responseFuture = new ResponseFuture(requestId, Type.DROP_STREAMING);
+        ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
+        connectionContext.getResponseFutureMap().put(requestId, responseFuture);
+        channel.writeAndFlush(request);
+        responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
+        connectionContext.getStreamingIds().remove(streamingId);
+        log.info("Drop streaming success, streaming id: {}", streamingId);
     }
     
     @Override

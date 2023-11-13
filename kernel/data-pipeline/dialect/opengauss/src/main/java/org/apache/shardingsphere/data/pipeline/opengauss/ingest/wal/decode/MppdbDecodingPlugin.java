@@ -163,8 +163,8 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
             return decodeString(data.substring(1));
         }
         switch (columnType) {
+            case "tinyint":
             case "smallint":
-                return Short.parseShort(data);
             case "integer":
                 return Integer.parseInt(data);
             case "bigint":
@@ -193,9 +193,16 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
                     throw new DecodingException(ex);
                 }
             case "bytea":
+            case "blob":
                 return decodeBytea(data);
             case "raw":
             case "reltime":
+            case "int4range":
+            case "int8range":
+            case "numrange":
+            case "tsrange":
+            case "tstzrange":
+            case "daterange":
                 return decodePgObject(data, columnType);
             case "money":
                 return decodeMoney(data);
@@ -205,6 +212,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
             case "text":
             case "character":
             case "nvarchar2":
+            case "tsquery":
             default:
                 return decodeString(data).replace("''", "'");
         }
@@ -229,16 +237,8 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         }
     }
     
-    private PGobject decodeBytea(final String data) {
-        try {
-            PGobject result = new PGobject();
-            result.setType("bytea");
-            byte[] decodeByte = decodeHex(decodeString(data).substring(2));
-            result.setValue(new String(decodeByte));
-            return result;
-        } catch (final SQLException ignored) {
-            return null;
-        }
+    private Object decodeBytea(final String data) {
+        return decodeHex(decodeString(data).substring(2));
     }
     
     private String decodeMoney(final String data) {

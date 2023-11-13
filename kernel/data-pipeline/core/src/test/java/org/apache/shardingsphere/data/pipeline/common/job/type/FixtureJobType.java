@@ -20,11 +20,15 @@ package org.apache.shardingsphere.data.pipeline.common.job.type;
 /**
  * Fixture job type.
  */
-public final class FixtureJobType extends AbstractJobType {
+public final class FixtureJobType implements JobType {
     
-    public static final String TYPE_CODE = "00";
+    @Override
+    public String getCode() {
+        return "00";
+    }
     
-    public FixtureJobType() {
-        super("FIXTURE", TYPE_CODE);
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }

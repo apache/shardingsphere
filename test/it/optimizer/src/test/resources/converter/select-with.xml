@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-node-converter-test-cases>
+    <test-cases sql-case-id="select_with_single_subquery" expected-sql="WITH `t` AS (SELECT `a` + 2 AS `c`, `b` FROM `t1`) SELECT `c`, `b` FROM `t`" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_multiple_subquery" expected-sql="WITH `cte1` (`col1`, `col2`, `col3`) AS (SELECT `emp_no`, `first_name`, `last_name` FROM `employees` WHERE `emp_no` = 10012), `cte2` (`col1`, `col2`, `col3`) AS (SELECT `emp_no`, `first_name`, `last_name` FROM `employees` WHERE `emp_no` = 10012) SELECT `col1`, `col2`, `col3` FROM `cte1`" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_recursive_union_all1" expected-sql="WITH `DirectoryCTE` AS (SELECT * FROM `table1` WHERE `id` = 1 AND `project_id` = 2 UNION ALL SELECT * FROM `project_file_catalog` AS `t` INNER JOIN `DirectoryCTE` AS `cte` ON `t`.`project_id` = `cte`.`project_id` AND `t`.`parent_id` = `cte`.`id`) SELECT * FROM `DirectoryCTE` ORDER BY `level`" db-types="MySQL" />
+    <test-cases sql-case-id="select_with_recursive_union_all2" expected-sql="WITH `cte` AS (SELECT 1 AS `col1`, 2 AS `col2` UNION ALL SELECT 3, 4) SELECT `col1`, `col2` FROM `cte`" db-types="MySQL" />
+</sql-node-converter-test-cases>

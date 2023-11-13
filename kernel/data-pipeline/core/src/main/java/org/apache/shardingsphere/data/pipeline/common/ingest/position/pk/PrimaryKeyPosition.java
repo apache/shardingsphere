@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.ingest.position.pk;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 /**
  * Primary key position.
