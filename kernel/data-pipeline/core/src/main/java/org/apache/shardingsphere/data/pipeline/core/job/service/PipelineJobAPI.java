@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -94,6 +95,14 @@ public interface PipelineJobAPI extends TypedSPI {
      * @return job configuration
      */
     PipelineJobConfiguration getJobConfiguration(String jobId);
+    
+    /**
+     * Get job configuration.
+     *
+     * @param jobConfigPOJO job configuration POJO
+     * @return pipeline job configuration
+     */
+    PipelineJobConfiguration getJobConfiguration(JobConfigurationPOJO jobConfigPOJO);
     
     /**
      * Get pipeline job info.

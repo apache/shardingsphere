@@ -26,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyStartedException;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
@@ -62,13 +61,11 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         return Optional.of(jobId);
     }
     
-    protected abstract PipelineJobConfiguration getJobConfiguration(JobConfigurationPOJO jobConfigPOJO);
-    
     @Override
     public void startDisabledJob(final String jobId) {
         PipelineDistributedBarrier pipelineDistributedBarrier = PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId));
         pipelineDistributedBarrier.unregister(PipelineMetaDataNode.getJobBarrierDisablePath(jobId));
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
         ShardingSpherePreconditions.checkState(jobConfigPOJO.isDisabled(), () -> new PipelineJobHasAlreadyStartedException(jobId));
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
@@ -85,7 +82,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     public void stop(final String jobId) {
         PipelineDistributedBarrier pipelineDistributedBarrier = PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId));
         pipelineDistributedBarrier.unregister(PipelineMetaDataNode.getJobBarrierEnablePath(jobId));
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
         if (jobConfigPOJO.isDisabled()) {
             return;
         }
@@ -102,18 +99,6 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
         PipelineAPIFactory.getJobOperateAPI(contextKey).remove(String.valueOf(jobId), null);
         PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).deleteJob(jobId);
-    }
-    
-    /**
-     * Get ElasticJob configuration POJO.
-     *
-     * @param jobId job id
-     * @return ElasticJob configuration POJO
-     */
-    public final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
-        JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobConfiguration(jobId);
-        ShardingSpherePreconditions.checkNotNull(result, () -> new PipelineJobNotFoundException(jobId));
-        return result;
     }
     
     @Override

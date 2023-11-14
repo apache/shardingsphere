@@ -29,6 +29,10 @@ import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobCodeRegistry;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.common.util.InstanceTypeUtils;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 import java.nio.charset.StandardCharsets;
@@ -85,5 +89,17 @@ public final class PipelineJobIdUtils {
         short databaseNameLength = Shorts.fromByteArray(Hex.decodeHex(jobId.substring(6, 10)));
         String databaseName = new String(Hex.decodeHex(jobId.substring(10, 10 + databaseNameLength)), StandardCharsets.UTF_8);
         return new PipelineContextKey(databaseName, InstanceTypeUtils.decode(instanceType));
+    }
+    
+    /**
+     * Get ElasticJob configuration POJO.
+     *
+     * @param jobId job id
+     * @return ElasticJob configuration POJO
+     */
+    public static JobConfigurationPOJO getElasticJobConfigurationPOJO(final String jobId) {
+        JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobConfiguration(jobId);
+        ShardingSpherePreconditions.checkNotNull(result, () -> new PipelineJobNotFoundException(jobId));
+        return result;
     }
 }
