@@ -600,7 +600,9 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 
 ### 6. 官网首页增加发布版本文档入口
 
-参考 commit：https://github.com/apache/shardingsphere-doc/commit/9fdf438d1170129d2690b5dee316403984579430
+参考 commit：
+https://github.com/apache/shardingsphere-doc/commit/9fdf438d1170129d2690b5dee316403984579430
+https://github.com/apache/shardingsphere/pull/29017/files
 
 ### 7. 更新示例版本
 
