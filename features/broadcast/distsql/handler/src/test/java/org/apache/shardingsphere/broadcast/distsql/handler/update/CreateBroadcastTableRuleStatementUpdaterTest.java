@@ -40,7 +40,7 @@ class CreateBroadcastTableRuleStatementUpdaterTest {
     private final CreateBroadcastTableRuleStatementUpdater updater = new CreateBroadcastTableRuleStatementUpdater();
     
     @Test
-    void assertCreatedRuleConfigurationWithNoStorageUnits() {
+    void assertCheckSQLStatementWithEmptyStorageUnit() {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
         CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
