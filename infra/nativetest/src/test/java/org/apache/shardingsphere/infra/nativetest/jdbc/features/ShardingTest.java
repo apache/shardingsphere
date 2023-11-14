@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -68,8 +68,8 @@ public final class ShardingTest {
     }
     
     private void processSuccess() throws SQLException {
-        final List<Long> orderIds = insertData();
-        List<Order> orders = orderRepository.selectAll();
+        final Collection<Long> orderIds = insertData();
+        Collection<Order> orders = orderRepository.selectAll();
         assertThat(orders.stream().map(Order::getOrderType).collect(Collectors.toList()),
                 equalTo(Arrays.asList(1, 1, 1, 1, 1, 0, 0, 0, 0, 0)));
         assertThat(orders.stream().map(Order::getUserId).collect(Collectors.toList()),
@@ -78,7 +78,7 @@ public final class ShardingTest {
                 equalTo(new ArrayList<>(Arrays.asList(1L, 3L, 5L, 7L, 9L, 2L, 4L, 6L, 8L, 10L))));
         assertThat(orders.stream().map(Order::getStatus).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
-        List<OrderItem> orderItems = orderItemRepository.selectAll();
+        Collection<OrderItem> orderItems = orderItemRepository.selectAll();
         assertThat(orderItems.stream().map(OrderItem::getUserId).collect(Collectors.toList()),
                 equalTo(new ArrayList<>(Arrays.asList(1, 3, 5, 7, 9, 2, 4, 6, 8, 10))));
         assertThat(orderItems.stream().map(OrderItem::getPhone).collect(Collectors.toList()),
@@ -93,8 +93,8 @@ public final class ShardingTest {
         assertThat(addressRepository.selectAll(), equalTo(new ArrayList<>()));
     }
     
-    private List<Long> insertData() throws SQLException {
-        List<Long> result = new ArrayList<>(10);
+    private Collection<Long> insertData() throws SQLException {
+        Collection<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             Order order = new Order();
             order.setUserId(i);
@@ -115,7 +115,7 @@ public final class ShardingTest {
         return result;
     }
     
-    private void deleteData(final List<Long> orderIds) throws SQLException {
+    private void deleteData(final Collection<Long> orderIds) throws SQLException {
         long count = 1;
         for (Long each : orderIds) {
             orderRepository.delete(each);

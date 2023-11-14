@@ -32,8 +32,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -71,7 +71,7 @@ public final class ShadowTest {
     }
     
     private void processSuccess() throws SQLException {
-        final List<Long> orderIds = insertData();
+        final Collection<Long> orderIds = insertData();
         assertThat(this.selectAll(), equalTo(Arrays.asList(
                 new Order(1, 0, 2, 2, "INSERT_TEST"),
                 new Order(2, 0, 4, 4, "INSERT_TEST"),
@@ -102,8 +102,8 @@ public final class ShadowTest {
         assertThat(addressRepository.selectAll(), equalTo(new ArrayList<>()));
     }
     
-    private List<Long> insertData() throws SQLException {
-        List<Long> result = new ArrayList<>(10);
+    private Collection<Long> insertData() throws SQLException {
+        Collection<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             Order order = new Order();
             order.setUserId(i);
@@ -124,7 +124,7 @@ public final class ShadowTest {
         return result;
     }
     
-    private void deleteData(final List<Long> orderIds) throws SQLException {
+    private void deleteData(final Collection<Long> orderIds) throws SQLException {
         long count = 1;
         for (Long each : orderIds) {
             orderRepository.deleteShadow(each);
@@ -134,8 +134,8 @@ public final class ShadowTest {
         }
     }
     
-    private List<Order> selectAll() throws SQLException {
-        List<Order> result = orderRepository.selectAll();
+    private Collection<Order> selectAll() throws SQLException {
+        Collection<Order> result = orderRepository.selectAll();
         result.addAll(orderRepository.selectShadowOrder());
         return result;
     }

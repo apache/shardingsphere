@@ -32,7 +32,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -65,7 +65,7 @@ public final class ReadWriteSplittingTest {
     }
     
     private void processSuccess() throws SQLException {
-        List<Long> orderIds = insertData();
+        Collection<Long> orderIds = insertData();
         // This is intentional because the read operation is in the slave database and the corresponding table does not exist.
         assertThrows(JdbcSQLSyntaxErrorException.class, this::printData);
         deleteData(orderIds);
@@ -73,8 +73,8 @@ public final class ReadWriteSplittingTest {
         assertThrows(JdbcSQLSyntaxErrorException.class, this::printData);
     }
     
-    private List<Long> insertData() throws SQLException {
-        List<Long> result = new ArrayList<>(10);
+    private Collection<Long> insertData() throws SQLException {
+        Collection<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             Order order = new Order();
             order.setUserId(i);
@@ -95,7 +95,7 @@ public final class ReadWriteSplittingTest {
         return result;
     }
     
-    private void deleteData(final List<Long> orderIds) throws SQLException {
+    private void deleteData(final Collection<Long> orderIds) throws SQLException {
         long count = 1;
         for (Long each : orderIds) {
             orderRepository.delete(each);

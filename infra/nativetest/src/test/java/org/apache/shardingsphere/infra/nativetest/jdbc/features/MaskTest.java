@@ -31,7 +31,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -68,7 +68,7 @@ public final class MaskTest {
     }
     
     private void processSuccess() throws SQLException {
-        final List<Long> orderIds = insertData();
+        final Collection<Long> orderIds = insertData();
         assertThat(orderRepository.selectAll(),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> new Order(i, i % 2, i, i, "INSERT_TEST")).collect(Collectors.toList())));
         assertThat(orderItemRepository.selectAll(),
@@ -81,8 +81,8 @@ public final class MaskTest {
         assertThat(addressRepository.selectAll(), equalTo(new ArrayList<>()));
     }
     
-    private List<Long> insertData() throws SQLException {
-        List<Long> result = new ArrayList<>(10);
+    private Collection<Long> insertData() throws SQLException {
+        Collection<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             Order order = new Order();
             order.setUserId(i);
@@ -103,7 +103,7 @@ public final class MaskTest {
         return result;
     }
     
-    private void deleteData(final List<Long> orderIds) throws SQLException {
+    private void deleteData(final Collection<Long> orderIds) throws SQLException {
         long count = 1;
         for (Long each : orderIds) {
             orderRepository.delete(each);
