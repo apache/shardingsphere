@@ -20,9 +20,10 @@ package org.apache.shardingsphere.broadcast.distsql.handler.update;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.CreateBroadcastTableRuleStatement;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -34,6 +35,7 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateBroadcastTableRuleStatement sqlStatement, final BroadcastRuleConfiguration currentRuleConfig) {
+        ShardingSpherePreconditions.checkState(!database.getResourceMetaData().getStorageUnits().isEmpty(), () -> new EmptyStorageUnitException(database.getName()));
         if (!sqlStatement.isIfNotExists()) {
             checkDuplicate(sqlStatement, currentRuleConfig);
         }
