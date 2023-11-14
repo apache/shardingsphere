@@ -69,7 +69,6 @@ public final class ShardingTest {
     
     private void processSuccess() throws SQLException {
         final List<Long> orderIds = insertData();
-        
         List<Order> orders = orderRepository.selectAll();
         assertThat(orders.stream().map(Order::getOrderType).collect(Collectors.toList()),
                 equalTo(Arrays.asList(1, 1, 1, 1, 1, 0, 0, 0, 0, 0)));
@@ -79,7 +78,6 @@ public final class ShardingTest {
                 equalTo(new ArrayList<>(Arrays.asList(1L, 3L, 5L, 7L, 9L, 2L, 4L, 6L, 8L, 10L))));
         assertThat(orders.stream().map(Order::getStatus).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
-        
         List<OrderItem> orderItems = orderItemRepository.selectAll();
         assertThat(orderItems.stream().map(OrderItem::getUserId).collect(Collectors.toList()),
                 equalTo(new ArrayList<>(Arrays.asList(1, 3, 5, 7, 9, 2, 4, 6, 8, 10))));
@@ -87,7 +85,6 @@ public final class ShardingTest {
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "13800000001").collect(Collectors.toList())));
         assertThat(orderItems.stream().map(OrderItem::getStatus).collect(Collectors.toList()),
                 equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
-        
         assertThat(addressRepository.selectAll(),
                 equalTo(LongStream.range(1, 11).mapToObj(i -> new Address(i, "address_test_" + i)).collect(Collectors.toList())));
         deleteData(orderIds);
@@ -105,17 +102,14 @@ public final class ShardingTest {
             order.setAddressId(i);
             order.setStatus("INSERT_TEST");
             orderRepository.insert(order);
-            
             OrderItem orderItem = new OrderItem();
             orderItem.setOrderId(order.getOrderId());
             orderItem.setUserId(i);
             orderItem.setPhone("13800000001");
             orderItem.setStatus("INSERT_TEST");
             orderItemRepository.insert(orderItem);
-            
             Address address = new Address((long) i, "address_test_" + i);
             addressRepository.insert(address);
-            
             result.add(order.getOrderId());
         }
         return result;

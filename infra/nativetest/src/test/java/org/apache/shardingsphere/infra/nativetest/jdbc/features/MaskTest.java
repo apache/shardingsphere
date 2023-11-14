@@ -90,17 +90,14 @@ public final class MaskTest {
             order.setAddressId(i);
             order.setStatus("INSERT_TEST");
             orderRepository.insert(order);
-            
             OrderItem orderItem = new OrderItem();
             orderItem.setOrderId(order.getOrderId());
             orderItem.setUserId(i);
             orderItem.setPhone("13800000001");
             orderItem.setStatus("INSERT_TEST");
             orderItemRepository.insert(orderItem);
-            
             Address address = new Address((long) i, "address_test_" + i);
             addressRepository.insert(address);
-            
             result.add(order.getOrderId());
         }
         return result;
