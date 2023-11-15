@@ -89,4 +89,15 @@ public final class PipelineJobManager {
         return PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"))
                 .filter(each -> jobType.equals(PipelineJobIdUtils.parseJobType(each.getJobName()).getType()));
     }
+    
+    /**
+     * Get job item error message.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @return map, key is sharding item, value is error message
+     */
+    public String getJobItemErrorMessage(final String jobId, final int shardingItem) {
+        return Optional.ofNullable(PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemErrorMessage(jobId, shardingItem)).orElse("");
+    }
 }

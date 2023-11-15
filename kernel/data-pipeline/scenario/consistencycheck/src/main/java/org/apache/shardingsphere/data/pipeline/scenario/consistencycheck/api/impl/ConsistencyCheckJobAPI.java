@@ -305,7 +305,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         fillInJobItemInfoWithTimes(result, jobItemProgress, jobConfigPOJO);
         result.setTableNames(Optional.ofNullable(jobItemProgress.getTableNames()).orElse(""));
         fillInJobItemInfoWithCheckAlgorithm(result, checkJobId);
-        result.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
+        result.setErrorMessage(new PipelineJobManager(this).getJobItemErrorMessage(checkJobId, 0));
         Map<String, TableDataConsistencyCheckResult> checkJobResult = governanceRepositoryAPI.getCheckJobResult(parentJobId, checkJobId);
         fillInJobItemInfoWithCheckResult(result, checkJobResult, parentJobId);
         result.setCheckFailedTableNames(checkJobResult.entrySet().stream().filter(each -> !each.getValue().isIgnored() && !each.getValue().isMatched())

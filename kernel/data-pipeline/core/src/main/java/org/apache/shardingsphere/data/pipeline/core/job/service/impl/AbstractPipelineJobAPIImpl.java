@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -73,11 +72,6 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         pipelineDistributedBarrier.register(barrierPath, jobConfigPOJO.getShardingTotalCount());
         PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId)).updateJobConfiguration(jobConfigPOJO);
         pipelineDistributedBarrier.await(barrierPath, 5, TimeUnit.SECONDS);
-    }
-    
-    @Override
-    public String getJobItemErrorMessage(final String jobId, final int shardingItem) {
-        return Optional.ofNullable(PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemErrorMessage(jobId, shardingItem)).orElse("");
     }
     
     @Override
