@@ -43,7 +43,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
-import org.apache.shardingsphere.data.pipeline.core.job.service.impl.AbstractPipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobId;
@@ -78,7 +77,7 @@ import java.util.stream.Collectors;
  * Consistency check job API.
  */
 @Slf4j
-public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
+public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     
@@ -181,23 +180,13 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
                 YamlEngine.marshal(swapper.swapToYamlConfiguration(jobItemProgress.get())));
     }
     
-    @Override
-    public void startDisabledJob(final String jobId) {
-        Optional<ConsistencyCheckJobItemProgress> jobItemProgress = getJobItemProgress(jobId, 0);
-        if (jobItemProgress.isPresent() && JobStatus.FINISHED == jobItemProgress.get().getStatus()) {
-            log.info("job status is FINISHED, ignore, jobId={}", jobId);
-            return;
-        }
-        super.startDisabledJob(jobId);
-    }
-    
     /**
      * Start by parent job id.
      *
      * @param parentJobId parent job id
      */
     public void startByParentJobId(final String parentJobId) {
-        startDisabledJob(getLatestCheckJobId(parentJobId));
+        new PipelineJobManager(this).startDisabledJob(getLatestCheckJobId(parentJobId));
     }
     
     private String getLatestCheckJobId(final String parentJobId) {

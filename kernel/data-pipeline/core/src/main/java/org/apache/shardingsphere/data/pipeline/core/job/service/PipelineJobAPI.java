@@ -67,13 +67,6 @@ public interface PipelineJobAPI extends TypedSPI {
     PipelineProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     /**
-     * Start disabled job.
-     *
-     * @param jobId job id
-     */
-    void startDisabledJob(String jobId);
-    
-    /**
      * Get job configuration.
      *
      * @param jobId job id
@@ -88,6 +81,33 @@ public interface PipelineJobAPI extends TypedSPI {
      * @return pipeline job configuration
      */
     PipelineJobConfiguration getJobConfiguration(JobConfigurationPOJO jobConfigPOJO);
+    
+    /**
+     * Whether to ignore to start disabled job when job item progress is finished.
+     * 
+     * @return ignore to start disabled job when job item progress is finished or not
+     */
+    default boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished() {
+        return false;
+    }
+    
+    /**
+     * Get to be start disabled next job type.
+     *
+     * @return to be start disabled next job type
+     */
+    default Optional<String> getToBeStartDisabledNextJobType() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get to be stopped previous job type.
+     *
+     * @return to be stopped previous job type
+     */
+    default Optional<String> getToBeStoppedPreviousJobType() {
+        return Optional.empty();
+    }
     
     /**
      * Get pipeline job info.
@@ -128,15 +148,6 @@ public interface PipelineJobAPI extends TypedSPI {
      * @param status status
      */
     void updateJobItemStatus(String jobId, int shardingItem, JobStatus status);
-    
-    /**
-     * Get to be stopped previous job type.
-     * 
-     * @return to be stopped previous job type
-     */
-    default Optional<String> getToBeStoppedPreviousJobType() {
-        return Optional.empty();
-    }
     
     /**
      * Get pipeline job class.
