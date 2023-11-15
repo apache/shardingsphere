@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.context;
 
 import lombok.Setter;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
@@ -25,7 +26,7 @@ import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewri
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRewriterBuilder;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingTokenGenerateBuilder;
+import org.apache.shardingsphere.sharding.rewrite.token.ShardingTokenGenerateBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
@@ -38,12 +39,24 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     
     @Override
     public void decorate(final ShardingRule shardingRule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
+        if (!containsShardingTable(shardingRule, sqlRewriteContext.getSqlStatementContext())) {
+            return;
+        }
         if (!sqlRewriteContext.getParameters().isEmpty()) {
             Collection<ParameterRewriter> parameterRewriters =
                     new ShardingParameterRewriterBuilder(shardingRule, routeContext, sqlRewriteContext.getDatabase().getSchemas(), sqlRewriteContext.getSqlStatementContext()).getParameterRewriters();
             rewriteParameters(sqlRewriteContext, parameterRewriters);
         }
         sqlRewriteContext.addSQLTokenGenerators(new ShardingTokenGenerateBuilder(shardingRule, routeContext, sqlRewriteContext.getSqlStatementContext()).getSQLTokenGenerators());
+    }
+    
+    private boolean containsShardingTable(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) {
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
+            if (shardingRule.findTableRule(each).isPresent()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private void rewriteParameters(final SQLRewriteContext sqlRewriteContext, final Collection<ParameterRewriter> parameterRewriters) {

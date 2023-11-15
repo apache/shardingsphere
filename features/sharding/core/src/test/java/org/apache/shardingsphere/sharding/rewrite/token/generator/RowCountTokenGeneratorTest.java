@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token;
+package org.apache.shardingsphere.sharding.rewrite.token.generator;
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;

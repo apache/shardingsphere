@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo;
+package org.apache.shardingsphere.sharding.rewrite.token;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;

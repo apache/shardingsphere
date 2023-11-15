@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token;
+package org.apache.shardingsphere.sharding.rewrite.token.generator;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateDatabaseStatementContext;
