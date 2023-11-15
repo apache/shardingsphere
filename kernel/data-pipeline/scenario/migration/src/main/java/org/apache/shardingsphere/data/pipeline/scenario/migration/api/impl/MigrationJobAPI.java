@@ -55,6 +55,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.impl.AbstractInventoryIncrementalJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
@@ -122,7 +123,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
      */
     public String createJobAndStart(final PipelineContextKey contextKey, final MigrateTableStatement param) {
         MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(buildYamlJobConfiguration(contextKey, param));
-        start(jobConfig);
+        new PipelineJobManager(this).start(jobConfig);
         return jobConfig.getJobId();
     }
     

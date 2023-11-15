@@ -67,14 +67,6 @@ public interface PipelineJobAPI extends TypedSPI {
     PipelineProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     /**
-     * Start job.
-     *
-     * @param jobConfig job configuration
-     * @return job id
-     */
-    Optional<String> start(PipelineJobConfiguration jobConfig);
-    
-    /**
      * Start disabled job.
      *
      * @param jobId job id

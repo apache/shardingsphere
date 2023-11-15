@@ -42,6 +42,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.impl.AbstractPipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
@@ -113,7 +114,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         yamlConfig.setAlgorithmTypeName(param.getAlgorithmTypeName());
         yamlConfig.setAlgorithmProps(param.getAlgorithmProps());
         yamlConfig.setSourceDatabaseType(param.getSourceDatabaseType().getType());
-        start(new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(yamlConfig));
+        new PipelineJobManager(this).start(new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(yamlConfig));
         return result;
     }
     
