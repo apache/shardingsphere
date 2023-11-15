@@ -83,7 +83,7 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
         log.error("job execution failed, {}-{}", jobId, shardingItem, ex);
         jobManager.updateJobItemErrorMessage(jobId, shardingItem, ex);
         try {
-            getJobAPI().stop(jobId);
+            jobManager.stop(jobId);
         } catch (final PipelineJobNotFoundException ignored) {
         }
     }

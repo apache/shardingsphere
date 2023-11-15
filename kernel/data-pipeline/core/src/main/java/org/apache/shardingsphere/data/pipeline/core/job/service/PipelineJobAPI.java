@@ -74,13 +74,6 @@ public interface PipelineJobAPI extends TypedSPI {
     void startDisabledJob(String jobId);
     
     /**
-     * Stop pipeline job.
-     *
-     * @param jobId job id
-     */
-    void stop(String jobId);
-    
-    /**
      * Get job configuration.
      *
      * @param jobId job id
@@ -135,6 +128,15 @@ public interface PipelineJobAPI extends TypedSPI {
      * @param status status
      */
     void updateJobItemStatus(String jobId, int shardingItem, JobStatus status);
+    
+    /**
+     * Get to be stopped previous job type.
+     * 
+     * @return to be stopped previous job type
+     */
+    default Optional<String> getToBeStoppedPreviousJobType() {
+        return Optional.empty();
+    }
     
     /**
      * Get pipeline job class.

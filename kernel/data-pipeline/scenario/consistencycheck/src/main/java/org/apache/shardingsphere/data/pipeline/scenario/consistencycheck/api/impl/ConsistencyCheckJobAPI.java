@@ -212,7 +212,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
      * @param parentJobId parent job id
      */
     public void stopByParentJobId(final String parentJobId) {
-        stop(getLatestCheckJobId(parentJobId));
+        new PipelineJobManager(this).stop(getLatestCheckJobId(parentJobId));
     }
     
     /**
@@ -222,7 +222,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
      */
     public void dropByParentJobId(final String parentJobId) {
         String latestCheckJobId = getLatestCheckJobId(parentJobId);
-        stop(latestCheckJobId);
+        new PipelineJobManager(this).stop(latestCheckJobId);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(parentJobId);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey);
         Collection<String> checkJobIds = repositoryAPI.listCheckJobIds(parentJobId);

@@ -148,7 +148,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         String jobId = jobItemContext.getJobId();
         jobManager.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
         try {
-            jobAPI.stop(jobId);
+            jobManager.stop(jobId);
         } catch (final PipelineJobNotFoundException ignored) {
         }
     }
@@ -183,7 +183,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
             String jobId = jobItemContext.getJobId();
             jobManager.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
             try {
-                jobAPI.stop(jobId);
+                jobManager.stop(jobId);
             } catch (final PipelineJobNotFoundException ignored) {
             }
         }

@@ -134,7 +134,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             log.info("onSuccess, check job id: {}, parent job id: {}", checkJobId, parentJobId);
             jobItemContext.setStatus(JobStatus.FINISHED);
             checkJobAPI.persistJobItemProgress(jobItemContext);
-            checkJobAPI.stop(checkJobId);
+            jobManager.stop(checkJobId);
         }
         
         @Override
@@ -142,12 +142,12 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             PipelineDataConsistencyChecker checker = consistencyChecker.get();
             if (null != checker && checker.isCanceling()) {
                 log.info("onFailure, canceling, check job id: {}, parent job id: {}", checkJobId, parentJobId);
-                checkJobAPI.stop(checkJobId);
+                jobManager.stop(checkJobId);
                 return;
             }
             log.info("onFailure, check job id: {}, parent job id: {}", checkJobId, parentJobId, throwable);
             jobManager.updateJobItemErrorMessage(checkJobId, 0, throwable);
-            checkJobAPI.stop(checkJobId);
+            jobManager.stop(checkJobId);
         }
     }
 }

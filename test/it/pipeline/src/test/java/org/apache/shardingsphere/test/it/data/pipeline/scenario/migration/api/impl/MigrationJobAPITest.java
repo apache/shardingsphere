@@ -132,7 +132,7 @@ class MigrationJobAPITest {
         assertFalse(getJobConfigurationPOJO(jobId.get()).isDisabled());
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
         when(PipelineDistributedBarrier.getInstance(any())).thenReturn(mockBarrier);
-        jobAPI.stop(jobId.get());
+        jobManager.stop(jobId.get());
         assertTrue(getJobConfigurationPOJO(jobId.get()).isDisabled());
         jobAPI.startDisabledJob(jobId.get());
         assertFalse(getJobConfigurationPOJO(jobId.get()).isDisabled());
