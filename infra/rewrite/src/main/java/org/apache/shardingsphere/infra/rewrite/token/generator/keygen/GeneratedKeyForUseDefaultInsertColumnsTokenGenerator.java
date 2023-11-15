@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
+package org.apache.shardingsphere.infra.rewrite.token.generator.keygen;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.UseDefaultInsertColumnsToken;

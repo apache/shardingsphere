@@ -37,10 +37,10 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.RowCountT
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingInsertValuesTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingRemoveTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.TableTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen.GeneratedKeyAssignmentTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen.GeneratedKeyForUseDefaultInsertColumnsTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen.GeneratedKeyInsertColumnTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen.GeneratedKeyInsertValuesTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.token.generator.keygen.GeneratedKeyAssignmentTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.token.generator.keygen.GeneratedKeyForUseDefaultInsertColumnsTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.token.generator.keygen.GeneratedKeyInsertColumnTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.token.generator.keygen.GeneratedKeyInsertValuesTokenGenerator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 

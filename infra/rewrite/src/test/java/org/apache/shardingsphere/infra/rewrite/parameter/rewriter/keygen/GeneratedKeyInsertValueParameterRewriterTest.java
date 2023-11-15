@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.parameter;
+package org.apache.shardingsphere.infra.rewrite.parameter.rewriter.keygen;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
-import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
@@ -42,7 +41,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShardingGeneratedKeyInsertValueParameterRewriterTest {
+class GeneratedKeyInsertValueParameterRewriterTest {
     
     private static final int TEST_PARAMETER_COUNT = 3;
     
@@ -50,7 +49,7 @@ class ShardingGeneratedKeyInsertValueParameterRewriterTest {
     
     @Test
     void assertIsNeedRewrite() {
-        ShardingGeneratedKeyInsertValueParameterRewriter paramRewriter = new ShardingGeneratedKeyInsertValueParameterRewriter();
+        GeneratedKeyInsertValueParameterRewriter paramRewriter = new GeneratedKeyInsertValueParameterRewriter();
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         assertFalse(paramRewriter.isNeedRewrite(selectStatementContext));
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
@@ -68,7 +67,7 @@ class ShardingGeneratedKeyInsertValueParameterRewriterTest {
     void assertRewrite() {
         InsertStatementContext insertStatementContext = getInsertStatementContext();
         ParameterBuilder groupedParamBuilder = getParameterBuilder();
-        ShardingGeneratedKeyInsertValueParameterRewriter paramRewriter = new ShardingGeneratedKeyInsertValueParameterRewriter();
+        GeneratedKeyInsertValueParameterRewriter paramRewriter = new GeneratedKeyInsertValueParameterRewriter();
         paramRewriter.rewrite(groupedParamBuilder, insertStatementContext, null);
         assertThat(((GroupedParameterBuilder) groupedParamBuilder).getParameterBuilders().get(0).getAddedIndexAndParameters().get(TEST_PARAMETER_COUNT), hasItem(TEST_GENERATED_VALUE));
     }

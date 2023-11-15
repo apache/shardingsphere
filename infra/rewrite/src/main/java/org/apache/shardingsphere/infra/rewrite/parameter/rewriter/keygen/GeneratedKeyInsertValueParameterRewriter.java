@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.parameter.impl;
+package org.apache.shardingsphere.infra.rewrite.parameter.rewriter.keygen;
 
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -30,10 +30,10 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Sharding generated key insert value parameter rewriter.
+ * Generated key insert value parameter rewriter.
  */
 @Setter
-public final class ShardingGeneratedKeyInsertValueParameterRewriter implements ParameterRewriter {
+public final class GeneratedKeyInsertValueParameterRewriter implements ParameterRewriter {
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo;
+package org.apache.shardingsphere.infra.rewrite.token.pojo.keygen;
 
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.pojo;
+package org.apache.shardingsphere.infra.rewrite.token.pojo.keygen;
 
 /**
  * Generated key assignment token for literal.

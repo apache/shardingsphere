@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
+package org.apache.shardingsphere.infra.rewrite.token.generator.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;

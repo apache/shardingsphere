@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.rewrite.token.generator.impl.keygen;
+package org.apache.shardingsphere.infra.rewrite.token.generator.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.GeneratedKeyAssignmentToken;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.LiteralGeneratedKeyAssignmentToken;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.ParameterMarkerGeneratedKeyAssignmentToken;
+import org.apache.shardingsphere.infra.rewrite.token.pojo.keygen.GeneratedKeyAssignmentToken;
+import org.apache.shardingsphere.infra.rewrite.token.pojo.keygen.LiteralGeneratedKeyAssignmentToken;
+import org.apache.shardingsphere.infra.rewrite.token.pojo.keygen.ParameterMarkerGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
