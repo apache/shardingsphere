@@ -55,7 +55,7 @@ class ShowMaskRuleExecutorTest {
         assertThat(row.getCell(1), is("t_mask"));
         assertThat(row.getCell(2), is("user_id"));
         assertThat(row.getCell(3), is("md5"));
-        assertThat(row.getCell(4), is(""));
+        assertThat(row.getCell(4), is("{}"));
     }
     
     @Test
