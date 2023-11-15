@@ -107,7 +107,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         String result = latestCheckJobId.map(s -> new ConsistencyCheckJobId(contextKey, parentJobId, s)).orElseGet(() -> new ConsistencyCheckJobId(contextKey, parentJobId)).marshal();
         repositoryAPI.persistLatestCheckJobId(parentJobId, result);
         repositoryAPI.deleteCheckJobResult(parentJobId, result);
-        dropJob(result);
+        new PipelineJobManager(this).drop(result);
         YamlConsistencyCheckJobConfiguration yamlConfig = new YamlConsistencyCheckJobConfiguration();
         yamlConfig.setJobId(result);
         yamlConfig.setParentJobId(parentJobId);
@@ -235,7 +235,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
             repositoryAPI.deleteLatestCheckJobId(parentJobId);
         }
         repositoryAPI.deleteCheckJobResult(parentJobId, latestCheckJobId);
-        dropJob(latestCheckJobId);
+        new PipelineJobManager(this).drop(latestCheckJobId);
     }
     
     /**

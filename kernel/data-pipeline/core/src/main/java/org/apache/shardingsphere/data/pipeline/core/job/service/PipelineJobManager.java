@@ -65,6 +65,17 @@ public final class PipelineJobManager {
     }
     
     /**
+     * Drop job.
+     * 
+     * @param jobId to be drooped job id
+     */
+    public void drop(final String jobId) {
+        PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
+        PipelineAPIFactory.getJobOperateAPI(contextKey).remove(String.valueOf(jobId), null);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).deleteJob(jobId);
+    }
+    
+    /**
      * Get pipeline jobs info.
      *
      * @param contextKey context key

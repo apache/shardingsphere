@@ -327,7 +327,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         stop(jobId);
         dropCheckJobs(jobId);
         cleanTempTableOnRollback(jobId);
-        dropJob(jobId);
+        new PipelineJobManager(this).drop(jobId);
         log.info("Rollback job {} cost {} ms", jobId, System.currentTimeMillis() - startTimeMillis);
     }
     
@@ -338,7 +338,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         }
         for (String each : checkJobIds) {
             try {
-                dropJob(each);
+                new PipelineJobManager(this).drop(each);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -373,7 +373,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         dropCheckJobs(jobId);
         MigrationJobConfiguration jobConfig = getJobConfiguration(jobId);
         refreshTableMetadata(jobId, jobConfig.getTargetDatabaseName());
-        dropJob(jobId);
+        new PipelineJobManager(this).drop(jobId);
         log.info("Commit cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     

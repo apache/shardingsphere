@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.job.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyStartedException;
@@ -74,12 +73,6 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         pipelineDistributedBarrier.register(barrierPath, jobConfigPOJO.getShardingTotalCount());
         PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId)).updateJobConfiguration(jobConfigPOJO);
         pipelineDistributedBarrier.await(barrierPath, 5, TimeUnit.SECONDS);
-    }
-    
-    protected void dropJob(final String jobId) {
-        PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
-        PipelineAPIFactory.getJobOperateAPI(contextKey).remove(String.valueOf(jobId), null);
-        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).deleteJob(jobId);
     }
     
     @Override
