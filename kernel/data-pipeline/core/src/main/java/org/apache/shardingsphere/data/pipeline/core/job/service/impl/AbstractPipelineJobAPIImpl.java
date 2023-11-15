@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.job.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyStartedException;
@@ -72,21 +71,5 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         pipelineDistributedBarrier.register(barrierPath, jobConfigPOJO.getShardingTotalCount());
         PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId)).updateJobConfiguration(jobConfigPOJO);
         pipelineDistributedBarrier.await(barrierPath, 5, TimeUnit.SECONDS);
-    }
-    
-    @Override
-    public void updateJobItemErrorMessage(final String jobId, final int shardingItem, final Object error) {
-        String key = PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem);
-        String value = "";
-        if (null != error) {
-            value = error instanceof Throwable ? ExceptionUtils.getStackTrace((Throwable) error) : error.toString();
-        }
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).update(key, value);
-    }
-    
-    @Override
-    public void cleanJobItemErrorMessage(final String jobId, final int shardingItem) {
-        String key = PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem);
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persist(key, "");
     }
 }

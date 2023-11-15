@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
@@ -50,6 +51,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
     private final ConsistencyCheckJobAPI checkJobAPI = new ConsistencyCheckJobAPI();
+    
+    private final PipelineJobManager jobManager = new PipelineJobManager(checkJobAPI);
     
     @Getter
     private final ConsistencyCheckJobItemContext jobItemContext;
@@ -143,7 +146,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
                 return;
             }
             log.info("onFailure, check job id: {}, parent job id: {}", checkJobId, parentJobId, throwable);
-            checkJobAPI.updateJobItemErrorMessage(checkJobId, 0, throwable);
+            jobManager.updateJobItemErrorMessage(checkJobId, 0, throwable);
             checkJobAPI.stop(checkJobId);
         }
     }
