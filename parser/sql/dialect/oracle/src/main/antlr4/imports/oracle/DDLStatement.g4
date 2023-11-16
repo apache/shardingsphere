@@ -2752,7 +2752,8 @@ dropFlashbackArchive
     ;
 
 createDiskgroup
-    : CREATE DISKGROUP diskgroupName ((HIGH | NORMAL | FLEX | EXTENDED (SITE siteName)? | EXTERNAL) REDUNDANCY)? diskClause+ attribute?
+    : CREATE DISKGROUP diskgroupName ((HIGH | NORMAL | FLEX | EXTENDED (SITE siteName)? | EXTERNAL) REDUNDANCY)? diskClause+
+    ( ATTRIBUTE attributeName EQ_ attributeValue (COMMA_ attributeName EQ_ attributeValue)*)?
     ;
 
 diskClause
@@ -2761,14 +2762,6 @@ diskClause
 
 qualifieDiskClause
     : searchString (NAME diskName)? (SIZE sizeClause)? (FORCE | NOFORCE)?
-    ;
-
-attribute
-    : ATTRIBUTE attributeNameAndValue (COMMA_ attributeNameAndValue)*
-    ;
-
-attributeNameAndValue
-    : attributeName EQ_ attributeValue
     ;
 
 dropDiskgroup
@@ -3260,7 +3253,7 @@ modifyVolumeClause
     ;
 
 diskgroupAttributes
-    : SET ATTRIBUTE attributeNameAndValue
+    : SET ATTRIBUTE attributeName EQ_ attributeValue
     ;
 
 modifyDiskgroupFile

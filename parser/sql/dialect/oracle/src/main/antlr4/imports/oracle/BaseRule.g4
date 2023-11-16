@@ -912,6 +912,10 @@ orderByItem
     : (columnName | numberLiterals | expr) (ASC | DESC)? (NULLS FIRST | NULLS LAST)?
     ;
 
+attribute
+    : (owner DOT_)? identifier
+    ;
+
 attributeName
     : oracleId
     ;
