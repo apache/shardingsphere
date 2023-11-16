@@ -20,7 +20,9 @@ package org.apache.shardingsphere.broadcast.distsql.handler.update;
 import org.apache.shardingsphere.broadcast.api.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.CreateBroadcastTableRuleStatement;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -29,6 +31,7 @@ import java.util.LinkedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,22 +40,38 @@ class CreateBroadcastTableRuleStatementUpdaterTest {
     private final CreateBroadcastTableRuleStatementUpdater updater = new CreateBroadcastTableRuleStatementUpdater();
     
     @Test
+    void assertCheckSQLStatementWithEmptyStorageUnit() {
+        BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
+        when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
+        CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
+        assertThrows(EmptyStorageUnitException.class, () -> updater.checkSQLStatement(database, statement, currentConfig));
+    }
+    
+    @Test
     void assertCheckSQLStatementWithDuplicateBroadcastRule() {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_address"));
         CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(mock(ShardingSphereDatabase.class), statement, currentConfig));
+        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(mockShardingSphereDatabase(), statement, currentConfig));
     }
     
     @Test
     void assertBuildToBeCreatedRuleConfiguration() {
         BroadcastRuleConfiguration currentConfig = new BroadcastRuleConfiguration(new LinkedList<>());
         CreateBroadcastTableRuleStatement statement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        updater.checkSQLStatement(mock(ShardingSphereDatabase.class), statement, currentConfig);
+        updater.checkSQLStatement(mockShardingSphereDatabase(), statement, currentConfig);
         BroadcastRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, statement);
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertThat(currentConfig.getTables().size(), is(1));
         assertThat(currentConfig.getTables().iterator().next(), is("t_address"));
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
+    }
+    
+    private ShardingSphereDatabase mockShardingSphereDatabase() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
+        return database;
     }
 }

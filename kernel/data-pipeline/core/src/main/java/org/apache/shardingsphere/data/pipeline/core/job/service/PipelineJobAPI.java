@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -66,34 +67,47 @@ public interface PipelineJobAPI extends TypedSPI {
     PipelineProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     /**
-     * Start job.
-     *
-     * @param jobConfig job configuration
-     * @return job id
-     */
-    Optional<String> start(PipelineJobConfiguration jobConfig);
-    
-    /**
-     * Start disabled job.
-     *
-     * @param jobId job id
-     */
-    void startDisabledJob(String jobId);
-    
-    /**
-     * Stop pipeline job.
-     *
-     * @param jobId job id
-     */
-    void stop(String jobId);
-    
-    /**
      * Get job configuration.
      *
      * @param jobId job id
      * @return job configuration
      */
     PipelineJobConfiguration getJobConfiguration(String jobId);
+    
+    /**
+     * Get job configuration.
+     *
+     * @param jobConfigPOJO job configuration POJO
+     * @return pipeline job configuration
+     */
+    PipelineJobConfiguration getJobConfiguration(JobConfigurationPOJO jobConfigPOJO);
+    
+    /**
+     * Whether to ignore to start disabled job when job item progress is finished.
+     * 
+     * @return ignore to start disabled job when job item progress is finished or not
+     */
+    default boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished() {
+        return false;
+    }
+    
+    /**
+     * Get to be start disabled next job type.
+     *
+     * @return to be start disabled next job type
+     */
+    default Optional<String> getToBeStartDisabledNextJobType() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get to be stopped previous job type.
+     *
+     * @return to be stopped previous job type
+     */
+    default Optional<String> getToBeStoppedPreviousJobType() {
+        return Optional.empty();
+    }
     
     /**
      * Get pipeline job info.
@@ -134,32 +148,6 @@ public interface PipelineJobAPI extends TypedSPI {
      * @param status status
      */
     void updateJobItemStatus(String jobId, int shardingItem, JobStatus status);
-    
-    /**
-     * Get job item error message.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @return map, key is sharding item, value is error message
-     */
-    String getJobItemErrorMessage(String jobId, int shardingItem);
-    
-    /**
-     * Update job item error message.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @param error error
-     */
-    void updateJobItemErrorMessage(String jobId, int shardingItem, Object error);
-    
-    /**
-     * Clean job item error message.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     */
-    void cleanJobItemErrorMessage(String jobId, int shardingItem);
     
     /**
      * Get pipeline job class.

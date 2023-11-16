@@ -1,0 +1,31 @@
+{
+  "rules": [
+    {"includeClasses": "**"},
+
+    {"excludeClasses": "com.sun.crypto.provider.**"},
+    {"excludeClasses": "com.sun.org.apache.xerces.internal.jaxp.**"},
+    {"excludeClasses": "java.**"},
+    {"includeClasses": "java.lang.Boolean"},
+    {"includeClasses": "java.lang.Thread"},
+    {"includeClasses": "java.util.Properties"},
+    {"excludeClasses": "javax.security.auth.x500.**"},
+    {"excludeClasses": "sun.misc.**"},
+    {"excludeClasses": "sun.security.**"},
+
+    {"excludeClasses": "com.github.benmanes.caffeine.cache.**"},
+    {"excludeClasses": "com.google.common.util.concurrent.**"},
+    {"excludeClasses": "com.sun.xml.bind.v2.**"},
+    {"excludeClasses": "com.zaxxer.hikari.**"},
+    {"excludeClasses": "javax.xml.bind.annotation.**"},
+    {"excludeClasses": "groovy.**"},
+    {"excludeClasses": "org.apache.calcite.**"},
+    {"excludeClasses": "org.codehaus.groovy.**"},
+    {"excludeClasses": "org.h2.**"},
+    {"excludeClasses": "org.locationtech.jts.geom.**"},
+    {"excludeClasses": "org.slf4j.event.**"},
+
+    {"excludeClasses": "org.apache.shardingsphere.infra.nativetest.**"}
+  ],
+  "regexRules": [
+  ]
+}

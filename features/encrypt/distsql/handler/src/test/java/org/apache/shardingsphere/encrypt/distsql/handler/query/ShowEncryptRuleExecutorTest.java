@@ -58,7 +58,7 @@ class ShowEncryptRuleExecutorTest {
         assertThat(row.getCell(4), is("user_assisted"));
         assertThat(row.getCell(5), is("user_like"));
         assertThat(row.getCell(6), is("md5"));
-        assertThat(row.getCell(7), is(""));
+        assertThat(row.getCell(7), is("{}"));
         assertThat(row.getCell(8), is(""));
         assertThat(row.getCell(9), is(""));
         assertThat(row.getCell(10), is(""));

@@ -27,21 +27,6 @@ services:
       - "3307:3307"
 ````
 
-- If you find that the build process has missing GraalVM Reachability Metadata, a new issue should be opened
-  at https://github.com/oracle/graalvm-reachability-metadata, and submit a PR containing GraalVM Reachability Metadata
-  missing from ShardingSphere itself or dependent third-party libraries.
-
-- The master branch of ShardingSphere is not yet ready to handle unit tests in Native Image,
-  you always need to build GraalVM Native Image in the process,
-  Plus `-DskipNativeTests` or `-DskipTests` parameter specific to `GraalVM Native Build Tools` to skip unit tests in
-  Native Image.
-
-- The following algorithm classes are not available under GraalVM Native Image due
-  to https://github.com/oracle/graal/issues/5522 involved.
-    - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`
-    - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.ComplexInlineShardingAlgorithm`
-    - `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
-
 - At this stage, ShardingSphere Proxy in the form of GraalVM Native Image does not support `row expressions` using the 
   default implementation of the `InlineExpressionParser` SPI.
   This first results in the `actualDataNodes` property of the `data sharding` feature that can only be configured using 
@@ -62,19 +47,12 @@ services:
 JDK 17 according to https://www.graalvm.org/downloads/. If `SDKMAN!` is used,
 
 ```shell
-sdk install java 17.0.8-graalce
+sdk install java 17.0.9-graalce
 ```
 
 2. Install the local toolchain as required by https://www.graalvm.org/jdk17/reference-manual/native-image/#prerequisites.
 
 3. If you need to build a Docker Image, make sure `docker-ce` is installed.
-
-4. First, you need to execute the following command in the root directory of the project to collect the GraalVM
-   Reachability Metadata of the Standard form for all submodules.
-
-```shell
-./mvnw -PgenerateStandardMetadata -DskipNativeTests -B -T1C clean test
-```
 
 ## Steps
 
@@ -163,7 +141,7 @@ services:
   the `Dockerfile`. So make sure to tune `distribution/proxy-native` according to your usage `pom.xml` and `Dockerfile`
   below.
 
-# Observability
+## Observability
 
 - ShardingSphere for GraalVM Native Image form Proxy, which provides observability capabilities
   with https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/

@@ -68,6 +68,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.impl.AbstractInventoryIncrementalJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.preparer.PipelineJobPreparerUtils;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -123,7 +124,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
             log.warn("CDC job already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
         } else {
             repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobConfig.getJobId()), getPipelineJobClass().getName());
-            JobConfigurationPOJO jobConfigPOJO = convertJobConfiguration(jobConfig);
+            JobConfigurationPOJO jobConfigPOJO = jobConfig.convertToJobConfigurationPOJO();
             jobConfigPOJO.setDisabled(true);
             repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfigPOJO));
             if (!param.isFull()) {
@@ -193,13 +194,6 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         return result;
     }
     
-    @Override
-    protected JobConfigurationPOJO convertJobConfiguration(final PipelineJobConfiguration jobConfig) {
-        JobConfigurationPOJO result = super.convertJobConfiguration(jobConfig);
-        result.setShardingTotalCount(1);
-        return result;
-    }
-    
     /**
      * Start job.
      *
@@ -210,7 +204,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         CDCJob job = new CDCJob(jobId, sink);
         PipelineJobCenter.addJob(jobId, job);
         updateJobConfigurationDisabled(jobId, false);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfigPOJO.toJobConfiguration());
         job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
@@ -223,7 +217,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
      * @param disabled disabled
      */
     public void updateJobConfigurationDisabled(final String jobId, final boolean disabled) {
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
         jobConfigPOJO.setDisabled(disabled);
         if (disabled) {
             jobConfigPOJO.getProps().setProperty("stop_time_millis", String.valueOf(System.currentTimeMillis()));
@@ -286,22 +280,17 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     @Override
     public CDCJobConfiguration getJobConfiguration(final String jobId) {
-        return getJobConfiguration(getElasticJobConfigPOJO(jobId));
+        return getJobConfiguration(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
     }
     
     @Override
-    protected CDCJobConfiguration getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
+    public CDCJobConfiguration getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
         return new YamlCDCJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter());
     }
     
     @Override
-    protected YamlPipelineJobConfiguration swapToYamlJobConfiguration(final PipelineJobConfiguration jobConfig) {
-        return new YamlCDCJobConfigurationSwapper().swapToYamlConfiguration((CDCJobConfiguration) jobConfig);
-    }
-    
-    @Override
     public TableBasedPipelineJobInfo getJobInfo(final String jobId) {
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
         PipelineJobMetaData jobMetaData = new PipelineJobMetaData(jobConfigPOJO);
         CDCJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
         return new TableBasedPipelineJobInfo(jobMetaData, jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
@@ -317,10 +306,10 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
      * @param jobId job id
      */
     public void dropStreaming(final String jobId) {
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
         CDCJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
         ShardingSpherePreconditions.checkState(jobConfigPOJO.isDisabled(), () -> new PipelineInternalException("Can't drop streaming job which is active"));
-        dropJob(jobId);
+        new PipelineJobManager(this).drop(jobId);
         cleanup(jobConfig);
     }
     

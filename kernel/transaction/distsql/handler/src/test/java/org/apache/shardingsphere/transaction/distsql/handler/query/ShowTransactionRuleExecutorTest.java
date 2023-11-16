@@ -56,8 +56,8 @@ class ShowTransactionRuleExecutorTest {
         assertThat(row.getCell(1), is(TransactionType.XA.name()));
         assertThat(row.getCell(2), is("Atomikos"));
         String props = (String) row.getCell(3);
-        assertTrue(props.contains("databaseName=jbossts"));
-        assertTrue(props.contains("host=127.0.0.1"));
+        assertTrue(props.contains("\"databaseName\":\"jbossts\""));
+        assertTrue(props.contains("\"host\":\"127.0.0.1\""));
     }
     
     @Test

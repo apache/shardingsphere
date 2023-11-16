@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
@@ -46,6 +47,7 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
     
     @Override
     public void execute(final ShardingContext shardingContext) {
+        PipelineJobManager jobManager = new PipelineJobManager(getJobAPI());
         String jobId = shardingContext.getJobName();
         int shardingItem = shardingContext.getShardingItem();
         log.info("Execute job {}-{}", jobId, shardingItem);
@@ -55,33 +57,33 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
         }
         try {
             PipelineJobItemContext jobItemContext = buildPipelineJobItemContext(shardingContext);
-            execute0(jobItemContext);
+            execute0(jobManager, jobItemContext);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            processFailed(jobId, shardingItem, ex);
+            processFailed(jobManager, jobId, shardingItem, ex);
             throw ex;
         }
     }
     
-    private void execute0(final PipelineJobItemContext jobItemContext) {
+    private void execute0(final PipelineJobManager jobManager, final PipelineJobItemContext jobItemContext) {
         String jobId = jobItemContext.getJobId();
         int shardingItem = jobItemContext.getShardingItem();
         PipelineTasksRunner tasksRunner = buildPipelineTasksRunner(jobItemContext);
         if (!addTasksRunner(shardingItem, tasksRunner)) {
             return;
         }
-        getJobAPI().cleanJobItemErrorMessage(jobId, shardingItem);
+        jobManager.cleanJobItemErrorMessage(jobId, shardingItem);
         prepare(jobItemContext);
         log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
         tasksRunner.start();
     }
     
-    private void processFailed(final String jobId, final int shardingItem, final Exception ex) {
+    private void processFailed(final PipelineJobManager jobManager, final String jobId, final int shardingItem, final Exception ex) {
         log.error("job execution failed, {}-{}", jobId, shardingItem, ex);
-        getJobAPI().updateJobItemErrorMessage(jobId, shardingItem, ex);
+        jobManager.updateJobItemErrorMessage(jobId, shardingItem, ex);
         try {
-            getJobAPI().stop(jobId);
+            jobManager.stop(jobId);
         } catch (final PipelineJobNotFoundException ignored) {
         }
     }

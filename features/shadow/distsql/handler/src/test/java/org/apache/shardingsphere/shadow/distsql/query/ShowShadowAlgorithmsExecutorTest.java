@@ -53,7 +53,7 @@ class ShowShadowAlgorithmsExecutorTest {
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("shadowAlgorithmName"));
         assertThat(row.getCell(2), is("sql_hint"));
-        assertThat(row.getCell(3), is("foo=bar"));
+        assertThat(row.getCell(3), is("{\"foo\":\"bar\"}"));
         assertThat(row.getCell(4), is("false"));
     }
     

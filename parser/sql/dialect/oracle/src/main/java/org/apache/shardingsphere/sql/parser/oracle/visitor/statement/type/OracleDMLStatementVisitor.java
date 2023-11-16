@@ -82,7 +82,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryT
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.QueryTableExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ReferenceModelContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RollupCubeClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectCombineClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectFromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SelectJoinOptionContext;
@@ -544,18 +543,34 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitSelectSubquery(final SelectSubqueryContext ctx) {
         OracleSelectStatement result;
-        if (null != ctx.queryBlock()) {
-            result = (OracleSelectStatement) visit(ctx.queryBlock());
-        } else if (null != ctx.selectCombineClause()) {
-            result = (OracleSelectStatement) visit(ctx.selectCombineClause());
+        if (null != ctx.combineType()) {
+            result = new OracleSelectStatement();
+            OracleSelectStatement left = (OracleSelectStatement) visit(ctx.selectSubquery(0));
+            result.setProjections(left.getProjections());
+            result.setFrom(left.getFrom());
+            createSelectCombineClause(ctx, result, left);
         } else {
-            result = (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
+            result = null != ctx.queryBlock() ? (OracleSelectStatement) visit(ctx.queryBlock()) : (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
         }
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         return result;
+    }
+    
+    private void createSelectCombineClause(final SelectSubqueryContext ctx, final OracleSelectStatement result, final OracleSelectStatement left) {
+        CombineType combineType;
+        if (null != ctx.combineType().UNION() && null != ctx.combineType().ALL()) {
+            combineType = CombineType.UNION_ALL;
+        } else if (null != ctx.combineType().UNION()) {
+            combineType = CombineType.UNION;
+        } else if (null != ctx.combineType().INTERSECT()) {
+            combineType = CombineType.INTERSECT;
+        } else {
+            combineType = CombineType.MINUS;
+        }
+        result.setCombine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left, combineType, (OracleSelectStatement) visit(ctx.selectSubquery(1))));
     }
     
     @Override
@@ -661,37 +676,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     }
     
     @Override
-    public ASTNode visitSelectCombineClause(final SelectCombineClauseContext ctx) {
-        OracleSelectStatement result = new OracleSelectStatement();
-        OracleSelectStatement left = null != ctx.queryBlock() ? (OracleSelectStatement) visit(ctx.queryBlock()) : (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
-        if (null != ctx.selectSubquery()) {
-            result.setProjections(left.getProjections());
-            result.setFrom(left.getFrom());
-            setSelectCombineClause(ctx, result, left);
-        }
-        if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
-        }
-        return result;
-    }
-    
-    @Override
     public ASTNode visitParenthesisSelectSubquery(final ParenthesisSelectSubqueryContext ctx) {
         return visit(ctx.selectSubquery());
-    }
-    
-    private void setSelectCombineClause(final SelectCombineClauseContext ctx, final OracleSelectStatement result, final OracleSelectStatement left) {
-        CombineType combineType;
-        if (null != ctx.UNION(0) && null != ctx.ALL(0)) {
-            combineType = CombineType.UNION_ALL;
-        } else if (null != ctx.UNION(0)) {
-            combineType = CombineType.UNION;
-        } else if (null != ctx.INTERSECT(0)) {
-            combineType = CombineType.INTERSECT;
-        } else {
-            combineType = CombineType.MINUS;
-        }
-        result.setCombine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left, combineType, (OracleSelectStatement) visit(ctx.selectSubquery(0))));
     }
     
     @Override

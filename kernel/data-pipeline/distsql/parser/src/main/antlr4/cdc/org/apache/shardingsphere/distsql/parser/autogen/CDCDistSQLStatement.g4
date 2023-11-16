@@ -23,5 +23,6 @@ execute
     : (showStreamingList
     | showStreamingStatus
     | dropStreaming
+    | alterStreamingRule
     ) SEMI_? EOF
     ;

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigura
 import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 import org.apache.shardingsphere.infra.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.props.exception.TypedPropertyValueException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -82,7 +83,10 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
     private Object getValue(final TypedPropertyKey propertyKey, final String value) {
         try {
             Object propertyValue = new TypedPropertyValue(propertyKey, value).getValue();
-            return Enum.class.isAssignableFrom(propertyKey.getType()) ? propertyValue.toString() : propertyValue;
+            if (Enum.class.isAssignableFrom(propertyKey.getType())) {
+                return propertyValue.toString();
+            }
+            return TypedSPI.class.isAssignableFrom(propertyKey.getType()) ? ((TypedSPI) propertyValue).getType().toString() : propertyValue;
         } catch (final TypedPropertyValueException ignored) {
             throw new InvalidValueException(value);
         }

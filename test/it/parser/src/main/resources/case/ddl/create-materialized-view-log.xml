@@ -23,4 +23,8 @@
     <create-materialized-view-log sql-case-id="create_materialized_view_log_with_table_schema" />
     <create-materialized-view-log sql-case-id="create_materialized_view_log_with_object_id" />
     <create-materialized-view-log sql-case-id="create_materialized_view_log_with_row_id" />
+    <create-materialized-view-log sql-case-id="create_materialized_view_log_with_multi_row_id_" />
+    <create-materialized-view-log sql-case-id="create_materialized_view_log_with_row_id_sequence_including_new" />
+    <create-materialized-view-log sql-case-id="create_materialized_view_log_with_row_id_multi_sequence" />
+
 </sql-parser-test-cases>

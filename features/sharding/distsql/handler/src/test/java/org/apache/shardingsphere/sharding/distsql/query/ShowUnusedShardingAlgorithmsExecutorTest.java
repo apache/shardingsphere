@@ -54,7 +54,7 @@ class ShowUnusedShardingAlgorithmsExecutorTest {
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("database_inline"));
         assertThat(row.getCell(2), is("INLINE"));
-        assertThat(row.getCell(3), is("algorithm-expression=ds_${user_id % 2}"));
+        assertThat(row.getCell(3), is("{\"algorithm-expression\":\"ds_${user_id % 2}\"}"));
     }
     
     @Test

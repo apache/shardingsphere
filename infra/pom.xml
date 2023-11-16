@@ -44,5 +44,7 @@
         <module>session</module>
         <module>expr</module>
         <module>util</module>
+        <module>reachability-metadata</module>
+        <module>nativetest</module>
     </modules>
 </project>
