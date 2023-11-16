@@ -74,21 +74,6 @@ class ConsistencyCheckJobAPITest {
     }
     
     @Test
-    void assertGetLatestDataConsistencyCheckResult() {
-        MigrationJobConfiguration parentJobConfig = jobConfigSwapper.swapToObject(JobConfigurationBuilder.createYamlMigrationJobConfiguration());
-        String parentJobId = parentJobConfig.getJobId();
-        String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
-                parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
-        GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey());
-        governanceRepositoryAPI.persistLatestCheckJobId(parentJobId, checkJobId);
-        Map<String, TableDataConsistencyCheckResult> expectedCheckResult = Collections.singletonMap("t_order", new TableDataConsistencyCheckResult(true));
-        governanceRepositoryAPI.persistCheckJobResult(parentJobId, checkJobId, expectedCheckResult);
-        Map<String, TableDataConsistencyCheckResult> actualCheckResult = checkJobAPI.getLatestDataConsistencyCheckResult(parentJobId);
-        assertThat(actualCheckResult.size(), is(expectedCheckResult.size()));
-        assertThat(actualCheckResult.get("t_order").isMatched(), is(expectedCheckResult.get("t_order").isMatched()));
-    }
-    
-    @Test
     void assertDropByParentJobId() {
         MigrationJobConfiguration parentJobConfig = jobConfigSwapper.swapToObject(JobConfigurationBuilder.createYamlMigrationJobConfiguration());
         String parentJobId = parentJobConfig.getJobId();

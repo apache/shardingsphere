@@ -117,21 +117,6 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
         ShardingSpherePreconditions.checkState(supportedDatabaseTypes.contains(param.getTargetDatabaseType()), () -> new UnsupportedPipelineDatabaseTypeException(param.getTargetDatabaseType()));
     }
     
-    /**
-     * Get latest data consistency check result.
-     *
-     * @param parentJobId parent job id
-     * @return latest data consistency check result
-     */
-    public Map<String, TableDataConsistencyCheckResult> getLatestDataConsistencyCheckResult(final String parentJobId) {
-        GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(parentJobId));
-        Optional<String> latestCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
-        if (!latestCheckJobId.isPresent()) {
-            return Collections.emptyMap();
-        }
-        return governanceRepositoryAPI.getCheckJobResult(parentJobId, latestCheckJobId.get());
-    }
-    
     @Override
     public boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished() {
         return true;
