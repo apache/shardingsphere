@@ -20,6 +20,7 @@ package org.apache.shardingsphere.cdc.distsql.parser.core;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.cdc.distsql.statement.DropStreamingStatement;
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingListStatement;
+import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingRuleStatement;
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingStatusStatement;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.AlgorithmDefinitionContext;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParse
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.ReadDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.ShardingSizeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.ShowStreamingListContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.ShowStreamingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.ShowStreamingStatusContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.StreamChannelContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.WorkerThreadContext;
@@ -72,6 +74,11 @@ public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVis
     }
     
     @Override
+    public ASTNode visitShowStreamingRule(final ShowStreamingRuleContext ctx) {
+        return new ShowStreamingRuleStatement();
+    }
+    
+    @Override
     public ASTNode visitAlterStreamingRule(final AlterStreamingRuleContext ctx) {
         InventoryIncrementalRuleSegment segment = null == ctx.inventoryIncrementalRule() ? null
                 : (InventoryIncrementalRuleSegment) visit(ctx.inventoryIncrementalRule());
@@ -83,6 +90,9 @@ public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVis
         InventoryIncrementalRuleSegment result = new InventoryIncrementalRuleSegment();
         if (null != ctx.readDefinition()) {
             result.setReadSegment((ReadOrWriteSegment) visit(ctx.readDefinition()));
+        }
+        if (null != ctx.writeDefinition()) {
+            result.setWriteSegment((ReadOrWriteSegment) visit(ctx.writeDefinition()));
         }
         if (null != ctx.streamChannel()) {
             result.setStreamChannel((AlgorithmSegment) visit(ctx.streamChannel()));
@@ -114,6 +124,11 @@ public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVis
     @Override
     public ASTNode visitWriteDefinition(final WriteDefinitionContext ctx) {
         return new ReadOrWriteSegment(getWorkerThread(ctx.workerThread()), getBatchSize(ctx.batchSize()), getAlgorithmSegment(ctx.rateLimiter()));
+    }
+    
+    @Override
+    public ASTNode visitRateLimiter(final RateLimiterContext ctx) {
+        return visit(ctx.algorithmDefinition());
     }
     
     @Override

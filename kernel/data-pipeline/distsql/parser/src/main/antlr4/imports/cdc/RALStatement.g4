@@ -19,12 +19,16 @@ grammar RALStatement;
 
 import BaseRule;
 
+showStreamingRule
+    : SHOW STREAMING RULE
+    ;
+
 alterStreamingRule
     : ALTER STREAMING RULE inventoryIncrementalRule?
     ;
 
 inventoryIncrementalRule
-    : LP_ readDefinition? (COMMA_? streamChannel)? RP_
+    : LP_ readDefinition? (COMMA_? writeDefinition)? (COMMA_? streamChannel)? RP_
     ;
 
 readDefinition
