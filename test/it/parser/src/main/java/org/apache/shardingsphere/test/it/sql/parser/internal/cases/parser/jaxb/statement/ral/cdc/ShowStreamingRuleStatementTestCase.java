@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-grammar CDCDistSQLStatement;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc;
 
-import Symbol, RALStatement;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-execute
-    : (showStreamingList
-    | showStreamingStatus
-    | dropStreaming
-    | showStreamingRule
-    | alterStreamingRule
-    ) SEMI_? EOF
-    ;
+/**
+ * Show streaming rule statement test case.
+ */
+public final class ShowStreamingRuleStatementTestCase extends SQLParserTestCase {
+}

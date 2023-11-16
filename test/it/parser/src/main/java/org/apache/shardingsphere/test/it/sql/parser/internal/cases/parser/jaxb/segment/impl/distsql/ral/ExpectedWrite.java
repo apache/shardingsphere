@@ -15,15 +15,30 @@
  * limitations under the License.
  */
 
-grammar CDCDistSQLStatement;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ral;
 
-import Symbol, RALStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
 
-execute
-    : (showStreamingList
-    | showStreamingStatus
-    | dropStreaming
-    | showStreamingRule
-    | alterStreamingRule
-    ) SEMI_? EOF
-    ;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+
+/**
+ * Expected write.
+ */
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedWrite {
+    
+    @XmlElement(name = "worker-thread")
+    private Integer workerThread;
+    
+    @XmlElement(name = "batch-size")
+    private Integer batchSize;
+    
+    @XmlElement(name = "rate-limiter")
+    private ExpectedAlgorithm rateLimiter;
+}

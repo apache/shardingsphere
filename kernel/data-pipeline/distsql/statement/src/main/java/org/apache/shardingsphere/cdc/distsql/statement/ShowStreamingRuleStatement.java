@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-grammar CDCDistSQLStatement;
+package org.apache.shardingsphere.cdc.distsql.statement;
 
-import Symbol, RALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.cdc.QueryableCDCRALStatement;
 
-execute
-    : (showStreamingList
-    | showStreamingStatus
-    | dropStreaming
-    | showStreamingRule
-    | alterStreamingRule
-    ) SEMI_? EOF
-    ;
+/**
+ * Show streaming rule statement.
+ */
+public final class ShowStreamingRuleStatement extends QueryableCDCRALStatement {
+}

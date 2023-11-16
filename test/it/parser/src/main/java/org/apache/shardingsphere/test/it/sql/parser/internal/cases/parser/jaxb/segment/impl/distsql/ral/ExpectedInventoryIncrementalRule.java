@@ -15,15 +15,30 @@
  * limitations under the License.
  */
 
-grammar CDCDistSQLStatement;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ral;
 
-import Symbol, RALStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
 
-execute
-    : (showStreamingList
-    | showStreamingStatus
-    | dropStreaming
-    | showStreamingRule
-    | alterStreamingRule
-    ) SEMI_? EOF
-    ;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+
+/**
+ * Expected inventory incremental rule.
+ */
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedInventoryIncrementalRule {
+    
+    @XmlElement(name = "read")
+    private ExpectedRead read;
+    
+    @XmlElement(name = "write")
+    private ExpectedWrite write;
+    
+    @XmlElement(name = "stream-channel")
+    private ExpectedAlgorithm streamChannel;
+}
