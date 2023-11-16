@@ -1,0 +1,12 @@
+[
+{
+  "condition":{"typeReachable":"com.sun.xml.bind.v2.ContextFactory"},
+  "name":"com.sun.xml.bind.v2.ContextFactory",
+  "methods":[{"name":"createContext","parameterTypes":["java.lang.Class[]","java.util.Map"] }]
+},
+{
+  "condition":{"typeReachable":"com.sun.xml.bind.v2.runtime.property.SingleElementLeafProperty"},
+  "name":"com.sun.xml.bind.v2.runtime.property.SingleElementLeafProperty",
+  "methods":[{"name":"<init>","parameterTypes":["com.sun.xml.bind.v2.runtime.JAXBContextImpl","com.sun.xml.bind.v2.model.runtime.RuntimeElementPropertyInfo"] }]
+}
+]
