@@ -98,7 +98,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             checkJobAPI.persistJobItemProgress(jobItemContext);
             JobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
             InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, jobType.getType());
-            PipelineJobConfiguration parentJobConfig = jobAPI.getJobConfiguration(parentJobId);
+            PipelineJobConfiguration parentJobConfig = jobAPI.getJobConfiguration(PipelineJobIdUtils.getElasticJobConfigurationPOJO(parentJobId));
             try {
                 PipelineDataConsistencyChecker checker = jobAPI.buildPipelineDataConsistencyChecker(
                         parentJobConfig, jobAPI.buildPipelineProcessContext(parentJobConfig), jobItemContext.getProgressContext());

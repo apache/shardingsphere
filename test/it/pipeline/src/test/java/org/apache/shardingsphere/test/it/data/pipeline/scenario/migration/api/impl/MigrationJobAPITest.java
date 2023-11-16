@@ -142,7 +142,7 @@ class MigrationJobAPITest {
     void assertRollback() throws SQLException {
         Optional<String> jobId = jobManager.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
+        MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId.get()));
         initTableData(jobConfig);
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
         when(PipelineDistributedBarrier.getInstance(any())).thenReturn(mockBarrier);
@@ -154,7 +154,7 @@ class MigrationJobAPITest {
     void assertCommit() {
         Optional<String> jobId = jobManager.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
+        MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId.get()));
         initTableData(jobConfig);
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
         when(PipelineDistributedBarrier.getInstance(any())).thenReturn(mockBarrier);
@@ -277,7 +277,7 @@ class MigrationJobAPITest {
         initIntPrimaryEnvironment();
         SourceTargetEntry sourceTargetEntry = new SourceTargetEntry("logic_db", new DataNode("ds_0", "t_order"), "t_order");
         String jobId = jobAPI.createJobAndStart(PipelineContextUtils.getContextKey(), new MigrateTableStatement(Collections.singletonList(sourceTargetEntry), "logic_db"));
-        MigrationJobConfiguration actual = jobAPI.getJobConfiguration(jobId);
+        MigrationJobConfiguration actual = jobAPI.getJobConfiguration(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
         assertThat(actual.getTargetDatabaseName(), is("logic_db"));
         List<JobDataNodeLine> dataNodeLines = actual.getJobShardingDataNodes();
         assertThat(dataNodeLines.size(), is(1));
