@@ -279,11 +279,6 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     }
     
     @Override
-    public CDCJobConfiguration getJobConfiguration(final String jobId) {
-        return getJobConfiguration(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
-    }
-    
-    @Override
     public CDCJobConfiguration getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
         return new YamlCDCJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter());
     }

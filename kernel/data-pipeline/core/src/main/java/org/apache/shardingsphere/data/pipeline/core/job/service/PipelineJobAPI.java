@@ -37,14 +37,6 @@ public interface PipelineJobAPI extends TypedSPI {
     /**
      * Get job configuration.
      *
-     * @param jobId job id
-     * @return job configuration
-     */
-    PipelineJobConfiguration getJobConfiguration(String jobId);
-    
-    /**
-     * Get job configuration.
-     *
      * @param jobConfigPOJO job configuration POJO
      * @return pipeline job configuration
      */
