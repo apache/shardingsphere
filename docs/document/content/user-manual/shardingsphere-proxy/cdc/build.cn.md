@@ -116,6 +116,81 @@ sh bin/start.sh
 
 确认启动成功。
 
+6. 按需配置迁移
+
+6.1. 查询配置。
+
+```sql
+SHOW STREAMING RULE;
+```
+
+默认配置如下：
+
+```
++--------------------------------------------------------------+--------------------------------------+-------------------------------------------------------+
+| read                                                         | write                                | stream_channel                                        |
++--------------------------------------------------------------+--------------------------------------+-------------------------------------------------------+
+| {"workerThread":20,"batchSize":1000,"shardingSize":10000000} | {"workerThread":20,"batchSize":1000} | {"type":"MEMORY","props":{"block-queue-size":"2000"}} |
++--------------------------------------------------------------+--------------------------------------+-------------------------------------------------------+
+```
+
+6.2. 修改配置（可选）。
+
+因 streaming rule 具有默认值，无需创建，仅提供 ALTER 语句。
+
+完整配置 DistSQL 示例：
+
+```sql
+ALTER STREAMING RULE (
+READ(
+  WORKER_THREAD=20,
+  BATCH_SIZE=1000,
+  SHARDING_SIZE=10000000,
+  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
+),
+WRITE(
+  WORKER_THREAD=20,
+  BATCH_SIZE=1000,
+  RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))
+),
+STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000')))
+);
+```
+
+配置项说明：
+
+```sql
+ALTER STREAMING RULE (
+READ( -- 数据读取配置。如果不配置则部分参数默认生效。
+  WORKER_THREAD=20, -- 从源端摄取全量数据的线程池大小。如果不配置则使用默认值。
+  BATCH_SIZE=1000, -- 一次查询操作返回的最大记录数。如果不配置则使用默认值。
+  SHARDING_SIZE=10000000, -- 存量数据分片大小。如果不配置则使用默认值。
+  RATE_LIMITER ( -- 限流算法。如果不配置则不限流。
+  TYPE( -- 算法类型。可选项：QPS
+  NAME='QPS',
+  PROPERTIES( -- 算法属性
+  'qps'='500'
+  )))
+),
+WRITE( -- 数据写入配置。如果不配置则部分参数默认生效。
+  WORKER_THREAD=20, -- 数据写入到目标端的线程池大小。如果不配置则使用默认值。
+  BATCH_SIZE=1000, -- 存量任务一次批量写入操作的最大记录数。如果不配置则使用默认值。
+  RATE_LIMITER ( -- 限流算法。如果不配置则不限流。
+  TYPE( -- 算法类型。可选项：TPS
+  NAME='TPS',
+  PROPERTIES( -- 算法属性
+  'tps'='2000'
+  )))
+),
+STREAM_CHANNEL ( -- 数据通道，连接生产者和消费者，用于 read 和 write 环节。如果不配置则默认使用 MEMORY 类型。
+TYPE( -- 算法类型。可选项：MEMORY
+NAME='MEMORY',
+PROPERTIES( -- 算法属性
+'block-queue-size'='2000' -- 属性：阻塞队列大小，堆内存比较小的时候需要调小该值。
+)))
+);
+```
+
 ## CDC Client 手册
 
 CDC Client 不需要额外部署，只需要通过 maven 引入 CDC Client 的依赖就可以在项目中使用。用户可以通过 CDC Client 和服务端进行交互。
