@@ -28,4 +28,15 @@
     INCLUDING NEW VALUES;" db-types="Oracle" />
     <sql-case id="create_materialized_view_log_with_object_id" value="CREATE MATERIALIZED VIEW LOG ON oe.categories_tab_sys WITH OBJECT ID;" db-types="Oracle" />
     <sql-case id="create_materialized_view_log_with_row_id" value="CREATE MATERIALIZED VIEW LOG ON sales WITH ROWID;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_log_with_multi_row_id_" value="CREATE MATERIALIZED VIEW LOG ON products WITH SEQUENCE, ROWID
+    (prod_id, prod_name, prod_desc, prod_subcategory, prod_subcategory_desc,
+    prod_category, prod_category_desc, prod_weight_class, prod_unit_of_measure,
+    prod_pack_size, supplier_id, prod_status, prod_list_price, prod_min_price)
+    INCLUDING NEW VALUES;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_log_with_row_id_sequence_including_new" value="CREATE MATERIALIZED VIEW LOG ON product_information
+    WITH ROWID, SEQUENCE (list_price, min_price, category_id), PRIMARY KEY
+    INCLUDING NEW VALUES;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_log_with_row_id_multi_sequence" value="CREATE MATERIALIZED VIEW LOG ON sales
+    WITH ROWID, SEQUENCE(amount_sold, time_id, prod_id)
+    INCLUDING NEW VALUES;" db-types="Oracle" />
 </sql-cases>
