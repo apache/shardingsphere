@@ -18,14 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
@@ -37,24 +33,6 @@ import java.util.Optional;
  */
 @SingletonSPI
 public interface PipelineJobAPI extends TypedSPI {
-    
-    /**
-     * Build task configuration.
-     *
-     * @param pipelineJobConfig pipeline job configuration
-     * @param jobShardingItem job sharding item
-     * @param pipelineProcessConfig pipeline process configuration
-     * @return task configuration
-     */
-    PipelineTaskConfiguration buildTaskConfiguration(PipelineJobConfiguration pipelineJobConfig, int jobShardingItem, PipelineProcessConfiguration pipelineProcessConfig);
-    
-    /**
-     * Build pipeline process context.
-     *
-     * @param pipelineJobConfig pipeline job configuration
-     * @return pipeline process context
-     */
-    PipelineProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     /**
      * Get job configuration.
@@ -98,14 +76,6 @@ public interface PipelineJobAPI extends TypedSPI {
     default Optional<String> getToBeStoppedPreviousJobType() {
         return Optional.empty();
     }
-    
-    /**
-     * Get pipeline job info.
-     * 
-     * @param jobId job ID
-     * @return pipeline job info
-     */
-    PipelineJobInfo getJobInfo(String jobId);
     
     /**
      * Persist job item progress.

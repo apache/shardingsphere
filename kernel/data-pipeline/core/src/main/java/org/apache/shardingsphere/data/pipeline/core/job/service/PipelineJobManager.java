@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -178,7 +179,10 @@ public final class PipelineJobManager {
      * @return jobs info
      */
     public List<PipelineJobInfo> getPipelineJobInfos(final PipelineContextKey contextKey) {
-        return getJobBriefInfos(contextKey, pipelineJobAPI.getType()).map(each -> pipelineJobAPI.getJobInfo(each.getJobName())).collect(Collectors.toList());
+        if (pipelineJobAPI instanceof InventoryIncrementalJobAPI) {
+            return getJobBriefInfos(contextKey, pipelineJobAPI.getType()).map(each -> ((InventoryIncrementalJobAPI) pipelineJobAPI).getJobInfo(each.getJobName())).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
     }
     
     private Stream<JobBriefInfo> getJobBriefInfos(final PipelineContextKey contextKey, final String jobType) {
