@@ -27,4 +27,7 @@
     <sql-case id="create_or_replace_view_with_select" value="create or replace view named_moons as select p.name planet, p.class, m.name moon, m.radius from planets p, moons m where p.name = m.planet_name(+) and m.name(+) not like 'S/%'" db-types="Oracle" />
     <sql-case id="create_view_as_simple_select" value="CREATE VIEW laurel.employee AS SELECT * FROM laurel.emp" db-types="Oracle" />
     <sql-case id="create_view_as_where_where" value="CREATE VIEW employees_departments AS SELECT employee_id, last_name, department_id FROM employees, departments WHERE employees.department_id = departments.department_id" db-types="Oracle" />
+    <sql-case id="create_view_select_partition" value="CREATE VIEW Q1_2000_sales AS SELECT * FROM sales PARTITION (SALES_Q1_2000)" db-types="Oracle" />
+    <sql-case id="create_view_select_with_check_option" value="CREATE VIEW clerk AS SELECT employee_id, last_name, department_id, job_id FROM employees WHERE job_id = 'PU_CLERK' or job_id = 'SH_CLERK' or job_id = 'ST_CLERK' WITH CHECK OPTION" db-types="Oracle" />
+    <sql-case id="create_view_select_union" value="CREATE VIEW all_employees_vw AS (SELECT employee_id, last_name, job_id, commission_pct, department_id FROM employees) UNION (SELECT employee_id, last_name, job_id, commission_pct, department_id FROM contract_workers)" db-types="Oracle" />
 </sql-cases>

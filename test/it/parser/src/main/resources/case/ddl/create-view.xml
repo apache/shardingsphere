@@ -296,4 +296,118 @@
             </where>
         </select>
     </create-view>
+    
+    <create-view sql-case-id="create_view_select_partition" view-definition="SELECT * FROM sales PARTITION (SALES_Q1_2000)">
+        <view name="Q1_2000_sales" start-index="12" stop-index="24" />
+        <select>
+            <projections start-index="36" stop-index="36">
+                <shorthand-projection start-index="36" stop-index="36" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="43" stop-index="47" />
+            </from>
+        </select>
+    </create-view>
+    
+    <create-view sql-case-id="create_view_select_with_check_option" view-definition="SELECT employee_id, last_name, department_id, job_id FROM employees WHERE job_id = 'PU_CLERK' or job_id = 'SH_CLERK' or job_id = 'ST_CLERK'">
+        <view name="clerk" start-index="12" stop-index="16" />
+        <select>
+            <projections start-index="28" stop-index="72">
+                <column-projection name="employee_id" start-index="28" stop-index="38" />
+                <column-projection name="last_name" start-index="41" stop-index="49" />
+                <column-projection name="department_id" start-index="52" stop-index="64" />
+                <column-projection name="job_id" start-index="67" stop-index="72" />
+            </projections>
+            <from>
+                <simple-table name="employees" start-index="79" stop-index="87" />
+            </from>
+            <where start-index="89" stop-index="159">
+                <expr>
+                    <binary-operation-expression start-index="95" stop-index="159">
+                        <left>
+                            <binary-operation-expression start-index="95" stop-index="136">
+                                <left>
+                                    <binary-operation-expression start-index="95" stop-index="113">
+                                        <left>
+                                            <column name="job_id" start-index="95" stop-index="100" />
+                                        </left>
+                                        <right>
+                                            <literal-expression value="PU_CLERK" start-index="104" stop-index="113" />
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </left>
+                                <right>
+                                    <binary-operation-expression start-index="118" stop-index="136">
+                                        <left>
+                                            <column name="job_id" start-index="118" stop-index="123" />
+                                        </left>
+                                        <right>
+                                            <literal-expression value="SH_CLERK" start-index="127" stop-index="136" />
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </right>
+                                <operator>or</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <binary-operation-expression start-index="141" stop-index="159">
+                                <left>
+                                    <column name="job_id" start-index="141" stop-index="146" />
+                                </left>
+                                <right>
+                                    <literal-expression value="ST_CLERK" start-index="150" stop-index="159" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </right>
+                        <operator>or</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-view>
+    
+    <create-view sql-case-id="create_view_select_union" view-definition="(SELECT employee_id, last_name, job_id, commission_pct, department_id FROM employees) UNION (SELECT employee_id, last_name, job_id, commission_pct, department_id FROM contract_workers)">
+        <view name="all_employees_vw" start-index="12" stop-index="27" />
+        <select>
+            <projections start-index="40" stop-index="100">
+                <column-projection name="employee_id" start-index="40" stop-index="50" />
+                <column-projection name="last_name" start-index="53" stop-index="61" />
+                <column-projection name="job_id" start-index="64" stop-index="69" />
+                <column-projection name="commission_pct" start-index="72" stop-index="85" />
+                <column-projection name="department_id" start-index="88" stop-index="100" />
+            </projections>
+            <from>
+                <simple-table name="employees" start-index="107" stop-index="115" />
+            </from>
+            <combine combine-type="UNION" start-index="32" stop-index="215">
+                <left>
+                    <projections start-index="40" stop-index="100">
+                        <column-projection name="employee_id" start-index="40" stop-index="50" />
+                        <column-projection name="last_name" start-index="53" stop-index="61" />
+                        <column-projection name="job_id" start-index="64" stop-index="69" />
+                        <column-projection name="commission_pct" start-index="72" stop-index="85" />
+                        <column-projection name="department_id" start-index="88" stop-index="100" />
+                    </projections>
+                    <from>
+                        <simple-table name="employees" start-index="107" stop-index="115" />
+                    </from>
+                </left>
+                <right>
+                    <projections start-index="132" stop-index="192">
+                        <column-projection name="employee_id" start-index="132" stop-index="142" />
+                        <column-projection name="last_name" start-index="145" stop-index="153" />
+                        <column-projection name="job_id" start-index="156" stop-index="161" />
+                        <column-projection name="commission_pct" start-index="164" stop-index="177" />
+                        <column-projection name="department_id" start-index="180" stop-index="192" />
+                    </projections>
+                    <from>
+                        <simple-table name="contract_workers" start-index="199" stop-index="214" />
+                    </from>
+                </right>
+            </combine>
+        </select>
+    </create-view>
 </sql-parser-test-cases>
