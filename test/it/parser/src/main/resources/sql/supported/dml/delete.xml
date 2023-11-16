@@ -42,4 +42,5 @@
     <sql-case id="delete_with_partition" value="DELETE FROM sales PARTITION (sales_q1_1998) WHERE amount_sold > 1000" db-types="Oracle" />
     <sql-case id="delete_with_table" value="DELETE product_price_history" db-types="Oracle" />
     <sql-case id="delete_with_schema" value="DELETE FROM db1.t_order" />
+    <sql-case id="delete_with_simple_condition" value="DELETE FROM Q1_2000_sales WHERE amount_sold &lt; 0" db-types="Oracle" />
 </sql-cases>
