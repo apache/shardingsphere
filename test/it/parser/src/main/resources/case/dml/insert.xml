@@ -17,13 +17,157 @@
   -->
 
 <sql-parser-test-cases>
-    <insert sql-case-id="insert_into_values">
+    <insert sql-case-id="insert_into_values1">
         <table name="test_nested" start-index="12" stop-index="22" />
         <columns start-index="23" stop-index="23" />
         <values>
             <value>
                 <assignment-value>
                     <literal-expression value="1" start-index="31" stop-index="31" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_values2">
+        <table name="emp_table" start-index="12" stop-index="20" />
+        <columns start-index="21" stop-index="21" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="29" stop-index="29" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="John" start-index="31" stop-index="36" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1000.00" start-index="38" stop-index="44" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Architect" start-index="46" stop-index="56" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_values3">
+        <table name="emp_table" start-index="12" stop-index="20" />
+        <columns start-index="21" stop-index="21" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="29" stop-index="29" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Robert" start-index="31" stop-index="38" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="900.00" start-index="40" stop-index="45" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Developer" start-index="47" stop-index="57" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_values4">
+        <table name="emp_table" start-index="12" stop-index="20" />
+        <columns start-index="21" stop-index="21" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="3" start-index="29" stop-index="29" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="James" start-index="31" stop-index="37" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="2000.00" start-index="39" stop-index="45" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Director" start-index="47" stop-index="56" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_values5">
+        <table name="dept" start-index="12" stop-index="15" />
+        <columns start-index="16" stop-index="16" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="24" stop-index="24" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Sales" start-index="26" stop-index="32" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="500 Oracle pkwy" start-index="34" stop-index="50" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Redwood S" start-index="52" stop-index="62" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="CA" start-index="64" stop-index="67" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="94065" start-index="69" stop-index="75" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_values6">
+        <table name="dept" start-index="12" stop-index="15" />
+        <columns start-index="16" stop-index="16" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="24" stop-index="24" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="ST" start-index="26" stop-index="29" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="400 Oracle Pkwy" start-index="31" stop-index="47" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Redwood S" start-index="49" stop-index="59" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="CA" start-index="61" stop-index="64" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="94065" start-index="66" stop-index="72" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    
+    <insert sql-case-id="insert_into_values7">
+        <table name="dept" start-index="12" stop-index="15" />
+        <columns start-index="16" stop-index="16" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="3" start-index="24" stop-index="24" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Apps" start-index="26" stop-index="31" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="300 Oracle pkwy" start-index="33" stop-index="49" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Redwood S" start-index="51" stop-index="61" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="CA" start-index="63" stop-index="66" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="94065" start-index="68" stop-index="74" />
                 </assignment-value>
             </value>
         </values>
