@@ -26,9 +26,11 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncr
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
+import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -41,7 +43,30 @@ import java.util.Optional;
  */
 public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     
-    @Override
+    /**
+     * Get pipeline job info.
+     *
+     * @param jobId job ID
+     * @return pipeline job info
+     */
+    PipelineJobInfo getJobInfo(String jobId);
+    
+    /**
+     * Build task configuration.
+     *
+     * @param pipelineJobConfig pipeline job configuration
+     * @param jobShardingItem job sharding item
+     * @param pipelineProcessConfig pipeline process configuration
+     * @return task configuration
+     */
+    PipelineTaskConfiguration buildTaskConfiguration(PipelineJobConfiguration pipelineJobConfig, int jobShardingItem, PipelineProcessConfiguration pipelineProcessConfig);
+    
+    /**
+     * Build pipeline process context.
+     *
+     * @param pipelineJobConfig pipeline job configuration
+     * @return pipeline process context
+     */
     InventoryIncrementalProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     /**
