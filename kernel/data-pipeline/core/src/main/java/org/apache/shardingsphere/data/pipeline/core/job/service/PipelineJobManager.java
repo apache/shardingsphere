@@ -58,6 +58,16 @@ public final class PipelineJobManager {
     private final PipelineJobAPI pipelineJobAPI;
     
     /**
+     * Get job configuration.
+     *
+     * @param jobConfigPOJO job configuration POJO
+     * @return pipeline job configuration
+     */
+    public PipelineJobConfiguration getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
+        return pipelineJobAPI.getYamlJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter());
+    }
+    
+    /**
      * Start job.
      *
      * @param jobConfig job configuration

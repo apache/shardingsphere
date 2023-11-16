@@ -312,7 +312,8 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     }
     
     private void fillInJobItemInfoWithCheckAlgorithm(final ConsistencyCheckJobItemInfo result, final String checkJobId) {
-        ConsistencyCheckJobConfiguration jobConfig = getJobConfiguration(PipelineJobIdUtils.getElasticJobConfigurationPOJO(checkJobId));
+        ConsistencyCheckJobConfiguration jobConfig = (ConsistencyCheckJobConfiguration) new PipelineJobManager(this)
+                .getJobConfiguration(PipelineJobIdUtils.getElasticJobConfigurationPOJO(checkJobId));
         result.setAlgorithmType(jobConfig.getAlgorithmTypeName());
         if (null != jobConfig.getAlgorithmProps()) {
             result.setAlgorithmProps(jobConfig.getAlgorithmProps().entrySet().stream().map(entry -> String.format("'%s'='%s'", entry.getKey(), entry.getValue())).collect(Collectors.joining(",")));
@@ -330,8 +331,8 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     }
     
     @Override
-    public ConsistencyCheckJobConfiguration getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
-        return new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter());
+    public YamlConsistencyCheckJobConfigurationSwapper getYamlJobConfigurationSwapper() {
+        return new YamlConsistencyCheckJobConfigurationSwapper();
     }
     
     @Override

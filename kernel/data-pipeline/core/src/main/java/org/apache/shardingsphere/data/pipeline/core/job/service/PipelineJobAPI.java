@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
-import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConfigurationSwapper;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -35,12 +34,11 @@ import java.util.Optional;
 public interface PipelineJobAPI extends TypedSPI {
     
     /**
-     * Get job configuration.
-     *
-     * @param jobConfigPOJO job configuration POJO
-     * @return pipeline job configuration
+     * Get YAML job configuration swapper.
+     * 
+     * @return YAML job configuration swapper
      */
-    PipelineJobConfiguration getJobConfiguration(JobConfigurationPOJO jobConfigPOJO);
+    YamlPipelineJobConfigurationSwapper<?, ?> getYamlJobConfigurationSwapper();
     
     /**
      * Whether to ignore to start disabled job when job item progress is finished.
