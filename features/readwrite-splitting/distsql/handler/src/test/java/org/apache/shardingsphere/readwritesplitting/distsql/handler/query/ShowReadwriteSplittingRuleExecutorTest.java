@@ -74,7 +74,7 @@ class ShowReadwriteSplittingRuleExecutorTest {
         assertThat(row.getCell(3), is("ds_slave_0,ds_slave_1"));
         assertThat(row.getCell(4), is("DYNAMIC"));
         assertThat(row.getCell(5), is("random"));
-        assertThat(row.getCell(6), is("read_weight=2:1"));
+        assertThat(row.getCell(6), is("{\"read_weight\":\"2:1\"}"));
     }
     
     @Test
@@ -94,7 +94,7 @@ class ShowReadwriteSplittingRuleExecutorTest {
         assertThat(row.getCell(3), is("ds_slave_0,ds_slave_1"));
         assertThat(row.getCell(4), is("DYNAMIC"));
         assertThat(row.getCell(5), is("random"));
-        assertThat(row.getCell(6), is("read_weight=2:1"));
+        assertThat(row.getCell(6), is("{\"read_weight\":\"2:1\"}"));
     }
     
     private Map<String, Object> createExportedData() {

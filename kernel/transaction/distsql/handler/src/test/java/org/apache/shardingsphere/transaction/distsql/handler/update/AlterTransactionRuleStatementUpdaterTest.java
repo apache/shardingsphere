@@ -54,8 +54,8 @@ class AlterTransactionRuleStatementUpdaterTest {
         assertThat(actual.getProviderType(), is("Atomikos"));
         assertFalse(actual.getProps().isEmpty());
         String props = PropertiesConverter.convert(actual.getProps());
-        assertTrue(props.contains("host=127.0.0.1"));
-        assertTrue(props.contains("databaseName=jbossts"));
+        assertTrue(props.contains("\"host\":\"127.0.0.1\""));
+        assertTrue(props.contains("\"databaseName\":\"jbossts\""));
     }
     
     @Test

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.props;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Properties converter.
@@ -36,6 +36,6 @@ public final class PropertiesConverter {
      * @return converted string content
      */
     public static String convert(final Properties props) {
-        return props.entrySet().stream().map(entry -> String.join("=", entry.getKey().toString(), entry.getValue().toString())).sorted().collect(Collectors.joining(","));
+        return JsonUtils.toJsonString(props);
     }
 }
