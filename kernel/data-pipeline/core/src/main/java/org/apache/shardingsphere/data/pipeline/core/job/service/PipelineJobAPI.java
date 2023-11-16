@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
@@ -39,14 +37,6 @@ import java.util.Optional;
  */
 @SingletonSPI
 public interface PipelineJobAPI extends TypedSPI {
-    
-    /**
-     * Extend YAML job configuration.
-     *
-     * @param contextKey context key
-     * @param yamlJobConfig YAML job configuration
-     */
-    void extendYamlJobConfiguration(PipelineContextKey contextKey, YamlPipelineJobConfiguration yamlJobConfig);
     
     /**
      * Build task configuration.
