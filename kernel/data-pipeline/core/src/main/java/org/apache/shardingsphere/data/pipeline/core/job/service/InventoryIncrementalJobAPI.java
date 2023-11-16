@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
@@ -42,6 +43,14 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     
     @Override
     InventoryIncrementalProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
+    
+    /**
+     * Extend YAML job configuration.
+     *
+     * @param contextKey context key
+     * @param yamlJobConfig YAML job configuration
+     */
+    void extendYamlJobConfiguration(PipelineContextKey contextKey, YamlPipelineJobConfiguration yamlJobConfig);
     
     /**
      * Alter process configuration.
