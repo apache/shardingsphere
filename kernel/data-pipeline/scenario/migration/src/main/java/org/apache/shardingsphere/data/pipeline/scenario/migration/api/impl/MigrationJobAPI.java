@@ -54,7 +54,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.Increm
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.impl.AbstractInventoryIncrementalJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
@@ -80,7 +80,6 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -102,6 +101,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -122,7 +122,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
      */
     public String createJobAndStart(final PipelineContextKey contextKey, final MigrateTableStatement param) {
         MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(buildYamlJobConfiguration(contextKey, param));
-        start(jobConfig);
+        new PipelineJobManager(this).start(jobConfig);
         return jobConfig.getJobId();
     }
     
@@ -293,40 +293,21 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     @Override
-    public void startDisabledJob(final String jobId) {
-        super.startDisabledJob(jobId);
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getLatestCheckJobId(jobId).ifPresent(optional -> {
-            try {
-                TypedSPILoader.getService(PipelineJobAPI.class, "CONSISTENCY_CHECK").startDisabledJob(optional);
-                // CHECKSTYLE:OFF
-            } catch (final RuntimeException ex) {
-                // CHECKSTYLE:ON
-                log.warn("start related check job failed, check job id: {}, error: {}", optional, ex.getMessage());
-            }
-        });
+    public Optional<String> getToBeStartDisabledNextJobType() {
+        return Optional.of("CONSISTENCY_CHECK");
     }
     
     @Override
-    public void stop(final String jobId) {
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getLatestCheckJobId(jobId).ifPresent(optional -> {
-            try {
-                TypedSPILoader.getService(PipelineJobAPI.class, "CONSISTENCY_CHECK").stop(optional);
-                // CHECKSTYLE:OFF
-            } catch (final RuntimeException ex) {
-                // CHECKSTYLE:ON
-                log.warn("stop related check job failed, check job id: {}, error: {}", optional, ex.getMessage());
-            }
-        });
-        super.stop(jobId);
+    public Optional<String> getToBeStoppedPreviousJobType() {
+        return Optional.of("CONSISTENCY_CHECK");
     }
     
     @Override
     public void rollback(final String jobId) throws SQLException {
         final long startTimeMillis = System.currentTimeMillis();
-        stop(jobId);
         dropCheckJobs(jobId);
         cleanTempTableOnRollback(jobId);
-        dropJob(jobId);
+        new PipelineJobManager(this).drop(jobId);
         log.info("Rollback job {} cost {} ms", jobId, System.currentTimeMillis() - startTimeMillis);
     }
     
@@ -337,7 +318,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         }
         for (String each : checkJobIds) {
             try {
-                dropJob(each);
+                new PipelineJobManager(this).drop(each);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -368,11 +349,12 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     public void commit(final String jobId) {
         log.info("Commit job {}", jobId);
         final long startTimeMillis = System.currentTimeMillis();
-        stop(jobId);
+        PipelineJobManager jobManager = new PipelineJobManager(this);
+        jobManager.stop(jobId);
         dropCheckJobs(jobId);
         MigrationJobConfiguration jobConfig = getJobConfiguration(jobId);
         refreshTableMetadata(jobId, jobConfig.getTargetDatabaseName());
-        dropJob(jobId);
+        jobManager.drop(jobId);
         log.info("Commit cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
