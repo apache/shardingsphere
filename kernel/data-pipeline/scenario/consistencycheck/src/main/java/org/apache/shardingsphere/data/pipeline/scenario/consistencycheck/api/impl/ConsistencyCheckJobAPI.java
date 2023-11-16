@@ -133,6 +133,11 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     }
     
     @Override
+    public boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished() {
+        return true;
+    }
+    
+    @Override
     public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
         PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobItemContext.getJobId()))
                 .persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertJobItemProgress(jobItemContext));
