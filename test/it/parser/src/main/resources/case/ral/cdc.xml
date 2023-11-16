@@ -17,6 +17,34 @@
   -->
 
 <sql-parser-test-cases>
+    <show-streaming-rule sql-case-id="show-streaming-rule" />
+
+    <alter-streaming-rule sql-case-id="alter-streaming-rule">
+        <job-type-name>STREAMING</job-type-name>
+        <rule>
+            <read>
+                <worker-thread>20</worker-thread>
+                <batch-size>1000</batch-size>
+                <sharding-size>10000000</sharding-size>
+                <rate-limiter algorithm-name="QPS">
+                    <properties>
+                        <property key="qps" value="500" />
+                    </properties>
+                </rate-limiter>
+            </read>
+            <write>
+                <worker-thread>20</worker-thread>
+                <batch-size>2000</batch-size>
+                <rate-limiter algorithm-name="TPS">
+                    <property key="tps" value="2000" />
+                </rate-limiter>
+            </write>
+            <stream-channel algorithm-name="MEMORY">
+                <property key="block-queue-size" value="100" />
+            </stream-channel>
+        </rule>
+    </alter-streaming-rule>
+
     <show-streaming-list sql-case-id="show-streaming-list" />
     
     <show-streaming-status sql-case-id="show-streaming-status">
