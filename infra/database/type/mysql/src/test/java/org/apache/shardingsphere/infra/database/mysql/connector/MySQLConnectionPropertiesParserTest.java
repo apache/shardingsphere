@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.mysql.connector;
 
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.connector.url.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -66,7 +66,7 @@ class MySQLConnectionPropertiesParserTest {
             return Stream.of(
                     Arguments.of("simple", "jdbc:mysql://127.0.0.1/foo_ds", "127.0.0.1", 3306, "foo_ds", null, new Properties()),
                     Arguments.of("complex", "jdbc:mysql:loadbalance://127.0.0.1:9999,127.0.0.2:9999/foo_ds?useSSL=false", "127.0.0.1", 9999, "foo_ds", null,
-                            PropertiesBuilder.build(new Property("serverTimezone", "UTC"), new Property("useSSL", Boolean.FALSE.toString()))));
+                            PropertiesBuilder.build(new Property("useSSL", Boolean.FALSE.toString()))));
         }
     }
 }
