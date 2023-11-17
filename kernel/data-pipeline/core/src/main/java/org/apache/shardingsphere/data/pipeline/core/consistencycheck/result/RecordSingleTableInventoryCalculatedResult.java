@@ -26,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.DataConsist
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -66,12 +65,12 @@ public final class RecordSingleTableInventoryCalculatedResult implements SingleT
             return false;
         }
         final RecordSingleTableInventoryCalculatedResult that = (RecordSingleTableInventoryCalculatedResult) o;
-        if (recordsCount != that.recordsCount || !Objects.equals(maxUniqueKeyValue, that.maxUniqueKeyValue)) {
+        EqualsBuilder equalsBuilder = new EqualsBuilder();
+        if (recordsCount != that.recordsCount || !DataConsistencyCheckUtils.isMatched(equalsBuilder, maxUniqueKeyValue, that.maxUniqueKeyValue)) {
             log.warn("Record count or max unique key value not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}.",
                     recordsCount, that.recordsCount, maxUniqueKeyValue, that.maxUniqueKeyValue);
             return false;
         }
-        EqualsBuilder equalsBuilder = new EqualsBuilder();
         Iterator<Map<String, Object>> thisRecordsIterator = records.iterator();
         Iterator<Map<String, Object>> thatRecordsIterator = that.records.iterator();
         while (thisRecordsIterator.hasNext() && thatRecordsIterator.hasNext()) {
