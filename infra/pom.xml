@@ -46,5 +46,6 @@
         <module>util</module>
         <module>reachability-metadata</module>
         <module>nativetest</module>
+        <module>algorithm</module>
     </modules>
 </project>
