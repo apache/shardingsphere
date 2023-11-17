@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.rewrite.fixture.keygen;
 
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
 
 public final class RewriteKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
