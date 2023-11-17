@@ -101,9 +101,12 @@ public final class MigrationJobPreparer {
             PipelineJobCenter.stop(jobItemContext.getJobId());
             return;
         }
-        prepareIncremental(jobItemContext);
+        boolean isIncrementalSupported = PipelineJobPreparerUtils.isIncrementalSupported(jobItemContext.getJobConfig().getSourceDatabaseType());
+        if (isIncrementalSupported) {
+            prepareIncremental(jobItemContext);
+        }
         initInventoryTasks(jobItemContext);
-        if (PipelineJobPreparerUtils.isIncrementalSupported(jobItemContext.getJobConfig().getSourceDatabaseType())) {
+        if (isIncrementalSupported) {
             initIncrementalTasks(jobItemContext);
             if (jobItemContext.isStopping()) {
                 PipelineJobCenter.stop(jobItemContext.getJobId());
