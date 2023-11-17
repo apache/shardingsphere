@@ -102,12 +102,12 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl implements Inventor
     
     @Override
     public List<InventoryIncrementalJobItemInfo> getJobItemInfos(final String jobId) {
+        PipelineJobManager pipelineJobManager = new PipelineJobManager(this);
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
-        PipelineJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
+        PipelineJobConfiguration jobConfig = pipelineJobManager.getJobConfiguration(jobConfigPOJO);
         long startTimeMillis = Long.parseLong(Optional.ofNullable(jobConfigPOJO.getProps().getProperty("start_time_millis")).orElse("0"));
         Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = getJobProgress(jobConfig);
         List<InventoryIncrementalJobItemInfo> result = new LinkedList<>();
-        PipelineJobManager pipelineJobManager = new PipelineJobManager(this);
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : jobProgress.entrySet()) {
             int shardingItem = entry.getKey();
             TableBasedPipelineJobInfo jobInfo = (TableBasedPipelineJobInfo) getJobInfo(jobId);

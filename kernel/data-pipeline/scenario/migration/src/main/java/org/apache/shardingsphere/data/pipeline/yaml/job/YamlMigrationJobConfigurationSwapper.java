@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.yaml.job;
 
-import org.apache.shardingsphere.data.pipeline.common.datasource.yaml.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.data.pipeline.common.datasource.yaml.YamlPipelineDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * YAML migration job configuration swapper.
  */
-public final class YamlMigrationJobConfigurationSwapper implements YamlConfigurationSwapper<YamlMigrationJobConfiguration, MigrationJobConfiguration> {
+public final class YamlMigrationJobConfigurationSwapper implements YamlPipelineJobConfigurationSwapper<YamlMigrationJobConfiguration, MigrationJobConfiguration> {
     
     private final YamlPipelineDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlPipelineDataSourceConfigurationSwapper();
     
@@ -67,12 +67,7 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
                 yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
     }
     
-    /**
-     * Swap to migration job configuration from YAML text.
-     *
-     * @param jobParam job parameter YAML text
-     * @return migration job configuration
-     */
+    @Override
     public MigrationJobConfiguration swapToObject(final String jobParam) {
         return swapToObject(YamlEngine.unmarshal(jobParam, YamlMigrationJobConfiguration.class, true));
     }
