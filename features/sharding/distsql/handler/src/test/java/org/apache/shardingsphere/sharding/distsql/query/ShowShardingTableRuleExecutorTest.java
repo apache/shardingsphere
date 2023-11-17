@@ -69,7 +69,7 @@ class ShowShardingTableRuleExecutorTest {
         assertThat(row.getCell(11), is("{\"algorithm-expression\":\"t_order_${order_id % 2}\"}"));
         assertThat(row.getCell(12), is("order_id"));
         assertThat(row.getCell(13), is("SNOWFLAKE"));
-        assertThat(row.getCell(14), is("{}"));
+        assertThat(row.getCell(14), is(""));
         assertThat(row.getCell(15), is("DML_SHARDING_CONDITIONS"));
         assertThat(row.getCell(16), is("true"));
     }
