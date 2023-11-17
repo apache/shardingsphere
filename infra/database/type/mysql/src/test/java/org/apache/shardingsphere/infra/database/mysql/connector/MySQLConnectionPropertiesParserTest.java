@@ -65,7 +65,7 @@ class MySQLConnectionPropertiesParserTest {
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(
                     Arguments.of("simple", "jdbc:mysql://127.0.0.1/foo_ds", "127.0.0.1", 3306, "foo_ds", null, new Properties()),
-                    Arguments.of("complex", "jdbc:mysql:loadbalance://127.0.0.1:9999,127.0.0.2:9999/foo_ds?serverTimezone=UTC&useSSL=false", "127.0.0.1", 9999, "foo_ds", null,
+                    Arguments.of("complex", "jdbc:mysql:loadbalance://127.0.0.1:9999,127.0.0.2:9999/foo_ds?useSSL=false", "127.0.0.1", 9999, "foo_ds", null,
                             PropertiesBuilder.build(new Property("serverTimezone", "UTC"), new Property("useSSL", Boolean.FALSE.toString()))));
         }
     }

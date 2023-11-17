@@ -76,7 +76,7 @@
 #
 #dataSources:
 #  write_ds:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_write_ds?serverTimezone=UTC&useSSL=false
+#    url: jdbc:mysql://127.0.0.1:3306/demo_write_ds?useSSL=false
 #    username: root
 #    password:
 #    connectionTimeoutMilliseconds: 30000
@@ -85,7 +85,7 @@
 #    maxPoolSize: 50
 #    minPoolSize: 1
 #  read_ds_0:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_read_ds_0?serverTimezone=UTC&useSSL=false
+#    url: jdbc:mysql://127.0.0.1:3306/demo_read_ds_0?useSSL=false
 #    username: root
 #    password:
 #    connectionTimeoutMilliseconds: 30000
@@ -94,7 +94,7 @@
 #    maxPoolSize: 50
 #    minPoolSize: 1
 #  read_ds_1:
-#    url: jdbc:mysql://127.0.0.1:3306/demo_read_ds_1?serverTimezone=UTC&useSSL=false
+#    url: jdbc:mysql://127.0.0.1:3306/demo_read_ds_1?useSSL=false
 #    username: root
 #    password:
 #    connectionTimeoutMilliseconds: 30000
