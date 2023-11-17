@@ -116,11 +116,8 @@ public final class MySQLIncrementalDumper extends AbstractPipelineLifecycleRunna
     private void handleEvents(final List<AbstractBinlogEvent> events) {
         List<Record> dataRecords = new LinkedList<>();
         for (AbstractBinlogEvent each : events) {
-            if (!(each instanceof AbstractRowsEvent)) {
-                dataRecords.add(createPlaceholderRecord(each));
-                continue;
-            }
-            dataRecords.addAll(handleEvent(each));
+            List<? extends Record> records = handleEvent(each);
+            dataRecords.addAll(records);
         }
         if (dataRecords.isEmpty()) {
             return;
