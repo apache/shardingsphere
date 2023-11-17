@@ -17,7 +17,13 @@
   -->
 
 <sql-cases>
-    <sql-case id="insert_into_values" value="INSERT INTO test_nested VALUES(1)" db-types="MySQL" />
+    <sql-case id="insert_into_values1" value="INSERT INTO test_nested VALUES(1)" db-types="MySQL" />
+    <sql-case id="insert_into_values2" value="insert into emp_table values(1,'John',1000.00,'Architect')" db-types="Oracle" />
+    <sql-case id="insert_into_values3" value="insert into emp_table values(2,'Robert',900.00,'Developer')" db-types="Oracle" />
+    <sql-case id="insert_into_values4" value="insert into emp_table values(3,'James',2000.00,'Director')" db-types="Oracle" />
+    <sql-case id="insert_into_values5" value="insert into dept values(1,'Sales','500 Oracle pkwy','Redwood S','CA','94065')" db-types="Oracle" />
+    <sql-case id="insert_into_values6" value="insert into dept values(2,'ST','400 Oracle Pkwy','Redwood S','CA','94065')" db-types="Oracle" />
+    <sql-case id="insert_into_values7" value="insert into dept values(3,'Apps','300 Oracle pkwy','Redwood S','CA','94065');" db-types="Oracle" />
     <sql-case id="insert_with_all_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" />
     <sql-case id="insert_with_historical_type_cast_syntax" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?::int4, ?::text)" db-types="PostgreSQL,openGauss" />
     <sql-case id="insert_with_now_function" value="INSERT INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())" db-types="MySQL" />

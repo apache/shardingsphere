@@ -25,9 +25,14 @@
     <sql-case id="create_view_with_recursive" value="CREATE RECURSIVE VIEW public.nums_1_100 (n) AS VALUES (1) UNION ALL SELECT n+1 FROM nums_1_100 WHERE n = 100" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_view_with_option" value="CREATE OR REPLACE TEMP view order_view (order_id,user_id) WITH (security_barrier=TRUE) AS SELECT * FROM t_order" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_or_replace_view_with_select" value="create or replace view named_moons as select p.name planet, p.class, m.name moon, m.radius from planets p, moons m where p.name = m.planet_name(+) and m.name(+) not like 'S/%'" db-types="Oracle" />
-    <sql-case id="create_view_as_simple_select" value="CREATE VIEW laurel.employee AS SELECT * FROM laurel.emp" db-types="Oracle" />
+    <sql-case id="create_view_as_simple_select1" value="CREATE VIEW laurel.employee AS SELECT * FROM laurel.emp" db-types="Oracle" />
+    <sql-case id="create_view_as_simple_select2" value="CREATE VIEW dept AS SELECT * FROM scott.dept" db-types="Oracle" />
     <sql-case id="create_view_as_where_where" value="CREATE VIEW employees_departments AS SELECT employee_id, last_name, department_id FROM employees, departments WHERE employees.department_id = departments.department_id" db-types="Oracle" />
     <sql-case id="create_view_select_partition" value="CREATE VIEW Q1_2000_sales AS SELECT * FROM sales PARTITION (SALES_Q1_2000)" db-types="Oracle" />
     <sql-case id="create_view_select_with_check_option" value="CREATE VIEW clerk AS SELECT employee_id, last_name, department_id, job_id FROM employees WHERE job_id = 'PU_CLERK' or job_id = 'SH_CLERK' or job_id = 'ST_CLERK' WITH CHECK OPTION" db-types="Oracle" />
     <sql-case id="create_view_select_union" value="CREATE VIEW all_employees_vw AS (SELECT employee_id, last_name, job_id, commission_pct, department_id FROM employees) UNION (SELECT employee_id, last_name, job_id, commission_pct, department_id FROM contract_workers)" db-types="Oracle" />
+    <sql-case id="create_view_with_object_identifier1" value="CREATE VIEW emp_view1 OF employee_t WITH OBJECT IDENTIFIER (empno) AS SELECT e.empnum, e.ename, e.salary, e.job FROM emp_table e WHERE job = 'Developer'" db-types="Oracle" />
+    <sql-case id="create_view_with_object_identifier2" value="CREATE VIEW dept_view OF dept_t WITH OBJECT IDENTIFIER (deptno) AS SELECT d.deptno, d.deptname, address_t(d.deptstreet,d.deptcity,d.deptstate,d.deptzip) AS deptaddr FROM dept d" db-types="Oracle" />
+    <sql-case id="create_view_select_host_table" value="CREATE VIEW company AS SELECT a.empno, a.ename, b.dname FROM scott.emp a, jward.dept@hq.example.com b WHERE a.deptno = b.deptno" db-types="Oracle" />
+    <sql-case id="create_view_select_function_group_by_order_by" value="CREATE VIEW dept_salaries AS SELECT deptno, MIN(sal), AVG(sal), MAX(sal) FROM emp GROUP BY deptno ORDER BY deptno" db-types="Oracle" />
 </sql-cases>
