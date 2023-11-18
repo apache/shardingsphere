@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.ConsistencyCheckJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlConsistencyCheckJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.common.pojo.ConsistencyCheckJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
@@ -84,7 +83,8 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(parentJobId));
         Optional<String> latestCheckJobId = repositoryAPI.getLatestCheckJobId(parentJobId);
         if (latestCheckJobId.isPresent()) {
-            Optional<ConsistencyCheckJobItemProgress> progress = getJobItemProgress(latestCheckJobId.get(), 0);
+            PipelineJobManager jobManager = new PipelineJobManager(this);
+            Optional<ConsistencyCheckJobItemProgress> progress = jobManager.getJobItemProgress(latestCheckJobId.get(), 0);
             if (!progress.isPresent() || JobStatus.FINISHED != progress.get().getStatus()) {
                 log.info("check job already exists and status is not FINISHED, progress={}", progress);
                 throw new UncompletedConsistencyCheckJobExistsException(latestCheckJobId.get());
@@ -118,14 +118,9 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     }
     
     @Override
-    public Optional<ConsistencyCheckJobItemProgress> getJobItemProgress(final String jobId, final int shardingItem) {
-        Optional<String> progress = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProgress(jobId, shardingItem);
-        return progress.map(s -> getYamlJobItemProgressSwapper().swapToObject(YamlEngine.unmarshal(s, YamlConsistencyCheckJobItemProgress.class, true)));
-    }
-    
-    @Override
     public void updateJobItemStatus(final String jobId, final int shardingItem, final JobStatus status) {
-        Optional<ConsistencyCheckJobItemProgress> jobItemProgress = getJobItemProgress(jobId, shardingItem);
+        PipelineJobManager jobManager = new PipelineJobManager(this);
+        Optional<ConsistencyCheckJobItemProgress> jobItemProgress = jobManager.getJobItemProgress(jobId, shardingItem);
         if (!jobItemProgress.isPresent()) {
             log.warn("updateJobItemStatus, jobProgress is null, jobId={}, shardingItem={}", jobId, shardingItem);
             return;
@@ -193,7 +188,8 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
         Optional<String> latestCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
         String checkJobId = latestCheckJobId.get();
-        Optional<ConsistencyCheckJobItemProgress> progress = getJobItemProgress(checkJobId, 0);
+        PipelineJobManager jobManager = new PipelineJobManager(this);
+        Optional<ConsistencyCheckJobItemProgress> progress = jobManager.getJobItemProgress(checkJobId, 0);
         if (!progress.isPresent()) {
             return Collections.emptyList();
         }
@@ -233,7 +229,8 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
         Optional<String> latestCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
         String checkJobId = latestCheckJobId.get();
-        Optional<ConsistencyCheckJobItemProgress> progress = getJobItemProgress(checkJobId, 0);
+        PipelineJobManager jobManager = new PipelineJobManager(this);
+        Optional<ConsistencyCheckJobItemProgress> progress = jobManager.getJobItemProgress(checkJobId, 0);
         ConsistencyCheckJobItemInfo result = new ConsistencyCheckJobItemInfo();
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(checkJobId);
         result.setActive(!jobConfigPOJO.isDisabled());
@@ -306,6 +303,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
         return new YamlConsistencyCheckJobConfigurationSwapper();
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public YamlConsistencyCheckJobItemProgressSwapper getYamlJobItemProgressSwapper() {
         return new YamlConsistencyCheckJobItemProgressSwapper();

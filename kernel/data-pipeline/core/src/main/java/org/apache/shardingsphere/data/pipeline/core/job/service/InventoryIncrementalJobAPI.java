@@ -37,13 +37,13 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Inventory incremental job API.
  */
 public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     
+    @SuppressWarnings("unchecked")
     @Override
     default YamlInventoryIncrementalJobItemProgressSwapper getYamlJobItemProgressSwapper() {
         return new YamlInventoryIncrementalJobItemProgressSwapper();
@@ -122,9 +122,6 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      * @return each sharding item progress
      */
     Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(PipelineJobConfiguration pipelineJobConfig);
-    
-    @Override
-    Optional<InventoryIncrementalJobItemProgress> getJobItemProgress(String jobId, int shardingItem);
     
     /**
      * Get job infos.

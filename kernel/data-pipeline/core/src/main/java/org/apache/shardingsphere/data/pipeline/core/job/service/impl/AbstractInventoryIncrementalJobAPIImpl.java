@@ -25,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfoSwapper;
 import org.apache.shardingsphere.data.pipeline.common.pojo.DataConsistencyCheckAlgorithmInfo;
@@ -77,10 +76,11 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl implements Inventor
     
     @Override
     public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final PipelineJobConfiguration jobConfig) {
+        PipelineJobManager jobManager = new PipelineJobManager(this);
         String jobId = jobConfig.getJobId();
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
         return IntStream.range(0, jobConfig.getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
-            Optional<InventoryIncrementalJobItemProgress> jobItemProgress = getJobItemProgress(jobId, each);
+            Optional<InventoryIncrementalJobItemProgress> jobItemProgress = jobManager.getJobItemProgress(jobId, each);
             jobItemProgress.ifPresent(optional -> optional.setActive(!jobConfigPOJO.isDisabled()));
             map.put(each, jobItemProgress.orElse(null));
         }, LinkedHashMap::putAll);
@@ -131,14 +131,9 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl implements Inventor
     }
     
     @Override
-    public Optional<InventoryIncrementalJobItemProgress> getJobItemProgress(final String jobId, final int shardingItem) {
-        Optional<String> progress = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProgress(jobId, shardingItem);
-        return progress.map(optional -> getYamlJobItemProgressSwapper().swapToObject(YamlEngine.unmarshal(optional, YamlInventoryIncrementalJobItemProgress.class)));
-    }
-    
-    @Override
     public void updateJobItemStatus(final String jobId, final int shardingItem, final JobStatus status) {
-        Optional<InventoryIncrementalJobItemProgress> jobItemProgress = getJobItemProgress(jobId, shardingItem);
+        PipelineJobManager jobManager = new PipelineJobManager(this);
+        Optional<InventoryIncrementalJobItemProgress> jobItemProgress = jobManager.getJobItemProgress(jobId, shardingItem);
         if (!jobItemProgress.isPresent()) {
             return;
         }

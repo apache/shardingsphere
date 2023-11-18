@@ -50,4 +50,9 @@ public final class YamlConsistencyCheckJobItemProgressSwapper implements YamlPip
         result.setStatus(JobStatus.valueOf(yamlConfig.getStatus()));
         return result;
     }
+    
+    @Override
+    public Class<YamlConsistencyCheckJobItemProgress> getYamlProgressClass() {
+        return YamlConsistencyCheckJobItemProgress.class;
+    }
 }

@@ -168,9 +168,10 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     private void initIncrementalPosition(final CDCJobConfiguration jobConfig) {
         String jobId = jobConfig.getJobId();
+        PipelineJobManager jobManager = new PipelineJobManager(this);
         try (PipelineDataSourceManager pipelineDataSourceManager = new DefaultPipelineDataSourceManager()) {
             for (int i = 0; i < jobConfig.getJobShardingCount(); i++) {
-                if (getJobItemProgress(jobId, i).isPresent()) {
+                if (jobManager.getJobItemProgress(jobId, i).isPresent()) {
                     continue;
                 }
                 IncrementalDumperContext dumperContext = buildDumperContext(jobConfig, i, new TableAndSchemaNameMapper(jobConfig.getSchemaTableNames()));

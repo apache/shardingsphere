@@ -18,14 +18,20 @@
 package org.apache.shardingsphere.data.pipeline.core.job.yaml;
 
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
  * YAML pipeline job configuration swapper.
  *
- * @param <Y> type of YAML configuration
+ * @param <Y> type of YAML pipeline job item progress configuration
  * @param <T> type of swapped pipeline job item progress
  */
-public interface YamlPipelineJobItemProgressSwapper<Y extends YamlConfiguration, T extends PipelineJobItemProgress> extends YamlConfigurationSwapper<Y, T> {
+public interface YamlPipelineJobItemProgressSwapper<Y extends YamlPipelineJobItemProgressConfiguration, T extends PipelineJobItemProgress> extends YamlConfigurationSwapper<Y, T> {
+    
+    /**
+     * Get YAML pipeline job item progress configuration class.
+     * 
+     * @return YAML pipeline job item progress configuration class
+     */
+    Class<Y> getYamlProgressClass();
 }

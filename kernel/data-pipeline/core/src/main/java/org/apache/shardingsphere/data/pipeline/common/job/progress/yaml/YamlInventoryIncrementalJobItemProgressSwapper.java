@@ -57,4 +57,9 @@ public final class YamlInventoryIncrementalJobItemProgressSwapper implements Yam
         result.setInventoryRecordsCount(yamlProgress.getInventoryRecordsCount());
         return result;
     }
+    
+    @Override
+    public Class<YamlInventoryIncrementalJobItemProgress> getYamlProgressClass() {
+        return YamlInventoryIncrementalJobItemProgress.class;
+    }
 }
