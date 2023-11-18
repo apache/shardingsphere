@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfigurationUtils;
@@ -43,7 +42,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -52,14 +50,11 @@ import java.util.stream.IntStream;
  * Inventory incremental job manager.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class InventoryIncrementalJobManager {
     
     private final PipelineJobAPI jobAPI;
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
-    
-    private final YamlJobOffsetInfoSwapper jobOffsetInfoSwapper = new YamlJobOffsetInfoSwapper();
     
     /**
      * Alter process configuration.
@@ -106,7 +101,7 @@ public final class InventoryIncrementalJobManager {
      * @param jobOffsetInfo job offset info
      */
     public void persistJobOffsetInfo(final String jobId, final JobOffsetInfo jobOffsetInfo) {
-        String value = YamlEngine.marshal(jobOffsetInfoSwapper.swapToYamlConfiguration(jobOffsetInfo));
+        String value = YamlEngine.marshal(new YamlJobOffsetInfoSwapper().swapToYamlConfiguration(jobOffsetInfo));
         PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persistJobOffsetInfo(jobId, value);
     }
     
@@ -118,11 +113,7 @@ public final class InventoryIncrementalJobManager {
      */
     public JobOffsetInfo getJobOffsetInfo(final String jobId) {
         Optional<String> offsetInfo = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobOffsetInfo(jobId);
-        if (offsetInfo.isPresent()) {
-            YamlJobOffsetInfo info = YamlEngine.unmarshal(offsetInfo.get(), YamlJobOffsetInfo.class);
-            return jobOffsetInfoSwapper.swapToObject(info);
-        }
-        return jobOffsetInfoSwapper.swapToObject(new YamlJobOffsetInfo());
+        return new YamlJobOffsetInfoSwapper().swapToObject(offsetInfo.isPresent() ? YamlEngine.unmarshal(offsetInfo.get(), YamlJobOffsetInfo.class) : new YamlJobOffsetInfo());
     }
     
     /**
@@ -153,12 +144,6 @@ public final class InventoryIncrementalJobManager {
      */
     public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, TableDataConsistencyCheckResult> checkResults) {
         Preconditions.checkArgument(!checkResults.isEmpty(), "checkResults empty, jobId:", jobId);
-        for (Entry<String, TableDataConsistencyCheckResult> entry : checkResults.entrySet()) {
-            TableDataConsistencyCheckResult checkResult = entry.getValue();
-            if (!checkResult.isMatched()) {
-                return false;
-            }
-        }
-        return true;
+        return checkResults.values().stream().allMatch(TableDataConsistencyCheckResult::isMatched);
     }
 }
