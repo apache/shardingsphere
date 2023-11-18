@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
-import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConfigurationSwapper;
@@ -75,15 +74,6 @@ public interface PipelineJobAPI extends TypedSPI {
     default Optional<String> getToBeStoppedPreviousJobType() {
         return Optional.empty();
     }
-    
-    /**
-     * Update job item status.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @param status status
-     */
-    void updateJobItemStatus(String jobId, int shardingItem, JobStatus status);
     
     /**
      * Get pipeline job class.

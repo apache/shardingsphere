@@ -151,7 +151,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     
     private void updateLocalAndRemoteJobItemStatus(final PipelineJobItemContext jobItemContext, final JobStatus jobStatus) {
         jobItemContext.setStatus(jobStatus);
-        jobAPI.updateJobItemStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
+        jobManager.updateJobItemStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
     
     private void executeIncrementalTasks(final List<CDCJobItemContext> jobItemContexts) {

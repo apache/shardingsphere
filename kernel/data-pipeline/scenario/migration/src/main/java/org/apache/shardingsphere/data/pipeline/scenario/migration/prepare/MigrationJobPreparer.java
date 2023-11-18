@@ -136,7 +136,7 @@ public final class MigrationJobPreparer {
                 JobOffsetInfo offsetInfo = jobAPI.getJobOffsetInfo(jobId);
                 if (!offsetInfo.isTargetSchemaTableCreated()) {
                     jobItemContext.setStatus(JobStatus.PREPARING);
-                    jobAPI.updateJobItemStatus(jobId, jobItemContext.getShardingItem(), JobStatus.PREPARING);
+                    jobManager.updateJobItemStatus(jobId, jobItemContext.getShardingItem(), JobStatus.PREPARING);
                     prepareAndCheckTarget(jobItemContext);
                     jobAPI.persistJobOffsetInfo(jobId, new JobOffsetInfo(true));
                 }
