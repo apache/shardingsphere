@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
@@ -34,7 +35,7 @@ public final class AlterInventoryIncrementalRuleUpdater implements RALUpdater<Al
     
     @Override
     public void executeUpdate(final String databaseName, final AlterInventoryIncrementalRuleStatement sqlStatement) {
-        InventoryIncrementalJobManager jobManager = new InventoryIncrementalJobManager(TypedSPILoader.getService(PipelineJobAPI.class, sqlStatement.getJobTypeName()));
+        InventoryIncrementalJobManager jobManager = new InventoryIncrementalJobManager((InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, sqlStatement.getJobTypeName()));
         PipelineProcessConfiguration processConfig = InventoryIncrementalProcessConfigurationSegmentConverter.convert(sqlStatement.getProcessConfigSegment());
         jobManager.alterProcessConfiguration(new PipelineContextKey(InstanceType.PROXY), processConfig);
     }

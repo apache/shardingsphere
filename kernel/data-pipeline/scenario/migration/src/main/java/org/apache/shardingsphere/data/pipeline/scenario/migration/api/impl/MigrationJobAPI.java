@@ -53,10 +53,10 @@ import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInva
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
-import org.apache.shardingsphere.data.pipeline.core.job.service.impl.AbstractInventoryIncrementalJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
@@ -110,7 +110,7 @@ import java.util.stream.Collectors;
  * Migration job API.
  */
 @Slf4j
-public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
+public final class MigrationJobAPI implements InventoryIncrementalJobAPI {
     
     private final PipelineDataSourcePersistService dataSourcePersistService = new PipelineDataSourcePersistService();
     

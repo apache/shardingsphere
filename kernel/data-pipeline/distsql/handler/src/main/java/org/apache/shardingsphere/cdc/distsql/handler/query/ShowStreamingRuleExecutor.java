@@ -20,6 +20,7 @@ package org.apache.shardingsphere.cdc.distsql.handler.query;
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingRuleStatement;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
@@ -39,7 +40,7 @@ public final class ShowStreamingRuleExecutor implements QueryableRALExecutor<Sho
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingRuleStatement sqlStatement) {
-        PipelineProcessConfiguration processConfig = new InventoryIncrementalJobManager(TypedSPILoader.getService(PipelineJobAPI.class, "STREAMING"))
+        PipelineProcessConfiguration processConfig = new InventoryIncrementalJobManager((InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "STREAMING"))
                 .showProcessConfiguration(new PipelineContextKey(InstanceType.PROXY));
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         result.add(new LocalDataQueryResultRow(getString(processConfig.getRead()), getString(processConfig.getWrite()), getString(processConfig.getStreamChannel())));
