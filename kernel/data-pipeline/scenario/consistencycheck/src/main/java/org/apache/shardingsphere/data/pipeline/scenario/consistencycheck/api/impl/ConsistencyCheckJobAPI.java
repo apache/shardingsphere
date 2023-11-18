@@ -27,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlCons
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlConsistencyCheckJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.common.pojo.ConsistencyCheckJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckerFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineDatabaseTypeException;
@@ -44,7 +43,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.poj
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.YamlConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.YamlConsistencyCheckJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -129,15 +127,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     }
     
     private String convertJobItemProgress(final PipelineJobItemContext jobItemContext) {
-        ConsistencyCheckJobItemContext context = (ConsistencyCheckJobItemContext) jobItemContext;
-        ConsistencyCheckJobItemProgressContext progressContext = context.getProgressContext();
-        String tableNames = String.join(",", progressContext.getTableNames());
-        String ignoredTableNames = String.join(",", progressContext.getIgnoredTableNames());
-        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(tableNames, ignoredTableNames, progressContext.getCheckedRecordsCount().get(),
-                progressContext.getRecordsCount(), progressContext.getCheckBeginTimeMillis(), progressContext.getCheckEndTimeMillis(),
-                progressContext.getSourceTableCheckPositions(), progressContext.getTargetTableCheckPositions(), progressContext.getSourceDatabaseType());
-        jobItemProgress.setStatus(context.getStatus());
-        return YamlEngine.marshal(swapper.swapToYamlConfiguration(jobItemProgress));
+        return YamlEngine.marshal(swapper.swapToYamlConfiguration((ConsistencyCheckJobItemProgress) jobItemContext.toPipelineJobItemProgress()));
     }
     
     @Override

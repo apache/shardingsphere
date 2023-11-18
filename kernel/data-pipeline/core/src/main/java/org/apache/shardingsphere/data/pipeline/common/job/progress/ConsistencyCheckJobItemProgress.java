@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 
 import java.util.Map;
 
@@ -33,9 +34,6 @@ import java.util.Map;
 @ToString
 // TODO Refactor structure, List<TableProgress>
 public final class ConsistencyCheckJobItemProgress implements PipelineJobItemProgress {
-    
-    @Setter
-    private JobStatus status = JobStatus.RUNNING;
     
     private final String tableNames;
     
@@ -54,4 +52,19 @@ public final class ConsistencyCheckJobItemProgress implements PipelineJobItemPro
     private final Map<String, Object> targetTableCheckPositions;
     
     private final String sourceDatabaseType;
+    
+    @Setter
+    private JobStatus status = JobStatus.RUNNING;
+    
+    public ConsistencyCheckJobItemProgress(final ConsistencyCheckJobItemProgressContext context) {
+        tableNames = String.join(",", context.getTableNames());
+        ignoredTableNames = String.join(",", context.getIgnoredTableNames());
+        checkedRecordsCount = context.getCheckedRecordsCount().get();
+        recordsCount = context.getRecordsCount();
+        checkBeginTimeMillis = context.getCheckBeginTimeMillis();
+        checkEndTimeMillis = context.getCheckEndTimeMillis();
+        sourceTableCheckPositions = context.getSourceTableCheckPositions();
+        targetTableCheckPositions = context.getTargetTableCheckPositions();
+        sourceDatabaseType = context.getSourceDatabaseType();
+    }
 }

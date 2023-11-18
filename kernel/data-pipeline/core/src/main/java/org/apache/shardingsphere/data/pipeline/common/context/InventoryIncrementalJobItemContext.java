@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.common.context;
 
-import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 
@@ -88,4 +88,9 @@ public interface InventoryIncrementalJobItemContext extends PipelineJobItemConte
      * @return inventory records count
      */
     long getInventoryRecordsCount();
+    
+    @Override
+    default InventoryIncrementalJobItemProgress toPipelineJobItemProgress() {
+        return new InventoryIncrementalJobItemProgress(this);
+    }
 }
