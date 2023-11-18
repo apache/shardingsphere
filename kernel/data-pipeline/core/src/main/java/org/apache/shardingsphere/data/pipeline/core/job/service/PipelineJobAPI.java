@@ -34,9 +34,9 @@ import java.util.Optional;
 public interface PipelineJobAPI extends TypedSPI {
     
     /**
-     * Get YAML job configuration swapper.
+     * Get YAML pipeline job configuration swapper.
      * 
-     * @return YAML job configuration swapper
+     * @return YAML pipeline job configuration swapper
      */
     YamlPipelineJobConfigurationSwapper<?, ?> getYamlJobConfigurationSwapper();
     
