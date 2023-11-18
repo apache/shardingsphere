@@ -90,7 +90,7 @@ public interface InventoryIncrementalJobItemContext extends PipelineJobItemConte
     long getInventoryRecordsCount();
     
     @Override
-    default InventoryIncrementalJobItemProgress toPipelineJobItemProgress() {
+    default InventoryIncrementalJobItemProgress toProgress() {
         return new InventoryIncrementalJobItemProgress(this);
     }
 }

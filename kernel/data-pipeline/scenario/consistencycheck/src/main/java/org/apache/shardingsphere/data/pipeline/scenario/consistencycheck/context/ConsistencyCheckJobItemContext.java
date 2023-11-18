@@ -71,7 +71,7 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     }
     
     @Override
-    public ConsistencyCheckJobItemProgress toPipelineJobItemProgress() {
+    public ConsistencyCheckJobItemProgress toProgress() {
         ConsistencyCheckJobItemProgress result = new ConsistencyCheckJobItemProgress(progressContext);
         result.setStatus(status);
         return result;

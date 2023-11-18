@@ -92,5 +92,5 @@ public interface PipelineJobItemContext {
      * 
      * @return converted pipeline job item progress
      */
-    PipelineJobItemProgress toPipelineJobItemProgress();
+    PipelineJobItemProgress toProgress();
 }

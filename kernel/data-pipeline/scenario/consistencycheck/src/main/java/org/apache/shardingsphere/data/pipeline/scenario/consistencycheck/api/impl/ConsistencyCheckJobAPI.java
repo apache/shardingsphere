@@ -127,7 +127,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     }
     
     private String convertJobItemProgress(final PipelineJobItemContext jobItemContext) {
-        return YamlEngine.marshal(swapper.swapToYamlConfiguration((ConsistencyCheckJobItemProgress) jobItemContext.toPipelineJobItemProgress()));
+        return YamlEngine.marshal(swapper.swapToYamlConfiguration((ConsistencyCheckJobItemProgress) jobItemContext.toProgress()));
     }
     
     @Override

@@ -134,7 +134,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl implements Inventor
     }
     
     private String convertJobItemProgress(final PipelineJobItemContext jobItemContext) {
-        return YamlEngine.marshal(jobItemProgressSwapper.swapToYamlConfiguration((InventoryIncrementalJobItemProgress) jobItemContext.toPipelineJobItemProgress()));
+        return YamlEngine.marshal(jobItemProgressSwapper.swapToYamlConfiguration((InventoryIncrementalJobItemProgress) jobItemContext.toProgress()));
     }
     
     @Override
