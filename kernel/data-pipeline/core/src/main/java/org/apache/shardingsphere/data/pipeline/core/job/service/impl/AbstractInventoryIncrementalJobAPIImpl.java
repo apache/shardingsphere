@@ -131,18 +131,6 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl implements Inventor
     }
     
     @Override
-    public void updateJobItemStatus(final String jobId, final int shardingItem, final JobStatus status) {
-        PipelineJobManager jobManager = new PipelineJobManager(this);
-        Optional<InventoryIncrementalJobItemProgress> jobItemProgress = jobManager.getJobItemProgress(jobId, shardingItem);
-        if (!jobItemProgress.isPresent()) {
-            return;
-        }
-        jobItemProgress.get().setStatus(status);
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).updateJobItemProgress(jobId, shardingItem,
-                YamlEngine.marshal(getYamlJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress.get())));
-    }
-    
-    @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         Collection<DataConsistencyCheckAlgorithmInfo> result = new LinkedList<>();
         for (TableDataConsistencyChecker each : ShardingSphereServiceLoader.getServiceInstances(TableDataConsistencyChecker.class)) {

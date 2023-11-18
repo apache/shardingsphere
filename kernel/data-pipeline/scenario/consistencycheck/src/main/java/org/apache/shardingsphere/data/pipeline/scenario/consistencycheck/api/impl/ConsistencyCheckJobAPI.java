@@ -46,7 +46,6 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -115,19 +114,6 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     @Override
     public boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished() {
         return true;
-    }
-    
-    @Override
-    public void updateJobItemStatus(final String jobId, final int shardingItem, final JobStatus status) {
-        PipelineJobManager jobManager = new PipelineJobManager(this);
-        Optional<ConsistencyCheckJobItemProgress> jobItemProgress = jobManager.getJobItemProgress(jobId, shardingItem);
-        if (!jobItemProgress.isPresent()) {
-            log.warn("updateJobItemStatus, jobProgress is null, jobId={}, shardingItem={}", jobId, shardingItem);
-            return;
-        }
-        jobItemProgress.get().setStatus(status);
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).updateJobItemProgress(jobId, shardingItem,
-                YamlEngine.marshal(getYamlJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress.get())));
     }
     
     /**

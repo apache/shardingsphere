@@ -228,6 +228,24 @@ public final class PipelineJobManager {
     }
     
     /**
+     * Update job item status.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @param status status
+     */
+    public void updateJobItemStatus(final String jobId, final int shardingItem, final JobStatus status) {
+        Optional<PipelineJobItemProgress> jobItemProgress = getJobItemProgress(jobId, shardingItem);
+        if (!jobItemProgress.isPresent()) {
+            log.warn("updateJobItemStatus, jobProgress is null, jobId={}, shardingItem={}", jobId, shardingItem);
+            return;
+        }
+        jobItemProgress.get().setStatus(status);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).updateJobItemProgress(jobId, shardingItem,
+                YamlEngine.marshal(jobAPI.getYamlJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress.get())));
+    }
+    
+    /**
      * Update job item progress.
      *
      * @param jobItemContext job item context

@@ -30,4 +30,11 @@ public interface PipelineJobItemProgress {
      * @return job status
      */
     JobStatus getStatus();
+    
+    /**
+     * Set status.
+     * 
+     * @param jobStatus job status
+     */
+    void setStatus(JobStatus jobStatus);
 }
