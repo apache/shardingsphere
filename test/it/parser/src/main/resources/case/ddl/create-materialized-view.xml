@@ -26,11 +26,9 @@
     <create-materialized-view sql-case-id="create_materialized_view_with_refresh_fast_query_rewrite" />
     <create-materialized-view sql-case-id="create_materialized_view_with_refresh_fast_disable_query_rewrite" />
     <create-materialized-view sql-case-id="create_materialized_view_with_tablespace_parallel_build_immediate" />
-
     <create-materialized-view sql-case-id="create_materialized_view_with_pctfree_storage_parallel" />
     <create-materialized-view sql-case-id="create_materialized_view_with_refresh_fast_for_update" />
     <create-materialized-view sql-case-id="create_materialized_view_for_update" />
     <create-materialized-view sql-case-id="create_materialized_view_with_refresh_force" />
     <create-materialized-view sql-case-id="create_materialized_view_with_refresh_fast_for_update_as_with_recursive" />
-
 </sql-parser-test-cases>
