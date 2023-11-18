@@ -217,4 +217,5 @@
     <sql-case id="select_wm_concat_function2" value="SELECT WM_CONCAT(NAME) NAME FROM TEST_TABLE" db-types="Oracle" />
     <sql-case id="select_wm_concat_function3" value="SELECT REPLACE(WM_CONCAT(NAME),',','|') FROM TEST_TABLE" db-types="Oracle" />
     <sql-case id="select_wm_concat_function4" value="SELECT NAME,WM_CONCAT(DECODE(SUBSTR((TO_CHAR(NAME)),0,1),'.','0'||TO_CHAR(NAME),TO_CHAR(NAME))) WM_NAME FROM TEST_TABLE WHERE NAME ='TEST' GROUP BY NAME" db-types="Oracle" />
+    <sql-case id="select_with_user_updatable_columns" value="SELECT column_name, updatable FROM user_updatable_columns WHERE table_name = 'LOCATIONS_VIEW' ORDER BY column_name, updatable" db-types="Oracle" />
 </sql-cases>
