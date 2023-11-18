@@ -133,7 +133,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl implements Inventor
     @Override
     public Optional<InventoryIncrementalJobItemProgress> getJobItemProgress(final String jobId, final int shardingItem) {
         Optional<String> progress = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProgress(jobId, shardingItem);
-        return progress.map(optional -> getYamlPipelineJobItemProgressSwapper().swapToObject(YamlEngine.unmarshal(optional, YamlInventoryIncrementalJobItemProgress.class)));
+        return progress.map(optional -> getYamlJobItemProgressSwapper().swapToObject(YamlEngine.unmarshal(optional, YamlInventoryIncrementalJobItemProgress.class)));
     }
     
     @Override
@@ -144,7 +144,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl implements Inventor
         }
         jobItemProgress.get().setStatus(status);
         PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).updateJobItemProgress(jobId, shardingItem,
-                YamlEngine.marshal(getYamlPipelineJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress.get())));
+                YamlEngine.marshal(getYamlJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress.get())));
     }
     
     @Override

@@ -46,7 +46,7 @@ public interface PipelineJobAPI extends TypedSPI {
      * @return YAML pipeline job item progress swapper
      */
     @SuppressWarnings("rawtypes")
-    YamlPipelineJobItemProgressSwapper getYamlPipelineJobItemProgressSwapper();
+    YamlPipelineJobItemProgressSwapper getYamlJobItemProgressSwapper();
     
     /**
      * Whether to ignore to start disabled job when job item progress is finished.

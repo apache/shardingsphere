@@ -223,7 +223,7 @@ public final class PipelineJobManager {
     
     @SuppressWarnings("unchecked")
     private String convertJobItemProgress(final PipelineJobItemContext jobItemContext) {
-        return YamlEngine.marshal(jobAPI.getYamlPipelineJobItemProgressSwapper().swapToYamlConfiguration(jobItemContext.toProgress()));
+        return YamlEngine.marshal(jobAPI.getYamlJobItemProgressSwapper().swapToYamlConfiguration(jobItemContext.toProgress()));
     }
     
     /**

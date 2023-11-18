@@ -45,7 +45,7 @@ import java.util.Optional;
 public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     
     @Override
-    default YamlInventoryIncrementalJobItemProgressSwapper getYamlPipelineJobItemProgressSwapper() {
+    default YamlInventoryIncrementalJobItemProgressSwapper getYamlJobItemProgressSwapper() {
         return new YamlInventoryIncrementalJobItemProgressSwapper();
     }
     

@@ -120,7 +120,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     @Override
     public Optional<ConsistencyCheckJobItemProgress> getJobItemProgress(final String jobId, final int shardingItem) {
         Optional<String> progress = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProgress(jobId, shardingItem);
-        return progress.map(s -> getYamlPipelineJobItemProgressSwapper().swapToObject(YamlEngine.unmarshal(s, YamlConsistencyCheckJobItemProgress.class, true)));
+        return progress.map(s -> getYamlJobItemProgressSwapper().swapToObject(YamlEngine.unmarshal(s, YamlConsistencyCheckJobItemProgress.class, true)));
     }
     
     @Override
@@ -132,7 +132,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
         }
         jobItemProgress.get().setStatus(status);
         PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).updateJobItemProgress(jobId, shardingItem,
-                YamlEngine.marshal(getYamlPipelineJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress.get())));
+                YamlEngine.marshal(getYamlJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress.get())));
     }
     
     /**
@@ -307,7 +307,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     }
     
     @Override
-    public YamlConsistencyCheckJobItemProgressSwapper getYamlPipelineJobItemProgressSwapper() {
+    public YamlConsistencyCheckJobItemProgressSwapper getYamlJobItemProgressSwapper() {
         return new YamlConsistencyCheckJobItemProgressSwapper();
     }
     
