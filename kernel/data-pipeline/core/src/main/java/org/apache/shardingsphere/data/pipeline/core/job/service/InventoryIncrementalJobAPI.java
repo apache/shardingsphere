@@ -22,21 +22,15 @@ import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipeli
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlInventoryIncrementalJobItemProgressSwapper;
-import org.apache.shardingsphere.data.pipeline.common.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Inventory incremental job API.
@@ -84,59 +78,12 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     void extendYamlJobConfiguration(PipelineContextKey contextKey, YamlPipelineJobConfiguration yamlJobConfig);
     
     /**
-     * Alter process configuration.
-     *
-     * @param contextKey context key
-     * @param processConfig process configuration
-     */
-    void alterProcessConfiguration(PipelineContextKey contextKey, PipelineProcessConfiguration processConfig);
-    
-    /**
-     * Show process configuration.
-     *
-     * @param contextKey context key
-     * @return process configuration, non-null
-     */
-    PipelineProcessConfiguration showProcessConfiguration(PipelineContextKey contextKey);
-    
-    /**
-     * Persist job offset info.
-     *
-     * @param jobId job ID
-     * @param jobOffsetInfo job offset info
-     */
-    void persistJobOffsetInfo(String jobId, JobOffsetInfo jobOffsetInfo);
-    
-    /**
-     * Get job offset info.
-     *
-     * @param jobId job ID
-     * @return job offset progress
-     */
-    JobOffsetInfo getJobOffsetInfo(String jobId);
-    
-    /**
-     * Get job progress.
-     *
-     * @param pipelineJobConfig job configuration
-     * @return each sharding item progress
-     */
-    Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(PipelineJobConfiguration pipelineJobConfig);
-    
-    /**
      * Get job infos.
      *
      * @param jobId job ID
      * @return job item infos
      */
     List<InventoryIncrementalJobItemInfo> getJobItemInfos(String jobId);
-    
-    /**
-     * List all data consistency check algorithms from SPI.
-     *
-     * @return data consistency check algorithms
-     */
-    Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms();
     
     /**
      * Build pipeline data consistency checker.
@@ -148,15 +95,6 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      */
     PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(PipelineJobConfiguration pipelineJobConfig, InventoryIncrementalProcessContext processContext,
                                                                        ConsistencyCheckJobItemProgressContext progressContext);
-    
-    /**
-     * Aggregate data consistency check results.
-     *
-     * @param jobId job ID
-     * @param checkResults check results
-     * @return check success or not
-     */
-    boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, TableDataConsistencyCheckResult> checkResults);
     
     /**
      * Commit pipeline job.
