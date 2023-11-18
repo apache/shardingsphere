@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.common.context;
 
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
 
 /**
  * Pipeline job item context.
@@ -85,4 +86,11 @@ public interface PipelineJobItemContext {
      * @return stopping
      */
     boolean isStopping();
+    
+    /**
+     * Convert to pipeline job item progress.
+     * 
+     * @return converted pipeline job item progress
+     */
+    PipelineJobItemProgress toProgress();
 }

@@ -23,13 +23,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfigurationUtils;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.JobItemIncrementalTasksProgress;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlInventoryIncrementalJobItemProgressSwapper;
@@ -38,8 +35,6 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobO
 import org.apache.shardingsphere.data.pipeline.common.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.TableBasedPipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.common.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.common.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
@@ -47,7 +42,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
-import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -55,7 +49,6 @@ import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -134,35 +127,14 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl implements Inventor
                 .persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertJobItemProgress(jobItemContext));
     }
     
-    private String convertJobItemProgress(final PipelineJobItemContext jobItemContext) {
-        InventoryIncrementalJobItemContext context = (InventoryIncrementalJobItemContext) jobItemContext;
-        InventoryIncrementalJobItemProgress jobItemProgress = new InventoryIncrementalJobItemProgress();
-        jobItemProgress.setStatus(context.getStatus());
-        jobItemProgress.setSourceDatabaseType(context.getJobConfig().getSourceDatabaseType());
-        jobItemProgress.setDataSourceName(context.getDataSourceName());
-        jobItemProgress.setIncremental(getIncrementalTasksProgress(context.getIncrementalTasks()));
-        jobItemProgress.setInventory(getInventoryTasksProgress(context.getInventoryTasks()));
-        jobItemProgress.setProcessedRecordsCount(context.getProcessedRecordsCount());
-        jobItemProgress.setInventoryRecordsCount(context.getInventoryRecordsCount());
-        return YamlEngine.marshal(jobItemProgressSwapper.swapToYamlConfiguration(jobItemProgress));
-    }
-    
     @Override
     public void updateJobItemProgress(final PipelineJobItemContext jobItemContext) {
         PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobItemContext.getJobId()))
                 .updateJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertJobItemProgress(jobItemContext));
     }
     
-    private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final Collection<PipelineTask> incrementalTasks) {
-        return new JobItemIncrementalTasksProgress(incrementalTasks.isEmpty() ? null : (IncrementalTaskProgress) incrementalTasks.iterator().next().getTaskProgress());
-    }
-    
-    private JobItemInventoryTasksProgress getInventoryTasksProgress(final Collection<PipelineTask> inventoryTasks) {
-        Map<String, InventoryTaskProgress> inventoryTaskProgressMap = new HashMap<>();
-        for (PipelineTask each : inventoryTasks) {
-            inventoryTaskProgressMap.put(each.getTaskId(), (InventoryTaskProgress) each.getTaskProgress());
-        }
-        return new JobItemInventoryTasksProgress(inventoryTaskProgressMap);
+    private String convertJobItemProgress(final PipelineJobItemContext jobItemContext) {
+        return YamlEngine.marshal(jobItemProgressSwapper.swapToYamlConfiguration((InventoryIncrementalJobItemProgress) jobItemContext.toProgress()));
     }
     
     @Override
