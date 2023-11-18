@@ -45,7 +45,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.Increm
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.preparer.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.PipelineJobPreparerUtils;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PrepareTargetSchemasParameter;
@@ -82,7 +82,7 @@ public final class MigrationJobPreparer {
     
     private final MigrationJobAPI jobAPI = new MigrationJobAPI();
     
-    private final PipelineJobManager jobManager = new PipelineJobManager(jobAPI);
+    private final PipelineJobItemManager<InventoryIncrementalJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
     
     /**
      * Do prepare work.
@@ -125,8 +125,8 @@ public final class MigrationJobPreparer {
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String jobId = jobConfig.getJobId();
         LockContext lockContext = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobId)).getContextManager().getInstanceContext().getLockContext();
-        if (!jobManager.getJobItemProgress(jobId, jobItemContext.getShardingItem()).isPresent()) {
-            jobManager.persistJobItemProgress(jobItemContext);
+        if (!jobItemManager.getProgress(jobId, jobItemContext.getShardingItem()).isPresent()) {
+            jobItemManager.persistProgress(jobItemContext);
         }
         LockDefinition lockDefinition = new GlobalLockDefinition(String.format(GlobalLockNames.PREPARE.getLockName(), jobConfig.getJobId()));
         long startTimeMillis = System.currentTimeMillis();
@@ -136,7 +136,7 @@ public final class MigrationJobPreparer {
                 JobOffsetInfo offsetInfo = jobAPI.getJobOffsetInfo(jobId);
                 if (!offsetInfo.isTargetSchemaTableCreated()) {
                     jobItemContext.setStatus(JobStatus.PREPARING);
-                    jobManager.updateJobItemStatus(jobId, jobItemContext.getShardingItem(), JobStatus.PREPARING);
+                    jobItemManager.updateStatus(jobId, jobItemContext.getShardingItem(), JobStatus.PREPARING);
                     prepareAndCheckTarget(jobItemContext);
                     jobAPI.persistJobOffsetInfo(jobId, new JobOffsetInfo(true));
                 }
