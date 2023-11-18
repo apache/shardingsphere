@@ -41,7 +41,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncr
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
@@ -65,7 +65,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     
     private final CDCJobAPI jobAPI = new CDCJobAPI();
     
-    private final PipelineJobManager jobManager = new PipelineJobManager(jobAPI);
+    private final PipelineJobItemManager<InventoryIncrementalJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
     
     private final CDCJobPreparer jobPreparer = new CDCJobPreparer();
     
@@ -93,7 +93,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
                 continue;
             }
             jobItemContexts.add(jobItemContext);
-            jobManager.cleanJobItemErrorMessage(jobId, shardingItem);
+            jobItemManager.cleanErrorMessage(jobId, shardingItem);
             log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
         }
         if (jobItemContexts.isEmpty()) {
@@ -106,7 +106,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     }
     
     private CDCJobItemContext buildPipelineJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem) {
-        Optional<InventoryIncrementalJobItemProgress> initProgress = jobManager.getJobItemProgress(jobConfig.getJobId(), shardingItem);
+        Optional<InventoryIncrementalJobItemProgress> initProgress = jobItemManager.getProgress(jobConfig.getJobId(), shardingItem);
         CDCProcessContext jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
         CDCTaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
         return new CDCJobItemContext(jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager, sink);
@@ -127,7 +127,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     
     private void processFailed(final String jobId, final int shardingItem, final Exception ex) {
         log.error("job execution failed, {}-{}", jobId, shardingItem, ex);
-        jobManager.updateJobItemErrorMessage(jobId, shardingItem, ex);
+        jobItemManager.updateErrorMessage(jobId, shardingItem, ex);
         PipelineJobCenter.stop(jobId);
         jobAPI.updateJobConfigurationDisabled(jobId, true);
     }
@@ -151,7 +151,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     
     private void updateLocalAndRemoteJobItemStatus(final PipelineJobItemContext jobItemContext, final JobStatus jobStatus) {
         jobItemContext.setStatus(jobStatus);
-        jobManager.updateJobItemStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
+        jobItemManager.updateStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
     
     private void executeIncrementalTasks(final List<CDCJobItemContext> jobItemContexts) {
@@ -204,7 +204,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
         public void onFailure(final Throwable throwable) {
             log.error("onFailure, {} task execute failed.", identifier, throwable);
             String jobId = jobItemContext.getJobId();
-            jobManager.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+            jobItemManager.updateErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
             if (jobItemContext.getSink() instanceof CDCSocketSink) {
                 CDCSocketSink cdcSink = (CDCSocketSink) jobItemContext.getSink();
                 cdcSink.getChannel().writeAndFlush(CDCResponseUtils.failed("", "", throwable.getMessage()));
