@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.service.impl;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
@@ -29,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlInventoryIncrementalJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfoSwapper;
 import org.apache.shardingsphere.data.pipeline.common.pojo.DataConsistencyCheckAlgorithmInfo;
@@ -65,9 +62,6 @@ import java.util.stream.IntStream;
 public abstract class AbstractInventoryIncrementalJobAPIImpl implements InventoryIncrementalJobAPI {
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
-    
-    @Getter(AccessLevel.PROTECTED)
-    private final YamlInventoryIncrementalJobItemProgressSwapper jobItemProgressSwapper = new YamlInventoryIncrementalJobItemProgressSwapper();
     
     private final YamlJobOffsetInfoSwapper jobOffsetInfoSwapper = new YamlJobOffsetInfoSwapper();
     
@@ -134,7 +128,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl implements Inventor
     }
     
     private String convertJobItemProgress(final PipelineJobItemContext jobItemContext) {
-        return YamlEngine.marshal(jobItemProgressSwapper.swapToYamlConfiguration((InventoryIncrementalJobItemProgress) jobItemContext.toProgress()));
+        return YamlEngine.marshal(getYamlPipelineJobItemProgressSwapper().swapToYamlConfiguration((InventoryIncrementalJobItemProgress) jobItemContext.toProgress()));
     }
     
     @Override
@@ -156,7 +150,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl implements Inventor
     @Override
     public Optional<InventoryIncrementalJobItemProgress> getJobItemProgress(final String jobId, final int shardingItem) {
         Optional<String> progress = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProgress(jobId, shardingItem);
-        return progress.map(optional -> jobItemProgressSwapper.swapToObject(YamlEngine.unmarshal(optional, YamlInventoryIncrementalJobItemProgress.class)));
+        return progress.map(optional -> getYamlPipelineJobItemProgressSwapper().swapToObject(YamlEngine.unmarshal(optional, YamlInventoryIncrementalJobItemProgress.class)));
     }
     
     @Override
@@ -167,7 +161,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl implements Inventor
         }
         jobItemProgress.get().setStatus(status);
         PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).updateJobItemProgress(jobId, shardingItem,
-                YamlEngine.marshal(jobItemProgressSwapper.swapToYamlConfiguration(jobItemProgress.get())));
+                YamlEngine.marshal(getYamlPipelineJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress.get())));
     }
     
     @Override

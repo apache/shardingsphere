@@ -19,12 +19,12 @@ package org.apache.shardingsphere.data.pipeline.common.job.progress.yaml;
 
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.ConsistencyCheckJobItemProgress;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressSwapper;
 
 /**
  * YAML data check job item progress swapper.
  */
-public final class YamlConsistencyCheckJobItemProgressSwapper implements YamlConfigurationSwapper<YamlConsistencyCheckJobItemProgress, ConsistencyCheckJobItemProgress> {
+public final class YamlConsistencyCheckJobItemProgressSwapper implements YamlPipelineJobItemProgressSwapper<YamlConsistencyCheckJobItemProgress, ConsistencyCheckJobItemProgress> {
     
     @Override
     public YamlConsistencyCheckJobItemProgress swapToYamlConfiguration(final ConsistencyCheckJobItemProgress data) {

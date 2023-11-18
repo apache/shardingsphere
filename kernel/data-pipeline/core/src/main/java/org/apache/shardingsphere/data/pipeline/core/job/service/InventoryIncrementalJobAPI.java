@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrement
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlInventoryIncrementalJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.common.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
@@ -42,6 +43,11 @@ import java.util.Optional;
  * Inventory incremental job API.
  */
 public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
+    
+    @Override
+    default YamlInventoryIncrementalJobItemProgressSwapper getYamlPipelineJobItemProgressSwapper() {
+        return new YamlInventoryIncrementalJobItemProgressSwapper();
+    }
     
     /**
      * Get pipeline job info.

@@ -73,8 +73,6 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     
-    private final YamlConsistencyCheckJobItemProgressSwapper swapper = new YamlConsistencyCheckJobItemProgressSwapper();
-    
     /**
      * Create consistency check configuration and start job.
      *
@@ -127,7 +125,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     }
     
     private String convertJobItemProgress(final PipelineJobItemContext jobItemContext) {
-        return YamlEngine.marshal(swapper.swapToYamlConfiguration((ConsistencyCheckJobItemProgress) jobItemContext.toProgress()));
+        return YamlEngine.marshal(getYamlPipelineJobItemProgressSwapper().swapToYamlConfiguration((ConsistencyCheckJobItemProgress) jobItemContext.toProgress()));
     }
     
     @Override
@@ -139,7 +137,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     @Override
     public Optional<ConsistencyCheckJobItemProgress> getJobItemProgress(final String jobId, final int shardingItem) {
         Optional<String> progress = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProgress(jobId, shardingItem);
-        return progress.map(s -> swapper.swapToObject(YamlEngine.unmarshal(s, YamlConsistencyCheckJobItemProgress.class, true)));
+        return progress.map(s -> getYamlPipelineJobItemProgressSwapper().swapToObject(YamlEngine.unmarshal(s, YamlConsistencyCheckJobItemProgress.class, true)));
     }
     
     @Override
@@ -151,7 +149,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
         }
         jobItemProgress.get().setStatus(status);
         PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).updateJobItemProgress(jobId, shardingItem,
-                YamlEngine.marshal(swapper.swapToYamlConfiguration(jobItemProgress.get())));
+                YamlEngine.marshal(getYamlPipelineJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress.get())));
     }
     
     /**
@@ -323,6 +321,11 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     @Override
     public YamlConsistencyCheckJobConfigurationSwapper getYamlJobConfigurationSwapper() {
         return new YamlConsistencyCheckJobConfigurationSwapper();
+    }
+    
+    @Override
+    public YamlConsistencyCheckJobItemProgressSwapper getYamlPipelineJobItemProgressSwapper() {
+        return new YamlConsistencyCheckJobItemProgressSwapper();
     }
     
     @Override
