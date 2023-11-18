@@ -50,9 +50,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
-    private final ConsistencyCheckJobAPI checkJobAPI = new ConsistencyCheckJobAPI();
+    private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI();
     
-    private final PipelineJobManager jobManager = new PipelineJobManager(checkJobAPI);
+    private final PipelineJobManager jobManager = new PipelineJobManager(jobAPI);
     
     @Getter
     private final ConsistencyCheckJobItemContext jobItemContext;
@@ -80,7 +80,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         if (jobItemContext.isStopping()) {
             return;
         }
-        TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType()).persistJobItemProgress(jobItemContext);
+        new PipelineJobManager(TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType())).persistJobItemProgress(jobItemContext);
         CompletableFuture<?> future = jobItemContext.getProcessContext().getConsistencyCheckExecuteEngine().submit(checkExecutor);
         ExecuteEngine.trigger(Collections.singletonList(future), new CheckExecuteCallback());
     }
@@ -95,7 +95,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         
         @Override
         protected void runBlocking() {
-            checkJobAPI.persistJobItemProgress(jobItemContext);
+            jobManager.persistJobItemProgress(jobItemContext);
             JobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
             InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, jobType.getType());
             PipelineJobConfiguration parentJobConfig = new PipelineJobManager(jobAPI).getJobConfiguration(PipelineJobIdUtils.getElasticJobConfigurationPOJO(parentJobId));
@@ -133,7 +133,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             }
             log.info("onSuccess, check job id: {}, parent job id: {}", checkJobId, parentJobId);
             jobItemContext.setStatus(JobStatus.FINISHED);
-            checkJobAPI.persistJobItemProgress(jobItemContext);
+            jobManager.persistJobItemProgress(jobItemContext);
             jobManager.stop(checkJobId);
         }
         

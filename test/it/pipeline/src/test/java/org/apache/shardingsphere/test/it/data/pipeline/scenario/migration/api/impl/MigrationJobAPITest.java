@@ -212,7 +212,7 @@ class MigrationJobAPITest {
         Optional<String> jobId = jobManager.start(jobConfig);
         assertTrue(jobId.isPresent());
         MigrationJobItemContext jobItemContext = PipelineContextUtils.mockMigrationJobItemContext(jobConfig);
-        jobAPI.persistJobItemProgress(jobItemContext);
+        jobManager.persistJobItemProgress(jobItemContext);
         jobAPI.updateJobItemStatus(jobId.get(), jobItemContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
         Map<Integer, InventoryIncrementalJobItemProgress> progress = jobAPI.getJobProgress(jobConfig);
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : progress.entrySet()) {
@@ -245,7 +245,7 @@ class MigrationJobAPITest {
     void assertRenewJobStatus() {
         final MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
         MigrationJobItemContext jobItemContext = PipelineContextUtils.mockMigrationJobItemContext(jobConfig);
-        jobAPI.persistJobItemProgress(jobItemContext);
+        jobManager.persistJobItemProgress(jobItemContext);
         jobAPI.updateJobItemStatus(jobConfig.getJobId(), 0, JobStatus.FINISHED);
         Optional<InventoryIncrementalJobItemProgress> actual = jobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         assertTrue(actual.isPresent());

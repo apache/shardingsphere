@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
@@ -46,7 +45,8 @@ public interface PipelineJobAPI extends TypedSPI {
      * 
      * @return YAML pipeline job item progress swapper
      */
-    YamlPipelineJobItemProgressSwapper<?, ?> getYamlPipelineJobItemProgressSwapper();
+    @SuppressWarnings("rawtypes")
+    YamlPipelineJobItemProgressSwapper getYamlPipelineJobItemProgressSwapper();
     
     /**
      * Whether to ignore to start disabled job when job item progress is finished.
@@ -74,20 +74,6 @@ public interface PipelineJobAPI extends TypedSPI {
     default Optional<String> getToBeStoppedPreviousJobType() {
         return Optional.empty();
     }
-    
-    /**
-     * Persist job item progress.
-     *
-     * @param jobItemContext job item context
-     */
-    void persistJobItemProgress(PipelineJobItemContext jobItemContext);
-    
-    /**
-     * Update job item progress.
-     *
-     * @param jobItemContext job item context
-     */
-    void updateJobItemProgress(PipelineJobItemContext jobItemContext);
     
     /**
      * Get job item progress.

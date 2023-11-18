@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
@@ -55,7 +56,7 @@ public final class PipelineJobManager {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
-    private final PipelineJobAPI pipelineJobAPI;
+    private final PipelineJobAPI jobAPI;
     
     /**
      * Get job configuration.
@@ -64,7 +65,7 @@ public final class PipelineJobManager {
      * @return pipeline job configuration
      */
     public PipelineJobConfiguration getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
-        return pipelineJobAPI.getYamlJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter());
+        return jobAPI.getYamlJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter());
     }
     
     /**
@@ -82,7 +83,7 @@ public final class PipelineJobManager {
             log.warn("jobId already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
             return Optional.of(jobId);
         }
-        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), pipelineJobAPI.getPipelineJobClass().getName());
+        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), jobAPI.getPipelineJobClass().getName());
         repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfig.convertToJobConfigurationPOJO()));
         return Optional.of(jobId);
     }
@@ -93,15 +94,15 @@ public final class PipelineJobManager {
      * @param jobId job id
      */
     public void startDisabledJob(final String jobId) {
-        if (pipelineJobAPI.isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished()) {
-            Optional<? extends PipelineJobItemProgress> jobItemProgress = pipelineJobAPI.getJobItemProgress(jobId, 0);
+        if (jobAPI.isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished()) {
+            Optional<? extends PipelineJobItemProgress> jobItemProgress = jobAPI.getJobItemProgress(jobId, 0);
             if (jobItemProgress.isPresent() && JobStatus.FINISHED == jobItemProgress.get().getStatus()) {
                 log.info("job status is FINISHED, ignore, jobId={}", jobId);
                 return;
             }
         }
         startCurrentDisabledJob(jobId);
-        pipelineJobAPI.getToBeStartDisabledNextJobType().ifPresent(optional -> startNextDisabledJob(jobId, optional));
+        jobAPI.getToBeStartDisabledNextJobType().ifPresent(optional -> startNextDisabledJob(jobId, optional));
         
     }
     
@@ -139,7 +140,7 @@ public final class PipelineJobManager {
      * @param jobId job id
      */
     public void stop(final String jobId) {
-        pipelineJobAPI.getToBeStoppedPreviousJobType().ifPresent(optional -> stopPreviousJob(jobId, optional));
+        jobAPI.getToBeStoppedPreviousJobType().ifPresent(optional -> stopPreviousJob(jobId, optional));
         stopCurrentJob(jobId);
     }
     
@@ -189,8 +190,8 @@ public final class PipelineJobManager {
      * @return jobs info
      */
     public List<PipelineJobInfo> getPipelineJobInfos(final PipelineContextKey contextKey) {
-        if (pipelineJobAPI instanceof InventoryIncrementalJobAPI) {
-            return getJobBriefInfos(contextKey, pipelineJobAPI.getType()).map(each -> ((InventoryIncrementalJobAPI) pipelineJobAPI).getJobInfo(each.getJobName())).collect(Collectors.toList());
+        if (jobAPI instanceof InventoryIncrementalJobAPI) {
+            return getJobBriefInfos(contextKey, jobAPI.getType()).map(each -> ((InventoryIncrementalJobAPI) jobAPI).getJobInfo(each.getJobName())).collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
@@ -198,6 +199,31 @@ public final class PipelineJobManager {
     private Stream<JobBriefInfo> getJobBriefInfos(final PipelineContextKey contextKey, final String jobType) {
         return PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"))
                 .filter(each -> jobType.equals(PipelineJobIdUtils.parseJobType(each.getJobName()).getType()));
+    }
+    
+    /**
+     * Persist job item progress.
+     *
+     * @param jobItemContext job item context
+     */
+    public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobItemContext.getJobId()))
+                .persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertJobItemProgress(jobItemContext));
+    }
+    
+    /**
+     * Update job item progress.
+     *
+     * @param jobItemContext job item context
+     */
+    public void updateJobItemProgress(final PipelineJobItemContext jobItemContext) {
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobItemContext.getJobId()))
+                .updateJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertJobItemProgress(jobItemContext));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private String convertJobItemProgress(final PipelineJobItemContext jobItemContext) {
+        return YamlEngine.marshal(jobAPI.getYamlPipelineJobItemProgressSwapper().swapToYamlConfiguration(jobItemContext.toProgress()));
     }
     
     /**
