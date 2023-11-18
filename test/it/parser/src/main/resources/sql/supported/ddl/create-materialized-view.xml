@@ -54,4 +54,39 @@
         FROM times t, sales s, customers c
         WHERE s.time_id = t.time_id AND s.cust_id = c.cust_id
         GROUP BY t.calendar_month_desc, c.cust_state_province;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_pctfree_storage_parallel" value="CREATE MATERIALIZED VIEW cust_sales_mv
+    PCTFREE 0 TABLESPACE demo
+    STORAGE (INITIAL 8M)
+    PARALLEL
+    BUILD IMMEDIATE
+    REFRESH COMPLETE
+    ENABLE QUERY REWRITE AS
+    SELECT  c.cust_last_name, SUM(amount_sold) AS sum_amount_sold
+    FROM customers c, sales s WHERE s.cust_id = c.cust_id
+    GROUP BY c.cust_last_name;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_refresh_fast_for_update" value="CREATE MATERIALIZED VIEW oe.categories_objmv OF oe.category_typ
+    REFRESH FAST FOR UPDATE
+    AS SELECT * FROM oe.categories_tab@orc1.example.com;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_for_update" value="CREATE MATERIALIZED VIEW foreign_customers FOR UPDATE
+    AS SELECT * FROM sh.customers@remote cu
+    WHERE EXISTS
+      (SELECT * FROM sh.countries@remote co
+       WHERE co.country_id = cu.country_id);" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_refresh_force" value="CREATE MATERIALIZED VIEW detail_sales_mv
+    PARALLEL
+    BUILD IMMEDIATE
+    REFRESH FORCE AS
+    SELECT s.rowid 'sales_rid', c.cust_id, c.cust_last_name, s.amount_sold,
+       s.quantity_sold, s.time_id
+    FROM sales s, times t, customers c
+    WHERE s.cust_id = c.cust_id(+) AND s.time_id = t.time_id(+);" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_refresh_fast_for_update_as_with_recursive" value="CREATE MATERIALIZED VIEW hr.employees REFRESH FAST FOR UPDATE AS
+    SELECT * FROM hr.employees@orc1.example.com e
+      WHERE EXISTS
+        (SELECT * FROM hr.departments@orc1.example.com d
+         WHERE e.department_id = d.department_id
+         AND EXISTS
+           (SELECT * FROM hr.locations@orc1.example.com l
+            WHERE l.country_id = 'UK'
+            AND d.location_id = l.location_id));" db-types="Oracle" />
 </sql-cases>
