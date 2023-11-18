@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.common.job.progress.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,7 +29,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public final class YamlConsistencyCheckJobItemProgress implements YamlConfiguration {
+public final class YamlConsistencyCheckJobItemProgress implements YamlPipelineJobItemProgressConfiguration {
     
     private String status;
     

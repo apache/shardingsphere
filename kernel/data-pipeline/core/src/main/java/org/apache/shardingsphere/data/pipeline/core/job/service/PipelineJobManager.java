@@ -32,6 +32,8 @@ import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBa
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyStartedException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -95,7 +97,7 @@ public final class PipelineJobManager {
      */
     public void startDisabledJob(final String jobId) {
         if (jobAPI.isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished()) {
-            Optional<? extends PipelineJobItemProgress> jobItemProgress = jobAPI.getJobItemProgress(jobId, 0);
+            Optional<? extends PipelineJobItemProgress> jobItemProgress = getJobItemProgress(jobId, 0);
             if (jobItemProgress.isPresent() && JobStatus.FINISHED == jobItemProgress.get().getStatus()) {
                 log.info("job status is FINISHED, ignore, jobId={}", jobId);
                 return;
@@ -202,6 +204,20 @@ public final class PipelineJobManager {
     }
     
     /**
+     * Get job item progress.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @param <T> type of pipeline job item progress
+     * @return job item progress, may be null
+     */
+    public <T extends PipelineJobItemProgress> Optional<T> getJobItemProgress(final String jobId, final int shardingItem) {
+        YamlPipelineJobItemProgressSwapper<YamlPipelineJobItemProgressConfiguration, T> swapper = jobAPI.getYamlJobItemProgressSwapper();
+        Optional<String> progress = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProgress(jobId, shardingItem);
+        return progress.map(optional -> swapper.swapToObject(YamlEngine.unmarshal(optional, swapper.getYamlProgressClass(), true)));
+    }
+    
+    /**
      * Persist job item progress.
      *
      * @param jobItemContext job item context
@@ -221,7 +237,6 @@ public final class PipelineJobManager {
                 .updateJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertJobItemProgress(jobItemContext));
     }
     
-    @SuppressWarnings("unchecked")
     private String convertJobItemProgress(final PipelineJobItemContext jobItemContext) {
         return YamlEngine.marshal(jobAPI.getYamlJobItemProgressSwapper().swapToYamlConfiguration(jobItemContext.toProgress()));
     }

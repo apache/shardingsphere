@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressSwapper;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
@@ -43,10 +44,10 @@ public interface PipelineJobAPI extends TypedSPI {
     /**
      * Get YAML pipeline job item progress swapper.
      * 
+     * @param <T> type of pipeline job item progress
      * @return YAML pipeline job item progress swapper
      */
-    @SuppressWarnings("rawtypes")
-    YamlPipelineJobItemProgressSwapper getYamlJobItemProgressSwapper();
+    <T extends PipelineJobItemProgress> YamlPipelineJobItemProgressSwapper<YamlPipelineJobItemProgressConfiguration, T> getYamlJobItemProgressSwapper();
     
     /**
      * Whether to ignore to start disabled job when job item progress is finished.
@@ -74,15 +75,6 @@ public interface PipelineJobAPI extends TypedSPI {
     default Optional<String> getToBeStoppedPreviousJobType() {
         return Optional.empty();
     }
-    
-    /**
-     * Get job item progress.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @return job item progress, may be null
-     */
-    Optional<? extends PipelineJobItemProgress> getJobItemProgress(String jobId, int shardingItem);
     
     /**
      * Update job item status.
