@@ -98,7 +98,7 @@ public interface PipelineJobAPI extends TypedSPI {
      * 
      * @return pipeline job class
      */
-    Class<? extends PipelineJob> getPipelineJobClass();
+    Class<? extends PipelineJob> getJobClass();
     
     @Override
     String getType();

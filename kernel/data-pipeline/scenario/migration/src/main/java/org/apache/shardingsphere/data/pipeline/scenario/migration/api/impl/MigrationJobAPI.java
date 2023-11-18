@@ -445,7 +445,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     @Override
-    public Class<MigrationJob> getPipelineJobClass() {
+    public Class<MigrationJob> getJobClass() {
         return MigrationJob.class;
     }
     

@@ -83,7 +83,7 @@ public final class PipelineJobManager {
             log.warn("jobId already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
             return Optional.of(jobId);
         }
-        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), jobAPI.getPipelineJobClass().getName());
+        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), jobAPI.getJobClass().getName());
         repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfig.convertToJobConfigurationPOJO()));
         return Optional.of(jobId);
     }

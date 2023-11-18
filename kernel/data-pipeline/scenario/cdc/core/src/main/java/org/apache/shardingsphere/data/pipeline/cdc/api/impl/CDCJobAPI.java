@@ -123,7 +123,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         if (repositoryAPI.isExisted(jobConfigKey)) {
             log.warn("CDC job already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
         } else {
-            repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobConfig.getJobId()), getPipelineJobClass().getName());
+            repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobConfig.getJobId()), getJobClass().getName());
             JobConfigurationPOJO jobConfigPOJO = jobConfig.convertToJobConfigurationPOJO();
             jobConfigPOJO.setDisabled(true);
             repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfigPOJO));
@@ -329,7 +329,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     }
     
     @Override
-    public Class<CDCJob> getPipelineJobClass() {
+    public Class<CDCJob> getJobClass() {
         return CDCJob.class;
     }
     

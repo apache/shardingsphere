@@ -312,7 +312,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     }
     
     @Override
-    public Class<ConsistencyCheckJob> getPipelineJobClass() {
+    public Class<ConsistencyCheckJob> getJobClass() {
         return ConsistencyCheckJob.class;
     }
     
