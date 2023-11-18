@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressSwapper;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -34,11 +34,19 @@ import java.util.Optional;
 public interface PipelineJobAPI extends TypedSPI {
     
     /**
-     * Get YAML job configuration swapper.
+     * Get YAML pipeline job configuration swapper.
      * 
-     * @return YAML job configuration swapper
+     * @return YAML pipeline job configuration swapper
      */
     YamlPipelineJobConfigurationSwapper<?, ?> getYamlJobConfigurationSwapper();
+    
+    /**
+     * Get YAML pipeline job item progress swapper.
+     * 
+     * @return YAML pipeline job item progress swapper
+     */
+    @SuppressWarnings("rawtypes")
+    YamlPipelineJobItemProgressSwapper getYamlJobItemProgressSwapper();
     
     /**
      * Whether to ignore to start disabled job when job item progress is finished.
@@ -68,20 +76,6 @@ public interface PipelineJobAPI extends TypedSPI {
     }
     
     /**
-     * Persist job item progress.
-     *
-     * @param jobItemContext job item context
-     */
-    void persistJobItemProgress(PipelineJobItemContext jobItemContext);
-    
-    /**
-     * Update job item progress.
-     *
-     * @param jobItemContext job item context
-     */
-    void updateJobItemProgress(PipelineJobItemContext jobItemContext);
-    
-    /**
      * Get job item progress.
      *
      * @param jobId job id
@@ -104,7 +98,7 @@ public interface PipelineJobAPI extends TypedSPI {
      * 
      * @return pipeline job class
      */
-    Class<? extends PipelineJob> getPipelineJobClass();
+    Class<? extends PipelineJob> getJobClass();
     
     @Override
     String getType();

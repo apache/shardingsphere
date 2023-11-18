@@ -41,6 +41,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWith
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.preparer.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.PipelineJobPreparerUtils;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
@@ -68,6 +69,8 @@ public final class CDCJobPreparer {
     
     private final CDCJobAPI jobAPI = new CDCJobAPI();
     
+    private final PipelineJobManager jobManager = new PipelineJobManager(jobAPI);
+    
     /**
      * Do prepare work.
      *
@@ -88,7 +91,7 @@ public final class CDCJobPreparer {
                             final AtomicBoolean incrementalImporterUsed, final List<CDCChannelProgressPair> incrementalChannelProgressPairs) {
         Optional<InventoryIncrementalJobItemProgress> jobItemProgress = jobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         if (!jobItemProgress.isPresent()) {
-            jobAPI.persistJobItemProgress(jobItemContext);
+            jobManager.persistJobItemProgress(jobItemContext);
         }
         if (jobItemContext.isStopping()) {
             PipelineJobCenter.stop(jobItemContext.getJobId());

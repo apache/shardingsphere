@@ -50,7 +50,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConsistencyCheckJobAPITest {
     
-    private final ConsistencyCheckJobAPI checkJobAPI = new ConsistencyCheckJobAPI();
+    private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI();
+    
+    private final PipelineJobManager jobManager = new PipelineJobManager(jobAPI);
     
     private final YamlMigrationJobConfigurationSwapper jobConfigSwapper = new YamlMigrationJobConfigurationSwapper();
     
@@ -63,9 +65,9 @@ class ConsistencyCheckJobAPITest {
     void assertCreateJobConfig() {
         MigrationJobConfiguration parentJobConfig = jobConfigSwapper.swapToObject(JobConfigurationBuilder.createYamlMigrationJobConfiguration());
         String parentJobId = parentJobConfig.getJobId();
-        String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
+        String checkJobId = jobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
                 parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
-        ConsistencyCheckJobConfiguration checkJobConfig = (ConsistencyCheckJobConfiguration) new PipelineJobManager(checkJobAPI)
+        ConsistencyCheckJobConfiguration checkJobConfig = (ConsistencyCheckJobConfiguration) new PipelineJobManager(jobAPI)
                 .getJobConfiguration(PipelineJobIdUtils.getElasticJobConfigurationPOJO(checkJobId));
         int expectedSequence = ConsistencyCheckSequence.MIN_SEQUENCE;
         String expectCheckJobId = new ConsistencyCheckJobId(PipelineJobIdUtils.parseContextKey(parentJobId), parentJobId, expectedSequence).marshal();
@@ -82,11 +84,11 @@ class ConsistencyCheckJobAPITest {
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey());
         int expectedSequence = 1;
         for (int i = 0; i < 3; i++) {
-            String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
+            String checkJobId = jobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
                     parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
             ConsistencyCheckJobItemContext checkJobItemContext = new ConsistencyCheckJobItemContext(
                     new ConsistencyCheckJobConfiguration(checkJobId, parentJobId, null, null, TypedSPILoader.getService(DatabaseType.class, "H2")), 0, JobStatus.FINISHED, null);
-            checkJobAPI.persistJobItemProgress(checkJobItemContext);
+            jobManager.persistJobItemProgress(checkJobItemContext);
             Map<String, TableDataConsistencyCheckResult> dataConsistencyCheckResult = Collections.singletonMap("t_order", new TableDataConsistencyCheckResult(true));
             repositoryAPI.persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
             Optional<String> latestCheckJobId = repositoryAPI.getLatestCheckJobId(parentJobId);
@@ -95,12 +97,12 @@ class ConsistencyCheckJobAPITest {
         }
         expectedSequence = 2;
         for (int i = 0; i < 2; i++) {
-            checkJobAPI.dropByParentJobId(parentJobId);
+            jobAPI.dropByParentJobId(parentJobId);
             Optional<String> latestCheckJobId = repositoryAPI.getLatestCheckJobId(parentJobId);
             assertTrue(latestCheckJobId.isPresent());
             assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId.get()), is(expectedSequence--));
         }
-        checkJobAPI.dropByParentJobId(parentJobId);
+        jobAPI.dropByParentJobId(parentJobId);
         Optional<String> latestCheckJobId = repositoryAPI.getLatestCheckJobId(parentJobId);
         assertFalse(latestCheckJobId.isPresent());
     }

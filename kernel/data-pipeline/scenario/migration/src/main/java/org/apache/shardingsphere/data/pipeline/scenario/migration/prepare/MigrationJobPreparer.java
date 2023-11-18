@@ -45,6 +45,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.Increm
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.preparer.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.PipelineJobPreparerUtils;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PrepareTargetSchemasParameter;
@@ -80,6 +81,8 @@ import java.util.concurrent.TimeUnit;
 public final class MigrationJobPreparer {
     
     private final MigrationJobAPI jobAPI = new MigrationJobAPI();
+    
+    private final PipelineJobManager jobManager = new PipelineJobManager(jobAPI);
     
     /**
      * Do prepare work.
@@ -123,7 +126,7 @@ public final class MigrationJobPreparer {
         String jobId = jobConfig.getJobId();
         LockContext lockContext = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobId)).getContextManager().getInstanceContext().getLockContext();
         if (!jobAPI.getJobItemProgress(jobId, jobItemContext.getShardingItem()).isPresent()) {
-            jobAPI.persistJobItemProgress(jobItemContext);
+            jobManager.persistJobItemProgress(jobItemContext);
         }
         LockDefinition lockDefinition = new GlobalLockDefinition(String.format(GlobalLockNames.PREPARE.getLockName(), jobConfig.getJobId()));
         long startTimeMillis = System.currentTimeMillis();
