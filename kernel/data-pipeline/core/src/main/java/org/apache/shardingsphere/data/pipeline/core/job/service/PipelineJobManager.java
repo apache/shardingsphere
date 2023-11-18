@@ -54,8 +54,6 @@ public final class PipelineJobManager {
     
     private final PipelineJobAPI jobAPI;
     
-    private final PipelineJobItemManager<? extends PipelineJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
-    
     /**
      * Get job configuration.
      *
@@ -93,7 +91,7 @@ public final class PipelineJobManager {
      */
     public void startDisabledJob(final String jobId) {
         if (jobAPI.isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished()) {
-            Optional<? extends PipelineJobItemProgress> jobItemProgress = jobItemManager.getProgress(jobId, 0);
+            Optional<? extends PipelineJobItemProgress> jobItemProgress = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper()).getProgress(jobId, 0);
             if (jobItemProgress.isPresent() && JobStatus.FINISHED == jobItemProgress.get().getStatus()) {
                 log.info("job status is FINISHED, ignore, jobId={}", jobId);
                 return;
