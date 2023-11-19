@@ -24,7 +24,7 @@
             </projections>
         </select>
     </describe>
-
+    
     <describe sql-case-id="explain_update_without_condition">
         <update>
             <table start-index="15" stop-index="21">
@@ -40,7 +40,7 @@
             </set>
         </update>
     </describe>
-
+    
     <describe sql-case-id="explain_insert_without_parameters">
         <insert>
             <table name="t_order" start-index="20" stop-index="26" />
@@ -67,7 +67,7 @@
             </values>
         </insert>
     </describe>
-
+    
     <describe sql-case-id="explain_delete_without_sharding_value">
         <delete>
             <table name="t_order" start-index="20" stop-index="26" />
@@ -87,7 +87,7 @@
             </where>
         </delete>
     </describe>
-
+    
     <describe sql-case-id="explain_select_with_binding_tables">
         <select>
             <from>
@@ -123,7 +123,7 @@
             </where>
         </select>
     </describe>
-
+    
     <describe sql-case-id="explain_create_table_as_select">
         <create-table>
             <table name="t_order_new" start-index="21" stop-index="31" />
@@ -137,7 +137,7 @@
             </select>
         </create-table>
     </describe>
-
+    
     <describe sql-case-id="explain_create_table_as_select_with_explicit_column_names">
         <create-table>
             <table name="t_order_new" start-index="21" stop-index="31" />
@@ -154,7 +154,7 @@
             </select>
         </create-table>
     </describe>
-
+    
     <describe sql-case-id="explain_create_remote_table_as_select">
         <create-table>
             <table name="t_order_new" start-index="28" stop-index="38" />
@@ -192,6 +192,7 @@
             </select>
         </create-table>
     </describe>
+    
     <describe sql-case-id="explain_with_analyze">
         <select>
             <projections start-index="23" stop-index="23">
@@ -215,6 +216,7 @@
             </where>
         </select>
     </describe>
+    
     <describe sql-case-id="explain_with_analyze_format">
         <select>
             <projections start-index="37" stop-index="37">
@@ -238,11 +240,13 @@
             </where>
         </select>
     </describe>
+    
     <describe sql-case-id="explain_with_analyze_delete">
         <delete>
             <table name="t_order" start-index="28" stop-index="34" />
         </delete>
     </describe>
+    
     <describe sql-case-id="explain_with_analyze_delete_condition">
         <delete>
             <table name="t1" start-index="23" stop-index="24" />
@@ -273,6 +277,7 @@
             </where>
         </delete>
     </describe>
+    
     <describe sql-case-id="explain_with_analyze_update">
         <update>
             <table start-index="7" stop-index="13">
@@ -288,6 +293,7 @@
             </set>
         </update>
     </describe>
+    
     <describe sql-case-id="explain_with_analyze_insert">
         <insert>
             <table name="t_order" start-index="28" stop-index="34" />
@@ -303,32 +309,40 @@
             </values>
         </insert>
     </describe>
+    
     <describe sql-case-id="desc_table">
         <simple-table name="tableName" start-index="5" stop-index="13" />
     </describe>
+    
     <describe sql-case-id="desc_table_with_col_name">
         <simple-table name="tableName" start-index="5" stop-index="13" />
         <column-wild name="colName" start-index="15" stop-index="21" />
     </describe>
+    
     <describe sql-case-id="desc_table_with_placeholder">
         <simple-table name="tableName" start-index="5" stop-index="13" />
         <column-wild name="___" start-index="15" stop-index="17" />
     </describe>
+    
     <describe sql-case-id="desc_table_with_wild">
         <simple-table name="tableName" start-index="5" stop-index="13" />
         <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
     </describe>
+    
     <describe sql-case-id="describe_table">
         <simple-table name="tableName" start-index="9" stop-index="17" />
     </describe>
+    
     <describe sql-case-id="describe_table_with_col_name">
         <simple-table name="tableName" start-index="9" stop-index="17" />
         <column-wild name="colName" start-index="19" stop-index="25" />
     </describe>
+    
     <describe sql-case-id="describe_table_with_placeholder">
         <simple-table name="tableName" start-index="5" stop-index="13" />
         <column-wild name="___" start-index="15" stop-index="17" />
     </describe>
+    
     <describe sql-case-id="describe_table_with_wild">
         <simple-table name="tableName" start-index="5" stop-index="13" />
         <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
@@ -353,6 +367,7 @@
     </describe>
     
     <describe sql-case-id="explain_create_materialized_view_with_data" />
+    
     <describe sql-case-id="explain_create_materialized_view_with_no_data" />
     
     <describe sql-case-id="explain_performance">
@@ -426,6 +441,7 @@
             </where>
         </select>
     </describe>
+    
     <describe sql-case-id="explain_for_select_with_analyze">
         <select>
             <projections start-index="24" stop-index="24">
@@ -449,6 +465,7 @@
             </where>
         </select>
     </describe>
+    
     <describe sql-case-id="explain_for_select_with_statement">
         <select>
             <projections start-index="53" stop-index="53">
@@ -472,6 +489,7 @@
             </where>
         </select>
     </describe>
+    
     <describe sql-case-id="explain_for_select_with_into">
         <select>
             <projections start-index="37" stop-index="37">
@@ -495,6 +513,7 @@
             </where>
         </select>
     </describe>
+    
     <describe sql-case-id="explain_for_select_with_into_dblink">
         <select>
             <projections start-index="65" stop-index="65">
@@ -518,6 +537,7 @@
             </where>
         </select>
     </describe>
+    
     <describe sql-case-id="explain_for_update_without_condition">
         <update>
             <table start-index="24" stop-index="30">
@@ -549,6 +569,7 @@
             </set>
         </update>
     </describe>
+    
     <describe sql-case-id="explain_for_update_with_statement">
         <update>
             <table start-index="37" stop-index="43">
@@ -564,6 +585,7 @@
             </set>
         </update>
     </describe>
+    
     <describe sql-case-id="explain_for_update_with_into">
         <update>
             <table start-index="21" stop-index="27">
@@ -579,6 +601,7 @@
             </set>
         </update>
     </describe>
+    
     <describe sql-case-id="explain_for_update_with_into_dblink">
         <update>
             <table start-index="48" stop-index="54">
@@ -594,6 +617,7 @@
             </set>
         </update>
     </describe>
+    
     <describe sql-case-id="explain_for_insert_without_parameters">
         <insert>
             <table name="t_order" start-index="29" stop-index="35" />
@@ -620,6 +644,7 @@
             </values>
         </insert>
     </describe>
+    
     <describe sql-case-id="explain_for_with_analyze_insert">
         <insert>
             <table name="t_order" start-index="29" stop-index="35" />
@@ -635,6 +660,7 @@
             </values>
         </insert>
     </describe>
+    
     <describe sql-case-id="explain_for_insert_statement">
         <insert>
             <table name="t_order" start-index="58" stop-index="64" />
@@ -650,6 +676,7 @@
             </values>
         </insert>
     </describe>
+    
     <describe sql-case-id="explain_for_insert_into">
         <insert>
             <table name="t_order" start-index="42" stop-index="48" />
@@ -665,6 +692,7 @@
             </values>
         </insert>
     </describe>
+    
     <describe sql-case-id="explain_for_insert_into_dblink">
         <insert>
             <table name="t_order" start-index="70" stop-index="76" />
@@ -680,6 +708,7 @@
             </values>
         </insert>
     </describe>
+    
     <describe sql-case-id="explain_for_delete_without_sharding_value">
         <delete>
             <table name="t_order" start-index="29" stop-index="35" />
@@ -726,6 +755,7 @@
             </where>
         </delete>
     </describe>
+    
     <describe sql-case-id="explain_for_delete_statement">
         <delete>
             <table name="t_order" start-index="58" stop-index="64" />
@@ -746,6 +776,7 @@
             </where>
         </delete>
     </describe>
+    
     <describe sql-case-id="explain_for_delete_into">
         <delete>
             <table name="t_order" start-index="42" stop-index="48" />
@@ -766,6 +797,7 @@
             </where>
         </delete>
     </describe>
+    
     <describe sql-case-id="explain_for_delete_into_dblink">
         <delete>
             <table name="t_order" start-index="70" stop-index="76" />
