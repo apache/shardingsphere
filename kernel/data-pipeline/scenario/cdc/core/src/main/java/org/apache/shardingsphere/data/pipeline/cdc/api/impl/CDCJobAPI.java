@@ -289,9 +289,8 @@ public final class CDCJobAPI implements InventoryIncrementalJobAPI {
     
     @Override
     public TableBasedPipelineJobInfo getJobInfo(final String jobId) {
-        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
-        PipelineJobMetaData jobMetaData = new PipelineJobMetaData(jobConfigPOJO);
-        CDCJobConfiguration jobConfig = new PipelineJobManager(this).getJobConfiguration(jobConfigPOJO);
+        PipelineJobMetaData jobMetaData = new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
+        CDCJobConfiguration jobConfig = new PipelineJobManager(this).getJobConfiguration(jobId);
         return new TableBasedPipelineJobInfo(jobMetaData, jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
     }
     
@@ -305,9 +304,8 @@ public final class CDCJobAPI implements InventoryIncrementalJobAPI {
      * @param jobId job id
      */
     public void dropStreaming(final String jobId) {
-        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
-        CDCJobConfiguration jobConfig = new PipelineJobManager(this).getJobConfiguration(jobConfigPOJO);
-        ShardingSpherePreconditions.checkState(jobConfigPOJO.isDisabled(), () -> new PipelineInternalException("Can't drop streaming job which is active"));
+        CDCJobConfiguration jobConfig = new PipelineJobManager(this).getJobConfiguration(jobId);
+        ShardingSpherePreconditions.checkState(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).isDisabled(), () -> new PipelineInternalException("Can't drop streaming job which is active"));
         new PipelineJobManager(this).drop(jobId);
         cleanup(jobConfig);
     }
