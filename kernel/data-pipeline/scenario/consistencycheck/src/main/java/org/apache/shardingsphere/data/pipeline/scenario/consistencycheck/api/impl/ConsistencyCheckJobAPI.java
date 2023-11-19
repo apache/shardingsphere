@@ -268,7 +268,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     }
     
     private void fillInJobItemInfoWithCheckAlgorithm(final ConsistencyCheckJobItemInfo result, final String checkJobId) {
-        ConsistencyCheckJobConfiguration jobConfig = new PipelineJobManager(this).getJobConfiguration(PipelineJobIdUtils.getElasticJobConfigurationPOJO(checkJobId));
+        ConsistencyCheckJobConfiguration jobConfig = new PipelineJobManager(this).getJobConfiguration(checkJobId);
         result.setAlgorithmType(jobConfig.getAlgorithmTypeName());
         if (null != jobConfig.getAlgorithmProps()) {
             result.setAlgorithmProps(jobConfig.getAlgorithmProps().entrySet().stream().map(entry -> String.format("'%s'='%s'", entry.getKey(), entry.getValue())).collect(Collectors.joining(",")));

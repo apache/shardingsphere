@@ -90,9 +90,8 @@ public final class InventoryIncrementalJobManager {
      */
     public List<InventoryIncrementalJobItemInfo> getJobItemInfos(final String jobId) {
         PipelineJobManager jobManager = new PipelineJobManager(jobAPI);
-        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
-        PipelineJobConfiguration jobConfig = jobManager.getJobConfiguration(jobConfigPOJO);
-        long startTimeMillis = Long.parseLong(Optional.ofNullable(jobConfigPOJO.getProps().getProperty("start_time_millis")).orElse("0"));
+        PipelineJobConfiguration jobConfig = jobManager.getJobConfiguration(jobId);
+        long startTimeMillis = Long.parseLong(Optional.ofNullable(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).getProps().getProperty("start_time_millis")).orElse("0"));
         InventoryIncrementalJobManager inventoryIncrementalJobManager = new InventoryIncrementalJobManager(jobAPI);
         Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = inventoryIncrementalJobManager.getJobProgress(jobConfig);
         List<InventoryIncrementalJobItemInfo> result = new LinkedList<>();
