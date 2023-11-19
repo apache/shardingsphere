@@ -39,4 +39,9 @@
     <sql-case id="create_materialized_view_log_with_row_id_multi_sequence" value="CREATE MATERIALIZED VIEW LOG ON sales
     WITH ROWID, SEQUENCE(amount_sold, time_id, prod_id)
     INCLUDING NEW VALUES;" db-types="Oracle" />
+    <sql-case id="create_materialized_view_log_with_pctfree_storage_purge_repeat" value="CREATE MATERIALIZED VIEW LOG ON orders
+    PCTFREE 5
+    TABLESPACE example
+    STORAGE (INITIAL 10K)
+    PURGE REPEAT INTERVAL '5' DAY;" db-types="Oracle" />
 </sql-cases>
