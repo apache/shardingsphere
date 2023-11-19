@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.distsql.handler.ral.query.algorithm;
 
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,9 +35,9 @@ public final class AlgorithmMetaDataQueryResultRows {
     
     private final Collection<AlgorithmMetaDataQueryResultRow> rows;
     
-    public AlgorithmMetaDataQueryResultRows(final Class<? extends TypedSPI> typedSPIClass) {
-        containsDatabaseTypes = DatabaseSupportedTypedSPI.class.isAssignableFrom(typedSPIClass);
-        rows = ShardingSphereServiceLoader.getServiceInstances(typedSPIClass).stream().map(AlgorithmMetaDataQueryResultRow::new).collect(Collectors.toList());
+    public AlgorithmMetaDataQueryResultRows(final Class<? extends ShardingSphereAlgorithm> algorithmClass) {
+        containsDatabaseTypes = DatabaseSupportedTypedSPI.class.isAssignableFrom(algorithmClass);
+        rows = ShardingSphereServiceLoader.getServiceInstances(algorithmClass).stream().map(AlgorithmMetaDataQueryResultRow::new).collect(Collectors.toList());
     }
     
     /**

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.distsql.handler.ral.query.algorithm;
 
+import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -42,14 +42,14 @@ public final class AlgorithmMetaDataQueryResultRow {
     
     private final String description;
     
-    public AlgorithmMetaDataQueryResultRow(final TypedSPI typedSPI) {
-        containsDatabaseTypes = typedSPI instanceof DatabaseSupportedTypedSPI;
-        type = String.valueOf(typedSPI.getType());
-        typeAliases = typedSPI.getTypeAliases().stream().map(Object::toString).collect(Collectors.joining(","));
+    public AlgorithmMetaDataQueryResultRow(final ShardingSphereAlgorithm algorithm) {
+        containsDatabaseTypes = algorithm instanceof DatabaseSupportedTypedSPI;
+        type = String.valueOf(algorithm.getType());
+        typeAliases = algorithm.getTypeAliases().stream().map(Object::toString).collect(Collectors.joining(","));
         supportedDatabaseTypes = containsDatabaseTypes
-                ? getSupportedDatabaseTypes(((DatabaseSupportedTypedSPI) typedSPI).getSupportedDatabaseTypes()).stream().map(DatabaseType::getType).collect(Collectors.joining(","))
+                ? getSupportedDatabaseTypes(((DatabaseSupportedTypedSPI) algorithm).getSupportedDatabaseTypes()).stream().map(DatabaseType::getType).collect(Collectors.joining(","))
                 : "";
-        SPIDescription description = typedSPI.getClass().getAnnotation(SPIDescription.class);
+        SPIDescription description = algorithm.getClass().getAnnotation(SPIDescription.class);
         this.description = null == description ? "" : description.value();
     }
     
