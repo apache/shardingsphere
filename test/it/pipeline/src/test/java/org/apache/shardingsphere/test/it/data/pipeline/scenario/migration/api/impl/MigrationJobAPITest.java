@@ -326,7 +326,7 @@ class MigrationJobAPITest {
         yamlJobItemProgress.setStatus(JobStatus.RUNNING.name());
         yamlJobItemProgress.setSourceDatabaseType("MySQL");
         PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(jobId.get(), 0, YamlEngine.marshal(yamlJobItemProgress));
-        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId.get());
+        List<InventoryIncrementalJobItemInfo> jobItemInfos = inventoryIncrementalJobManager.getJobItemInfos(jobId.get());
         assertThat(jobItemInfos.size(), is(1));
         InventoryIncrementalJobItemInfo jobItemInfo = jobItemInfos.get(0);
         assertThat(jobItemInfo.getJobItemProgress().getStatus(), is(JobStatus.RUNNING));
@@ -343,7 +343,7 @@ class MigrationJobAPITest {
         yamlJobItemProgress.setProcessedRecordsCount(100);
         yamlJobItemProgress.setInventoryRecordsCount(50);
         PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(jobId.get(), 0, YamlEngine.marshal(yamlJobItemProgress));
-        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId.get());
+        List<InventoryIncrementalJobItemInfo> jobItemInfos = inventoryIncrementalJobManager.getJobItemInfos(jobId.get());
         InventoryIncrementalJobItemInfo jobItemInfo = jobItemInfos.get(0);
         assertThat(jobItemInfo.getJobItemProgress().getStatus(), is(JobStatus.EXECUTE_INCREMENTAL_TASK));
         assertThat(jobItemInfo.getInventoryFinishedPercentage(), is(100));

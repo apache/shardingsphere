@@ -23,14 +23,12 @@ import org.apache.shardingsphere.data.pipeline.common.config.process.PipelinePro
 import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlInventoryIncrementalJobItemProgressSwapper;
-import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
 
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Inventory incremental job API.
@@ -76,14 +74,6 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      * @param yamlJobConfig YAML job configuration
      */
     void extendYamlJobConfiguration(PipelineContextKey contextKey, YamlPipelineJobConfiguration yamlJobConfig);
-    
-    /**
-     * Get job infos.
-     *
-     * @param jobId job ID
-     * @return job item infos
-     */
-    List<InventoryIncrementalJobItemInfo> getJobItemInfos(String jobId);
     
     /**
      * Build pipeline data consistency checker.

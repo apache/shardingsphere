@@ -23,11 +23,14 @@ import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConf
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfoSwapper;
 import org.apache.shardingsphere.data.pipeline.common.pojo.DataConsistencyCheckAlgorithmInfo;
+import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
+import org.apache.shardingsphere.data.pipeline.common.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
@@ -41,7 +44,9 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -52,7 +57,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public final class InventoryIncrementalJobManager {
     
-    private final PipelineJobAPI jobAPI;
+    private final InventoryIncrementalJobAPI jobAPI;
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
@@ -75,6 +80,41 @@ public final class InventoryIncrementalJobManager {
      */
     public PipelineProcessConfiguration showProcessConfiguration(final PipelineContextKey contextKey) {
         return PipelineProcessConfigurationUtils.convertWithDefaultValue(processConfigPersistService.load(contextKey, jobAPI.getType()));
+    }
+    
+    /**
+     * Get job infos.
+     *
+     * @param jobId job ID
+     * @return job item infos
+     */
+    public List<InventoryIncrementalJobItemInfo> getJobItemInfos(final String jobId) {
+        PipelineJobManager jobManager = new PipelineJobManager(jobAPI);
+        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
+        PipelineJobConfiguration jobConfig = jobManager.getJobConfiguration(jobConfigPOJO);
+        long startTimeMillis = Long.parseLong(Optional.ofNullable(jobConfigPOJO.getProps().getProperty("start_time_millis")).orElse("0"));
+        InventoryIncrementalJobManager inventoryIncrementalJobManager = new InventoryIncrementalJobManager(jobAPI);
+        Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = inventoryIncrementalJobManager.getJobProgress(jobConfig);
+        List<InventoryIncrementalJobItemInfo> result = new LinkedList<>();
+        PipelineJobItemManager<InventoryIncrementalJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
+        for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : jobProgress.entrySet()) {
+            int shardingItem = entry.getKey();
+            TableBasedPipelineJobInfo jobInfo = (TableBasedPipelineJobInfo) jobAPI.getJobInfo(jobId);
+            InventoryIncrementalJobItemProgress jobItemProgress = entry.getValue();
+            String errorMessage = jobItemManager.getErrorMessage(jobId, shardingItem);
+            if (null == jobItemProgress) {
+                result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTable(), null, startTimeMillis, 0, errorMessage));
+                continue;
+            }
+            int inventoryFinishedPercentage = 0;
+            if (JobStatus.EXECUTE_INCREMENTAL_TASK == jobItemProgress.getStatus() || JobStatus.FINISHED == jobItemProgress.getStatus()) {
+                inventoryFinishedPercentage = 100;
+            } else if (0 != jobItemProgress.getProcessedRecordsCount() && 0 != jobItemProgress.getInventoryRecordsCount()) {
+                inventoryFinishedPercentage = (int) Math.min(100, jobItemProgress.getProcessedRecordsCount() * 100 / jobItemProgress.getInventoryRecordsCount());
+            }
+            result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTable(), jobItemProgress, startTimeMillis, inventoryFinishedPercentage, errorMessage));
+        }
+        return result;
     }
     
     /**
