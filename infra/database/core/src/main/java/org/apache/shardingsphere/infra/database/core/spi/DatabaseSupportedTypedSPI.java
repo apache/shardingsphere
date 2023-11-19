@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.pojo;
+package org.apache.shardingsphere.infra.database.core.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
 
 /**
- * Data consistency check algorithm info.
+ * Database supported SPI.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DataConsistencyCheckAlgorithmInfo {
+public interface DatabaseSupportedTypedSPI extends TypedSPI {
     
-    private final String type;
-    
-    private final String typeAliases;
-    
-    private final Collection<DatabaseType> supportedDatabaseTypes;
-    
-    private final String description;
+    /**
+     * Get supported database types.
+     *
+     * @return supported database types
+     */
+    Collection<DatabaseType> getSupportedDatabaseTypes();
 }
