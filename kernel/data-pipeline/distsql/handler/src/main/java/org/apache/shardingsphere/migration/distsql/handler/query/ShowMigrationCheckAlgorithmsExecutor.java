@@ -17,32 +17,29 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.common.pojo.DataConsistencyCheckAlgorithmInfoRegistry;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.distsql.handler.ral.query.algorithm.AlgorithmMetaDataQueryResultRows;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Show migration check algorithms' executor.
  */
 public final class ShowMigrationCheckAlgorithmsExecutor implements QueryableRALExecutor<ShowMigrationCheckAlgorithmsStatement> {
     
+    private final AlgorithmMetaDataQueryResultRows algorithmMetaDataQueryResultRows = new AlgorithmMetaDataQueryResultRows(TableDataConsistencyChecker.class);
+    
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationCheckAlgorithmsStatement sqlStatement) {
-        return DataConsistencyCheckAlgorithmInfoRegistry.getAllAlgorithmInfos().stream().map(
-                each -> new LocalDataQueryResultRow(each.getType(), each.getTypeAliases(),
-                        each.getSupportedDatabaseTypes().stream().map(DatabaseType::getType).collect(Collectors.joining(",")), each.getDescription()))
-                .collect(Collectors.toList());
+        return algorithmMetaDataQueryResultRows.getRows();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("type", "type_aliases", "supported_database_types", "description");
+        return algorithmMetaDataQueryResultRows.getColumnNames();
     }
     
     @Override
