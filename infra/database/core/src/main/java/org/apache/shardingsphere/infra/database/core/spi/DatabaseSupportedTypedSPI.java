@@ -15,33 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
+package org.apache.shardingsphere.infra.database.core.spi;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+
+import java.util.Collection;
 
 /**
- * Table data consistency checker.
+ * Database supported SPI.
  */
-public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm, DatabaseSupportedTypedSPI, AutoCloseable {
+public interface DatabaseSupportedTypedSPI extends TypedSPI {
     
     /**
-     * Build table inventory checker.
+     * Get supported database types.
      *
-     * @param param check parameter
-     * @return table inventory checker
+     * @return supported database types
      */
-    TableInventoryChecker buildTableInventoryChecker(TableInventoryCheckParameter param);
-    
-    /**
-     * Is break on inventory check not matched.
-     *
-     * @return break or not
-     */
-    default boolean isBreakOnInventoryCheckNotMatched() {
-        return true;
-    }
-    
-    @Override
-    void close();
+    Collection<DatabaseType> getSupportedDatabaseTypes();
 }
