@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
-import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobManager;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.common.pojo.DataConsistencyCheckAlgorithmInfoRegistry;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
 
 import java.util.Arrays;
@@ -37,8 +34,7 @@ public final class ShowMigrationCheckAlgorithmsExecutor implements QueryableRALE
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationCheckAlgorithmsStatement sqlStatement) {
-        InventoryIncrementalJobManager inventoryIncrementalJobManager = new InventoryIncrementalJobManager((InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION"));
-        return inventoryIncrementalJobManager.listDataConsistencyCheckAlgorithms().stream().map(
+        return DataConsistencyCheckAlgorithmInfoRegistry.getAllAlgorithmInfos().stream().map(
                 each -> new LocalDataQueryResultRow(each.getType(), each.getTypeAliases(),
                         each.getSupportedDatabaseTypes().stream().map(DatabaseType::getType).collect(Collectors.joining(",")), each.getDescription()))
                 .collect(Collectors.toList());
