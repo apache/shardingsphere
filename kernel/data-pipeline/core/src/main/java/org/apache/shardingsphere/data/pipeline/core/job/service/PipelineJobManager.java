@@ -58,10 +58,12 @@ public final class PipelineJobManager {
      * Get job configuration.
      *
      * @param jobConfigPOJO job configuration POJO
+     * @param <T> type of pipeline job configuration
      * @return pipeline job configuration
      */
-    public PipelineJobConfiguration getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
-        return jobAPI.getYamlJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter());
+    @SuppressWarnings("unchecked")
+    public <T extends PipelineJobConfiguration> T getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
+        return (T) jobAPI.getYamlJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter());
     }
     
     /**
