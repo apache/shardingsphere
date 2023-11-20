@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobO
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfoSwapper;
 import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.TableBasedPipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -144,17 +142,5 @@ public final class InventoryIncrementalJobManager {
     public JobOffsetInfo getJobOffsetInfo(final String jobId) {
         Optional<String> offsetInfo = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobOffsetInfo(jobId);
         return new YamlJobOffsetInfoSwapper().swapToObject(offsetInfo.isPresent() ? YamlEngine.unmarshal(offsetInfo.get(), YamlJobOffsetInfo.class) : new YamlJobOffsetInfo());
-    }
-    
-    /**
-     * Aggregate data consistency check results.
-     *
-     * @param jobId job ID
-     * @param checkResults check results
-     * @return check success or not
-     */
-    public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, TableDataConsistencyCheckResult> checkResults) {
-        Preconditions.checkArgument(!checkResults.isEmpty(), "checkResults empty, jobId:", jobId);
-        return checkResults.values().stream().allMatch(TableDataConsistencyCheckResult::isMatched);
     }
 }

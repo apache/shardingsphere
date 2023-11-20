@@ -67,7 +67,6 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -191,27 +190,6 @@ class MigrationJobAPITest {
         String checkKey = "t_order";
         assertTrue(checkResultMap.get(checkKey).isMatched());
         assertTrue(checkResultMap.get(checkKey).isMatched());
-    }
-    
-    @Test
-    void assertAggregateEmptyDataConsistencyCheckResults() {
-        assertThrows(IllegalArgumentException.class, () -> inventoryIncrementalJobManager.aggregateDataConsistencyCheckResults("foo_job", Collections.emptyMap()));
-    }
-    
-    @Test
-    void assertAggregateDifferentDataConsistencyCheckResults() {
-        Map<String, TableDataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1F);
-        checkResults.put("foo_tbl", new TableDataConsistencyCheckResult(true));
-        checkResults.put("bar_tbl", new TableDataConsistencyCheckResult(false));
-        assertFalse(inventoryIncrementalJobManager.aggregateDataConsistencyCheckResults("foo_job", checkResults));
-    }
-    
-    @Test
-    void assertAggregateSameDataConsistencyCheckResults() {
-        Map<String, TableDataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1F);
-        checkResults.put("foo_tbl", new TableDataConsistencyCheckResult(true));
-        checkResults.put("bar_tbl", new TableDataConsistencyCheckResult(true));
-        assertTrue(inventoryIncrementalJobManager.aggregateDataConsistencyCheckResults("foo_job", checkResults));
     }
     
     @Test
