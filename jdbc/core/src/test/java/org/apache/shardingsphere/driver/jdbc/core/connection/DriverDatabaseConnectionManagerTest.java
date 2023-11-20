@@ -113,7 +113,7 @@ class DriverDatabaseConnectionManagerTest {
     
     private Map<String, Object> createProperties() {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
+        result.put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?useSSL=false");
         result.put("username", "root");
         result.put("password", "123456");
         return result;
@@ -121,7 +121,7 @@ class DriverDatabaseConnectionManagerTest {
     
     private Map<String, DataSource> mockTrafficDataSourceMap() throws SQLException {
         MockedDataSource result = new MockedDataSource(mock(Connection.class, RETURNS_DEEP_STUBS));
-        result.setUrl("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false");
+        result.setUrl("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false");
         result.setUsername("root");
         result.setPassword("123456");
         when(result.getConnection().getMetaData().getURL()).thenReturn(result.getUrl());
@@ -165,7 +165,7 @@ class DriverDatabaseConnectionManagerTest {
         assertThat(actual, is(databaseConnectionManager.getConnections("127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
-        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false"));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false"));
     }
     
     @Test
@@ -183,7 +183,7 @@ class DriverDatabaseConnectionManagerTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));
         assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
-        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false"));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false"));
     }
     
     @Test
@@ -197,7 +197,7 @@ class DriverDatabaseConnectionManagerTest {
         List<Connection> actual = databaseConnectionManager.getConnections("127.0.0.1@3307", 0, 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
-        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false"));
+        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?useSSL=false"));
     }
     
     @Test

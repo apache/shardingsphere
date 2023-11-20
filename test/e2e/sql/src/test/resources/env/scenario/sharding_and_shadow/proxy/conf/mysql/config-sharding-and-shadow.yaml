@@ -19,7 +19,7 @@ databaseName: sharding_and_shadow
 
 dataSources:
   db_0:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_0?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -28,7 +28,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   db_1:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_1?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -37,7 +37,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   db_2:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_2?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_2?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -46,7 +46,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   db_3:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_3?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_3?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -55,7 +55,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   db_4:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_4?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_4?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -64,7 +64,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   db_5:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_5?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_5?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -73,7 +73,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   db_6:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_6?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_6?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -82,7 +82,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   db_7:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_7?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_7?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -91,7 +91,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   db_8:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_8?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -100,7 +100,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   db_9:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_9?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -109,7 +109,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   shadow_db_0:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_0?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -118,7 +118,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   shadow_db_1:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_1?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -127,7 +127,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   shadow_db_2:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_2?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_2?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -136,7 +136,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   shadow_db_3:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_3?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_3?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -145,7 +145,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   shadow_db_4:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_4?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_4?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -154,7 +154,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   shadow_db_5:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_5?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_5?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -163,7 +163,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   shadow_db_6:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_6?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_6?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -172,7 +172,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   shadow_db_7:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_7?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_7?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -181,7 +181,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   shadow_db_8:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_8?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -190,7 +190,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   shadow_db_9:
-    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_9?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
