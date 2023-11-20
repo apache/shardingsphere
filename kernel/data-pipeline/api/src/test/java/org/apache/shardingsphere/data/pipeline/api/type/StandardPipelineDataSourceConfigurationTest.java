@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class StandardPipelineDataSourceConfigurationTest {
     
-    private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false";
+    private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/demo_ds?useSSL=false";
     
     private static final String USERNAME = "userName";
     

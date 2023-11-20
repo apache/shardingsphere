@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml;
 
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
  * YAML consistency check job configuration swapper.
  */
-public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlConfigurationSwapper<YamlConsistencyCheckJobConfiguration, ConsistencyCheckJobConfiguration> {
+public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlPipelineJobConfigurationSwapper<YamlConsistencyCheckJobConfiguration, ConsistencyCheckJobConfiguration> {
     
     @Override
     public YamlConsistencyCheckJobConfiguration swapToYamlConfiguration(final ConsistencyCheckJobConfiguration data) {
@@ -45,12 +45,7 @@ public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlCo
         return new ConsistencyCheckJobConfiguration(yamlConfig.getJobId(), yamlConfig.getParentJobId(), yamlConfig.getAlgorithmTypeName(), yamlConfig.getAlgorithmProps(), databaseType);
     }
     
-    /**
-     * Swap to job configuration from text.
-     *
-     * @param jobParam job parameter
-     * @return job configuration
-     */
+    @Override
     public ConsistencyCheckJobConfiguration swapToObject(final String jobParam) {
         return null == jobParam ? null : swapToObject(YamlEngine.unmarshal(jobParam, YamlConsistencyCheckJobConfiguration.class, true));
     }

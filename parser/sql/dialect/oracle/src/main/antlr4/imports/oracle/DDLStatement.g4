@@ -22,8 +22,8 @@ import BaseRule, DCLStatement, DMLStatement;
 createView
     : CREATE (OR REPLACE)? (NO? FORCE)? (EDITIONING | EDITIONABLE EDITIONING? | NONEDITIONABLE)? VIEW viewName
     ( SHARING EQ_ (METADATA | DATA | EXTENDED DATA | NONE))?
-    ( LP_ (alias (VISIBLE | INVISIBLE)? inlineConstraint* (COMMA_ alias (VISIBLE | INVISIBLE)? inlineConstraint*)*
-    | outOfLineConstraint) RP_ | objectViewClause | xmlTypeViewClause)?
+    ( LP_ ((alias (VISIBLE | INVISIBLE)? inlineConstraint* | outOfLineConstraint) (COMMA_ (alias (VISIBLE | INVISIBLE)? inlineConstraint* | outOfLineConstraint))*) RP_
+    | objectViewClause | xmlTypeViewClause)?
     ( DEFAULT COLLATION collationName)? (BEQUEATH (CURRENT_USER | DEFINER))? AS select subqueryRestrictionClause?
     ( CONTAINER_MAP | CONTAINERS_DEFAULT)?
     ;

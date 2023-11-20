@@ -7174,4 +7174,31 @@
             <column-item name="NAME" order-direction="ASC" start-index="148" stop-index="151" />
         </group-by>
     </select>
+    
+    <select sql-case-id="select_with_user_updatable_columns">
+        <projections start-index="7" stop-index="28">
+            <column-projection name="column_name" start-index="7" stop-index="17" />
+            <column-projection name="updatable" start-index="20" stop-index="28" />
+        </projections>
+        <from>
+            <simple-table name="user_updatable_columns" start-index="35" stop-index="56" />
+        </from>
+        <where start-index="58" stop-index="92">
+            <expr>
+                <binary-operation-expression text="table_name = 'LOCATIONS_VIEW'" start-index="64" stop-index="92">
+                    <left>
+                        <column name="table_name" start-index="64" stop-index="73" />
+                    </left>
+                    <right>
+                        <literal-expression start-index="77" stop-index="92" value="LOCATIONS_VIEW" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="column_name" order-direction="ASC" start-index="103" stop-index="113" />
+            <column-item name="updatable" order-direction="ASC" start-index="116" stop-index="124" />
+        </order-by>
+    </select>
 </sql-parser-test-cases>

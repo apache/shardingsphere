@@ -53,7 +53,7 @@ class ShowUnusedShardingKeyGeneratorExecutorTest {
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("uuid_key_generator"));
         assertThat(row.getCell(2), is("UUID"));
-        assertThat(row.getCell(3), is("{}"));
+        assertThat(row.getCell(3), is(""));
     }
     
     @Test

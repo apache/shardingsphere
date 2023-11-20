@@ -35,6 +35,6 @@ class PropertiesConverterTest {
     
     @Test
     void assertConvertEmptyProperties() {
-        assertThat(PropertiesConverter.convert(new Properties()), is("{}"));
+        assertThat(PropertiesConverter.convert(new Properties()), is(""));
     }
 }

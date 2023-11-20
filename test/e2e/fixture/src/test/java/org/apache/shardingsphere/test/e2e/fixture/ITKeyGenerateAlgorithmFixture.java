@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.fixture;
 
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
 
 import java.util.Properties;
 

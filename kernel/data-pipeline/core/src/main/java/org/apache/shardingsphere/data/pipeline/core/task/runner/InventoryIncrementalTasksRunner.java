@@ -25,15 +25,17 @@ import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
-import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -57,12 +59,15 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     
     private final PipelineJobManager jobManager;
     
+    private final PipelineJobItemManager<InventoryIncrementalJobItemProgress> jobItemManager;
+    
     public InventoryIncrementalTasksRunner(final InventoryIncrementalJobItemContext jobItemContext) {
         this.jobItemContext = jobItemContext;
         inventoryTasks = jobItemContext.getInventoryTasks();
         incrementalTasks = jobItemContext.getIncrementalTasks();
         jobAPI = TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType());
         jobManager = new PipelineJobManager(jobAPI);
+        jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
     }
     
     @Override
@@ -83,7 +88,8 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         if (jobItemContext.isStopping()) {
             return;
         }
-        TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType()).persistJobItemProgress(jobItemContext);
+        new PipelineJobItemManager<>(TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType())
+                .getYamlJobItemProgressSwapper()).persistProgress(jobItemContext);
         if (PipelineJobProgressDetector.isAllInventoryTasksFinished(inventoryTasks)) {
             log.info("All inventory tasks finished.");
             executeIncrementalTask();
@@ -106,7 +112,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     
     private void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
         jobItemContext.setStatus(jobStatus);
-        jobAPI.updateJobItemStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
+        jobItemManager.updateStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
     
     private synchronized void executeIncrementalTask() {
@@ -146,7 +152,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     protected void inventoryFailureCallback(final Throwable throwable) {
         log.error("onFailure, inventory task execute failed.", throwable);
         String jobId = jobItemContext.getJobId();
-        jobManager.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+        jobItemManager.updateErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
         try {
             jobManager.stop(jobId);
         } catch (final PipelineJobNotFoundException ignored) {
@@ -181,7 +187,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         public void onFailure(final Throwable throwable) {
             log.error("onFailure, incremental task execute failed.", throwable);
             String jobId = jobItemContext.getJobId();
-            jobManager.updateJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+            jobItemManager.updateErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
             try {
                 jobManager.stop(jobId);
             } catch (final PipelineJobNotFoundException ignored) {

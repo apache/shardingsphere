@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
-import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressSwapper;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
@@ -35,12 +34,19 @@ import java.util.Optional;
 public interface PipelineJobAPI extends TypedSPI {
     
     /**
-     * Get job configuration.
-     *
-     * @param jobConfigPOJO job configuration POJO
-     * @return pipeline job configuration
+     * Get YAML pipeline job configuration swapper.
+     * 
+     * @return YAML pipeline job configuration swapper
      */
-    PipelineJobConfiguration getJobConfiguration(JobConfigurationPOJO jobConfigPOJO);
+    YamlPipelineJobConfigurationSwapper<?, ?> getYamlJobConfigurationSwapper();
+    
+    /**
+     * Get YAML pipeline job item progress swapper.
+     * 
+     * @param <T> type of pipeline job item progress
+     * @return YAML pipeline job item progress swapper
+     */
+    <T extends PipelineJobItemProgress> YamlPipelineJobItemProgressSwapper<YamlPipelineJobItemProgressConfiguration, T> getYamlJobItemProgressSwapper();
     
     /**
      * Whether to ignore to start disabled job when job item progress is finished.
@@ -70,43 +76,11 @@ public interface PipelineJobAPI extends TypedSPI {
     }
     
     /**
-     * Persist job item progress.
-     *
-     * @param jobItemContext job item context
-     */
-    void persistJobItemProgress(PipelineJobItemContext jobItemContext);
-    
-    /**
-     * Update job item progress.
-     *
-     * @param jobItemContext job item context
-     */
-    void updateJobItemProgress(PipelineJobItemContext jobItemContext);
-    
-    /**
-     * Get job item progress.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @return job item progress, may be null
-     */
-    Optional<? extends PipelineJobItemProgress> getJobItemProgress(String jobId, int shardingItem);
-    
-    /**
-     * Update job item status.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @param status status
-     */
-    void updateJobItemStatus(String jobId, int shardingItem, JobStatus status);
-    
-    /**
      * Get pipeline job class.
      * 
      * @return pipeline job class
      */
-    Class<? extends PipelineJob> getPipelineJobClass();
+    Class<? extends PipelineJob> getJobClass();
     
     @Override
     String getType();

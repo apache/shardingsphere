@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
@@ -32,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCre
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyStartedException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -44,7 +42,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Pipeline job manager.
@@ -55,7 +52,19 @@ public final class PipelineJobManager {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
-    private final PipelineJobAPI pipelineJobAPI;
+    private final PipelineJobAPI jobAPI;
+    
+    /**
+     * Get job configuration.
+     *
+     * @param jobId job ID
+     * @param <T> type of pipeline job configuration
+     * @return pipeline job configuration
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends PipelineJobConfiguration> T getJobConfiguration(final String jobId) {
+        return (T) jobAPI.getYamlJobConfigurationSwapper().swapToObject(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).getJobParameter());
+    }
     
     /**
      * Start job.
@@ -72,7 +81,7 @@ public final class PipelineJobManager {
             log.warn("jobId already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
             return Optional.of(jobId);
         }
-        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), pipelineJobAPI.getPipelineJobClass().getName());
+        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), jobAPI.getJobClass().getName());
         repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfig.convertToJobConfigurationPOJO()));
         return Optional.of(jobId);
     }
@@ -83,15 +92,15 @@ public final class PipelineJobManager {
      * @param jobId job id
      */
     public void startDisabledJob(final String jobId) {
-        if (pipelineJobAPI.isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished()) {
-            Optional<? extends PipelineJobItemProgress> jobItemProgress = pipelineJobAPI.getJobItemProgress(jobId, 0);
+        if (jobAPI.isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished()) {
+            Optional<? extends PipelineJobItemProgress> jobItemProgress = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper()).getProgress(jobId, 0);
             if (jobItemProgress.isPresent() && JobStatus.FINISHED == jobItemProgress.get().getStatus()) {
                 log.info("job status is FINISHED, ignore, jobId={}", jobId);
                 return;
             }
         }
         startCurrentDisabledJob(jobId);
-        pipelineJobAPI.getToBeStartDisabledNextJobType().ifPresent(optional -> startNextDisabledJob(jobId, optional));
+        jobAPI.getToBeStartDisabledNextJobType().ifPresent(optional -> startNextDisabledJob(jobId, optional));
         
     }
     
@@ -129,7 +138,7 @@ public final class PipelineJobManager {
      * @param jobId job id
      */
     public void stop(final String jobId) {
-        pipelineJobAPI.getToBeStoppedPreviousJobType().ifPresent(optional -> stopPreviousJob(jobId, optional));
+        jobAPI.getToBeStoppedPreviousJobType().ifPresent(optional -> stopPreviousJob(jobId, optional));
         stopCurrentJob(jobId);
     }
     
@@ -178,53 +187,12 @@ public final class PipelineJobManager {
      * @param contextKey context key
      * @return jobs info
      */
-    public List<PipelineJobInfo> getPipelineJobInfos(final PipelineContextKey contextKey) {
-        if (pipelineJobAPI instanceof InventoryIncrementalJobAPI) {
-            return getJobBriefInfos(contextKey, pipelineJobAPI.getType()).map(each -> ((InventoryIncrementalJobAPI) pipelineJobAPI).getJobInfo(each.getJobName())).collect(Collectors.toList());
+    public List<PipelineJobInfo> getJobInfos(final PipelineContextKey contextKey) {
+        if (jobAPI instanceof InventoryIncrementalJobAPI) {
+            return PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo().stream()
+                    .filter(each -> !each.getJobName().startsWith("_") && jobAPI.getType().equals(PipelineJobIdUtils.parseJobType(each.getJobName()).getType()))
+                    .map(each -> ((InventoryIncrementalJobAPI) jobAPI).getJobInfo(each.getJobName())).collect(Collectors.toList());
         }
         return Collections.emptyList();
-    }
-    
-    private Stream<JobBriefInfo> getJobBriefInfos(final PipelineContextKey contextKey, final String jobType) {
-        return PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"))
-                .filter(each -> jobType.equals(PipelineJobIdUtils.parseJobType(each.getJobName()).getType()));
-    }
-    
-    /**
-     * Get job item error message.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @return map, key is sharding item, value is error message
-     */
-    public String getJobItemErrorMessage(final String jobId, final int shardingItem) {
-        return Optional.ofNullable(PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemErrorMessage(jobId, shardingItem)).orElse("");
-    }
-    
-    /**
-     * Update job item error message.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @param error error
-     */
-    public void updateJobItemErrorMessage(final String jobId, final int shardingItem, final Object error) {
-        String key = PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem);
-        String value = "";
-        if (null != error) {
-            value = error instanceof Throwable ? ExceptionUtils.getStackTrace((Throwable) error) : error.toString();
-        }
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).update(key, value);
-    }
-    
-    /**
-     * Clean job item error message.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     */
-    public void cleanJobItemErrorMessage(final String jobId, final int shardingItem) {
-        String key = PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem);
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persist(key, "");
     }
 }

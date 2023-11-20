@@ -19,14 +19,14 @@ package org.apache.shardingsphere.data.pipeline.common.job.progress.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressConfiguration;
 
 /**
  * YAML inventory incremental job item progress.
  */
 @Getter
 @Setter
-public final class YamlInventoryIncrementalJobItemProgress implements YamlConfiguration {
+public final class YamlInventoryIncrementalJobItemProgress implements YamlPipelineJobItemProgressConfiguration {
     
     private String status;
     

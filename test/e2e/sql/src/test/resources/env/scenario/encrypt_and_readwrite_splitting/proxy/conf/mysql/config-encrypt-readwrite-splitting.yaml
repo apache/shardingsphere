@@ -19,7 +19,7 @@ databaseName: encrypt_and_readwrite_splitting
 
 dataSources:
   encrypt_write_ds:
-    url: jdbc:mysql://mysql.encrypt_and_readwrite_splitting.host:3306/encrypt_write_ds?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.encrypt_and_readwrite_splitting.host:3306/encrypt_write_ds?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -28,7 +28,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   encrypt_read_ds:
-    url: jdbc:mysql://mysql.encrypt_and_readwrite_splitting.host:3306/encrypt_read_ds?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.encrypt_and_readwrite_splitting.host:3306/encrypt_read_ds?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000

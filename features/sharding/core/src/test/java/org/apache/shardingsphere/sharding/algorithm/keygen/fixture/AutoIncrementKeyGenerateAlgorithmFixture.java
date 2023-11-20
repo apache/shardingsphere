@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.keygen.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

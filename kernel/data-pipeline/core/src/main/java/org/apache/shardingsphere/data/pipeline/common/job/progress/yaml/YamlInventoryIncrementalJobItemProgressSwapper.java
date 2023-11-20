@@ -19,14 +19,14 @@ package org.apache.shardingsphere.data.pipeline.common.job.progress.yaml;
 
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressSwapper;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
  * YAML inventory incremental job item progress swapper.
  */
-public final class YamlInventoryIncrementalJobItemProgressSwapper implements YamlConfigurationSwapper<YamlInventoryIncrementalJobItemProgress, InventoryIncrementalJobItemProgress> {
+public final class YamlInventoryIncrementalJobItemProgressSwapper implements YamlPipelineJobItemProgressSwapper<YamlInventoryIncrementalJobItemProgress, InventoryIncrementalJobItemProgress> {
     
     private final YamlJobItemInventoryTasksProgressSwapper inventoryTasksProgressSwapper = new YamlJobItemInventoryTasksProgressSwapper();
     
@@ -56,5 +56,10 @@ public final class YamlInventoryIncrementalJobItemProgressSwapper implements Yam
         result.setProcessedRecordsCount(yamlProgress.getProcessedRecordsCount());
         result.setInventoryRecordsCount(yamlProgress.getInventoryRecordsCount());
         return result;
+    }
+    
+    @Override
+    public Class<YamlInventoryIncrementalJobItemProgress> getYamlProgressClass() {
+        return YamlInventoryIncrementalJobItemProgress.class;
     }
 }

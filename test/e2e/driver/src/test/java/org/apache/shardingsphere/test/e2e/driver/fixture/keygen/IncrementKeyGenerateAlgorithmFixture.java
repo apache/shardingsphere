@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.driver.fixture.keygen;
 
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

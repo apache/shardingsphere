@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
 import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
 
 /**
  * Table data consistency checker.
  */
-public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm, AutoCloseable {
+public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm, DatabaseSupportedTypedSPI, AutoCloseable {
     
     /**
      * Build table inventory checker.
@@ -43,13 +41,6 @@ public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm, Au
     default boolean isBreakOnInventoryCheckNotMatched() {
         return true;
     }
-    
-    /**
-     * Get supported database types.
-     *
-     * @return supported database types
-     */
-    Collection<DatabaseType> getSupportedDatabaseTypes();
     
     @Override
     void close();

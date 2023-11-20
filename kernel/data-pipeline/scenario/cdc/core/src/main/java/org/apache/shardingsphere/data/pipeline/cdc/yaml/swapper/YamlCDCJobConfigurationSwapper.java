@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.data.pipeline.cdc.yaml.swapper;
 
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.datasource.yaml.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration.SinkConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.config.YamlCDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.config.YamlCDCJobConfiguration.YamlSinkConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.data.pipeline.common.datasource.yaml.YamlPipelineDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConfigurationSwapper;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * YAML CDC job configuration swapper.
  */
-public final class YamlCDCJobConfigurationSwapper implements YamlConfigurationSwapper<YamlCDCJobConfiguration, CDCJobConfiguration> {
+public final class YamlCDCJobConfigurationSwapper implements YamlPipelineJobConfigurationSwapper<YamlCDCJobConfiguration, CDCJobConfiguration> {
     
     private final YamlPipelineDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlPipelineDataSourceConfigurationSwapper();
     
@@ -81,12 +81,7 @@ public final class YamlCDCJobConfigurationSwapper implements YamlConfigurationSw
                 jobShardingDataNodes, yamlConfig.isDecodeWithTX(), sinkConfig, yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
     }
     
-    /**
-     * Swap to job configuration from text.
-     *
-     * @param jobParam job parameter
-     * @return job configuration
-     */
+    @Override
     public CDCJobConfiguration swapToObject(final String jobParam) {
         return null == jobParam ? null : swapToObject(YamlEngine.unmarshal(jobParam, YamlCDCJobConfiguration.class, true));
     }
