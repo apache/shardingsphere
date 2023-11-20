@@ -31,4 +31,6 @@
     <create-materialized-view sql-case-id="create_materialized_view_for_update" />
     <create-materialized-view sql-case-id="create_materialized_view_with_refresh_force" />
     <create-materialized-view sql-case-id="create_materialized_view_with_refresh_fast_for_update_as_with_recursive" />
+    <create-materialized-view sql-case-id="create_materialized_view_scope_for" />
+    <create-materialized-view sql-case-id="create_materialized_view_with_refresh_complete" />
 </sql-parser-test-cases>
