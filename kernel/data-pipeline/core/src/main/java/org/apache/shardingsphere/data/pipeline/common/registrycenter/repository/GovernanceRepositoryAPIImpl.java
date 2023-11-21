@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfoSwapper;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNodePath;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResultSwapper;
@@ -142,8 +143,8 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
-        repository.watch(key, listener);
+    public void watchPipeLineRootPath(final DataChangedEventListener listener) {
+        repository.watch(PipelineNodePath.DATA_PIPELINE_ROOT, listener);
     }
     
     @Override

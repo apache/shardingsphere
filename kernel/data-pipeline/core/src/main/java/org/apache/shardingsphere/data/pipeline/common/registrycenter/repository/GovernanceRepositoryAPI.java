@@ -147,12 +147,11 @@ public interface GovernanceRepositoryAPI {
     void deleteJob(String jobId);
     
     /**
-     * Watch key or path of governance server.
+     * Watch pipeLine root path.
      *
-     * @param key key of data
      * @param listener data changed event listener
      */
-    void watch(String key, DataChangedEventListener listener);
+    void watchPipeLineRootPath(DataChangedEventListener listener);
     
     /**
      * Persist data.
