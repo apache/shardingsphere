@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
 
+import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Collection;
@@ -154,12 +156,20 @@ public interface GovernanceRepositoryAPI {
     void deleteJob(String jobId);
     
     /**
-     * Persist data.
+     * Persist job root info.
      *
-     * @param key key of data
-     * @param value value of data
+     * @param jobId job ID
+     * @param jobClass job class
      */
-    void persist(String key, String value);
+    void persistJobRootInfo(String jobId, Class<? extends PipelineJob> jobClass);
+    
+    /**
+     * Persist job configuration.
+     * 
+     * @param jobId job ID
+     * @param jobConfigPOJO job configuration POJO
+     */
+    void persistJobConfiguration(String jobId, JobConfigurationPOJO jobConfigPOJO);
     
     /**
      * Update job item error message.
