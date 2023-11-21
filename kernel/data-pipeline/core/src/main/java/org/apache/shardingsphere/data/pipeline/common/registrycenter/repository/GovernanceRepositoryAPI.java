@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
 
+import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
@@ -44,7 +45,7 @@ public interface GovernanceRepositoryAPI {
      * @param jobId job id
      * @param jobOffsetInfo job offset info
      */
-    void persistJobOffsetInfo(String jobId, String jobOffsetInfo);
+    void persistJobOffsetInfo(String jobId, JobOffsetInfo jobOffsetInfo);
     
     /**
      * Get job offset info.
@@ -52,7 +53,7 @@ public interface GovernanceRepositoryAPI {
      * @param jobId job id
      * @return job offset info
      */
-    Optional<String> getJobOffsetInfo(String jobId);
+    JobOffsetInfo getJobOffsetInfo(String jobId);
     
     /**
      * Persist job item progress.
