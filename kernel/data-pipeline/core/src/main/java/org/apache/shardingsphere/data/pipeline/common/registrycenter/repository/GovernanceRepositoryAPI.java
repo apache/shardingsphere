@@ -32,6 +32,13 @@ import java.util.Optional;
 public interface GovernanceRepositoryAPI {
     
     /**
+     * Watch pipeLine root path.
+     *
+     * @param listener data changed event listener
+     */
+    void watchPipeLineRootPath(DataChangedEventListener listener);
+    
+    /**
      * Whether job configuration existed.
      *
      * @param jobId jobId
@@ -145,13 +152,6 @@ public interface GovernanceRepositoryAPI {
      * @param jobId job id
      */
     void deleteJob(String jobId);
-    
-    /**
-     * Watch pipeLine root path.
-     *
-     * @param listener data changed event listener
-     */
-    void watchPipeLineRootPath(DataChangedEventListener listener);
     
     /**
      * Persist data.

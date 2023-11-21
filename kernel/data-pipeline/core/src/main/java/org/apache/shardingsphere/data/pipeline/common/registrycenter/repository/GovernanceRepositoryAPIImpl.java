@@ -52,6 +52,11 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     private final ClusterPersistRepository repository;
     
     @Override
+    public void watchPipeLineRootPath(final DataChangedEventListener listener) {
+        repository.watch(PipelineNodePath.DATA_PIPELINE_ROOT, listener);
+    }
+    
+    @Override
     public boolean isJobConfigurationExisted(final String jobId) {
         return null != repository.getDirectly(PipelineMetaDataNode.getJobConfigurationPath(jobId));
     }
@@ -140,11 +145,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public void deleteJob(final String jobId) {
         repository.delete(PipelineMetaDataNode.getJobRootPath(jobId));
-    }
-    
-    @Override
-    public void watchPipeLineRootPath(final DataChangedEventListener listener) {
-        repository.watch(PipelineNodePath.DATA_PIPELINE_ROOT, listener);
     }
     
     @Override
