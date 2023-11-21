@@ -33,4 +33,5 @@
     <create-materialized-view sql-case-id="create_materialized_view_with_refresh_fast_for_update_as_with_recursive" />
     <create-materialized-view sql-case-id="create_materialized_view_scope_for" />
     <create-materialized-view sql-case-id="create_materialized_view_with_refresh_complete" />
+    <create-materialized-view sql-case-id="create_materialized_view_with_pctfree_storage_build_deferred" />
 </sql-parser-test-cases>
