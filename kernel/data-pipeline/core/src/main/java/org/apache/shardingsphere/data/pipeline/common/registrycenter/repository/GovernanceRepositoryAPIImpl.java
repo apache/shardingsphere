@@ -20,6 +20,9 @@ package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfo;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfoSwapper;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult;
@@ -54,14 +57,14 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void persistJobOffsetInfo(final String jobId, final String jobOffsetInfo) {
-        repository.persist(PipelineMetaDataNode.getJobOffsetPath(jobId), jobOffsetInfo);
+    public void persistJobOffsetInfo(final String jobId, final JobOffsetInfo jobOffsetInfo) {
+        repository.persist(PipelineMetaDataNode.getJobOffsetPath(jobId), YamlEngine.marshal(new YamlJobOffsetInfoSwapper().swapToYamlConfiguration(jobOffsetInfo)));
     }
     
     @Override
-    public Optional<String> getJobOffsetInfo(final String jobId) {
-        String text = repository.getDirectly(PipelineMetaDataNode.getJobOffsetPath(jobId));
-        return Strings.isNullOrEmpty(text) ? Optional.empty() : Optional.of(text);
+    public JobOffsetInfo getJobOffsetInfo(final String jobId) {
+        String value = repository.getDirectly(PipelineMetaDataNode.getJobOffsetPath(jobId));
+        return new YamlJobOffsetInfoSwapper().swapToObject(Strings.isNullOrEmpty(value) ? new YamlJobOffsetInfo() : YamlEngine.unmarshal(value, YamlJobOffsetInfo.class));
     }
     
     @Override
