@@ -76,13 +76,12 @@ public final class PipelineJobManager {
         String jobId = jobConfig.getJobId();
         ShardingSpherePreconditions.checkState(0 != jobConfig.getJobShardingCount(), () -> new PipelineJobCreationWithInvalidShardingCountException(jobId));
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId));
-        String jobConfigKey = PipelineMetaDataNode.getJobConfigPath(jobId);
-        if (repositoryAPI.isExisted(jobConfigKey)) {
-            log.warn("jobId already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
+        if (repositoryAPI.isJobConfigurationExisted(jobId)) {
+            log.warn("jobId already exists in registry center, ignore, job id is `{}`", jobId);
             return Optional.of(jobId);
         }
         repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), jobAPI.getJobClass().getName());
-        repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfig.convertToJobConfigurationPOJO()));
+        repositoryAPI.persist(PipelineMetaDataNode.getJobConfigurationPath(jobId), YamlEngine.marshal(jobConfig.convertToJobConfigurationPOJO()));
         return Optional.of(jobId);
     }
     

@@ -32,12 +32,12 @@ import java.util.Optional;
 public interface GovernanceRepositoryAPI {
     
     /**
-     * Whether key existing or not.
+     * Whether job configuration existed.
      *
-     * @param key registry center key
-     * @return true if job exists, else false
+     * @param jobId jobId
+     * @return job configuration exist or not
      */
-    boolean isExisted(String key);
+    boolean isJobConfigurationExisted(String jobId);
     
     /**
      * Persist job offset info.

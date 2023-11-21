@@ -80,11 +80,10 @@ class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    void assertIsExisted() {
-        String testKey = "/testKey1";
-        assertFalse(governanceRepositoryAPI.isExisted(testKey));
-        governanceRepositoryAPI.persist(testKey, "testValue1");
-        assertTrue(governanceRepositoryAPI.isExisted(testKey));
+    void assertIsJobConfigurationExisted() {
+        assertFalse(governanceRepositoryAPI.isJobConfigurationExisted("foo_job"));
+        governanceRepositoryAPI.persist("/pipeline/jobs/foo_job/config", "foo");
+        assertTrue(governanceRepositoryAPI.isJobConfigurationExisted("foo_job"));
     }
     
     @Test

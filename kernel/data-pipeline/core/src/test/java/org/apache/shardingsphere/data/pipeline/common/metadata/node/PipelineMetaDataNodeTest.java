@@ -67,7 +67,7 @@ class PipelineMetaDataNodeTest {
     
     @Test
     void assertGetJobConfigPath() {
-        assertThat(PipelineMetaDataNode.getJobConfigPath(jobId), is(jobRootPath + "/config"));
+        assertThat(PipelineMetaDataNode.getJobConfigurationPath(jobId), is(jobRootPath + "/config"));
     }
     
     @Test
