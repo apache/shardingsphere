@@ -56,6 +56,7 @@ class ShardingTest {
         addressRepository = new AddressRepository(dataSource);
         this.initEnvironment();
         this.processSuccess();
+        this.cleanEnvironment();
     }
     
     private void initEnvironment() throws SQLException {
@@ -122,5 +123,11 @@ class ShardingTest {
             orderItemRepository.delete(each);
             addressRepository.delete(count++);
         }
+    }
+    
+    private void cleanEnvironment() throws SQLException {
+        orderRepository.dropTable();
+        orderItemRepository.dropTable();
+        addressRepository.dropTable();
     }
 }
