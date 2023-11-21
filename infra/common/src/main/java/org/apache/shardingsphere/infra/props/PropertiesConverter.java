@@ -38,6 +38,9 @@ public final class PropertiesConverter {
      * @return converted string content
      */
     public static String convert(final Properties props) {
+        if (null == props) {
+            return "";
+        }
         Map<Object, Object> sortedProps = new LinkedHashMap<>();
         props.keySet().stream().map(Object::toString).sorted().forEach(each -> sortedProps.put(each, props.get(each)));
         return sortedProps.isEmpty() ? "" : JsonUtils.toJsonString(sortedProps);
