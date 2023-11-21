@@ -37,7 +37,8 @@ public final class ShowGlobalClockRuleExecutor implements MetaDataRequiredQuerya
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowGlobalClockRuleStatement sqlStatement) {
         GlobalClockRuleConfiguration ruleConfig = metaData.getGlobalRuleMetaData().getSingleRule(GlobalClockRule.class).getConfiguration();
-        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProvider(), String.valueOf(ruleConfig.isEnabled()), PropertiesConverter.convert(ruleConfig.getProps())));
+        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getType(), ruleConfig.getProvider(),
+                String.valueOf(ruleConfig.isEnabled()), PropertiesConverter.convert(ruleConfig.getProps())));
     }
     
     @Override
