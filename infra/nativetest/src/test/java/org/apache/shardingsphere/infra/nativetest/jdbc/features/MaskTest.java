@@ -39,7 +39,7 @@ import java.util.stream.LongStream;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MaskTest {
+class MaskTest {
     
     private OrderRepository orderRepository;
     
@@ -48,7 +48,7 @@ public final class MaskTest {
     private AddressRepository addressRepository;
     
     @Test
-    void testMaskInLocalTransactions() throws SQLException, IOException {
+    void assertMaskInLocalTransactions() throws SQLException, IOException {
         DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("yaml/mask.yaml"));
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);

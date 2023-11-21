@@ -40,7 +40,7 @@ import java.util.stream.LongStream;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ShadowTest {
+class ShadowTest {
     
     private OrderRepository orderRepository;
     
@@ -49,7 +49,7 @@ public final class ShadowTest {
     private AddressRepository addressRepository;
     
     @Test
-    void testShadowInLocalTransactions() throws SQLException, IOException {
+    void assertShadowInLocalTransactions() throws SQLException, IOException {
         DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("yaml/shadow.yaml"));
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
