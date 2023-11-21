@@ -39,8 +39,8 @@ import org.apache.shardingsphere.data.pipeline.common.datasource.yaml.YamlPipeli
 import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveQualifiedTable;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineSchemaUtils;
+import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobMetaData;
-import org.apache.shardingsphere.data.pipeline.common.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.common.spi.algorithm.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.common.util.ShardingColumnsExtractor;
@@ -209,12 +209,12 @@ public final class MigrationJobAPI implements InventoryIncrementalJobAPI {
     }
     
     @Override
-    public TableBasedPipelineJobInfo getJobInfo(final String jobId) {
+    public PipelineJobInfo getJobInfo(final String jobId) {
         PipelineJobMetaData jobMetaData = new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
         List<String> sourceTables = new LinkedList<>();
         new PipelineJobManager(this).<MigrationJobConfiguration>getJobConfiguration(jobId).getJobShardingDataNodes()
                 .forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> sourceTables.add(DataNodeUtils.formatWithSchema(dataNode)))));
-        return new TableBasedPipelineJobInfo(jobMetaData, String.join(",", sourceTables));
+        return new PipelineJobInfo(jobMetaData, null, String.join(",", sourceTables));
     }
     
     @Override
