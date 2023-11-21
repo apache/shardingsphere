@@ -214,13 +214,13 @@ ShardingSphere 对在 GraalVM Native Image 下的可用性的验证，是通过 
 在 GraalVM Native Image 下的单元测试覆盖率。请贡献者不要使用 `io.kotest:kotest-runner-junit5-jvm:5.5.4` 等在 `test listener` mode 下
 failed to discover tests 的测试库。
 
-ShardingSphere 定义了 `shardingsphere-infra-nativetest` 的 Maven Module 用于为 native Test 提供小型的单元测试子集，
+ShardingSphere 定义了 `shardingsphere-test-native` 的 Maven Module 用于为 native Test 提供小型的单元测试子集，
 此单元测试子集避免了使用 Mockito 等 native Test 下无法使用的第三方库。
 
-ShardingSphere 定义了 `nativeTestInShardingSphere` 的 Maven Profile 用于为 `shardingsphere-infra-nativetest` 模块执行 nativeTest 。
+ShardingSphere 定义了 `nativeTestInShardingSphere` 的 Maven Profile 用于为 `shardingsphere-test-native` 模块执行 nativeTest 。
 
 假设贡献者处于新的 Ubuntu 22.04.3 LTS 实例下，其可通过如下 bash 命令通过 SDKMAN! 管理 JDK 和工具链，
-并为 `shardingsphere-infra-nativetest` 子模块执行 nativeTest。
+并为 `shardingsphere-test-native` 子模块执行 nativeTest。
 
 ```bash
 sudo apt install unzip zip curl sed -y
@@ -247,11 +247,11 @@ ShardingSphere 定义了 `generateMetadata` 的 Maven Profile 用于在 GraalVM 
 已有的 GraalVM Reachability Metadata 文件。可通过如下 bash 命令简单处理此流程。贡献者仍可能需要手动调整具体的 JSON 条目，并在适当的时候
 调整 Maven Profile 和 GraalVM Tracing Agent 的 Filter 链。
 
-以下命令仅为 `shardingsphere-infra-nativetest` 生成 Conditional 形态的 GraalVM Reachability Metadata 的一个举例。生成的 GraalVM
+以下命令仅为 `shardingsphere-test-native` 生成 Conditional 形态的 GraalVM Reachability Metadata 的一个举例。生成的 GraalVM
 Reachability Metadata 位于 `shardingsphere-infra-reachability-metadata` 子模块下。
 
 对于测试类和测试文件独立使用的 GraalVM Reachability Metadata，贡献者应该放置到
-`${user.dir}/infra/nativetest/src/test/resources/META-INF/native-image/shardingsphere-infra-nativetest-test-metadata/`
+`${user.dir}/infra/nativetest/src/test/resources/META-INF/native-image/shardingsphere-test-native-test-metadata/`
 文件夹下。`${}` 内为相关子模块对应的 POM 4.0 的常规系统变量，自行替换。
 
 ```bash

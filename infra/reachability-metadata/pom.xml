@@ -25,5 +25,4 @@
     </parent>
     <artifactId>shardingsphere-infra-reachability-metadata</artifactId>
     <name>${project.artifactId}</name>
-    
 </project>
