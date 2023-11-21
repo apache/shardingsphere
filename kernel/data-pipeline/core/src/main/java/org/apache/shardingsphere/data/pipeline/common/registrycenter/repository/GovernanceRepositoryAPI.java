@@ -147,14 +147,6 @@ public interface GovernanceRepositoryAPI {
     void deleteJob(String jobId);
     
     /**
-     * Get node's sub-nodes list.
-     *
-     * @param key key of data
-     * @return sub-nodes name list
-     */
-    List<String> getChildrenKeys(String key);
-    
-    /**
      * Watch key or path of governance server.
      *
      * @param key key of data

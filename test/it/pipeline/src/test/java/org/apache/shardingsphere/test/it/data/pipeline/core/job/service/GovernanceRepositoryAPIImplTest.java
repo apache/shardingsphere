@@ -121,14 +121,6 @@ class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    void assertGetChildrenKeys() {
-        governanceRepositoryAPI.persist(PipelineNodePath.DATA_PIPELINE_ROOT + "/1", "");
-        List<String> actual = governanceRepositoryAPI.getChildrenKeys(PipelineNodePath.DATA_PIPELINE_ROOT);
-        assertFalse(actual.isEmpty());
-        assertTrue(actual.contains("1"));
-    }
-    
-    @Test
     void assertWatch() throws InterruptedException {
         String key = PipelineNodePath.DATA_PIPELINE_ROOT + "/1";
         governanceRepositoryAPI.persist(key, "");

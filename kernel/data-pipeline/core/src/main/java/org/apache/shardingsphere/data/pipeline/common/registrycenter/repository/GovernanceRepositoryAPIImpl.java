@@ -142,11 +142,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public List<String> getChildrenKeys(final String key) {
-        return repository.getChildrenKeys(key);
-    }
-    
-    @Override
     public void watch(final String key, final DataChangedEventListener listener) {
         repository.watch(key, listener);
     }
@@ -163,7 +158,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public List<Integer> getShardingItems(final String jobId) {
-        List<String> result = getChildrenKeys(PipelineMetaDataNode.getJobOffsetPath(jobId));
+        List<String> result = repository.getChildrenKeys(PipelineMetaDataNode.getJobOffsetPath(jobId));
         return result.stream().map(Integer::parseInt).collect(Collectors.toList());
     }
     
