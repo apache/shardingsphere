@@ -1,0 +1,21 @@
+{
+  "resources":{
+  "includes":[{
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.EncryptTest"},
+    "pattern":"\\Qyaml/encrypt.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.MaskTest"},
+    "pattern":"\\Qyaml/mask.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.ReadWriteSplittingTest"},
+    "pattern":"\\Qyaml/readwrite-splitting.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.ShadowTest"},
+    "pattern":"\\Qyaml/shadow.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.ShardingTest"},
+    "pattern":"\\Qyaml/sharding.yaml\\E"
+  }
+  ]},
+  "bundles":[]
+}

@@ -1026,7 +1026,7 @@
                             <version>${maven-surefire-plugin.version}</version>
                             <configuration>
                                 <includes>
-                                    <include>org.apache.shardingsphere.infra.nativetest.**</include>
+                                    <include>org.apache.shardingsphere.test.natived.**</include>
                                 </includes>
                             </configuration>
                         </plugin>
@@ -1041,8 +1041,8 @@
                                     <defaultMode>Conditional</defaultMode>
                                     <modes>
                                         <conditional>
-                                            <userCodeFilterPath>${user.dir}/infra/nativetest/native-image-filter/user-code-filter.json</userCodeFilterPath>
-                                            <extraFilterPath>${user.dir}/infra/nativetest/native-image-filter/extra-filter.json</extraFilterPath>
+                                            <userCodeFilterPath>${user.dir}/test/natived/native-image-filter/user-code-filter.json</userCodeFilterPath>
+                                            <extraFilterPath>${user.dir}/test/natived/native-image-filter/extra-filter.json</extraFilterPath>
                                             <parallel>true</parallel>
                                         </conditional>
                                     </modes>
@@ -1088,7 +1088,7 @@
                             <artifactId>maven-surefire-plugin</artifactId>
                             <configuration>
                                 <includes>
-                                    <include>org.apache.shardingsphere.infra.nativetest.**</include>
+                                    <include>org.apache.shardingsphere.test.natived.**</include>
                                 </includes>
                             </configuration>
                         </plugin>
