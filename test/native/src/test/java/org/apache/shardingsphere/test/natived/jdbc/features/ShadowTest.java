@@ -15,31 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.features;
+package org.apache.shardingsphere.test.natived.jdbc.features;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.test.natived.FileTestUtils;
-import org.apache.shardingsphere.test.natived.features.entity.Address;
-import org.apache.shardingsphere.test.natived.features.entity.Order;
-import org.apache.shardingsphere.test.natived.features.entity.OrderItem;
-import org.apache.shardingsphere.test.natived.features.repository.AddressRepository;
-import org.apache.shardingsphere.test.natived.features.repository.OrderItemRepository;
-import org.apache.shardingsphere.test.natived.features.repository.OrderRepository;
+import org.apache.shardingsphere.test.natived.jdbc.features.entity.Address;
+import org.apache.shardingsphere.test.natived.jdbc.features.entity.Order;
+import org.apache.shardingsphere.test.natived.jdbc.features.entity.OrderItem;
+import org.apache.shardingsphere.test.natived.jdbc.features.repository.AddressRepository;
+import org.apache.shardingsphere.test.natived.jdbc.features.repository.OrderItemRepository;
+import org.apache.shardingsphere.test.natived.jdbc.features.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MaskTest {
+class ShadowTest {
     
     private OrderRepository orderRepository;
     
@@ -48,8 +49,8 @@ class MaskTest {
     private AddressRepository addressRepository;
     
     @Test
-    void assertMaskInLocalTransactions() throws SQLException, IOException {
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("yaml/mask.yaml"));
+    void assertShadowInLocalTransactions() throws SQLException, IOException {
+        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("yaml/shadow.yaml"));
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
         addressRepository = new AddressRepository(dataSource);
@@ -65,18 +66,38 @@ class MaskTest {
         orderRepository.truncateTable();
         orderItemRepository.truncateTable();
         addressRepository.truncateTable();
+        orderRepository.createTableIfNotExistsShadow();
+        orderRepository.truncateTableShadow();
     }
     
     private void processSuccess() throws SQLException {
         final Collection<Long> orderIds = insertData();
-        assertThat(orderRepository.selectAll(),
-                equalTo(IntStream.range(1, 11).mapToObj(i -> new Order(i, i % 2, i, i, "INSERT_TEST")).collect(Collectors.toList())));
-        assertThat(orderItemRepository.selectAll(),
-                equalTo(IntStream.range(1, 11).mapToObj(i -> new OrderItem(i, i, i, "138****0001", "INSERT_TEST")).collect(Collectors.toList())));
+        assertThat(this.selectAll(), equalTo(Arrays.asList(
+                new Order(1, 0, 2, 2, "INSERT_TEST"),
+                new Order(2, 0, 4, 4, "INSERT_TEST"),
+                new Order(3, 0, 6, 6, "INSERT_TEST"),
+                new Order(4, 0, 8, 8, "INSERT_TEST"),
+                new Order(5, 0, 10, 10, "INSERT_TEST"),
+                new Order(1, 1, 1, 1, "INSERT_TEST"),
+                new Order(2, 1, 3, 3, "INSERT_TEST"),
+                new Order(3, 1, 5, 5, "INSERT_TEST"),
+                new Order(4, 1, 7, 7, "INSERT_TEST"),
+                new Order(5, 1, 9, 9, "INSERT_TEST"))));
+        assertThat(orderItemRepository.selectAll(), equalTo(Arrays.asList(
+                new OrderItem(1, 1, 1, "13800000001", "INSERT_TEST"),
+                new OrderItem(2, 1, 2, "13800000001", "INSERT_TEST"),
+                new OrderItem(3, 2, 3, "13800000001", "INSERT_TEST"),
+                new OrderItem(4, 2, 4, "13800000001", "INSERT_TEST"),
+                new OrderItem(5, 3, 5, "13800000001", "INSERT_TEST"),
+                new OrderItem(6, 3, 6, "13800000001", "INSERT_TEST"),
+                new OrderItem(7, 4, 7, "13800000001", "INSERT_TEST"),
+                new OrderItem(8, 4, 8, "13800000001", "INSERT_TEST"),
+                new OrderItem(9, 5, 9, "13800000001", "INSERT_TEST"),
+                new OrderItem(10, 5, 10, "13800000001", "INSERT_TEST"))));
         assertThat(addressRepository.selectAll(),
                 equalTo(LongStream.range(1, 11).mapToObj(i -> new Address(i, "address_test_" + i)).collect(Collectors.toList())));
         deleteData(orderIds);
-        assertThat(orderRepository.selectAll(), equalTo(new ArrayList<>()));
+        assertThat(this.selectAll(), equalTo(Collections.singletonList(new Order(1, 0, 2, 2, "INSERT_TEST"))));
         assertThat(orderItemRepository.selectAll(), equalTo(new ArrayList<>()));
         assertThat(addressRepository.selectAll(), equalTo(new ArrayList<>()));
     }
@@ -106,13 +127,21 @@ class MaskTest {
     private void deleteData(final Collection<Long> orderIds) throws SQLException {
         long count = 1;
         for (Long each : orderIds) {
+            orderRepository.deleteShadow(each);
             orderRepository.delete(each);
             orderItemRepository.delete(each);
             addressRepository.delete(count++);
         }
     }
     
+    private Collection<Order> selectAll() throws SQLException {
+        Collection<Order> result = orderRepository.selectAll();
+        result.addAll(orderRepository.selectShadowOrder());
+        return result;
+    }
+    
     private void cleanEnvironment() throws SQLException {
+        orderRepository.dropTableShadow();
         orderRepository.dropTable();
         orderItemRepository.dropTable();
         addressRepository.dropTable();

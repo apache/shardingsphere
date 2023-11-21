@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.features.entity;
+package org.apache.shardingsphere.test.natived.jdbc.features.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,11 +26,17 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Address implements Serializable {
+public class Order implements Serializable {
     
-    private static final long serialVersionUID = 4743102234543827855L;
+    private static final long serialVersionUID = 8306802022239174861L;
     
-    private Long addressId;
+    private long orderId;
     
-    private String addressName;
+    private int orderType;
+    
+    private int userId;
+    
+    private long addressId;
+    
+    private String status;
 }

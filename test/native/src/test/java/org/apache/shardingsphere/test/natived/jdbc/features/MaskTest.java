@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.features;
+package org.apache.shardingsphere.test.natived.jdbc.features;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.test.natived.FileTestUtils;
-import org.apache.shardingsphere.test.natived.features.entity.Address;
-import org.apache.shardingsphere.test.natived.features.entity.Order;
-import org.apache.shardingsphere.test.natived.features.entity.OrderItem;
-import org.apache.shardingsphere.test.natived.features.repository.AddressRepository;
-import org.apache.shardingsphere.test.natived.features.repository.OrderItemRepository;
-import org.apache.shardingsphere.test.natived.features.repository.OrderRepository;
-import org.h2.jdbc.JdbcSQLSyntaxErrorException;
+import org.apache.shardingsphere.test.natived.jdbc.features.entity.Address;
+import org.apache.shardingsphere.test.natived.jdbc.features.entity.Order;
+import org.apache.shardingsphere.test.natived.jdbc.features.entity.OrderItem;
+import org.apache.shardingsphere.test.natived.jdbc.features.repository.AddressRepository;
+import org.apache.shardingsphere.test.natived.jdbc.features.repository.OrderItemRepository;
+import org.apache.shardingsphere.test.natived.jdbc.features.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -33,10 +32,14 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-class ReadWriteSplittingTest {
+class MaskTest {
     
     private OrderRepository orderRepository;
     
@@ -45,8 +48,8 @@ class ReadWriteSplittingTest {
     private AddressRepository addressRepository;
     
     @Test
-    void assertReadWriteSplittingInLocalTransactions() throws SQLException, IOException {
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("yaml/readwrite-splitting.yaml"));
+    void assertMaskInLocalTransactions() throws SQLException, IOException {
+        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("yaml/mask.yaml"));
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
         addressRepository = new AddressRepository(dataSource);
@@ -65,12 +68,17 @@ class ReadWriteSplittingTest {
     }
     
     private void processSuccess() throws SQLException {
-        Collection<Long> orderIds = insertData();
-        // This is intentional because the read operation is in the slave database and the corresponding table does not exist.
-        assertThrows(JdbcSQLSyntaxErrorException.class, this::printData);
+        final Collection<Long> orderIds = insertData();
+        assertThat(orderRepository.selectAll(),
+                equalTo(IntStream.range(1, 11).mapToObj(i -> new Order(i, i % 2, i, i, "INSERT_TEST")).collect(Collectors.toList())));
+        assertThat(orderItemRepository.selectAll(),
+                equalTo(IntStream.range(1, 11).mapToObj(i -> new OrderItem(i, i, i, "138****0001", "INSERT_TEST")).collect(Collectors.toList())));
+        assertThat(addressRepository.selectAll(),
+                equalTo(LongStream.range(1, 11).mapToObj(i -> new Address(i, "address_test_" + i)).collect(Collectors.toList())));
         deleteData(orderIds);
-        // This is intentional because the read operation is in the slave database and the corresponding table does not exist.
-        assertThrows(JdbcSQLSyntaxErrorException.class, this::printData);
+        assertThat(orderRepository.selectAll(), equalTo(new ArrayList<>()));
+        assertThat(orderItemRepository.selectAll(), equalTo(new ArrayList<>()));
+        assertThat(addressRepository.selectAll(), equalTo(new ArrayList<>()));
     }
     
     private Collection<Long> insertData() throws SQLException {
@@ -102,12 +110,6 @@ class ReadWriteSplittingTest {
             orderItemRepository.delete(each);
             addressRepository.delete(count++);
         }
-    }
-    
-    private void printData() throws SQLException {
-        orderRepository.selectAll();
-        orderItemRepository.selectAll();
-        addressRepository.selectAll();
     }
     
     private void cleanEnvironment() throws SQLException {

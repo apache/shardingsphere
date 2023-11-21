@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.features;
+package org.apache.shardingsphere.test.natived.jdbc.features;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.test.natived.FileTestUtils;
-import org.apache.shardingsphere.test.natived.features.entity.Address;
-import org.apache.shardingsphere.test.natived.features.entity.Order;
-import org.apache.shardingsphere.test.natived.features.entity.OrderItem;
-import org.apache.shardingsphere.test.natived.features.repository.AddressRepository;
-import org.apache.shardingsphere.test.natived.features.repository.OrderItemRepository;
-import org.apache.shardingsphere.test.natived.features.repository.OrderRepository;
+import org.apache.shardingsphere.test.natived.jdbc.features.entity.Address;
+import org.apache.shardingsphere.test.natived.jdbc.features.entity.Order;
+import org.apache.shardingsphere.test.natived.jdbc.features.entity.OrderItem;
+import org.apache.shardingsphere.test.natived.jdbc.features.repository.AddressRepository;
+import org.apache.shardingsphere.test.natived.jdbc.features.repository.OrderItemRepository;
+import org.apache.shardingsphere.test.natived.jdbc.features.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -39,7 +40,7 @@ import java.util.stream.LongStream;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class EncryptTest {
+class ShardingTest {
     
     private OrderRepository orderRepository;
     
@@ -48,8 +49,8 @@ class EncryptTest {
     private AddressRepository addressRepository;
     
     @Test
-    void assertEncryptInLocalTransactions() throws SQLException, IOException {
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("yaml/encrypt.yaml"));
+    void assertShardingInLocalTransactions() throws SQLException, IOException {
+        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("yaml/sharding.yaml"));
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
         addressRepository = new AddressRepository(dataSource);
@@ -69,10 +70,22 @@ class EncryptTest {
     
     private void processSuccess() throws SQLException {
         final Collection<Long> orderIds = insertData();
-        assertThat(orderRepository.selectAll(),
-                equalTo(IntStream.range(1, 11).mapToObj(i -> new Order(i, i % 2, i, i, "INSERT_TEST")).collect(Collectors.toList())));
-        assertThat(orderItemRepository.selectAll(),
-                equalTo(IntStream.range(1, 11).mapToObj(i -> new OrderItem(i, i, i, "13800000001", "INSERT_TEST")).collect(Collectors.toList())));
+        Collection<Order> orders = orderRepository.selectAll();
+        assertThat(orders.stream().map(Order::getOrderType).collect(Collectors.toList()),
+                equalTo(Arrays.asList(1, 1, 1, 1, 1, 0, 0, 0, 0, 0)));
+        assertThat(orders.stream().map(Order::getUserId).collect(Collectors.toList()),
+                equalTo(new ArrayList<>(Arrays.asList(1, 3, 5, 7, 9, 2, 4, 6, 8, 10))));
+        assertThat(orders.stream().map(Order::getAddressId).collect(Collectors.toList()),
+                equalTo(new ArrayList<>(Arrays.asList(1L, 3L, 5L, 7L, 9L, 2L, 4L, 6L, 8L, 10L))));
+        assertThat(orders.stream().map(Order::getStatus).collect(Collectors.toList()),
+                equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
+        Collection<OrderItem> orderItems = orderItemRepository.selectAll();
+        assertThat(orderItems.stream().map(OrderItem::getUserId).collect(Collectors.toList()),
+                equalTo(new ArrayList<>(Arrays.asList(1, 3, 5, 7, 9, 2, 4, 6, 8, 10))));
+        assertThat(orderItems.stream().map(OrderItem::getPhone).collect(Collectors.toList()),
+                equalTo(IntStream.range(1, 11).mapToObj(i -> "13800000001").collect(Collectors.toList())));
+        assertThat(orderItems.stream().map(OrderItem::getStatus).collect(Collectors.toList()),
+                equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
         assertThat(addressRepository.selectAll(),
                 equalTo(LongStream.range(1, 11).mapToObj(i -> new Address(i, "address_test_" + i)).collect(Collectors.toList())));
         deleteData(orderIds);
