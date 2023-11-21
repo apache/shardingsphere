@@ -1,0 +1,8 @@
+[
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.algorithm.sharding.classbased.ClassBasedShardingAlgorithmFactory"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.features.algorithm.ClassBasedInlineShardingAlgorithmFixture",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+}
+]
+ 

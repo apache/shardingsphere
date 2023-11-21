@@ -225,13 +225,13 @@ and then build it as GraalVM Native Image for nativeTest to test Unit Test Cover
 Please do not use `io.kotest:kotest-runner-junit5-jvm:5.5.4` and some third-party test libraries, they are in `test listener` 
 mode failed to discover tests.
 
-ShardingSphere defines the Maven Module of `shardingsphere-infra-nativetest` to provide a small subset of unit tests for native Test.
+ShardingSphere defines the Maven Module of `shardingsphere-test-native` to provide a small subset of unit tests for native Test.
 This subset of unit tests avoids the use of third-party libraries such as Mockito that are not available under native Test.
 
-ShardingSphere defines the Maven Profile of `nativeTestInShardingSphere` for executing nativeTest for the `shardingsphere-infra-nativetest` module.
+ShardingSphere defines the Maven Profile of `nativeTestInShardingSphere` for executing nativeTest for the `shardingsphere-test-native` module.
 
 Assuming that the contributor is under a new Ubuntu 22.04.3 LTS instance, Contributors can manage the JDK and tool chain through 
-`SDKMAN!` through the following bash command, and execute nativeTest for the `shardingsphere-infra-nativetest` submodule.
+`SDKMAN!` through the following bash command, and execute nativeTest for the `shardingsphere-test-native` submodule.
 
 ```bash
 sudo apt install unzip zip curl sed -y
@@ -261,11 +261,11 @@ Metadata files in a specific directory.
 This process can be easily handled with the following bash command. Contributors may still need to manually adjust specific 
 JSON entries and GraalVM Tracing Agent Filter chain of Maven Profile.
 
-The following command is only an example of using `shardingsphere-infra-nativetest` to generate GraalVM Reachability Metadata 
+The following command is only an example of using `shardingsphere-test-native` to generate GraalVM Reachability Metadata 
 in Conditional form. Generated GraalVM Reachability Metadata is located under the `shardingsphere-infra-reachability-metadata` submodule.
 
 For GraalVM Reachability Metadata used independently by test classes and test files, contributors should place
-`${user.dir}/infra/nativetest/src/test/resources/META-INF/native-image/shardingsphere-infra-nativetest-test-metadata/`
+`${user.dir}/infra/nativetest/src/test/resources/META-INF/native-image/shardingsphere-test-native-test-metadata/`
 folder. `${}` contains the regular system variables of POM 4.0 corresponding to the relevant submodules, which can be replaced by yourself.
 
 ```bash
