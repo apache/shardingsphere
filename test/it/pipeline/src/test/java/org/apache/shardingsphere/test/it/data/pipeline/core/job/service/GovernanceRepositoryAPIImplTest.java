@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.job.service;
 
+import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNodePath;
@@ -32,6 +33,8 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.Migrati
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -71,7 +74,7 @@ class GovernanceRepositoryAPIImplTest {
     }
     
     private static void watch() {
-        governanceRepositoryAPI.watch(PipelineNodePath.DATA_PIPELINE_ROOT, event -> {
+        governanceRepositoryAPI.watchPipeLineRootPath(event -> {
             if ((PipelineNodePath.DATA_PIPELINE_ROOT + "/1").equals(event.getKey())) {
                 EVENT_ATOMIC_REFERENCE.set(event);
                 COUNT_DOWN_LATCH.countDown();
@@ -82,7 +85,7 @@ class GovernanceRepositoryAPIImplTest {
     @Test
     void assertIsJobConfigurationExisted() {
         assertFalse(governanceRepositoryAPI.isJobConfigurationExisted("foo_job"));
-        governanceRepositoryAPI.persist("/pipeline/jobs/foo_job/config", "foo");
+        getClusterPersistRepository().persist("/pipeline/jobs/foo_job/config", "foo");
         assertTrue(governanceRepositoryAPI.isJobConfigurationExisted("foo_job"));
     }
     
@@ -114,24 +117,16 @@ class GovernanceRepositoryAPIImplTest {
     
     @Test
     void assertDeleteJob() {
-        governanceRepositoryAPI.persist(PipelineNodePath.DATA_PIPELINE_ROOT + "/1", "");
+        getClusterPersistRepository().persist(PipelineNodePath.DATA_PIPELINE_ROOT + "/1", "");
         governanceRepositoryAPI.deleteJob("1");
         Optional<String> actual = governanceRepositoryAPI.getJobItemProgress("1", 0);
         assertFalse(actual.isPresent());
     }
     
     @Test
-    void assertGetChildrenKeys() {
-        governanceRepositoryAPI.persist(PipelineNodePath.DATA_PIPELINE_ROOT + "/1", "");
-        List<String> actual = governanceRepositoryAPI.getChildrenKeys(PipelineNodePath.DATA_PIPELINE_ROOT);
-        assertFalse(actual.isEmpty());
-        assertTrue(actual.contains("1"));
-    }
-    
-    @Test
     void assertWatch() throws InterruptedException {
         String key = PipelineNodePath.DATA_PIPELINE_ROOT + "/1";
-        governanceRepositoryAPI.persist(key, "");
+        getClusterPersistRepository().persist(key, "");
         boolean awaitResult = COUNT_DOWN_LATCH.await(10, TimeUnit.SECONDS);
         assertTrue(awaitResult);
         DataChangedEvent event = EVENT_ATOMIC_REFERENCE.get();
@@ -165,6 +160,11 @@ class GovernanceRepositoryAPIImplTest {
         assertEquals(expectedCheckJobId, actualCheckJobIdOpt.get(), "The retrieved checkJobId does not match the expected one");
         governanceRepositoryAPI.deleteLatestCheckJobId(parentJobId);
         assertFalse(governanceRepositoryAPI.getLatestCheckJobId(parentJobId).isPresent(), "Expected no checkJobId to be present after deletion");
+    }
+    
+    private ClusterPersistRepository getClusterPersistRepository() {
+        ContextManager contextManager = PipelineContextManager.getContext(PipelineContextUtils.getContextKey()).getContextManager();
+        return (ClusterPersistRepository) contextManager.getMetaDataContexts().getPersistService().getRepository();
     }
     
     private MigrationJobItemContext mockJobItemContext() {

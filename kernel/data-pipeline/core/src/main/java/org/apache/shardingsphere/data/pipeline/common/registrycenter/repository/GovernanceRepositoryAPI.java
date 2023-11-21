@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
 
+import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Collection;
@@ -30,6 +32,13 @@ import java.util.Optional;
  * Governance repository API.
  */
 public interface GovernanceRepositoryAPI {
+    
+    /**
+     * Watch pipeLine root path.
+     *
+     * @param listener data changed event listener
+     */
+    void watchPipeLineRootPath(DataChangedEventListener listener);
     
     /**
      * Whether job configuration existed.
@@ -147,36 +156,29 @@ public interface GovernanceRepositoryAPI {
     void deleteJob(String jobId);
     
     /**
-     * Get node's sub-nodes list.
+     * Persist job root info.
      *
-     * @param key key of data
-     * @return sub-nodes name list
+     * @param jobId job ID
+     * @param jobClass job class
      */
-    List<String> getChildrenKeys(String key);
+    void persistJobRootInfo(String jobId, Class<? extends PipelineJob> jobClass);
     
     /**
-     * Watch key or path of governance server.
-     *
-     * @param key key of data
-     * @param listener data changed event listener
+     * Persist job configuration.
+     * 
+     * @param jobId job ID
+     * @param jobConfigPOJO job configuration POJO
      */
-    void watch(String key, DataChangedEventListener listener);
+    void persistJobConfiguration(String jobId, JobConfigurationPOJO jobConfigPOJO);
     
     /**
-     * Persist data.
+     * Update job item error message.
      *
-     * @param key key of data
-     * @param value value of data
+     * @param jobId job ID
+     * @param shardingItem sharding item
+     * @param errorMessage error message
      */
-    void persist(String key, String value);
-    
-    /**
-     * Update data.
-     *
-     * @param key key of data
-     * @param value value of data
-     */
-    void update(String key, String value);
+    void updateJobItemErrorMessage(String jobId, int shardingItem, String errorMessage);
     
     /**
      * Get sharding items of job.

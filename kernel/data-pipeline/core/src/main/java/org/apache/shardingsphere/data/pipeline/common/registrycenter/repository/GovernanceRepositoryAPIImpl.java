@@ -20,13 +20,16 @@ package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfoSwapper;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNodePath;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResultSwapper;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -49,6 +52,11 @@ import java.util.stream.Collectors;
 public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAPI {
     
     private final ClusterPersistRepository repository;
+    
+    @Override
+    public void watchPipeLineRootPath(final DataChangedEventListener listener) {
+        repository.watch(PipelineNodePath.DATA_PIPELINE_ROOT, listener);
+    }
     
     @Override
     public boolean isJobConfigurationExisted(final String jobId) {
@@ -142,28 +150,23 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public List<String> getChildrenKeys(final String key) {
-        return repository.getChildrenKeys(key);
+    public void persistJobRootInfo(final String jobId, final Class<? extends PipelineJob> jobClass) {
+        repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), jobClass.getName());
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
-        repository.watch(key, listener);
+    public void persistJobConfiguration(final String jobId, final JobConfigurationPOJO jobConfigPOJO) {
+        repository.persist(PipelineMetaDataNode.getJobConfigurationPath(jobId), YamlEngine.marshal(jobConfigPOJO));
     }
     
     @Override
-    public void persist(final String key, final String value) {
-        repository.persist(key, value);
-    }
-    
-    @Override
-    public void update(final String key, final String value) {
-        repository.update(key, value);
+    public void updateJobItemErrorMessage(final String jobId, final int shardingItem, final String errorMessage) {
+        repository.update(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem), errorMessage);
     }
     
     @Override
     public List<Integer> getShardingItems(final String jobId) {
-        List<String> result = getChildrenKeys(PipelineMetaDataNode.getJobOffsetPath(jobId));
+        List<String> result = repository.getChildrenKeys(PipelineMetaDataNode.getJobOffsetPath(jobId));
         return result.stream().map(Integer::parseInt).collect(Collectors.toList());
     }
     

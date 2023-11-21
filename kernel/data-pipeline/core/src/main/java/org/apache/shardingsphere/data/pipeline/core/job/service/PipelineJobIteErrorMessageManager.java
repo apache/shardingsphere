@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 
@@ -56,7 +55,7 @@ public final class PipelineJobIteErrorMessageManager {
      * @param error error
      */
     public void updateErrorMessage(final Object error) {
-        governanceRepositoryAPI.update(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem), null == error ? "" : buildErrorMessage(error));
+        governanceRepositoryAPI.updateJobItemErrorMessage(jobId, shardingItem, null == error ? "" : buildErrorMessage(error));
     }
     
     private String buildErrorMessage(final Object error) {
@@ -67,6 +66,6 @@ public final class PipelineJobIteErrorMessageManager {
      * Clean job item error message.
      */
     public void cleanErrorMessage() {
-        governanceRepositoryAPI.persist(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem), "");
+        governanceRepositoryAPI.updateJobItemErrorMessage(jobId, shardingItem, "");
     }
 }
