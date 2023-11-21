@@ -49,16 +49,18 @@ class ShowSQLTranslatorRuleExecutorTest {
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("NATIVE"));
-        assertThat(row.getCell(2), is("true"));
+        assertThat(row.getCell(2), is(""));
+        assertThat(row.getCell(3), is("true"));
     }
     
     @Test
     void assertGetColumnNames() {
         ShowSQLTranslatorRuleExecutor executor = new ShowSQLTranslatorRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(2));
+        assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("type"));
+        assertThat(iterator.next(), is("props"));
         assertThat(iterator.next(), is("use_original_sql_when_translating_failed"));
     }
     
