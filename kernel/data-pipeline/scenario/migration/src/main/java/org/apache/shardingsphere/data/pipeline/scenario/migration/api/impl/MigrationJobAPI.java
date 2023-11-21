@@ -214,7 +214,7 @@ public final class MigrationJobAPI implements InventoryIncrementalJobAPI {
         List<String> sourceTables = new LinkedList<>();
         new PipelineJobManager(this).<MigrationJobConfiguration>getJobConfiguration(jobId).getJobShardingDataNodes()
                 .forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> sourceTables.add(DataNodeUtils.formatWithSchema(dataNode)))));
-        return new PipelineJobInfo(jobMetaData, String.join(",", sourceTables));
+        return new PipelineJobInfo(jobMetaData, null, String.join(",", sourceTables));
     }
     
     @Override

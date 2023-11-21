@@ -33,10 +33,4 @@ public final class PipelineJobInfo {
     
     // TODO Rename
     private final String table;
-    
-    public PipelineJobInfo(final PipelineJobMetaData jobMetaData, final String table) {
-        this.jobMetaData = jobMetaData;
-        databaseName = null;
-        this.table = table;
-    }
 }
