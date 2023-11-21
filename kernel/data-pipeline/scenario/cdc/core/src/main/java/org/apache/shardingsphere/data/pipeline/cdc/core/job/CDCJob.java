@@ -41,6 +41,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncr
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobIteErrorMessageManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
@@ -93,7 +94,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
                 continue;
             }
             jobItemContexts.add(jobItemContext);
-            jobItemManager.cleanErrorMessage(jobId, shardingItem);
+            new PipelineJobIteErrorMessageManager(jobId, shardingItem).cleanErrorMessage();
             log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
         }
         if (jobItemContexts.isEmpty()) {
@@ -127,7 +128,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     
     private void processFailed(final String jobId, final int shardingItem, final Exception ex) {
         log.error("job execution failed, {}-{}", jobId, shardingItem, ex);
-        jobItemManager.updateErrorMessage(jobId, shardingItem, ex);
+        new PipelineJobIteErrorMessageManager(jobId, shardingItem).updateErrorMessage(ex);
         PipelineJobCenter.stop(jobId);
         jobAPI.updateJobConfigurationDisabled(jobId, true);
     }
@@ -204,7 +205,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
         public void onFailure(final Throwable throwable) {
             log.error("onFailure, {} task execute failed.", identifier, throwable);
             String jobId = jobItemContext.getJobId();
-            jobItemManager.updateErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+            new PipelineJobIteErrorMessageManager(jobId, jobItemContext.getShardingItem()).updateErrorMessage(throwable);
             if (jobItemContext.getSink() instanceof CDCSocketSink) {
                 CDCSocketSink cdcSink = (CDCSocketSink) jobItemContext.getSink();
                 cdcSink.getChannel().writeAndFlush(CDCResponseUtils.failed("", "", throwable.getMessage()));
