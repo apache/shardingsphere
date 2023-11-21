@@ -38,7 +38,7 @@ public final class PropertiesConverter {
      * @return converted string content
      */
     public static String convert(final Properties props) {
-        return null == props || props.isEmpty() ? ""
-                : JsonUtils.toJsonString(props.keySet().stream().map(Object::toString).sorted().collect(Collectors.toMap(each -> each, props::get, (key1, key2) -> key1, LinkedHashMap::new)));
+        return null == props || props.isEmpty() ? "" : JsonUtils.toJsonString(props.keySet().stream().map(Object::toString).sorted()
+                .collect(Collectors.toMap(each -> each, props::get, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
 }
