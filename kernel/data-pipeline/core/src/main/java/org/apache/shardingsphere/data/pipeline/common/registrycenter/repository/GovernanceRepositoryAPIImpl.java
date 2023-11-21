@@ -51,9 +51,8 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     private final ClusterPersistRepository repository;
     
     @Override
-    public boolean isExisted(final String key) {
-        // TODO delegate to repository isExisted
-        return null != repository.getDirectly(key);
+    public boolean isJobConfigurationExisted(final String jobId) {
+        return null != repository.getDirectly(PipelineMetaDataNode.getJobConfigurationPath(jobId));
     }
     
     @Override
