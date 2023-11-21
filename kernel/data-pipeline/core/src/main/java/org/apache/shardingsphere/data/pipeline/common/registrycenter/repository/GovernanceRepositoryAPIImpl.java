@@ -153,8 +153,8 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void update(final String key, final String value) {
-        repository.update(key, value);
+    public void updateJobItemErrorMessage(final String jobId, final int shardingItem, final String errorMessage) {
+        repository.update(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem), errorMessage);
     }
     
     @Override

@@ -56,7 +56,7 @@ public final class PipelineJobIteErrorMessageManager {
      * @param error error
      */
     public void updateErrorMessage(final Object error) {
-        governanceRepositoryAPI.update(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem), null == error ? "" : buildErrorMessage(error));
+        governanceRepositoryAPI.updateJobItemErrorMessage(jobId, shardingItem, null == error ? "" : buildErrorMessage(error));
     }
     
     private String buildErrorMessage(final Object error) {

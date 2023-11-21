@@ -162,12 +162,13 @@ public interface GovernanceRepositoryAPI {
     void persist(String key, String value);
     
     /**
-     * Update data.
+     * Update job item error message.
      *
-     * @param key key of data
-     * @param value value of data
+     * @param jobId job ID
+     * @param shardingItem sharding item
+     * @param errorMessage error message
      */
-    void update(String key, String value);
+    void updateJobItemErrorMessage(String jobId, int shardingItem, String errorMessage);
     
     /**
      * Get sharding items of job.
