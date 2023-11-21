@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.shardingsphere.broadcast.route;
 
 import com.google.common.collect.Lists;
@@ -49,15 +66,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class BroadcastSqlRouterTest {
-
+    
+    /**
+     * test For BroadcastSQLRouter.createRouteContext().
+     */
     @Test
     public void assertCreateBroadcastRouteContextWithMultiDataSource() throws SQLException {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_order"));
-        BroadcastRule broadcastRule = new BroadcastRule(currentConfig, DefaultDatabase.LOGIC_NAME,
-                createMultiDataSourceMap(), Collections.emptyList());
-        RouteContext routeContext = new BroadcastSQLRouter().createRouteContext(createQueryContext(), mock(RuleMetaData.class),
-                mockDatabaseWithMultipleResources(), broadcastRule, new ConfigurationProperties(new Properties()), new ConnectionContext());
+        BroadcastRule broadcastRule = new BroadcastRule(currentConfig, DefaultDatabase.LOGIC_NAME, createMultiDataSourceMap(), Collections.emptyList());
+        RouteContext routeContext = new BroadcastSQLRouter().createRouteContext(createQueryContext(), mock(RuleMetaData.class), mockDatabaseWithMultipleResources(), broadcastRule,
+                new ConfigurationProperties(new Properties()), new ConnectionContext());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(2));
         assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is(routeUnits.get(0).getDataSourceMapper().getActualName()));
@@ -65,60 +84,63 @@ public class BroadcastSqlRouterTest {
         RouteMapper tableMapper = routeUnits.get(0).getTableMappers().iterator().next();
         assertThat(tableMapper.getActualName(), is("t_order"));
         assertThat(tableMapper.getLogicName(), is("t_order"));
-
+        
     }
-
-    @Test
-    void assertDecorateBroadcastRouteContextWithSingleDataSource() {
-        BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
-        when(currentConfig.getTables()).thenReturn(Collections.singleton("t_order"));
-        BroadcastRule broadcastRule = new BroadcastRule(currentConfig, DefaultDatabase.LOGIC_NAME,
-                Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.emptyList());
-        RouteContext routeContext = new RouteContext();
-        routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("foo_ds", "foo_ds"), Lists.newArrayList()));
-        BroadcastSQLRouter sqlRouter = (BroadcastSQLRouter) OrderedSPILoader.getServices(SQLRouter.class, Collections.singleton(broadcastRule)).get(broadcastRule);
-        sqlRouter.decorateRouteContext(routeContext, createQueryContext(),
-                mockSingleDatabase(), broadcastRule, new ConfigurationProperties(new Properties()), new ConnectionContext());
-        Iterator<String> routedDataSourceNames = routeContext.getActualDataSourceNames().iterator();
-        assertThat(routedDataSourceNames.next(), is("foo_ds"));
-    }
-
+    
+    /**
+     * test For BroadcastSQLRouter.createRouteContext().
+     */
     @Test
     public void assertCreateBroadcastRouteContextWithSingleDataSource() throws SQLException {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_order"));
-        BroadcastRule broadcastRule = new BroadcastRule(currentConfig, DefaultDatabase.LOGIC_NAME,
-                Collections.singletonMap("tmp_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
+        BroadcastRule broadcastRule = new BroadcastRule(currentConfig, DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tmp_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
         broadcastRule.getTableDataNodes().put("t_order", Collections.singletonList(createDataNode("tmp_ds")));
         ShardingSphereDatabase database = mockSingleDatabase();
-        RouteContext routeContext = new BroadcastSQLRouter().createRouteContext(createQueryContext(),
-                mock(RuleMetaData.class), database, broadcastRule, new ConfigurationProperties(new Properties()), new ConnectionContext());
+        RouteContext routeContext = new BroadcastSQLRouter().createRouteContext(createQueryContext(), mock(RuleMetaData.class), database, broadcastRule, new ConfigurationProperties(new Properties()),
+                new ConnectionContext());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = routeContext.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("tmp_ds"));
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is("tmp_ds"));
         assertFalse(routeUnit.getTableMappers().isEmpty());
     }
-
+    
+    /**
+     * test For BroadcastSQLRouter.decorateRouteContext().
+     */
+    @Test
+    void assertDecorateBroadcastRouteContextWithSingleDataSource() {
+        BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
+        when(currentConfig.getTables()).thenReturn(Collections.singleton("t_order"));
+        BroadcastRule broadcastRule = new BroadcastRule(currentConfig, DefaultDatabase.LOGIC_NAME, Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.emptyList());
+        RouteContext routeContext = new RouteContext();
+        routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("foo_ds", "foo_ds"), Lists.newArrayList()));
+        BroadcastSQLRouter sqlRouter = (BroadcastSQLRouter) OrderedSPILoader.getServices(SQLRouter.class, Collections.singleton(broadcastRule)).get(broadcastRule);
+        sqlRouter.decorateRouteContext(routeContext, createQueryContext(), mockSingleDatabase(), broadcastRule, new ConfigurationProperties(new Properties()), new ConnectionContext());
+        Iterator<String> routedDataSourceNames = routeContext.getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is("foo_ds"));
+    }
+    
     private Connection mockConnection() throws SQLException {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getURL()).thenReturn("jdbc:h2:mem:db");
         return result;
     }
-
+    
     private ShardingSphereDatabase mockSingleDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", mock(StorageUnit.class)));
         when(result.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("foo_ds"));
         return result;
     }
-
+    
     private QueryContext createQueryContext() {
         CreateTableStatement createTableStatement = new MySQLCreateTableStatement(false);
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         return new QueryContext(new CreateTableStatementContext(createTableStatement), "CREATE TABLE", new LinkedList<>());
     }
-
+    
     private Map<String, DataSource> createMultiDataSourceMap() throws SQLException {
         Map<String, DataSource> result = new HashMap<>(2, 1F);
         Connection connection = mockConnection();
@@ -126,13 +148,13 @@ public class BroadcastSqlRouterTest {
         result.put("ds_1", new MockedDataSource(connection));
         return result;
     }
-
+    
     private DataNode createDataNode(final String dataSourceName) {
         DataNode result = new DataNode(dataSourceName, "t_order");
         result.setSchemaName(DefaultDatabase.LOGIC_NAME);
         return result;
     }
-
+    
     private ShardingSphereDatabase mockDatabaseWithMultipleResources() {
         Map<String, StorageUnit> storageUnits = new HashMap<>(2, 1F);
         DataSourcePoolProperties dataSourcePoolProps0 = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
