@@ -17,15 +17,26 @@
 
 package org.apache.shardingsphere.data.pipeline.common.pojo;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
- * Pipeline job meta data.
+ * Pipeline job info.
  */
-public interface PipelineJobInfo {
+@RequiredArgsConstructor
+@Getter
+public final class PipelineJobInfo {
     
-    /**
-     * Get job meta data.
-     * 
-     * @return job meta data
-     */
-    PipelineJobMetaData getJobMetaData();
+    private final PipelineJobMetaData jobMetaData;
+    
+    private final String databaseName;
+    
+    // TODO Rename
+    private final String table;
+    
+    public PipelineJobInfo(final PipelineJobMetaData jobMetaData, final String table) {
+        this.jobMetaData = jobMetaData;
+        databaseName = null;
+        this.table = table;
+    }
 }
