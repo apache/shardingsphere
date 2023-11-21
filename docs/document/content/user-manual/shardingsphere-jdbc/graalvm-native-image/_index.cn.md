@@ -251,7 +251,7 @@ ShardingSphere 定义了 `generateMetadata` 的 Maven Profile 用于在 GraalVM 
 Reachability Metadata 位于 `shardingsphere-infra-reachability-metadata` 子模块下。
 
 对于测试类和测试文件独立使用的 GraalVM Reachability Metadata，贡献者应该放置到
-`${user.dir}/infra/nativetest/src/test/resources/META-INF/native-image/shardingsphere-test-native-test-metadata/`
+`${user.dir}/test/natived/src/test/resources/META-INF/native-image/shardingsphere-test-native-test-metadata/`
 文件夹下。`${}` 内为相关子模块对应的 POM 4.0 的常规系统变量，自行替换。
 
 ```bash

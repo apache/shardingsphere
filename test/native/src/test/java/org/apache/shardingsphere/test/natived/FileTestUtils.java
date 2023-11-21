@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.nativetest;
+package org.apache.shardingsphere.test.natived;
 
 import java.io.BufferedReader;
 import java.io.IOException;

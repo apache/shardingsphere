@@ -1,19 +1,19 @@
 {
   "resources":{
   "includes":[{
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.nativetest.jdbc.features.EncryptTest"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.EncryptTest"},
     "pattern":"\\Qyaml/encrypt.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.nativetest.jdbc.features.MaskTest"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.MaskTest"},
     "pattern":"\\Qyaml/mask.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.nativetest.jdbc.features.ReadWriteSplittingTest"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.ReadWriteSplittingTest"},
     "pattern":"\\Qyaml/readwrite-splitting.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.nativetest.jdbc.features.ShadowTest"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.ShadowTest"},
     "pattern":"\\Qyaml/shadow.yaml\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.nativetest.jdbc.features.ShardingTest"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.ShardingTest"},
     "pattern":"\\Qyaml/sharding.yaml\\E"
   }
   ]},

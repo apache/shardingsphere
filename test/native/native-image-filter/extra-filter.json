@@ -24,7 +24,7 @@
     {"excludeClasses": "org.locationtech.jts.geom.**"},
     {"excludeClasses": "org.slf4j.event.**"},
 
-    {"excludeClasses": "org.apache.shardingsphere.infra.nativetest.**"}
+    {"excludeClasses": "org.apache.shardingsphere.test.natived.**"}
   ],
   "regexRules": [
   ]

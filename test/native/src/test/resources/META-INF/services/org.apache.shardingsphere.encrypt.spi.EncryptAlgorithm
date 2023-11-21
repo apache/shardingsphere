@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.nativetest.jdbc.features.algorithm.TestQueryAssistedShardingEncryptAlgorithm
+org.apache.shardingsphere.test.natived.features.algorithm.TestQueryAssistedShardingEncryptAlgorithm

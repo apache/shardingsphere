@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.nativetest.jdbc.features.entity;
+package org.apache.shardingsphere.test.natived.features.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

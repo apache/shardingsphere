@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.nativetest.jdbc.features.repository;
+package org.apache.shardingsphere.test.natived.features.repository;
 
-import org.apache.shardingsphere.infra.nativetest.jdbc.features.entity.Address;
+import org.apache.shardingsphere.test.natived.features.entity.Address;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

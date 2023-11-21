@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.nativetest.jdbc.features;
+package org.apache.shardingsphere.test.natived.features;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.infra.nativetest.FileTestUtils;
-import org.apache.shardingsphere.infra.nativetest.jdbc.features.entity.Address;
-import org.apache.shardingsphere.infra.nativetest.jdbc.features.entity.Order;
-import org.apache.shardingsphere.infra.nativetest.jdbc.features.entity.OrderItem;
-import org.apache.shardingsphere.infra.nativetest.jdbc.features.repository.AddressRepository;
-import org.apache.shardingsphere.infra.nativetest.jdbc.features.repository.OrderItemRepository;
-import org.apache.shardingsphere.infra.nativetest.jdbc.features.repository.OrderRepository;
+import org.apache.shardingsphere.test.natived.FileTestUtils;
+import org.apache.shardingsphere.test.natived.features.entity.Address;
+import org.apache.shardingsphere.test.natived.features.entity.Order;
+import org.apache.shardingsphere.test.natived.features.entity.OrderItem;
+import org.apache.shardingsphere.test.natived.features.repository.AddressRepository;
+import org.apache.shardingsphere.test.natived.features.repository.OrderItemRepository;
+import org.apache.shardingsphere.test.natived.features.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
