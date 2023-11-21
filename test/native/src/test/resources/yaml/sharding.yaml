@@ -58,7 +58,7 @@ rules:
       shardingColumn: user_id
       shardingAlgorithmName: inline
   shardingAlgorithms:
-    # GroovyShell related classes are not available on GraalVM CE 23.0.2 For JDK 17.0.9,
+    # `groovy.lang.Closure` related classes are not available on GraalVM CE 23.0.2 For JDK 17.0.9,
     # This CLASS_BASE algorithm class is designed to emulate INLINE's `ds_${user_id % 2}`.
     # See https://github.com/oracle/graal/issues/5522 .
     inline:

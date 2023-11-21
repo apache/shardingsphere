@@ -1011,10 +1011,6 @@
             <id>generateMetadata</id>
             <properties>
                 <java.version>17</java.version>
-                <jacoco.skip>true</jacoco.skip>
-                <maven.javadoc.skip>true</maven.javadoc.skip>
-                <checkstyle.skip>true</checkstyle.skip>
-                <rat.skip>true</rat.skip>
                 <spotless.apply.skip>true</spotless.apply.skip>
             </properties>
             <build>
@@ -1041,8 +1037,8 @@
                                     <defaultMode>Conditional</defaultMode>
                                     <modes>
                                         <conditional>
-                                            <userCodeFilterPath>${user.dir}/test/natived/native-image-filter/user-code-filter.json</userCodeFilterPath>
-                                            <extraFilterPath>${user.dir}/test/natived/native-image-filter/extra-filter.json</extraFilterPath>
+                                            <userCodeFilterPath>${user.dir}/test/native/native-image-filter/user-code-filter.json</userCodeFilterPath>
+                                            <extraFilterPath>${user.dir}/test/native/native-image-filter/extra-filter.json</extraFilterPath>
                                             <parallel>true</parallel>
                                         </conditional>
                                     </modes>
@@ -1098,9 +1094,6 @@
                             <version>${native-maven-plugin.version}</version>
                             <extensions>true</extensions>
                             <configuration>
-                                <buildArgs>
-                                    <arg>--report-unsupported-elements-at-runtime</arg>
-                                </buildArgs>
                                 <classesDirectory>${project.build.outputDirectory}</classesDirectory>
                                 <metadataRepository>
                                     <enabled>true</enabled>

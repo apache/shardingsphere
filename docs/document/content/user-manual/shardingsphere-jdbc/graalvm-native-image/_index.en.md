@@ -10,21 +10,20 @@ ShardingSphere JDBC has been validated for availability under GraalVM Native Ima
 
 Build GraalVM Native containing Maven dependencies of `org.apache.shardingsphere:shardingsphere-jdbc-core:${shardingsphere.version}`
 Image, you need to resort to GraalVM Native Build Tools. GraalVM Native Build Tools provides Maven Plugin and Gradle Plugin 
-to simplify long list of shell commands for GraalVM CE's `native-image` tool.
+to simplify long list of shell commands for GraalVM CE's `native-image` command line tool.
 
 ShardingSphere JDBC requires GraalVM Native Image to be built with GraalVM CE as follows or higher. Users can quickly switch 
 JDK through `SDKMAN!`. Same reason applicable to downstream distributions of `GraalVM CE` such as `Oracle GraalVM`, `Liberica Native Image Kit` 
 and `Mandrel`.
 
 - GraalVM CE 23.0.2 For JDK 17.0.9, corresponding to `17.0.9-graalce` of SDKMAN!
-- GraalVM CE 23.0.2 For JDK 21.0.1, corresponding to `21.0.1-graalce` of SDKMAN!
+- GraalVM CE 23.1.1 For JDK 21.0.1, corresponding to `21.0.1-graalce` of SDKMAN!
 
 ### Maven Ecology
 
-Users need to configure additional `BuildArgs` to prevent GroovyShell related classes from reporting errors when building 
-GraalVM Native Image. and proactively use GraalVM Reachability Metadata central repository. The following configuration 
-is for reference to configure additional Maven Profiles for the project, and the documentation of GraalVM Native Build 
-Tools shall prevail.
+Users need to actively use the GraalVM Reachability Metadata central repository. 
+The following configuration is for reference to configure additional Maven Profiles for the project, 
+and the documentation of GraalVM Native Build Tools shall prevail.
 
 ```xml
 <project>
@@ -44,9 +43,6 @@ Tools shall prevail.
                  <version>0.9.28</version>
                  <extensions>true</extensions>
                  <configuration>
-                     <buildArgs>
-                         <arg>--report-unsupported-elements-at-runtime</arg>
-                     </buildArgs>
                      <metadataRepository>
                          <enabled>true</enabled>
                      </metadataRepository>
@@ -75,10 +71,9 @@ Tools shall prevail.
 
 ### Gradle Ecosystem
 
-Users need to configure additional `BuildArgs` to prevent GroovyShell related classes from reporting errors when building
-GraalVM Native Image. and proactively use GraalVM Reachability Metadata central repository. The following configuration
-is for reference to configure additional Gradle Task for the project, and the documentation of GraalVM Native Build
-Tools shall prevail.
+Users need to actively use the GraalVM Reachability Metadata central repository.
+The following configuration is for reference to configure additional Gradle Tasks for the project,
+and the documentation of GraalVM Native Build Tools shall prevail.
 
 ```groovy
 plugins {
@@ -90,27 +85,18 @@ dependencies {
 }
 
 graalvmNative {
-     binaries {
-         main {
-             buildArgs.add('--report-unsupported-elements-at-runtime')
-         }
-         test {
-             buildArgs.add('--report-unsupported-elements-at-runtime')
-         }
-     }
      metadataRepository {
          enabled = true
      }
 }
 ```
 
-### For build tools such as SBT that are not supported by GraalVM Native Build Tools
+### For build tools such as sbt that are not supported by GraalVM Native Build Tools
 
-Such requirements require opening additional issues at https://github.com/graalvm/native-build-tools and providing the Plugin 
-implementation of the corresponding build tool.
+Such requirements require opening additional issues at https://github.com/graalvm/native-build-tools 
+and providing the Plugin implementation of the corresponding build tool.
 
-
-### Usage restrictions
+## Usage restrictions
 
 1. The following algorithm classes are not available under GraalVM Native Image due to the involvement of https://github.com/oracle/graal/issues/5522.
     - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`

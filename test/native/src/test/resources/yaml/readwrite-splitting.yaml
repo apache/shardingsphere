@@ -43,7 +43,7 @@ dataSources:
 rules:
 - !READWRITE_SPLITTING
   # We need to prevent the logical database name, writeDataSourceName and readDataSourceNames from being parsed by
-  # GroovyShell under Native Image for the read-write separation function.
+  # `groovy.lang.Closure` under Native Image for the read-write separation function.
   # That is, switch to another Row Value Expression SPI implementation.
   dataSources:
     <LITERAL>readwrite_ds:

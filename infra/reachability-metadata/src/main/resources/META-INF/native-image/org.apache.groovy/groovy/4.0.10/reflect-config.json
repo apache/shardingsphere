@@ -117,6 +117,10 @@
 },
 {
   "condition":{"typeReachable":"org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"},
+  "name":"java.lang.Boolean"
+},
+{
+  "condition":{"typeReachable":"org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"},
   "name":"java.lang.Thread"
 },
 {

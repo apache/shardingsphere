@@ -10,18 +10,18 @@ ShardingSphere JDBC 已在 GraalVM Native Image 下完成可用性验证。
 
 构建包含 `org.apache.shardingsphere:shardingsphere-jdbc-core:${shardingsphere.version}` 的 Maven 依赖的 GraalVM Native 
 Image，你需要借助于 GraalVM Native Build Tools。GraalVM Native Build Tools 提供了 Maven Plugin 和 Gradle Plugin 来简化 GraalVM
-CE 的 `native-image` 工具的长篇大论的 shell 命令。
+CE 的 `native-image` 命令行工具的长篇大论的 shell 命令。
 
 ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 GraalVM Native Image。使用者可通过 SDKMAN! 快速切换 JDK。这同理
 适用于 `Oracle GraalVM`， `Liberica Native Image Kit` 和 `Mandrel` 等 `GraalVM CE` 的下游发行版。
 
 - GraalVM CE 23.0.2 For JDK 17.0.9，对应于 SDKMAN! 的 `17.0.9-graalce`
-- GraalVM CE 23.0.2 For JDK 21.0.1，对应于 SDKMAN! 的 `21.0.1-graalce`
+- GraalVM CE 23.1.1 For JDK 21.0.1，对应于 SDKMAN! 的 `21.0.1-graalce`
 
 ### Maven 生态
 
-使用者需要配置额外的 BuildArgs ，以阻止 GroovyShell 的相关类在构建 GraalVM Native Image 时报错。并主动使用 GraalVM Reachability 
-Metadata 中央仓库。如下配置可供参考，以配置项目额外的 Maven Profile，以 GraalVM Native Build Tools 的文档为准。
+使用者需要主动使用 GraalVM Reachability Metadata 中央仓库。
+如下配置可供参考，以配置项目额外的 Maven Profiles，以 GraalVM Native Build Tools 的文档为准。
 
 ```xml
 <project>
@@ -41,9 +41,6 @@ Metadata 中央仓库。如下配置可供参考，以配置项目额外的 Mave
                 <version>0.9.28</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <buildArgs>
-                        <arg>--report-unsupported-elements-at-runtime</arg>
-                    </buildArgs>
                     <metadataRepository>
                         <enabled>true</enabled>
                     </metadataRepository>
@@ -72,8 +69,8 @@ Metadata 中央仓库。如下配置可供参考，以配置项目额外的 Mave
 
 ### Gradle 生态
 
-使用者需要配置额外的 BuildArgs ，以阻止 GroovyShell 的相关类在构建 GraalVM Native Image 时报错。并主动使用 GraalVM Reachability
-Metadata 中央仓库。如下配置可供参考，以配置项目额外的 Gradle Task，以 GraalVM Native Build Tools 的文档为准。
+使用者需要主动使用 GraalVM Reachability Metadata 中央仓库。
+如下配置可供参考，以配置项目额外的 Gradle Tasks，以 GraalVM Native Build Tools 的文档为准。
 
 ```groovy
 plugins {
@@ -85,26 +82,17 @@ dependencies {
 }
 
 graalvmNative {
-    binaries {
-        main {
-            buildArgs.add('--report-unsupported-elements-at-runtime')
-        }
-        test {
-            buildArgs.add('--report-unsupported-elements-at-runtime')
-        }
-    }
     metadataRepository {
         enabled = true
     }
 }
 ```
 
-### 对于 SBT 等不被 GraalVM Native Build Tools 支持的构建工具
+### 对于 sbt 等不被 GraalVM Native Build Tools 支持的构建工具
 
 此类需求需要在 https://github.com/graalvm/native-build-tools 打开额外的 issue 并提供对应构建工具的 Plugin 实现。
 
-
-### 使用限制
+## 使用限制
 
 1. 如下的算法类由于涉及到 https://github.com/oracle/graal/issues/5522 ， 暂未可在 GraalVM Native Image 下使用。
     - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`

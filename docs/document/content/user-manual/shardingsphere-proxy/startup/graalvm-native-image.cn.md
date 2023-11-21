@@ -25,16 +25,8 @@ services:
       - "3307:3307"
 ```
 
-- 当前阶段，GraalVM Native Image 形态的 ShardingSphere Proxy 不支持使用 `InlineExpressionParser` SPI 的默认实现的 `行表达式`， 
-  这首先导致 `数据分片` 功能的`actualDataNodes` 属性只能使用其他 `InlineExpressionParser` SPI 的实现来配置， 例如使用
- `InlineExpressionParser` SPI 实现为 `LITERAL` 的 `行表达式`, 即 `<LITERAL>ds_0.t_order_0, ds_0.t_order_1`
-  或 `<LITERAL>ds_0.t_user_0, ds_15.t_user_1023`。
-
 - 本节假定处于 Linux（amd64，aarch64）， MacOS（amd64）或 Windows（amd64）环境。
   如果你位于 MacOS（aarch64/M1） 环境，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/2666 。
-
-- `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd` 受
-  https://github.com/micronaut-projects/micronaut-gcp/issues/532 影响，不可使用。
 
 ## 前提条件
 
