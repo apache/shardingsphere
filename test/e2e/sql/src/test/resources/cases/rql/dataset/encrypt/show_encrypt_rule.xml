@@ -29,8 +29,8 @@
         <column name="like_query_type" />
         <column name="like_query_props" />
     </metadata>
-    <row values="t_user| user_name| user_name_cipher| | user_name_like| AES| aes-key-value=123456abc| | | IT.ENCRYPT.LIKE.FIXTURE| mask=4093" />
-    <row values="t_user| password| password_cipher| | | AES| aes-key-value=123456abc| | | | " />
-    <row values="t_user| email| email_cipher| | | AES| aes-key-value=123456abc| | | | " />
-    <row values="t_user| telephone| user_telephone_cipher| | user_telephone_like| AES| aes-key-value=123456abc| | | IT.ENCRYPT.LIKE.FIXTURE| mask=4093" />
+    <row values="t_user| user_name| user_name_cipher| | user_name_like| AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;}| | | IT.ENCRYPT.LIKE.FIXTURE| {&quot;mask&quot;:4093}" />
+    <row values="t_user| password| password_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;}| | | | " />
+    <row values="t_user| email| email_cipher| | | AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;}| | | | " />
+    <row values="t_user| telephone| user_telephone_cipher| | user_telephone_like| AES| {&quot;aes-key-value&quot;:&quot;123456abc&quot;}| | | IT.ENCRYPT.LIKE.FIXTURE| {&quot;mask&quot;:4093}" />
 </dataset>
