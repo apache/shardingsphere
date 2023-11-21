@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.props;
+package org.apache.shardingsphere.sqltranslator.distsql.statement.updateable;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.statement.ral.UpdatableGlobalRuleRALStatement;
 
-import java.util.LinkedHashMap;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
- * Properties converter.
+ * Alter SQL translator rule statement.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PropertiesConverter {
+@RequiredArgsConstructor
+@Getter
+public final class AlterSQLTranslatorRuleStatement extends UpdatableGlobalRuleRALStatement {
     
-    /**
-     * Convert properties to string content.
-     * 
-     * @param props properties to be converted
-     * @return converted string content
-     */
-    public static String convert(final Properties props) {
-        return null == props || props.isEmpty() ? ""
-                : JsonUtils.toJsonString(props.keySet().stream().map(Object::toString).sorted().collect(Collectors.toMap(each -> each, props::get, (key1, key2) -> key1, LinkedHashMap::new)));
-    }
+    private final String type;
+    
+    private final Properties props;
+    
+    private final Boolean useOriginalSQLWhenTranslatingFailed;
 }

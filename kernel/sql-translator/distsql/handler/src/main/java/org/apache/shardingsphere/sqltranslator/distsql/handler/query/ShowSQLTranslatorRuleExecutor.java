@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.distsql.handler;
+package org.apache.shardingsphere.sqltranslator.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
-import org.apache.shardingsphere.sqltranslator.distsql.statement.ShowSQLTranslatorRuleStatement;
+import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
 import java.util.Arrays;
@@ -40,12 +41,13 @@ public final class ShowSQLTranslatorRuleExecutor implements MetaDataRequiredQuer
     }
     
     private Collection<LocalDataQueryResultRow> buildData(final SQLTranslatorRuleConfiguration ruleConfig) {
-        return Collections.singleton(new LocalDataQueryResultRow(null != ruleConfig.getType() ? ruleConfig.getType() : "", String.valueOf(ruleConfig.isUseOriginalSQLWhenTranslatingFailed())));
+        return Collections.singleton(new LocalDataQueryResultRow(null == ruleConfig.getType() ? "" : ruleConfig.getType(),
+                PropertiesConverter.convert(ruleConfig.getProps()), String.valueOf(ruleConfig.isUseOriginalSQLWhenTranslatingFailed())));
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("type", "use_original_sql_when_translating_failed");
+        return Arrays.asList("type", "props", "use_original_sql_when_translating_failed");
     }
     
     @Override

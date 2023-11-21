@@ -33,7 +33,7 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariabl
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.sqltranslator.distsql.statement.ShowSQLTranslatorRuleStatement;
+import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ConvertYamlConfigurationStatementAssert;

@@ -17,8 +17,32 @@
 
 grammar RALStatement;
 
-import Keyword;
+import BaseRule;
 
 showSQLTranslatorRule
     : SHOW SQL_TRANSLATOR RULE
+    ;
+
+alterSQLTranslatorRule
+    : ALTER SQL_TRANSLATOR RULE LP_ sqlTranslatorRuleDefinition RP_
+    ;
+
+sqlTranslatorRuleDefinition
+    : TYPE LP_ NAME EQ_ providerName (COMMA_ propertiesDefinition)? RP_ (COMMA_ useOriginalSQLDefinition)?
+    ;
+
+useOriginalSQLDefinition
+    : USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED EQ_ useOriginalSQL
+    ;
+
+providerName
+    : STRING_ | buildInProviderTypeName
+    ;
+
+buildInProviderTypeName
+    : JOOQ | NATIVE
+    ;
+
+useOriginalSQL
+    : TRUE | FALSE
     ;

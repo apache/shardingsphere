@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.distsql.statement;
+lexer grammar Literals;
 
-import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
+import Alphabet, Symbol;
 
-/**
- * Show SQL translator rule statement.
- */
-public final class ShowSQLTranslatorRuleStatement extends QueryableRALStatement {
-}
+IDENTIFIER_
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    | BQ_ ~'`'+ BQ_
+    ;
+
+STRING_
+    : (DQ_ ('\\'. | '""' | ~('"' | '\\'))* DQ_)
+    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
+    ;
+
+INT_
+    : [0-9]+
+    ;
