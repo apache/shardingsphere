@@ -39,7 +39,7 @@ import java.util.stream.LongStream;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class EncryptTest {
+class EncryptTest {
     
     private OrderRepository orderRepository;
     
@@ -48,7 +48,7 @@ public final class EncryptTest {
     private AddressRepository addressRepository;
     
     @Test
-    void testEncryptInLocalTransactions() throws SQLException, IOException {
+    void assertEncryptInLocalTransactions() throws SQLException, IOException {
         DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("yaml/encrypt.yaml"));
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
