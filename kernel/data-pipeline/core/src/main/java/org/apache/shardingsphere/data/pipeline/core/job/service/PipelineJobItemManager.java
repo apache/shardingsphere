@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressSwapper;
@@ -30,7 +28,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import java.util.Optional;
 
 /**
- * Pipeline job manager.
+ * Pipeline job item manager.
  * 
  * @param <T> type of pipeline job item progress
  */
@@ -95,43 +93,5 @@ public final class PipelineJobItemManager<T extends PipelineJobItemProgress> {
     @SuppressWarnings("unchecked")
     private String convertProgressYamlContent(final PipelineJobItemContext jobItemContext) {
         return YamlEngine.marshal(swapper.swapToYamlConfiguration((T) jobItemContext.toProgress()));
-    }
-    
-    /**
-     * Get job item error message.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @return map, key is sharding item, value is error message
-     */
-    public String getErrorMessage(final String jobId, final int shardingItem) {
-        return Optional.ofNullable(PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemErrorMessage(jobId, shardingItem)).orElse("");
-    }
-    
-    /**
-     * Update job item error message.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @param error error
-     */
-    public void updateErrorMessage(final String jobId, final int shardingItem, final Object error) {
-        String key = PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem);
-        String value = "";
-        if (null != error) {
-            value = error instanceof Throwable ? ExceptionUtils.getStackTrace((Throwable) error) : error.toString();
-        }
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).update(key, value);
-    }
-    
-    /**
-     * Clean job item error message.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     */
-    public void cleanErrorMessage(final String jobId, final int shardingItem) {
-        String key = PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem);
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persist(key, "");
     }
 }

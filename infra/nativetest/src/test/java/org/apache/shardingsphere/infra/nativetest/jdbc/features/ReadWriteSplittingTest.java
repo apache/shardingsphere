@@ -36,7 +36,7 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class ReadWriteSplittingTest {
+class ReadWriteSplittingTest {
     
     private OrderRepository orderRepository;
     
@@ -45,7 +45,7 @@ public final class ReadWriteSplittingTest {
     private AddressRepository addressRepository;
     
     @Test
-    void testReadWriteSplittingInLocalTransactions() throws SQLException, IOException {
+    void assertReadWriteSplittingInLocalTransactions() throws SQLException, IOException {
         DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("yaml/readwrite-splitting.yaml"));
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);

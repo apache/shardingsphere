@@ -40,7 +40,7 @@ import java.util.stream.LongStream;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ShardingTest {
+class ShardingTest {
     
     private OrderRepository orderRepository;
     
@@ -49,13 +49,14 @@ public final class ShardingTest {
     private AddressRepository addressRepository;
     
     @Test
-    void testShardingInLocalTransactions() throws SQLException, IOException {
+    void assertShardingInLocalTransactions() throws SQLException, IOException {
         DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("yaml/sharding.yaml"));
         orderRepository = new OrderRepository(dataSource);
         orderItemRepository = new OrderItemRepository(dataSource);
         addressRepository = new AddressRepository(dataSource);
         this.initEnvironment();
         this.processSuccess();
+        this.cleanEnvironment();
     }
     
     private void initEnvironment() throws SQLException {
