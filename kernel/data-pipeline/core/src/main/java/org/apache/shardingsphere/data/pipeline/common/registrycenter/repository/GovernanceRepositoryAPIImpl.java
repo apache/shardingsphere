@@ -21,9 +21,6 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfo;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfoSwapper;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNodePath;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
@@ -54,25 +51,17 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     private final PipelineJobConfigurationGovernanceRepository jobConfigurationGovernanceRepository;
     
+    private final PipelineJobOffsetGovernanceRepository jobOffsetGovernanceRepository;
+    
     public GovernanceRepositoryAPIImpl(final ClusterPersistRepository repository) {
         this.repository = repository;
         jobConfigurationGovernanceRepository = new PipelineJobConfigurationGovernanceRepository(repository);
+        jobOffsetGovernanceRepository = new PipelineJobOffsetGovernanceRepository(repository);
     }
     
     @Override
     public void watchPipeLineRootPath(final DataChangedEventListener listener) {
         repository.watch(PipelineNodePath.DATA_PIPELINE_ROOT, listener);
-    }
-    
-    @Override
-    public void persistJobOffsetInfo(final String jobId, final JobOffsetInfo jobOffsetInfo) {
-        repository.persist(PipelineMetaDataNode.getJobOffsetPath(jobId), YamlEngine.marshal(new YamlJobOffsetInfoSwapper().swapToYamlConfiguration(jobOffsetInfo)));
-    }
-    
-    @Override
-    public JobOffsetInfo getJobOffsetInfo(final String jobId) {
-        String value = repository.getDirectly(PipelineMetaDataNode.getJobOffsetPath(jobId));
-        return new YamlJobOffsetInfoSwapper().swapToObject(Strings.isNullOrEmpty(value) ? new YamlJobOffsetInfo() : YamlEngine.unmarshal(value, YamlJobOffsetInfo.class));
     }
     
     @Override

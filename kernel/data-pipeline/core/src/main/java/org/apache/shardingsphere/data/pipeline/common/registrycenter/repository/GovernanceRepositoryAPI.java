@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
 
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
@@ -40,27 +39,18 @@ public interface GovernanceRepositoryAPI {
     PipelineJobConfigurationGovernanceRepository getJobConfigurationGovernanceRepository();
     
     /**
+     * Get job offset governance repository.
+     * 
+     * @return job offset governance repository
+     */
+    PipelineJobOffsetGovernanceRepository getJobOffsetGovernanceRepository();
+    
+    /**
      * Watch pipeLine root path.
      *
      * @param listener data changed event listener
      */
     void watchPipeLineRootPath(DataChangedEventListener listener);
-    
-    /**
-     * Persist job offset info.
-     *
-     * @param jobId job id
-     * @param jobOffsetInfo job offset info
-     */
-    void persistJobOffsetInfo(String jobId, JobOffsetInfo jobOffsetInfo);
-    
-    /**
-     * Get job offset info.
-     *
-     * @param jobId job id
-     * @return job offset info
-     */
-    JobOffsetInfo getJobOffsetInfo(String jobId);
     
     /**
      * Persist job item progress.
