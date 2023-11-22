@@ -40,6 +40,7 @@
     <sql-case id="create_view_as_select_with_condition8" value="CREATE VIEW employees_50_vw AS SELECT employee_id, last_name, job_id, salary, commission_pct, department_id FROM employees WHERE department_id = 50" db-types="Oracle" />
     <sql-case id="create_view_as_select_with_condition9" value="CREATE VIEW locations_view AS SELECT d.department_id, d.department_name, l.location_id, l.city FROM departments d, locations l WHERE d.location_id = l.location_id" db-types="Oracle" />
     <sql-case id="create_view_as_select_with_condition10" value="CREATE VIEW emp_dept_oj2 AS SELECT e.empno, e.ename, e.deptno, d.dname, d.loc FROM emp e, dept d WHERE e.deptno (+) = d.deptno" db-types="Oracle" />
+    <sql-case id="create_view_as_select_with_condition11" value="CREATE VIEW own_salary AS SELECT last_name, salary FROM employees WHERE last_name = USER" db-types="Oracle" />
     <sql-case id="create_view_select_partition" value="CREATE VIEW Q1_2000_sales AS SELECT * FROM sales PARTITION (SALES_Q1_2000)" db-types="Oracle" />
     <sql-case id="create_view_select_with_check_option1" value="CREATE VIEW clerk AS SELECT employee_id, last_name, department_id, job_id FROM employees WHERE job_id = 'PU_CLERK' or job_id = 'SH_CLERK' or job_id = 'ST_CLERK' WITH CHECK OPTION" db-types="Oracle" />
     <sql-case id="create_view_select_with_check_option2" value="CREATE VIEW emp_mgr AS SELECT e1.ename, e2.ename mname FROM emp e1, emp e2 WHERE e1.mgr = e2.empno WITH CHECK OPTION" db-types="Oracle" />
@@ -56,4 +57,42 @@
     <sql-case id="create_view_of_with_object_identifier" value="CREATE VIEW it_prog_view OF employee_type WITH OBJECT IDENTIFIER (employee_id) AS SELECT e.employee_id, e.last_name, e.job_id FROM employees e WHERE job_id = 'IT_PROG'" db-types="Oracle" />
     <sql-case id="create_view_define_column_with_select" value="CREATE VIEW emp_sal (emp_id, last_name, email UNIQUE RELY DISABLE NOVALIDATE, CONSTRAINT id_pk PRIMARY KEY (emp_id) RELY DISABLE NOVALIDATE) AS SELECT employee_id, last_name, email FROM employees" db-types="Oracle" />
     <sql-case id="create_view_select_join_using" value="CREATE VIEW employees_view AS SELECT employee_id, last_name, salary, location_id FROM employees JOIN departments USING (department_id) WHERE department_id = 10" db-types="Oracle" />
+    <sql-case id="create_view_select_with_check_option_constraint" value="CREATE VIEW sales_staff AS SELECT empno, ename, deptno FROM emp WHERE deptno = 10 WITH CHECK OPTION CONSTRAINT sales_staff_cnst" db-types="Oracle" />
+    <sql-case id="create_view_select_with_group_by_function" value="CREATE VIEW sales_view AS
+    SELECT
+    prod_name product, country_name country, channel_id channel,
+    SUBSTR(calendar_quarter_desc, 6,2) quarter,
+    SUM(amount_sold) amount_sold, SUM(quantity_sold) quantity_sold 
+    FROM sales, times, customers, countries, products
+    WHERE sales.time_id = times.time_id AND
+    sales.prod_id = products.prod_id AND
+    sales.cust_id = customers.cust_id AND
+    customers.country_id = countries.country_id
+    GROUP BY prod_name, country_name, channel_id,
+    SUBSTR(calendar_quarter_desc, 6, 2)" db-types="Oracle" />
+    <sql-case id="create_view_select_with_group_by" value="CREATE VIEW sales_view2 AS
+    SELECT country_name country, prod_name product, calendar_year year,
+    calendar_month_name month, SUM(amount_sold) sale, COUNT(amount_sold) cnt
+    FROM sales, times, customers, countries, products
+    WHERE sales.time_id = times.time_id AND
+    sales.prod_id = products.prod_id AND
+    sales.cust_id = customers.cust_id AND
+    customers.country_id = countries.country_id
+    GROUP BY country_name, prod_name, calendar_year, calendar_month_name" db-types="Oracle" />
+    <sql-case id="create_view_select_with_partition_by" value="CREATE VIEW sales_view AS
+    SELECT country_name country, prod_name product, calendar_year year,
+    SUM(amount_sold) sales, COUNT(amount_sold) cnt,
+    MAX(calendar_year) KEEP (DENSE_RANK FIRST ORDER BY SUM(amount_sold) DESC)
+    OVER (PARTITION BY country_name, prod_name) best_year,
+    MAX(calendar_year) KEEP (DENSE_RANK LAST ORDER BY SUM(amount_sold) DESC)
+    OVER (PARTITION BY country_name, prod_name) worst_year
+    FROM sales, times, customers, countries, products
+    WHERE sales.time_id = times.time_id AND sales.prod_id = products.prod_id AND
+    sales.cust_id =customers.cust_id AND customers.country_id=countries.country_id
+    GROUP BY country_name, prod_name, calendar_year" db-types="Oracle" />
+    <sql-case id="create_view_select_with_multiset" value="CREATE VIEW v_depts OF depts_t WITH OBJECT IDENTIFIER (deptno) AS
+    SELECT d.deptno, d.deptname, CAST(MULTISET(SELECT e.ename, e.salary, e.deptname, CAST(MULTISET(SELECT p.projname, p.mgr FROM projects p WHERE p.mgr = e.ename) AS nt_project_t) FROM emps e WHERE e.deptname = d.deptname) AS nt_emp_t) FROM depts d" db-types="Oracle" />
+    <sql-case id="create_view_with_select_value" value="CREATE VIEW warehouse_view AS SELECT VALUE(p) AS warehouse_xml FROM xwarehouses p" db-types="Oracle" />
+    <sql-case id="create_view_select_to_number_to_char" value="CREATE VIEW time_view AS SELECT time_id, TO_NUMBER(TO_CHAR(time_id, 'ddd')) AS day_in_year FROM times" db-types="Oracle" />
+    <sql-case id="create_view_select_subquery_with_union_all" value="CREATE VIEW view_with_unionall AS (SELECT c.rowid crid, c.cust_id, 2 umarker FROM customers c WHERE c.cust_last_name = 'Smith' UNION ALL SELECT c.rowid crid, c.cust_id, 3 umarker FROM customers c WHERE c.cust_last_name = 'Jones')" db-types="Oracle" />
 </sql-cases>
