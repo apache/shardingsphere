@@ -17,11 +17,19 @@
 
 package org.apache.shardingsphere.sqltranslator.distsql.parser.core;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.AlterSQLTranslatorRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.PropertiesDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.ShowSQLTranslatorRuleContext;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sqltranslator.distsql.statement.ShowSQLTranslatorRuleStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
+import org.apache.shardingsphere.sqltranslator.distsql.statement.updateable.AlterSQLTranslatorRuleStatement;
+
+import java.util.Properties;
 
 /**
  * SQL statement visitor for SQL translator DistSQL.
@@ -31,5 +39,27 @@ public final class SQLTranslatorDistSQLStatementVisitor extends SQLTranslatorDis
     @Override
     public ASTNode visitShowSQLTranslatorRule(final ShowSQLTranslatorRuleContext ctx) {
         return new ShowSQLTranslatorRuleStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterSQLTranslatorRule(final AlterSQLTranslatorRuleContext ctx) {
+        return new AlterSQLTranslatorRuleStatement(getIdentifierValue(ctx.sqlTranslatorRuleDefinition().providerName()), getProperties(ctx.sqlTranslatorRuleDefinition().propertiesDefinition()),
+                null == ctx.sqlTranslatorRuleDefinition().useOriginalSQLDefinition() ? null
+                        : Boolean.valueOf(getIdentifierValue(ctx.sqlTranslatorRuleDefinition().useOriginalSQLDefinition().useOriginalSQL())));
+    }
+    
+    private Properties getProperties(final PropertiesDefinitionContext ctx) {
+        Properties result = new Properties();
+        if (null == ctx || null == ctx.properties()) {
+            return result;
+        }
+        for (PropertyContext each : ctx.properties().property()) {
+            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
+        }
+        return result;
+    }
+    
+    private String getIdentifierValue(final ParseTree context) {
+        return null == context ? null : new IdentifierValue(context.getText()).getValue();
     }
 }

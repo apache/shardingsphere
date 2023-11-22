@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import BaseRule, DCLStatement, DMLStatement;
+import DMLStatement, DCLStatement;
 
 createView
     : CREATE (OR REPLACE)? (NO? FORCE)? (EDITIONING | EDITIONABLE EDITIONING? | NONEDITIONABLE)? VIEW viewName
