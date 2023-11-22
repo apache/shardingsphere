@@ -30,22 +30,22 @@ public final class PipelineMetaDataProcessConfigurationGovernanceRepository {
     private final ClusterPersistRepository repository;
     
     /**
-     * Get meta data process configuration.
-     *
-     * @param jobType job type, nullable
-     * @return process configuration YAML text
-     */
-    public String getMetaDataProcessConfiguration(final String jobType) {
-        return repository.getDirectly(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType));
-    }
-    
-    /**
      * Persist meta data process configuration.
      *
      * @param jobType job type, nullable
      * @param processConfigYamlText process configuration YAML text
      */
-    public void persistMetaDataProcessConfiguration(final String jobType, final String processConfigYamlText) {
+    public void persist(final String jobType, final String processConfigYamlText) {
         repository.persist(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType), processConfigYamlText);
+    }
+    
+    /**
+     * Load meta data process configuration.
+     *
+     * @param jobType job type, nullable
+     * @return process configuration YAML text
+     */
+    public String load(final String jobType) {
+        return repository.getDirectly(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType));
     }
 }

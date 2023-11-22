@@ -34,7 +34,7 @@ public final class PipelineProcessConfigurationPersistService implements Pipelin
     
     @Override
     public PipelineProcessConfiguration load(final PipelineContextKey contextKey, final String jobType) {
-        String yamlText = PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).getMetaDataProcessConfigurationGovernanceRepository().getMetaDataProcessConfiguration(jobType);
+        String yamlText = PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).getMetaDataProcessConfigurationGovernanceRepository().load(jobType);
         if (Strings.isNullOrEmpty(yamlText)) {
             return null;
         }
@@ -45,6 +45,6 @@ public final class PipelineProcessConfigurationPersistService implements Pipelin
     @Override
     public void persist(final PipelineContextKey contextKey, final String jobType, final PipelineProcessConfiguration processConfig) {
         String yamlText = YamlEngine.marshal(swapper.swapToYamlConfiguration(processConfig));
-        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).getMetaDataProcessConfigurationGovernanceRepository().persistMetaDataProcessConfiguration(jobType, yamlText);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).getMetaDataProcessConfigurationGovernanceRepository().persist(jobType, yamlText);
     }
 }
