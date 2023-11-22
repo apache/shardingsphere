@@ -18,13 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
 
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Governance repository API.
@@ -60,68 +56,18 @@ public interface GovernanceRepositoryAPI {
     PipelineJobItemErrorMessageGovernanceRepository getJobItemErrorMessageGovernanceRepository();
     
     /**
+     * Get job check governance repository.
+     * 
+     * @return job check governance repository
+     */
+    PipelineJobCheckGovernanceRepository getJobCheckGovernanceRepository();
+    
+    /**
      * Watch pipeLine root path.
      *
      * @param listener data changed event listener
      */
     void watchPipeLineRootPath(DataChangedEventListener listener);
-    
-    /**
-     * Get latest check job id.
-     *
-     * @param parentJobId parent job id
-     * @return check job id
-     */
-    Optional<String> getLatestCheckJobId(String parentJobId);
-    
-    /**
-     * Persist latest check job id.
-     *
-     * @param parentJobId job id
-     * @param checkJobId check job id
-     */
-    void persistLatestCheckJobId(String parentJobId, String checkJobId);
-    
-    /**
-     * Delete latest check job id.
-     *
-     * @param parentJobId parent job id
-     */
-    void deleteLatestCheckJobId(String parentJobId);
-    
-    /**
-     * Get check job result.
-     *
-     * @param parentJobId parent job id
-     * @param checkJobId check job id
-     * @return check job result
-     */
-    Map<String, TableDataConsistencyCheckResult> getCheckJobResult(String parentJobId, String checkJobId);
-    
-    /**
-     * Persist check job result.
-     *
-     * @param parentJobId parent job id
-     * @param checkJobId check job id
-     * @param checkResultMap check result map
-     */
-    void persistCheckJobResult(String parentJobId, String checkJobId, Map<String, TableDataConsistencyCheckResult> checkResultMap);
-    
-    /**
-     * Delete check job result.
-     *
-     * @param parentJobId parent job id
-     * @param checkJobId check job id
-     */
-    void deleteCheckJobResult(String parentJobId, String checkJobId);
-    
-    /**
-     * List check job ids.
-     *
-     * @param parentJobId parent job id
-     * @return check job ids
-     */
-    Collection<String> listCheckJobIds(String parentJobId);
     
     /**
      * Delete job.

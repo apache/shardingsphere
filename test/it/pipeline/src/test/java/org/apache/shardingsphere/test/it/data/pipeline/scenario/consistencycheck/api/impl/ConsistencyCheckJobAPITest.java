@@ -91,20 +91,20 @@ class ConsistencyCheckJobAPITest {
                     new ConsistencyCheckJobConfiguration(checkJobId, parentJobId, null, null, TypedSPILoader.getService(DatabaseType.class, "H2")), 0, JobStatus.FINISHED, null);
             jobItemManager.persistProgress(checkJobItemContext);
             Map<String, TableDataConsistencyCheckResult> dataConsistencyCheckResult = Collections.singletonMap("t_order", new TableDataConsistencyCheckResult(true));
-            repositoryAPI.persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
-            Optional<String> latestCheckJobId = repositoryAPI.getLatestCheckJobId(parentJobId);
+            repositoryAPI.getJobCheckGovernanceRepository().persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
+            Optional<String> latestCheckJobId = repositoryAPI.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
             assertTrue(latestCheckJobId.isPresent());
             assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId.get()), is(expectedSequence++));
         }
         expectedSequence = 2;
         for (int i = 0; i < 2; i++) {
             jobAPI.dropByParentJobId(parentJobId);
-            Optional<String> latestCheckJobId = repositoryAPI.getLatestCheckJobId(parentJobId);
+            Optional<String> latestCheckJobId = repositoryAPI.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
             assertTrue(latestCheckJobId.isPresent());
             assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId.get()), is(expectedSequence--));
         }
         jobAPI.dropByParentJobId(parentJobId);
-        Optional<String> latestCheckJobId = repositoryAPI.getLatestCheckJobId(parentJobId);
+        Optional<String> latestCheckJobId = repositoryAPI.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
         assertFalse(latestCheckJobId.isPresent());
     }
 }
