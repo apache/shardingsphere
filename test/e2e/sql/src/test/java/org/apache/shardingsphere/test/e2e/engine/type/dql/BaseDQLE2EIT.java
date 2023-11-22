@@ -201,8 +201,10 @@ public abstract class BaseDQLE2EIT {
                     // TODO Since mysql 8.0.23, for the DATETIME type, the mysql driver returns the LocalDateTime type, but the proxy returns the Timestamp type.
                     assertThat(((Timestamp) actualValue).toLocalDateTime(), is(expectedValue));
                 } else if (Types.TIMESTAMP == actualMetaData.getColumnType(i + 1) || Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1)) {
-                    Object convertedActualValue = Types.TIMESTAMP == actualMetaData.getColumnType(i + 1) ? actualResultSet.getTimestamp(i + 1).toLocalDateTime().format(dateTimeFormatter) : actualValue;
-                    Object convertedExpectedValue = Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1) ? expectedResultSet.getTimestamp(i + 1).toLocalDateTime().format(dateTimeFormatter) : actualValue;
+                    Object convertedActualValue =
+                            Types.TIMESTAMP == actualMetaData.getColumnType(i + 1) ? actualResultSet.getTimestamp(i + 1).toLocalDateTime().format(dateTimeFormatter) : actualValue;
+                    Object convertedExpectedValue =
+                            Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1) ? expectedResultSet.getTimestamp(i + 1).toLocalDateTime().format(dateTimeFormatter) : actualValue;
                     assertThat(String.valueOf(convertedActualValue), is(String.valueOf(convertedExpectedValue)));
                 } else {
                     assertThat(String.valueOf(actualValue), is(String.valueOf(expectedValue)));
