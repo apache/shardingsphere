@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabase
 import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.TableNotExistsException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -79,6 +80,7 @@ public final class SimpleTableSegmentBinder {
         fillPivotColumnNamesInBinderContext(segment, statementBinderContext);
         IdentifierValue originalDatabase = getDatabaseName(segment, statementBinderContext);
         IdentifierValue originalSchema = getSchemaName(segment, statementBinderContext);
+        ShardingSpherePreconditions.checkNotNull(originalDatabase.getValue(), NoDatabaseSelectedException::new);
         checkTableExists(segment.getTableName().getIdentifier().getValue(), statementBinderContext, originalDatabase.getValue(), originalSchema.getValue());
         ShardingSphereSchema schema = statementBinderContext.getMetaData().getDatabase(originalDatabase.getValue()).getSchema(originalSchema.getValue());
         tableBinderContexts.put((segment.getAliasName().orElseGet(() -> segment.getTableName().getIdentifier().getValue())).toLowerCase(),
