@@ -34,7 +34,7 @@ chapter = true
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/api/src/main/java/org/apache/shardingsphere/sharding/spi/KeyGenerateAlgorithm.java)
+[`org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/core/src/main/java/org/apache/shardingsphere/keygen/core/algorithm/KeyGenerateAlgorithm.java)
 
 ### 定义
 
@@ -44,8 +44,8 @@ chapter = true
 
 | *配置标识*          | *详细说明*                  | *全限定类名*                                                                                                                                                                                                                                                                                               |
 |-----------------|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SNOWFLAKE       | 基于雪花算法的分布式主键生成算法        | [`org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/keygen/SnowflakeKeyGenerateAlgorithm.java)                               |
-| UUID            | 基于 UUID 的分布式主键生成算法      | [`org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/keygen/UUIDKeyGenerateAlgorithm.java)                                         |
+| SNOWFLAKE       | 基于雪花算法的分布式主键生成算法        | [`org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/type/snowflake/src/main/java/org/apache/shardingsphere/keygen/snowflake/algorithm/SnowflakeKeyGenerateAlgorithm.java)                               |
+| UUID            | 基于 UUID 的分布式主键生成算法      | [`org.apache.shardingsphere.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/type/uuid/src/main/java/org/apache/shardingsphere/keygen/uuid/algorithm/UUIDKeyGenerateAlgorithm.java)                                         |
 
 ## ShardingAuditAlgorithm
 

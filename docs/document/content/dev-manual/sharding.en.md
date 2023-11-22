@@ -34,7 +34,7 @@ Sharding Algorithm definition
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/api/src/main/java/org/apache/shardingsphere/sharding/spi/KeyGenerateAlgorithm.java)
+[`org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/core/src/main/java/org/apache/shardingsphere/keygen/core/algorithm/KeyGenerateAlgorithm.java)
 
 ### Definition
 
@@ -44,8 +44,8 @@ Distributed Key Generating Algorithm definition
 
 | *Configuration Type* | *Description*                                      | *Fully-qualified class name*                                                                                                                                                                                                                                                                          |
 |----------------------|----------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SNOWFLAKE            | Snowflake key generate algorithm                   | [`org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/keygen/SnowflakeKeyGenerateAlgorithm.java)                               |
-| UUID                 | UUID key generate algorithm                        | [`org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/algorithm/keygen/UUIDKeyGenerateAlgorithm.java)                                         |
+| SNOWFLAKE            | Snowflake key generate algorithm                   | [`org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/type/snowflake/src/main/java/org/apache/shardingsphere/keygen/snowflake/algorithm/SnowflakeKeyGenerateAlgorithm.java)                               |
+| UUID                 | UUID key generate algorithm                        | [`org.apache.shardingsphere.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm`](https://github.com/apache/shardingsphere/blob/master/infra/algorithm/key-generator/type/uuid/src/main/java/org/apache/shardingsphere/keygen/uuid/algorithm/UUIDKeyGenerateAlgorithm.java)                                         |
 
 ## ShardingAuditAlgorithm
 
