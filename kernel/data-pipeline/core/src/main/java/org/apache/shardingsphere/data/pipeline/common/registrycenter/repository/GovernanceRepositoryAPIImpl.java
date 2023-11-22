@@ -53,31 +53,18 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     private final PipelineJobOffsetGovernanceRepository jobOffsetGovernanceRepository;
     
+    private final PipelineJobItemProcessGovernanceRepository jobItemProcessGovernanceRepository;
+    
     public GovernanceRepositoryAPIImpl(final ClusterPersistRepository repository) {
         this.repository = repository;
         jobConfigurationGovernanceRepository = new PipelineJobConfigurationGovernanceRepository(repository);
         jobOffsetGovernanceRepository = new PipelineJobOffsetGovernanceRepository(repository);
+        jobItemProcessGovernanceRepository = new PipelineJobItemProcessGovernanceRepository(repository);
     }
     
     @Override
     public void watchPipeLineRootPath(final DataChangedEventListener listener) {
         repository.watch(PipelineNodePath.DATA_PIPELINE_ROOT, listener);
-    }
-    
-    @Override
-    public void persistJobItemProgress(final String jobId, final int shardingItem, final String progressValue) {
-        repository.persist(PipelineMetaDataNode.getJobOffsetItemPath(jobId, shardingItem), progressValue);
-    }
-    
-    @Override
-    public void updateJobItemProgress(final String jobId, final int shardingItem, final String progressValue) {
-        repository.update(PipelineMetaDataNode.getJobOffsetItemPath(jobId, shardingItem), progressValue);
-    }
-    
-    @Override
-    public Optional<String> getJobItemProgress(final String jobId, final int shardingItem) {
-        String text = repository.getDirectly(PipelineMetaDataNode.getJobOffsetItemPath(jobId, shardingItem));
-        return Strings.isNullOrEmpty(text) ? Optional.empty() : Optional.of(text);
     }
     
     @Override

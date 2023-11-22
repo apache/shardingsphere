@@ -54,8 +54,8 @@ public final class PipelineJobItemManager<T extends PipelineJobItemProgress> {
             return;
         }
         jobItemProgress.get().setStatus(status);
-        PipelineAPIFactory.getGovernanceRepositoryAPI(
-                PipelineJobIdUtils.parseContextKey(jobId)).updateJobItemProgress(jobId, shardingItem, YamlEngine.marshal(swapper.swapToYamlConfiguration(jobItemProgress.get())));
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId))
+                .getJobItemProcessGovernanceRepository().update(jobId, shardingItem, YamlEngine.marshal(swapper.swapToYamlConfiguration(jobItemProgress.get())));
     }
     
     /**
@@ -66,7 +66,7 @@ public final class PipelineJobItemManager<T extends PipelineJobItemProgress> {
      * @return job item progress
      */
     public Optional<T> getProgress(final String jobId, final int shardingItem) {
-        return PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProgress(jobId, shardingItem)
+        return PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProcessGovernanceRepository().get(jobId, shardingItem)
                 .map(optional -> swapper.swapToObject(YamlEngine.unmarshal(optional, swapper.getYamlProgressClass(), true)));
     }
     
@@ -77,7 +77,7 @@ public final class PipelineJobItemManager<T extends PipelineJobItemProgress> {
      */
     public void persistProgress(final PipelineJobItemContext jobItemContext) {
         PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobItemContext.getJobId()))
-                .persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertProgressYamlContent(jobItemContext));
+                .getJobItemProcessGovernanceRepository().persist(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertProgressYamlContent(jobItemContext));
     }
     
     /**
@@ -87,7 +87,7 @@ public final class PipelineJobItemManager<T extends PipelineJobItemProgress> {
      */
     public void updateProgress(final PipelineJobItemContext jobItemContext) {
         PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobItemContext.getJobId()))
-                .updateJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertProgressYamlContent(jobItemContext));
+                .getJobItemProcessGovernanceRepository().update(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertProgressYamlContent(jobItemContext));
     }
     
     @SuppressWarnings("unchecked")

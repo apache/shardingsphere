@@ -46,38 +46,18 @@ public interface GovernanceRepositoryAPI {
     PipelineJobOffsetGovernanceRepository getJobOffsetGovernanceRepository();
     
     /**
+     * Get job item process governance repository.
+     *
+     * @return job item process governance repository
+     */
+    PipelineJobItemProcessGovernanceRepository getJobItemProcessGovernanceRepository();
+    
+    /**
      * Watch pipeLine root path.
      *
      * @param listener data changed event listener
      */
     void watchPipeLineRootPath(DataChangedEventListener listener);
-    
-    /**
-     * Persist job item progress.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @param progressValue progress value
-     */
-    void persistJobItemProgress(String jobId, int shardingItem, String progressValue);
-    
-    /**
-     * Update job item progress.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @param progressValue progress value
-     */
-    void updateJobItemProgress(String jobId, int shardingItem, String progressValue);
-    
-    /**
-     * Get job item progress.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @return job item progress
-     */
-    Optional<String> getJobItemProgress(String jobId, int shardingItem);
     
     /**
      * Get latest check job id.
