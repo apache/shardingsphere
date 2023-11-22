@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Collection;
@@ -34,19 +33,18 @@ import java.util.Optional;
 public interface GovernanceRepositoryAPI {
     
     /**
+     * Get job configuration governance repository.
+     * 
+     * @return job configuration governance repository
+     */
+    PipelineJobConfigurationGovernanceRepository getJobConfigurationGovernanceRepository();
+    
+    /**
      * Watch pipeLine root path.
      *
      * @param listener data changed event listener
      */
     void watchPipeLineRootPath(DataChangedEventListener listener);
-    
-    /**
-     * Whether job configuration existed.
-     *
-     * @param jobId jobId
-     * @return job configuration exist or not
-     */
-    boolean isJobConfigurationExisted(String jobId);
     
     /**
      * Persist job offset info.
@@ -162,14 +160,6 @@ public interface GovernanceRepositoryAPI {
      * @param jobClass job class
      */
     void persistJobRootInfo(String jobId, Class<? extends PipelineJob> jobClass);
-    
-    /**
-     * Persist job configuration.
-     * 
-     * @param jobId job ID
-     * @param jobConfigPOJO job configuration POJO
-     */
-    void persistJobConfiguration(String jobId, JobConfigurationPOJO jobConfigPOJO);
     
     /**
      * Update job item error message.

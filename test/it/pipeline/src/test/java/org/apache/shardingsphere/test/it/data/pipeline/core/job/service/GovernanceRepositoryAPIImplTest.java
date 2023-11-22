@@ -83,13 +83,6 @@ class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    void assertIsJobConfigurationExisted() {
-        assertFalse(governanceRepositoryAPI.isJobConfigurationExisted("foo_job"));
-        getClusterPersistRepository().persist("/pipeline/jobs/foo_job/config", "foo");
-        assertTrue(governanceRepositoryAPI.isJobConfigurationExisted("foo_job"));
-    }
-    
-    @Test
     void assertPersistJobItemProgress() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
         governanceRepositoryAPI.updateJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue1");

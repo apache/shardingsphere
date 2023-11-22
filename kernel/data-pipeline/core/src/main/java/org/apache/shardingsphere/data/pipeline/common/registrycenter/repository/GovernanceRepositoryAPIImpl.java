@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
@@ -29,7 +29,6 @@ import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNode
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResultSwapper;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -47,20 +46,22 @@ import java.util.stream.Collectors;
 /**
  * Governance repository API impl.
  */
-@RequiredArgsConstructor
+@Getter
 @Slf4j
 public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAPI {
     
     private final ClusterPersistRepository repository;
     
-    @Override
-    public void watchPipeLineRootPath(final DataChangedEventListener listener) {
-        repository.watch(PipelineNodePath.DATA_PIPELINE_ROOT, listener);
+    private final PipelineJobConfigurationGovernanceRepository jobConfigurationGovernanceRepository;
+    
+    public GovernanceRepositoryAPIImpl(final ClusterPersistRepository repository) {
+        this.repository = repository;
+        jobConfigurationGovernanceRepository = new PipelineJobConfigurationGovernanceRepository(repository);
     }
     
     @Override
-    public boolean isJobConfigurationExisted(final String jobId) {
-        return null != repository.getDirectly(PipelineMetaDataNode.getJobConfigurationPath(jobId));
+    public void watchPipeLineRootPath(final DataChangedEventListener listener) {
+        repository.watch(PipelineNodePath.DATA_PIPELINE_ROOT, listener);
     }
     
     @Override
@@ -152,11 +153,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public void persistJobRootInfo(final String jobId, final Class<? extends PipelineJob> jobClass) {
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), jobClass.getName());
-    }
-    
-    @Override
-    public void persistJobConfiguration(final String jobId, final JobConfigurationPOJO jobConfigPOJO) {
-        repository.persist(PipelineMetaDataNode.getJobConfigurationPath(jobId), YamlEngine.marshal(jobConfigPOJO));
     }
     
     @Override

@@ -121,13 +121,13 @@ public final class CDCJobAPI implements InventoryIncrementalJobAPI {
         CDCJobConfiguration jobConfig = new YamlCDCJobConfigurationSwapper().swapToObject(yamlJobConfig);
         ShardingSpherePreconditions.checkState(0 != jobConfig.getJobShardingCount(), () -> new PipelineJobCreationWithInvalidShardingCountException(jobConfig.getJobId()));
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()));
-        if (repositoryAPI.isJobConfigurationExisted(jobConfig.getJobId())) {
+        if (repositoryAPI.getJobConfigurationGovernanceRepository().isExisted(jobConfig.getJobId())) {
             log.warn("CDC job already exists in registry center, ignore, job id is `{}`", jobConfig.getJobId());
         } else {
             repositoryAPI.persistJobRootInfo(jobConfig.getJobId(), getJobClass());
             JobConfigurationPOJO jobConfigPOJO = jobConfig.convertToJobConfigurationPOJO();
             jobConfigPOJO.setDisabled(true);
-            repositoryAPI.persistJobConfiguration(jobConfig.getJobId(), jobConfigPOJO);
+            repositoryAPI.getJobConfigurationGovernanceRepository().persist(jobConfig.getJobId(), jobConfigPOJO);
             if (!param.isFull()) {
                 initIncrementalPosition(jobConfig);
             }
