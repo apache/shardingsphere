@@ -21,6 +21,6 @@
         <column name="creation_date" type="Date" />
         <column name="update_date" type="datetime" />
     </metadata>
-    <row data-node="passthrough.t_data_type_date" values="1, 2017-08-08, 2017-08-08 00:00:00" />
-    <row data-node="passthrough.t_data_type_date" values="2, 2017-08-08, 2017-08-08 00:00:00" />
+    <row data-node="passthrough.t_data_type_date" values="1, 2017-08-08, 2017-08-08 00:00:00.0" />
+    <row data-node="passthrough.t_data_type_date" values="2, 2017-08-08, 2017-08-08 00:00:00.0" />
 </dataset>
