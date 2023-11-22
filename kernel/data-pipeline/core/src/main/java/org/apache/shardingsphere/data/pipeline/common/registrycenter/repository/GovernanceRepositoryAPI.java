@@ -67,27 +67,18 @@ public interface GovernanceRepositoryAPI {
     PipelineJobGovernanceRepository getJobGovernanceRepository();
     
     /**
+     * Get meta data data source governance repository.
+     *
+     * @return meta data data source governance repository
+     */
+    PipelineMetaDataDataSourceGovernanceRepository getMetaDataDataSourceGovernanceRepository();
+            
+    /**
      * Watch pipeLine root path.
      *
      * @param listener data changed event listener
      */
     void watchPipeLineRootPath(DataChangedEventListener listener);
-    
-    /**
-     * Get meta data data sources.
-     *
-     * @param jobType job type
-     * @return data source properties
-     */
-    String getMetaDataDataSources(String jobType);
-    
-    /**
-     * Persist meta data data sources.
-     *
-     * @param jobType job type
-     * @param metaDataDataSources data source properties
-     */
-    void persistMetaDataDataSources(String jobType, String metaDataDataSources);
     
     /**
      * Get meta data process configuration.

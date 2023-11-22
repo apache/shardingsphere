@@ -66,7 +66,7 @@ public final class PipelineJobItemManager<T extends PipelineJobItemProgress> {
      * @return job item progress
      */
     public Optional<T> getProgress(final String jobId, final int shardingItem) {
-        return PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProcessGovernanceRepository().get(jobId, shardingItem)
+        return PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProcessGovernanceRepository().load(jobId, shardingItem)
                 .map(optional -> swapper.swapToObject(YamlEngine.unmarshal(optional, swapper.getYamlProgressClass(), true)));
     }
     

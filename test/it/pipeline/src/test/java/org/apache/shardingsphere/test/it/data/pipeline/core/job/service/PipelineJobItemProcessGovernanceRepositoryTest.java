@@ -57,13 +57,13 @@ class PipelineJobItemProcessGovernanceRepositoryTest {
         PipelineJobItemProcessGovernanceRepository repository = new PipelineJobItemProcessGovernanceRepository(clusterPersistRepository);
         MigrationJobItemContext jobItemContext = mockJobItemContext();
         repository.update(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue1");
-        assertFalse(repository.get(jobItemContext.getJobId(), jobItemContext.getShardingItem()).isPresent());
+        assertFalse(repository.load(jobItemContext.getJobId(), jobItemContext.getShardingItem()).isPresent());
         repository.persist(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue1");
-        Optional<String> actual = repository.get(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        Optional<String> actual = repository.load(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("testValue1"));
         repository.update(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue2");
-        actual = repository.get(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        actual = repository.load(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("testValue2"));
     }

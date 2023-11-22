@@ -57,9 +57,9 @@ class PipelineJobOffsetGovernanceRepositoryTest {
     void assertPersist() {
         ClusterPersistRepository clusterPersistRepository = getClusterPersistRepository();
         PipelineJobOffsetGovernanceRepository repository = new PipelineJobOffsetGovernanceRepository(clusterPersistRepository);
-        assertFalse(repository.get("1").isTargetSchemaTableCreated());
+        assertFalse(repository.load("1").isTargetSchemaTableCreated());
         repository.persist("1", new JobOffsetInfo(true));
-        assertTrue(repository.get("1").isTargetSchemaTableCreated());
+        assertTrue(repository.load("1").isTargetSchemaTableCreated());
     }
     
     @Test

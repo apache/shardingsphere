@@ -38,7 +38,7 @@ class PipelineJobGovernanceRepositoryTest {
         PipelineJobGovernanceRepository repository = new PipelineJobGovernanceRepository(clusterPersistRepository);
         clusterPersistRepository.persist(PipelineNodePath.DATA_PIPELINE_ROOT + "/1", "");
         repository.delete("1");
-        Optional<String> actual = new PipelineJobItemProcessGovernanceRepository(clusterPersistRepository).get("1", 0);
+        Optional<String> actual = new PipelineJobItemProcessGovernanceRepository(clusterPersistRepository).load("1", 0);
         assertFalse(actual.isPresent());
     }
     

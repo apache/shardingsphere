@@ -46,7 +46,7 @@ public final class PipelineJobIteErrorMessageManager {
      * @return map, key is sharding item, value is error message
      */
     public String getErrorMessage() {
-        return Optional.ofNullable(governanceRepositoryAPI.getJobItemErrorMessageGovernanceRepository().get(jobId, shardingItem)).orElse("");
+        return Optional.ofNullable(governanceRepositoryAPI.getJobItemErrorMessageGovernanceRepository().load(jobId, shardingItem)).orElse("");
     }
     
     /**

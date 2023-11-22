@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
  * Governance repository API impl.
  */
 @Getter
-@Slf4j
 public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAPI {
     
     private final ClusterPersistRepository repository;
@@ -45,6 +43,8 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     private final PipelineJobGovernanceRepository jobGovernanceRepository;
     
+    private final PipelineMetaDataDataSourceGovernanceRepository metaDataDataSourceGovernanceRepository;
+    
     public GovernanceRepositoryAPIImpl(final ClusterPersistRepository repository) {
         this.repository = repository;
         jobConfigurationGovernanceRepository = new PipelineJobConfigurationGovernanceRepository(repository);
@@ -53,21 +53,12 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         jobItemErrorMessageGovernanceRepository = new PipelineJobItemErrorMessageGovernanceRepository(repository);
         jobCheckGovernanceRepository = new PipelineJobCheckGovernanceRepository(repository);
         jobGovernanceRepository = new PipelineJobGovernanceRepository(repository);
+        metaDataDataSourceGovernanceRepository = new PipelineMetaDataDataSourceGovernanceRepository(repository);
     }
     
     @Override
     public void watchPipeLineRootPath(final DataChangedEventListener listener) {
         repository.watch(PipelineNodePath.DATA_PIPELINE_ROOT, listener);
-    }
-    
-    @Override
-    public String getMetaDataDataSources(final String jobType) {
-        return repository.getDirectly(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType));
-    }
-    
-    @Override
-    public void persistMetaDataDataSources(final String jobType, final String metaDataDataSources) {
-        repository.persist(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType), metaDataDataSources);
     }
     
     @Override

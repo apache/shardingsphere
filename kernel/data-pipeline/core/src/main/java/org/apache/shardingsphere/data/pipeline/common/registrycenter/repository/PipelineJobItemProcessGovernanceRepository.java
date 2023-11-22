@@ -55,13 +55,13 @@ public final class PipelineJobItemProcessGovernanceRepository {
     }
     
     /**
-     * Get job item progress.
+     * Load job item progress.
      *
      * @param jobId job id
      * @param shardingItem sharding item
      * @return job item progress
      */
-    public Optional<String> get(final String jobId, final int shardingItem) {
+    public Optional<String> load(final String jobId, final int shardingItem) {
         String text = repository.getDirectly(PipelineMetaDataNode.getJobOffsetItemPath(jobId, shardingItem));
         return Strings.isNullOrEmpty(text) ? Optional.empty() : Optional.of(text);
     }
