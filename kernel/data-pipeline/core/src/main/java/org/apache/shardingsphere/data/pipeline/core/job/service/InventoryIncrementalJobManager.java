@@ -24,15 +24,11 @@ import org.apache.shardingsphere.data.pipeline.common.config.process.PipelinePro
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfo;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlJobOffsetInfoSwapper;
 import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
-import org.apache.shardingsphere.data.pipeline.common.pojo.TableBasedPipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -84,12 +80,11 @@ public final class InventoryIncrementalJobManager {
         long startTimeMillis = Long.parseLong(Optional.ofNullable(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).getProps().getProperty("start_time_millis")).orElse("0"));
         Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = getJobProgress(jobConfig);
         List<InventoryIncrementalJobItemInfo> result = new LinkedList<>();
-        PipelineJobItemManager<InventoryIncrementalJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
+        PipelineJobInfo jobInfo = jobAPI.getJobInfo(jobId);
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : jobProgress.entrySet()) {
             int shardingItem = entry.getKey();
-            TableBasedPipelineJobInfo jobInfo = (TableBasedPipelineJobInfo) jobAPI.getJobInfo(jobId);
             InventoryIncrementalJobItemProgress jobItemProgress = entry.getValue();
-            String errorMessage = jobItemManager.getErrorMessage(jobId, shardingItem);
+            String errorMessage = new PipelineJobIteErrorMessageManager(jobId, shardingItem).getErrorMessage();
             if (null == jobItemProgress) {
                 result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTable(), null, startTimeMillis, 0, errorMessage));
                 continue;
@@ -120,27 +115,5 @@ public final class InventoryIncrementalJobManager {
             jobItemProgress.ifPresent(optional -> optional.setActive(!jobConfigPOJO.isDisabled()));
             map.put(each, jobItemProgress.orElse(null));
         }, LinkedHashMap::putAll);
-    }
-    
-    /**
-     * Persist job offset info.
-     *
-     * @param jobId job ID
-     * @param jobOffsetInfo job offset info
-     */
-    public void persistJobOffsetInfo(final String jobId, final JobOffsetInfo jobOffsetInfo) {
-        String value = YamlEngine.marshal(new YamlJobOffsetInfoSwapper().swapToYamlConfiguration(jobOffsetInfo));
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persistJobOffsetInfo(jobId, value);
-    }
-    
-    /**
-     * Get job offset info.
-     *
-     * @param jobId job ID
-     * @return job offset progress
-     */
-    public JobOffsetInfo getJobOffsetInfo(final String jobId) {
-        Optional<String> offsetInfo = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobOffsetInfo(jobId);
-        return new YamlJobOffsetInfoSwapper().swapToObject(offsetInfo.isPresent() ? YamlEngine.unmarshal(offsetInfo.get(), YamlJobOffsetInfo.class) : new YamlJobOffsetInfo());
     }
 }

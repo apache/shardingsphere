@@ -49,9 +49,8 @@ import org.apache.shardingsphere.data.pipeline.common.datasource.yaml.YamlPipeli
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
-import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobMetaData;
-import org.apache.shardingsphere.data.pipeline.common.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.common.spi.algorithm.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.common.task.progress.IncrementalTaskProgress;
@@ -122,14 +121,13 @@ public final class CDCJobAPI implements InventoryIncrementalJobAPI {
         CDCJobConfiguration jobConfig = new YamlCDCJobConfigurationSwapper().swapToObject(yamlJobConfig);
         ShardingSpherePreconditions.checkState(0 != jobConfig.getJobShardingCount(), () -> new PipelineJobCreationWithInvalidShardingCountException(jobConfig.getJobId()));
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()));
-        String jobConfigKey = PipelineMetaDataNode.getJobConfigPath(jobConfig.getJobId());
-        if (repositoryAPI.isExisted(jobConfigKey)) {
-            log.warn("CDC job already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
+        if (repositoryAPI.isJobConfigurationExisted(jobConfig.getJobId())) {
+            log.warn("CDC job already exists in registry center, ignore, job id is `{}`", jobConfig.getJobId());
         } else {
-            repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobConfig.getJobId()), getJobClass().getName());
+            repositoryAPI.persistJobRootInfo(jobConfig.getJobId(), getJobClass());
             JobConfigurationPOJO jobConfigPOJO = jobConfig.convertToJobConfigurationPOJO();
             jobConfigPOJO.setDisabled(true);
-            repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfigPOJO));
+            repositoryAPI.persistJobConfiguration(jobConfig.getJobId(), jobConfigPOJO);
             if (!param.isFull()) {
                 initIncrementalPosition(jobConfig);
             }
@@ -290,10 +288,10 @@ public final class CDCJobAPI implements InventoryIncrementalJobAPI {
     }
     
     @Override
-    public TableBasedPipelineJobInfo getJobInfo(final String jobId) {
+    public PipelineJobInfo getJobInfo(final String jobId) {
         PipelineJobMetaData jobMetaData = new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
         CDCJobConfiguration jobConfig = new PipelineJobManager(this).getJobConfiguration(jobId);
-        return new TableBasedPipelineJobInfo(jobMetaData, jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
+        return new PipelineJobInfo(jobMetaData, jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
     }
     
     @Override

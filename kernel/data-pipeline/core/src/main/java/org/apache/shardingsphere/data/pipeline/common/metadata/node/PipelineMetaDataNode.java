@@ -106,12 +106,12 @@ public final class PipelineMetaDataNode {
     }
     
     /**
-     * Get job config path.
+     * Get job configuration path.
      *
      * @param jobId job id
      * @return job configuration path
      */
-    public static String getJobConfigPath(final String jobId) {
+    public static String getJobConfigurationPath(final String jobId) {
         return String.join("/", getJobRootPath(jobId), "config");
     }
     

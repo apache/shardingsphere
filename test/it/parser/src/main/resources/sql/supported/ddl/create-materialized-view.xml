@@ -122,4 +122,13 @@
     GROUP BY
       ROLLUP(calendar_year, calendar_quarter_desc, calendar_month_desc, t.time_id),
       ROLLUP(prod_category, prod_subcategory, p.prod_id);" db-types="Oracle" />
+    <sql-case id="create_materialized_view_with_pctfree_storage_build_deferred" value="CREATE MATERIALIZED VIEW product_sales_mv
+    PCTFREE 0 TABLESPACE demo
+    STORAGE (INITIAL 8M)
+    BUILD DEFERRED
+    REFRESH COMPLETE ON DEMAND
+    ENABLE QUERY REWRITE AS
+    SELECT p.prod_name, SUM(s.amount_sold) AS dollar_sales
+    FROM sales s, products p WHERE s.prod_id = p.prod_id
+    GROUP BY p.prod_name;" db-types="Oracle" />
 </sql-cases>

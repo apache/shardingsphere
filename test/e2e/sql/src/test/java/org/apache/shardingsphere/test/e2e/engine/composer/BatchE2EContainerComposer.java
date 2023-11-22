@@ -63,7 +63,9 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer implem
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
     
     public BatchE2EContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException {
         super(testParam);
@@ -159,8 +161,10 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer implem
             for (String expected : expectedDatSetRows.get(count).splitValues(", ")) {
                 if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
                     if (!E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
-                        assertThat(dateTimeFormatter.format(actual.getDate(columnIndex).toLocalDate()), is(expected));
+                        assertThat(dateFormatter.format(actual.getDate(columnIndex).toLocalDate()), is(expected));
                     }
+                } else if (Types.TIMESTAMP == actual.getMetaData().getColumnType(columnIndex)) {
+                    assertThat(actual.getTimestamp(columnIndex).toLocalDateTime().format(dateTimeFormatter), is(expected));
                 } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
                         && ("PostgreSQL".equals(databaseType.getType()) || "openGauss".equals(databaseType.getType()))) {
                     assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
