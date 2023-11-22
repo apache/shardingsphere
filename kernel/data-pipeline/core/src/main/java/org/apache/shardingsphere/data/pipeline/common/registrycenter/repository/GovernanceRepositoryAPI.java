@@ -19,8 +19,6 @@ package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository
 
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.util.List;
-
 /**
  * Governance repository API.
  */
@@ -74,14 +72,6 @@ public interface GovernanceRepositoryAPI {
      * @param listener data changed event listener
      */
     void watchPipeLineRootPath(DataChangedEventListener listener);
-    
-    /**
-     * Get sharding items of job.
-     *
-     * @param jobId job id
-     * @return sharding items
-     */
-    List<Integer> getShardingItems(String jobId);
     
     /**
      * Get meta data data sources.

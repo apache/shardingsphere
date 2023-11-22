@@ -24,9 +24,6 @@ import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNode
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * Governance repository API impl.
  */
@@ -61,12 +58,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public void watchPipeLineRootPath(final DataChangedEventListener listener) {
         repository.watch(PipelineNodePath.DATA_PIPELINE_ROOT, listener);
-    }
-    
-    @Override
-    public List<Integer> getShardingItems(final String jobId) {
-        List<String> result = repository.getChildrenKeys(PipelineMetaDataNode.getJobOffsetPath(jobId));
-        return result.stream().map(Integer::parseInt).collect(Collectors.toList());
     }
     
     @Override
