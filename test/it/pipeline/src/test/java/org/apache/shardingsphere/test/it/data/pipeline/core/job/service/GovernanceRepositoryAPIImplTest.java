@@ -41,7 +41,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -49,7 +48,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -76,14 +74,6 @@ class GovernanceRepositoryAPIImplTest {
                 COUNT_DOWN_LATCH.countDown();
             }
         });
-    }
-    
-    @Test
-    void assertDeleteJob() {
-        getClusterPersistRepository().persist(PipelineNodePath.DATA_PIPELINE_ROOT + "/1", "");
-        governanceRepositoryAPI.deleteJob("1");
-        Optional<String> actual = new PipelineJobItemProcessGovernanceRepository(getClusterPersistRepository()).get("1", 0);
-        assertFalse(actual.isPresent());
     }
     
     @Test

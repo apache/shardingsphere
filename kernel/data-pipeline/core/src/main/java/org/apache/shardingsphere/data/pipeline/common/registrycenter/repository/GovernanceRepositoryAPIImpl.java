@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -47,6 +46,8 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     private final PipelineJobCheckGovernanceRepository jobCheckGovernanceRepository;
     
+    private final PipelineJobGovernanceRepository jobGovernanceRepository;
+    
     public GovernanceRepositoryAPIImpl(final ClusterPersistRepository repository) {
         this.repository = repository;
         jobConfigurationGovernanceRepository = new PipelineJobConfigurationGovernanceRepository(repository);
@@ -54,21 +55,12 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         jobItemProcessGovernanceRepository = new PipelineJobItemProcessGovernanceRepository(repository);
         jobItemErrorMessageGovernanceRepository = new PipelineJobItemErrorMessageGovernanceRepository(repository);
         jobCheckGovernanceRepository = new PipelineJobCheckGovernanceRepository(repository);
+        jobGovernanceRepository = new PipelineJobGovernanceRepository(repository);
     }
     
     @Override
     public void watchPipeLineRootPath(final DataChangedEventListener listener) {
         repository.watch(PipelineNodePath.DATA_PIPELINE_ROOT, listener);
-    }
-    
-    @Override
-    public void deleteJob(final String jobId) {
-        repository.delete(PipelineMetaDataNode.getJobRootPath(jobId));
-    }
-    
-    @Override
-    public void persistJobRootInfo(final String jobId, final Class<? extends PipelineJob> jobClass) {
-        repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), jobClass.getName());
     }
     
     @Override

@@ -79,7 +79,7 @@ public final class PipelineJobManager {
             log.warn("jobId already exists in registry center, ignore, job id is `{}`", jobId);
             return Optional.of(jobId);
         }
-        repositoryAPI.persistJobRootInfo(jobId, jobAPI.getJobClass());
+        repositoryAPI.getJobGovernanceRepository().create(jobId, jobAPI.getJobClass());
         repositoryAPI.getJobConfigurationGovernanceRepository().persist(jobId, jobConfig.convertToJobConfigurationPOJO());
         return Optional.of(jobId);
     }
@@ -176,7 +176,7 @@ public final class PipelineJobManager {
     public void drop(final String jobId) {
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
         PipelineAPIFactory.getJobOperateAPI(contextKey).remove(String.valueOf(jobId), null);
-        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).deleteJob(jobId);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).getJobGovernanceRepository().delete(jobId);
     }
     
     /**

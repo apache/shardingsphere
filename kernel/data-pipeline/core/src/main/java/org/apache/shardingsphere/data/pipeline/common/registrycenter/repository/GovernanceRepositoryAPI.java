@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
 
-import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.List;
@@ -63,26 +62,18 @@ public interface GovernanceRepositoryAPI {
     PipelineJobCheckGovernanceRepository getJobCheckGovernanceRepository();
     
     /**
+     * Get job governance repository.
+     * 
+     * @return job governance repository
+     */
+    PipelineJobGovernanceRepository getJobGovernanceRepository();
+    
+    /**
      * Watch pipeLine root path.
      *
      * @param listener data changed event listener
      */
     void watchPipeLineRootPath(DataChangedEventListener listener);
-    
-    /**
-     * Delete job.
-     *
-     * @param jobId job id
-     */
-    void deleteJob(String jobId);
-    
-    /**
-     * Persist job root info.
-     *
-     * @param jobId job ID
-     * @param jobClass job class
-     */
-    void persistJobRootInfo(String jobId, Class<? extends PipelineJob> jobClass);
     
     /**
      * Get sharding items of job.

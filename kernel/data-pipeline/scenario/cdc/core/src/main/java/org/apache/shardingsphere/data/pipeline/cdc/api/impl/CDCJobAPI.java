@@ -124,7 +124,7 @@ public final class CDCJobAPI implements InventoryIncrementalJobAPI {
         if (repositoryAPI.getJobConfigurationGovernanceRepository().isExisted(jobConfig.getJobId())) {
             log.warn("CDC job already exists in registry center, ignore, job id is `{}`", jobConfig.getJobId());
         } else {
-            repositoryAPI.persistJobRootInfo(jobConfig.getJobId(), getJobClass());
+            repositoryAPI.getJobGovernanceRepository().create(jobConfig.getJobId(), getJobClass());
             JobConfigurationPOJO jobConfigPOJO = jobConfig.convertToJobConfigurationPOJO();
             jobConfigPOJO.setDisabled(true);
             repositoryAPI.getJobConfigurationGovernanceRepository().persist(jobConfig.getJobId(), jobConfigPOJO);
