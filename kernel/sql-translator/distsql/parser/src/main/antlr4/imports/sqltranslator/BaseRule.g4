@@ -15,58 +15,22 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+grammar BaseRule;
 
-import Alphabet;
+import Symbol, Keyword, Literals;
 
-WS
-    : [ \t\r\n] + ->skip
+propertiesDefinition
+    : PROPERTIES LP_ properties? RP_
     ;
 
-SHOW
-    : S H O W
+properties
+    : property (COMMA_ property)*
     ;
 
-RULE
-    : R U L E
+property
+    : key=STRING_ EQ_ value=literal
     ;
 
-SQL_TRANSLATOR
-    : S Q L UL_ T R A N S L A T O R
-    ;
-
-USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED
-    : U S E UL_ O R I G I N A L UL_ S Q L UL_ W H E N UL_ T R A N S L A T I N G UL_ F A I L E D
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-TYPE
-    : T Y P E
-    ;
-
-JOOQ
-    : J O O Q
-    ;
-
-NATIVE
-    : N A T I V E
-    ;
-
-NAME
-    : N A M E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
-
-TRUE
-    : T R U E
-    ;
-
-FALSE
-    : F A L S E
+literal
+    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
     ;

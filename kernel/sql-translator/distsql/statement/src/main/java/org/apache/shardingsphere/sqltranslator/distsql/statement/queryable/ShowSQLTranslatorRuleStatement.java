@@ -15,58 +15,12 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.sqltranslator.distsql.statement.queryable;
 
-import Alphabet;
+import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-RULE
-    : R U L E
-    ;
-
-SQL_TRANSLATOR
-    : S Q L UL_ T R A N S L A T O R
-    ;
-
-USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED
-    : U S E UL_ O R I G I N A L UL_ S Q L UL_ W H E N UL_ T R A N S L A T I N G UL_ F A I L E D
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-TYPE
-    : T Y P E
-    ;
-
-JOOQ
-    : J O O Q
-    ;
-
-NATIVE
-    : N A T I V E
-    ;
-
-NAME
-    : N A M E
-    ;
-
-PROPERTIES
-    : P R O P E R T I E S
-    ;
-
-TRUE
-    : T R U E
-    ;
-
-FALSE
-    : F A L S E
-    ;
+/**
+ * Show SQL translator rule statement.
+ */
+public final class ShowSQLTranslatorRuleStatement extends QueryableRALStatement {
+}

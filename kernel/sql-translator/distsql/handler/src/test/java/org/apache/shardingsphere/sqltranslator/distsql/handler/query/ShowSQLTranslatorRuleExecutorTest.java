@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.distsql.handler;
+package org.apache.shardingsphere.sqltranslator.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
-import org.apache.shardingsphere.sqltranslator.distsql.statement.ShowSQLTranslatorRuleStatement;
+import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.jupiter.api.Test;
 
@@ -49,16 +49,18 @@ class ShowSQLTranslatorRuleExecutorTest {
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("NATIVE"));
-        assertThat(row.getCell(2), is("true"));
+        assertThat(row.getCell(2), is(""));
+        assertThat(row.getCell(3), is("true"));
     }
     
     @Test
     void assertGetColumnNames() {
         ShowSQLTranslatorRuleExecutor executor = new ShowSQLTranslatorRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(2));
+        assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("type"));
+        assertThat(iterator.next(), is("props"));
         assertThat(iterator.next(), is("use_original_sql_when_translating_failed"));
     }
     
