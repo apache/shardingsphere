@@ -44,7 +44,7 @@ public final class SQLTranslatorDistSQLStatementVisitor extends SQLTranslatorDis
     @Override
     public ASTNode visitAlterSQLTranslatorRule(final AlterSQLTranslatorRuleContext ctx) {
         return new AlterSQLTranslatorRuleStatement(getIdentifierValue(ctx.sqlTranslatorRuleDefinition().providerName()), getProperties(ctx.sqlTranslatorRuleDefinition().propertiesDefinition()),
-                null == ctx.sqlTranslatorRuleDefinition().useOriginalSQLDefinition().useOriginalSQL() ? null
+                null == ctx.sqlTranslatorRuleDefinition().useOriginalSQLDefinition() ? null
                         : Boolean.valueOf(getIdentifierValue(ctx.sqlTranslatorRuleDefinition().useOriginalSQLDefinition().useOriginalSQL())));
     }
     
