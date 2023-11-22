@@ -53,6 +53,13 @@ public interface GovernanceRepositoryAPI {
     PipelineJobItemProcessGovernanceRepository getJobItemProcessGovernanceRepository();
     
     /**
+     * Get job item error message governance repository.
+     * 
+     * @return job item error message governance repository
+     */
+    PipelineJobItemErrorMessageGovernanceRepository getJobItemErrorMessageGovernanceRepository();
+    
+    /**
      * Watch pipeLine root path.
      *
      * @param listener data changed event listener
@@ -132,15 +139,6 @@ public interface GovernanceRepositoryAPI {
     void persistJobRootInfo(String jobId, Class<? extends PipelineJob> jobClass);
     
     /**
-     * Update job item error message.
-     *
-     * @param jobId job ID
-     * @param shardingItem sharding item
-     * @param errorMessage error message
-     */
-    void updateJobItemErrorMessage(String jobId, int shardingItem, String errorMessage);
-    
-    /**
      * Get sharding items of job.
      *
      * @param jobId job id
@@ -179,13 +177,4 @@ public interface GovernanceRepositoryAPI {
      * @param processConfigYamlText process configuration YAML text
      */
     void persistMetaDataProcessConfiguration(String jobType, String processConfigYamlText);
-    
-    /**
-     * Get job item error msg.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @return error msg
-     */
-    String getJobItemErrorMessage(String jobId, int shardingItem);
 }

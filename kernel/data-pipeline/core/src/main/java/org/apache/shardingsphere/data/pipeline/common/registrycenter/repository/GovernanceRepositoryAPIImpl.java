@@ -55,11 +55,14 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     private final PipelineJobItemProcessGovernanceRepository jobItemProcessGovernanceRepository;
     
+    private final PipelineJobItemErrorMessageGovernanceRepository jobItemErrorMessageGovernanceRepository;
+    
     public GovernanceRepositoryAPIImpl(final ClusterPersistRepository repository) {
         this.repository = repository;
         jobConfigurationGovernanceRepository = new PipelineJobConfigurationGovernanceRepository(repository);
         jobOffsetGovernanceRepository = new PipelineJobOffsetGovernanceRepository(repository);
         jobItemProcessGovernanceRepository = new PipelineJobItemProcessGovernanceRepository(repository);
+        jobItemErrorMessageGovernanceRepository = new PipelineJobItemErrorMessageGovernanceRepository(repository);
     }
     
     @Override
@@ -132,11 +135,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void updateJobItemErrorMessage(final String jobId, final int shardingItem, final String errorMessage) {
-        repository.update(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem), errorMessage);
-    }
-    
-    @Override
     public List<Integer> getShardingItems(final String jobId) {
         List<String> result = repository.getChildrenKeys(PipelineMetaDataNode.getJobOffsetPath(jobId));
         return result.stream().map(Integer::parseInt).collect(Collectors.toList());
@@ -160,10 +158,5 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public void persistMetaDataProcessConfiguration(final String jobType, final String processConfigYamlText) {
         repository.persist(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType), processConfigYamlText);
-    }
-    
-    @Override
-    public String getJobItemErrorMessage(final String jobId, final int shardingItem) {
-        return repository.getDirectly(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem));
     }
 }
