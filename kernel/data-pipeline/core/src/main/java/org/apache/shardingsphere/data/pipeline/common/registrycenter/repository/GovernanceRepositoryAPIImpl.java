@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
 
 import lombok.Getter;
-import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -45,6 +44,8 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     private final PipelineMetaDataDataSourceGovernanceRepository metaDataDataSourceGovernanceRepository;
     
+    private final PipelineMetaDataProcessConfigurationGovernanceRepository metaDataProcessConfigurationGovernanceRepository;
+    
     public GovernanceRepositoryAPIImpl(final ClusterPersistRepository repository) {
         this.repository = repository;
         jobConfigurationGovernanceRepository = new PipelineJobConfigurationGovernanceRepository(repository);
@@ -54,20 +55,11 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         jobCheckGovernanceRepository = new PipelineJobCheckGovernanceRepository(repository);
         jobGovernanceRepository = new PipelineJobGovernanceRepository(repository);
         metaDataDataSourceGovernanceRepository = new PipelineMetaDataDataSourceGovernanceRepository(repository);
+        metaDataProcessConfigurationGovernanceRepository = new PipelineMetaDataProcessConfigurationGovernanceRepository(repository);
     }
     
     @Override
     public void watchPipeLineRootPath(final DataChangedEventListener listener) {
         repository.watch(PipelineNodePath.DATA_PIPELINE_ROOT, listener);
-    }
-    
-    @Override
-    public String getMetaDataProcessConfiguration(final String jobType) {
-        return repository.getDirectly(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType));
-    }
-    
-    @Override
-    public void persistMetaDataProcessConfiguration(final String jobType, final String processConfigYamlText) {
-        repository.persist(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType), processConfigYamlText);
     }
 }
