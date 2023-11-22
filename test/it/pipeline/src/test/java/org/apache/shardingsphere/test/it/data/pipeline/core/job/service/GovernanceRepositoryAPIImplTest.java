@@ -87,6 +87,8 @@ class GovernanceRepositoryAPIImplTest {
         assertFalse(governanceRepositoryAPI.isJobConfigurationExisted("foo_job"));
         getClusterPersistRepository().persist("/pipeline/jobs/foo_job/config", "foo");
         assertTrue(governanceRepositoryAPI.isJobConfigurationExisted("foo_job"));
+        getClusterPersistRepository().delete("/pipeline/jobs/foo_job/config");
+        assertFalse(governanceRepositoryAPI.isJobConfigurationExisted("foo_job"));
     }
     
     @Test
