@@ -36,12 +36,6 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-bootstrap</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         
         <dependency>
@@ -103,7 +97,6 @@
                         <configuration>
                             <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
                             <buildArgs>
-                                <arg>--report-unsupported-elements-at-runtime</arg>
                                 <arg>-J-Xmx7g</arg>
                             </buildArgs>
                             <metadataRepository>
