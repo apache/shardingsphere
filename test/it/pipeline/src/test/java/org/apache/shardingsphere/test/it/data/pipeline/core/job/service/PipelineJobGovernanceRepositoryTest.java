@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -31,6 +32,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class PipelineJobGovernanceRepositoryTest {
+    
+    @BeforeAll
+    static void beforeClass() {
+        PipelineContextUtils.mockModeConfigAndContextManager();
+    }
     
     @Test
     void assertDelete() {
