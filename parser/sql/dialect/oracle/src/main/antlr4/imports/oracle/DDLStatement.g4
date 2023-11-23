@@ -2304,7 +2304,7 @@ auditUnified
     : AUDIT (auditPolicyClause | contextClause)
     ;
 
-noAudit
+noAuditUnified
     : NOAUDIT (noAuditPolicyClause | contextClause)
     ;
 
@@ -4138,3 +4138,11 @@ createProfile
     : CREATE MANDATORY? PROFILE profileName LIMIT (resourceParameters | passwordParameters)+ (CONTAINER EQ_ (CURRENT | ALL))?
     ;
 
+noAudit
+    : noAuditTraditional | noAuditUnified
+    ;
+
+noAuditTraditional
+    : NOAUDIT (auditOperationClause auditingByClause? |  auditSchemaObjectClause | NETWORK | DIRECT_PATH LOAD auditingByClause?)
+    (WHENEVER NOT? SUCCESSFUL)? (CONTAINER EQ_ (CURRENT | ALL))?
+    ;
