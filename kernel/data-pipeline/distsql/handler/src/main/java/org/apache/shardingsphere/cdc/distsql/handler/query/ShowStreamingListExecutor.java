@@ -40,7 +40,7 @@ public final class ShowStreamingListExecutor implements QueryableRALExecutor<Sho
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingListStatement sqlStatement) {
         return pipelineJobManager.getJobInfos(new PipelineContextKey(InstanceType.PROXY)).stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
-                each.getDatabaseName(), each.getTable(),
+                each.getDatabaseName(), each.getTableName(),
                 each.getJobMetaData().getJobItemCount(), each.getJobMetaData().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),
                 each.getJobMetaData().getCreateTime(), Optional.ofNullable(each.getJobMetaData().getStopTime()).orElse(""))).collect(Collectors.toList());
     }

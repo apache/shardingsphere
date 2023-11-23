@@ -31,6 +31,5 @@ public final class PipelineJobInfo {
     
     private final String databaseName;
     
-    // TODO Rename
-    private final String table;
+    private final String tableName;
 }
