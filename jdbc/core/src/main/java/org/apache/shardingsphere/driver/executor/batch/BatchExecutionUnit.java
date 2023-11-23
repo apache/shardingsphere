@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -66,7 +67,7 @@ public final class BatchExecutionUnit {
         if (executionUnit.getSqlUnit().getParameters().isEmpty() || 0 == actualCallAddBatchTimes) {
             result.add(Collections.emptyList());
         } else {
-            result.addAll(Lists.partition(executionUnit.getSqlUnit().getParameters(), executionUnit.getSqlUnit().getParameters().size() / actualCallAddBatchTimes));
+            result.addAll(Lists.partition(new ArrayList<>(executionUnit.getSqlUnit().getParameters()), executionUnit.getSqlUnit().getParameters().size() / actualCallAddBatchTimes));
         }
         return result;
     }
