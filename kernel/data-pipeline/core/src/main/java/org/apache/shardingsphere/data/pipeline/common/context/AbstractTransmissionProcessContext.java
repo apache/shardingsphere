@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 /**
- * Abstract inventory incremental process context.
+ * Abstract transmission process context.
  */
 @Getter
 public abstract class AbstractTransmissionProcessContext implements TransmissionProcessContext {
