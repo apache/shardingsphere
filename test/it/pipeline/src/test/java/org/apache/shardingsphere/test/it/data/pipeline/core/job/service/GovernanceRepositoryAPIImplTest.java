@@ -31,6 +31,8 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -85,7 +87,10 @@ class GovernanceRepositoryAPIImplTest {
     @Test
     void assertIsJobConfigurationExisted() {
         assertFalse(governanceRepositoryAPI.isJobConfigurationExisted("foo_job"));
-        getClusterPersistRepository().persist("/pipeline/jobs/foo_job/config", "foo");
+        JobConfigurationPOJO value = new JobConfigurationPOJO();
+        value.setJobName("foo_job");
+        value.setShardingTotalCount(1);
+        getClusterPersistRepository().persist("/pipeline/jobs/foo_job/config", YamlEngine.marshal(value));
         assertTrue(governanceRepositoryAPI.isJobConfigurationExisted("foo_job"));
     }
     

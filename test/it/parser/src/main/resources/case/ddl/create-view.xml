@@ -727,6 +727,32 @@
         </select>
     </create-view>
     
+    <create-view sql-case-id="create_view_as_select_with_condition11" view-definition="SELECT last_name, salary FROM employees WHERE last_name = USER">
+        <view name="own_salary" start-index="12" stop-index="21" />
+        <select>
+            <projections start-index="33" stop-index="49">
+                <column-projection name="last_name" start-index="33" stop-index="41" />
+                <column-projection name="salary" start-index="44" stop-index="49" />
+            </projections>
+            <from>
+                <simple-table name="employees" start-index="56" stop-index="64" />
+            </from>
+            <where start-index="66" stop-index="87">
+                <expr>
+                    <binary-operation-expression start-index="72" stop-index="87">
+                        <left>
+                            <column name="last_name" start-index="72" stop-index="80" />
+                        </left>
+                        <right>
+                            <column name="USER" start-index="84" stop-index="87" />
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-view>
+    
     <create-view sql-case-id="create_view_as_where_where" view-definition="SELECT employee_id, last_name, department_id FROM employees, departments WHERE employees.department_id = departments.department_id">
         <view name="employees_departments" start-index="12" stop-index="32" />
         <select>
@@ -1361,6 +1387,721 @@
                     </binary-operation-expression>
                 </expr>
             </where>
+        </select>
+    </create-view>
+    
+    <create-view sql-case-id="create_view_select_with_check_option_constraint" view-definition="SELECT empno, ename, deptno FROM emp WHERE deptno = 10">
+        <view name="sales_staff" start-index="12" stop-index="22" />
+        <select>
+            <projections start-index="34" stop-index="53">
+                <column-projection name="empno" start-index="34" stop-index="38" />
+                <column-projection name="ename" start-index="41" stop-index="45" />
+                <column-projection name="deptno" start-index="48" stop-index="53" />
+            </projections>
+            <from>
+                <simple-table name="emp" start-index="60" stop-index="62" />
+            </from>
+            <where start-index="64" stop-index="80">
+                <expr>
+                    <binary-operation-expression start-index="70" stop-index="80">
+                        <left>
+                            <column name="deptno" start-index="70" stop-index="75" />
+                        </left>
+                        <right>
+                            <literal-expression value="10" start-index="79" stop-index="80" />
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-view>
+    
+    <create-view sql-case-id="create_view_select_with_group_by_function" view-definition="SELECT     prod_name product, country_name country, channel_id channel,     SUBSTR(calendar_quarter_desc, 6,2) quarter,     SUM(amount_sold) amount_sold, SUM(quantity_sold) quantity_sold      FROM sales, times, customers, countries, products     WHERE sales.time_id = times.time_id AND     sales.prod_id = products.prod_id AND     sales.cust_id = customers.cust_id AND     customers.country_id = countries.country_id     GROUP BY prod_name, country_name, channel_id,     SUBSTR(calendar_quarter_desc, 6, 2)">
+        <view name="sales_view" start-index="12" stop-index="21" />
+        <select>
+            <projections start-index="41" stop-index="215">
+                <column-projection name="prod_name" alias="product" start-index="41" stop-index="57" />
+                <column-projection name="country_name" alias="country" start-index="60" stop-index="79" />
+                <column-projection name="channel_id" alias="channel" start-index="82" stop-index="99" />
+                <expression-projection alias="quarter" text="SUBSTR(calendar_quarter_desc, 6,2)" start-index="106" stop-index="147">
+                    <expr>
+                        <function function-name="SUBSTR" text="SUBSTR(calendar_quarter_desc, 6,2)" start-index="106" stop-index="139">
+                            <parameter>
+                                <column name="calendar_quarter_desc" start-index="113" stop-index="133" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="6" start-index="136" stop-index="136" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="2" start-index="138" stop-index="138" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+                <aggregation-projection alias="amount_sold" type="SUM" expression="SUM(amount_sold)" start-index="154" stop-index="169">
+                    <parameter>
+                        <column name="amount_sold" start-index="158" stop-index="169" />
+                    </parameter>
+                </aggregation-projection>
+                <aggregation-projection alias="quantity_sold" type="SUM" expression="SUM(quantity_sold)" start-index="184" stop-index="201">
+                    <parameter>
+                        <column name="quantity_sold" start-index="188" stop-index="200" />
+                    </parameter>
+                </aggregation-projection>
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <join-table join-type="COMMA">
+                            <left>
+                                <join-table join-type="COMMA">
+                                    <left>
+                                        <join-table join-type="COMMA">
+                                            <left>
+                                                <simple-table name="sales" start-index="227" stop-index="231" />
+                                            </left>
+                                            <right>
+                                                <simple-table name="times" start-index="234" stop-index="238" />
+                                            </right>
+                                        </join-table>
+                                    </left>
+                                    <right>
+                                        <simple-table name="customers" start-index="241" stop-index="249" />
+                                    </right>
+                                </join-table>
+                            </left>
+                            <right>
+                                <simple-table name="countries" start-index="252" stop-index="260" />
+                            </right>
+                        </join-table>
+                    </left>
+                    <right>
+                        <simple-table name="products" start-index="263" stop-index="270" />
+                    </right>
+                </join-table>
+            </from>
+            <where start-index="276" stop-index="445">
+                <expr>
+                    <binary-operation-expression start-index="282" stop-index="445">
+                        <left>
+                            <binary-operation-expression start-index="282" stop-index="393">
+                                <left>
+                                    <binary-operation-expression start-index="282" stop-index="351">
+                                        <left>
+                                            <binary-operation-expression start-index="282" stop-index="310">
+                                                <left>
+                                                    <column name="time_id" start-index="282" stop-index="294">
+                                                        <owner name="sales" start-index="282" stop-index="286" />
+                                                    </column>
+                                                </left>
+                                                <right>
+                                                    <column name="time_id" start-index="298" stop-index="310">
+                                                        <owner name="times" start-index="298" stop-index="302" />
+                                                    </column>
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </left>
+                                        <right>
+                                            <binary-operation-expression start-index="320" stop-index="351">
+                                                <left>
+                                                    <column name="prod_id" start-index="320" stop-index="332">
+                                                        <owner name="sales" start-index="320" stop-index="324" />
+                                                    </column>
+                                                </left>
+                                                <right>
+                                                    <column name="prod_id" start-index="336" stop-index="351">
+                                                        <owner name="products" start-index="336" stop-index="343" />
+                                                    </column>
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </right>
+                                        <operator>AND</operator>
+                                    </binary-operation-expression>
+                                </left>
+                                <right>
+                                    <binary-operation-expression start-index="361" stop-index="393">
+                                        <left>
+                                            <column name="cust_id" start-index="361" stop-index="373">
+                                                <owner name="sales" start-index="361" stop-index="365" />
+                                            </column>
+                                        </left>
+                                        <right>
+                                            <column name="cust_id" start-index="377" stop-index="393">
+                                                <owner name="customers" start-index="377" stop-index="385" />
+                                            </column>
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </right>
+                                <operator>AND</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <binary-operation-expression start-index="403" stop-index="445">
+                                <left>
+                                    <column name="country_id" start-index="403" stop-index="422">
+                                        <owner name="customers" start-index="403" stop-index="411" />
+                                    </column>
+                                </left>
+                                <right>
+                                    <column name="country_id" start-index="426" stop-index="445">
+                                        <owner name="countries" start-index="426" stop-index="434" />
+                                    </column>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </right>
+                        <operator>AND</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+            <group-by>
+                <column-item name="prod_name" order-direction="ASC" start-index="460" stop-index="468" />
+                <column-item name="country_name" order-direction="ASC" start-index="471" stop-index="482" />
+                <column-item name="channel_id" order-direction="ASC" start-index="485" stop-index="494" />
+                <expression-item expression="SUBSTR(calendar_quarter_desc, 6, 2)" order-direction="ASC" start-index="501" stop-index="535">
+                    <expr>
+                        <function function-name="SUBSTR" text="SUBSTR(calendar_quarter_desc, 6, 2)" start-index="501" stop-index="535">
+                            <parameter>
+                                <column name="calendar_quarter_desc" start-index="508" stop-index="528" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="6" start-index="531" stop-index="531" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="2" start-index="534" stop-index="534" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-item>
+            </group-by>
+        </select>
+    </create-view>
+    
+    <create-view sql-case-id="create_view_select_with_group_by" view-definition="SELECT country_name country, prod_name product, calendar_year year,     calendar_month_name month, SUM(amount_sold) sale, COUNT(amount_sold) cnt     FROM sales, times, customers, countries, products     WHERE sales.time_id = times.time_id AND     sales.prod_id = products.prod_id AND     sales.cust_id = customers.cust_id AND     customers.country_id = countries.country_id     GROUP BY country_name, prod_name, calendar_year, calendar_month_name">
+        <view name="sales_view2" start-index="12" stop-index="22" />
+        <select>
+            <projections start-index="38" stop-index="174">
+                <column-projection name="country_name" alias="country" start-index="38" stop-index="57" />
+                <column-projection name="prod_name" alias="product" start-index="60" stop-index="76" />
+                <column-projection name="calendar_year" alias="year" start-index="79" stop-index="96" />
+                <column-projection name="calendar_month_name" alias="month" start-index="103" stop-index="127" />
+                <aggregation-projection alias="sale" type="SUM" expression="SUM(amount_sold)" start-index="130" stop-index="145">
+                    <parameter>
+                        <column name="amount_sold" start-index="134" stop-index="144" />
+                    </parameter>
+                </aggregation-projection>
+                <aggregation-projection alias="cnt" type="COUNT" expression="COUNT(amount_sold)" start-index="153" stop-index="170">
+                    <parameter>
+                        <column name="amount_sold" start-index="159" stop-index="169" />
+                    </parameter>
+                </aggregation-projection>
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <join-table join-type="COMMA">
+                            <left>
+                                <join-table join-type="COMMA">
+                                    <left>
+                                        <join-table join-type="COMMA">
+                                            <left>
+                                                <simple-table name="sales" start-index="185" stop-index="189" />
+                                            </left>
+                                            <right>
+                                                <simple-table name="times" start-index="192" stop-index="196" />
+                                            </right>
+                                        </join-table>
+                                    </left>
+                                    <right>
+                                        <simple-table name="customers" start-index="199" stop-index="207" />
+                                    </right>
+                                </join-table>
+                            </left>
+                            <right>
+                                <simple-table name="countries" start-index="210" stop-index="218" />
+                            </right>
+                        </join-table>
+                    </left>
+                    <right>
+                        <simple-table name="products" start-index="221" stop-index="228" />
+                    </right>
+                </join-table>
+            </from>
+            <where start-index="234" stop-index="403">
+                <expr>
+                    <binary-operation-expression start-index="240" stop-index="403">
+                        <left>
+                            <binary-operation-expression start-index="240" stop-index="351">
+                                <left>
+                                    <binary-operation-expression start-index="240" stop-index="309">
+                                        <left>
+                                            <binary-operation-expression start-index="240" stop-index="268">
+                                                <left>
+                                                    <column name="time_id" start-index="240" stop-index="252">
+                                                        <owner name="sales" start-index="240" stop-index="244" />
+                                                    </column>
+                                                </left>
+                                                <right>
+                                                    <column name="time_id" start-index="256" stop-index="268">
+                                                        <owner name="times" start-index="256" stop-index="260" />
+                                                    </column>
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </left>
+                                        <right>
+                                            <binary-operation-expression start-index="278" stop-index="309">
+                                                <left>
+                                                    <column name="prod_id" start-index="278" stop-index="290">
+                                                        <owner name="sales" start-index="278" stop-index="282" />
+                                                    </column>
+                                                </left>
+                                                <right>
+                                                    <column name="prod_id" start-index="294" stop-index="309">
+                                                        <owner name="products" start-index="294" stop-index="301" />
+                                                    </column>
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </right>
+                                        <operator>AND</operator>
+                                    </binary-operation-expression>
+                                </left>
+                                <right>
+                                    <binary-operation-expression start-index="319" stop-index="351">
+                                        <left>
+                                            <column name="cust_id" start-index="319" stop-index="331">
+                                                <owner name="sales" start-index="319" stop-index="323" />
+                                            </column>
+                                        </left>
+                                        <right>
+                                            <column name="cust_id" start-index="335" stop-index="351">
+                                                <owner name="customers" start-index="335" stop-index="343" />
+                                            </column>
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </right>
+                                <operator>AND</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <binary-operation-expression start-index="361" stop-index="403">
+                                <left>
+                                    <column name="country_id" start-index="361" stop-index="380">
+                                        <owner name="customers" start-index="361" stop-index="369" />
+                                    </column>
+                                </left>
+                                <right>
+                                    <column name="country_id" start-index="384" stop-index="403">
+                                        <owner name="countries" start-index="384" stop-index="392" />
+                                    </column>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </right>
+                        <operator>AND</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+            <group-by>
+                <column-item name="country_name" start-index="418" stop-index="429" />
+                <column-item name="prod_name" start-index="432" stop-index="440" />
+                <column-item name="calendar_year" start-index="443" stop-index="455" />
+                <column-item name="calendar_month_name" start-index="458" stop-index="476" />
+            </group-by>
+        </select>
+    </create-view>
+    
+    <create-view sql-case-id="create_view_select_with_partition_by" view-definition="SELECT country_name country, prod_name product, calendar_year year,     SUM(amount_sold) sales, COUNT(amount_sold) cnt,     MAX(calendar_year) KEEP (DENSE_RANK FIRST ORDER BY SUM(amount_sold) DESC)     OVER (PARTITION BY country_name, prod_name) best_year,     MAX(calendar_year) KEEP (DENSE_RANK LAST ORDER BY SUM(amount_sold) DESC)     OVER (PARTITION BY country_name, prod_name) worst_year     FROM sales, times, customers, countries, products     WHERE sales.time_id = times.time_id AND sales.prod_id = products.prod_id AND     sales.cust_id =customers.cust_id AND customers.country_id=countries.country_id     GROUP BY country_name, prod_name, calendar_year">
+        <view name="sales_view" start-index="12" stop-index="21" />
+        <select>
+            <projections start-index="37" stop-index="421">
+                <column-projection name="country_name" alias="country" start-index="37" stop-index="56" />
+                <column-projection name="prod_name" alias="product" start-index="59" stop-index="75" />
+                <column-projection name="calendar_year" alias="year" start-index="78" stop-index="95" />
+                <aggregation-projection type="SUM" alias="sales" expression="SUM(amount_sold)" start-index="102" stop-index="117">
+                    <parameter>
+                        <column name="amount_sold" start-index="106" stop-index="116" />
+                    </parameter>
+                </aggregation-projection>
+                <aggregation-projection type="COUNT" alias="cnt" expression="COUNT(amount_sold)" start-index="126" stop-index="143">
+                    <parameter>
+                        <column name="amount_sold" start-index="132" stop-index="142" />
+                    </parameter>
+                </aggregation-projection>
+                <aggregation-projection type="MAX" alias="best_year" expression="MAX(calendar_year) KEEP (DENSE_RANK FIRST ORDER BY SUM(amount_sold) DESC)     OVER (PARTITION BY country_name, prod_name)" start-index="154" stop-index="274">
+                    <parameter>
+                        <column name="calendar_year" start-index="158" stop-index="170" />
+                    </parameter>
+                </aggregation-projection>
+                <aggregation-projection type="MAX" alias="worst_year" expression="MAX(calendar_year) KEEP (DENSE_RANK LAST ORDER BY SUM(amount_sold) DESC)     OVER (PARTITION BY country_name, prod_name)" start-index="291" stop-index="410">
+                    <parameter>
+                        <column name="calendar_year" start-index="295" stop-index="307" />
+                    </parameter>
+                </aggregation-projection>
+            </projections>
+            <from>
+                <join-table join-type="COMMA">
+                    <left>
+                        <join-table join-type="COMMA">
+                            <left>
+                                <join-table join-type="COMMA">
+                                    <left>
+                                        <join-table join-type="COMMA">
+                                            <left>
+                                                <simple-table name="sales" start-index="432" stop-index="436" />
+                                            </left>
+                                            <right>
+                                                <simple-table name="times" start-index="439" stop-index="443" />
+                                            </right>
+                                        </join-table>
+                                    </left>
+                                    <right>
+                                        <simple-table name="customers" start-index="446" stop-index="454" />
+                                    </right>
+                                </join-table>
+                            </left>
+                            <right>
+                                <simple-table name="countries" start-index="457" stop-index="465" />
+                            </right>
+                        </join-table>
+                    </left>
+                    <right>
+                        <simple-table name="products" start-index="468" stop-index="475" />
+                    </right>
+                </join-table>
+            </from>
+            <where start-index="481" stop-index="639">
+                <expr>
+                    <binary-operation-expression start-index="487" stop-index="639">
+                        <left>
+                            <binary-operation-expression start-index="487" stop-index="593">
+                                <left>
+                                    <binary-operation-expression start-index="487" stop-index="552">
+                                        <left>
+                                            <binary-operation-expression start-index="487" stop-index="515">
+                                                <left>
+                                                    <column name="time_id" start-index="487" stop-index="499">
+                                                        <owner name="sales" start-index="487" stop-index="491" />
+                                                    </column>
+                                                </left>
+                                                <right>
+                                                    <column name="time_id" start-index="503" stop-index="515">
+                                                        <owner name="times" start-index="503" stop-index="507" />
+                                                    </column>
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </left>
+                                        <right>
+                                            <binary-operation-expression start-index="521" stop-index="552">
+                                                <left>
+                                                    <column name="prod_id" start-index="521" stop-index="533">
+                                                        <owner name="sales" start-index="521" stop-index="525" />
+                                                    </column>
+                                                </left>
+                                                <right>
+                                                    <column name="prod_id" start-index="537" stop-index="552">
+                                                        <owner name="products" start-index="537" stop-index="544" />
+                                                    </column>
+                                                </right>
+                                                <operator>=</operator>
+                                            </binary-operation-expression>
+                                        </right>
+                                        <operator>AND</operator>
+                                    </binary-operation-expression>
+                                </left>
+                                <right>
+                                    <binary-operation-expression start-index="562" stop-index="593">
+                                        <left>
+                                            <column name="cust_id" start-index="562" stop-index="574">
+                                                <owner name="sales" start-index="562" stop-index="566" />
+                                            </column>
+                                        </left>
+                                        <right>
+                                            <column name="cust_id" start-index="577" stop-index="593">
+                                                <owner name="customers" start-index="577" stop-index="585" />
+                                            </column>
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </right>
+                                <operator>AND</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <binary-operation-expression start-index="599" stop-index="639">
+                                <left>
+                                    <column name="country_id" start-index="599" stop-index="618">
+                                        <owner name="customers" start-index="599" stop-index="607" />
+                                    </column>
+                                </left>
+                                <right>
+                                    <column name="country_id" start-index="620" stop-index="639">
+                                        <owner name="countries" start-index="620" stop-index="628" />
+                                    </column>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </right>
+                        <operator>AND</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+            <group-by>
+                <column-item name="country_name" order-direction="ASC" start-index="654" stop-index="665" />
+                <column-item name="prod_name" order-direction="ASC" start-index="668" stop-index="676" />
+                <column-item name="calendar_year" order-direction="ASC" start-index="679" stop-index="691" />
+            </group-by>
+        </select>
+    </create-view>
+    
+    <create-view sql-case-id="create_view_select_with_multiset" view-definition="SELECT d.deptno, d.deptname, CAST(MULTISET(SELECT e.ename, e.salary, e.deptname, CAST(MULTISET(SELECT p.projname, p.mgr FROM projects p WHERE p.mgr = e.ename) AS nt_project_t) FROM emps e WHERE e.deptname = d.deptname) AS nt_emp_t) FROM depts d">
+        <view name="v_depts" start-index="12" stop-index="18" />
+        <select>
+            <projections start-index="77" stop-index="300">
+                <column-projection name="deptno" start-index="77" stop-index="84">
+                    <owner name="d" start-index="77" stop-index="77" />
+                </column-projection>
+                <column-projection name="deptname" start-index="87" stop-index="96">
+                    <owner name="d" start-index="87" stop-index="87" />
+                </column-projection>
+                <expression-projection text="CAST(MULTISET(SELECT e.ename, e.salary, e.deptname, CAST(MULTISET(SELECT p.projname, p.mgr FROM projects p WHERE p.mgr = e.ename) AS nt_project_t) FROM emps e WHERE e.deptname = d.deptname) AS nt_emp_t)" start-index="99" stop-index="300">
+                    <expr>
+                        <function function-name="CAST" text="CAST(MULTISET(SELECT e.ename, e.salary, e.deptname, CAST(MULTISET(SELECT p.projname, p.mgr FROM projects p WHERE p.mgr = e.ename) AS nt_project_t) FROM emps e WHERE e.deptname = d.deptname) AS nt_emp_t)" start-index="99" stop-index="300">
+                            <parameter>
+                                <subquery start-index="112" stop-index="287">
+                                    <select>
+                                        <projections start-index="120" stop-index="244">
+                                            <column-projection name="ename" start-index="120" stop-index="126">
+                                                <owner name="e" start-index="120" stop-index="120" />
+                                            </column-projection>
+                                            <column-projection name="salary" start-index="129" stop-index="136">
+                                                <owner name="e" start-index="129" stop-index="129" />
+                                            </column-projection>
+                                            <column-projection name="deptname" start-index="139" stop-index="148">
+                                                <owner name="e" start-index="139" stop-index="139" />
+                                            </column-projection>
+                                            <expression-projection text="CAST(MULTISET(SELECT p.projname, p.mgr FROM projects p WHERE p.mgr = e.ename) AS nt_project_t)" start-index="151" stop-index="244">
+                                                <expr>
+                                                    <function function-name="CAST" text="CAST(MULTISET(SELECT p.projname, p.mgr FROM projects p WHERE p.mgr = e.ename) AS nt_project_t)" start-index="151" stop-index="244">
+                                                        <parameter>
+                                                            <subquery start-index="164" stop-index="227">
+                                                                <select>
+                                                                    <projections start-index="172" stop-index="188">
+                                                                        <column-projection name="projname" start-index="172" stop-index="181">
+                                                                            <owner name="p" start-index="172" stop-index="172" />
+                                                                        </column-projection>
+                                                                        <column-projection name="mgr" start-index="184" stop-index="188">
+                                                                            <owner name="p" start-index="184" stop-index="184" />
+                                                                        </column-projection>
+                                                                    </projections>
+                                                                    <from>
+                                                                        <simple-table name="projects" alias="p" start-index="195" stop-index="204" />
+                                                                    </from>
+                                                                    <where start-index="206" stop-index="226">
+                                                                        <expr>
+                                                                            <binary-operation-expression start-index="212" stop-index="226">
+                                                                                <left>
+                                                                                    <column name="mgr" start-index="212" stop-index="216">
+                                                                                        <owner name="p" start-index="212" stop-index="212" />
+                                                                                    </column>
+                                                                                </left>
+                                                                                <operator>=</operator>
+                                                                                <right>
+                                                                                    <column name="ename" start-index="220" stop-index="226">
+                                                                                        <owner name="e" start-index="220" stop-index="220" />
+                                                                                    </column>
+                                                                                </right>
+                                                                            </binary-operation-expression>
+                                                                        </expr>
+                                                                    </where>
+                                                                </select>
+                                                            </subquery>
+                                                        </parameter>
+                                                        <parameter>
+                                                            <data-type value="nt_project_t" start-index="232" stop-index="243" />
+                                                        </parameter>
+                                                    </function>
+                                                </expr>
+                                            </expression-projection>
+                                        </projections>
+                                        <from>
+                                            <simple-table alias="e" name="emps" start-index="251" stop-index="256" />
+                                        </from>
+                                        <where start-index="258" stop-index="286">
+                                            <expr>
+                                                <binary-operation-expression start-index="264" stop-index="286">
+                                                    <left>
+                                                        <column name="deptname" start-index="264" stop-index="273">
+                                                            <owner name="e" start-index="264" stop-index="264" />
+                                                        </column>
+                                                    </left>
+                                                    <right>
+                                                        <column name="deptname" start-index="277" stop-index="286">
+                                                            <owner name="d" start-index="277" stop-index="277" />
+                                                        </column>
+                                                    </right>
+                                                    <operator>=</operator>
+                                                </binary-operation-expression>   
+                                            </expr>
+                                        </where>
+                                    </select>
+                                </subquery>
+                            </parameter>
+                            <parameter>
+                                <data-type value="nt_emp_t" start-index="292" stop-index="299" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <simple-table name="depts" alias="d" start-index="307" stop-index="313" />
+            </from>
+        </select>
+    </create-view>
+    
+    <create-view sql-case-id="create_view_with_select_value" view-definition="SELECT VALUE(p) AS warehouse_xml FROM xwarehouses p">
+        <view name="warehouse_view" start-index="12" stop-index="25" />
+        <select>
+            <projections start-index="37" stop-index="61">
+                <expression-projection text="VALUE(p)" alias="warehouse_xml" start-index="37" stop-index="61">
+                    <expr>
+                        <function function-name="VALUE" text="VALUE(p)" start-index="37" stop-index="44">
+                            <parameter>
+                                <column name="p" start-index="43" stop-index="43" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <simple-table name="xwarehouses" alias="p" start-index="68" stop-index="80" />
+            </from>
+        </select>
+    </create-view>
+    
+    <create-view sql-case-id="create_view_select_to_number_to_char" view-definition="SELECT time_id, TO_NUMBER(TO_CHAR(time_id, 'ddd')) AS day_in_year FROM times">
+        <view name="time_view" start-index="12" stop-index="20" />
+        <select>
+            <projections start-index="32" stop-index="89">
+                <column-projection name="time_id" start-index="32" stop-index="38" />
+                <expression-projection text="TO_NUMBER(TO_CHAR(time_id, 'ddd'))" alias="day_in_year" start-index="41" stop-index="89">
+                    <expr>
+                        <function function-name="TO_NUMBER" text="TO_NUMBER(TO_CHAR(time_id, 'ddd'))" start-index="41" stop-index="74">
+                            <parameter>
+                                <function function-name="TO_CHAR" text="TO_CHAR(time_id, 'ddd')" start-index="51" stop-index="73">
+                                    <parameter>
+                                        <column name="time_id" start-index="59" stop-index="65" />
+                                    </parameter>
+                                    <parameter>
+                                        <literal-expression value="ddd" start-index="68" stop-index="72" />
+                                    </parameter>
+                                </function>
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <simple-table name="times" start-index="96" stop-index="100" />
+            </from>
+        </select>
+    </create-view>
+    
+    <create-view sql-case-id="create_view_select_subquery_with_union_all" view-definition="(SELECT c.rowid crid, c.cust_id, 2 umarker FROM customers c WHERE c.cust_last_name = 'Smith' UNION ALL SELECT c.rowid crid, c.cust_id, 3 umarker FROM customers c WHERE c.cust_last_name = 'Jones')">
+        <view name="view_with_unionall" start-index="12" stop-index="29" />
+        <select>
+            <projections start-index="42" stop-index="75">
+                <column-projection name="rowid" alias="crid" start-index="42" stop-index="53">
+                    <owner name="c" start-index="42" stop-index="42" />
+                </column-projection>
+                <column-projection name="cust_id" start-index="56" stop-index="64">
+                    <owner name="c" start-index="56" stop-index="56" />
+                </column-projection>
+                <expression-projection text="2" alias="umarker" start-index="67" stop-index="75">
+                    <expr>
+                        <literal-expression value="2" start-index="67" stop-index="67" />
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <simple-table name="customers" alias="c" start-index="82" stop-index="92" />
+            </from>
+            <combine combine-type="UNION_ALL" start-index="35" stop-index="227">
+                <left>
+                    <projections start-index="42" stop-index="75">
+                        <column-projection name="rowid" alias="crid" start-index="42" stop-index="53">
+                            <owner name="c" start-index="42" stop-index="42" />
+                        </column-projection>
+                        <column-projection name="cust_id" start-index="56" stop-index="64">
+                            <owner name="c" start-index="56" stop-index="56" />
+                        </column-projection>
+                        <expression-projection text="2" alias="umarker" start-index="67" stop-index="75">
+                            <expr>
+                                <literal-expression value="2" start-index="67" stop-index="67" />
+                            </expr>
+                        </expression-projection>
+                    </projections>
+                    <from>
+                        <simple-table name="customers" alias="c" start-index="82" stop-index="92" />
+                    </from>
+                    <where start-index="94" stop-index="125">
+                        <expr>
+                            <binary-operation-expression start-index="100" stop-index="125">
+                                <left>
+                                    <column name="cust_last_name" start-index="100" stop-index="115">
+                                        <owner name="c" start-index="100" stop-index="100" />
+                                    </column>
+                                </left>
+                                <right>
+                                    <literal-expression value="Smith" start-index="119" stop-index="125" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </expr>
+                    </where>
+                </left>
+                <right>
+                    <projections start-index="144" stop-index="177">
+                        <column-projection name="rowid" alias="crid" start-index="144" stop-index="155">
+                            <owner name="c" start-index="144" stop-index="144" />
+                        </column-projection>
+                        <column-projection name="cust_id" start-index="158" stop-index="166">
+                            <owner name="c" start-index="158" stop-index="158" />
+                        </column-projection>
+                        <expression-projection text="3" alias="umarker" start-index="169" stop-index="177">
+                            <expr>
+                                <literal-expression value="3" start-index="169" stop-index="169" />
+                            </expr>
+                        </expression-projection>
+                    </projections>
+                    <from>
+                        <simple-table name="customers" alias="c" start-index="184" stop-index="194" />
+                    </from>
+                    <where start-index="196" stop-index="227">
+                        <expr>
+                            <binary-operation-expression start-index="202" stop-index="227">
+                                <left>
+                                    <column name="cust_last_name" start-index="202" stop-index="217">
+                                        <owner name="c" start-index="202" stop-index="202" />
+                                    </column>
+                                </left>
+                                <right>
+                                    <literal-expression value="Jones" start-index="221" stop-index="227" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </expr>
+                    </where>
+                </right>
+            </combine>
         </select>
     </create-view>
 </sql-parser-test-cases>
