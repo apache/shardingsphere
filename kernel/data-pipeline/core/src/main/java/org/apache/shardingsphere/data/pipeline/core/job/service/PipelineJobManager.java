@@ -75,12 +75,12 @@ public final class PipelineJobManager {
         String jobId = jobConfig.getJobId();
         ShardingSpherePreconditions.checkState(0 != jobConfig.getJobShardingCount(), () -> new PipelineJobCreationWithInvalidShardingCountException(jobId));
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId));
-        if (repositoryAPI.isJobConfigurationExisted(jobId)) {
+        if (repositoryAPI.getJobConfigurationGovernanceRepository().isExisted(jobId)) {
             log.warn("jobId already exists in registry center, ignore, job id is `{}`", jobId);
             return Optional.of(jobId);
         }
-        repositoryAPI.persistJobRootInfo(jobId, jobAPI.getJobClass());
-        repositoryAPI.persistJobConfiguration(jobId, jobConfig.convertToJobConfigurationPOJO());
+        repositoryAPI.getJobGovernanceRepository().create(jobId, jobAPI.getJobClass());
+        repositoryAPI.getJobConfigurationGovernanceRepository().persist(jobId, jobConfig.convertToJobConfigurationPOJO());
         return Optional.of(jobId);
     }
     
@@ -119,7 +119,7 @@ public final class PipelineJobManager {
     }
     
     private void startNextDisabledJob(final String jobId, final String toBeStartDisabledNextJobType) {
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getLatestCheckJobId(jobId).ifPresent(optional -> {
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobCheckGovernanceRepository().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
                 new PipelineJobManager(TypedSPILoader.getService(PipelineJobAPI.class, toBeStartDisabledNextJobType)).startDisabledJob(optional);
                 // CHECKSTYLE:OFF
@@ -141,7 +141,7 @@ public final class PipelineJobManager {
     }
     
     private void stopPreviousJob(final String jobId, final String toBeStoppedPreviousJobType) {
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getLatestCheckJobId(jobId).ifPresent(optional -> {
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobCheckGovernanceRepository().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
                 new PipelineJobManager(TypedSPILoader.getService(PipelineJobAPI.class, toBeStoppedPreviousJobType)).stop(optional);
                 // CHECKSTYLE:OFF
@@ -176,7 +176,7 @@ public final class PipelineJobManager {
     public void drop(final String jobId) {
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
         PipelineAPIFactory.getJobOperateAPI(contextKey).remove(String.valueOf(jobId), null);
-        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).deleteJob(jobId);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).getJobGovernanceRepository().delete(jobId);
     }
     
     /**

@@ -17,16 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
 
-import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Governance repository API.
@@ -34,198 +25,65 @@ import java.util.Optional;
 public interface GovernanceRepositoryAPI {
     
     /**
+     * Get job configuration governance repository.
+     * 
+     * @return job configuration governance repository
+     */
+    PipelineJobConfigurationGovernanceRepository getJobConfigurationGovernanceRepository();
+    
+    /**
+     * Get job offset governance repository.
+     * 
+     * @return job offset governance repository
+     */
+    PipelineJobOffsetGovernanceRepository getJobOffsetGovernanceRepository();
+    
+    /**
+     * Get job item process governance repository.
+     *
+     * @return job item process governance repository
+     */
+    PipelineJobItemProcessGovernanceRepository getJobItemProcessGovernanceRepository();
+    
+    /**
+     * Get job item error message governance repository.
+     * 
+     * @return job item error message governance repository
+     */
+    PipelineJobItemErrorMessageGovernanceRepository getJobItemErrorMessageGovernanceRepository();
+    
+    /**
+     * Get job check governance repository.
+     * 
+     * @return job check governance repository
+     */
+    PipelineJobCheckGovernanceRepository getJobCheckGovernanceRepository();
+    
+    /**
+     * Get job governance repository.
+     * 
+     * @return job governance repository
+     */
+    PipelineJobGovernanceRepository getJobGovernanceRepository();
+    
+    /**
+     * Get meta data data source governance repository.
+     *
+     * @return meta data data source governance repository
+     */
+    PipelineMetaDataDataSourceGovernanceRepository getMetaDataDataSourceGovernanceRepository();
+    
+    /**
+     * Get meta data process configuration governance repository.
+     * 
+     * @return meta data process configuration governance repository
+     */
+    PipelineMetaDataProcessConfigurationGovernanceRepository getMetaDataProcessConfigurationGovernanceRepository();
+    
+    /**
      * Watch pipeLine root path.
      *
      * @param listener data changed event listener
      */
     void watchPipeLineRootPath(DataChangedEventListener listener);
-    
-    /**
-     * Whether job configuration existed.
-     *
-     * @param jobId jobId
-     * @return job configuration exist or not
-     */
-    boolean isJobConfigurationExisted(String jobId);
-    
-    /**
-     * Persist job offset info.
-     *
-     * @param jobId job id
-     * @param jobOffsetInfo job offset info
-     */
-    void persistJobOffsetInfo(String jobId, JobOffsetInfo jobOffsetInfo);
-    
-    /**
-     * Get job offset info.
-     *
-     * @param jobId job id
-     * @return job offset info
-     */
-    JobOffsetInfo getJobOffsetInfo(String jobId);
-    
-    /**
-     * Persist job item progress.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @param progressValue progress value
-     */
-    void persistJobItemProgress(String jobId, int shardingItem, String progressValue);
-    
-    /**
-     * Update job item progress.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @param progressValue progress value
-     */
-    void updateJobItemProgress(String jobId, int shardingItem, String progressValue);
-    
-    /**
-     * Get job item progress.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @return job item progress
-     */
-    Optional<String> getJobItemProgress(String jobId, int shardingItem);
-    
-    /**
-     * Get latest check job id.
-     *
-     * @param parentJobId parent job id
-     * @return check job id
-     */
-    Optional<String> getLatestCheckJobId(String parentJobId);
-    
-    /**
-     * Persist latest check job id.
-     *
-     * @param parentJobId job id
-     * @param checkJobId check job id
-     */
-    void persistLatestCheckJobId(String parentJobId, String checkJobId);
-    
-    /**
-     * Delete latest check job id.
-     *
-     * @param parentJobId parent job id
-     */
-    void deleteLatestCheckJobId(String parentJobId);
-    
-    /**
-     * Get check job result.
-     *
-     * @param parentJobId parent job id
-     * @param checkJobId check job id
-     * @return check job result
-     */
-    Map<String, TableDataConsistencyCheckResult> getCheckJobResult(String parentJobId, String checkJobId);
-    
-    /**
-     * Persist check job result.
-     *
-     * @param parentJobId parent job id
-     * @param checkJobId check job id
-     * @param checkResultMap check result map
-     */
-    void persistCheckJobResult(String parentJobId, String checkJobId, Map<String, TableDataConsistencyCheckResult> checkResultMap);
-    
-    /**
-     * Delete check job result.
-     *
-     * @param parentJobId parent job id
-     * @param checkJobId check job id
-     */
-    void deleteCheckJobResult(String parentJobId, String checkJobId);
-    
-    /**
-     * List check job ids.
-     *
-     * @param parentJobId parent job id
-     * @return check job ids
-     */
-    Collection<String> listCheckJobIds(String parentJobId);
-    
-    /**
-     * Delete job.
-     *
-     * @param jobId job id
-     */
-    void deleteJob(String jobId);
-    
-    /**
-     * Persist job root info.
-     *
-     * @param jobId job ID
-     * @param jobClass job class
-     */
-    void persistJobRootInfo(String jobId, Class<? extends PipelineJob> jobClass);
-    
-    /**
-     * Persist job configuration.
-     * 
-     * @param jobId job ID
-     * @param jobConfigPOJO job configuration POJO
-     */
-    void persistJobConfiguration(String jobId, JobConfigurationPOJO jobConfigPOJO);
-    
-    /**
-     * Update job item error message.
-     *
-     * @param jobId job ID
-     * @param shardingItem sharding item
-     * @param errorMessage error message
-     */
-    void updateJobItemErrorMessage(String jobId, int shardingItem, String errorMessage);
-    
-    /**
-     * Get sharding items of job.
-     *
-     * @param jobId job id
-     * @return sharding items
-     */
-    List<Integer> getShardingItems(String jobId);
-    
-    /**
-     * Get meta data data sources.
-     *
-     * @param jobType job type
-     * @return data source properties
-     */
-    String getMetaDataDataSources(String jobType);
-    
-    /**
-     * Persist meta data data sources.
-     *
-     * @param jobType job type
-     * @param metaDataDataSources data source properties
-     */
-    void persistMetaDataDataSources(String jobType, String metaDataDataSources);
-    
-    /**
-     * Get meta data process configuration.
-     *
-     * @param jobType job type, nullable
-     * @return process configuration YAML text
-     */
-    String getMetaDataProcessConfiguration(String jobType);
-    
-    /**
-     * Persist meta data process configuration.
-     *
-     * @param jobType job type, nullable
-     * @param processConfigYamlText process configuration YAML text
-     */
-    void persistMetaDataProcessConfiguration(String jobType, String processConfigYamlText);
-    
-    /**
-     * Get job item error msg.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @return error msg
-     */
-    String getJobItemErrorMessage(String jobId, int shardingItem);
 }

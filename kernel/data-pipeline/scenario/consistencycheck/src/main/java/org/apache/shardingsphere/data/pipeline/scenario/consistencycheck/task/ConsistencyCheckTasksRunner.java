@@ -113,7 +113,8 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
                 log.info("job {} with check algorithm '{}' data consistency checker result: {}, stopping: {}",
                         parentJobId, checkJobConfig.getAlgorithmTypeName(), checkResultMap, jobItemContext.isStopping());
                 if (!jobItemContext.isStopping()) {
-                    PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(parentJobId)).persistCheckJobResult(parentJobId, checkJobId, checkResultMap);
+                    PipelineAPIFactory.getGovernanceRepositoryAPI(
+                            PipelineJobIdUtils.parseContextKey(parentJobId)).getJobCheckGovernanceRepository().persistCheckJobResult(parentJobId, checkJobId, checkResultMap);
                 }
             } finally {
                 jobItemContext.getProgressContext().setCheckEndTimeMillis(System.currentTimeMillis());

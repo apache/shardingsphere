@@ -63,7 +63,7 @@ class MigrationDataConsistencyCheckerTest {
         jobConfigurationPOJO.setShardingTotalCount(1);
         GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey());
         getClusterPersistRepository().persist(String.format("/pipeline/jobs/%s/config", jobConfig.getJobId()), YamlEngine.marshal(jobConfigurationPOJO));
-        governanceRepositoryAPI.persistJobItemProgress(jobConfig.getJobId(), 0, "");
+        governanceRepositoryAPI.getJobItemProcessGovernanceRepository().persist(jobConfig.getJobId(), 0, "");
         Map<String, TableDataConsistencyCheckResult> actual = new MigrationDataConsistencyChecker(jobConfig, new MigrationProcessContext(jobConfig.getJobId(), null),
                 createConsistencyCheckJobItemProgressContext(jobConfig.getJobId())).check("FIXTURE", null);
         String checkKey = "t_order";
