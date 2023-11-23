@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Col
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNamesWithSortContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConstraintNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ConvertFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableAsSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseSetContext;
@@ -598,6 +599,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.castFunction()) {
             return visit(ctx.castFunction());
         }
+        if (null != ctx.convertFunction()) {
+            return visit(ctx.convertFunction());
+        }
         if (null != ctx.charFunction()) {
             return visit(ctx.charFunction());
         }
@@ -615,6 +619,17 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.getParameters().add((LiteralExpressionSegment) exprSegment);
         }
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitConvertFunction(final ConvertFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CONVERT().getText(), getOriginalText(ctx));
+        result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        if (null != ctx.NUMBER_()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.NUMBER_().getText()));
+        }
         return result;
     }
     

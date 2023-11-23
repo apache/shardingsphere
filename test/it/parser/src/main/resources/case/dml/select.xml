@@ -3771,7 +3771,7 @@
         </where>
     </select>
 
-    <select sql-case-id="select_with_convert_function">
+    <select sql-case-id="select_with_convert_function1">
         <from>
             <simple-table name="t_order" start-index="70" stop-index="76" />
         </from>
@@ -3795,6 +3795,299 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+
+    <select sql-case-id="select_with_convert_function2">
+        <projections start-index="7" stop-index="246">
+            <column-projection name="sequence_name" start-index="7" stop-index="19" />
+            <column-projection name="sequence_catalog" start-index="22" stop-index="37" />
+            <column-projection name="sequence_schema" start-index="40" stop-index="54" />
+            <expression-projection alias="start_value" text="convert( bigint, start_value )" start-index="57" stop-index="101">
+                <expr>
+                    <function function-name="convert" text="convert( bigint, start_value )" start-index="57" stop-index="86">
+                        <parameter>
+                            <data-type value="bigint" start-index="66" stop-index="71" />
+                        </parameter>
+                        <parameter>
+                            <column name="start_value" start-index="74" stop-index="84" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection alias="minimum_value" text="convert( bigint, minimum_value )" start-index="104" stop-index="152">
+                <expr>
+                    <function function-name="convert" text="convert( bigint, minimum_value )" start-index="104" stop-index="135">
+                        <parameter>
+                            <data-type value="bigint" start-index="113" stop-index="118" />
+                        </parameter>
+                        <parameter>
+                            <column name="minimum_value" start-index="121" stop-index="133" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection alias="maximum_value" text="convert( bigint, maximum_value )" start-index="155" stop-index="203">
+                <expr>
+                    <function function-name="convert" text="convert( bigint, maximum_value )" start-index="155" stop-index="186">
+                        <parameter>
+                            <data-type value="bigint" start-index="164" stop-index="169" />
+                        </parameter>
+                        <parameter>
+                            <column name="maximum_value" start-index="172" stop-index="184" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection alias="increment" text="convert( bigint, increment )" start-index="206" stop-index="246">
+                <expr>
+                    <function function-name="convert" text="convert( bigint, increment )" start-index="206" stop-index="233">
+                        <parameter>
+                            <data-type value="bigint" start-index="215" stop-index="220" />
+                        </parameter>
+                        <parameter>
+                            <column name="increment" start-index="223" stop-index="231" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="SEQUENCES" start-index="253" stop-index="280">
+                <owner name="INFORMATION_SCHEMA" start-index="253" stop-index="270" />
+            </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_convert_function3">
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="CONVERT(NVARCHAR, GETDATE(), 0)" start-index="7" stop-index="37">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(NVARCHAR, GETDATE(), 0)" start-index="7" stop-index="37">
+                        <parameter>
+                            <data-type value="NVARCHAR" start-index="15" stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="GETDATE" text="GETDATE()" start-index="25" stop-index="33" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="7" stop-index="37" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_function4">
+        <projections start-index="7" stop-index="61">
+            <expression-projection text="CONVERT(DECIMAL(10, 5), CONVERT(VARBINARY(20), @myval))" start-index="7" stop-index="61">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(DECIMAL(10, 5), CONVERT(VARBINARY(20), @myval))" start-index="7" stop-index="61">
+                        <parameter>
+                            <data-type value="DECIMAL" start-index="15" stop-index="28" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="CONVERT" text="CONVERT(VARBINARY(20), @myval)" start-index="31" stop-index="60">
+                                <parameter>
+                                    <data-type value="VARBINARY" start-index="39" stop-index="51" />
+                                </parameter>
+                                <parameter>
+                                    <column name="@myval" start-index="54" stop-index="59" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_function5">
+        <projections start-index="7" stop-index="69">
+            <expression-projection alias="Style 0, character to binary" text="CONVERT(BINARY(8), 'Name', 0)" start-index="7" stop-index="69">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(BINARY(8), 'Name', 0)" start-index="7" stop-index="35">
+                        <parameter>
+                            <data-type value="BINARY" start-index="15" stop-index="23" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Name" start-index="26" stop-index="31" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="7" stop-index="35" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_xml1">
+        <projections start-index="7" stop-index="43">
+            <expression-projection text="CONVERT(XML, '&lt;root&gt;&lt;child/&gt;&lt;/root&gt;')" start-index="7" stop-index="43">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(XML, '&lt;root&gt;&lt;child/&gt;&lt;/root&gt;')" start-index="7" stop-index="43">
+                        <parameter>
+                            <data-type value="XML" start-index="15" stop-index="17" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="&lt;root&gt;&lt;child/&gt;&lt;/root&gt;" start-index="20" stop-index="42" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_xml2">
+        <projections start-index="7" stop-index="65">
+            <expression-projection text="CONVERT(XML, '&lt;root&gt;          &lt;child/&gt;         &lt;/root&gt;', 1)" start-index="7" stop-index="65">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(XML, '&lt;root&gt;          &lt;child/&gt;         &lt;/root&gt;', 1)" start-index="7" stop-index="65">
+                        <parameter>
+                            <data-type value="XML" start-index="15" stop-index="17" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="&lt;root&gt;          &lt;child/&gt;         &lt;/root&gt;" start-index="20" stop-index="61" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="7" stop-index="65" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cast_convert_function">
+        <projections start-index="7" stop-index="149">
+            <expression-projection alias="UnconvertedDateTime" text="GETDATE()" start-index="7" stop-index="38">
+                <expr>
+                    <function function-name="GETDATE" text="GETDATE()" start-index="7" stop-index="15" />
+                </expr>
+            </expression-projection>
+            <expression-projection alias="UsingCast" text="CAST(GETDATE() AS NVARCHAR(30))" start-index="41" stop-index="84">
+                <expr>
+                    <function function-name="CAST" text="CAST(GETDATE() AS NVARCHAR(30))" start-index="41" stop-index="71">
+                        <parameter>
+                            <data-type value="NVARCHAR" start-index="59" stop-index="70" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection alias="UsingConvertTo_ISO8601" text="CONVERT(NVARCHAR(30), GETDATE(), 126)" start-index="87" stop-index="149">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(NVARCHAR(30), GETDATE(), 126)" start-index="87" stop-index="123">
+                        <parameter>
+                            <data-type value="NVARCHAR" start-index="95" stop-index="106" />
+                        </parameter>
+                        <parameter>
+                            <function function-name="GETDATE" text="GETDATE()" start-index="109" stop-index="117" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="126" start-index="87" stop-index="123" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cast_convert_datetime">
+        <projections start-index="7" stop-index="187">
+            <expression-projection alias="UnconvertedText" text="2006-04-25T15:50:59.997" start-index="7" stop-index="50">
+                <expr>
+                    <literal-expression value="2006-04-25T15:50:59.997" start-index="7" stop-index="31" />
+                </expr>
+            </expression-projection>
+            <expression-projection alias="UsingCast" text="CAST('2006-04-25T15:50:59.997' AS DATETIME)" start-index="53" stop-index="108">
+                <expr>
+                    <function function-name="CAST" text="CAST('2006-04-25T15:50:59.997' AS DATETIME)" start-index="53" stop-index="95">
+                        <parameter>
+                            <literal-expression value="2006-04-25T15:50:59.997" start-index="58" stop-index="82" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="DATETIME" start-index="87" stop-index="94" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection alias="UsingConvertFrom_ISO8601" text="CONVERT(DATETIME, '2006-04-25T15:50:59.997', 126)" start-index="111" stop-index="187">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(DATETIME, '2006-04-25T15:50:59.997', 126)" start-index="111" stop-index="159">
+                        <parameter>
+                            <data-type value="DATETIME" start-index="119" stop-index="126" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2006-04-25T15:50:59.997" start-index="129" stop-index="153" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="126" start-index="111" stop-index="159" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_hex1">
+        <projections start-index="7" stop-index="71">
+            <expression-projection alias="Style 0, binary to character" text="CONVERT(CHAR(8), 0x4E616d65, 0)" start-index="7" stop-index="71">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(CHAR(8), 0x4E616d65, 0)" start-index="7" stop-index="37">
+                        <parameter>
+                            <data-type value="CHAR" start-index="15" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <common-expression literal-text="0x4E616d65" start-index="24" stop-index="33" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="7" stop-index="37" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_hex2">
+        <projections start-index="7" stop-index="71">
+            <expression-projection alias="Style 1, binary to character" text="CONVERT(CHAR(8), 0x4E616d65, 1)" start-index="7" stop-index="71">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(CHAR(8), 0x4E616d65, 1)" start-index="7" stop-index="37">
+                        <parameter>
+                            <data-type value="CHAR" start-index="15" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <common-expression literal-text="0x4E616d65" start-index="24" stop-index="33" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="7" stop-index="37" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_convert_hex3">
+        <projections start-index="7" stop-index="75">
+            <expression-projection alias="Style 1, character to binary" text="CONVERT(BINARY(4), '0x4E616D65', 1)" start-index="7" stop-index="75">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(BINARY(4), '0x4E616D65', 1)" start-index="7" stop-index="41">
+                        <parameter>
+                            <data-type value="BINARY" start-index="15" stop-index="23" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0x4E616D65" start-index="26" stop-index="37" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="7" stop-index="41" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 
     <select sql-case-id="select_with_json_extract">
