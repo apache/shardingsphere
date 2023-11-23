@@ -26,9 +26,6 @@ import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMeta
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * Pipeline job offset governance repository.
  */
@@ -56,16 +53,5 @@ public final class PipelineJobOffsetGovernanceRepository {
     public JobOffsetInfo load(final String jobId) {
         String value = repository.getDirectly(PipelineMetaDataNode.getJobOffsetPath(jobId));
         return new YamlJobOffsetInfoSwapper().swapToObject(Strings.isNullOrEmpty(value) ? new YamlJobOffsetInfo() : YamlEngine.unmarshal(value, YamlJobOffsetInfo.class));
-    }
-    
-    /**
-     * Get sharding items of job.
-     *
-     * @param jobId job id
-     * @return sharding items
-     */
-    public List<Integer> getShardingItems(final String jobId) {
-        List<String> result = repository.getChildrenKeys(PipelineMetaDataNode.getJobOffsetPath(jobId));
-        return result.stream().map(Integer::parseInt).collect(Collectors.toList());
     }
 }

@@ -43,7 +43,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -153,15 +152,6 @@ class GovernanceRepositoryAPIImplTest {
         assertFalse(governanceRepositoryAPI.getJobOffsetGovernanceRepository().load("1").isTargetSchemaTableCreated());
         governanceRepositoryAPI.getJobOffsetGovernanceRepository().persist("1", new JobOffsetInfo(true));
         assertTrue(governanceRepositoryAPI.getJobOffsetGovernanceRepository().load("1").isTargetSchemaTableCreated());
-    }
-    
-    @Test
-    void assertGetShardingItems() {
-        MigrationJobItemContext jobItemContext = mockJobItemContext();
-        governanceRepositoryAPI.getJobItemProcessGovernanceRepository().persist(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
-        List<Integer> shardingItems = governanceRepositoryAPI.getJobOffsetGovernanceRepository().getShardingItems(jobItemContext.getJobId());
-        assertThat(shardingItems.size(), is(1));
-        assertThat(shardingItems.get(0), is(jobItemContext.getShardingItem()));
     }
     
     private ClusterPersistRepository getClusterPersistRepository() {
