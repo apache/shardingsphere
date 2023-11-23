@@ -51,7 +51,7 @@ class ConsistencyCheckJobTest {
         ConsistencyCheckJobId pipelineJobId = new ConsistencyCheckJobId(new PipelineContextKey(InstanceType.PROXY), JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId());
         String checkJobId = pipelineJobId.marshal();
         Map<String, Object> expectTableCheckPosition = Collections.singletonMap("t_order", 100);
-        PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey()).getJobItemProcessGovernanceRepository().persist(checkJobId, 0,
+        PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey()).getJobItemFacade().getProcess().persist(checkJobId, 0,
                 YamlEngine.marshal(createYamlConsistencyCheckJobItemProgress(expectTableCheckPosition)));
         ConsistencyCheckJob consistencyCheckJob = new ConsistencyCheckJob(checkJobId);
         ConsistencyCheckJobItemContext actual = consistencyCheckJob.buildPipelineJobItemContext(

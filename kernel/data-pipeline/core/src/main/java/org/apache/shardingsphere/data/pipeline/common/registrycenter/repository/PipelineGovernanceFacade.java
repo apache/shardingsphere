@@ -20,6 +20,9 @@ package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNodePath;
+import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.item.PipelineJobItemFacade;
+import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.job.PipelineJobFacade;
+import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.metadata.PipelineMetaDataFacade;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
@@ -32,32 +35,17 @@ public final class PipelineGovernanceFacade {
     @Getter(AccessLevel.NONE)
     private final ClusterPersistRepository repository;
     
-    private final PipelineJobConfigurationGovernanceRepository jobConfigurationGovernanceRepository;
+    private final PipelineJobFacade jobFacade;
     
-    private final PipelineJobOffsetGovernanceRepository jobOffsetGovernanceRepository;
+    private final PipelineJobItemFacade jobItemFacade;
     
-    private final PipelineJobItemProcessGovernanceRepository jobItemProcessGovernanceRepository;
-    
-    private final PipelineJobItemErrorMessageGovernanceRepository jobItemErrorMessageGovernanceRepository;
-    
-    private final PipelineJobCheckGovernanceRepository jobCheckGovernanceRepository;
-    
-    private final PipelineJobGovernanceRepository jobGovernanceRepository;
-    
-    private final PipelineMetaDataDataSourceGovernanceRepository metaDataDataSourceGovernanceRepository;
-    
-    private final PipelineMetaDataProcessConfigurationGovernanceRepository metaDataProcessConfigurationGovernanceRepository;
+    private final PipelineMetaDataFacade metaDataFacade;
     
     public PipelineGovernanceFacade(final ClusterPersistRepository repository) {
         this.repository = repository;
-        jobConfigurationGovernanceRepository = new PipelineJobConfigurationGovernanceRepository(repository);
-        jobOffsetGovernanceRepository = new PipelineJobOffsetGovernanceRepository(repository);
-        jobItemProcessGovernanceRepository = new PipelineJobItemProcessGovernanceRepository(repository);
-        jobItemErrorMessageGovernanceRepository = new PipelineJobItemErrorMessageGovernanceRepository(repository);
-        jobCheckGovernanceRepository = new PipelineJobCheckGovernanceRepository(repository);
-        jobGovernanceRepository = new PipelineJobGovernanceRepository(repository);
-        metaDataDataSourceGovernanceRepository = new PipelineMetaDataDataSourceGovernanceRepository(repository);
-        metaDataProcessConfigurationGovernanceRepository = new PipelineMetaDataProcessConfigurationGovernanceRepository(repository);
+        jobFacade = new PipelineJobFacade(repository);
+        jobItemFacade = new PipelineJobItemFacade(repository);
+        metaDataFacade = new PipelineMetaDataFacade(repository);
     }
     
     /**

@@ -80,7 +80,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     public String createJobAndStart(final CreateConsistencyCheckJobParameter param) {
         String parentJobId = param.getParentJobId();
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId));
-        Optional<String> latestCheckJobId = governanceFacade.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
+        Optional<String> latestCheckJobId = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
         if (latestCheckJobId.isPresent()) {
             PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(getYamlJobItemProgressSwapper());
             Optional<ConsistencyCheckJobItemProgress> progress = jobItemManager.getProgress(latestCheckJobId.get(), 0);
@@ -92,8 +92,8 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
         verifyPipelineDatabaseType(param);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(parentJobId);
         String result = latestCheckJobId.map(s -> new ConsistencyCheckJobId(contextKey, parentJobId, s)).orElseGet(() -> new ConsistencyCheckJobId(contextKey, parentJobId)).marshal();
-        governanceFacade.getJobCheckGovernanceRepository().persistLatestCheckJobId(parentJobId, result);
-        governanceFacade.getJobCheckGovernanceRepository().deleteCheckJobResult(parentJobId, result);
+        governanceFacade.getJobFacade().getCheck().persistLatestCheckJobId(parentJobId, result);
+        governanceFacade.getJobFacade().getCheck().deleteCheckJobResult(parentJobId, result);
         new PipelineJobManager(this).drop(result);
         YamlConsistencyCheckJobConfiguration yamlConfig = new YamlConsistencyCheckJobConfiguration();
         yamlConfig.setJobId(result);
@@ -126,7 +126,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     }
     
     private String getLatestCheckJobId(final String parentJobId) {
-        Optional<String> result = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId)).getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
+        Optional<String> result = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(result.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
         return result.get();
     }
@@ -150,16 +150,16 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
         new PipelineJobManager(this).stop(latestCheckJobId);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(parentJobId);
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey);
-        Collection<String> checkJobIds = governanceFacade.getJobCheckGovernanceRepository().listCheckJobIds(parentJobId);
+        Collection<String> checkJobIds = governanceFacade.getJobFacade().getCheck().listCheckJobIds(parentJobId);
         Optional<Integer> previousSequence = ConsistencyCheckSequence.getPreviousSequence(
                 checkJobIds.stream().map(ConsistencyCheckJobId::parseSequence).collect(Collectors.toList()), ConsistencyCheckJobId.parseSequence(latestCheckJobId));
         if (previousSequence.isPresent()) {
             String checkJobId = new ConsistencyCheckJobId(contextKey, parentJobId, previousSequence.get()).marshal();
-            governanceFacade.getJobCheckGovernanceRepository().persistLatestCheckJobId(parentJobId, checkJobId);
+            governanceFacade.getJobFacade().getCheck().persistLatestCheckJobId(parentJobId, checkJobId);
         } else {
-            governanceFacade.getJobCheckGovernanceRepository().deleteLatestCheckJobId(parentJobId);
+            governanceFacade.getJobFacade().getCheck().deleteLatestCheckJobId(parentJobId);
         }
-        governanceFacade.getJobCheckGovernanceRepository().deleteCheckJobResult(parentJobId, latestCheckJobId);
+        governanceFacade.getJobFacade().getCheck().deleteCheckJobResult(parentJobId, latestCheckJobId);
         new PipelineJobManager(this).drop(latestCheckJobId);
     }
     
@@ -171,7 +171,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
      */
     public List<ConsistencyCheckJobItemInfo> getJobItemInfos(final String parentJobId) {
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId));
-        Optional<String> latestCheckJobId = governanceFacade.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
+        Optional<String> latestCheckJobId = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
         String checkJobId = latestCheckJobId.get();
         PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(getYamlJobItemProgressSwapper());
@@ -182,7 +182,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
         List<ConsistencyCheckJobItemInfo> result = new LinkedList<>();
         ConsistencyCheckJobItemProgress jobItemProgress = progress.get();
         if (!Strings.isNullOrEmpty(jobItemProgress.getIgnoredTableNames())) {
-            Map<String, TableDataConsistencyCheckResult> checkJobResult = governanceFacade.getJobCheckGovernanceRepository().getCheckJobResult(parentJobId, latestCheckJobId.get());
+            Map<String, TableDataConsistencyCheckResult> checkJobResult = governanceFacade.getJobFacade().getCheck().getCheckJobResult(parentJobId, latestCheckJobId.get());
             result.addAll(buildIgnoredTableInfo(jobItemProgress.getIgnoredTableNames().split(","), checkJobResult));
         }
         if (Objects.equals(jobItemProgress.getIgnoredTableNames(), jobItemProgress.getTableNames())) {
@@ -212,7 +212,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
     
     private ConsistencyCheckJobItemInfo getJobItemInfo(final String parentJobId) {
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId));
-        Optional<String> latestCheckJobId = governanceFacade.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
+        Optional<String> latestCheckJobId = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
         String checkJobId = latestCheckJobId.get();
         PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(getYamlJobItemProgressSwapper());
@@ -233,7 +233,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
         result.setTableNames(Optional.ofNullable(jobItemProgress.getTableNames()).orElse(""));
         fillInJobItemInfoWithCheckAlgorithm(result, checkJobId);
         result.setErrorMessage(new PipelineJobIteErrorMessageManager(checkJobId, 0).getErrorMessage());
-        Map<String, TableDataConsistencyCheckResult> checkJobResults = governanceFacade.getJobCheckGovernanceRepository().getCheckJobResult(parentJobId, checkJobId);
+        Map<String, TableDataConsistencyCheckResult> checkJobResults = governanceFacade.getJobFacade().getCheck().getCheckJobResult(parentJobId, checkJobId);
         result.setCheckSuccess(checkJobResults.isEmpty() ? null : checkJobResults.values().stream().allMatch(TableDataConsistencyCheckResult::isMatched));
         result.setCheckFailedTableNames(checkJobResults.entrySet().stream().filter(each -> !each.getValue().isIgnored() && !each.getValue().isMatched())
                 .map(Entry::getKey).collect(Collectors.joining(",")));

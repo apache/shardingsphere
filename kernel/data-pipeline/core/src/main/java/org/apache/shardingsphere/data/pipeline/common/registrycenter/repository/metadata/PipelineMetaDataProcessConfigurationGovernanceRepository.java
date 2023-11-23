@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
+package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;

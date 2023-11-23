@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
+package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.item;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;

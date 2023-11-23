@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.common.ingest.position.Placeholde
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNodePath;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.PipelineGovernanceFacade;
-import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.PipelineJobItemProcessGovernanceRepository;
+import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.item.PipelineJobItemProcessGovernanceRepository;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
@@ -96,7 +96,7 @@ class PipelineGovernanceFacadeTest {
     void assertDeleteJob() {
         ClusterPersistRepository clusterPersistRepository = getClusterPersistRepository();
         clusterPersistRepository.persist(PipelineNodePath.DATA_PIPELINE_ROOT + "/1", "");
-        governanceFacade.getJobGovernanceRepository().delete("1");
+        governanceFacade.getJobFacade().getJob().delete("1");
         Optional<String> actual = new PipelineJobItemProcessGovernanceRepository(clusterPersistRepository).load("1", 0);
         assertFalse(actual.isPresent());
     }
@@ -104,21 +104,21 @@ class PipelineGovernanceFacadeTest {
     @Test
     void assertIsExistedJobConfiguration() {
         ClusterPersistRepository clusterPersistRepository = getClusterPersistRepository();
-        assertFalse(governanceFacade.getJobConfigurationGovernanceRepository().isExisted("foo_job"));
+        assertFalse(governanceFacade.getJobFacade().getConfiguration().isExisted("foo_job"));
         clusterPersistRepository.persist("/pipeline/jobs/foo_job/config", "foo");
-        assertTrue(governanceFacade.getJobConfigurationGovernanceRepository().isExisted("foo_job"));
+        assertTrue(governanceFacade.getJobFacade().getConfiguration().isExisted("foo_job"));
     }
     
     @Test
     void assertLatestCheckJobIdPersistenceDeletion() {
         String parentJobId = "testParentJob";
         String expectedCheckJobId = "testCheckJob";
-        governanceFacade.getJobCheckGovernanceRepository().persistLatestCheckJobId(parentJobId, expectedCheckJobId);
-        Optional<String> actualCheckJobIdOpt = governanceFacade.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
+        governanceFacade.getJobFacade().getCheck().persistLatestCheckJobId(parentJobId, expectedCheckJobId);
+        Optional<String> actualCheckJobIdOpt = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
         assertTrue(actualCheckJobIdOpt.isPresent());
         assertThat(actualCheckJobIdOpt.get(), is(expectedCheckJobId));
-        governanceFacade.getJobCheckGovernanceRepository().deleteLatestCheckJobId(parentJobId);
-        assertFalse(governanceFacade.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId).isPresent());
+        governanceFacade.getJobFacade().getCheck().deleteLatestCheckJobId(parentJobId);
+        assertFalse(governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId).isPresent());
     }
     
     @Test
@@ -126,8 +126,8 @@ class PipelineGovernanceFacadeTest {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
         Map<String, TableDataConsistencyCheckResult> actual = new HashMap<>();
         actual.put("test", new TableDataConsistencyCheckResult(true));
-        governanceFacade.getJobCheckGovernanceRepository().persistCheckJobResult(jobItemContext.getJobId(), "j02123", actual);
-        Map<String, TableDataConsistencyCheckResult> checkResult = governanceFacade.getJobCheckGovernanceRepository().getCheckJobResult(jobItemContext.getJobId(), "j02123");
+        governanceFacade.getJobFacade().getCheck().persistCheckJobResult(jobItemContext.getJobId(), "j02123", actual);
+        Map<String, TableDataConsistencyCheckResult> checkResult = governanceFacade.getJobFacade().getCheck().getCheckJobResult(jobItemContext.getJobId(), "j02123");
         assertThat(checkResult.size(), is(1));
         assertTrue(checkResult.get("test").isMatched());
     }
@@ -135,23 +135,23 @@ class PipelineGovernanceFacadeTest {
     @Test
     void assertPersistJobItemProcess() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
-        governanceFacade.getJobItemProcessGovernanceRepository().update(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue1");
-        assertFalse(governanceFacade.getJobItemProcessGovernanceRepository().load(jobItemContext.getJobId(), jobItemContext.getShardingItem()).isPresent());
-        governanceFacade.getJobItemProcessGovernanceRepository().persist(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue1");
-        Optional<String> actual = governanceFacade.getJobItemProcessGovernanceRepository().load(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        governanceFacade.getJobItemFacade().getProcess().update(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue1");
+        assertFalse(governanceFacade.getJobItemFacade().getProcess().load(jobItemContext.getJobId(), jobItemContext.getShardingItem()).isPresent());
+        governanceFacade.getJobItemFacade().getProcess().persist(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue1");
+        Optional<String> actual = governanceFacade.getJobItemFacade().getProcess().load(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("testValue1"));
-        governanceFacade.getJobItemProcessGovernanceRepository().update(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue2");
-        actual = governanceFacade.getJobItemProcessGovernanceRepository().load(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        governanceFacade.getJobItemFacade().getProcess().update(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue2");
+        actual = governanceFacade.getJobItemFacade().getProcess().load(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("testValue2"));
     }
     
     @Test
     void assertPersistJobOffset() {
-        assertFalse(governanceFacade.getJobOffsetGovernanceRepository().load("1").isTargetSchemaTableCreated());
-        governanceFacade.getJobOffsetGovernanceRepository().persist("1", new JobOffsetInfo(true));
-        assertTrue(governanceFacade.getJobOffsetGovernanceRepository().load("1").isTargetSchemaTableCreated());
+        assertFalse(governanceFacade.getJobFacade().getOffset().load("1").isTargetSchemaTableCreated());
+        governanceFacade.getJobFacade().getOffset().persist("1", new JobOffsetInfo(true));
+        assertTrue(governanceFacade.getJobFacade().getOffset().load("1").isTargetSchemaTableCreated());
     }
     
     private ClusterPersistRepository getClusterPersistRepository() {
