@@ -39,7 +39,7 @@ public final class PipelineDataSourcePersistService implements PipelineMetaDataP
     @Override
     @SuppressWarnings("unchecked")
     public Map<String, DataSourcePoolProperties> load(final PipelineContextKey contextKey, final String jobType) {
-        String dataSourcesProps = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getMetaDataDataSourceGovernanceRepository().load(jobType);
+        String dataSourcesProps = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getMetaDataFacade().getDataSource().load(jobType);
         if (Strings.isNullOrEmpty(dataSourcesProps)) {
             return Collections.emptyMap();
         }
@@ -55,6 +55,6 @@ public final class PipelineDataSourcePersistService implements PipelineMetaDataP
         for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
             dataSourceMap.put(entry.getKey(), swapper.swapToMap(entry.getValue()));
         }
-        PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getMetaDataDataSourceGovernanceRepository().persist(jobType, YamlEngine.marshal(dataSourceMap));
+        PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getMetaDataFacade().getDataSource().persist(jobType, YamlEngine.marshal(dataSourceMap));
     }
 }

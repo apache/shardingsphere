@@ -15,39 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
+package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.item;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
- * Pipeline job configuration governance repository.
+ * Pipeline job item error message governance repository.
  */
 @RequiredArgsConstructor
-public final class PipelineJobConfigurationGovernanceRepository {
+public final class PipelineJobItemErrorMessageGovernanceRepository {
     
     private final ClusterPersistRepository repository;
     
     /**
-     * Whether pipeline job configuration existed.
+     * Update job item error message.
      *
-     * @param jobId jobId
-     * @return pipeline job configuration exists or not
+     * @param jobId job ID
+     * @param shardingItem sharding item
+     * @param errorMessage error message
      */
-    public boolean isExisted(final String jobId) {
-        return null != repository.getDirectly(PipelineMetaDataNode.getJobConfigurationPath(jobId));
+    public void update(final String jobId, final int shardingItem, final String errorMessage) {
+        repository.update(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem), errorMessage);
     }
     
     /**
-     * Persist pipeline job configuration.
-     * 
-     * @param jobId job ID
-     * @param jobConfigPOJO job configuration POJO
+     * Load job item error msg.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @return error msg
      */
-    public void persist(final String jobId, final JobConfigurationPOJO jobConfigPOJO) {
-        repository.persist(PipelineMetaDataNode.getJobConfigurationPath(jobId), YamlEngine.marshal(jobConfigPOJO));
+    public String load(final String jobId, final int shardingItem) {
+        return repository.getDirectly(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem));
     }
 }

@@ -15,37 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
+package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.job;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
- * Pipeline meta data data source governance repository.
+ * Pipeline job configuration governance repository.
  */
 @RequiredArgsConstructor
-public final class PipelineMetaDataDataSourceGovernanceRepository {
+public final class PipelineJobConfigurationGovernanceRepository {
     
     private final ClusterPersistRepository repository;
     
     /**
-     * Persist meta data data sources.
+     * Whether pipeline job configuration existed.
      *
-     * @param jobType job type
-     * @param metaDataDataSources data source properties
+     * @param jobId jobId
+     * @return pipeline job configuration exists or not
      */
-    public void persist(final String jobType, final String metaDataDataSources) {
-        repository.persist(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType), metaDataDataSources);
+    public boolean isExisted(final String jobId) {
+        return null != repository.getDirectly(PipelineMetaDataNode.getJobConfigurationPath(jobId));
     }
     
     /**
-     * Load meta data data sources.
-     *
-     * @param jobType job type
-     * @return data source properties
+     * Persist pipeline job configuration.
+     * 
+     * @param jobId job ID
+     * @param jobConfigPOJO job configuration POJO
      */
-    public String load(final String jobType) {
-        return repository.getDirectly(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType));
+    public void persist(final String jobId, final JobConfigurationPOJO jobConfigPOJO) {
+        repository.persist(PipelineMetaDataNode.getJobConfigurationPath(jobId), YamlEngine.marshal(jobConfigPOJO));
     }
 }

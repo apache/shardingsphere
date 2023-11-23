@@ -114,7 +114,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
                         parentJobId, checkJobConfig.getAlgorithmTypeName(), checkResultMap, jobItemContext.isStopping());
                 if (!jobItemContext.isStopping()) {
                     PipelineAPIFactory.getPipelineGovernanceFacade(
-                            PipelineJobIdUtils.parseContextKey(parentJobId)).getJobCheckGovernanceRepository().persistCheckJobResult(parentJobId, checkJobId, checkResultMap);
+                            PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().persistCheckJobResult(parentJobId, checkJobId, checkResultMap);
                 }
             } finally {
                 jobItemContext.getProgressContext().setCheckEndTimeMillis(System.currentTimeMillis());

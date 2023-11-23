@@ -15,39 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
+package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
- * Pipeline job item error message governance repository.
+ * Pipeline meta data data source governance repository.
  */
 @RequiredArgsConstructor
-public final class PipelineJobItemErrorMessageGovernanceRepository {
+public final class PipelineMetaDataDataSourceGovernanceRepository {
     
     private final ClusterPersistRepository repository;
     
     /**
-     * Update job item error message.
+     * Persist meta data data sources.
      *
-     * @param jobId job ID
-     * @param shardingItem sharding item
-     * @param errorMessage error message
+     * @param jobType job type
+     * @param metaDataDataSources data source properties
      */
-    public void update(final String jobId, final int shardingItem, final String errorMessage) {
-        repository.update(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem), errorMessage);
+    public void persist(final String jobType, final String metaDataDataSources) {
+        repository.persist(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType), metaDataDataSources);
     }
     
     /**
-     * Load job item error msg.
+     * Load meta data data sources.
      *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @return error msg
+     * @param jobType job type
+     * @return data source properties
      */
-    public String load(final String jobId, final int shardingItem) {
-        return repository.getDirectly(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem));
+    public String load(final String jobType) {
+        return repository.getDirectly(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType));
     }
 }

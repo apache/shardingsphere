@@ -306,7 +306,7 @@ public final class MigrationJobAPI implements InventoryIncrementalJobAPI {
     }
     
     private void dropCheckJobs(final String jobId) {
-        Collection<String> checkJobIds = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobCheckGovernanceRepository().listCheckJobIds(jobId);
+        Collection<String> checkJobIds = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobFacade().getCheck().listCheckJobIds(jobId);
         if (checkJobIds.isEmpty()) {
             return;
         }

@@ -46,7 +46,7 @@ public final class PipelineJobIteErrorMessageManager {
      * @return map, key is sharding item, value is error message
      */
     public String getErrorMessage() {
-        return Optional.ofNullable(governanceFacade.getJobItemErrorMessageGovernanceRepository().load(jobId, shardingItem)).orElse("");
+        return Optional.ofNullable(governanceFacade.getJobItemFacade().getErrorMessage().load(jobId, shardingItem)).orElse("");
     }
     
     /**
@@ -55,7 +55,7 @@ public final class PipelineJobIteErrorMessageManager {
      * @param error error
      */
     public void updateErrorMessage(final Object error) {
-        governanceFacade.getJobItemErrorMessageGovernanceRepository().update(jobId, shardingItem, null == error ? "" : buildErrorMessage(error));
+        governanceFacade.getJobItemFacade().getErrorMessage().update(jobId, shardingItem, null == error ? "" : buildErrorMessage(error));
     }
     
     private String buildErrorMessage(final Object error) {
@@ -66,6 +66,6 @@ public final class PipelineJobIteErrorMessageManager {
      * Clean job item error message.
      */
     public void cleanErrorMessage() {
-        governanceFacade.getJobItemErrorMessageGovernanceRepository().update(jobId, shardingItem, "");
+        governanceFacade.getJobItemFacade().getErrorMessage().update(jobId, shardingItem, "");
     }
 }

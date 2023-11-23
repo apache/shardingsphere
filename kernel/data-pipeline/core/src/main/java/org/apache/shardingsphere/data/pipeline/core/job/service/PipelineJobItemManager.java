@@ -55,7 +55,7 @@ public final class PipelineJobItemManager<T extends PipelineJobItemProgress> {
         }
         jobItemProgress.get().setStatus(status);
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId))
-                .getJobItemProcessGovernanceRepository().update(jobId, shardingItem, YamlEngine.marshal(swapper.swapToYamlConfiguration(jobItemProgress.get())));
+                .getJobItemFacade().getProcess().update(jobId, shardingItem, YamlEngine.marshal(swapper.swapToYamlConfiguration(jobItemProgress.get())));
     }
     
     /**
@@ -66,7 +66,7 @@ public final class PipelineJobItemManager<T extends PipelineJobItemProgress> {
      * @return job item progress
      */
     public Optional<T> getProgress(final String jobId, final int shardingItem) {
-        return PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProcessGovernanceRepository().load(jobId, shardingItem)
+        return PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getProcess().load(jobId, shardingItem)
                 .map(optional -> swapper.swapToObject(YamlEngine.unmarshal(optional, swapper.getYamlProgressClass(), true)));
     }
     
@@ -77,7 +77,7 @@ public final class PipelineJobItemManager<T extends PipelineJobItemProgress> {
      */
     public void persistProgress(final PipelineJobItemContext jobItemContext) {
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobItemContext.getJobId()))
-                .getJobItemProcessGovernanceRepository().persist(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertProgressYamlContent(jobItemContext));
+                .getJobItemFacade().getProcess().persist(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertProgressYamlContent(jobItemContext));
     }
     
     /**
@@ -87,7 +87,7 @@ public final class PipelineJobItemManager<T extends PipelineJobItemProgress> {
      */
     public void updateProgress(final PipelineJobItemContext jobItemContext) {
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobItemContext.getJobId()))
-                .getJobItemProcessGovernanceRepository().update(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertProgressYamlContent(jobItemContext));
+                .getJobItemFacade().getProcess().update(jobItemContext.getJobId(), jobItemContext.getShardingItem(), convertProgressYamlContent(jobItemContext));
     }
     
     @SuppressWarnings("unchecked")

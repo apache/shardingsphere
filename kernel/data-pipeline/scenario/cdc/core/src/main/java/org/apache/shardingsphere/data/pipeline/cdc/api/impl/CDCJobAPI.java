@@ -121,13 +121,13 @@ public final class CDCJobAPI implements InventoryIncrementalJobAPI {
         CDCJobConfiguration jobConfig = new YamlCDCJobConfigurationSwapper().swapToObject(yamlJobConfig);
         ShardingSpherePreconditions.checkState(0 != jobConfig.getJobShardingCount(), () -> new PipelineJobCreationWithInvalidShardingCountException(jobConfig.getJobId()));
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()));
-        if (governanceFacade.getJobConfigurationGovernanceRepository().isExisted(jobConfig.getJobId())) {
+        if (governanceFacade.getJobFacade().getConfiguration().isExisted(jobConfig.getJobId())) {
             log.warn("CDC job already exists in registry center, ignore, job id is `{}`", jobConfig.getJobId());
         } else {
-            governanceFacade.getJobGovernanceRepository().create(jobConfig.getJobId(), getJobClass());
+            governanceFacade.getJobFacade().getJob().create(jobConfig.getJobId(), getJobClass());
             JobConfigurationPOJO jobConfigPOJO = jobConfig.convertToJobConfigurationPOJO();
             jobConfigPOJO.setDisabled(true);
-            governanceFacade.getJobConfigurationGovernanceRepository().persist(jobConfig.getJobId(), jobConfigPOJO);
+            governanceFacade.getJobFacade().getConfiguration().persist(jobConfig.getJobId(), jobConfigPOJO);
             if (!param.isFull()) {
                 initIncrementalPosition(jobConfig);
             }
@@ -177,7 +177,7 @@ public final class CDCJobAPI implements InventoryIncrementalJobAPI {
                 }
                 IncrementalDumperContext dumperContext = buildDumperContext(jobConfig, i, new TableAndSchemaNameMapper(jobConfig.getSchemaTableNames()));
                 InventoryIncrementalJobItemProgress jobItemProgress = getInventoryIncrementalJobItemProgress(jobConfig, pipelineDataSourceManager, dumperContext);
-                PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProcessGovernanceRepository().persist(
+                PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getProcess().persist(
                         jobId, i, YamlEngine.marshal(getYamlJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress)));
             }
         } catch (final SQLException ex) {
