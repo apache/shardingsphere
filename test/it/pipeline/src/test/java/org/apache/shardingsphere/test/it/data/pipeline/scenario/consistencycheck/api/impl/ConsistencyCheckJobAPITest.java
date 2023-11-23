@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.scenario.consistencychec
 
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
@@ -82,7 +82,7 @@ class ConsistencyCheckJobAPITest {
     void assertDropByParentJobId() {
         MigrationJobConfiguration parentJobConfig = jobConfigSwapper.swapToObject(JobConfigurationBuilder.createYamlMigrationJobConfiguration());
         String parentJobId = parentJobConfig.getJobId();
-        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey());
+        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey());
         int expectedSequence = 1;
         for (int i = 0; i < 3; i++) {
             String checkJobId = jobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
@@ -91,20 +91,20 @@ class ConsistencyCheckJobAPITest {
                     new ConsistencyCheckJobConfiguration(checkJobId, parentJobId, null, null, TypedSPILoader.getService(DatabaseType.class, "H2")), 0, JobStatus.FINISHED, null);
             jobItemManager.persistProgress(checkJobItemContext);
             Map<String, TableDataConsistencyCheckResult> dataConsistencyCheckResult = Collections.singletonMap("t_order", new TableDataConsistencyCheckResult(true));
-            repositoryAPI.getJobCheckGovernanceRepository().persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
-            Optional<String> latestCheckJobId = repositoryAPI.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
+            governanceFacade.getJobCheckGovernanceRepository().persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
+            Optional<String> latestCheckJobId = governanceFacade.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
             assertTrue(latestCheckJobId.isPresent());
             assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId.get()), is(expectedSequence++));
         }
         expectedSequence = 2;
         for (int i = 0; i < 2; i++) {
             jobAPI.dropByParentJobId(parentJobId);
-            Optional<String> latestCheckJobId = repositoryAPI.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
+            Optional<String> latestCheckJobId = governanceFacade.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
             assertTrue(latestCheckJobId.isPresent());
             assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId.get()), is(expectedSequence--));
         }
         jobAPI.dropByParentJobId(parentJobId);
-        Optional<String> latestCheckJobId = repositoryAPI.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
+        Optional<String> latestCheckJobId = governanceFacade.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
         assertFalse(latestCheckJobId.isPresent());
     }
 }
