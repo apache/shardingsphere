@@ -90,7 +90,18 @@
     <sql-case id="select_with_match_against" value="SELECT * FROM t_order_item WHERE MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE) AND user_id = ?" db-types="MySQL" />
     <sql-case id="select_with_json_separator" value="select content_json->>'$.nation' as nation,content_json->>'$.title' as title from tb_content_json b where b.content_id=1" db-types="MySQL" />
     <sql-case id="select_with_json_value_return_type" value="SELECT * FROM t_order WHERE JSON_VALUE(items, '$.name' RETURNING VARCHAR(100)) = 'jack'" db-types="MySQL" />
-    <sql-case id="select_with_convert_function" value="SELECT CONVERT(SUBSTRING(content, 5) , SIGNED) AS signed_content FROM t_order WHERE order_id = 1" db-types="MySQL" />
+    <sql-case id="select_with_convert_function1" value="SELECT CONVERT(SUBSTRING(content, 5) , SIGNED) AS signed_content FROM t_order WHERE order_id = 1" db-types="MySQL" />
+    <sql-case id="select_with_convert_function2" value="select sequence_name, sequence_catalog, sequence_schema, convert( bigint, start_value ) as start_value, convert( bigint, minimum_value ) as minimum_value, convert( bigint, maximum_value ) as maximum_value, convert( bigint, increment ) as increment from INFORMATION_SCHEMA.SEQUENCES" db-types="SQLServer" />
+    <sql-case id="select_with_convert_function3" value="SELECT CONVERT(NVARCHAR, GETDATE(), 0)" db-types="SQLServer" />
+    <sql-case id="select_with_convert_function4" value="SELECT CONVERT(DECIMAL(10, 5), CONVERT(VARBINARY(20), @myval))" db-types="SQLServer" />
+    <sql-case id="select_with_convert_function5" value="SELECT CONVERT(BINARY(8), 'Name', 0) AS [Style 0, character to binary]" db-types="SQLServer" />
+    <sql-case id="select_with_convert_xml1" value="SELECT CONVERT(XML, '&lt;root&gt;&lt;child/&gt;&lt;/root&gt;')" db-types="SQLServer" />
+    <sql-case id="select_with_convert_xml2" value="SELECT CONVERT(XML, '&lt;root&gt;          &lt;child/&gt;         &lt;/root&gt;', 1)" db-types="SQLServer" />
+    <sql-case id="select_cast_convert_function" value="SELECT GETDATE() AS UnconvertedDateTime, CAST(GETDATE() AS NVARCHAR(30)) AS UsingCast, CONVERT(NVARCHAR(30), GETDATE(), 126) AS UsingConvertTo_ISO8601" db-types="SQLServer" />
+    <sql-case id="select_cast_convert_datetime" value="SELECT '2006-04-25T15:50:59.997' AS UnconvertedText, CAST('2006-04-25T15:50:59.997' AS DATETIME) AS UsingCast, CONVERT(DATETIME, '2006-04-25T15:50:59.997', 126) AS UsingConvertFrom_ISO8601" db-types="SQLServer" />
+    <sql-case id="select_with_convert_hex1" value="SELECT CONVERT(CHAR(8), 0x4E616d65, 0) AS [Style 0, binary to character]" db-types="SQLServer" />
+    <sql-case id="select_with_convert_hex2" value="SELECT CONVERT(CHAR(8), 0x4E616d65, 1) AS [Style 1, binary to character]" db-types="SQLServer" />
+    <sql-case id="select_with_convert_hex3" value="SELECT CONVERT(BINARY(4), '0x4E616D65', 1) AS [Style 1, character to binary]" db-types="SQLServer" />
     <sql-case id="select_with_json_extract" value="SELECT content_json::json->'title', content_json::json->'nation' FROM tb_content_json WHERE content_id = 1" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_json_extract_text" value="SELECT * FROM tb_content_json WHERE content_json::json->>'nation'='CHINA'" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_json_path_extract" value="SELECT content_json::json#>'{keyword,1}' FROM tb_content_json" db-types="PostgreSQL,openGauss" />

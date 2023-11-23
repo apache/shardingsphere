@@ -300,11 +300,15 @@ distinct
     ;
 
 specialFunction
-    : castFunction  | charFunction
+    : castFunction  | charFunction | convertFunction
     ;
 
 castFunction
     : CAST LP_ expr AS dataType RP_
+    ;
+
+convertFunction
+    : CONVERT LP_ dataType COMMA_ expr (COMMA_ NUMBER_)? RP_
     ;
 
 charFunction
