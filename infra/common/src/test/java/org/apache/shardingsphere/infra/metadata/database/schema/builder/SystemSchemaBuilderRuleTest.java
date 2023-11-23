@@ -19,45 +19,56 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SystemSchemaBuilderRuleTest {
     
     @Test
     void assertValueOfSchemaPathSuccess() {
-        SystemSchemaBuilderRule actualInformationSchema = SystemSchemaBuilderRule.valueOf("MySQL", "information_schema");
-        assertThat(actualInformationSchema, is(SystemSchemaBuilderRule.MYSQL_INFORMATION_SCHEMA));
-        assertThat(actualInformationSchema.getTables().size(), is(61));
-        SystemSchemaBuilderRule actualMySQLSchema = SystemSchemaBuilderRule.valueOf("MySQL", "mysql");
-        assertThat(actualMySQLSchema, is(SystemSchemaBuilderRule.MYSQL_MYSQL));
-        assertThat(actualMySQLSchema.getTables().size(), is(31));
-        SystemSchemaBuilderRule actualPerformanceSchema = SystemSchemaBuilderRule.valueOf("MySQL", "performance_schema");
-        assertThat(actualPerformanceSchema, is(SystemSchemaBuilderRule.MYSQL_PERFORMANCE_SCHEMA));
-        assertThat(actualPerformanceSchema.getTables().size(), is(87));
-        SystemSchemaBuilderRule actualSysSchema = SystemSchemaBuilderRule.valueOf("MySQL", "sys");
-        assertThat(actualSysSchema, is(SystemSchemaBuilderRule.MYSQL_SYS));
-        assertThat(actualSysSchema.getTables().size(), is(53));
-        SystemSchemaBuilderRule actualPgInformationSchema = SystemSchemaBuilderRule.valueOf("PostgreSQL", "information_schema");
-        assertThat(actualPgInformationSchema, is(SystemSchemaBuilderRule.POSTGRESQL_INFORMATION_SCHEMA));
-        assertThat(actualPgInformationSchema.getTables().size(), is(69));
-        SystemSchemaBuilderRule actualPgCatalog = SystemSchemaBuilderRule.valueOf("PostgreSQL", "pg_catalog");
-        assertThat(actualPgCatalog, is(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG));
-        assertThat(actualPgCatalog.getTables().size(), is(134));
-        SystemSchemaBuilderRule actualOgInformationSchema = SystemSchemaBuilderRule.valueOf("openGauss", "information_schema");
-        assertThat(actualOgInformationSchema, is(SystemSchemaBuilderRule.OPEN_GAUSS_INFORMATION_SCHEMA));
-        assertThat(actualOgInformationSchema.getTables().size(), is(66));
-        SystemSchemaBuilderRule actualOgPgCatalog = SystemSchemaBuilderRule.valueOf("openGauss", "pg_catalog");
-        assertThat(actualOgPgCatalog, is(SystemSchemaBuilderRule.OPEN_GAUSS_PG_CATALOG));
-        assertThat(actualOgPgCatalog.getTables().size(), is(240));
+        Optional<SystemSchemaBuilderRule> actualInformationSchema = SystemSchemaBuilderRule.findBuilderRule("MySQL", "information_schema");
+        assertTrue(actualInformationSchema.isPresent());
+        assertThat(actualInformationSchema.get(), is(SystemSchemaBuilderRule.MYSQL_INFORMATION_SCHEMA));
+        assertThat(actualInformationSchema.get().getTables().size(), is(61));
+        Optional<SystemSchemaBuilderRule> actualMySQLSchema = SystemSchemaBuilderRule.findBuilderRule("MySQL", "mysql");
+        assertTrue(actualMySQLSchema.isPresent());
+        assertThat(actualMySQLSchema.get(), is(SystemSchemaBuilderRule.MYSQL_MYSQL));
+        assertThat(actualMySQLSchema.get().getTables().size(), is(31));
+        Optional<SystemSchemaBuilderRule> actualPerformanceSchema = SystemSchemaBuilderRule.findBuilderRule("MySQL", "performance_schema");
+        assertTrue(actualPerformanceSchema.isPresent());
+        assertThat(actualPerformanceSchema.get(), is(SystemSchemaBuilderRule.MYSQL_PERFORMANCE_SCHEMA));
+        assertThat(actualPerformanceSchema.get().getTables().size(), is(87));
+        Optional<SystemSchemaBuilderRule> actualSysSchema = SystemSchemaBuilderRule.findBuilderRule("MySQL", "sys");
+        assertTrue(actualSysSchema.isPresent());
+        assertThat(actualSysSchema.get(), is(SystemSchemaBuilderRule.MYSQL_SYS));
+        assertThat(actualSysSchema.get().getTables().size(), is(53));
+        Optional<SystemSchemaBuilderRule> actualPgInformationSchema = SystemSchemaBuilderRule.findBuilderRule("PostgreSQL", "information_schema");
+        assertTrue(actualPgInformationSchema.isPresent());
+        assertThat(actualPgInformationSchema.get(), is(SystemSchemaBuilderRule.POSTGRESQL_INFORMATION_SCHEMA));
+        assertThat(actualPgInformationSchema.get().getTables().size(), is(69));
+        Optional<SystemSchemaBuilderRule> actualPgCatalog = SystemSchemaBuilderRule.findBuilderRule("PostgreSQL", "pg_catalog");
+        assertTrue(actualPgCatalog.isPresent());
+        assertThat(actualPgCatalog.get(), is(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG));
+        assertThat(actualPgCatalog.get().getTables().size(), is(134));
+        Optional<SystemSchemaBuilderRule> actualOgInformationSchema = SystemSchemaBuilderRule.findBuilderRule("openGauss", "information_schema");
+        assertTrue(actualOgInformationSchema.isPresent());
+        assertThat(actualOgInformationSchema.get(), is(SystemSchemaBuilderRule.OPEN_GAUSS_INFORMATION_SCHEMA));
+        assertThat(actualOgInformationSchema.get().getTables().size(), is(66));
+        Optional<SystemSchemaBuilderRule> actualOgPgCatalog = SystemSchemaBuilderRule.findBuilderRule("openGauss", "pg_catalog");
+        assertTrue(actualOgPgCatalog.isPresent());
+        assertThat(actualOgPgCatalog.get(), is(SystemSchemaBuilderRule.OPEN_GAUSS_PG_CATALOG));
+        assertThat(actualOgPgCatalog.get().getTables().size(), is(240));
+        
     }
     
     @Test
-    void assertValueOfSchemaPathFailure() {
-        assertThrows(NullPointerException.class, () -> SystemSchemaBuilderRule.valueOf("MySQL", "test"));
+    void assertNullableValueOfSchemaPath() {
+        Optional<SystemSchemaBuilderRule> unknownSchema = SystemSchemaBuilderRule.findBuilderRule("UnKnown", "public");
+        assertFalse(unknownSchema.isPresent());
     }
     
     @Test

@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -76,7 +77,11 @@ public final class SystemSchemaBuilder {
     }
     
     private static Collection<InputStream> getSchemaStreams(final String schemaName, final DatabaseType databaseType) {
-        SystemSchemaBuilderRule builderRule = SystemSchemaBuilderRule.valueOf(databaseType.getType(), schemaName);
+        Optional<SystemSchemaBuilderRule> builderRuleOptional = SystemSchemaBuilderRule.findBuilderRule(databaseType.getType(), schemaName);
+        if (!builderRuleOptional.isPresent()) {
+            return Collections.emptyList();
+        }
+        SystemSchemaBuilderRule builderRule = builderRuleOptional.get();
         Collection<InputStream> result = new LinkedList<>();
         for (String each : builderRule.getTables()) {
             result.add(Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/" + databaseType.getType().toLowerCase() + "/" + schemaName + "/" + each + ".yaml"));
