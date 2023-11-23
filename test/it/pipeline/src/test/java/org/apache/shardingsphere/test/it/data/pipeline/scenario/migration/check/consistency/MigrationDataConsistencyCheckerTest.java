@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextMan
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
@@ -61,9 +61,9 @@ class MigrationDataConsistencyCheckerTest {
         jobConfigurationPOJO.setJobParameter(YamlEngine.marshal(new YamlMigrationJobConfigurationSwapper().swapToYamlConfiguration(jobConfig)));
         jobConfigurationPOJO.setJobName(jobConfig.getJobId());
         jobConfigurationPOJO.setShardingTotalCount(1);
-        GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey());
+        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey());
         getClusterPersistRepository().persist(String.format("/pipeline/jobs/%s/config", jobConfig.getJobId()), YamlEngine.marshal(jobConfigurationPOJO));
-        governanceRepositoryAPI.getJobItemProcessGovernanceRepository().persist(jobConfig.getJobId(), 0, "");
+        governanceFacade.getJobItemProcessGovernanceRepository().persist(jobConfig.getJobId(), 0, "");
         Map<String, TableDataConsistencyCheckResult> actual = new MigrationDataConsistencyChecker(jobConfig, new MigrationProcessContext(jobConfig.getJobId(), null),
                 createConsistencyCheckJobItemProgressContext(jobConfig.getJobId())).check("FIXTURE", null);
         String checkKey = "t_order";

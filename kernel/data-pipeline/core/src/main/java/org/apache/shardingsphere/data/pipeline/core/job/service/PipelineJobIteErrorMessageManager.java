@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 
 import java.util.Optional;
@@ -32,12 +32,12 @@ public final class PipelineJobIteErrorMessageManager {
     
     private final int shardingItem;
     
-    private final GovernanceRepositoryAPI governanceRepositoryAPI;
+    private final PipelineGovernanceFacade governanceFacade;
     
     public PipelineJobIteErrorMessageManager(final String jobId, final int shardingItem) {
         this.jobId = jobId;
         this.shardingItem = shardingItem;
-        governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId));
+        governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId));
     }
     
     /**
@@ -46,7 +46,7 @@ public final class PipelineJobIteErrorMessageManager {
      * @return map, key is sharding item, value is error message
      */
     public String getErrorMessage() {
-        return Optional.ofNullable(governanceRepositoryAPI.getJobItemErrorMessageGovernanceRepository().load(jobId, shardingItem)).orElse("");
+        return Optional.ofNullable(governanceFacade.getJobItemErrorMessageGovernanceRepository().load(jobId, shardingItem)).orElse("");
     }
     
     /**
@@ -55,7 +55,7 @@ public final class PipelineJobIteErrorMessageManager {
      * @param error error
      */
     public void updateErrorMessage(final Object error) {
-        governanceRepositoryAPI.getJobItemErrorMessageGovernanceRepository().update(jobId, shardingItem, null == error ? "" : buildErrorMessage(error));
+        governanceFacade.getJobItemErrorMessageGovernanceRepository().update(jobId, shardingItem, null == error ? "" : buildErrorMessage(error));
     }
     
     private String buildErrorMessage(final Object error) {
@@ -66,6 +66,6 @@ public final class PipelineJobIteErrorMessageManager {
      * Clean job item error message.
      */
     public void cleanErrorMessage() {
-        governanceRepositoryAPI.getJobItemErrorMessageGovernanceRepository().update(jobId, shardingItem, "");
+        governanceFacade.getJobItemErrorMessageGovernanceRepository().update(jobId, shardingItem, "");
     }
 }

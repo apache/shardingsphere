@@ -27,8 +27,7 @@ import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.elasticjob.CoordinatorRegistryCenterInitializer;
-import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
-import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPIImpl;
+import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
@@ -49,22 +48,22 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineAPIFactory {
     
-    private static final Map<PipelineContextKey, LazyInitializer<GovernanceRepositoryAPI>> GOVERNANCE_REPOSITORY_API_MAP = new ConcurrentHashMap<>();
+    private static final Map<PipelineContextKey, LazyInitializer<PipelineGovernanceFacade>> GOVERNANCE_FACADE_MAP = new ConcurrentHashMap<>();
     
     /**
-     * Get governance repository API.
+     * Get pipeline governance facade.
      *
      * @param contextKey context key
-     * @return governance repository API
+     * @return pipeline governance facade
      */
     @SneakyThrows(ConcurrentException.class)
-    public static GovernanceRepositoryAPI getGovernanceRepositoryAPI(final PipelineContextKey contextKey) {
-        return GOVERNANCE_REPOSITORY_API_MAP.computeIfAbsent(contextKey, key -> new LazyInitializer<GovernanceRepositoryAPI>() {
+    public static PipelineGovernanceFacade getPipelineGovernanceFacade(final PipelineContextKey contextKey) {
+        return GOVERNANCE_FACADE_MAP.computeIfAbsent(contextKey, key -> new LazyInitializer<PipelineGovernanceFacade>() {
             
             @Override
-            protected GovernanceRepositoryAPI initialize() {
+            protected PipelineGovernanceFacade initialize() {
                 ContextManager contextManager = PipelineContextManager.getContext(contextKey).getContextManager();
-                return new GovernanceRepositoryAPIImpl((ClusterPersistRepository) contextManager.getMetaDataContexts().getPersistService().getRepository());
+                return new PipelineGovernanceFacade((ClusterPersistRepository) contextManager.getMetaDataContexts().getPersistService().getRepository());
             }
         }).get();
     }

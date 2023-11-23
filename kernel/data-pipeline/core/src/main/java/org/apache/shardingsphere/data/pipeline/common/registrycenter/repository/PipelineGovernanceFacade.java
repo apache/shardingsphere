@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNodePath;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 /**
- * Governance repository API impl.
+ * Pipeline governance facade.
  */
 @Getter
-public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAPI {
+public final class PipelineGovernanceFacade {
     
+    @Getter(AccessLevel.NONE)
     private final ClusterPersistRepository repository;
     
     private final PipelineJobConfigurationGovernanceRepository jobConfigurationGovernanceRepository;
@@ -46,7 +48,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     private final PipelineMetaDataProcessConfigurationGovernanceRepository metaDataProcessConfigurationGovernanceRepository;
     
-    public GovernanceRepositoryAPIImpl(final ClusterPersistRepository repository) {
+    public PipelineGovernanceFacade(final ClusterPersistRepository repository) {
         this.repository = repository;
         jobConfigurationGovernanceRepository = new PipelineJobConfigurationGovernanceRepository(repository);
         jobOffsetGovernanceRepository = new PipelineJobOffsetGovernanceRepository(repository);
@@ -58,7 +60,11 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         metaDataProcessConfigurationGovernanceRepository = new PipelineMetaDataProcessConfigurationGovernanceRepository(repository);
     }
     
-    @Override
+    /**
+     * Watch pipeLine root path.
+     *
+     * @param listener data changed event listener
+     */
     public void watchPipeLineRootPath(final DataChangedEventListener listener) {
         repository.watch(PipelineNodePath.DATA_PIPELINE_ROOT, listener);
     }
