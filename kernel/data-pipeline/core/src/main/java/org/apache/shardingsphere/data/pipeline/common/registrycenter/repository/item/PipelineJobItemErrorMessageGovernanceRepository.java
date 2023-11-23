@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.item;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+
+import java.util.Optional;
 
 /**
  * Pipeline job item error message governance repository.
@@ -34,10 +37,20 @@ public final class PipelineJobItemErrorMessageGovernanceRepository {
      *
      * @param jobId job ID
      * @param shardingItem sharding item
-     * @param errorMessage error message
+     * @param throwable throwable
      */
-    public void update(final String jobId, final int shardingItem, final String errorMessage) {
-        repository.update(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem), errorMessage);
+    public void update(final String jobId, final int shardingItem, final Throwable throwable) {
+        repository.update(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem), ExceptionUtils.getStackTrace(throwable));
+    }
+    
+    /**
+     * Clean job item error message.
+     *
+     * @param jobId job ID
+     * @param shardingItem sharding item
+     */
+    public void clean(final String jobId, final int shardingItem) {
+        repository.update(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem), "");
     }
     
     /**
@@ -48,6 +61,6 @@ public final class PipelineJobItemErrorMessageGovernanceRepository {
      * @return error msg
      */
     public String load(final String jobId, final int shardingItem) {
-        return repository.getDirectly(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem));
+        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem))).orElse("");
     }
 }

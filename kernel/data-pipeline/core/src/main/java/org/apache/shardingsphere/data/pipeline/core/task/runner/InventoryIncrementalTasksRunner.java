@@ -30,8 +30,8 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNot
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobIteErrorMessageManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
@@ -153,7 +153,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     protected void inventoryFailureCallback(final Throwable throwable) {
         log.error("onFailure, inventory task execute failed.", throwable);
         String jobId = jobItemContext.getJobId();
-        new PipelineJobIteErrorMessageManager(jobId, jobItemContext.getShardingItem()).updateErrorMessage(throwable);
+        PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, jobItemContext.getShardingItem(), throwable);
         try {
             jobManager.stop(jobId);
         } catch (final PipelineJobNotFoundException ignored) {
@@ -188,7 +188,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         public void onFailure(final Throwable throwable) {
             log.error("onFailure, incremental task execute failed.", throwable);
             String jobId = jobItemContext.getJobId();
-            new PipelineJobIteErrorMessageManager(jobId, jobItemContext.getShardingItem()).updateErrorMessage(throwable);
+            PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, jobItemContext.getShardingItem(), throwable);
             try {
                 jobManager.stop(jobId);
             } catch (final PipelineJobNotFoundException ignored) {

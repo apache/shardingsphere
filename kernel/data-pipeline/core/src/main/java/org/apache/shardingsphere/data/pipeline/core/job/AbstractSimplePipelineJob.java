@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobIteErrorMessageManager;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
@@ -74,7 +74,7 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
         if (!addTasksRunner(shardingItem, tasksRunner)) {
             return;
         }
-        new PipelineJobIteErrorMessageManager(jobId, shardingItem).cleanErrorMessage();
+        PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().clean(jobId, shardingItem);
         prepare(jobItemContext);
         log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
         tasksRunner.start();
@@ -82,7 +82,7 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
     
     private void processFailed(final PipelineJobManager jobManager, final String jobId, final int shardingItem, final Exception ex) {
         log.error("job execution failed, {}-{}", jobId, shardingItem, ex);
-        new PipelineJobIteErrorMessageManager(jobId, shardingItem).updateErrorMessage(ex);
+        PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, shardingItem, ex);
         try {
             jobManager.stop(jobId);
         } catch (final PipelineJobNotFoundException ignored) {

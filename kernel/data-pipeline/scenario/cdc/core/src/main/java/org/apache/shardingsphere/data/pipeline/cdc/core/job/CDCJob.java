@@ -41,7 +41,8 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncr
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobIteErrorMessageManager;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
@@ -94,7 +95,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
                 continue;
             }
             jobItemContexts.add(jobItemContext);
-            new PipelineJobIteErrorMessageManager(jobId, shardingItem).cleanErrorMessage();
+            PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().clean(jobId, shardingItem);
             log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
         }
         if (jobItemContexts.isEmpty()) {
@@ -128,7 +129,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     
     private void processFailed(final String jobId, final int shardingItem, final Exception ex) {
         log.error("job execution failed, {}-{}", jobId, shardingItem, ex);
-        new PipelineJobIteErrorMessageManager(jobId, shardingItem).updateErrorMessage(ex);
+        PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, shardingItem, ex);
         PipelineJobCenter.stop(jobId);
         jobAPI.updateJobConfigurationDisabled(jobId, true);
     }
@@ -205,7 +206,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
         public void onFailure(final Throwable throwable) {
             log.error("onFailure, {} task execute failed.", identifier, throwable);
             String jobId = jobItemContext.getJobId();
-            new PipelineJobIteErrorMessageManager(jobId, jobItemContext.getShardingItem()).updateErrorMessage(throwable);
+            PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, jobItemContext.getShardingItem(), throwable);
             if (jobItemContext.getSink() instanceof CDCSocketSink) {
                 CDCSocketSink cdcSink = (CDCSocketSink) jobItemContext.getSink();
                 cdcSink.getChannel().writeAndFlush(CDCResponseUtils.failed("", "", throwable.getMessage()));
