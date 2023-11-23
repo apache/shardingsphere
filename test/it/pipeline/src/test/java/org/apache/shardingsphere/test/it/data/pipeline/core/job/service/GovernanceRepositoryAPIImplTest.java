@@ -18,17 +18,34 @@
 package org.apache.shardingsphere.test.it.data.pipeline.core.job.service;
 
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextManager;
+import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNodePath;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.PipelineJobItemProcessGovernanceRepository;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -36,8 +53,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class GovernanceRepositoryAPIImplTest {
     
@@ -74,8 +93,97 @@ class GovernanceRepositoryAPIImplTest {
         assertThat(event.getType(), anyOf(is(Type.ADDED), is(Type.UPDATED)));
     }
     
+    @Test
+    void assertDeleteJob() {
+        ClusterPersistRepository clusterPersistRepository = getClusterPersistRepository();
+        clusterPersistRepository.persist(PipelineNodePath.DATA_PIPELINE_ROOT + "/1", "");
+        governanceRepositoryAPI.getJobGovernanceRepository().delete("1");
+        Optional<String> actual = new PipelineJobItemProcessGovernanceRepository(clusterPersistRepository).load("1", 0);
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    void assertIsExistedJobConfiguration() {
+        ClusterPersistRepository clusterPersistRepository = getClusterPersistRepository();
+        assertFalse(governanceRepositoryAPI.getJobConfigurationGovernanceRepository().isExisted("foo_job"));
+        clusterPersistRepository.persist("/pipeline/jobs/foo_job/config", "foo");
+        assertTrue(governanceRepositoryAPI.getJobConfigurationGovernanceRepository().isExisted("foo_job"));
+    }
+    
+    @Test
+    void assertLatestCheckJobIdPersistenceDeletion() {
+        String parentJobId = "testParentJob";
+        String expectedCheckJobId = "testCheckJob";
+        governanceRepositoryAPI.getJobCheckGovernanceRepository().persistLatestCheckJobId(parentJobId, expectedCheckJobId);
+        Optional<String> actualCheckJobIdOpt = governanceRepositoryAPI.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId);
+        assertTrue(actualCheckJobIdOpt.isPresent());
+        assertThat(actualCheckJobIdOpt.get(), is(expectedCheckJobId));
+        governanceRepositoryAPI.getJobCheckGovernanceRepository().deleteLatestCheckJobId(parentJobId);
+        assertFalse(governanceRepositoryAPI.getJobCheckGovernanceRepository().getLatestCheckJobId(parentJobId).isPresent());
+    }
+    
+    @Test
+    void assertPersistJobCheckResult() {
+        MigrationJobItemContext jobItemContext = mockJobItemContext();
+        Map<String, TableDataConsistencyCheckResult> actual = new HashMap<>();
+        actual.put("test", new TableDataConsistencyCheckResult(true));
+        governanceRepositoryAPI.getJobCheckGovernanceRepository().persistCheckJobResult(jobItemContext.getJobId(), "j02123", actual);
+        Map<String, TableDataConsistencyCheckResult> checkResult = governanceRepositoryAPI.getJobCheckGovernanceRepository().getCheckJobResult(jobItemContext.getJobId(), "j02123");
+        assertThat(checkResult.size(), is(1));
+        assertTrue(checkResult.get("test").isMatched());
+    }
+    
+    @Test
+    void assertPersistJobItemProcess() {
+        MigrationJobItemContext jobItemContext = mockJobItemContext();
+        governanceRepositoryAPI.getJobItemProcessGovernanceRepository().update(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue1");
+        assertFalse(governanceRepositoryAPI.getJobItemProcessGovernanceRepository().load(jobItemContext.getJobId(), jobItemContext.getShardingItem()).isPresent());
+        governanceRepositoryAPI.getJobItemProcessGovernanceRepository().persist(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue1");
+        Optional<String> actual = governanceRepositoryAPI.getJobItemProcessGovernanceRepository().load(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("testValue1"));
+        governanceRepositoryAPI.getJobItemProcessGovernanceRepository().update(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue2");
+        actual = governanceRepositoryAPI.getJobItemProcessGovernanceRepository().load(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("testValue2"));
+    }
+    
+    @Test
+    void assertPersistJobOffset() {
+        assertFalse(governanceRepositoryAPI.getJobOffsetGovernanceRepository().load("1").isTargetSchemaTableCreated());
+        governanceRepositoryAPI.getJobOffsetGovernanceRepository().persist("1", new JobOffsetInfo(true));
+        assertTrue(governanceRepositoryAPI.getJobOffsetGovernanceRepository().load("1").isTargetSchemaTableCreated());
+    }
+    
+    @Test
+    void assertGetShardingItems() {
+        MigrationJobItemContext jobItemContext = mockJobItemContext();
+        governanceRepositoryAPI.getJobItemProcessGovernanceRepository().persist(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
+        List<Integer> shardingItems = governanceRepositoryAPI.getJobOffsetGovernanceRepository().getShardingItems(jobItemContext.getJobId());
+        assertThat(shardingItems.size(), is(1));
+        assertThat(shardingItems.get(0), is(jobItemContext.getShardingItem()));
+    }
+    
     private ClusterPersistRepository getClusterPersistRepository() {
         ContextManager contextManager = PipelineContextManager.getContext(PipelineContextUtils.getContextKey()).getContextManager();
         return (ClusterPersistRepository) contextManager.getMetaDataContexts().getPersistService().getRepository();
+    }
+    
+    private MigrationJobItemContext mockJobItemContext() {
+        MigrationJobItemContext result = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
+        MigrationTaskConfiguration taskConfig = result.getTaskConfig();
+        result.getInventoryTasks().add(mockInventoryTask(taskConfig));
+        return result;
+    }
+    
+    private InventoryTask mockInventoryTask(final MigrationTaskConfiguration taskConfig) {
+        InventoryDumperContext dumperContext = new InventoryDumperContext(taskConfig.getDumperContext().getCommonContext());
+        dumperContext.getCommonContext().setPosition(new PlaceholderPosition());
+        dumperContext.setActualTableName("t_order");
+        dumperContext.setLogicTableName("t_order");
+        dumperContext.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
+        dumperContext.setShardingItem(0);
+        return new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(dumperContext), PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(),
+                mock(Dumper.class), mock(Importer.class), new AtomicReference<>(new PlaceholderPosition()));
     }
 }
