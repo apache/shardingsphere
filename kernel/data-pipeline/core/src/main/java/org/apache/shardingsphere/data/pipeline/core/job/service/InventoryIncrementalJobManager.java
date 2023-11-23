@@ -84,7 +84,7 @@ public final class InventoryIncrementalJobManager {
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : jobProgress.entrySet()) {
             int shardingItem = entry.getKey();
             InventoryIncrementalJobItemProgress jobItemProgress = entry.getValue();
-            String errorMessage = new PipelineJobIteErrorMessageManager(jobId, shardingItem).getErrorMessage();
+            String errorMessage = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().load(jobId, shardingItem);
             if (null == jobItemProgress) {
                 result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTableName(), null, startTimeMillis, 0, errorMessage));
                 continue;
