@@ -19,24 +19,24 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionJobItemContext;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 
 import java.util.Collection;
 
-public final class FixtureInventoryIncrementalJobItemContext implements InventoryIncrementalJobItemContext {
+public final class FixtureTransmissionJobItemContext implements TransmissionJobItemContext {
     
     @Override
     public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {
     }
     
     @Override
-    public InventoryIncrementalProcessContext getJobProcessContext() {
+    public TransmissionProcessContext getJobProcessContext() {
         return null;
     }
     
@@ -51,7 +51,7 @@ public final class FixtureInventoryIncrementalJobItemContext implements Inventor
     }
     
     @Override
-    public InventoryIncrementalJobItemProgress getInitProgress() {
+    public TransmissionJobItemProgress getInitProgress() {
         return null;
     }
     

@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ral;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.domain.statement.ral;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ral.ExpectedTransmissionRule;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected inventory incremental rule.
+ * Alter transmission rule statement test case.
  */
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedInventoryIncrementalRule {
+public final class AlterTransmissionRuleStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "read")
-    private ExpectedRead read;
+    @XmlElement(name = "job-type-name")
+    private String jobTypeName;
     
-    @XmlElement(name = "write")
-    private ExpectedWrite write;
-    
-    @XmlElement(name = "stream-channel")
-    private ExpectedAlgorithm streamChannel;
+    @XmlElement(name = "rule")
+    private ExpectedTransmissionRule rule;
 }

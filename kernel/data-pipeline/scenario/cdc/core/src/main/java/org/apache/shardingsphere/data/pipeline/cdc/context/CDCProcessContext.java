@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.cdc.context;
 
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.AbstractInventoryIncrementalProcessContext;
+import org.apache.shardingsphere.data.pipeline.common.context.AbstractTransmissionProcessContext;
 
 /**
  * CDC process context.
  */
-public final class CDCProcessContext extends AbstractInventoryIncrementalProcessContext {
+public final class CDCProcessContext extends AbstractTransmissionProcessContext {
     
     public CDCProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
         super(jobId, originalProcessConfig);

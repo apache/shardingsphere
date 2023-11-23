@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.context;
 
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
@@ -26,12 +26,12 @@ import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import java.util.Collection;
 
 /**
- * Inventory incremental job item context.
+ * Transmission job item context.
  */
-public interface InventoryIncrementalJobItemContext extends PipelineJobItemContext, PipelineJobProgressListener {
+public interface TransmissionJobItemContext extends PipelineJobItemContext, PipelineJobProgressListener {
     
     @Override
-    InventoryIncrementalProcessContext getJobProcessContext();
+    TransmissionProcessContext getJobProcessContext();
     
     /**
      * Get inventory tasks.
@@ -52,7 +52,7 @@ public interface InventoryIncrementalJobItemContext extends PipelineJobItemConte
      *
      * @return init progress
      */
-    InventoryIncrementalJobItemProgress getInitProgress();
+    TransmissionJobItemProgress getInitProgress();
     
     /**
      * Get source meta data loader.
@@ -90,7 +90,7 @@ public interface InventoryIncrementalJobItemContext extends PipelineJobItemConte
     long getInventoryRecordsCount();
     
     @Override
-    default InventoryIncrementalJobItemProgress toProgress() {
-        return new InventoryIncrementalJobItemProgress(this);
+    default TransmissionJobItemProgress toProgress() {
+        return new TransmissionJobItemProgress(this);
     }
 }

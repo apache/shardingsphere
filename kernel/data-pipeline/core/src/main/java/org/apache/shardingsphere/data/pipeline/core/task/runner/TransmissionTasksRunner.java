@@ -20,12 +20,12 @@ package org.apache.shardingsphere.data.pipeline.core.task.runner;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
@@ -43,14 +43,14 @@ import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Inventory incremental tasks' runner.
+ * Transmission tasks' runner.
  */
 @RequiredArgsConstructor
 @Slf4j
-public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
+public class TransmissionTasksRunner implements PipelineTasksRunner {
     
     @Getter
-    private final InventoryIncrementalJobItemContext jobItemContext;
+    private final TransmissionJobItemContext jobItemContext;
     
     private final Collection<PipelineTask> inventoryTasks;
     
@@ -60,9 +60,9 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     
     private final PipelineJobManager jobManager;
     
-    private final PipelineJobItemManager<InventoryIncrementalJobItemProgress> jobItemManager;
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
     
-    public InventoryIncrementalTasksRunner(final InventoryIncrementalJobItemContext jobItemContext) {
+    public TransmissionTasksRunner(final TransmissionJobItemContext jobItemContext) {
         this.jobItemContext = jobItemContext;
         inventoryTasks = jobItemContext.getInventoryTasks();
         incrementalTasks = jobItemContext.getIncrementalTasks();

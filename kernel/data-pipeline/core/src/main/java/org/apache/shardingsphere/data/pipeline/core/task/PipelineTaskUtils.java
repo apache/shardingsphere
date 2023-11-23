@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChann
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.channel.AckCallbacks;
 import org.apache.shardingsphere.data.pipeline.common.ingest.channel.PipelineChannelCreator;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.task.progress.IncrementalTaskProgress;
 
 import java.util.Optional;
@@ -54,7 +54,7 @@ public final class PipelineTaskUtils {
      * @param initProgress initial job item progress
      * @return incremental task progress
      */
-    public static IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition position, final InventoryIncrementalJobItemProgress initProgress) {
+    public static IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition position, final TransmissionJobItemProgress initProgress) {
         IncrementalTaskProgress result = new IncrementalTaskProgress(position);
         if (null != initProgress && null != initProgress.getIncremental()) {
             Optional.ofNullable(initProgress.getIncremental().getIncrementalTaskProgress())

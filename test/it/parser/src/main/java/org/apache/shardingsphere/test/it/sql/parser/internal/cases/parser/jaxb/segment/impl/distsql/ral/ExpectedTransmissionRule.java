@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.segment;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ral;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Inventory incremental rule segment.
+ * Expected transmission rule.
  */
 @Getter
 @Setter
-public final class InventoryIncrementalRuleSegment implements ASTNode {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedTransmissionRule {
     
-    private ReadOrWriteSegment readSegment;
+    @XmlElement(name = "read")
+    private ExpectedRead read;
     
-    private ReadOrWriteSegment writeSegment;
+    @XmlElement(name = "write")
+    private ExpectedWrite write;
     
-    private AlgorithmSegment streamChannel;
+    @XmlElement(name = "stream-channel")
+    private ExpectedAlgorithm streamChannel;
 }

@@ -22,9 +22,9 @@ import org.apache.shardingsphere.data.pipeline.common.ingest.channel.PipelineCha
 import org.apache.shardingsphere.data.pipeline.common.spi.algorithm.JobRateLimitAlgorithm;
 
 /**
- * Inventory incremental process context.
+ * Transmission process context.
  */
-public interface InventoryIncrementalProcessContext extends PipelineProcessContext {
+public interface TransmissionProcessContext extends PipelineProcessContext {
     
     /**
      * Get pipeline channel creator.

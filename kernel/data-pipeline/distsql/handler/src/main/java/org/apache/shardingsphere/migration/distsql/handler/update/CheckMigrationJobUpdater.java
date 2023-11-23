@@ -19,7 +19,7 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
-import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobManager;
+import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.pojo.CreateConsistencyCheckJobParameter;
@@ -54,8 +54,8 @@ public final class CheckMigrationJobUpdater implements RALUpdater<CheckMigration
     }
     
     private void verifyInventoryFinished(final MigrationJobConfiguration jobConfig) {
-        InventoryIncrementalJobManager inventoryIncrementalJobManager = new InventoryIncrementalJobManager(migrationJobAPI);
-        ShardingSpherePreconditions.checkState(PipelineJobProgressDetector.isInventoryFinished(jobConfig.getJobShardingCount(), inventoryIncrementalJobManager.getJobProgress(jobConfig).values()),
+        TransmissionJobManager transmissionJobManager = new TransmissionJobManager(migrationJobAPI);
+        ShardingSpherePreconditions.checkState(PipelineJobProgressDetector.isInventoryFinished(jobConfig.getJobShardingCount(), transmissionJobManager.getJobProgress(jobConfig).values()),
                 () -> new PipelineInvalidParameterException("Inventory is not finished."));
     }
     

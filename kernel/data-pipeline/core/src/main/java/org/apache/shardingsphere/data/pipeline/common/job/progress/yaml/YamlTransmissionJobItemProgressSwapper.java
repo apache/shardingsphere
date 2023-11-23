@@ -18,23 +18,23 @@
 package org.apache.shardingsphere.data.pipeline.common.job.progress.yaml;
 
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressSwapper;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 /**
- * YAML inventory incremental job item progress swapper.
+ * YAML transmission job item progress swapper.
  */
-public final class YamlInventoryIncrementalJobItemProgressSwapper implements YamlPipelineJobItemProgressSwapper<YamlInventoryIncrementalJobItemProgress, InventoryIncrementalJobItemProgress> {
+public final class YamlTransmissionJobItemProgressSwapper implements YamlPipelineJobItemProgressSwapper<YamlTransmissionJobItemProgress, TransmissionJobItemProgress> {
     
     private final YamlJobItemInventoryTasksProgressSwapper inventoryTasksProgressSwapper = new YamlJobItemInventoryTasksProgressSwapper();
     
     private final YamlJobItemIncrementalTasksProgressSwapper incrementalTasksProgressSwapper = new YamlJobItemIncrementalTasksProgressSwapper();
     
     @Override
-    public YamlInventoryIncrementalJobItemProgress swapToYamlConfiguration(final InventoryIncrementalJobItemProgress progress) {
-        YamlInventoryIncrementalJobItemProgress result = new YamlInventoryIncrementalJobItemProgress();
+    public YamlTransmissionJobItemProgress swapToYamlConfiguration(final TransmissionJobItemProgress progress) {
+        YamlTransmissionJobItemProgress result = new YamlTransmissionJobItemProgress();
         result.setStatus(progress.getStatus().name());
         result.setSourceDatabaseType(progress.getSourceDatabaseType().getType());
         result.setDataSourceName(progress.getDataSourceName());
@@ -46,8 +46,8 @@ public final class YamlInventoryIncrementalJobItemProgressSwapper implements Yam
     }
     
     @Override
-    public InventoryIncrementalJobItemProgress swapToObject(final YamlInventoryIncrementalJobItemProgress yamlProgress) {
-        InventoryIncrementalJobItemProgress result = new InventoryIncrementalJobItemProgress();
+    public TransmissionJobItemProgress swapToObject(final YamlTransmissionJobItemProgress yamlProgress) {
+        TransmissionJobItemProgress result = new TransmissionJobItemProgress();
         result.setStatus(JobStatus.valueOf(yamlProgress.getStatus()));
         result.setSourceDatabaseType(TypedSPILoader.getService(DatabaseType.class, yamlProgress.getSourceDatabaseType()));
         result.setDataSourceName(yamlProgress.getDataSourceName());
@@ -59,7 +59,7 @@ public final class YamlInventoryIncrementalJobItemProgressSwapper implements Yam
     }
     
     @Override
-    public Class<YamlInventoryIncrementalJobItemProgress> getYamlProgressClass() {
-        return YamlInventoryIncrementalJobItemProgress.class;
+    public Class<YamlTransmissionJobItemProgress> getYamlProgressClass() {
+        return YamlTransmissionJobItemProgress.class;
     }
 }

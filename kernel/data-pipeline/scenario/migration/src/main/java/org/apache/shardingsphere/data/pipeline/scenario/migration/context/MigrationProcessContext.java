@@ -19,13 +19,13 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.AbstractInventoryIncrementalProcessContext;
+import org.apache.shardingsphere.data.pipeline.common.context.AbstractTransmissionProcessContext;
 
 /**
  * Migration process context.
  */
 @Getter
-public final class MigrationProcessContext extends AbstractInventoryIncrementalProcessContext {
+public final class MigrationProcessContext extends AbstractTransmissionProcessContext {
     
     /**
      * Constructor.

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterInventoryIncrementalRuleUpdater
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterTransmissionRuleUpdater
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.LabelComputeNodeUpdater
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.UnlabelComputeNodeUpdater
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetInstanceStatusUpdater

@@ -27,14 +27,14 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositi
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineReadConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionJobItemContext;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type.StringPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.pk.type.UnsupportedKeyPosition;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataUtils;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.common.util.IntervalToRangeIterator;
@@ -78,10 +78,10 @@ public final class InventoryTaskSplitter {
      * @param jobItemContext job item context
      * @return split inventory data task
      */
-    public List<InventoryTask> splitInventoryData(final InventoryIncrementalJobItemContext jobItemContext) {
+    public List<InventoryTask> splitInventoryData(final TransmissionJobItemContext jobItemContext) {
         List<InventoryTask> result = new LinkedList<>();
         long startTimeMillis = System.currentTimeMillis();
-        InventoryIncrementalProcessContext processContext = jobItemContext.getJobProcessContext();
+        TransmissionProcessContext processContext = jobItemContext.getJobProcessContext();
         for (InventoryDumperContext each : splitInventoryDumperContext(jobItemContext)) {
             AtomicReference<IngestPosition> position = new AtomicReference<>(each.getCommonContext().getPosition());
             PipelineChannel channel = PipelineTaskUtils.createInventoryChannel(processContext.getPipelineChannelCreator(), importerConfig.getBatchSize(), position);
@@ -100,7 +100,7 @@ public final class InventoryTaskSplitter {
      * @param jobItemContext job item context
      * @return inventory dumper contexts
      */
-    public Collection<InventoryDumperContext> splitInventoryDumperContext(final InventoryIncrementalJobItemContext jobItemContext) {
+    public Collection<InventoryDumperContext> splitInventoryDumperContext(final TransmissionJobItemContext jobItemContext) {
         Collection<InventoryDumperContext> result = new LinkedList<>();
         for (InventoryDumperContext each : splitByTable(dumperContext)) {
             result.addAll(splitByPrimaryKey(each, jobItemContext, sourceDataSource));
@@ -123,7 +123,7 @@ public final class InventoryTaskSplitter {
         return result;
     }
     
-    private Collection<InventoryDumperContext> splitByPrimaryKey(final InventoryDumperContext dumperContext, final InventoryIncrementalJobItemContext jobItemContext,
+    private Collection<InventoryDumperContext> splitByPrimaryKey(final InventoryDumperContext dumperContext, final TransmissionJobItemContext jobItemContext,
                                                                  final PipelineDataSourceWrapper dataSource) {
         if (null == dumperContext.getUniqueKeyColumns()) {
             String schemaName = dumperContext.getCommonContext().getTableAndSchemaNameMapper().getSchemaName(dumperContext.getLogicTableName());
@@ -132,7 +132,7 @@ public final class InventoryTaskSplitter {
             dumperContext.setUniqueKeyColumns(uniqueKeyColumns);
         }
         Collection<InventoryDumperContext> result = new LinkedList<>();
-        InventoryIncrementalProcessContext jobProcessContext = jobItemContext.getJobProcessContext();
+        TransmissionProcessContext jobProcessContext = jobItemContext.getJobProcessContext();
         PipelineReadConfiguration readConfig = jobProcessContext.getPipelineProcessConfig().getRead();
         int batchSize = readConfig.getBatchSize();
         JobRateLimitAlgorithm rateLimitAlgorithm = jobProcessContext.getReadRateLimitAlgorithm();
@@ -153,9 +153,9 @@ public final class InventoryTaskSplitter {
         return result;
     }
     
-    private Collection<IngestPosition> getInventoryPositions(final InventoryDumperContext dumperContext, final InventoryIncrementalJobItemContext jobItemContext,
+    private Collection<IngestPosition> getInventoryPositions(final InventoryDumperContext dumperContext, final TransmissionJobItemContext jobItemContext,
                                                              final PipelineDataSourceWrapper dataSource) {
-        InventoryIncrementalJobItemProgress initProgress = jobItemContext.getInitProgress();
+        TransmissionJobItemProgress initProgress = jobItemContext.getInitProgress();
         if (null != initProgress) {
             // Do NOT filter FinishedPosition here, since whole inventory tasks are required in job progress when persisting to register center.
             Collection<IngestPosition> result = initProgress.getInventory().getInventoryPosition(dumperContext.getActualTableName()).values();
@@ -183,7 +183,7 @@ public final class InventoryTaskSplitter {
     }
     
     private Collection<IngestPosition> getPositionByIntegerUniqueKeyRange(final InventoryDumperContext dumperContext, final long tableRecordsCount,
-                                                                          final InventoryIncrementalJobItemContext jobItemContext, final PipelineDataSourceWrapper dataSource) {
+                                                                          final TransmissionJobItemContext jobItemContext, final PipelineDataSourceWrapper dataSource) {
         if (0 == tableRecordsCount) {
             return Collections.singletonList(new IntegerPrimaryKeyPosition(0, 0));
         }
@@ -200,7 +200,7 @@ public final class InventoryTaskSplitter {
         return result;
     }
     
-    private Range<Long> getUniqueKeyValuesRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource, final InventoryDumperContext dumperContext) {
+    private Range<Long> getUniqueKeyValuesRange(final TransmissionJobItemContext jobItemContext, final DataSource dataSource, final InventoryDumperContext dumperContext) {
         String uniqueKey = dumperContext.getUniqueKeyColumns().get(0).getName();
         PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(jobItemContext.getJobConfig().getSourceDatabaseType());
         String sql = pipelineSQLBuilder.buildUniqueKeyMinMaxValuesSQL(

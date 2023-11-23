@@ -40,9 +40,9 @@ import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParse
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.WorkerThreadContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.WriteDefinitionContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.segment.InventoryIncrementalRuleSegment;
+import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
 import org.apache.shardingsphere.distsql.segment.ReadOrWriteSegment;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterInventoryIncrementalRuleStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterTransmissionRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -80,14 +80,14 @@ public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVis
     
     @Override
     public ASTNode visitAlterStreamingRule(final AlterStreamingRuleContext ctx) {
-        InventoryIncrementalRuleSegment segment = null == ctx.inventoryIncrementalRule() ? null
-                : (InventoryIncrementalRuleSegment) visit(ctx.inventoryIncrementalRule());
-        return new AlterInventoryIncrementalRuleStatement("STREAMING", segment);
+        TransmissionRuleSegment segment = null == ctx.inventoryIncrementalRule() ? null
+                : (TransmissionRuleSegment) visit(ctx.inventoryIncrementalRule());
+        return new AlterTransmissionRuleStatement("STREAMING", segment);
     }
     
     @Override
     public ASTNode visitInventoryIncrementalRule(final InventoryIncrementalRuleContext ctx) {
-        InventoryIncrementalRuleSegment result = new InventoryIncrementalRuleSegment();
+        TransmissionRuleSegment result = new TransmissionRuleSegment();
         if (null != ctx.readDefinition()) {
             result.setReadSegment((ReadOrWriteSegment) visit(ctx.readDefinition()));
         }

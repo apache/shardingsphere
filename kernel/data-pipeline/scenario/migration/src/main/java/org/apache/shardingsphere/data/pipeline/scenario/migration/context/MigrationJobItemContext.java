@@ -23,11 +23,11 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineDataSourceSink;
@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Getter
 @Setter
-public final class MigrationJobItemContext implements InventoryIncrementalJobItemContext {
+public final class MigrationJobItemContext implements TransmissionJobItemContext {
     
     private final String jobId;
     
@@ -58,7 +58,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     
     private volatile JobStatus status = JobStatus.RUNNING;
     
-    private final InventoryIncrementalJobItemProgress initProgress;
+    private final TransmissionJobItemProgress initProgress;
     
     private final MigrationTaskConfiguration taskConfig;
     
@@ -92,7 +92,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         }
     };
     
-    public MigrationJobItemContext(final MigrationJobConfiguration jobConfig, final int shardingItem, final InventoryIncrementalJobItemProgress initProgress,
+    public MigrationJobItemContext(final MigrationJobConfiguration jobConfig, final int shardingItem, final TransmissionJobItemProgress initProgress,
                                    final MigrationProcessContext jobProcessContext, final MigrationTaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager) {
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();
