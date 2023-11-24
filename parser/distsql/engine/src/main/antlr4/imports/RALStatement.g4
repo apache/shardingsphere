@@ -104,7 +104,7 @@ showMigrationRule
     ;
 
 alterMigrationRule
-    : ALTER MIGRATION RULE inventoryIncrementalRule?
+    : ALTER MIGRATION RULE transmissionRule?
     ;
 
 lockCluster
@@ -115,7 +115,7 @@ unlockCluster
     : UNLOCK CLUSTER
     ;
 
-inventoryIncrementalRule
+transmissionRule
     : LP_ readDefinition? (COMMA_? writeDefinition)? (COMMA_? streamChannel)? RP_
     ;
 

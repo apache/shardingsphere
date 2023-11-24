@@ -27,7 +27,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParse
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.AlterStreamingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.BatchSizeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.DropStreamingContext;
-import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.InventoryIncrementalRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.RateLimiterContext;
@@ -37,11 +36,12 @@ import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParse
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.ShowStreamingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.ShowStreamingStatusContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.StreamChannelContext;
+import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.TransmissionRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.WorkerThreadContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser.WriteDefinitionContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
 import org.apache.shardingsphere.distsql.segment.ReadOrWriteSegment;
+import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterTransmissionRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -80,13 +80,13 @@ public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVis
     
     @Override
     public ASTNode visitAlterStreamingRule(final AlterStreamingRuleContext ctx) {
-        TransmissionRuleSegment segment = null == ctx.inventoryIncrementalRule() ? null
-                : (TransmissionRuleSegment) visit(ctx.inventoryIncrementalRule());
+        TransmissionRuleSegment segment = null == ctx.transmissionRule() ? null
+                : (TransmissionRuleSegment) visit(ctx.transmissionRule());
         return new AlterTransmissionRuleStatement("STREAMING", segment);
     }
     
     @Override
-    public ASTNode visitInventoryIncrementalRule(final InventoryIncrementalRuleContext ctx) {
+    public ASTNode visitTransmissionRule(final TransmissionRuleContext ctx) {
         TransmissionRuleSegment result = new TransmissionRuleSegment();
         if (null != ctx.readDefinition()) {
             result.setReadSegment((ReadOrWriteSegment) visit(ctx.readDefinition()));

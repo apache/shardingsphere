@@ -24,10 +24,10 @@ showStreamingRule
     ;
 
 alterStreamingRule
-    : ALTER STREAMING RULE inventoryIncrementalRule?
+    : ALTER STREAMING RULE transmissionRule?
     ;
 
-inventoryIncrementalRule
+transmissionRule
     : LP_ readDefinition? (COMMA_? writeDefinition)? (COMMA_? streamChannel)? RP_
     ;
 

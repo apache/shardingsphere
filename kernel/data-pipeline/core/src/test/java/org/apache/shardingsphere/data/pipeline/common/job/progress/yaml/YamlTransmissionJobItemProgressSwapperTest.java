@@ -53,7 +53,7 @@ class YamlTransmissionJobItemProgressSwapperTest {
     }
     
     @Test
-    void assertSwapWithoutInventoryIncremental() {
+    void assertSwapWithoutTransmission() {
         YamlTransmissionJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress-failure.yaml"), YamlTransmissionJobItemProgress.class);
         TransmissionJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
         assertNotNull(progress.getInventory());
