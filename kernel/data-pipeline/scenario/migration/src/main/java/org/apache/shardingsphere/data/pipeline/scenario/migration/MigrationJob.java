@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSimplePipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
-import org.apache.shardingsphere.data.pipeline.core.task.runner.InventoryIncrementalTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.task.runner.TransmissionTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
@@ -47,7 +47,7 @@ public final class MigrationJob extends AbstractSimplePipelineJob {
     
     private final MigrationJobAPI jobAPI = new MigrationJobAPI();
     
-    private final PipelineJobItemManager<InventoryIncrementalJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     
@@ -59,10 +59,10 @@ public final class MigrationJob extends AbstractSimplePipelineJob {
     }
     
     @Override
-    protected InventoryIncrementalJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {
+    protected TransmissionJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {
         int shardingItem = shardingContext.getShardingItem();
         MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
-        Optional<InventoryIncrementalJobItemProgress> initProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem);
+        Optional<TransmissionJobItemProgress> initProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem);
         MigrationProcessContext jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
         MigrationTaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
         return new MigrationJobItemContext(jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager);
@@ -70,7 +70,7 @@ public final class MigrationJob extends AbstractSimplePipelineJob {
     
     @Override
     protected PipelineTasksRunner buildPipelineTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {
-        return new InventoryIncrementalTasksRunner((InventoryIncrementalJobItemContext) pipelineJobItemContext);
+        return new TransmissionTasksRunner((TransmissionJobItemContext) pipelineJobItemContext);
     }
     
     @Override

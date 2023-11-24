@@ -32,10 +32,10 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 /**
- * Abstract inventory incremental process context.
+ * Abstract transmission process context.
  */
 @Getter
-public abstract class AbstractInventoryIncrementalProcessContext implements InventoryIncrementalProcessContext {
+public abstract class AbstractTransmissionProcessContext implements TransmissionProcessContext {
     
     private final PipelineProcessConfiguration pipelineProcessConfig;
     
@@ -51,7 +51,7 @@ public abstract class AbstractInventoryIncrementalProcessContext implements Inve
     
     private final PipelineLazyInitializer<ExecuteEngine> incrementalExecuteEngineLazyInitializer;
     
-    protected AbstractInventoryIncrementalProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
+    protected AbstractTransmissionProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
         PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(originalProcessConfig);
         this.pipelineProcessConfig = processConfig;
         PipelineReadConfiguration readConfig = processConfig.getRead();

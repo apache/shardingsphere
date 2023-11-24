@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.domain.statement.ral;
+package org.apache.shardingsphere.distsql.statement.ral.updatable;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ral.ExpectedInventoryIncrementalRule;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
 
 /**
- * Alter inventory incremental rule statement test case.
+ * Alter transmission rule statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-public final class AlterInventoryIncrementalRuleStatementTestCase extends SQLParserTestCase {
+public final class AlterTransmissionRuleStatement extends UpdatableMigrationRALStatement {
     
-    @XmlElement(name = "job-type-name")
-    private String jobTypeName;
+    private final String jobTypeName;
     
-    @XmlElement(name = "rule")
-    private ExpectedInventoryIncrementalRule rule;
+    private final TransmissionRuleSegment processConfigSegment;
 }

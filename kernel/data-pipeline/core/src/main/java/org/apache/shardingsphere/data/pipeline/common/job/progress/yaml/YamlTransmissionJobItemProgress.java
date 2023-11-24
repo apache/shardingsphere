@@ -22,11 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressConfiguration;
 
 /**
- * YAML inventory incremental job item progress.
+ * YAML transmission job item progress.
  */
 @Getter
 @Setter
-public final class YamlInventoryIncrementalJobItemProgress implements YamlPipelineJobItemProgressConfiguration {
+public final class YamlTransmissionJobItemProgress implements YamlPipelineJobItemProgressConfiguration {
     
     private String status;
     

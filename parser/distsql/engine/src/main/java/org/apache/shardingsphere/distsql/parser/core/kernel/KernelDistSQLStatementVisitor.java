@@ -71,7 +71,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.segment.InventoryIncrementalRuleSegment;
+import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
 import org.apache.shardingsphere.distsql.segment.ReadOrWriteSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ConvertYamlConfigurationStatement;
@@ -86,7 +86,7 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariabl
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowMigrationRuleStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterComputeNodeStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterInventoryIncrementalRuleStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterTransmissionRuleStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.LabelComputeNodeStatement;
@@ -312,14 +312,14 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitAlterMigrationRule(final AlterMigrationRuleContext ctx) {
-        InventoryIncrementalRuleSegment segment = null == ctx.inventoryIncrementalRule() ? null
-                : (InventoryIncrementalRuleSegment) visit(ctx.inventoryIncrementalRule());
-        return new AlterInventoryIncrementalRuleStatement("MIGRATION", segment);
+        TransmissionRuleSegment segment = null == ctx.inventoryIncrementalRule() ? null
+                : (TransmissionRuleSegment) visit(ctx.inventoryIncrementalRule());
+        return new AlterTransmissionRuleStatement("MIGRATION", segment);
     }
     
     @Override
     public ASTNode visitInventoryIncrementalRule(final InventoryIncrementalRuleContext ctx) {
-        InventoryIncrementalRuleSegment result = new InventoryIncrementalRuleSegment();
+        TransmissionRuleSegment result = new TransmissionRuleSegment();
         if (null != ctx.readDefinition()) {
             result.setReadSegment((ReadOrWriteSegment) visit(ctx.readDefinition()));
         }

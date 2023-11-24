@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.common.job.progress.yaml;
 
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.test.util.ConfigurationFileUtils;
 import org.junit.jupiter.api.Test;
@@ -26,14 +26,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class YamlInventoryIncrementalJobItemProgressSwapperTest {
+class YamlTransmissionJobItemProgressSwapperTest {
     
-    private static final YamlInventoryIncrementalJobItemProgressSwapper SWAPPER = new YamlInventoryIncrementalJobItemProgressSwapper();
+    private static final YamlTransmissionJobItemProgressSwapper SWAPPER = new YamlTransmissionJobItemProgressSwapper();
     
     @Test
     void assertFullSwapToYamlConfiguration() {
-        InventoryIncrementalJobItemProgress progress = SWAPPER.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress.yaml"), YamlInventoryIncrementalJobItemProgress.class));
-        YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
+        TransmissionJobItemProgress progress = SWAPPER.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress.yaml"), YamlTransmissionJobItemProgress.class));
+        YamlTransmissionJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
         assertThat(actual.getStatus(), is("RUNNING"));
         assertThat(actual.getSourceDatabaseType(), is("H2"));
         assertThat(actual.getDataSourceName(), is("ds_0"));
@@ -47,20 +47,20 @@ class YamlInventoryIncrementalJobItemProgressSwapperTest {
     
     @Test
     void assertSwapWithFullConfig() {
-        YamlInventoryIncrementalJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress.yaml"), YamlInventoryIncrementalJobItemProgress.class);
-        YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(SWAPPER.swapToObject(yamlProgress));
+        YamlTransmissionJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress.yaml"), YamlTransmissionJobItemProgress.class);
+        YamlTransmissionJobItemProgress actual = SWAPPER.swapToYamlConfiguration(SWAPPER.swapToObject(yamlProgress));
         assertThat(YamlEngine.marshal(actual), is(YamlEngine.marshal(yamlProgress)));
     }
     
     @Test
     void assertSwapWithoutInventoryIncremental() {
-        YamlInventoryIncrementalJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress-failure.yaml"), YamlInventoryIncrementalJobItemProgress.class);
-        InventoryIncrementalJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
+        YamlTransmissionJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress-failure.yaml"), YamlTransmissionJobItemProgress.class);
+        TransmissionJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
         assertNotNull(progress.getInventory());
         assertNotNull(progress.getIncremental());
         assertThat(progress.getDataSourceName(), is("ds_0"));
         assertThat(progress.getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
-        YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
+        YamlTransmissionJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
         assertNotNull(actual.getInventory());
         assertNotNull(actual.getIncremental());
         assertThat(YamlEngine.marshal(actual), is(YamlEngine.marshal(yamlProgress)));
@@ -68,13 +68,13 @@ class YamlInventoryIncrementalJobItemProgressSwapperTest {
     
     @Test
     void assertSwapWithRunningConfig() {
-        YamlInventoryIncrementalJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress-running.yaml"), YamlInventoryIncrementalJobItemProgress.class);
-        InventoryIncrementalJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
+        YamlTransmissionJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtils.readFile("job-progress-running.yaml"), YamlTransmissionJobItemProgress.class);
+        TransmissionJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
         assertNotNull(progress.getInventory());
         assertNotNull(progress.getIncremental());
         assertThat(progress.getDataSourceName(), is("ds_0"));
         assertThat(progress.getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
-        YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
+        YamlTransmissionJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
         assertNotNull(actual.getInventory());
         assertNotNull(actual.getIncremental());
         assertThat(YamlEngine.marshal(actual), is(YamlEngine.marshal(yamlProgress)));

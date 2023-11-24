@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.statement.ral.updatable;
+package org.apache.shardingsphere.data.pipeline.common.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.segment.InventoryIncrementalRuleSegment;
-import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 
 /**
- * Alter inventory incremental rule statement.
+ * Transmission job item info.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterInventoryIncrementalRuleStatement extends UpdatableMigrationRALStatement {
+public class TransmissionJobItemInfo {
     
-    private final String jobTypeName;
+    private final int shardingItem;
     
-    private final InventoryIncrementalRuleSegment processConfigSegment;
+    private final String tableNames;
+    
+    private final TransmissionJobItemProgress jobItemProgress;
+    
+    private final long startTimeMillis;
+    
+    private final int inventoryFinishedPercentage;
+    
+    private final String errorMessage;
 }

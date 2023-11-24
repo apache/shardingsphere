@@ -24,11 +24,11 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * CDC job item context.
  */
 @Getter
-public final class CDCJobItemContext implements InventoryIncrementalJobItemContext {
+public final class CDCJobItemContext implements TransmissionJobItemContext {
     
     private final CDCJobConfiguration jobConfig;
     
@@ -56,7 +56,7 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     @Setter
     private volatile JobStatus status = JobStatus.RUNNING;
     
-    private final InventoryIncrementalJobItemProgress initProgress;
+    private final TransmissionJobItemProgress initProgress;
     
     private final CDCProcessContext jobProcessContext;
     
@@ -90,7 +90,7 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
         }
     };
     
-    public CDCJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem, final InventoryIncrementalJobItemProgress initProgress, final CDCProcessContext jobProcessContext,
+    public CDCJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem, final TransmissionJobItemProgress initProgress, final CDCProcessContext jobProcessContext,
                              final CDCTaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager, final PipelineSink sink) {
         this.jobConfig = jobConfig;
         this.shardingItem = shardingItem;

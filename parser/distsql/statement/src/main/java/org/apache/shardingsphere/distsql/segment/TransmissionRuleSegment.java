@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.common.pojo;
+package org.apache.shardingsphere.distsql.segment;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
- * Inventory incremental job item info.
+ * Transmission rule segment.
  */
-@RequiredArgsConstructor
 @Getter
-public class InventoryIncrementalJobItemInfo {
+@Setter
+public final class TransmissionRuleSegment implements ASTNode {
     
-    private final int shardingItem;
+    private ReadOrWriteSegment readSegment;
     
-    private final String tableNames;
+    private ReadOrWriteSegment writeSegment;
     
-    private final InventoryIncrementalJobItemProgress jobItemProgress;
-    
-    private final long startTimeMillis;
-    
-    private final int inventoryFinishedPercentage;
-    
-    private final String errorMessage;
+    private AlgorithmSegment streamChannel;
 }

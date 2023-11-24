@@ -23,8 +23,8 @@ import org.apache.shardingsphere.data.pipeline.common.config.process.PipelinePro
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.pojo.TransmissionJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
@@ -39,12 +39,12 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 /**
- * Inventory incremental job manager.
+ * Transmission job manager.
  */
 @RequiredArgsConstructor
-public final class InventoryIncrementalJobManager {
+public final class TransmissionJobManager {
     
-    private final InventoryIncrementalJobAPI jobAPI;
+    private final TransmissionJobAPI jobAPI;
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
@@ -75,18 +75,18 @@ public final class InventoryIncrementalJobManager {
      * @param jobId job ID
      * @return job item infos
      */
-    public List<InventoryIncrementalJobItemInfo> getJobItemInfos(final String jobId) {
+    public List<TransmissionJobItemInfo> getJobItemInfos(final String jobId) {
         PipelineJobConfiguration jobConfig = new PipelineJobManager(jobAPI).getJobConfiguration(jobId);
         long startTimeMillis = Long.parseLong(Optional.ofNullable(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).getProps().getProperty("start_time_millis")).orElse("0"));
-        Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = getJobProgress(jobConfig);
-        List<InventoryIncrementalJobItemInfo> result = new LinkedList<>();
+        Map<Integer, TransmissionJobItemProgress> jobProgress = getJobProgress(jobConfig);
+        List<TransmissionJobItemInfo> result = new LinkedList<>();
         PipelineJobInfo jobInfo = jobAPI.getJobInfo(jobId);
-        for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : jobProgress.entrySet()) {
+        for (Entry<Integer, TransmissionJobItemProgress> entry : jobProgress.entrySet()) {
             int shardingItem = entry.getKey();
-            InventoryIncrementalJobItemProgress jobItemProgress = entry.getValue();
+            TransmissionJobItemProgress jobItemProgress = entry.getValue();
             String errorMessage = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().load(jobId, shardingItem);
             if (null == jobItemProgress) {
-                result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTableName(), null, startTimeMillis, 0, errorMessage));
+                result.add(new TransmissionJobItemInfo(shardingItem, jobInfo.getTableName(), null, startTimeMillis, 0, errorMessage));
                 continue;
             }
             int inventoryFinishedPercentage = 0;
@@ -95,7 +95,7 @@ public final class InventoryIncrementalJobManager {
             } else if (0 != jobItemProgress.getProcessedRecordsCount() && 0 != jobItemProgress.getInventoryRecordsCount()) {
                 inventoryFinishedPercentage = (int) Math.min(100, jobItemProgress.getProcessedRecordsCount() * 100 / jobItemProgress.getInventoryRecordsCount());
             }
-            result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTableName(), jobItemProgress, startTimeMillis, inventoryFinishedPercentage, errorMessage));
+            result.add(new TransmissionJobItemInfo(shardingItem, jobInfo.getTableName(), jobItemProgress, startTimeMillis, inventoryFinishedPercentage, errorMessage));
         }
         return result;
     }
@@ -106,12 +106,12 @@ public final class InventoryIncrementalJobManager {
      * @param jobConfig pipeline job configuration
      * @return each sharding item progress
      */
-    public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final PipelineJobConfiguration jobConfig) {
-        PipelineJobItemManager<InventoryIncrementalJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
+    public Map<Integer, TransmissionJobItemProgress> getJobProgress(final PipelineJobConfiguration jobConfig) {
+        PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
         String jobId = jobConfig.getJobId();
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
         return IntStream.range(0, jobConfig.getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
-            Optional<InventoryIncrementalJobItemProgress> jobItemProgress = jobItemManager.getProgress(jobId, each);
+            Optional<TransmissionJobItemProgress> jobItemProgress = jobItemManager.getProgress(jobId, each);
             jobItemProgress.ifPresent(optional -> optional.setActive(!jobConfigPOJO.isDisabled()));
             map.put(each, jobItemProgress.orElse(null));
         }, LinkedHashMap::putAll);

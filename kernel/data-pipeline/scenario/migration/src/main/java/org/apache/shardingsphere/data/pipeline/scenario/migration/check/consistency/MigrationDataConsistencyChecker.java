@@ -22,14 +22,14 @@ import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveQu
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.datanode.DataNodeUtils;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataUtils;
 import org.apache.shardingsphere.data.pipeline.common.metadata.loader.StandardPipelineTableMetaDataLoader;
@@ -41,7 +41,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.Table
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryCheckParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryChecker;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
-import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobManager;
+import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.spi.algorithm.JobRateLimitAlgorithm;
@@ -72,7 +72,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     
     private final AtomicReference<TableInventoryChecker> currentTableInventoryChecker = new AtomicReference<>();
     
-    public MigrationDataConsistencyChecker(final MigrationJobConfiguration jobConfig, final InventoryIncrementalProcessContext processContext,
+    public MigrationDataConsistencyChecker(final MigrationJobConfiguration jobConfig, final TransmissionProcessContext processContext,
                                            final ConsistencyCheckJobItemProgressContext progressContext) {
         this.jobConfig = jobConfig;
         readRateLimitAlgorithm = null == processContext ? null : processContext.getReadRateLimitAlgorithm();
@@ -99,8 +99,8 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     }
     
     private long getRecordsCount() {
-        Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = new InventoryIncrementalJobManager(new MigrationJobAPI()).getJobProgress(jobConfig);
-        return jobProgress.values().stream().filter(Objects::nonNull).mapToLong(InventoryIncrementalJobItemProgress::getProcessedRecordsCount).sum();
+        Map<Integer, TransmissionJobItemProgress> jobProgress = new TransmissionJobManager(new MigrationJobAPI()).getJobProgress(jobConfig);
+        return jobProgress.values().stream().filter(Objects::nonNull).mapToLong(TransmissionJobItemProgress::getProcessedRecordsCount).sum();
     }
     
     private void checkTableInventoryData(final JobDataNodeLine jobDataNodeLine, final TableDataConsistencyChecker tableChecker,

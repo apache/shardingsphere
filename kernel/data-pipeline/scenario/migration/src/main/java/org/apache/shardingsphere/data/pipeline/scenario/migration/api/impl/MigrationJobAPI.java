@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.common.config.ImporterConfigurati
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.common.datanode.DataNodeUtils;
@@ -53,8 +53,8 @@ import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInva
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
-import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobManager;
+import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineDataSourcePersistService;
@@ -109,7 +109,7 @@ import java.util.stream.Collectors;
  * Migration job API.
  */
 @Slf4j
-public final class MigrationJobAPI implements InventoryIncrementalJobAPI {
+public final class MigrationJobAPI implements TransmissionJobAPI {
     
     private final PipelineDataSourcePersistService dataSourcePersistService = new PipelineDataSourcePersistService();
     
@@ -276,12 +276,12 @@ public final class MigrationJobAPI implements InventoryIncrementalJobAPI {
     
     @Override
     public MigrationProcessContext buildPipelineProcessContext(final PipelineJobConfiguration pipelineJobConfig) {
-        PipelineProcessConfiguration processConfig = new InventoryIncrementalJobManager(this).showProcessConfiguration(PipelineJobIdUtils.parseContextKey(pipelineJobConfig.getJobId()));
+        PipelineProcessConfiguration processConfig = new TransmissionJobManager(this).showProcessConfiguration(PipelineJobIdUtils.parseContextKey(pipelineJobConfig.getJobId()));
         return new MigrationProcessContext(pipelineJobConfig.getJobId(), processConfig);
     }
     
     @Override
-    public PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(final PipelineJobConfiguration pipelineJobConfig, final InventoryIncrementalProcessContext processContext,
+    public PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(final PipelineJobConfiguration pipelineJobConfig, final TransmissionProcessContext processContext,
                                                                               final ConsistencyCheckJobItemProgressContext progressContext) {
         return new MigrationDataConsistencyChecker((MigrationJobConfiguration) pipelineJobConfig, processContext, progressContext);
     }

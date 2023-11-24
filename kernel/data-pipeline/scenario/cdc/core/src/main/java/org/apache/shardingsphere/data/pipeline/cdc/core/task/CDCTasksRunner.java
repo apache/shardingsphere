@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.task;
 
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
@@ -30,13 +30,13 @@ import java.util.Collection;
  */
 public final class CDCTasksRunner implements PipelineTasksRunner {
     
-    private final InventoryIncrementalJobItemContext jobItemContext;
+    private final TransmissionJobItemContext jobItemContext;
     
     private final Collection<PipelineTask> inventoryTasks;
     
     private final Collection<PipelineTask> incrementalTasks;
     
-    public CDCTasksRunner(final InventoryIncrementalJobItemContext jobItemContext) {
+    public CDCTasksRunner(final TransmissionJobItemContext jobItemContext) {
         this.jobItemContext = jobItemContext;
         inventoryTasks = jobItemContext.getInventoryTasks();
         incrementalTasks = jobItemContext.getIncrementalTasks();

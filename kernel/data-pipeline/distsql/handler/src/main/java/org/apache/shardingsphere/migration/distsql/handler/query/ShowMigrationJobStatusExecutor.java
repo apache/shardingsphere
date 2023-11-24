@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.common.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.pojo.InventoryIncrementalJobItemInfo;
-import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
-import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobManager;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.pojo.TransmissionJobItemInfo;
+import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -40,14 +40,14 @@ public final class ShowMigrationJobStatusExecutor implements QueryableRALExecuto
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationStatusStatement sqlStatement) {
-        InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION");
-        List<InventoryIncrementalJobItemInfo> jobItemInfos = new InventoryIncrementalJobManager(jobAPI).getJobItemInfos(sqlStatement.getJobId());
+        TransmissionJobAPI jobAPI = (TransmissionJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION");
+        List<TransmissionJobItemInfo> jobItemInfos = new TransmissionJobManager(jobAPI).getJobItemInfos(sqlStatement.getJobId());
         long currentTimeMillis = System.currentTimeMillis();
         return jobItemInfos.stream().map(each -> generateResultRow(each, currentTimeMillis)).collect(Collectors.toList());
     }
     
-    private LocalDataQueryResultRow generateResultRow(final InventoryIncrementalJobItemInfo jobItemInfo, final long currentTimeMillis) {
-        InventoryIncrementalJobItemProgress jobItemProgress = jobItemInfo.getJobItemProgress();
+    private LocalDataQueryResultRow generateResultRow(final TransmissionJobItemInfo jobItemInfo, final long currentTimeMillis) {
+        TransmissionJobItemProgress jobItemProgress = jobItemInfo.getJobItemProgress();
         if (null == jobItemProgress) {
             return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), "", "", "", "", "", "", "", jobItemInfo.getErrorMessage());
         }

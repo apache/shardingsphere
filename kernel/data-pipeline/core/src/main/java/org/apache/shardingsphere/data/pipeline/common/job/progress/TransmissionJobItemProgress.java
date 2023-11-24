@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.common.job.progress;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.common.task.progress.InventoryTaskProgress;
@@ -32,12 +32,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Inventory incremental job item progress.
+ * Transmission job item progress.
  */
 @NoArgsConstructor
 @Getter
 @Setter
-public final class InventoryIncrementalJobItemProgress implements PipelineJobItemProgress {
+public final class TransmissionJobItemProgress implements PipelineJobItemProgress {
     
     private DatabaseType sourceDatabaseType;
     
@@ -55,7 +55,7 @@ public final class InventoryIncrementalJobItemProgress implements PipelineJobIte
     
     private JobStatus status = JobStatus.RUNNING;
     
-    public InventoryIncrementalJobItemProgress(final InventoryIncrementalJobItemContext context) {
+    public TransmissionJobItemProgress(final TransmissionJobItemContext context) {
         sourceDatabaseType = context.getJobConfig().getSourceDatabaseType();
         dataSourceName = context.getDataSourceName();
         inventory = getInventoryTasksProgress(context.getInventoryTasks());

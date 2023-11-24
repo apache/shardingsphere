@@ -21,9 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.segment.ReadOrWriteSegment;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterInventoryIncrementalRuleStatement;
+import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterTransmissionRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.domain.statement.ral.AlterInventoryIncrementalRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.domain.statement.ral.AlterTransmissionRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ral.ExpectedRead;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ral.ExpectedWrite;
@@ -34,10 +34,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
- * Alter inventory incremental rule statement assert.
+ * Alter transmission rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AlterInventoryIncrementalRuleStatementAssert {
+public class AlterTransmissionRuleStatementAssert {
     
     /**
      * Assert statement is correct with expected parser result.
@@ -46,7 +46,7 @@ public class AlterInventoryIncrementalRuleStatementAssert {
      * @param actual actual statement
      * @param expected expected statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterInventoryIncrementalRuleStatement actual, final AlterInventoryIncrementalRuleStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterTransmissionRuleStatement actual, final AlterTransmissionRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {

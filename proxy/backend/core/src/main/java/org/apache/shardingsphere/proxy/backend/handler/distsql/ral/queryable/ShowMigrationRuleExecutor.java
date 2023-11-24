@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobAPI;
-import org.apache.shardingsphere.data.pipeline.core.job.service.InventoryIncrementalJobManager;
+import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowMigrationRuleStatement;
@@ -40,7 +40,7 @@ public final class ShowMigrationRuleExecutor implements QueryableRALExecutor<Sho
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationRuleStatement sqlStatement) {
-        PipelineProcessConfiguration processConfig = new InventoryIncrementalJobManager((InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION"))
+        PipelineProcessConfiguration processConfig = new TransmissionJobManager((TransmissionJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION"))
                 .showProcessConfiguration(new PipelineContextKey(InstanceType.PROXY));
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         result.add(new LocalDataQueryResultRow(getString(processConfig.getRead()), getString(processConfig.getWrite()), getString(processConfig.getStreamChannel())));

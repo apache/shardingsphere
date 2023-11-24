@@ -20,9 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.job.service;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.InventoryIncrementalProcessContext;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlInventoryIncrementalJobItemProgressSwapper;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlTransmissionJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
@@ -31,14 +31,14 @@ import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConf
 import java.sql.SQLException;
 
 /**
- * Inventory incremental job API.
+ * Transmission job API.
  */
-public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
+public interface TransmissionJobAPI extends PipelineJobAPI {
     
     @SuppressWarnings("unchecked")
     @Override
-    default YamlInventoryIncrementalJobItemProgressSwapper getYamlJobItemProgressSwapper() {
-        return new YamlInventoryIncrementalJobItemProgressSwapper();
+    default YamlTransmissionJobItemProgressSwapper getYamlJobItemProgressSwapper() {
+        return new YamlTransmissionJobItemProgressSwapper();
     }
     
     /**
@@ -65,7 +65,7 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      * @param pipelineJobConfig pipeline job configuration
      * @return pipeline process context
      */
-    InventoryIncrementalProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
+    TransmissionProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     /**
      * Extend YAML job configuration.
@@ -83,7 +83,7 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      * @param progressContext consistency check job item progress context
      * @return all logic tables check result
      */
-    PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(PipelineJobConfiguration pipelineJobConfig, InventoryIncrementalProcessContext processContext,
+    PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(PipelineJobConfiguration pipelineJobConfig, TransmissionProcessContext processContext,
                                                                        ConsistencyCheckJobItemProgressContext progressContext);
     
     /**
