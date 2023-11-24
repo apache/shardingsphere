@@ -52,20 +52,20 @@ public interface TransmissionJobAPI extends PipelineJobAPI {
     /**
      * Build task configuration.
      *
-     * @param pipelineJobConfig pipeline job configuration
+     * @param jobConfig pipeline job configuration
      * @param jobShardingItem job sharding item
-     * @param pipelineProcessConfig pipeline process configuration
+     * @param processConfig pipeline process configuration
      * @return task configuration
      */
-    PipelineTaskConfiguration buildTaskConfiguration(PipelineJobConfiguration pipelineJobConfig, int jobShardingItem, PipelineProcessConfiguration pipelineProcessConfig);
+    PipelineTaskConfiguration buildTaskConfiguration(PipelineJobConfiguration jobConfig, int jobShardingItem, PipelineProcessConfiguration processConfig);
     
     /**
-     * Build pipeline process context.
+     * Build transmission process context.
      *
-     * @param pipelineJobConfig pipeline job configuration
-     * @return pipeline process context
+     * @param jobConfig pipeline job configuration
+     * @return transmission process context
      */
-    TransmissionProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
+    TransmissionProcessContext buildProcessContext(PipelineJobConfiguration jobConfig);
     
     /**
      * Extend YAML job configuration.
@@ -78,13 +78,12 @@ public interface TransmissionJobAPI extends PipelineJobAPI {
     /**
      * Build pipeline data consistency checker.
      *
-     * @param pipelineJobConfig job configuration
+     * @param jobConfig job configuration
      * @param processContext process context
      * @param progressContext consistency check job item progress context
      * @return all logic tables check result
      */
-    PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(PipelineJobConfiguration pipelineJobConfig, TransmissionProcessContext processContext,
-                                                                       ConsistencyCheckJobItemProgressContext progressContext);
+    PipelineDataConsistencyChecker buildDataConsistencyChecker(PipelineJobConfiguration jobConfig, TransmissionProcessContext processContext, ConsistencyCheckJobItemProgressContext progressContext);
     
     /**
      * Commit pipeline job.
