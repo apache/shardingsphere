@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
+import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConfigurationSwapper;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItem
 import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressSwapper;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 import java.util.Optional;
 
@@ -36,9 +38,11 @@ public interface PipelineJobAPI extends TypedSPI {
     /**
      * Get YAML pipeline job configuration swapper.
      * 
+     * @param <T> type of YAML configuration
+     * @param <Y> type of pipeline job configuration
      * @return YAML pipeline job configuration swapper
      */
-    YamlPipelineJobConfigurationSwapper<?, ?> getYamlJobConfigurationSwapper();
+    <Y extends YamlConfiguration, T extends PipelineJobConfiguration> YamlPipelineJobConfigurationSwapper<Y, T> getYamlJobConfigurationSwapper();
     
     /**
      * Get YAML pipeline job item progress swapper.
@@ -73,6 +77,15 @@ public interface PipelineJobAPI extends TypedSPI {
      */
     default Optional<String> getToBeStoppedPreviousJobType() {
         return Optional.empty();
+    }
+    
+    /**
+     * Whether to force no sharding when convert to job configuration POJO.
+     * 
+     * @return without sharding or not
+     */
+    default boolean isForceNoShardingWhenConvertToJobConfigurationPOJO() {
+        return false;
     }
     
     /**

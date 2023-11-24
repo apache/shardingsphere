@@ -76,7 +76,7 @@ public final class TransmissionJobManager {
      * @return job item infos
      */
     public List<TransmissionJobItemInfo> getJobItemInfos(final String jobId) {
-        PipelineJobConfiguration jobConfig = new PipelineJobManager(jobAPI).getJobConfiguration(jobId);
+        PipelineJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobAPI).getJobConfiguration(jobId);
         long startTimeMillis = Long.parseLong(Optional.ofNullable(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).getProps().getProperty("start_time_millis")).orElse("0"));
         Map<Integer, TransmissionJobItemProgress> jobProgress = getJobProgress(jobConfig);
         List<TransmissionJobItemInfo> result = new LinkedList<>();

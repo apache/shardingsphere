@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
@@ -103,7 +104,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             jobItemManager.persistProgress(jobItemContext);
             JobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
             TransmissionJobAPI jobAPI = (TransmissionJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, jobType.getType());
-            PipelineJobConfiguration parentJobConfig = new PipelineJobManager(jobAPI).getJobConfiguration(parentJobId);
+            PipelineJobConfiguration parentJobConfig = new PipelineJobConfigurationManager(jobAPI).getJobConfiguration(parentJobId);
             try {
                 PipelineDataConsistencyChecker checker = jobAPI.buildDataConsistencyChecker(
                         parentJobConfig, jobAPI.buildProcessContext(parentJobConfig), jobItemContext.getProgressContext());
