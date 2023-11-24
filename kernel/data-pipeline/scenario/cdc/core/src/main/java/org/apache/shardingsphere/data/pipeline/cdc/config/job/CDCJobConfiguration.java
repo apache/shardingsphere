@@ -21,11 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
-import org.apache.shardingsphere.data.pipeline.cdc.yaml.swapper.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.util.List;
@@ -65,18 +62,6 @@ public final class CDCJobConfiguration implements PipelineJobConfiguration {
     @Override
     public int getJobShardingCount() {
         return jobShardingDataNodes.size();
-    }
-    
-    @Override
-    public JobConfigurationPOJO convertToJobConfigurationPOJO() {
-        JobConfigurationPOJO result = PipelineJobConfiguration.super.convertToJobConfigurationPOJO();
-        result.setShardingTotalCount(1);
-        return result;
-    }
-    
-    @Override
-    public YamlPipelineJobConfiguration swapToYamlJobConfiguration() {
-        return new YamlCDCJobConfigurationSwapper().swapToYamlConfiguration(this);
     }
     
     @RequiredArgsConstructor

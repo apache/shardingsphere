@@ -17,22 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.common.config.job;
 
-import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.listener.PipelineElasticJobListener;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 
 /**
  * Pipeline job configuration.
  */
 public interface PipelineJobConfiguration {
-    
-    DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     /**
      * Get job id.
@@ -54,29 +44,4 @@ public interface PipelineJobConfiguration {
      * @return source database type
      */
     DatabaseType getSourceDatabaseType();
-    
-    /**
-     * Convert to job configuration POJO.
-     * 
-     * @return converted job configuration POJO
-     */
-    default JobConfigurationPOJO convertToJobConfigurationPOJO() {
-        JobConfigurationPOJO result = new JobConfigurationPOJO();
-        result.setJobName(getJobId());
-        result.setShardingTotalCount(getJobShardingCount());
-        result.setJobParameter(YamlEngine.marshal(swapToYamlJobConfiguration()));
-        String createTimeFormat = LocalDateTime.now().format(DATE_TIME_FORMATTER);
-        result.getProps().setProperty("create_time", createTimeFormat);
-        result.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
-        result.getProps().setProperty("run_count", "1");
-        result.setJobListenerTypes(Collections.singletonList(PipelineElasticJobListener.class.getName()));
-        return result;
-    }
-    
-    /**
-     * Swap to YAML pipeline job configuration.
-     * 
-     * @return swapped YAML pipeline job configuration
-     */
-    YamlPipelineJobConfiguration swapToYamlJobConfiguration();
 }

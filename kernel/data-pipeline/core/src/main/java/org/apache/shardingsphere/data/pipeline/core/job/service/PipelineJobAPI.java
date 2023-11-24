@@ -80,6 +80,15 @@ public interface PipelineJobAPI extends TypedSPI {
     }
     
     /**
+     * Whether to force no sharding when convert to job configuration POJO.
+     * 
+     * @return without sharding or not
+     */
+    default boolean isForceNoShardingWhenConvertToJobConfigurationPOJO() {
+        return false;
+    }
+    
+    /**
      * Get pipeline job class.
      * 
      * @return pipeline job class

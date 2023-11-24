@@ -86,6 +86,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -100,6 +101,8 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public final class CDCJobAPI implements TransmissionJobAPI {
+    
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     private final YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
     
@@ -126,7 +129,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
             log.warn("CDC job already exists in registry center, ignore, job id is `{}`", jobConfig.getJobId());
         } else {
             governanceFacade.getJobFacade().getJob().create(jobConfig.getJobId(), getJobClass());
-            JobConfigurationPOJO jobConfigPOJO = jobConfig.convertToJobConfigurationPOJO();
+            JobConfigurationPOJO jobConfigPOJO = new PipelineJobConfigurationLoader(this).convertToJobConfigurationPOJO(jobConfig);
             jobConfigPOJO.setDisabled(true);
             governanceFacade.getJobFacade().getConfiguration().persist(jobConfig.getJobId(), jobConfigPOJO);
             if (!param.isFull()) {
@@ -223,7 +226,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
         jobConfigPOJO.setDisabled(disabled);
         if (disabled) {
-            jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(PipelineJobConfiguration.DATE_TIME_FORMATTER));
+            jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
             jobConfigPOJO.getProps().setProperty("stop_time_millis", String.valueOf(System.currentTimeMillis()));
         } else {
             jobConfigPOJO.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
@@ -294,6 +297,11 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         PipelineJobMetaData jobMetaData = new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
         CDCJobConfiguration jobConfig = new PipelineJobConfigurationLoader(this).getJobConfiguration(jobId);
         return new PipelineJobInfo(jobMetaData, jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
+    }
+    
+    @Override
+    public boolean isForceNoShardingWhenConvertToJobConfigurationPOJO() {
+        return true;
     }
     
     @Override
