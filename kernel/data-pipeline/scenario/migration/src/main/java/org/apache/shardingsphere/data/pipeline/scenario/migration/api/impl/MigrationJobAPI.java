@@ -231,7 +231,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     }
     
     @Override
-    public MigrationTaskConfiguration buildTaskConfiguration(final PipelineJobConfiguration pipelineJobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
+    public MigrationTaskConfiguration buildTaskConfiguration(final PipelineJobConfiguration pipelineJobConfig, final int jobShardingItem, final PipelineProcessConfiguration processConfig) {
         MigrationJobConfiguration jobConfig = (MigrationJobConfiguration) pipelineJobConfig;
         IncrementalDumperContext incrementalDumperContext = new MigrationIncrementalDumperContextCreator(
                 jobConfig).createDumperContext(jobConfig.getJobShardingDataNodes().get(jobShardingItem));
@@ -240,7 +240,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
         Map<CaseInsensitiveIdentifier, Set<String>> shardingColumnsMap = new ShardingColumnsExtractor().getShardingColumnsMap(
                 ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), targetTableNames);
         ImporterConfiguration importerConfig = buildImporterConfiguration(
-                jobConfig, pipelineProcessConfig, shardingColumnsMap, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
+                jobConfig, processConfig, shardingColumnsMap, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
         MigrationTaskConfiguration result = new MigrationTaskConfiguration(
                 incrementalDumperContext.getCommonContext().getDataSourceName(), createTableConfigs, incrementalDumperContext, importerConfig);
         log.info("buildTaskConfiguration, result={}", result);
@@ -275,15 +275,15 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     }
     
     @Override
-    public MigrationProcessContext buildPipelineProcessContext(final PipelineJobConfiguration pipelineJobConfig) {
-        PipelineProcessConfiguration processConfig = new TransmissionJobManager(this).showProcessConfiguration(PipelineJobIdUtils.parseContextKey(pipelineJobConfig.getJobId()));
-        return new MigrationProcessContext(pipelineJobConfig.getJobId(), processConfig);
+    public MigrationProcessContext buildProcessContext(final PipelineJobConfiguration jobConfig) {
+        PipelineProcessConfiguration processConfig = new TransmissionJobManager(this).showProcessConfiguration(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()));
+        return new MigrationProcessContext(jobConfig.getJobId(), processConfig);
     }
     
     @Override
-    public PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(final PipelineJobConfiguration pipelineJobConfig, final TransmissionProcessContext processContext,
-                                                                              final ConsistencyCheckJobItemProgressContext progressContext) {
-        return new MigrationDataConsistencyChecker((MigrationJobConfiguration) pipelineJobConfig, processContext, progressContext);
+    public PipelineDataConsistencyChecker buildDataConsistencyChecker(final PipelineJobConfiguration jobConfig, final TransmissionProcessContext processContext,
+                                                                      final ConsistencyCheckJobItemProgressContext progressContext) {
+        return new MigrationDataConsistencyChecker((MigrationJobConfiguration) jobConfig, processContext, progressContext);
     }
     
     @Override
