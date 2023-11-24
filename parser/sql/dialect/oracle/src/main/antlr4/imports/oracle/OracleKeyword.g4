@@ -7747,3 +7747,11 @@ DB_RECOVERY_FILE_DEST_SIZE
 MANDATORY
     : M A N D A T O R Y
     ;
+
+BACKUPS
+    : B A C  K U P S
+    ;
+
+NOPROMPT
+    : N O  P R O M P T
+    ;

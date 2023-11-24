@@ -4146,3 +4146,7 @@ noAuditTraditional
     : NOAUDIT (auditOperationClause auditingByClause? |  auditSchemaObjectClause | NETWORK | DIRECT_PATH LOAD auditingByClause?)
     (WHENEVER NOT? SUCCESSFUL)? (CONTAINER EQ_ (CURRENT | ALL))?
     ;
+
+dropDatabase
+    : DROP DATABASE (INCLUDING BACKUPS)? NOPROMPT?
+    ;
