@@ -53,6 +53,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInva
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationLoader;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
@@ -212,7 +213,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     public PipelineJobInfo getJobInfo(final String jobId) {
         PipelineJobMetaData jobMetaData = new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
         List<String> sourceTables = new LinkedList<>();
-        new PipelineJobManager(this).<MigrationJobConfiguration>getJobConfiguration(jobId).getJobShardingDataNodes()
+        new PipelineJobConfigurationLoader(this).<MigrationJobConfiguration>getJobConfiguration(jobId).getJobShardingDataNodes()
                 .forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> sourceTables.add(DataNodeUtils.formatWithSchema(dataNode)))));
         return new PipelineJobInfo(jobMetaData, null, String.join(",", sourceTables));
     }
@@ -322,7 +323,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     }
     
     private void cleanTempTableOnRollback(final String jobId) throws SQLException {
-        MigrationJobConfiguration jobConfig = new PipelineJobManager(this).getJobConfiguration(jobId);
+        MigrationJobConfiguration jobConfig = new PipelineJobConfigurationLoader(this).getJobConfiguration(jobId);
         PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(jobConfig.getTargetDatabaseType());
         TableAndSchemaNameMapper mapping = new TableAndSchemaNameMapper(jobConfig.getTargetTableSchemaMap());
         try (
@@ -346,7 +347,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
         PipelineJobManager jobManager = new PipelineJobManager(this);
         jobManager.stop(jobId);
         dropCheckJobs(jobId);
-        MigrationJobConfiguration jobConfig = new PipelineJobManager(this).getJobConfiguration(jobId);
+        MigrationJobConfiguration jobConfig = new PipelineJobConfigurationLoader(this).getJobConfiguration(jobId);
         refreshTableMetadata(jobId, jobConfig.getTargetDatabaseName());
         jobManager.drop(jobId);
         log.info("Commit cost {} ms", System.currentTimeMillis() - startTimeMillis);
