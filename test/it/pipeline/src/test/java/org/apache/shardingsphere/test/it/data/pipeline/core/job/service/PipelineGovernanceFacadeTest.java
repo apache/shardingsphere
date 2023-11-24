@@ -32,6 +32,8 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -103,10 +105,15 @@ class PipelineGovernanceFacadeTest {
     
     @Test
     void assertIsExistedJobConfiguration() {
-        ClusterPersistRepository clusterPersistRepository = getClusterPersistRepository();
         assertFalse(governanceFacade.getJobFacade().getConfiguration().isExisted("foo_job"));
-        clusterPersistRepository.persist("/pipeline/jobs/foo_job/config", "foo");
+        JobConfigurationPOJO value = new JobConfigurationPOJO();
+        value.setJobName("foo_job");
+        value.setShardingTotalCount(1);
+        ClusterPersistRepository clusterPersistRepository = getClusterPersistRepository();
+        clusterPersistRepository.persist("/pipeline/jobs/foo_job/config", YamlEngine.marshal(value));
         assertTrue(governanceFacade.getJobFacade().getConfiguration().isExisted("foo_job"));
+        clusterPersistRepository.delete("/pipeline/jobs/foo_job/config");
+        assertFalse(governanceFacade.getJobFacade().getConfiguration().isExisted("foo_job"));
     }
     
     @Test
