@@ -211,10 +211,10 @@ class MigrationJobAPITest {
         PipelineDataSourceConfiguration source = jobConfig.getSources().values().iterator().next();
         PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter());
         initTableData(TypedSPILoader.getService(
-                PipelineDataSourceCreator.class, sourceDataSourceConfig.getType()).createPipelineDataSource(sourceDataSourceConfig.getDataSourceConfiguration()));
+                PipelineDataSourceCreator.class, sourceDataSourceConfig.getType()).create(sourceDataSourceConfig.getDataSourceConfiguration()));
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter());
         initTableData(TypedSPILoader.getService(
-                PipelineDataSourceCreator.class, targetDataSourceConfig.getType()).createPipelineDataSource(targetDataSourceConfig.getDataSourceConfiguration()));
+                PipelineDataSourceCreator.class, targetDataSourceConfig.getType()).create(targetDataSourceConfig.getDataSourceConfiguration()));
     }
     
     private void initTableData(final DataSource pipelineDataSource) throws SQLException {
