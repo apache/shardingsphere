@@ -161,7 +161,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         } else if (likeQueryColumn.isPresent() != valueLikeQueryColumn.isPresent()) {
             throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));
         }
-        if (result.getAssignment().isEmpty()) {
+        if (result.isAssignmentsEmpty()) {
             throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));
         }
         return result;
