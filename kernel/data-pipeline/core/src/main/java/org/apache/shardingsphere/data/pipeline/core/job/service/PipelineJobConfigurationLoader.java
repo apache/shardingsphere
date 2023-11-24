@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 
 /**
@@ -39,5 +40,16 @@ public final class PipelineJobConfigurationLoader {
     @SuppressWarnings("unchecked")
     public <T extends PipelineJobConfiguration> T getJobConfiguration(final String jobId) {
         return (T) jobAPI.getYamlJobConfigurationSwapper().swapToObject(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).getJobParameter());
+    }
+    
+    /**
+     * Swap to YAML pipeline job configuration.
+     *
+     * @param jobConfig pipeline job configuration
+     * @param <T> type of pipeline job configuration
+     * @return swapped YAML pipeline job configuration
+     */
+    public <T extends PipelineJobConfiguration> YamlPipelineJobConfiguration swapToYamlJobConfiguration(final T jobConfig) {
+        return (YamlPipelineJobConfiguration) jobAPI.getYamlJobConfigurationSwapper().swapToYamlConfiguration(jobConfig);
     }
 }

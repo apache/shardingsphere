@@ -273,6 +273,7 @@ public final class ConsistencyCheckJobAPI implements PipelineJobAPI {
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public YamlConsistencyCheckJobConfigurationSwapper getYamlJobConfigurationSwapper() {
         return new YamlConsistencyCheckJobConfigurationSwapper();

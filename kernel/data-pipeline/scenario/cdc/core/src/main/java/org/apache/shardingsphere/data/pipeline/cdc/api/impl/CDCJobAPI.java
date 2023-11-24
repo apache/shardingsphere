@@ -283,6 +283,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         return new CDCProcessContext(jobConfig.getJobId(), jobManager.showProcessConfiguration(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId())));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public YamlCDCJobConfigurationSwapper getYamlJobConfigurationSwapper() {
         return new YamlCDCJobConfigurationSwapper();

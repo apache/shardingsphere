@@ -226,6 +226,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public YamlMigrationJobConfigurationSwapper getYamlJobConfigurationSwapper() {
         return new YamlMigrationJobConfigurationSwapper();
