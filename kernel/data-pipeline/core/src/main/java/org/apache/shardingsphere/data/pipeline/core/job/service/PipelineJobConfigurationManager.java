@@ -29,10 +29,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
 /**
- * Pipeline job configuration loader.
+ * Pipeline job configuration manager.
  */
 @RequiredArgsConstructor
-public final class PipelineJobConfigurationLoader {
+public final class PipelineJobConfigurationManager {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     

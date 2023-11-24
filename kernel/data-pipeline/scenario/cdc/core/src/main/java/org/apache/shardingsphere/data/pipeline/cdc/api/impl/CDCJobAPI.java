@@ -67,7 +67,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationLoader;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobAPI;
@@ -129,7 +129,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
             log.warn("CDC job already exists in registry center, ignore, job id is `{}`", jobConfig.getJobId());
         } else {
             governanceFacade.getJobFacade().getJob().create(jobConfig.getJobId(), getJobClass());
-            JobConfigurationPOJO jobConfigPOJO = new PipelineJobConfigurationLoader(this).convertToJobConfigurationPOJO(jobConfig);
+            JobConfigurationPOJO jobConfigPOJO = new PipelineJobConfigurationManager(this).convertToJobConfigurationPOJO(jobConfig);
             jobConfigPOJO.setDisabled(true);
             governanceFacade.getJobFacade().getConfiguration().persist(jobConfig.getJobId(), jobConfigPOJO);
             if (!param.isFull()) {
@@ -295,7 +295,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     @Override
     public PipelineJobInfo getJobInfo(final String jobId) {
         PipelineJobMetaData jobMetaData = new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
-        CDCJobConfiguration jobConfig = new PipelineJobConfigurationLoader(this).getJobConfiguration(jobId);
+        CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(this).getJobConfiguration(jobId);
         return new PipelineJobInfo(jobMetaData, jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
     }
     
@@ -314,7 +314,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      * @param jobId job id
      */
     public void dropStreaming(final String jobId) {
-        CDCJobConfiguration jobConfig = new PipelineJobConfigurationLoader(this).getJobConfiguration(jobId);
+        CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(this).getJobConfiguration(jobId);
         ShardingSpherePreconditions.checkState(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).isDisabled(), () -> new PipelineInternalException("Can't drop streaming job which is active"));
         new PipelineJobManager(this).drop(jobId);
         cleanup(jobConfig);

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.Consistency
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationLoader;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
@@ -91,7 +91,7 @@ class MigrationJobAPITest {
     
     private static MigrationJobAPI jobAPI;
     
-    private static PipelineJobConfigurationLoader jobConfigLoader;
+    private static PipelineJobConfigurationManager jobConfigManager;
     
     private static PipelineJobManager jobManager;
     
@@ -105,7 +105,7 @@ class MigrationJobAPITest {
     static void beforeClass() {
         PipelineContextUtils.mockModeConfigAndContextManager();
         jobAPI = new MigrationJobAPI();
-        jobConfigLoader = new PipelineJobConfigurationLoader(jobAPI);
+        jobConfigManager = new PipelineJobConfigurationManager(jobAPI);
         jobManager = new PipelineJobManager(jobAPI);
         transmissionJobManager = new TransmissionJobManager(jobAPI);
         jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
@@ -153,7 +153,7 @@ class MigrationJobAPITest {
     void assertRollback() throws SQLException {
         Optional<String> jobId = jobManager.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        MigrationJobConfiguration jobConfig = jobConfigLoader.getJobConfiguration(jobId.get());
+        MigrationJobConfiguration jobConfig = jobConfigManager.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
         when(PipelineDistributedBarrier.getInstance(any())).thenReturn(mockBarrier);
@@ -165,7 +165,7 @@ class MigrationJobAPITest {
     void assertCommit() {
         Optional<String> jobId = jobManager.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        MigrationJobConfiguration jobConfig = jobConfigLoader.getJobConfiguration(jobId.get());
+        MigrationJobConfiguration jobConfig = jobConfigManager.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
         when(PipelineDistributedBarrier.getInstance(any())).thenReturn(mockBarrier);
@@ -267,7 +267,7 @@ class MigrationJobAPITest {
         initIntPrimaryEnvironment();
         SourceTargetEntry sourceTargetEntry = new SourceTargetEntry("logic_db", new DataNode("ds_0", "t_order"), "t_order");
         String jobId = jobAPI.createJobAndStart(PipelineContextUtils.getContextKey(), new MigrateTableStatement(Collections.singletonList(sourceTargetEntry), "logic_db"));
-        MigrationJobConfiguration actual = jobConfigLoader.getJobConfiguration(jobId);
+        MigrationJobConfiguration actual = jobConfigManager.getJobConfiguration(jobId);
         assertThat(actual.getTargetDatabaseName(), is("logic_db"));
         List<JobDataNodeLine> dataNodeLines = actual.getJobShardingDataNodes();
         assertThat(dataNodeLines.size(), is(1));

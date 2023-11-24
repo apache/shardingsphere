@@ -68,7 +68,7 @@ public final class PipelineJobManager {
             return Optional.of(jobId);
         }
         governanceFacade.getJobFacade().getJob().create(jobId, jobAPI.getJobClass());
-        governanceFacade.getJobFacade().getConfiguration().persist(jobId, new PipelineJobConfigurationLoader(jobAPI).convertToJobConfigurationPOJO(jobConfig));
+        governanceFacade.getJobFacade().getConfiguration().persist(jobId, new PipelineJobConfigurationManager(jobAPI).convertToJobConfigurationPOJO(jobConfig));
         return Optional.of(jobId);
     }
     
