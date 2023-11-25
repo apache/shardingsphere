@@ -87,7 +87,6 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSour
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEntry;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -408,19 +407,6 @@ public final class MigrationJobOption implements TransmissionJobOption {
             return standardProps.get(key).toString();
         }
         return "";
-    }
-    
-    /**
-     * Refresh table metadata.
-     *
-     * @param jobId job id
-     * @param databaseName database name
-     */
-    public void refreshTableMetadata(final String jobId, final String databaseName) {
-        // TODO use origin database name now, wait reloadDatabaseMetaData fix case-sensitive probelm
-        ContextManager contextManager = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobId)).getContextManager();
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
-        contextManager.reloadDatabaseMetaData(database.getName());
     }
     
     @Override
