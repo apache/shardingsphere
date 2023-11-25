@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.engine.composer;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
+import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
@@ -41,7 +42,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -62,10 +62,6 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer implem
     private final Collection<DataSet> dataSets = new LinkedList<>();
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
-    
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
     
     public BatchE2EContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException {
         super(testParam);
@@ -161,10 +157,10 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer implem
             for (String expected : expectedDatSetRows.get(count).splitValues(", ")) {
                 if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
                     if (!E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
-                        assertThat(dateFormatter.format(actual.getDate(columnIndex).toLocalDate()), is(expected));
+                        assertThat(DateTimeFormatterFactory.getDateFormatter().format(actual.getDate(columnIndex).toLocalDate()), is(expected));
                     }
                 } else if (Types.TIMESTAMP == actual.getMetaData().getColumnType(columnIndex)) {
-                    assertThat(actual.getTimestamp(columnIndex).toLocalDateTime().format(dateTimeFormatter), is(expected));
+                    assertThat(actual.getTimestamp(columnIndex).toLocalDateTime().format(DateTimeFormatterFactory.getShortMillsFormatter()), is(expected));
                 } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
                         && ("PostgreSQL".equals(databaseType.getType()) || "openGauss".equals(databaseType.getType()))) {
                     assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));

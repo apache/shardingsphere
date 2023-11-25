@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.common.execute;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.util.datetime.StandardDateTimeFormatter;
+import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 
 import java.sql.SQLException;
 import java.time.Instant;
@@ -63,7 +63,7 @@ public abstract class AbstractPipelineLifecycleRunnable implements PipelineLifec
             return;
         }
         LocalDateTime startTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(startTimeMillis), ZoneId.systemDefault());
-        log.info("stop lifecycle executor {}, startTime={}, cost {} ms", this, startTime.format(StandardDateTimeFormatter.get()), System.currentTimeMillis() - startTimeMillis);
+        log.info("stop lifecycle executor {}, startTime={}, cost {} ms", this, startTime.format(DateTimeFormatterFactory.getStandardFormatter()), System.currentTimeMillis() - startTimeMillis);
         try {
             doStop();
             // CHECKSTYLE:OFF
