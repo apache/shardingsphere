@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.common.job.type;
 
+import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * Job type.
+ * Pipeline job type.
  */
 @SingletonSPI
-public interface JobType extends TypedSPI {
+public interface PipelineJobType extends TypedSPI {
     
     /**
      * Get job type code.
@@ -32,6 +33,13 @@ public interface JobType extends TypedSPI {
      * @return job type code
      */
     String getCode();
+    
+    /**
+     * Get job option.
+     *
+     * @return job option
+     */
+    PipelineJobOption getOption();
     
     @Override
     String getType();

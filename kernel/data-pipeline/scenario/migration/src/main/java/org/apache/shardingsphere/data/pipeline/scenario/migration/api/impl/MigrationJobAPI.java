@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.common.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
@@ -71,7 +72,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
         final long startTimeMillis = System.currentTimeMillis();
         dropCheckJobs(jobId);
         cleanTempTableOnRollback(jobId);
-        new PipelineJobManager(TypedSPILoader.getService(PipelineJobOption.class, getType())).drop(jobId);
+        new PipelineJobManager(TypedSPILoader.getService(PipelineJobType.class, getType()).getOption()).drop(jobId);
         log.info("Rollback job {} cost {} ms", jobId, System.currentTimeMillis() - startTimeMillis);
     }
     
@@ -82,7 +83,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
         }
         for (String each : checkJobIds) {
             try {
-                new PipelineJobManager(TypedSPILoader.getService(PipelineJobOption.class, getType())).drop(each);
+                new PipelineJobManager(TypedSPILoader.getService(PipelineJobType.class, getType()).getOption()).drop(each);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -92,7 +93,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     }
     
     private void cleanTempTableOnRollback(final String jobId) throws SQLException {
-        MigrationJobConfiguration jobConfig = new PipelineJobConfigurationManager(TypedSPILoader.getService(PipelineJobOption.class, getType())).getJobConfiguration(jobId);
+        MigrationJobConfiguration jobConfig = new PipelineJobConfigurationManager(TypedSPILoader.getService(PipelineJobType.class, getType()).getOption()).getJobConfiguration(jobId);
         PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(jobConfig.getTargetDatabaseType());
         TableAndSchemaNameMapper mapping = new TableAndSchemaNameMapper(jobConfig.getTargetTableSchemaMap());
         try (
