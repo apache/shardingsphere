@@ -49,10 +49,11 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     public void commit(final String jobId) {
         log.info("Commit job {}", jobId);
         final long startTimeMillis = System.currentTimeMillis();
-        PipelineJobManager jobManager = new PipelineJobManager(TypedSPILoader.getService(PipelineJobOption.class, getType()));
+        PipelineJobOption jobOption = new MigrationJobOption();
+        PipelineJobManager jobManager = new PipelineJobManager(jobOption);
         jobManager.stop(jobId);
         dropCheckJobs(jobId);
-        MigrationJobConfiguration jobConfig = new PipelineJobConfigurationManager(TypedSPILoader.getService(PipelineJobOption.class, getType())).getJobConfiguration(jobId);
+        MigrationJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobOption).getJobConfiguration(jobId);
         refreshTableMetadata(jobId, jobConfig.getTargetDatabaseName());
         jobManager.drop(jobId);
         log.info("Commit cost {} ms", System.currentTimeMillis() - startTimeMillis);
