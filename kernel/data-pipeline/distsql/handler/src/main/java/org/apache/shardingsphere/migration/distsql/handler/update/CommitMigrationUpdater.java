@@ -31,8 +31,7 @@ public final class CommitMigrationUpdater implements RALUpdater<CommitMigrationS
     
     @Override
     public void executeUpdate(final String databaseName, final CommitMigrationStatement sqlStatement) throws SQLException {
-        TransmissionJobAPI jobAPI = TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
-        jobAPI.commit(sqlStatement.getJobId());
+        TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION").commit(sqlStatement.getJobId());
     }
     
     @Override

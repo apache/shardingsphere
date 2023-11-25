@@ -174,7 +174,7 @@ public final class PipelineJobManager {
      * @return jobs info
      */
     public List<PipelineJobInfo> getJobInfos(final PipelineContextKey contextKey) {
-        if (jobOption instanceof TransmissionJobAPI) {
+        if (jobOption instanceof TransmissionJobOption) {
             return PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo().stream()
                     .filter(each -> !each.getJobName().startsWith("_") && jobOption.getType().equals(PipelineJobIdUtils.parseJobType(each.getJobName()).getType()))
                     .map(each -> ((TransmissionJobOption) jobOption).getJobInfo(each.getJobName())).collect(Collectors.toList());
