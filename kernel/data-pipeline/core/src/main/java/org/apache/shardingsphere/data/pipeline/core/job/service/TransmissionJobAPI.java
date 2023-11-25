@@ -17,73 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
-import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.job.yaml.YamlPipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlTransmissionJobItemProgressSwapper;
-import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
 
 /**
  * Transmission job API.
  */
-public interface TransmissionJobAPI extends PipelineJobAPI {
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    default YamlTransmissionJobItemProgressSwapper getYamlJobItemProgressSwapper() {
-        return new YamlTransmissionJobItemProgressSwapper();
-    }
-    
-    /**
-     * Get pipeline job info.
-     *
-     * @param jobId job ID
-     * @return pipeline job info
-     */
-    PipelineJobInfo getJobInfo(String jobId);
-    
-    /**
-     * Build task configuration.
-     *
-     * @param jobConfig pipeline job configuration
-     * @param jobShardingItem job sharding item
-     * @param processConfig pipeline process configuration
-     * @return task configuration
-     */
-    PipelineTaskConfiguration buildTaskConfiguration(PipelineJobConfiguration jobConfig, int jobShardingItem, PipelineProcessConfiguration processConfig);
-    
-    /**
-     * Build transmission process context.
-     *
-     * @param jobConfig pipeline job configuration
-     * @return transmission process context
-     */
-    TransmissionProcessContext buildProcessContext(PipelineJobConfiguration jobConfig);
-    
-    /**
-     * Extend YAML job configuration.
-     *
-     * @param contextKey context key
-     * @param yamlJobConfig YAML job configuration
-     */
-    void extendYamlJobConfiguration(PipelineContextKey contextKey, YamlPipelineJobConfiguration yamlJobConfig);
-    
-    /**
-     * Build pipeline data consistency checker.
-     *
-     * @param jobConfig job configuration
-     * @param processContext process context
-     * @param progressContext consistency check job item progress context
-     * @return all logic tables check result
-     */
-    PipelineDataConsistencyChecker buildDataConsistencyChecker(PipelineJobConfiguration jobConfig, TransmissionProcessContext processContext, ConsistencyCheckJobItemProgressContext progressContext);
+@SingletonSPI
+public interface TransmissionJobAPI extends TypedSPI {
     
     /**
      * Commit pipeline job.

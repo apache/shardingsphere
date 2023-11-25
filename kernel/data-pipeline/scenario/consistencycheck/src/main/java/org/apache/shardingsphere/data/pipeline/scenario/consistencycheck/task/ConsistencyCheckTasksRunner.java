@@ -30,14 +30,14 @@ import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
-import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
+import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobOption;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
-    private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI();
+    private final ConsistencyCheckJobOption jobAPI = new ConsistencyCheckJobOption();
     
     private final PipelineJobManager jobManager = new PipelineJobManager(jobAPI);
     
@@ -85,7 +85,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         if (jobItemContext.isStopping()) {
             return;
         }
-        new PipelineJobItemManager<>(TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType())
+        new PipelineJobItemManager<>(TypedSPILoader.getService(PipelineJobOption.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType())
                 .getYamlJobItemProgressSwapper()).persistProgress(jobItemContext);
         CompletableFuture<?> future = jobItemContext.getProcessContext().getConsistencyCheckExecuteEngine().submit(checkExecutor);
         ExecuteEngine.trigger(Collections.singletonList(future), new CheckExecuteCallback());
@@ -103,11 +103,11 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         protected void runBlocking() {
             jobItemManager.persistProgress(jobItemContext);
             JobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
-            TransmissionJobAPI jobAPI = (TransmissionJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, jobType.getType());
-            PipelineJobConfiguration parentJobConfig = new PipelineJobConfigurationManager(jobAPI).getJobConfiguration(parentJobId);
+            TransmissionJobOption jobOption = (TransmissionJobOption) TypedSPILoader.getService(PipelineJobOption.class, jobType.getType());
+            PipelineJobConfiguration parentJobConfig = new PipelineJobConfigurationManager(jobOption).getJobConfiguration(parentJobId);
             try {
-                PipelineDataConsistencyChecker checker = jobAPI.buildDataConsistencyChecker(
-                        parentJobConfig, jobAPI.buildProcessContext(parentJobConfig), jobItemContext.getProgressContext());
+                PipelineDataConsistencyChecker checker = jobOption.buildDataConsistencyChecker(
+                        parentJobConfig, jobOption.buildProcessContext(parentJobConfig), jobItemContext.getProgressContext());
                 consistencyChecker.set(checker);
                 Map<String, TableDataConsistencyCheckResult> checkResultMap = checker.check(checkJobConfig.getAlgorithmTypeName(), checkJobConfig.getAlgorithmProps());
                 log.info("job {} with check algorithm '{}' data consistency checker result: {}, stopping: {}",

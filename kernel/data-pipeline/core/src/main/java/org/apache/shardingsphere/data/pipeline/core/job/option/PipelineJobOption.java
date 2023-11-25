@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.service;
+package org.apache.shardingsphere.data.pipeline.core.job.option;
 
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
@@ -30,10 +30,10 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import java.util.Optional;
 
 /**
- * Pipeline job API.
+ * Pipeline job option.
  */
 @SingletonSPI
-public interface PipelineJobAPI extends TypedSPI {
+public interface PipelineJobOption extends TypedSPI {
     
     /**
      * Get YAML pipeline job configuration swapper.

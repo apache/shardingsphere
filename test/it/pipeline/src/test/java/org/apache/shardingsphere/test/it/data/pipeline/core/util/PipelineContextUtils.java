@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextMan
 import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.common.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobOption;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
@@ -166,7 +166,7 @@ public final class PipelineContextUtils {
         PipelineProcessConfiguration processConfig = mockPipelineProcessConfiguration();
         MigrationProcessContext processContext = new MigrationProcessContext(jobConfig.getJobId(), processConfig);
         int jobShardingItem = 0;
-        MigrationTaskConfiguration taskConfig = new MigrationJobAPI().buildTaskConfiguration(jobConfig, jobShardingItem, processConfig);
+        MigrationTaskConfiguration taskConfig = new MigrationJobOption().buildTaskConfiguration(jobConfig, jobShardingItem, processConfig);
         return new MigrationJobItemContext(jobConfig, jobShardingItem, null, processContext, taskConfig, new DefaultPipelineDataSourceManager());
     }
     

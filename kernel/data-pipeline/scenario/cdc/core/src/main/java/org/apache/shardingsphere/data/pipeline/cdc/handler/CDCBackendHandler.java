@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
+import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobOption;
 import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.StreamDataParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
@@ -70,7 +70,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class CDCBackendHandler {
     
-    private final CDCJobAPI jobAPI = new CDCJobAPI();
+    private final CDCJobOption jobAPI = new CDCJobOption();
     
     private final PipelineJobConfigurationManager jobConfigManager = new PipelineJobConfigurationManager(jobAPI);
     

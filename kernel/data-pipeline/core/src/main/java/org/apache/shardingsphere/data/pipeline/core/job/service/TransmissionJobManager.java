@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJ
 import org.apache.shardingsphere.data.pipeline.common.pojo.TransmissionJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 
@@ -44,7 +45,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public final class TransmissionJobManager {
     
-    private final TransmissionJobAPI jobAPI;
+    private final TransmissionJobOption jobOption;
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
@@ -56,7 +57,7 @@ public final class TransmissionJobManager {
      */
     public void alterProcessConfiguration(final PipelineContextKey contextKey, final PipelineProcessConfiguration processConfig) {
         // TODO check rateLimiter type match or not
-        processConfigPersistService.persist(contextKey, jobAPI.getType(), processConfig);
+        processConfigPersistService.persist(contextKey, jobOption.getType(), processConfig);
     }
     
     /**
@@ -66,7 +67,7 @@ public final class TransmissionJobManager {
      * @return process configuration, non-null
      */
     public PipelineProcessConfiguration showProcessConfiguration(final PipelineContextKey contextKey) {
-        return PipelineProcessConfigurationUtils.convertWithDefaultValue(processConfigPersistService.load(contextKey, jobAPI.getType()));
+        return PipelineProcessConfigurationUtils.convertWithDefaultValue(processConfigPersistService.load(contextKey, jobOption.getType()));
     }
     
     /**
@@ -76,11 +77,11 @@ public final class TransmissionJobManager {
      * @return job item infos
      */
     public List<TransmissionJobItemInfo> getJobItemInfos(final String jobId) {
-        PipelineJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobAPI).getJobConfiguration(jobId);
+        PipelineJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobOption).getJobConfiguration(jobId);
         long startTimeMillis = Long.parseLong(Optional.ofNullable(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).getProps().getProperty("start_time_millis")).orElse("0"));
         Map<Integer, TransmissionJobItemProgress> jobProgress = getJobProgress(jobConfig);
         List<TransmissionJobItemInfo> result = new LinkedList<>();
-        PipelineJobInfo jobInfo = jobAPI.getJobInfo(jobId);
+        PipelineJobInfo jobInfo = jobOption.getJobInfo(jobId);
         for (Entry<Integer, TransmissionJobItemProgress> entry : jobProgress.entrySet()) {
             int shardingItem = entry.getKey();
             TransmissionJobItemProgress jobItemProgress = entry.getValue();
@@ -107,7 +108,7 @@ public final class TransmissionJobManager {
      * @return each sharding item progress
      */
     public Map<Integer, TransmissionJobItemProgress> getJobProgress(final PipelineJobConfiguration jobConfig) {
-        PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
+        PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobOption.getYamlJobItemProgressSwapper());
         String jobId = jobConfig.getJobId();
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
         return IntStream.range(0, jobConfig.getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {

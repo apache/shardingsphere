@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI
+org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobOption
