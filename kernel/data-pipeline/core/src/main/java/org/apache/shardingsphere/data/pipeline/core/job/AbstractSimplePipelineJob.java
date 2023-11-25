@@ -48,7 +48,6 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        PipelineJobManager jobManager = new PipelineJobManager(getJobAPI());
         String jobId = shardingContext.getJobName();
         int shardingItem = shardingContext.getShardingItem();
         log.info("Execute job {}-{}", jobId, shardingItem);
@@ -62,7 +61,7 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            processFailed(jobManager, jobId, shardingItem, ex);
+            processFailed(new PipelineJobManager(getJobAPI()), jobId, shardingItem, ex);
             throw ex;
         }
     }
