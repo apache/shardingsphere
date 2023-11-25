@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
+import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
@@ -35,7 +35,7 @@ public final class AlterTransmissionRuleUpdater implements RALUpdater<AlterTrans
     
     @Override
     public void executeUpdate(final String databaseName, final AlterTransmissionRuleStatement sqlStatement) {
-        TransmissionJobManager jobManager = new TransmissionJobManager((TransmissionJobOption) TypedSPILoader.getService(PipelineJobOption.class, sqlStatement.getJobTypeName()));
+        TransmissionJobManager jobManager = new TransmissionJobManager((TransmissionJobOption) TypedSPILoader.getService(PipelineJobType.class, sqlStatement.getJobTypeName()).getOption());
         PipelineProcessConfiguration processConfig = TransmissionProcessConfigurationSegmentConverter.convert(sqlStatement.getProcessConfigSegment());
         jobManager.alterProcessConfiguration(new PipelineContextKey(InstanceType.PROXY), processConfig);
     }

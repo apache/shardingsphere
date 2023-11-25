@@ -17,16 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.api.job.type;
 
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
+import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobOption;
+import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
+import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
 
 /**
  * CDC job type.
  */
-public final class CDCJobType implements JobType {
+public final class CDCJobType implements PipelineJobType {
     
     @Override
     public String getCode() {
         return "03";
+    }
+    
+    @Override
+    public PipelineJobOption getOption() {
+        return new CDCJobOption();
     }
     
     @Override

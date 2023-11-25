@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
+import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
 
 /**
  * Abstract pipeline job id.
@@ -33,7 +33,7 @@ public abstract class AbstractPipelineJobId implements PipelineJobId {
     
     public static final String CURRENT_VERSION = "02";
     
-    private final JobType jobType;
+    private final PipelineJobType jobType;
     
     private final PipelineContextKey contextKey;
     

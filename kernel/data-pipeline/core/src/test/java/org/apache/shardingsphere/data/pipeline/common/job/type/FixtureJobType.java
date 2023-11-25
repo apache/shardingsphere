@@ -17,14 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.common.job.type;
 
+import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
+
+import static org.mockito.Mockito.mock;
+
 /**
  * Fixture job type.
  */
-public final class FixtureJobType implements JobType {
+public final class FixtureJobType implements PipelineJobType {
     
     @Override
     public String getCode() {
         return "00";
+    }
+    
+    @Override
+    public PipelineJobOption getOption() {
+        return mock(PipelineJobOption.class);
     }
     
     @Override
