@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl;
 
 import com.google.common.base.Strings;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.ConsistencyCheckJobItemProgress;
@@ -66,7 +65,6 @@ import java.util.stream.Collectors;
 /**
  * Consistency check job option.
  */
-@Slf4j
 public final class ConsistencyCheckJobOption implements PipelineJobOption {
     
     /**
