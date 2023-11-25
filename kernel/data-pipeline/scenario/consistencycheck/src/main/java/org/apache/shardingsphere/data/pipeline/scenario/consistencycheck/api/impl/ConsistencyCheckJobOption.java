@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl;
 
 import com.google.common.base.Strings;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.ConsistencyCheckJobItemProgress;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlCons
 import org.apache.shardingsphere.data.pipeline.common.pojo.ConsistencyCheckJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckerFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineDatabaseTypeException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.ConsistencyCheckJobNotFoundException;
@@ -65,7 +65,6 @@ import java.util.stream.Collectors;
 /**
  * Consistency check job option.
  */
-@Slf4j
 public final class ConsistencyCheckJobOption implements PipelineJobOption {
     
     /**
@@ -73,40 +72,43 @@ public final class ConsistencyCheckJobOption implements PipelineJobOption {
      *
      * @param param create consistency check job parameter
      * @return job id
-     * @throws UncompletedConsistencyCheckJobExistsException uncompleted consistency check job exists exception
      */
     public String createJobAndStart(final CreateConsistencyCheckJobParameter param) {
         String parentJobId = param.getParentJobId();
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId));
         Optional<String> latestCheckJobId = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
         if (latestCheckJobId.isPresent()) {
-            PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(getYamlJobItemProgressSwapper());
-            Optional<ConsistencyCheckJobItemProgress> progress = jobItemManager.getProgress(latestCheckJobId.get(), 0);
-            if (!progress.isPresent() || JobStatus.FINISHED != progress.get().getStatus()) {
-                log.info("check job already exists and status is not FINISHED, progress={}", progress);
-                throw new UncompletedConsistencyCheckJobExistsException(latestCheckJobId.get());
-            }
+            Optional<ConsistencyCheckJobItemProgress> progress = new PipelineJobItemManager<ConsistencyCheckJobItemProgress>(getYamlJobItemProgressSwapper()).getProgress(latestCheckJobId.get(), 0);
+            ShardingSpherePreconditions.checkState(progress.isPresent() && JobStatus.FINISHED == progress.get().getStatus(),
+                    () -> new UncompletedConsistencyCheckJobExistsException(latestCheckJobId.get(), progress.orElse(null)));
         }
-        verifyPipelineDatabaseType(param);
+        checkPipelineDatabaseType(param);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(parentJobId);
-        String result = latestCheckJobId.map(s -> new ConsistencyCheckJobId(contextKey, parentJobId, s)).orElseGet(() -> new ConsistencyCheckJobId(contextKey, parentJobId)).marshal();
+        String result = latestCheckJobId.map(optional -> new ConsistencyCheckJobId(contextKey, parentJobId, optional)).orElseGet(() -> new ConsistencyCheckJobId(contextKey, parentJobId)).marshal();
         governanceFacade.getJobFacade().getCheck().persistLatestCheckJobId(parentJobId, result);
         governanceFacade.getJobFacade().getCheck().deleteCheckJobResult(parentJobId, result);
         new PipelineJobManager(this).drop(result);
-        YamlConsistencyCheckJobConfiguration yamlConfig = new YamlConsistencyCheckJobConfiguration();
-        yamlConfig.setJobId(result);
-        yamlConfig.setParentJobId(parentJobId);
-        yamlConfig.setAlgorithmTypeName(param.getAlgorithmTypeName());
-        yamlConfig.setAlgorithmProps(param.getAlgorithmProps());
-        yamlConfig.setSourceDatabaseType(param.getSourceDatabaseType().getType());
-        new PipelineJobManager(this).start(new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(yamlConfig));
+        new PipelineJobManager(this).start(new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(getYamlConfiguration(result, parentJobId, param)));
         return result;
     }
     
-    private void verifyPipelineDatabaseType(final CreateConsistencyCheckJobParameter param) {
-        Collection<DatabaseType> supportedDatabaseTypes = TableDataConsistencyCheckerFactory.newInstance(param.getAlgorithmTypeName(), param.getAlgorithmProps()).getSupportedDatabaseTypes();
+    private void checkPipelineDatabaseType(final CreateConsistencyCheckJobParameter param) {
+        Collection<DatabaseType> supportedDatabaseTypes;
+        try (TableDataConsistencyChecker checker = TableDataConsistencyCheckerFactory.newInstance(param.getAlgorithmTypeName(), param.getAlgorithmProps())) {
+            supportedDatabaseTypes = checker.getSupportedDatabaseTypes();
+        }
         ShardingSpherePreconditions.checkState(supportedDatabaseTypes.contains(param.getSourceDatabaseType()), () -> new UnsupportedPipelineDatabaseTypeException(param.getSourceDatabaseType()));
         ShardingSpherePreconditions.checkState(supportedDatabaseTypes.contains(param.getTargetDatabaseType()), () -> new UnsupportedPipelineDatabaseTypeException(param.getTargetDatabaseType()));
+    }
+    
+    private YamlConsistencyCheckJobConfiguration getYamlConfiguration(final String jobId, final String parentJobId, final CreateConsistencyCheckJobParameter param) {
+        YamlConsistencyCheckJobConfiguration result = new YamlConsistencyCheckJobConfiguration();
+        result.setJobId(jobId);
+        result.setParentJobId(parentJobId);
+        result.setAlgorithmTypeName(param.getAlgorithmTypeName());
+        result.setAlgorithmProps(param.getAlgorithmProps());
+        result.setSourceDatabaseType(param.getSourceDatabaseType().getType());
+        return result;
     }
     
     @Override
