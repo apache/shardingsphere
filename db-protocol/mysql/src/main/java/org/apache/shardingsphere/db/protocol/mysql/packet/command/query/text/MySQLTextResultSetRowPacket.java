@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.util.datetime.StandardDateTimeFormatter;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -39,8 +39,6 @@ import java.util.Collection;
 public final class MySQLTextResultSetRowPacket extends MySQLPacket {
     
     private static final int NULL = 0xfb;
-    
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     private final Collection<Object> data;
     
@@ -72,7 +70,7 @@ public final class MySQLTextResultSetRowPacket extends MySQLPacket {
         } else if (data instanceof Boolean) {
             payload.writeBytesLenenc((boolean) data ? new byte[]{1} : new byte[]{0});
         } else if (data instanceof LocalDateTime) {
-            payload.writeStringLenenc(DATE_TIME_FORMATTER.format((LocalDateTime) data));
+            payload.writeStringLenenc(StandardDateTimeFormatter.get().format((LocalDateTime) data));
         } else {
             payload.writeStringLenenc(data.toString());
         }
