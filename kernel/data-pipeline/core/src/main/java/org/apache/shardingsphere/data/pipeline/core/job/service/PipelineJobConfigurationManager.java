@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.common.listener.PipelineElasticJo
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.util.datetime.StandardDateTimeFormatter;
+import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.time.LocalDateTime;
@@ -61,7 +61,7 @@ public final class PipelineJobConfigurationManager {
         int shardingTotalCount = jobOption.isForceNoShardingWhenConvertToJobConfigurationPOJO() ? 1 : jobConfig.getJobShardingCount();
         result.setShardingTotalCount(shardingTotalCount);
         result.setJobParameter(YamlEngine.marshal(jobOption.getYamlJobConfigurationSwapper().swapToYamlConfiguration(jobConfig)));
-        String createTimeFormat = LocalDateTime.now().format(StandardDateTimeFormatter.get());
+        String createTimeFormat = LocalDateTime.now().format(DateTimeFormatterFactory.getStandardFormatter());
         result.getProps().setProperty("create_time", createTimeFormat);
         result.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
         result.getProps().setProperty("run_count", "1");

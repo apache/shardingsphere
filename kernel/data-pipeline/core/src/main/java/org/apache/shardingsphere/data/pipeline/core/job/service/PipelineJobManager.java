@@ -35,7 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOp
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.datetime.StandardDateTimeFormatter;
+import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -148,7 +148,7 @@ public final class PipelineJobManager {
             return;
         }
         jobConfigPOJO.setDisabled(true);
-        jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(StandardDateTimeFormatter.get()));
+        jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DateTimeFormatterFactory.getStandardFormatter()));
         jobConfigPOJO.getProps().setProperty("stop_time_millis", String.valueOf(System.currentTimeMillis()));
         String barrierPath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
         pipelineDistributedBarrier.register(barrierPath, jobConfigPOJO.getShardingTotalCount());

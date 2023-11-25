@@ -46,11 +46,11 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.Co
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -67,8 +67,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public final class ConsistencyCheckJobOption implements PipelineJobOption {
-    
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     
     /**
      * Create consistency check configuration and start job.
@@ -244,13 +242,13 @@ public final class ConsistencyCheckJobOption implements PipelineJobOption {
         long recordsCount = jobItemProgress.getRecordsCount();
         long checkedRecordsCount = Math.min(jobItemProgress.getCheckedRecordsCount(), recordsCount);
         LocalDateTime checkBeginTime = new Timestamp(jobItemProgress.getCheckBeginTimeMillis()).toLocalDateTime();
-        result.setCheckBeginTime(DATE_TIME_FORMATTER.format(checkBeginTime));
+        result.setCheckBeginTime(DateTimeFormatterFactory.getLongMillsFormatter().format(checkBeginTime));
         if (JobStatus.FINISHED == jobItemProgress.getStatus()) {
             result.setInventoryFinishedPercentage(100);
             LocalDateTime checkEndTime = new Timestamp(jobItemProgress.getCheckEndTimeMillis()).toLocalDateTime();
             Duration duration = Duration.between(checkBeginTime, checkEndTime);
             result.setDurationSeconds(duration.getSeconds());
-            result.setCheckEndTime(DATE_TIME_FORMATTER.format(checkEndTime));
+            result.setCheckEndTime(DateTimeFormatterFactory.getLongMillsFormatter().format(checkEndTime));
             result.setInventoryRemainingSeconds(0L);
         } else if (0 != recordsCount && 0 != checkedRecordsCount) {
             result.setInventoryFinishedPercentage((int) (checkedRecordsCount * 100 / recordsCount));
@@ -258,7 +256,7 @@ public final class ConsistencyCheckJobOption implements PipelineJobOption {
             long durationMillis = (null != stopTimeMillis ? stopTimeMillis : System.currentTimeMillis()) - jobItemProgress.getCheckBeginTimeMillis();
             result.setDurationSeconds(TimeUnit.MILLISECONDS.toSeconds(durationMillis));
             if (null != stopTimeMillis) {
-                result.setCheckEndTime(DATE_TIME_FORMATTER.format(new Timestamp(stopTimeMillis).toLocalDateTime()));
+                result.setCheckEndTime(DateTimeFormatterFactory.getLongMillsFormatter().format(new Timestamp(stopTimeMillis).toLocalDateTime()));
             }
             long remainingMills = Math.max(0, (long) ((recordsCount - checkedRecordsCount) * 1.0D / checkedRecordsCount * durationMillis));
             result.setInventoryRemainingSeconds(remainingMills / 1000);
