@@ -27,8 +27,8 @@ import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.datasource.yaml.YamlPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobAPI;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
+import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
@@ -96,7 +96,7 @@ public final class JobConfigurationBuilder {
         result.setSources(sources);
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtils.readFile("migration_sharding_sphere_jdbc_target.yaml").replace("${databaseNameSuffix}", databaseNameSuffix))));
-        ((TransmissionJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION")).extendYamlJobConfiguration(contextKey, result);
+        ((TransmissionJobOption) TypedSPILoader.getService(PipelineJobOption.class, "MIGRATION")).extendYamlJobConfiguration(contextKey, result);
         return result;
     }
     

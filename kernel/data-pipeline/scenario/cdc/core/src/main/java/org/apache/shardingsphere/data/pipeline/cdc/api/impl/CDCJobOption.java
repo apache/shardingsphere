@@ -66,11 +66,11 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.Increm
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
-import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
 import org.apache.shardingsphere.data.pipeline.core.preparer.PipelineJobPreparerUtils;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -97,10 +97,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * CDC job API.
+ * CDC job option.
  */
 @Slf4j
-public final class CDCJobAPI implements TransmissionJobAPI {
+public final class CDCJobOption implements TransmissionJobOption {
     
     private final YamlDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
     
@@ -302,10 +302,6 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         return true;
     }
     
-    @Override
-    public void commit(final String jobId) {
-    }
-    
     /**
      * Drop streaming job.
      *
@@ -326,10 +322,6 @@ public final class CDCJobAPI implements TransmissionJobAPI {
                 log.warn("job destroying failed, jobId={}, dataSourceName={}", jobConfig.getJobId(), entry.getKey(), ex);
             }
         }
-    }
-    
-    @Override
-    public void rollback(final String jobId) throws SQLException {
     }
     
     @Override

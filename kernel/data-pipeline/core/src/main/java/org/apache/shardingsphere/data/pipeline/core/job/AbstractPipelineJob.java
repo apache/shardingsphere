@@ -26,8 +26,8 @@ import org.apache.shardingsphere.data.pipeline.common.listener.PipelineElasticJo
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
+import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
@@ -55,7 +55,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     private final String jobId;
     
     @Getter(AccessLevel.PROTECTED)
-    private final PipelineJobAPI jobAPI;
+    private final PipelineJobOption jobOption;
     
     private final AtomicBoolean stopping = new AtomicBoolean(false);
     
@@ -65,7 +65,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     protected AbstractPipelineJob(final String jobId) {
         this.jobId = jobId;
-        jobAPI = TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getType());
+        jobOption = TypedSPILoader.getService(PipelineJobOption.class, PipelineJobIdUtils.parseJobType(jobId).getType());
     }
     
     /**

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobAPI;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.migration.distsql.statement.CommitMigrationStatement;
@@ -32,8 +31,7 @@ public final class CommitMigrationUpdater implements RALUpdater<CommitMigrationS
     
     @Override
     public void executeUpdate(final String databaseName, final CommitMigrationStatement sqlStatement) throws SQLException {
-        TransmissionJobAPI jobAPI = (TransmissionJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION");
-        jobAPI.commit(sqlStatement.getJobId());
+        TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION").commit(sqlStatement.getJobId());
     }
     
     @Override

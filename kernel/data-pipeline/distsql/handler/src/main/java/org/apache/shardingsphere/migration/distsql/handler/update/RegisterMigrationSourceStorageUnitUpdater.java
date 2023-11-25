@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobOption;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePoolPropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
@@ -42,7 +42,7 @@ import java.util.Map;
  */
 public final class RegisterMigrationSourceStorageUnitUpdater implements RALUpdater<RegisterMigrationSourceStorageUnitStatement> {
     
-    private final MigrationJobAPI jobAPI = new MigrationJobAPI();
+    private final MigrationJobOption jobOption = new MigrationJobOption();
     
     private final DataSourcePoolPropertiesValidateHandler validateHandler = new DataSourcePoolPropertiesValidateHandler();
     
@@ -55,7 +55,7 @@ public final class RegisterMigrationSourceStorageUnitUpdater implements RALUpdat
         DatabaseType databaseType = DatabaseTypeFactory.get(urlBasedDataSourceSegment.getUrl());
         Map<String, DataSourcePoolProperties> propsMap = DataSourceSegmentsConverter.convert(databaseType, dataSources);
         validateHandler.validate(propsMap);
-        jobAPI.addMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY), propsMap);
+        jobOption.addMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY), propsMap);
     }
     
     @Override

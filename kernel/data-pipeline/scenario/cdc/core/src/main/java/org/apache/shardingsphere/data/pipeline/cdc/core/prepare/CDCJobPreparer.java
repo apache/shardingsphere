@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.core.prepare;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
+import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobOption;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCJobItemContext;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
@@ -67,7 +67,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class CDCJobPreparer {
     
-    private final CDCJobAPI jobAPI = new CDCJobAPI();
+    private final CDCJobOption jobAPI = new CDCJobOption();
     
     private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
     

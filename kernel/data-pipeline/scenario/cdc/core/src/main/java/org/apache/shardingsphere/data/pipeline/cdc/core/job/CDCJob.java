@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.job;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
+import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobOption;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCJobItemContext;
@@ -65,7 +65,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     @Getter
     private final PipelineSink sink;
     
-    private final CDCJobAPI jobAPI = new CDCJobAPI();
+    private final CDCJobOption jobAPI = new CDCJobOption();
     
     private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
     
