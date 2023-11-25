@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConf
 import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressSwapper;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 import java.util.Optional;
@@ -33,7 +32,7 @@ import java.util.Optional;
  * Pipeline job option.
  */
 @SingletonSPI
-public interface PipelineJobOption extends TypedSPI {
+public interface PipelineJobOption {
     
     /**
      * Get YAML pipeline job configuration swapper.
@@ -95,6 +94,10 @@ public interface PipelineJobOption extends TypedSPI {
      */
     Class<? extends PipelineJob> getJobClass();
     
-    @Override
+    /**
+     * Get job type.
+     * 
+     * @return job type
+     */
     String getType();
 }
