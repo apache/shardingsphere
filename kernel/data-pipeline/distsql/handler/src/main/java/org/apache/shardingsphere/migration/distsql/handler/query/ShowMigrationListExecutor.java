@@ -19,7 +19,7 @@ package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobOption;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  */
 public final class ShowMigrationListExecutor implements QueryableRALExecutor<ShowMigrationListStatement> {
     
-    private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new MigrationJobAPI());
+    private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new MigrationJobOption());
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationListStatement sqlStatement) {
