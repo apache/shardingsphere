@@ -58,19 +58,17 @@ public final class PipelineJobManager {
      * Start job.
      *
      * @param jobConfig job configuration
-     * @return job id
      */
-    public Optional<String> start(final PipelineJobConfiguration jobConfig) {
+    public void start(final PipelineJobConfiguration jobConfig) {
         String jobId = jobConfig.getJobId();
         ShardingSpherePreconditions.checkState(0 != jobConfig.getJobShardingCount(), () -> new PipelineJobCreationWithInvalidShardingCountException(jobId));
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId));
         if (governanceFacade.getJobFacade().getConfiguration().isExisted(jobId)) {
             log.warn("jobId already exists in registry center, ignore, job id is `{}`", jobId);
-            return Optional.of(jobId);
+            return;
         }
         governanceFacade.getJobFacade().getJob().create(jobId, jobOption.getJobClass());
         governanceFacade.getJobFacade().getConfiguration().persist(jobId, new PipelineJobConfigurationManager(jobOption).convertToJobConfigurationPOJO(jobConfig));
-        return Optional.of(jobId);
     }
     
     /**
