@@ -92,7 +92,7 @@ public final class ConsistencyCheckJobAPI {
             ShardingSpherePreconditions.checkState(progress.isPresent() && JobStatus.FINISHED == progress.get().getStatus(),
                     () -> new UncompletedConsistencyCheckJobExistsException(latestCheckJobId.get(), progress.orElse(null)));
         }
-        checkPipelineDatabaseType(param);
+        checkPipelineDatabaseTypes(param);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(parentJobId);
         String result = latestCheckJobId.map(optional -> new ConsistencyCheckJobId(contextKey, parentJobId, optional)).orElseGet(() -> new ConsistencyCheckJobId(contextKey, parentJobId)).marshal();
         governanceFacade.getJobFacade().getCheck().persistLatestCheckJobId(parentJobId, result);
@@ -102,7 +102,7 @@ public final class ConsistencyCheckJobAPI {
         return result;
     }
     
-    private void checkPipelineDatabaseType(final CreateConsistencyCheckJobParameter param) {
+    private void checkPipelineDatabaseTypes(final CreateConsistencyCheckJobParameter param) {
         Collection<DatabaseType> supportedDatabaseTypes;
         try (TableDataConsistencyChecker checker = TableDataConsistencyCheckerFactory.newInstance(param.getAlgorithmTypeName(), param.getAlgorithmProps())) {
             supportedDatabaseTypes = checker.getSupportedDatabaseTypes();
@@ -122,26 +122,20 @@ public final class ConsistencyCheckJobAPI {
     }
     
     /**
-     * Start by parent job id.
+     * Resume disabled consistency check job.
      *
      * @param parentJobId parent job id
      */
-    public void startByParentJobId(final String parentJobId) {
-        jobManager.startDisabledJob(getLatestCheckJobId(parentJobId));
-    }
-    
-    private String getLatestCheckJobId(final String parentJobId) {
-        Optional<String> result = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
-        ShardingSpherePreconditions.checkState(result.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
-        return result.get();
+    public void resume(final String parentJobId) {
+        jobManager.resume(getLatestCheckJobId(parentJobId));
     }
     
     /**
-     * Start by parent job id.
+     * Stop consistency check job.
      *
      * @param parentJobId parent job id
      */
-    public void stopByParentJobId(final String parentJobId) {
+    public void stop(final String parentJobId) {
         jobManager.stop(getLatestCheckJobId(parentJobId));
     }
     
@@ -166,6 +160,12 @@ public final class ConsistencyCheckJobAPI {
         }
         governanceFacade.getJobFacade().getCheck().deleteCheckJobResult(parentJobId, latestCheckJobId);
         jobManager.drop(latestCheckJobId);
+    }
+    
+    private String getLatestCheckJobId(final String parentJobId) {
+        Optional<String> result = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
+        ShardingSpherePreconditions.checkState(result.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
+        return result.get();
     }
     
     /**

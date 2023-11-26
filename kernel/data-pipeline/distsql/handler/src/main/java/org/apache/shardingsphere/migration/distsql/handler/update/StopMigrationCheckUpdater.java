@@ -31,7 +31,7 @@ public final class StopMigrationCheckUpdater implements RALUpdater<StopMigration
     
     @Override
     public void executeUpdate(final String databaseName, final StopMigrationCheckStatement sqlStatement) {
-        jobAPI.stopByParentJobId(sqlStatement.getJobId());
+        jobAPI.stop(sqlStatement.getJobId());
     }
     
     @Override

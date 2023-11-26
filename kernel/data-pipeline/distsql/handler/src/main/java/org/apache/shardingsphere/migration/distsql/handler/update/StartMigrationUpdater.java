@@ -31,7 +31,7 @@ public final class StartMigrationUpdater implements RALUpdater<StartMigrationSta
     
     @Override
     public void executeUpdate(final String databaseName, final StartMigrationStatement sqlStatement) {
-        jobManager.startDisabledJob(sqlStatement.getJobId());
+        jobManager.resume(sqlStatement.getJobId());
     }
     
     @Override

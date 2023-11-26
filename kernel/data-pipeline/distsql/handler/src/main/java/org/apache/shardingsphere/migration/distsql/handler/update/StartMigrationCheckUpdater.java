@@ -31,7 +31,7 @@ public final class StartMigrationCheckUpdater implements RALUpdater<StartMigrati
     
     @Override
     public void executeUpdate(final String databaseName, final StartMigrationCheckStatement sqlStatement) {
-        jobAPI.startByParentJobId(sqlStatement.getJobId());
+        jobAPI.resume(sqlStatement.getJobId());
     }
     
     @Override

@@ -72,11 +72,11 @@ public final class PipelineJobManager {
     }
     
     /**
-     * Start disabled job.
+     * Resume disabled job.
      *
      * @param jobId job id
      */
-    public void startDisabledJob(final String jobId) {
+    public void resume(final String jobId) {
         if (jobOption.isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished()) {
             Optional<? extends PipelineJobItemProgress> jobItemProgress = new PipelineJobItemManager<>(jobOption.getYamlJobItemProgressSwapper()).getProgress(jobId, 0);
             if (jobItemProgress.isPresent() && JobStatus.FINISHED == jobItemProgress.get().getStatus()) {
@@ -108,7 +108,7 @@ public final class PipelineJobManager {
     private void startNextDisabledJob(final String jobId, final String toBeStartDisabledNextJobType) {
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobFacade().getCheck().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
-                new PipelineJobManager(TypedSPILoader.getService(PipelineJobType.class, toBeStartDisabledNextJobType).getOption()).startDisabledJob(optional);
+                new PipelineJobManager(TypedSPILoader.getService(PipelineJobType.class, toBeStartDisabledNextJobType).getOption()).resume(optional);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -118,7 +118,7 @@ public final class PipelineJobManager {
     }
     
     /**
-     * Stop pipeline job.
+     * Stop job.
      *
      * @param jobId job id
      */
