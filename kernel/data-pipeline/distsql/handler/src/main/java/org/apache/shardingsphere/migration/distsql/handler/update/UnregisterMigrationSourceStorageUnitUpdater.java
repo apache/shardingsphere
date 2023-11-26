@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobManager;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobOption;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -28,11 +29,11 @@ import org.apache.shardingsphere.migration.distsql.statement.UnregisterMigration
  */
 public final class UnregisterMigrationSourceStorageUnitUpdater implements RALUpdater<UnregisterMigrationSourceStorageUnitStatement> {
     
-    private final MigrationJobOption jobOption = new MigrationJobOption();
+    private final MigrationJobManager jobManager = new MigrationJobManager(new MigrationJobOption());
     
     @Override
     public void executeUpdate(final String databaseName, final UnregisterMigrationSourceStorageUnitStatement sqlStatement) {
-        jobOption.dropMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY), sqlStatement.getNames());
+        jobManager.dropMigrationSourceResources(new PipelineContextKey(InstanceType.PROXY), sqlStatement.getNames());
     }
     
     @Override
