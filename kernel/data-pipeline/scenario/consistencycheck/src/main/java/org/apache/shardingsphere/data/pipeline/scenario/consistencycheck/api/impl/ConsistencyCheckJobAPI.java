@@ -172,18 +172,17 @@ public final class ConsistencyCheckJobAPI {
      */
     public List<ConsistencyCheckJobItemInfo> getJobItemInfos(final String parentJobId) {
         String latestCheckJobId = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
-        Optional<ConsistencyCheckJobItemProgress> progress = jobItemManager.getProgress(latestCheckJobId, 0);
-        if (!progress.isPresent()) {
-            return Collections.emptyList();
-        }
+        return jobItemManager.getProgress(latestCheckJobId, 0).map(optional -> getJobItemInfos(parentJobId, latestCheckJobId, optional)).orElse(Collections.emptyList());
+    }
+    
+    private List<ConsistencyCheckJobItemInfo> getJobItemInfos(final String parentJobId, final String latestCheckJobId, final ConsistencyCheckJobItemProgress progress) {
         List<ConsistencyCheckJobItemInfo> result = new LinkedList<>();
-        ConsistencyCheckJobItemProgress jobItemProgress = progress.get();
-        if (!Strings.isNullOrEmpty(jobItemProgress.getIgnoredTableNames())) {
+        if (!Strings.isNullOrEmpty(progress.getIgnoredTableNames())) {
             PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId));
             Map<String, TableDataConsistencyCheckResult> checkJobResult = governanceFacade.getJobFacade().getCheck().getCheckJobResult(parentJobId, latestCheckJobId);
-            result.addAll(buildIgnoredTableInfo(jobItemProgress.getIgnoredTableNames().split(","), checkJobResult));
+            result.addAll(buildIgnoredTableInfo(progress.getIgnoredTableNames().split(","), checkJobResult));
         }
-        if (Objects.equals(jobItemProgress.getIgnoredTableNames(), jobItemProgress.getTableNames())) {
+        if (Objects.equals(progress.getIgnoredTableNames(), progress.getTableNames())) {
             return result;
         }
         result.add(getJobItemInfo(parentJobId));
