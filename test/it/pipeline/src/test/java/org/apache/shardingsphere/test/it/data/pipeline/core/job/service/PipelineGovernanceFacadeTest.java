@@ -114,11 +114,11 @@ class PipelineGovernanceFacadeTest {
         String parentJobId = "testParentJob";
         String expectedCheckJobId = "testCheckJob";
         governanceFacade.getJobFacade().getCheck().persistLatestCheckJobId(parentJobId, expectedCheckJobId);
-        Optional<String> actualCheckJobIdOpt = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
+        Optional<String> actualCheckJobIdOpt = governanceFacade.getJobFacade().getCheck().findLatestCheckJobId(parentJobId);
         assertTrue(actualCheckJobIdOpt.isPresent());
         assertThat(actualCheckJobIdOpt.get(), is(expectedCheckJobId));
         governanceFacade.getJobFacade().getCheck().deleteLatestCheckJobId(parentJobId);
-        assertFalse(governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId).isPresent());
+        assertFalse(governanceFacade.getJobFacade().getCheck().findLatestCheckJobId(parentJobId).isPresent());
     }
     
     @Test

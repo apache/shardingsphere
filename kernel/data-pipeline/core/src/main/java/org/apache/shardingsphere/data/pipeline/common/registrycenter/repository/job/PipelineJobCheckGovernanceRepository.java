@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMeta
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResultSwapper;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.ConsistencyCheckJobNotFoundException;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -43,13 +44,23 @@ public final class PipelineJobCheckGovernanceRepository {
     private final ClusterPersistRepository repository;
     
     /**
+     * Find latest check job id.
+     *
+     * @param parentJobId parent job id
+     * @return check job id
+     */
+    public Optional<String> findLatestCheckJobId(final String parentJobId) {
+        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId)));
+    }
+    
+    /**
      * Get latest check job id.
      *
      * @param parentJobId parent job id
      * @return check job id
      */
-    public Optional<String> getLatestCheckJobId(final String parentJobId) {
-        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId)));
+    public String getLatestCheckJobId(final String parentJobId) {
+        return findLatestCheckJobId(parentJobId).orElseThrow(() -> new ConsistencyCheckJobNotFoundException(parentJobId));
     }
     
     /**
