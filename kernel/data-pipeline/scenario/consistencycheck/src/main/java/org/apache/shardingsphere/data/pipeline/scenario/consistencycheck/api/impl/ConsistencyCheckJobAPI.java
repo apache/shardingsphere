@@ -64,16 +64,19 @@ import java.util.stream.Collectors;
  */
 public final class ConsistencyCheckJobAPI {
     
+    private final YamlConsistencyCheckJobItemProgressSwapper progressSwapper;
+    
     private final PipelineJobManager jobManager;
     
     private final PipelineJobConfigurationManager jobConfigManager;
     
-    private final YamlConsistencyCheckJobItemProgressSwapper progressSwapper;
+    private final PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager;
     
     public ConsistencyCheckJobAPI(final ConsistencyCheckJobOption jobOption) {
         progressSwapper = jobOption.getYamlJobItemProgressSwapper();
         jobManager = new PipelineJobManager(jobOption);
         jobConfigManager = new PipelineJobConfigurationManager(jobOption);
+        jobItemManager = new PipelineJobItemManager<>(progressSwapper);
     }
     
     /**
@@ -144,11 +147,11 @@ public final class ConsistencyCheckJobAPI {
      * @param parentJobId parent job id
      */
     public void drop(final String parentJobId) {
-        String latestCheckJobId = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
-        jobManager.stop(latestCheckJobId);
+        jobManager.stop(parentJobId);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(parentJobId);
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey);
         Collection<String> checkJobIds = governanceFacade.getJobFacade().getCheck().listCheckJobIds(parentJobId);
+        String latestCheckJobId = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
         Optional<Integer> previousSequence = ConsistencyCheckSequence.getPreviousSequence(
                 checkJobIds.stream().map(ConsistencyCheckJobId::parseSequence).collect(Collectors.toList()), ConsistencyCheckJobId.parseSequence(latestCheckJobId));
         if (previousSequence.isPresent()) {
@@ -168,7 +171,6 @@ public final class ConsistencyCheckJobAPI {
      * @return consistency job item infos
      */
     public List<ConsistencyCheckJobItemInfo> getJobItemInfos(final String parentJobId) {
-        PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(progressSwapper);
         String latestCheckJobId = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
         Optional<ConsistencyCheckJobItemProgress> progress = jobItemManager.getProgress(latestCheckJobId, 0);
         if (!progress.isPresent()) {
@@ -207,7 +209,6 @@ public final class ConsistencyCheckJobAPI {
     }
     
     private ConsistencyCheckJobItemInfo getJobItemInfo(final String parentJobId) {
-        PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(progressSwapper);
         String latestCheckJobId = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
         Optional<ConsistencyCheckJobItemProgress> progress = jobItemManager.getProgress(latestCheckJobId, 0);
         ConsistencyCheckJobItemInfo result = new ConsistencyCheckJobItemInfo();
