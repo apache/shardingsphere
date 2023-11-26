@@ -147,11 +147,11 @@ public final class ConsistencyCheckJobAPI {
      * @param parentJobId parent job id
      */
     public void drop(final String parentJobId) {
-        jobManager.stop(parentJobId);
+        String latestCheckJobId = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
+        jobManager.stop(latestCheckJobId);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(parentJobId);
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey);
         Collection<String> checkJobIds = governanceFacade.getJobFacade().getCheck().listCheckJobIds(parentJobId);
-        String latestCheckJobId = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
         Optional<Integer> previousSequence = ConsistencyCheckSequence.getPreviousSequence(
                 checkJobIds.stream().map(ConsistencyCheckJobId::parseSequence).collect(Collectors.toList()), ConsistencyCheckJobId.parseSequence(latestCheckJobId));
         if (previousSequence.isPresent()) {
