@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInva
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobOption;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.pojo.CreateConsistencyCheckJobParameter;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobOption;
@@ -38,7 +39,7 @@ import java.util.Properties;
  */
 public final class CheckMigrationJobUpdater implements RALUpdater<CheckMigrationStatement> {
     
-    private final ConsistencyCheckJobOption checkJobAPI = new ConsistencyCheckJobOption();
+    private final ConsistencyCheckJobAPI checkJobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobOption());
     
     private final MigrationJobOption migrationJobOption = new MigrationJobOption();
     
