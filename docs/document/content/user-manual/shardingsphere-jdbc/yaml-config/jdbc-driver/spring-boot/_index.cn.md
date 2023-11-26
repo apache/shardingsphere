@@ -56,7 +56,7 @@ Quarkus 3，Micronaut Framework 4 和 Helidon 3。
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.1</version>
+            <version>2.3.9</version>
         </dependency>
     </dependencies>
 </project>

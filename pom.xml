@@ -87,15 +87,12 @@
         <freemarker.version>2.3.31</freemarker.version>
         <bytebuddy.version>1.14.8</bytebuddy.version>
         
-        <jaxb-api.version>2.3.1</jaxb-api.version>
-        <jaxb-runtime.version>2.3.1</jaxb-runtime.version>
-        <annotation-api.version>1.3.2</annotation-api.version>
-        <activation-api.version>1.2.0</activation-api.version>
+        <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
+        <glassfish-jaxb.version>2.3.9</glassfish-jaxb.version>
         
         <calcite.version>1.35.0</calcite.version>
         <immutables.version>2.9.3</immutables.version>
         
-        <javax.transaction.version>1.1</javax.transaction.version>
         <atomikos.version>6.0.0</atomikos.version>
         <narayana.version>5.12.4.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
@@ -297,24 +294,18 @@
             </dependency>
             
             <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>${jaxb-api.version}</version>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-bom</artifactId>
+                <version>${jakarta.jakartaee-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
-                <artifactId>jaxb-runtime</artifactId>
-                <version>${jaxb-runtime.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.annotation</groupId>
-                <artifactId>javax.annotation-api</artifactId>
-                <version>${annotation-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.activation</groupId>
-                <artifactId>javax.activation-api</artifactId>
-                <version>${activation-api.version}</version>
+                <artifactId>jaxb-bom</artifactId>
+                <version>${glassfish-jaxb.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             
             <dependency>
@@ -338,12 +329,6 @@
                 <artifactId>value</artifactId>
                 <version>${immutables.version}</version>
                 <scope>provided</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>javax.transaction</groupId>
-                <artifactId>jta</artifactId>
-                <version>${javax.transaction.version}</version>
             </dependency>
             
             <dependency>
