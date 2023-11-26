@@ -205,10 +205,10 @@ public final class ConsistencyCheckJobAPI {
     }
     
     private ConsistencyCheckJobItemInfo getJobItemInfo(final String parentJobId, final String latestCheckJobId) {
-        Optional<ConsistencyCheckJobItemProgress> progress = jobItemManager.getProgress(latestCheckJobId, 0);
         ConsistencyCheckJobItemInfo result = new ConsistencyCheckJobItemInfo();
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(latestCheckJobId);
         result.setActive(!jobConfigPOJO.isDisabled());
+        Optional<ConsistencyCheckJobItemProgress> progress = jobItemManager.getProgress(latestCheckJobId, 0);
         if (!progress.isPresent()) {
             return result;
         }
