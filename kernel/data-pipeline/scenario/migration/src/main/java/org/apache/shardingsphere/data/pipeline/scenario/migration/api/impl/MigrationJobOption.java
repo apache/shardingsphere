@@ -37,15 +37,12 @@ import org.apache.shardingsphere.data.pipeline.common.spi.algorithm.JobRateLimit
 import org.apache.shardingsphere.data.pipeline.common.util.ShardingColumnsExtractor;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.exception.connection.RegisterMigrationSourceStorageUnitException;
-import org.apache.shardingsphere.data.pipeline.core.exception.connection.UnregisterMigrationSourceStorageUnitException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
-import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency.MigrationDataConsistencyChecker;
@@ -55,26 +52,14 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.ingest.
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationProcessContext;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -84,8 +69,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public final class MigrationJobOption implements TransmissionJobOption {
-    
-    private final PipelineDataSourcePersistService dataSourcePersistService = new PipelineDataSourcePersistService();
     
     @Override
     public PipelineJobInfo getJobInfo(final String jobId) {
@@ -174,84 +157,6 @@ public final class MigrationJobOption implements TransmissionJobOption {
     @Override
     public Optional<String> getToBeStoppedPreviousJobType() {
         return Optional.of("CONSISTENCY_CHECK");
-    }
-    
-    /**
-     * Add migration source resources.
-     *
-     * @param contextKey context key
-     * @param propsMap data source pool properties map
-     */
-    public void addMigrationSourceResources(final PipelineContextKey contextKey, final Map<String, DataSourcePoolProperties> propsMap) {
-        Map<String, DataSourcePoolProperties> existDataSources = dataSourcePersistService.load(contextKey, getType());
-        Collection<String> duplicateDataSourceNames = new HashSet<>(propsMap.size(), 1F);
-        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            if (existDataSources.containsKey(entry.getKey())) {
-                duplicateDataSourceNames.add(entry.getKey());
-            }
-        }
-        ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(), () -> new RegisterMigrationSourceStorageUnitException(duplicateDataSourceNames));
-        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(existDataSources);
-        result.putAll(propsMap);
-        dataSourcePersistService.persist(contextKey, getType(), result);
-    }
-    
-    /**
-     * Drop migration source resources.
-     *
-     * @param contextKey context key
-     * @param resourceNames resource names
-     */
-    public void dropMigrationSourceResources(final PipelineContextKey contextKey, final Collection<String> resourceNames) {
-        Map<String, DataSourcePoolProperties> metaDataDataSource = dataSourcePersistService.load(contextKey, getType());
-        List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(noExistResources.isEmpty(), () -> new UnregisterMigrationSourceStorageUnitException(noExistResources));
-        for (String each : resourceNames) {
-            metaDataDataSource.remove(each);
-        }
-        dataSourcePersistService.persist(contextKey, getType(), metaDataDataSource);
-    }
-    
-    /**
-     * Query migration source resources list.
-     *
-     * @param contextKey context key
-     * @return migration source resources
-     */
-    public Collection<Collection<Object>> listMigrationSourceResources(final PipelineContextKey contextKey) {
-        Map<String, DataSourcePoolProperties> propsMap = dataSourcePersistService.load(contextKey, getType());
-        Collection<Collection<Object>> result = new ArrayList<>(propsMap.size());
-        for (Entry<String, DataSourcePoolProperties> entry : propsMap.entrySet()) {
-            String dataSourceName = entry.getKey();
-            DataSourcePoolProperties value = entry.getValue();
-            Collection<Object> props = new LinkedList<>();
-            props.add(dataSourceName);
-            String url = String.valueOf(value.getConnectionPropertySynonyms().getStandardProperties().get("url"));
-            DatabaseType databaseType = DatabaseTypeFactory.get(url);
-            props.add(databaseType.getType());
-            ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType).parse(url, "", null);
-            props.add(connectionProps.getHostname());
-            props.add(connectionProps.getPort());
-            props.add(connectionProps.getCatalog());
-            Map<String, Object> standardProps = value.getPoolPropertySynonyms().getStandardProperties();
-            props.add(getStandardProperty(standardProps, "connectionTimeoutMilliseconds"));
-            props.add(getStandardProperty(standardProps, "idleTimeoutMilliseconds"));
-            props.add(getStandardProperty(standardProps, "maxLifetimeMilliseconds"));
-            props.add(getStandardProperty(standardProps, "maxPoolSize"));
-            props.add(getStandardProperty(standardProps, "minPoolSize"));
-            props.add(getStandardProperty(standardProps, "readOnly"));
-            Map<String, Object> otherProps = value.getCustomProperties().getProperties();
-            props.add(otherProps.isEmpty() ? "" : JsonUtils.toJsonString(otherProps));
-            result.add(props);
-        }
-        return result;
-    }
-    
-    private String getStandardProperty(final Map<String, Object> standardProps, final String key) {
-        if (standardProps.containsKey(key) && null != standardProps.get(key)) {
-            return standardProps.get(key).toString();
-        }
-        return "";
     }
     
     @Override
