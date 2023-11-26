@@ -214,14 +214,11 @@ public final class ConsistencyCheckJobAPI {
     }
     
     private ConsistencyCheckJobItemInfo getJobItemInfo(final String parentJobId) {
-        PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId));
-        Optional<String> latestCheckJobId = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
-        ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
-        String checkJobId = latestCheckJobId.get();
+        String latestCheckJobId = getLatestCheckJobId(parentJobId);
         PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(progressSwapper);
-        Optional<ConsistencyCheckJobItemProgress> progress = jobItemManager.getProgress(checkJobId, 0);
+        Optional<ConsistencyCheckJobItemProgress> progress = jobItemManager.getProgress(latestCheckJobId, 0);
         ConsistencyCheckJobItemInfo result = new ConsistencyCheckJobItemInfo();
-        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(checkJobId);
+        JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(latestCheckJobId);
         result.setActive(!jobConfigPOJO.isDisabled());
         if (!progress.isPresent()) {
             return result;
@@ -234,9 +231,10 @@ public final class ConsistencyCheckJobAPI {
         }
         fillInJobItemInfoWithTimes(result, jobItemProgress, jobConfigPOJO);
         result.setTableNames(Optional.ofNullable(jobItemProgress.getTableNames()).orElse(""));
-        fillInJobItemInfoWithCheckAlgorithm(result, checkJobId);
-        result.setErrorMessage(PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(checkJobId)).getJobItemFacade().getErrorMessage().load(checkJobId, 0));
-        Map<String, TableDataConsistencyCheckResult> checkJobResults = governanceFacade.getJobFacade().getCheck().getCheckJobResult(parentJobId, checkJobId);
+        fillInJobItemInfoWithCheckAlgorithm(result, latestCheckJobId);
+        result.setErrorMessage(PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(latestCheckJobId)).getJobItemFacade().getErrorMessage().load(latestCheckJobId, 0));
+        Map<String, TableDataConsistencyCheckResult> checkJobResults = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId))
+                .getJobFacade().getCheck().getCheckJobResult(parentJobId, latestCheckJobId);
         result.setCheckSuccess(checkJobResults.isEmpty() ? null : checkJobResults.values().stream().allMatch(TableDataConsistencyCheckResult::isMatched));
         result.setCheckFailedTableNames(checkJobResults.entrySet().stream().filter(each -> !each.getValue().isIgnored() && !each.getValue().isMatched())
                 .map(Entry::getKey).collect(Collectors.joining(",")));
