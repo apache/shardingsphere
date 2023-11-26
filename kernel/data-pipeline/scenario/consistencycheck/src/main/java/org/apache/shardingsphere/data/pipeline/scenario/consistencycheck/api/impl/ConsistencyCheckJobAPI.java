@@ -140,11 +140,11 @@ public final class ConsistencyCheckJobAPI {
     }
     
     /**
-     * Drop by parent job id.
+     * Drop consistency check job.
      *
      * @param parentJobId parent job id
      */
-    public void dropByParentJobId(final String parentJobId) {
+    public void drop(final String parentJobId) {
         String latestCheckJobId = getLatestCheckJobId(parentJobId);
         jobManager.stop(latestCheckJobId);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(parentJobId);

@@ -101,12 +101,12 @@ class ConsistencyCheckJobAPITest {
         }
         expectedSequence = 2;
         for (int i = 0; i < 2; i++) {
-            jobAPI.dropByParentJobId(parentJobId);
+            jobAPI.drop(parentJobId);
             Optional<String> latestCheckJobId = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
             assertTrue(latestCheckJobId.isPresent());
             assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId.get()), is(expectedSequence--));
         }
-        jobAPI.dropByParentJobId(parentJobId);
+        jobAPI.drop(parentJobId);
         Optional<String> latestCheckJobId = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
         assertFalse(latestCheckJobId.isPresent());
     }

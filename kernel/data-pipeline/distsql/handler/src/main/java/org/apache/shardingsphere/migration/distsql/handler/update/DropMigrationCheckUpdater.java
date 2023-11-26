@@ -31,7 +31,7 @@ public final class DropMigrationCheckUpdater implements RALUpdater<DropMigration
     
     @Override
     public void executeUpdate(final String databaseName, final DropMigrationCheckStatement sqlStatement) {
-        jobAPI.dropByParentJobId(sqlStatement.getJobId());
+        jobAPI.drop(sqlStatement.getJobId());
     }
     
     @Override
