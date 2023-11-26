@@ -2036,4 +2036,49 @@
     <create-table sql-case-id="create_table_with_select">
         <table name="t_order_new" start-index="13" stop-index="23"/>
     </create-table>
+    
+    <create-table sql-case-id="create_table_organization_index_parallel_with_select">
+        <table name="admin_iot3" start-index="13" stop-index="22"  />
+        <column-definition start-index="24" stop-index="36" primary-key="true">
+            <column name="i" start-index="24" stop-index="24" />
+        </column-definition>
+        <column-definition start-index="39" stop-index="39">
+            <column name="j" start-index="39" stop-index="39" />
+        </column-definition>
+        <column-definition start-index="42" stop-index="42">
+            <column name="k" start-index="42" stop-index="42" />
+        </column-definition>
+        <column-definition start-index="45" stop-index="45">
+            <column name="l" start-index="45" stop-index="45" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_partition_by_range">
+        <table name="costs_demo" start-index="13" stop-index="22"  />
+        <column-definition type="NUMBER" start-index="25" stop-index="41">
+            <column name="prod_id" start-index="25" stop-index="31" />
+        </column-definition>
+        <column-definition type="DATE" start-index="44" stop-index="55">
+            <column name="time_id" start-index="44" stop-index="50" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="58" stop-index="79">
+            <column name="unit_cost" start-index="58" stop-index="66" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="82" stop-index="104">
+            <column name="unit_price" start-index="82" stop-index="91" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_default_user">
+        <table name="audit_trail" start-index="13" stop-index="23"  />
+        <column-definition type="NUMBER" start-index="26" stop-index="38">
+            <column name="value1" start-index="26" stop-index="31" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="41" stop-index="59">
+            <column name="value2" start-index="41" stop-index="46" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="62" stop-index="95">
+            <column name="inserter" start-index="62" stop-index="69" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>
