@@ -39,7 +39,7 @@
             <fileMode>0644</fileMode>
         </fileSet>
         <fileSet>
-            <directory>src/main/release-docs</directory>
+            <directory>../../distribution/proxy/src/main/release-docs</directory>
             <includes>
                 <include>**/*</include>
             </includes>
