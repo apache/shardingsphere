@@ -52,8 +52,15 @@ public interface PipelineJobOption {
     <T extends PipelineJobItemProgress> YamlPipelineJobItemProgressSwapper<YamlPipelineJobItemProgressConfiguration, T> getYamlJobItemProgressSwapper();
     
     /**
-     * Whether to ignore to start disabled job when job item progress is finished.
+     * Get pipeline job class.
      * 
+     * @return pipeline job class
+     */
+    Class<? extends PipelineJob> getJobClass();
+    
+    /**
+     * Whether to ignore to start disabled job when job item progress is finished.
+     *
      * @return ignore to start disabled job when job item progress is finished or not
      */
     default boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished() {
@@ -80,19 +87,12 @@ public interface PipelineJobOption {
     
     /**
      * Whether to force no sharding when convert to job configuration POJO.
-     * 
+     *
      * @return without sharding or not
      */
     default boolean isForceNoShardingWhenConvertToJobConfigurationPOJO() {
         return false;
     }
-    
-    /**
-     * Get pipeline job class.
-     * 
-     * @return pipeline job class
-     */
-    Class<? extends PipelineJob> getJobClass();
     
     /**
      * Get job type.
