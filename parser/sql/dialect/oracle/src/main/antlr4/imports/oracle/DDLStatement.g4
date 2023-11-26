@@ -176,7 +176,7 @@ truncateTable
     ;
 
 createTableSpecification
-    : ((GLOBAL | PRIVATE) TEMPORARY | SHARDED | DUPLICATED)?
+    : ((GLOBAL | PRIVATE) TEMPORARY | SHARDED | DUPLICATED | IMMUTABLE? BLOCKCHAIN | IMMUTABLE)?
     ;
 
 tablespaceClauseWithParen
@@ -192,11 +192,7 @@ createSharingClause
     ;
 
 createDefinitionClause
-    : createRelationalTableClause | createObjectTableClause | createTableAsSelectClause | createXMLTypeTableClause
-    ;
-
-createTableAsSelectClause
-    : AS selectSubquery
+    : createRelationalTableClause | createObjectTableClause | createXMLTypeTableClause
     ;
 
 createXMLTypeTableClause
@@ -247,23 +243,9 @@ oidIndexClause
     ;
 
 createRelationalTableClause
-    : (LP_ relationalProperties RP_)
-    | (LP_ relationalProperties RP_) collationClause
-    | (LP_ relationalProperties RP_) commitClause
-    | (LP_ relationalProperties RP_) physicalProperties
-    | (LP_ relationalProperties RP_) tableProperties
-    | (LP_ relationalProperties RP_) collationClause commitClause
-    | (LP_ relationalProperties RP_) collationClause physicalProperties
-    | (LP_ relationalProperties RP_) collationClause tableProperties
-    | (LP_ relationalProperties RP_) collationClause commitClause physicalProperties
-    | (LP_ relationalProperties RP_) collationClause commitClause tableProperties
-    | (LP_ relationalProperties RP_) collationClause commitClause physicalProperties tableProperties
-    | (LP_ relationalProperties RP_) commitClause physicalProperties
-    | (LP_ relationalProperties RP_) commitClause tableProperties
-    | (LP_ relationalProperties RP_) commitClause physicalProperties tableProperties
-    | (LP_ relationalProperties RP_) physicalProperties tableProperties
+    : (LP_ relationalProperties RP_)? immutableTableClauses? blockchainTableClauses? collationClause? commitClause? physicalProperties? tableProperties?
     ;
-    
+
 createMemOptimizeClause
     : (MEMOPTIMIZE FOR READ)? (MEMOPTIMIZE FOR WRITE)? 
     ;    
@@ -282,22 +264,47 @@ relationalProperties
     : relationalProperty (COMMA_ relationalProperty)*
     ;
 
+immutableTableClauses
+    : immutableTableNoDropClause? immutableTableNoDeleteClause?
+    ;
+
+immutableTableNoDropClause
+    : NO DROP (UNTIL INTEGER_ DAYS IDLE)?
+    ;
+
+immutableTableNoDeleteClause
+    : NO DELETE (LOCKED? | UNTIL INTEGER_ DAYS AFTER INSERT LOCKED?)
+    ;
+
+blockchainTableClauses
+    : blockchainDropTableClause | blockchainRowRetentionClause | blockchainHashAndDataFormatClause
+    ;
+
+blockchainDropTableClause
+    : NO DROP (UNTIL INTEGER_ DAYS IDLE)?
+    ;
+
+blockchainRowRetentionClause
+    : NO DELETE (LOCKED? | UNTIL INTEGER_ DAYS AFTER INSERT LOCKED?)
+    ;
+
+blockchainHashAndDataFormatClause
+    : HASHING USING 'sha2_512' VERSION 'v1'
+    ;
+
 relationalProperty
     : columnDefinition | virtualColumnDefinition | outOfLineConstraint | outOfLineRefConstraint
     ;
 
 columnDefinition
-    : columnName REF? dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
+    : columnName REF? (dataType (COLLATE columnCollationName)?)? SORT? visibleClause (DEFAULT (ON NULL)? expr | identityClause)? 
+    ( ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
     | REF LP_ columnName RP_ WITH ROWID
     | SCOPE FOR LP_ columnName RP_ IS identifier
     ;
 
 visibleClause
     : (VISIBLE | INVISIBLE)?
-    ;
-
-defaultNullClause
-    : DEFAULT (ON NULL)?
     ;
 
 identityClause
@@ -744,7 +751,7 @@ createSynonym
     ;
 
 commitClause
-    : (ON COMMIT (DROP | PRESERVE) ROWS)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
+    : (ON COMMIT (DROP | PRESERVE) DEFINITION)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     ;
 
 physicalProperties
@@ -908,20 +915,9 @@ clusterRelatedClause
     ;
 
 tableProperties
-    :columnProperties?
-     readOnlyClause?
-     indexingClause?
-     tablePartitioningClauses?
-     attributeClusteringClause?
-     (CACHE | NOCACHE)?
-     ( RESULT_CACHE ( MODE (DEFAULT | FORCE) ) )?
-     parallelClause?
-     (ROWDEPENDENCIES | NOROWDEPENDENCIES)?
-     enableDisableClause*
-     rowMovementClause?
-     flashbackArchiveClause?
-     (ROW ARCHIVAL)?
-     (AS subquery | FOR EXCHANGE WITH TABLE tableName)?
+    : columnProperties? readOnlyClause? indexingClause? tablePartitioningClauses? attributeClusteringClause? (CACHE | NOCACHE)? parallelClause?
+    ( RESULT_CACHE (MODE (DEFAULT | FORCE)))? (ROWDEPENDENCIES | NOROWDEPENDENCIES)? enableDisableClause* rowMovementClause? logicalReplicationClause? flashbackArchiveClause?
+    ( ROW ARCHIVAL)? (AS selectSubquery | FOR EXCHANGE WITH TABLE tableName)?
     ;
 
 readOnlyClause
