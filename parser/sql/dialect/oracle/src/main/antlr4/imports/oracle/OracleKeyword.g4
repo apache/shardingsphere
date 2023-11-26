@@ -7747,3 +7747,27 @@ DB_RECOVERY_FILE_DEST_SIZE
 MANDATORY
     : M A N D A T O R Y
     ;
+
+IMMUTABLE
+    : I M M U T A B L E
+    ;
+
+BLOCKCHAIN
+    : B L O C K C H A I N
+    ;
+
+IDLE
+    : I D L E
+    ;
+
+HASHING
+    : H A S H I N G
+    ;
+
+DEFINITION
+    : D E F I N I T I O N
+    ;
+
+COLLATE
+    : C O L L A T E
+    ;

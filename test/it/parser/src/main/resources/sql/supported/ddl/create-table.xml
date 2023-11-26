@@ -150,4 +150,11 @@
     <sql-case id="create_table_with_negative_data_type" value="CREATE TABLE T(COL1 NUMBER, COL2 NUMBER(3), COL3 NUMBER(3,2), COL4 NUMBER(6,-2))" db-types="Oracle" />
     <sql-case id="create_table_with_ref_data_type" value="CREATE TABLE location_table (location_number NUMBER, building REF warehouse_typ SCOPE IS warehouse_table);" db-types="Oracle" />
     <sql-case id="create_table_with_select" value="CREATE TABLE t_order_new AS SELECT * FROM t_order" db-types="Oracle"/>
+    <sql-case id="create_table_organization_index_parallel_with_select" value="CREATE TABLE admin_iot3(i PRIMARY KEY, j, k, l) ORGANIZATION INDEX PARALLEL AS SELECT * FROM hr.jobs" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range" value="CREATE TABLE costs_demo (prod_id NUMBER(6), time_id DATE, unit_cost NUMBER(10,2), unit_price NUMBER(10,2))
+    PARTITION BY RANGE (time_id) (PARTITION costs_old VALUES LESS THAN (TO_DATE('01-JAN-2003', 'DD-MON-YYYY')) COMPRESS,
+    PARTITION costs_q1_2003 VALUES LESS THAN (TO_DATE('01-APR-2003', 'DD-MON-YYYY')),
+    PARTITION costs_q2_2003 VALUES LESS THAN (TO_DATE('01-JUN-2003', 'DD-MON-YYYY')),
+    PARTITION costs_recent VALUES LESS THAN (MAXVALUE))" db-types="Oracle" />
+    <sql-case id="create_table_default_user" value="CREATE TABLE audit_trail (value1 NUMBER, value2 VARCHAR2(32), inserter VARCHAR2(30) DEFAULT USER)" db-types="Oracle" />
 </sql-cases>
