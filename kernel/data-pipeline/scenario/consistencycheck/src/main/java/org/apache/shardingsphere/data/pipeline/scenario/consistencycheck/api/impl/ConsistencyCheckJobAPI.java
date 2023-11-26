@@ -180,7 +180,7 @@ public final class ConsistencyCheckJobAPI {
         if (!Strings.isNullOrEmpty(progress.getIgnoredTableNames())) {
             PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId));
             Map<String, TableDataConsistencyCheckResult> checkJobResult = governanceFacade.getJobFacade().getCheck().getCheckJobResult(parentJobId, latestCheckJobId);
-            result.addAll(buildIgnoredTableInfo(progress.getIgnoredTableNames().split(","), checkJobResult));
+            result.addAll(getJobItemInfosWithIgnoredTables(progress.getIgnoredTableNames().split(","), checkJobResult));
         }
         if (Objects.equals(progress.getIgnoredTableNames(), progress.getTableNames())) {
             return result;
@@ -189,7 +189,7 @@ public final class ConsistencyCheckJobAPI {
         return result;
     }
     
-    private List<ConsistencyCheckJobItemInfo> buildIgnoredTableInfo(final String[] ignoredTables, final Map<String, TableDataConsistencyCheckResult> checkJobResult) {
+    private List<ConsistencyCheckJobItemInfo> getJobItemInfosWithIgnoredTables(final String[] ignoredTables, final Map<String, TableDataConsistencyCheckResult> checkJobResult) {
         if (null == ignoredTables) {
             return Collections.emptyList();
         }
