@@ -51,7 +51,7 @@ public final class CheckMigrationJobUpdater implements RALUpdater<CheckMigration
         String jobId = sqlStatement.getJobId();
         MigrationJobConfiguration jobConfig = new PipelineJobConfigurationManager(migrationJobOption).getJobConfiguration(jobId);
         verifyInventoryFinished(jobConfig);
-        checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(jobId, algorithmTypeName, algorithmProps, jobConfig.getSourceDatabaseType(), jobConfig.getTargetDatabaseType()));
+        checkJobAPI.start(new CreateConsistencyCheckJobParameter(jobId, algorithmTypeName, algorithmProps, jobConfig.getSourceDatabaseType(), jobConfig.getTargetDatabaseType()));
     }
     
     private void verifyInventoryFinished(final MigrationJobConfiguration jobConfig) {

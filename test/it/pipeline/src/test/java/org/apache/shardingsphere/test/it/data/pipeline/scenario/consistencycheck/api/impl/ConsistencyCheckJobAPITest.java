@@ -70,7 +70,7 @@ class ConsistencyCheckJobAPITest {
     void assertCreateJobConfig() {
         MigrationJobConfiguration parentJobConfig = jobConfigSwapper.swapToObject(JobConfigurationBuilder.createYamlMigrationJobConfiguration());
         String parentJobId = parentJobConfig.getJobId();
-        String checkJobId = jobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
+        String checkJobId = jobAPI.start(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
                 parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
         ConsistencyCheckJobConfiguration checkJobConfig = new PipelineJobConfigurationManager(jobOption).getJobConfiguration(checkJobId);
         int expectedSequence = ConsistencyCheckSequence.MIN_SEQUENCE;
@@ -88,7 +88,7 @@ class ConsistencyCheckJobAPITest {
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey());
         int expectedSequence = 1;
         for (int i = 0; i < 3; i++) {
-            String checkJobId = jobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
+            String checkJobId = jobAPI.start(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
                     parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
             ConsistencyCheckJobItemContext checkJobItemContext = new ConsistencyCheckJobItemContext(
                     new ConsistencyCheckJobConfiguration(checkJobId, parentJobId, null, null, TypedSPILoader.getService(DatabaseType.class, "H2")), 0, JobStatus.FINISHED, null);

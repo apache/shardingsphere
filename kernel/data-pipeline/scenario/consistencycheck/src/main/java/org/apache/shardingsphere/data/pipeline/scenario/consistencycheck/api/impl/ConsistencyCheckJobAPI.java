@@ -78,12 +78,12 @@ public final class ConsistencyCheckJobAPI {
     }
     
     /**
-     * Create consistency check configuration and start job.
+     * Start consistency check job.
      *
      * @param param create consistency check job parameter
      * @return job id
      */
-    public String createJobAndStart(final CreateConsistencyCheckJobParameter param) {
+    public String start(final CreateConsistencyCheckJobParameter param) {
         String parentJobId = param.getParentJobId();
         PipelineGovernanceFacade governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId));
         Optional<String> latestCheckJobId = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
