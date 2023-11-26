@@ -43,13 +43,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConsistencyCheckJobAPITest {
     
@@ -95,19 +93,16 @@ class ConsistencyCheckJobAPITest {
             jobItemManager.persistProgress(checkJobItemContext);
             Map<String, TableDataConsistencyCheckResult> dataConsistencyCheckResult = Collections.singletonMap("t_order", new TableDataConsistencyCheckResult(true));
             governanceFacade.getJobFacade().getCheck().persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
-            Optional<String> latestCheckJobId = governanceFacade.getJobFacade().getCheck().findLatestCheckJobId(parentJobId);
-            assertTrue(latestCheckJobId.isPresent());
-            assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId.get()), is(expectedSequence++));
+            String latestCheckJobId = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
+            assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId), is(expectedSequence++));
         }
         expectedSequence = 2;
         for (int i = 0; i < 2; i++) {
             jobAPI.drop(parentJobId);
-            Optional<String> latestCheckJobId = governanceFacade.getJobFacade().getCheck().findLatestCheckJobId(parentJobId);
-            assertTrue(latestCheckJobId.isPresent());
-            assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId.get()), is(expectedSequence--));
+            String latestCheckJobId = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
+            assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId), is(expectedSequence--));
         }
         jobAPI.drop(parentJobId);
-        Optional<String> latestCheckJobId = governanceFacade.getJobFacade().getCheck().findLatestCheckJobId(parentJobId);
-        assertFalse(latestCheckJobId.isPresent());
+        assertFalse(governanceFacade.getJobFacade().getCheck().findLatestCheckJobId(parentJobId).isPresent());
     }
 }
