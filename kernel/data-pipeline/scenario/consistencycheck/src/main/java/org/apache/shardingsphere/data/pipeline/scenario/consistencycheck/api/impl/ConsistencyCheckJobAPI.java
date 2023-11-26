@@ -185,14 +185,11 @@ public final class ConsistencyCheckJobAPI {
         if (Objects.equals(progress.getIgnoredTableNames(), progress.getTableNames())) {
             return result;
         }
-        result.add(getJobItemInfo(parentJobId));
+        result.add(getJobItemInfo(parentJobId, latestCheckJobId));
         return result;
     }
     
     private List<ConsistencyCheckJobItemInfo> getJobItemInfosWithIgnoredTables(final String[] ignoredTables, final Map<String, TableDataConsistencyCheckResult> checkJobResult) {
-        if (null == ignoredTables) {
-            return Collections.emptyList();
-        }
         List<ConsistencyCheckJobItemInfo> result = new LinkedList<>();
         for (String each : ignoredTables) {
             ConsistencyCheckJobItemInfo info = new ConsistencyCheckJobItemInfo();
@@ -207,8 +204,7 @@ public final class ConsistencyCheckJobAPI {
         return result;
     }
     
-    private ConsistencyCheckJobItemInfo getJobItemInfo(final String parentJobId) {
-        String latestCheckJobId = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(parentJobId)).getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
+    private ConsistencyCheckJobItemInfo getJobItemInfo(final String parentJobId, final String latestCheckJobId) {
         Optional<ConsistencyCheckJobItemProgress> progress = jobItemManager.getProgress(latestCheckJobId, 0);
         ConsistencyCheckJobItemInfo result = new ConsistencyCheckJobItemInfo();
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(latestCheckJobId);
