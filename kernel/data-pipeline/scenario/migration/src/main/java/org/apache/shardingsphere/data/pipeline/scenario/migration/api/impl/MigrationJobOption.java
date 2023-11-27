@@ -58,7 +58,6 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -70,10 +69,31 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class MigrationJobOption implements TransmissionJobOption {
     
+    @SuppressWarnings("unchecked")
+    @Override
+    public YamlMigrationJobConfigurationSwapper getYamlJobConfigurationSwapper() {
+        return new YamlMigrationJobConfigurationSwapper();
+    }
+    
+    @Override
+    public Class<MigrationJob> getJobClass() {
+        return MigrationJob.class;
+    }
+    
+    @Override
+    public Optional<String> getToBeStartDisabledNextJobType() {
+        return Optional.of("CONSISTENCY_CHECK");
+    }
+    
+    @Override
+    public Optional<String> getToBeStoppedPreviousJobType() {
+        return Optional.of("CONSISTENCY_CHECK");
+    }
+    
     @Override
     public PipelineJobInfo getJobInfo(final String jobId) {
         PipelineJobMetaData jobMetaData = new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
-        List<String> sourceTables = new LinkedList<>();
+        Collection<String> sourceTables = new LinkedList<>();
         new PipelineJobConfigurationManager(this).<MigrationJobConfiguration>getJobConfiguration(jobId).getJobShardingDataNodes()
                 .forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> sourceTables.add(DataNodeUtils.formatWithSchema(dataNode)))));
         return new PipelineJobInfo(jobMetaData, null, String.join(",", sourceTables));
@@ -85,12 +105,6 @@ public final class MigrationJobOption implements TransmissionJobOption {
         if (null == yamlJobConfig.getJobId()) {
             config.setJobId(new MigrationJobId(contextKey, config.getJobShardingDataNodes()).marshal());
         }
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public YamlMigrationJobConfigurationSwapper getYamlJobConfigurationSwapper() {
-        return new YamlMigrationJobConfigurationSwapper();
     }
     
     @Override
@@ -147,21 +161,6 @@ public final class MigrationJobOption implements TransmissionJobOption {
     public PipelineDataConsistencyChecker buildDataConsistencyChecker(final PipelineJobConfiguration jobConfig, final TransmissionProcessContext processContext,
                                                                       final ConsistencyCheckJobItemProgressContext progressContext) {
         return new MigrationDataConsistencyChecker((MigrationJobConfiguration) jobConfig, processContext, progressContext);
-    }
-    
-    @Override
-    public Optional<String> getToBeStartDisabledNextJobType() {
-        return Optional.of("CONSISTENCY_CHECK");
-    }
-    
-    @Override
-    public Optional<String> getToBeStoppedPreviousJobType() {
-        return Optional.of("CONSISTENCY_CHECK");
-    }
-    
-    @Override
-    public Class<MigrationJob> getJobClass() {
-        return MigrationJob.class;
     }
     
     @Override

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.job;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobOption;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
@@ -44,10 +45,12 @@ import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
+import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import java.util.Collection;
@@ -65,9 +68,11 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     @Getter
     private final PipelineSink sink;
     
-    private final CDCJobOption jobAPI = new CDCJobOption();
+    private final CDCJobOption jobOption = new CDCJobOption();
     
-    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobAPI.getYamlJobItemProgressSwapper());
+    private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
+    
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobOption.getYamlJobItemProgressSwapper());
     
     private final CDCJobPreparer jobPreparer = new CDCJobPreparer();
     
@@ -109,8 +114,8 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     
     private CDCJobItemContext buildPipelineJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem) {
         Optional<TransmissionJobItemProgress> initProgress = jobItemManager.getProgress(jobConfig.getJobId(), shardingItem);
-        CDCProcessContext jobProcessContext = jobAPI.buildProcessContext(jobConfig);
-        CDCTaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
+        CDCProcessContext jobProcessContext = jobOption.buildProcessContext(jobConfig);
+        CDCTaskConfiguration taskConfig = jobOption.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
         return new CDCJobItemContext(jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager, sink);
     }
     
@@ -131,7 +136,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
         log.error("job execution failed, {}-{}", jobId, shardingItem, ex);
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, shardingItem, ex);
         PipelineJobCenter.stop(jobId);
-        jobAPI.updateJobConfigurationDisabled(jobId, true);
+        jobAPI.disable(jobId);
     }
     
     private void executeInventoryTasks(final List<CDCJobItemContext> jobItemContexts) {
@@ -212,7 +217,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
                 cdcSink.getChannel().writeAndFlush(CDCResponseUtils.failed("", "", throwable.getMessage()));
             }
             PipelineJobCenter.stop(jobId);
-            jobAPI.updateJobConfigurationDisabled(jobId, true);
+            jobAPI.disable(jobId);
         }
     }
 }
