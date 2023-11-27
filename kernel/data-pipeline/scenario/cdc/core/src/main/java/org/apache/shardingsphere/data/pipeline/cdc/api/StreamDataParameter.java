@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.api.job.type;
+package org.apache.shardingsphere.data.pipeline.cdc.api;
 
-import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobOption;
-import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * CDC job type.
+ * Stream data parameter.
  */
-public final class CDCJobType implements PipelineJobType {
+@RequiredArgsConstructor
+@Getter
+public final class StreamDataParameter {
     
-    @Override
-    public String getCode() {
-        return "03";
-    }
+    private final String databaseName;
     
-    @Override
-    public PipelineJobOption getOption() {
-        return new CDCJobOption();
-    }
+    private final List<String> schemaTableNames;
     
-    @Override
-    public String getType() {
-        return "STREAMING";
-    }
+    private final boolean full;
+    
+    private final Map<String, List<DataNode>> dataNodesMap;
+    
+    private final boolean decodeWithTX;
 }

@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.core.job;
+package org.apache.shardingsphere.data.pipeline.cdc;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;

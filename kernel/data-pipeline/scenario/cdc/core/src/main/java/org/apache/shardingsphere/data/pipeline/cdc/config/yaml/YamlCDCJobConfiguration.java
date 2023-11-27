@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.yaml.config;
+package org.apache.shardingsphere.data.pipeline.cdc.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;

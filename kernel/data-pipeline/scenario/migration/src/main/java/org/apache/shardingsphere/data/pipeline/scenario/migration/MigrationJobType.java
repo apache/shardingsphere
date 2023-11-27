@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobOption;
 
 /**
  * Migration job type.
