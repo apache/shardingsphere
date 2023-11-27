@@ -2081,4 +2081,60 @@
             <column name="inserter" start-index="62" stop-index="69" />
         </column-definition>
     </create-table>
+    
+    <create-table sql-case-id="create_table_partition_by_list_subpartition_by_hash">
+        <table name="car_rentals" start-index="13" stop-index="23"  />
+        <column-definition type="NUMBER" start-index="30" stop-index="50">
+            <column name="id" start-index="30" stop-index="31" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="58" stop-index="85">
+            <column name="customer_id" start-index="58" stop-index="68" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="93" stop-index="134">
+            <column name="confirmation_number" start-index="93" stop-index="111" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="142" stop-index="156">
+            <column name="car_id" start-index="142" stop-index="147" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="164" stop-index="184">
+            <column name="car_type" start-index="164" stop-index="171" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="192" stop-index="233">
+            <column name="requested_car_type" start-index="192" stop-index="209" />
+        </column-definition>
+        <column-definition type="DATE" start-index="241" stop-index="270">
+            <column name="reservation_date" start-index="241" stop-index="256" />
+        </column-definition>
+        <column-definition type="DATE" start-index="278" stop-index="303">
+            <column name="start_date" start-index="278" stop-index="287" />
+        </column-definition>
+        <column-definition type="DATE" start-index="311" stop-index="323">
+            <column name="end_date" start-index="311" stop-index="318" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_subpartition_by_range_subpartition_template">
+        <table name="account_balance_history" start-index="13" stop-index="35"  />
+        <column-definition type="NUMBER" start-index="42" stop-index="59">
+            <column name="id" start-index="42" stop-index="43" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="67" stop-index="96">
+            <column name="account_number" start-index="67" stop-index="80" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="104" stop-index="133">
+            <column name="customer_id" start-index="104" stop-index="114" />
+        </column-definition>
+        <column-definition type="DATE" start-index="141" stop-index="172">
+            <column name="transaction_date" start-index="141" stop-index="156" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="180" stop-index="204">
+            <column name="amount_credited" start-index="180" stop-index="194" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="212" stop-index="232">
+            <column name="amount_debited" start-index="212" stop-index="225" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="240" stop-index="273">
+            <column name="end_of_day_balance" start-index="240" stop-index="257" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

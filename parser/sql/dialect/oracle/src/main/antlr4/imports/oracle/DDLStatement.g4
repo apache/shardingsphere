@@ -1094,13 +1094,12 @@ subpartitionByList
     ;
 
 subpartitionByHash
-    : SUBPARTITION BY HASH columnNames (SUBPARTITIONS NUMBER_ (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)? RP_)? | subpartitionTemplate)?
+    : SUBPARTITION BY HASH columnNames (SUBPARTITIONS INTEGER_ (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)? RP_)? | subpartitionTemplate)?
     ;
 
 subpartitionTemplate
-    : SUBPARTITION TEMPLATE
-    (LP_? rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)* RP_?)
-    | hashSubpartitionQuantity
+    : SUBPARTITION TEMPLATE (LP_ (rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)*
+    | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*) RP_) | hashSubpartitionQuantity
     ;
 
 rangeSubpartitionDesc
@@ -1129,7 +1128,8 @@ compositeListPartitions
     ;
 
 listPartitionDesc
-    : PARTITIONSET partitionSetName listValuesClause (TABLESPACE SET tablespaceSetName)? lobStorageClause? (SUBPARTITIONS STORE IN LP_? tablespaceSetName (COMMA_ tablespaceSetName)* RP_?)?
+    : PARTITION partitionName? listValuesClause tablePartitionDescription (LP_ (rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)*
+    | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*) RP_ | hashSubpartsByQuantity)?
     ;
 
 compositeHashPartitions
