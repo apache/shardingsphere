@@ -48,6 +48,14 @@ public interface TransmissionJobOption extends PipelineJobOption {
     PipelineJobInfo getJobInfo(String jobId);
     
     /**
+     * Extend YAML job configuration.
+     *
+     * @param contextKey context key
+     * @param yamlJobConfig YAML job configuration
+     */
+    void extendYamlJobConfiguration(PipelineContextKey contextKey, YamlPipelineJobConfiguration yamlJobConfig);
+    
+    /**
      * Build task configuration.
      *
      * @param jobConfig pipeline job configuration
@@ -64,14 +72,6 @@ public interface TransmissionJobOption extends PipelineJobOption {
      * @return transmission process context
      */
     TransmissionProcessContext buildProcessContext(PipelineJobConfiguration jobConfig);
-    
-    /**
-     * Extend YAML job configuration.
-     *
-     * @param contextKey context key
-     * @param yamlJobConfig YAML job configuration
-     */
-    void extendYamlJobConfiguration(PipelineContextKey contextKey, YamlPipelineJobConfiguration yamlJobConfig);
     
     /**
      * Build pipeline data consistency checker.

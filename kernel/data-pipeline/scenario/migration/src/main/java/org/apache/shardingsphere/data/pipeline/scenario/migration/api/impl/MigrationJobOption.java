@@ -70,6 +70,27 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class MigrationJobOption implements TransmissionJobOption {
     
+    @SuppressWarnings("unchecked")
+    @Override
+    public YamlMigrationJobConfigurationSwapper getYamlJobConfigurationSwapper() {
+        return new YamlMigrationJobConfigurationSwapper();
+    }
+    
+    @Override
+    public Class<MigrationJob> getJobClass() {
+        return MigrationJob.class;
+    }
+    
+    @Override
+    public Optional<String> getToBeStartDisabledNextJobType() {
+        return Optional.of("CONSISTENCY_CHECK");
+    }
+    
+    @Override
+    public Optional<String> getToBeStoppedPreviousJobType() {
+        return Optional.of("CONSISTENCY_CHECK");
+    }
+    
     @Override
     public PipelineJobInfo getJobInfo(final String jobId) {
         PipelineJobMetaData jobMetaData = new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
@@ -85,12 +106,6 @@ public final class MigrationJobOption implements TransmissionJobOption {
         if (null == yamlJobConfig.getJobId()) {
             config.setJobId(new MigrationJobId(contextKey, config.getJobShardingDataNodes()).marshal());
         }
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public YamlMigrationJobConfigurationSwapper getYamlJobConfigurationSwapper() {
-        return new YamlMigrationJobConfigurationSwapper();
     }
     
     @Override
@@ -147,21 +162,6 @@ public final class MigrationJobOption implements TransmissionJobOption {
     public PipelineDataConsistencyChecker buildDataConsistencyChecker(final PipelineJobConfiguration jobConfig, final TransmissionProcessContext processContext,
                                                                       final ConsistencyCheckJobItemProgressContext progressContext) {
         return new MigrationDataConsistencyChecker((MigrationJobConfiguration) jobConfig, processContext, progressContext);
-    }
-    
-    @Override
-    public Optional<String> getToBeStartDisabledNextJobType() {
-        return Optional.of("CONSISTENCY_CHECK");
-    }
-    
-    @Override
-    public Optional<String> getToBeStoppedPreviousJobType() {
-        return Optional.of("CONSISTENCY_CHECK");
-    }
-    
-    @Override
-    public Class<MigrationJob> getJobClass() {
-        return MigrationJob.class;
     }
     
     @Override
