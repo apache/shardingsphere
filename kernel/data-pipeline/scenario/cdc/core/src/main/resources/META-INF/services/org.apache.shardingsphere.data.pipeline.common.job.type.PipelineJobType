@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType
+org.apache.shardingsphere.data.pipeline.cdc.CDCJobType

@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.api.pojo;
+package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 
 /**
- * Stream data parameter.
+ * Create consistency check job parameter.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StreamDataParameter {
+public final class CreateConsistencyCheckJobParameter {
     
-    private final String databaseName;
+    private final String parentJobId;
     
-    private final List<String> schemaTableNames;
+    private final String algorithmTypeName;
     
-    private final boolean full;
+    private final Properties algorithmProps;
     
-    private final Map<String, List<DataNode>> dataNodesMap;
+    private final DatabaseType sourceDatabaseType;
     
-    private final boolean decodeWithTX;
+    private final DatabaseType targetDatabaseType;
 }

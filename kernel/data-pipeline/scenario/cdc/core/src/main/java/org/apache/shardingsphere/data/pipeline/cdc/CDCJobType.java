@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.pojo;
+package org.apache.shardingsphere.data.pipeline.cdc;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-
-import java.util.Properties;
+import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
+import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
 
 /**
- * Create consistency check job parameter.
+ * CDC job type.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateConsistencyCheckJobParameter {
+public final class CDCJobType implements PipelineJobType {
     
-    private final String parentJobId;
+    @Override
+    public String getCode() {
+        return "03";
+    }
     
-    private final String algorithmTypeName;
+    @Override
+    public PipelineJobOption getOption() {
+        return new CDCJobOption();
+    }
     
-    private final Properties algorithmProps;
-    
-    private final DatabaseType sourceDatabaseType;
-    
-    private final DatabaseType targetDatabaseType;
+    @Override
+    public String getType() {
+        return "STREAMING";
+    }
 }
