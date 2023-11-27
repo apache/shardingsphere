@@ -58,7 +58,6 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -94,7 +93,7 @@ public final class MigrationJobOption implements TransmissionJobOption {
     @Override
     public PipelineJobInfo getJobInfo(final String jobId) {
         PipelineJobMetaData jobMetaData = new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
-        List<String> sourceTables = new LinkedList<>();
+        Collection<String> sourceTables = new LinkedList<>();
         new PipelineJobConfigurationManager(this).<MigrationJobConfiguration>getJobConfiguration(jobId).getJobShardingDataNodes()
                 .forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> sourceTables.add(DataNodeUtils.formatWithSchema(dataNode)))));
         return new PipelineJobInfo(jobMetaData, null, String.join(",", sourceTables));
