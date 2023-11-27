@@ -261,10 +261,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     }
     
     private String getStandardProperty(final Map<String, Object> standardProps, final String key) {
-        if (standardProps.containsKey(key) && null != standardProps.get(key)) {
-            return standardProps.get(key).toString();
-        }
-        return "";
+        return standardProps.containsKey(key) && null != standardProps.get(key) ? standardProps.get(key).toString() : "";
     }
     
     @Override
