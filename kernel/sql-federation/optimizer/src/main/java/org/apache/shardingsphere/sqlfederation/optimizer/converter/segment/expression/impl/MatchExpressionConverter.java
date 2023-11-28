@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegm
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.operator.common.SQLExtensionOperatorTable;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,7 +56,7 @@ public final class MatchExpressionConverter {
         names.add(segment.getColumnName().getIdentifier().getValue());
         sqlNodes.add(new SqlIdentifier(names, SqlParserPos.ZERO));
         ExpressionConverter.convert(segment.getExpr()).ifPresent(sqlNodes::add);
-        SqlNode searchModifier = SqlLiteral.createCharString(segment.getSearchModifier(), SqlParserPos.ZERO);
+        SqlNode searchModifier = SqlLiteral.createCharString(segment.getSearchModifier(), StandardCharsets.UTF_8.name(), SqlParserPos.ZERO);
         sqlNodes.add(searchModifier);
         return Optional.of(new SqlBasicCall(SQLExtensionOperatorTable.MATCH_AGAINST, sqlNodes, SqlParserPos.ZERO));
     }

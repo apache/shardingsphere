@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhen
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -53,7 +54,7 @@ public final class CaseWhenExpressionConverter {
         segment.getThenExprs().forEach(each -> ExpressionConverter.convert(each).ifPresent(thenExprs::add));
         Optional<SqlNode> elseExpr = ExpressionConverter.convert(segment.getElseExpr());
         return Optional.of(new SqlCase(SqlParserPos.ZERO, null, new SqlNodeList(whenExprs, SqlParserPos.ZERO), new SqlNodeList(thenExprs, SqlParserPos.ZERO),
-                elseExpr.orElseGet(() -> SqlLiteral.createCharString("NULL", SqlParserPos.ZERO))));
+                elseExpr.orElseGet(() -> SqlLiteral.createCharString("NULL", StandardCharsets.UTF_8.name(), SqlParserPos.ZERO))));
     }
     
     private static Collection<SqlNode> convertWhenExprs(final ExpressionSegment caseExpr, final Collection<ExpressionSegment> whenExprs) {

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,7 +62,7 @@ public final class TrimFunctionConverter {
         List<SqlNode> result = new LinkedList<>();
         if (1 == sqlSegments.size()) {
             result.add(Flag.BOTH.symbol(SqlParserPos.ZERO));
-            result.add(SqlLiteral.createCharString(" ", SqlParserPos.ZERO));
+            result.add(SqlLiteral.createCharString(" ", StandardCharsets.UTF_8.name(), SqlParserPos.ZERO));
         }
         if (2 == sqlSegments.size()) {
             result.add(Flag.BOTH.symbol(SqlParserPos.ZERO));

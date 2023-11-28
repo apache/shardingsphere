@@ -58,7 +58,7 @@
     </test-case>
     
     <test-case sql="SELECT order_id, user_id FROM t_order_federate UNION SELECT 1, user_id FROM t_user_info WHERE information = 'before'">
-        <assertion expected-result="EnumerableUnion(all=[false])   EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT `order_id`, `user_id` FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT '1', `user_id` FROM `federate_jdbc`.`t_user_info` WHERE `information` = 'before'], dynamicParameters=[null]) " />
+        <assertion expected-result="EnumerableUnion(all=[false])   EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT `order_id`, `user_id` FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT _UTF-8'1', `user_id` FROM `federate_jdbc`.`t_user_info` WHERE `information` = _UTF-8'before'], dynamicParameters=[null]) " />
     </test-case>
     
     <test-case sql="SELECT order_id, user_id FROM t_order_federate LIMIT 1">
@@ -74,7 +74,7 @@
     </test-case>
     
     <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding' ">
-        <assertion expected-result="EnumerableCalc(expr#0..9=[{inputs}], proj#0..2=[{exprs}], item_id=[$t4], order_id1=[$t5], user_id0=[$t6], status0=[$t7], remarks=[$t8])   EnumerableHashJoin(condition=[=($3, $9)], joinType=[inner])     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t0):INTEGER], proj#0..3=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])     EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t0):INTEGER], proj#0..5=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_order_item_federate_sharding]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item_federate_sharding` WHERE `remarks` = 't_order_item_federate_sharding'], dynamicParameters=[null]) " />
+        <assertion expected-result="EnumerableCalc(expr#0..9=[{inputs}], proj#0..2=[{exprs}], item_id=[$t4], order_id1=[$t5], user_id0=[$t6], status0=[$t7], remarks=[$t8])   EnumerableHashJoin(condition=[=($3, $9)], joinType=[inner])     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t0):INTEGER], proj#0..3=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])     EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t0):INTEGER], proj#0..5=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_order_item_federate_sharding]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item_federate_sharding` WHERE `remarks` = _UTF-8't_order_item_federate_sharding'], dynamicParameters=[null]) " />
     </test-case>
     
     <test-case sql="select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id">
@@ -190,7 +190,7 @@
     </test-case>
     
     <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding' ">
-        <assertion expected-result="EnumerableCalc(expr#0..9=[{inputs}], proj#0..2=[{exprs}], item_id=[$t4], order_id1=[$t5], user_id0=[$t6], status0=[$t7], remarks=[$t8])   EnumerableHashJoin(condition=[=($3, $9)], joinType=[inner])     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t0):INTEGER], proj#0..3=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])     EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t0):INTEGER], proj#0..5=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_order_item_federate_sharding]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item_federate_sharding` WHERE `remarks` = 't_order_item_federate_sharding'], dynamicParameters=[null]) " />
+        <assertion expected-result="EnumerableCalc(expr#0..9=[{inputs}], proj#0..2=[{exprs}], item_id=[$t4], order_id1=[$t5], user_id0=[$t6], status0=[$t7], remarks=[$t8])   EnumerableHashJoin(condition=[=($3, $9)], joinType=[inner])     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t0):INTEGER], proj#0..3=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])     EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t0):INTEGER], proj#0..5=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_order_item_federate_sharding]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item_federate_sharding` WHERE `remarks` = _UTF-8't_order_item_federate_sharding'], dynamicParameters=[null]) " />
     </test-case>
     
     <test-case sql="select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id">
@@ -426,15 +426,15 @@
     </test-case>
     
     <test-case sql="SELECT * FROM multi_types_first first JOIN multi_types_second second ON first.id = second.id WHERE second.char_column = '1'">
-        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE `char_column` = '1'], dynamicParameters=[null]) " />
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE `char_column` = _UTF-8'1'], dynamicParameters=[null]) " />
     </test-case>
     
     <test-case sql="SELECT * FROM multi_types_first first JOIN multi_types_second second ON first.id = second.id WHERE second.varchar_column = '1'">
-        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE `varchar_column` = '1'], dynamicParameters=[null]) " />
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE `varchar_column` = _UTF-8'1'], dynamicParameters=[null]) " />
     </test-case>
     
     <test-case sql="SELECT * FROM multi_types_first first JOIN multi_types_second second ON first.id = second.id WHERE second.long_varchar_column = '1'">
-        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE `long_varchar_column` = '1'], dynamicParameters=[null]) " />
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE `long_varchar_column` = _UTF-8'1'], dynamicParameters=[null]) " />
     </test-case>
     
     <test-case sql="WITH cte AS (SELECT 1 AS col1, 2 AS col2 UNION ALL SELECT 3, 4) SELECT col1, col2 FROM cte">
