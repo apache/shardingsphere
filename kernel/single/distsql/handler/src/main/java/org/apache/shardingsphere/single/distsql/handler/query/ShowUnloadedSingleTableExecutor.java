@@ -54,7 +54,7 @@ public final class ShowUnloadedSingleTableExecutor implements RQLExecutor<ShowUn
         Optional<SingleRule> singleRule = database.getRuleMetaData().findSingleRule(SingleRule.class);
         if (singleRule.isPresent()) {
             for (String each : singleRule.get().getLogicTableMapper().getTableNames()) {
-                actualDataNodes.remove(each);
+                actualDataNodes.remove(each.toLowerCase());
             }
         }
         actualDataNodes.forEach((key, value) -> result.add(new LocalDataQueryResultRow(key, value.iterator().next().getDataSourceName())));

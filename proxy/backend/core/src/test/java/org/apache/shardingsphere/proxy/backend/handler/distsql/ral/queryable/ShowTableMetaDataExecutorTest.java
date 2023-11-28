@@ -54,12 +54,13 @@ class ShowTableMetaDataExecutorTest {
     void assertGetColumnNames() {
         ShowTableMetaDataExecutor executor = new ShowTableMetaDataExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(4));
+        assertThat(columns.size(), is(5));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("database_name"));
         assertThat(iterator.next(), is("table_name"));
         assertThat(iterator.next(), is("type"));
         assertThat(iterator.next(), is("name"));
+        assertThat(iterator.next(), is("value"));
     }
     
     @Test
@@ -73,11 +74,14 @@ class ShowTableMetaDataExecutorTest {
         assertThat(row.getCell(2), is("t_order"));
         assertThat(row.getCell(3), is("COLUMN"));
         assertThat(row.getCell(4), is("order_id"));
+        assertThat(row.getCell(5),
+                is("{\"name\":\"order_id\",\"dataType\":0,\"primaryKey\":false,\"generated\":false,\"caseSensitive\":false,\"visible\":true,\"unsigned\":false,\"nullable\":false}"));
         row = iterator.next();
         assertThat(row.getCell(1), is("foo_db"));
         assertThat(row.getCell(2), is("t_order"));
         assertThat(row.getCell(3), is("INDEX"));
         assertThat(row.getCell(4), is("primary"));
+        assertThat(row.getCell(5), is("{\"name\":\"primary\",\"columns\":[],\"unique\":false}"));
     }
     
     private ShardingSphereDatabase mockDatabase() {
