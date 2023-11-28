@@ -157,4 +157,42 @@
     PARTITION costs_q2_2003 VALUES LESS THAN (TO_DATE('01-JUN-2003', 'DD-MON-YYYY')),
     PARTITION costs_recent VALUES LESS THAN (MAXVALUE))" db-types="Oracle" />
     <sql-case id="create_table_default_user" value="CREATE TABLE audit_trail (value1 NUMBER, value2 VARCHAR2(32), inserter VARCHAR2(30) DEFAULT USER)" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_list_subpartition_by_hash" value="CREATE TABLE car_rentals
+    (id    NUMBER NOT NULL,
+     customer_id  NUMBER NOT NULL,
+     confirmation_number  VARCHAR2(12) NOT NULL,
+     car_id   NUMBER,
+     car_type VARCHAR2(10),
+     requested_car_type   VARCHAR2(10) NOT NULL,
+     reservation_date DATE NOT NULL,
+     start_date   DATE NOT NULL,
+     end_date DATE,
+     country as (substr(confirmation_number,9,2))
+    ) PARTITION BY LIST (country)
+    SUBPARTITION BY HASH (customer_id)
+    SUBPARTITIONS 16
+    (PARTITION north_america VALUES ('US','CA','MX'),
+      PARTITION south_america VALUES ('BR','AR','PE'),
+      PARTITION europe VALUES ('GB','DE','NL','BE','FR','ES','IT','CH'),
+      PARTITION apac VALUES ('NZ','AU','IN','CN')
+    ) ENABLE ROW MOVEMENT" db-types="Oracle" />
+    <sql-case id="create_table_subpartition_by_range_subpartition_template" value="CREATE TABLE account_balance_history
+    (id NUMBER NOT NULL,
+     account_number NUMBER NOT NULL,
+     customer_id    NUMBER NOT NULL,
+     transaction_date   DATE NOT NULL,
+     amount_credited    NUMBER,
+     amount_debited NUMBER,
+     end_of_day_balance NUMBER NOT NULL
+    ) PARTITION BY RANGE(transaction_date)
+    INTERVAL (NUMTODSINTERVAL(7,'DAY'))
+    SUBPARTITION BY RANGE(end_of_day_balance)
+    SUBPARTITION TEMPLATE
+    (SUBPARTITION unacceptable VALUES LESS THAN (-1000),
+      SUBPARTITION credit VALUES LESS THAN (0),
+      SUBPARTITION low VALUES LESS THAN (500),
+      SUBPARTITION normal VALUES LESS THAN (5000),
+      SUBPARTITION high VALUES LESS THAN (20000),
+      SUBPARTITION extraordinary VALUES LESS THAN (MAXVALUE)
+    ) (PARTITION p0 VALUES LESS THAN (TO_DATE('01-JAN-2007','dd-MON-yyyy')))" db-types="Oracle" />
 </sql-cases>
