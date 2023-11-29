@@ -62,7 +62,7 @@ public final class SQLHintUtils {
         int endIndex = comment.endsWith(SQL_COMMENT_SUFFIX) ? comment.indexOf(SQL_COMMENT_SUFFIX) : comment.length();
         Collection<String> sqlHints = Splitter.on(SQL_HINT_SPLIT).trimResults().splitToList(comment.substring(startIndex, endIndex).trim());
         for (String each : sqlHints) {
-            List<String> hintValues = Splitter.on(SQL_HINT_VALUE_SPLIT).trimResults().splitToList(each);
+            List<String> hintValues = Splitter.on(SQL_HINT_VALUE_SPLIT).limit(SQL_HINT_VALUE_SIZE).trimResults().splitToList(each);
             if (SQL_HINT_VALUE_SIZE == hintValues.size()) {
                 result.put(hintValues.get(0), convert(hintValues.get(1)));
             }
