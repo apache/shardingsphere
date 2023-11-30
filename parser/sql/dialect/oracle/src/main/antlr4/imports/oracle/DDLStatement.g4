@@ -883,7 +883,7 @@ heapOrgTableClause
     ;
 
 indexOrgTableClause
-    : (mappingTableClause | PCTTHRESHOLD NUMBER_ | prefixCompression)* indexOrgOverflowClause?
+    : (mappingTableClause | PCTTHRESHOLD INTEGER_ | prefixCompression)* indexOrgOverflowClause?
     ;
 
 externalTableClause
@@ -1114,10 +1114,13 @@ individualHashSubparts
     : SUBPARTITION subpartitionName? readOnlyClause? indexingClause? partitioningStorageClause?
     ;
 
+hashSubpartitionQuantity
+    : SUBPARTITIONS INTEGER_ (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_)?
+    ;
+
 rangePartitionDesc
-    : PARTITION partitionName? rangeValuesClause tablePartitionDescription
-    ((LP_? rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)* RP_?)
-    | hashSubpartitionQuantity)?
+    : PARTITION partitionName? rangeValuesClause tablePartitionDescription (LP_ (rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)*
+    | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*) RP_ | hashSubpartitionQuantity)?
     ;
 
 compositeListPartitions
