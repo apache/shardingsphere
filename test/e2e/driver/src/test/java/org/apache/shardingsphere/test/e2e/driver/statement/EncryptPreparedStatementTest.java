@@ -98,9 +98,7 @@ class EncryptPreparedStatementTest extends AbstractEncryptDriverTest {
     @Test
     void assertInsertWithBatchExecuteWithGeneratedKeys() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setObject(1, 'b');
             preparedStatement.addBatch();
-            preparedStatement.setObject(1, 'c');
             preparedStatement.addBatch();
             preparedStatement.executeBatch();
         }
