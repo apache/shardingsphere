@@ -39,12 +39,11 @@ import org.apache.shardingsphere.data.pipeline.core.exception.metadata.NoAnyRule
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
-import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
-import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobOption;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
@@ -93,6 +92,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class MigrationJobAPI implements TransmissionJobAPI {
     
+    private final TransmissionJobOption jobOption;
+    
     private final PipelineJobManager jobManager;
     
     private final PipelineJobConfigurationManager jobConfigManager;
@@ -100,7 +101,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     private final PipelineDataSourcePersistService dataSourcePersistService;
     
     public MigrationJobAPI() {
-        PipelineJobOption jobOption = new MigrationJobOption();
+        jobOption = new MigrationJobOption();
         jobManager = new PipelineJobManager(jobOption);
         jobConfigManager = new PipelineJobConfigurationManager(jobOption);
         dataSourcePersistService = new PipelineDataSourcePersistService();
@@ -163,7 +164,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
         result.setTargetTableSchemaMap(buildTargetTableSchemaMap(sourceDataNodes));
         result.setTablesFirstDataNodes(new JobDataNodeLine(tablesFirstDataNodes).marshal());
         result.setJobShardingDataNodes(JobDataNodeLineConvertUtils.convertDataNodesToLines(sourceDataNodes).stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
-        ((TransmissionJobOption) TypedSPILoader.getService(PipelineJobType.class, getType()).getOption()).extendYamlJobConfiguration(contextKey, result);
+        jobOption.extendYamlJobConfiguration(contextKey, result);
         return result;
     }
     
