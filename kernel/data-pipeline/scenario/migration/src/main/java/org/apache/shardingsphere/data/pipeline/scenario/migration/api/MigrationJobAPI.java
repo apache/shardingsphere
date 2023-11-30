@@ -45,6 +45,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOp
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineDataSourcePersistService;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobOption;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.YamlMigrationJobConfiguration;
@@ -92,8 +93,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class MigrationJobAPI implements TransmissionJobAPI {
     
-    private final TransmissionJobOption jobOption;
-    
     private final PipelineJobManager jobManager;
     
     private final PipelineJobConfigurationManager jobConfigManager;
@@ -101,7 +100,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     private final PipelineDataSourcePersistService dataSourcePersistService;
     
     public MigrationJobAPI() {
-        jobOption = new MigrationJobOption();
+        TransmissionJobOption jobOption = new MigrationJobOption();
         jobManager = new PipelineJobManager(jobOption);
         jobConfigManager = new PipelineJobConfigurationManager(jobOption);
         dataSourcePersistService = new PipelineDataSourcePersistService();
@@ -164,7 +163,7 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
         result.setTargetTableSchemaMap(buildTargetTableSchemaMap(sourceDataNodes));
         result.setTablesFirstDataNodes(new JobDataNodeLine(tablesFirstDataNodes).marshal());
         result.setJobShardingDataNodes(JobDataNodeLineConvertUtils.convertDataNodesToLines(sourceDataNodes).stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
-        jobOption.extendYamlJobConfiguration(contextKey, result);
+        result.setJobId(new MigrationJobId(contextKey, result.getJobShardingDataNodes()).marshal());
         return result;
     }
     
