@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.core.job.option;
 
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlTransmissionJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
 
 /**
  * Transmission job option.
@@ -44,16 +42,6 @@ public interface TransmissionJobOption extends PipelineJobOption {
      * @return pipeline job info
      */
     PipelineJobInfo getJobInfo(String jobId);
-    
-    /**
-     * Build task configuration.
-     *
-     * @param jobConfig pipeline job configuration
-     * @param jobShardingItem job sharding item
-     * @param processConfig pipeline process configuration
-     * @return task configuration
-     */
-    PipelineTaskConfiguration buildTaskConfiguration(PipelineJobConfiguration jobConfig, int jobShardingItem, PipelineProcessConfiguration processConfig);
     
     /**
      * Build transmission process context.
