@@ -1024,10 +1024,6 @@ matchNone
     : 'Default does not match anything'
     ;
 
-hashSubpartitionQuantity
-    : NUMBER
-    ;
-
 odciParameters
     : STRING_
     ;
