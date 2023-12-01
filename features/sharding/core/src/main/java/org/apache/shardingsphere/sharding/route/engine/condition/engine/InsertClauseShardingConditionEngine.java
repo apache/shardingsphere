@@ -137,7 +137,8 @@ public final class InsertClauseShardingConditionEngine {
                 List<Integer> parameterMarkerIndexes = each instanceof ParameterMarkerExpressionSegment
                         ? Collections.singletonList(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex())
                         : Collections.emptyList();
-                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, params)),
+                Object shardingValue = getShardingValue((SimpleExpressionSegment) each, params);
+                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(shardingValue),
                         parameterMarkerIndexes));
             } else if (each instanceof CommonExpressionSegment) {
                 generateShardingCondition((CommonExpressionSegment) each, result, shardingColumn.get(), tableName);
