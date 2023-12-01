@@ -105,8 +105,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             TransmissionJobOption jobOption = (TransmissionJobOption) TypedSPILoader.getService(PipelineJobType.class, jobType.getType()).getOption();
             PipelineJobConfiguration parentJobConfig = new PipelineJobConfigurationManager(jobOption).getJobConfiguration(parentJobId);
             try {
-                PipelineDataConsistencyChecker checker = jobOption.buildDataConsistencyChecker(
-                        parentJobConfig, jobOption.buildProcessContext(parentJobConfig), jobItemContext.getProgressContext());
+                PipelineDataConsistencyChecker checker = jobOption.buildDataConsistencyChecker(parentJobConfig, jobOption.buildProcessContext(parentJobConfig), jobItemContext.getProgressContext());
                 consistencyChecker.set(checker);
                 Map<String, TableDataConsistencyCheckResult> checkResultMap = checker.check(checkJobConfig.getAlgorithmTypeName(), checkJobConfig.getAlgorithmProps());
                 log.info("job {} with check algorithm '{}' data consistency checker result: {}, stopping: {}",

@@ -21,15 +21,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.CDCJobOption;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCJobItemContext;
-import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCChannelProgressPair;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCIncrementalTask;
 import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCInventoryTask;
 import org.apache.shardingsphere.data.pipeline.common.config.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPosition;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.JobItemIncrementalTasksProgress;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.spi.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.common.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
@@ -119,7 +119,7 @@ public final class CDCJobPreparer {
         long startTimeMillis = System.currentTimeMillis();
         CDCTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         ImporterConfiguration importerConfig = taskConfig.getImporterConfig();
-        CDCProcessContext processContext = jobItemContext.getJobProcessContext();
+        TransmissionProcessContext processContext = jobItemContext.getJobProcessContext();
         for (InventoryDumperContext each : new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), new InventoryDumperContext(taskConfig.getDumperContext().getCommonContext()), importerConfig)
                 .splitInventoryDumperContext(jobItemContext)) {
             AtomicReference<IngestPosition> position = new AtomicReference<>(each.getCommonContext().getPosition());
