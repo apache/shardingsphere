@@ -7771,3 +7771,23 @@ DEFINITION
 COLLATE
     : C O L L A T E
     ;
+
+XDB
+    : X D B
+    ;
+
+XMLINDEX
+    : X M L I N D E X
+    ;
+
+INDEX_ALL_PATHS
+    : I N D E X UL_ A L L UL_ P A T H S
+    ;
+
+NONBLOCKING
+    : N O N B L O C K I N G
+    ;
+
+MODIFY_COLUMN_TYPE
+    : M O D I F Y UL_ C O L U M N UL_ T Y P E
+    ;

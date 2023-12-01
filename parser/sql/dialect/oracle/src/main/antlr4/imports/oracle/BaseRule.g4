@@ -2122,3 +2122,7 @@ credentialName
 agentDblink
     : STRING_
     ;
+
+xPathsList
+    : STRING_
+    ;
