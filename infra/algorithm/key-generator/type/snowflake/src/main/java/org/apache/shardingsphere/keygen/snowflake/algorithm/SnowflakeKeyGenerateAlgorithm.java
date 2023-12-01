@@ -23,12 +23,15 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
 import org.apache.shardingsphere.keygen.core.exception.algorithm.KeyGenerateAlgorithmInitializationException;
 import org.apache.shardingsphere.keygen.snowflake.exception.SnowflakeClockMoveBackException;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -118,7 +121,15 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     @Override
-    public synchronized Long generateKey() {
+    public Collection<Comparable<?>> generateKeys(KeyGenerateContext keyGenerateContext, int keyGenerateCount) {
+        Collection<Comparable<?>> result = new LinkedList<>();
+        for (int index = 0; index < keyGenerateCount; index++) {
+            result.add(generateKey());
+        }
+        return result;
+    }
+    
+    private synchronized Long generateKey() {
         long currentMillis = timeService.getCurrentMillis();
         if (waitTolerateTimeDifferenceIfNeed(currentMillis)) {
             currentMillis = timeService.getCurrentMillis();

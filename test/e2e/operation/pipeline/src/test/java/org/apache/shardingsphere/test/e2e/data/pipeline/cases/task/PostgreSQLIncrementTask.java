@@ -68,7 +68,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private Object insertOrder() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), random.nextInt(0, 6), "'中文'" + System.currentTimeMillis(), PipelineCaseHelper.generateJsonString(5, true),
+        Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKeys(), random.nextInt(0, 6), "'中文'" + System.currentTimeMillis(), PipelineCaseHelper.generateJsonString(5, true),
                 PipelineCaseHelper.generateJsonString(10, false)};
         String insertSQL = String.format("INSERT INTO %s (order_id,user_id,status,t_json,t_jsonb) VALUES (?, ?, ?, ?, ?)", getTableNameWithSchema(orderTableName));
         log.info("insert order sql:{}", insertSQL);

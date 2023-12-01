@@ -28,7 +28,7 @@ public final class AutoIncrementKeyGenerateAlgorithmFixture implements KeyGenera
     private final AtomicInteger count = new AtomicInteger();
     
     @Override
-    public Comparable<?> generateKey() {
+    public Comparable<?> generateKeys() {
         return count.incrementAndGet();
     }
     

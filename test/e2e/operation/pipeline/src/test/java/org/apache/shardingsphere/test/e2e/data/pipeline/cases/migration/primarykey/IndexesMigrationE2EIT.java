@@ -94,9 +94,9 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             // TODO PostgreSQL update delete events not support if table without unique keys at increment task.
             final Consumer<DataSource> incrementalTaskFn = dataSource -> {
                 if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
-                    doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
+                    doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys());
                 }
-                Object orderId = keyGenerateAlgorithm.generateKey();
+                Object orderId = keyGenerateAlgorithm.generateKeys();
                 insertOneOrder(containerComposer, orderId);
                 containerComposer.assertOrderRecordExist(dataSource, "t_order", orderId);
             };
@@ -171,10 +171,10 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
                 return;
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-            Object uniqueKey = keyGenerateAlgorithm.generateKey();
+            Object uniqueKey = keyGenerateAlgorithm.generateKeys();
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
-                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
+                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys());
                 containerComposer.assertOrderRecordExist(dataSource, "t_order", uniqueKey);
             });
         }
@@ -194,10 +194,10 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
                 return;
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
-            Object uniqueKey = keyGenerateAlgorithm.generateKey();
+            Object uniqueKey = keyGenerateAlgorithm.generateKeys();
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
-                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
+                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys());
                 containerComposer.assertOrderRecordExist(dataSource, "t_order", uniqueKey);
             });
         }

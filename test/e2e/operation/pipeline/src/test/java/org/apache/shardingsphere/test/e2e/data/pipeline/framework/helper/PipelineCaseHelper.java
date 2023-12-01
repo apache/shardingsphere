@@ -83,7 +83,7 @@ public final class PipelineCaseHelper {
         if (databaseType instanceof MySQLDatabaseType) {
             for (int i = 0; i < insertRows; i++) {
                 int randomInt = generateInt(-100, 100);
-                Object orderId = keyGenerateAlgorithm.generateKey();
+                Object orderId = keyGenerateAlgorithm.generateKeys();
                 int randomUnsignedInt = generateInt(0, 100);
                 LocalDateTime now = LocalDateTime.now();
                 Object[] addObjs = {orderId, generateInt(0, 100), generateString(6), randomInt, randomInt, randomInt,
@@ -96,7 +96,7 @@ public final class PipelineCaseHelper {
         }
         if (databaseType instanceof PostgreSQLDatabaseType) {
             for (int i = 0; i < insertRows; i++) {
-                Object orderId = keyGenerateAlgorithm.generateKey();
+                Object orderId = keyGenerateAlgorithm.generateKeys();
                 result.add(new Object[]{orderId, generateInt(0, 100), generateString(6), generateInt(-128, 127),
                         BigDecimal.valueOf(generateDouble()), true, "bytea".getBytes(), generateString(2), generateString(2), generateFloat(), generateDouble(),
                         generateJsonString(8, false), generateJsonString(12, true), emojiText, LocalDate.now(),
@@ -106,7 +106,7 @@ public final class PipelineCaseHelper {
         }
         if (databaseType instanceof OpenGaussDatabaseType) {
             for (int i = 0; i < insertRows; i++) {
-                Object orderId = keyGenerateAlgorithm.generateKey();
+                Object orderId = keyGenerateAlgorithm.generateKeys();
                 byte[] bytesValue = {Byte.MIN_VALUE, -1, 0, 1, Byte.MAX_VALUE};
                 result.add(new Object[]{orderId, generateInt(0, 1000), "'status'" + i, generateInt(-1000, 9999), generateInt(0, 100), generateFloat(), generateDouble(),
                         BigDecimal.valueOf(generateDouble()), false, generateString(6), "texts", bytesValue, bytesValue, LocalDate.now(), LocalTime.now(), "2001-10-01",
@@ -166,9 +166,9 @@ public final class PipelineCaseHelper {
     private static List<Object[]> generateOrderItemInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
         List<Object[]> result = new ArrayList<>(insertRows);
         for (int i = 0; i < insertRows; i++) {
-            Object orderId = keyGenerateAlgorithm.generateKey();
+            Object orderId = keyGenerateAlgorithm.generateKeys();
             int userId = generateInt(0, 100);
-            result.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, "SUCCESS"});
+            result.add(new Object[]{keyGenerateAlgorithm.generateKeys(), orderId, userId, "SUCCESS"});
         }
         return result;
     }
@@ -187,7 +187,7 @@ public final class PipelineCaseHelper {
         log.info("init data begin: {}", LocalDateTime.now());
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (?,?,?)", tableName))) {
             for (int i = 0; i < recordCount; i++) {
-                preparedStatement.setObject(1, keyGenerateAlgorithm.generateKey());
+                preparedStatement.setObject(1, keyGenerateAlgorithm.generateKeys());
                 preparedStatement.setObject(2, ThreadLocalRandom.current().nextInt(0, 6));
                 preparedStatement.setObject(3, "OK");
                 preparedStatement.addBatch();

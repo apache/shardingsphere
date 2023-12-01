@@ -22,7 +22,7 @@ import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
 public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     @Override
-    public Comparable<?> generateKey() {
+    public Comparable<?> generateKeys() {
         return 0L;
     }
     

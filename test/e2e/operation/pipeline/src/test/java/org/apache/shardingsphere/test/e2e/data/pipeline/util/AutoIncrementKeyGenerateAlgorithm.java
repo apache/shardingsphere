@@ -26,7 +26,7 @@ public final class AutoIncrementKeyGenerateAlgorithm implements KeyGenerateAlgor
     private final AtomicInteger idGen = new AtomicInteger(1);
     
     @Override
-    public Integer generateKey() {
+    public Integer generateKeys() {
         return idGen.getAndIncrement();
     }
     

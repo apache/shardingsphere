@@ -33,7 +33,7 @@ public final class ITKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm
     }
     
     @Override
-    public Long generateKey() {
+    public Long generateKeys() {
         return 1L;
     }
     

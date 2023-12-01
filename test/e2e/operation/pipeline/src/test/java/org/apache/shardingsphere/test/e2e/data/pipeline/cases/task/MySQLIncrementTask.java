@@ -59,7 +59,7 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private Object insertOrder() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        Object[] orderInsertDate = new Object[]{primaryKeyGenerateAlgorithm.generateKey(), random.nextInt(0, 6),
+        Object[] orderInsertDate = new Object[]{primaryKeyGenerateAlgorithm.generateKeys(), random.nextInt(0, 6),
                 random.nextInt(1, 99), "中文测试"};
         DataSourceExecuteUtils.execute(dataSource, String.format("INSERT INTO %s (order_id,user_id,t_unsigned_int,status) VALUES (?, ?, ?, ?)", orderTableName), orderInsertDate);
         return orderInsertDate[0];

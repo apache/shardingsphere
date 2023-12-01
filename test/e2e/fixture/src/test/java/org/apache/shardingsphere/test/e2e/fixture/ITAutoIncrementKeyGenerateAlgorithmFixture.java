@@ -26,7 +26,7 @@ public final class ITAutoIncrementKeyGenerateAlgorithmFixture implements KeyGene
     private final AtomicLong idGenerator = new AtomicLong(1L);
     
     @Override
-    public Long generateKey() {
+    public Long generateKeys() {
         return idGenerator.getAndIncrement();
     }
     
