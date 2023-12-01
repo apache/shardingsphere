@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.cdc;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.YamlCDCJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
@@ -62,9 +61,9 @@ public final class CDCJobOption implements TransmissionJobOption {
     }
     
     @Override
-    public CDCProcessContext buildProcessContext(final PipelineJobConfiguration jobConfig) {
+    public TransmissionProcessContext buildProcessContext(final PipelineJobConfiguration jobConfig) {
         TransmissionJobManager jobManager = new TransmissionJobManager(this);
-        return new CDCProcessContext(jobConfig.getJobId(), jobManager.showProcessConfiguration(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId())));
+        return new TransmissionProcessContext(jobConfig.getJobId(), jobManager.showProcessConfiguration(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId())));
     }
     
     @Override

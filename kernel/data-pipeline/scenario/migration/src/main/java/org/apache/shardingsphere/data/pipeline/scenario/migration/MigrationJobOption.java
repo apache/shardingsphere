@@ -33,7 +33,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobM
 import org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency.MigrationDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.YamlMigrationJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationProcessContext;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -76,9 +75,9 @@ public final class MigrationJobOption implements TransmissionJobOption {
     }
     
     @Override
-    public MigrationProcessContext buildProcessContext(final PipelineJobConfiguration jobConfig) {
+    public TransmissionProcessContext buildProcessContext(final PipelineJobConfiguration jobConfig) {
         PipelineProcessConfiguration processConfig = new TransmissionJobManager(this).showProcessConfiguration(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()));
-        return new MigrationProcessContext(jobConfig.getJobId(), processConfig);
+        return new TransmissionProcessContext(jobConfig.getJobId(), processConfig);
     }
     
     @Override
