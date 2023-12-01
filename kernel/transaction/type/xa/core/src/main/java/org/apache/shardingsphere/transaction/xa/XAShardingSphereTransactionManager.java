@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.xa;
 
 import lombok.SneakyThrows;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -41,7 +42,6 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,7 +52,7 @@ import java.util.Properties;
  */
 public final class XAShardingSphereTransactionManager implements ShardingSphereTransactionManager {
     
-    private final Map<String, XATransactionDataSource> cachedDataSources = new HashMap<>();
+    private final Map<String, XATransactionDataSource> cachedDataSources = new CaseInsensitiveMap<>();
     
     private XATransactionManagerProvider xaTransactionManagerProvider;
     
