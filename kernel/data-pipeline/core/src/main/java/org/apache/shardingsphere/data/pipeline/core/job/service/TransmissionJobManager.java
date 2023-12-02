@@ -19,19 +19,16 @@ package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfigurationUtils;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.pojo.TransmissionJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.common.pojo.TransmissionJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
-import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,46 +45,13 @@ public final class TransmissionJobManager {
     
     private final TransmissionJobOption jobOption;
     
-    private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
-    
-    /**
-     * Alter process configuration.
-     *
-     * @param contextKey context key
-     * @param processConfig process configuration
-     */
-    public void alterProcessConfiguration(final PipelineContextKey contextKey, final PipelineProcessConfiguration processConfig) {
-        // TODO check rateLimiter type match or not
-        processConfigPersistService.persist(contextKey, jobOption.getType(), processConfig);
-    }
-    
-    /**
-     * Show pipeline process configuration.
-     *
-     * @param jobId job id
-     * @return pipeline process configuration
-     */
-    public PipelineProcessConfiguration showProcessConfiguration(final String jobId) {
-        return showProcessConfiguration(PipelineJobIdUtils.parseContextKey(jobId));
-    }
-    
-    /**
-     * Show pipeline process configuration.
-     *
-     * @param contextKey context key
-     * @return pipeline process configuration
-     */
-    public PipelineProcessConfiguration showProcessConfiguration(final PipelineContextKey contextKey) {
-        return PipelineProcessConfigurationUtils.convertWithDefaultValue(processConfigPersistService.load(contextKey, jobOption.getType()));
-    }
-    
     /**
      * Get job infos.
      *
      * @param jobId job ID
      * @return job item infos
      */
-    public List<TransmissionJobItemInfo> getJobItemInfos(final String jobId) {
+    public Collection<TransmissionJobItemInfo> getJobItemInfos(final String jobId) {
         PipelineJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobOption).getJobConfiguration(jobId);
         long startTimeMillis = Long.parseLong(Optional.ofNullable(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).getProps().getProperty("start_time_millis")).orElse("0"));
         Map<Integer, TransmissionJobItemProgress> jobProgress = getJobProgress(jobConfig);
