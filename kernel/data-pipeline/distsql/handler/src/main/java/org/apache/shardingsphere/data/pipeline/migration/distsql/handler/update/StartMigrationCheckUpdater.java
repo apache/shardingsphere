@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.handler.update;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobOption;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.migration.distsql.statement.CommitMigrationStatement;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.migration.distsql.statement.StartMigrationCheckStatement;
 
 /**
- * Commit migration updater.
+ * Start migration check updater.
  */
-public final class CommitMigrationUpdater implements RALUpdater<CommitMigrationStatement> {
+public final class StartMigrationCheckUpdater implements RALUpdater<StartMigrationCheckStatement> {
+    
+    private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobOption());
     
     @Override
-    public void executeUpdate(final String databaseName, final CommitMigrationStatement sqlStatement) throws SQLException {
-        TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION").commit(sqlStatement.getJobId());
+    public void executeUpdate(final String databaseName, final StartMigrationCheckStatement sqlStatement) {
+        jobAPI.resume(sqlStatement.getJobId());
     }
     
     @Override
-    public Class<CommitMigrationStatement> getType() {
-        return CommitMigrationStatement.class;
+    public Class<StartMigrationCheckStatement> getType() {
+        return StartMigrationCheckStatement.class;
     }
 }

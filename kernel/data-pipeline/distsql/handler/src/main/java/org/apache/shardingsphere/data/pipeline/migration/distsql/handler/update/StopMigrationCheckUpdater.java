@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cdc.distsql.handler.update;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
-import org.apache.shardingsphere.cdc.distsql.statement.DropStreamingStatement;
-import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
-import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobOption;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.migration.distsql.statement.StopMigrationCheckStatement;
 
 /**
- * Drop streaming updater.
+ * Stop migration check updater.
  */
-public final class DropStreamingUpdater implements RALUpdater<DropStreamingStatement> {
+public final class StopMigrationCheckUpdater implements RALUpdater<StopMigrationCheckStatement> {
     
-    private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
+    private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobOption());
     
     @Override
-    public void executeUpdate(final String databaseName, final DropStreamingStatement sqlStatement) throws SQLException {
-        jobAPI.drop(sqlStatement.getJobId());
+    public void executeUpdate(final String databaseName, final StopMigrationCheckStatement sqlStatement) {
+        jobAPI.stop(sqlStatement.getJobId());
     }
     
     @Override
-    public Class<DropStreamingStatement> getType() {
-        return DropStreamingStatement.class;
+    public Class<StopMigrationCheckStatement> getType() {
+        return StopMigrationCheckStatement.class;
     }
 }

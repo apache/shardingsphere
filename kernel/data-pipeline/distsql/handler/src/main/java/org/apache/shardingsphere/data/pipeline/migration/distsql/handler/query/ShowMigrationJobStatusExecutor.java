@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cdc.distsql.handler.query;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingStatusStatement;
-import org.apache.shardingsphere.data.pipeline.cdc.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.common.pojo.TransmissionJobItemInfo;
@@ -27,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobM
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,13 +33,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Show streaming job status executor.
+ * Show migration job status executor.
  */
-public final class ShowStreamingJobStatusExecutor implements QueryableRALExecutor<ShowStreamingStatusStatement> {
+public final class ShowMigrationJobStatusExecutor implements QueryableRALExecutor<ShowMigrationStatusStatement> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingStatusStatement sqlStatement) {
-        TransmissionJobOption jobOption = (TransmissionJobOption) TypedSPILoader.getService(PipelineJobType.class, new CDCJobType().getType()).getOption();
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationStatusStatement sqlStatement) {
+        TransmissionJobOption jobOption = (TransmissionJobOption) TypedSPILoader.getService(PipelineJobType.class, "MIGRATION").getOption();
         Collection<TransmissionJobItemInfo> jobItemInfos = new TransmissionJobManager(jobOption).getJobItemInfos(sqlStatement.getJobId());
         long currentTimeMillis = System.currentTimeMillis();
         return jobItemInfos.stream().map(each -> generateResultRow(each, currentTimeMillis)).collect(Collectors.toList());
@@ -49,25 +48,25 @@ public final class ShowStreamingJobStatusExecutor implements QueryableRALExecuto
     private LocalDataQueryResultRow generateResultRow(final TransmissionJobItemInfo jobItemInfo, final long currentTimeMillis) {
         TransmissionJobItemProgress jobItemProgress = jobItemInfo.getJobItemProgress();
         if (null == jobItemProgress) {
-            return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), "", "", "", "", "", "", jobItemInfo.getErrorMessage());
+            return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), "", "", "", "", "", "", "", jobItemInfo.getErrorMessage());
         }
         String incrementalIdleSeconds = "";
         if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
             long latestActiveTimeMillis = Math.max(jobItemInfo.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
             incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
         }
-        return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemProgress.getStatus(),
+        return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemInfo.getTableNames(), jobItemProgress.getStatus(),
                 jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemProgress.getProcessedRecordsCount(), jobItemInfo.getInventoryFinishedPercentage(),
                 incrementalIdleSeconds, jobItemInfo.getErrorMessage());
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("item", "data_source", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "error_message");
+        return Arrays.asList("item", "data_source", "tables", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "error_message");
     }
     
     @Override
-    public Class<ShowStreamingStatusStatement> getType() {
-        return ShowStreamingStatusStatement.class;
+    public Class<ShowMigrationStatusStatement> getType() {
+        return ShowMigrationStatusStatement.class;
     }
 }

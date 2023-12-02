@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.handler.query;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;

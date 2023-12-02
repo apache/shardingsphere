@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cdc.distsql.handler.query;
+package org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query;
 
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingRuleStatement;
 import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;

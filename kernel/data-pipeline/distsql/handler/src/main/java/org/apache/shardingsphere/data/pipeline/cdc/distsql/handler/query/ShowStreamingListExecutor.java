@@ -15,42 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.handler.query;
+package org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query;
 
+import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingListStatement;
+import org.apache.shardingsphere.data.pipeline.cdc.CDCJobOption;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobOption;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Show migration list executor.
+ * Show streaming list executor.
  */
-public final class ShowMigrationListExecutor implements QueryableRALExecutor<ShowMigrationListStatement> {
+public final class ShowStreamingListExecutor implements QueryableRALExecutor<ShowStreamingListStatement> {
     
-    private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new MigrationJobOption());
+    private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new CDCJobOption());
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationListStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingListStatement sqlStatement) {
         return pipelineJobManager.getJobInfos(new PipelineContextKey(InstanceType.PROXY)).stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
-                each.getTableName(), each.getJobMetaData().getJobItemCount(),
-                each.getJobMetaData().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),
-                each.getJobMetaData().getCreateTime(), each.getJobMetaData().getStopTime())).collect(Collectors.toList());
+                each.getDatabaseName(), each.getTableName(),
+                each.getJobMetaData().getJobItemCount(), each.getJobMetaData().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),
+                each.getJobMetaData().getCreateTime(), Optional.ofNullable(each.getJobMetaData().getStopTime()).orElse(""))).collect(Collectors.toList());
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("id", "tables", "job_item_count", "active", "create_time", "stop_time");
+        return Arrays.asList("id", "database", "tables", "job_item_count", "active", "create_time", "stop_time");
     }
     
     @Override
-    public Class<ShowMigrationListStatement> getType() {
-        return ShowMigrationListStatement.class;
+    public Class<ShowStreamingListStatement> getType() {
+        return ShowStreamingListStatement.class;
     }
 }

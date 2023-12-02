@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.handler.update;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update;
 
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobOption;
+import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
-import org.apache.shardingsphere.migration.distsql.statement.StopMigrationCheckStatement;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.migration.distsql.statement.RollbackMigrationStatement;
+
+import java.sql.SQLException;
 
 /**
- * Stop migration check updater.
+ * Rollback migration updater.
  */
-public final class StopMigrationCheckUpdater implements RALUpdater<StopMigrationCheckStatement> {
-    
-    private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI(new ConsistencyCheckJobOption());
+public final class RollbackMigrationUpdater implements RALUpdater<RollbackMigrationStatement> {
     
     @Override
-    public void executeUpdate(final String databaseName, final StopMigrationCheckStatement sqlStatement) {
-        jobAPI.stop(sqlStatement.getJobId());
+    public void executeUpdate(final String databaseName, final RollbackMigrationStatement sqlStatement) throws SQLException {
+        TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION").rollback(sqlStatement.getJobId());
     }
     
     @Override
-    public Class<StopMigrationCheckStatement> getType() {
-        return StopMigrationCheckStatement.class;
+    public Class<RollbackMigrationStatement> getType() {
+        return RollbackMigrationStatement.class;
     }
 }
