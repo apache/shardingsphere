@@ -62,10 +62,20 @@ public final class TransmissionJobManager {
     }
     
     /**
-     * Show process configuration.
+     * Show pipeline process configuration.
+     *
+     * @param jobId job id
+     * @return pipeline process configuration
+     */
+    public PipelineProcessConfiguration showProcessConfiguration(final String jobId) {
+        return showProcessConfiguration(PipelineJobIdUtils.parseContextKey(jobId));
+    }
+    
+    /**
+     * Show pipeline process configuration.
      *
      * @param contextKey context key
-     * @return process configuration, non-null
+     * @return pipeline process configuration
      */
     public PipelineProcessConfiguration showProcessConfiguration(final PipelineContextKey contextKey) {
         return PipelineProcessConfigurationUtils.convertWithDefaultValue(processConfigPersistService.load(contextKey, jobOption.getType()));
