@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.it.data.pipeline.scenario.migration.api.i
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceConfigurationFactory;
@@ -190,8 +192,10 @@ class MigrationJobAPITest {
         MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
         initTableData(jobConfig);
         jobManager.start(jobConfig);
+        PipelineProcessConfiguration processConfig = new TransmissionJobManager(jobOption).showProcessConfiguration(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()));
+        TransmissionProcessContext processContext = new TransmissionProcessContext(jobConfig.getJobId(), processConfig);
         Map<String, TableDataConsistencyCheckResult> checkResultMap = jobOption.buildDataConsistencyChecker(
-                jobConfig, jobOption.buildProcessContext(jobConfig), new ConsistencyCheckJobItemProgressContext(jobConfig.getJobId(), 0, "H2")).check("FIXTURE", null);
+                jobConfig, processContext, new ConsistencyCheckJobItemProgressContext(jobConfig.getJobId(), 0, "H2")).check("FIXTURE", null);
         assertThat(checkResultMap.size(), is(1));
         String checkKey = "t_order";
         assertTrue(checkResultMap.get(checkKey).isMatched());

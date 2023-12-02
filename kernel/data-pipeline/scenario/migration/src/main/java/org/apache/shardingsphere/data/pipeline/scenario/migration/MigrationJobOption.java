@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.datanode.DataNodeUtils;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDat
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
-import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency.MigrationDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.YamlMigrationJobConfigurationSwapper;
@@ -72,12 +70,6 @@ public final class MigrationJobOption implements TransmissionJobOption {
         new PipelineJobConfigurationManager(this).<MigrationJobConfiguration>getJobConfiguration(jobId).getJobShardingDataNodes()
                 .forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> sourceTables.add(DataNodeUtils.formatWithSchema(dataNode)))));
         return new PipelineJobInfo(jobMetaData, null, String.join(",", sourceTables));
-    }
-    
-    @Override
-    public TransmissionProcessContext buildProcessContext(final PipelineJobConfiguration jobConfig) {
-        PipelineProcessConfiguration processConfig = new TransmissionJobManager(this).showProcessConfiguration(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()));
-        return new TransmissionProcessContext(jobConfig.getJobId(), processConfig);
     }
     
     @Override

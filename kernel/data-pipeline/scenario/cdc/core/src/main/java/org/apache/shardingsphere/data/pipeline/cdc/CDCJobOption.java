@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobMetaData;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDat
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
-import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
 
 /**
  * CDC job option.
@@ -59,12 +57,6 @@ public final class CDCJobOption implements TransmissionJobOption {
         PipelineJobMetaData jobMetaData = new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
         CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(this).getJobConfiguration(jobId);
         return new PipelineJobInfo(jobMetaData, jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
-    }
-    
-    @Override
-    public TransmissionProcessContext buildProcessContext(final PipelineJobConfiguration jobConfig) {
-        PipelineProcessConfiguration processConfig = new TransmissionJobManager(this).showProcessConfiguration(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()));
-        return new TransmissionProcessContext(jobConfig.getJobId(), processConfig);
     }
     
     @Override
