@@ -17,16 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
+import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
+import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
 
 /**
  * Consistency check job type.
  */
-public final class ConsistencyCheckJobType implements JobType {
+public final class ConsistencyCheckJobType implements PipelineJobType {
     
     @Override
     public String getCode() {
         return "02";
+    }
+    
+    @Override
+    public PipelineJobOption getOption() {
+        return new ConsistencyCheckJobOption();
     }
     
     @Override

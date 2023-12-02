@@ -17,16 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
+import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
+import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
 
 /**
  * Migration job type.
  */
-public final class MigrationJobType implements JobType {
+public final class MigrationJobType implements PipelineJobType {
     
     @Override
     public String getCode() {
         return "01";
+    }
+    
+    @Override
+    public PipelineJobOption getOption() {
+        return new MigrationJobOption();
     }
     
     @Override

@@ -176,7 +176,7 @@ truncateTable
     ;
 
 createTableSpecification
-    : ((GLOBAL | PRIVATE) TEMPORARY | SHARDED | DUPLICATED)?
+    : ((GLOBAL | PRIVATE) TEMPORARY | SHARDED | DUPLICATED | IMMUTABLE? BLOCKCHAIN | IMMUTABLE)?
     ;
 
 tablespaceClauseWithParen
@@ -192,11 +192,7 @@ createSharingClause
     ;
 
 createDefinitionClause
-    : createRelationalTableClause | createObjectTableClause | createTableAsSelectClause | createXMLTypeTableClause
-    ;
-
-createTableAsSelectClause
-    : AS selectSubquery
+    : createRelationalTableClause | createObjectTableClause | createXMLTypeTableClause
     ;
 
 createXMLTypeTableClause
@@ -247,23 +243,9 @@ oidIndexClause
     ;
 
 createRelationalTableClause
-    : (LP_ relationalProperties RP_)
-    | (LP_ relationalProperties RP_) collationClause
-    | (LP_ relationalProperties RP_) commitClause
-    | (LP_ relationalProperties RP_) physicalProperties
-    | (LP_ relationalProperties RP_) tableProperties
-    | (LP_ relationalProperties RP_) collationClause commitClause
-    | (LP_ relationalProperties RP_) collationClause physicalProperties
-    | (LP_ relationalProperties RP_) collationClause tableProperties
-    | (LP_ relationalProperties RP_) collationClause commitClause physicalProperties
-    | (LP_ relationalProperties RP_) collationClause commitClause tableProperties
-    | (LP_ relationalProperties RP_) collationClause commitClause physicalProperties tableProperties
-    | (LP_ relationalProperties RP_) commitClause physicalProperties
-    | (LP_ relationalProperties RP_) commitClause tableProperties
-    | (LP_ relationalProperties RP_) commitClause physicalProperties tableProperties
-    | (LP_ relationalProperties RP_) physicalProperties tableProperties
+    : (LP_ relationalProperties RP_)? immutableTableClauses? blockchainTableClauses? collationClause? commitClause? physicalProperties? tableProperties?
     ;
-    
+
 createMemOptimizeClause
     : (MEMOPTIMIZE FOR READ)? (MEMOPTIMIZE FOR WRITE)? 
     ;    
@@ -282,22 +264,47 @@ relationalProperties
     : relationalProperty (COMMA_ relationalProperty)*
     ;
 
+immutableTableClauses
+    : immutableTableNoDropClause? immutableTableNoDeleteClause?
+    ;
+
+immutableTableNoDropClause
+    : NO DROP (UNTIL INTEGER_ DAYS IDLE)?
+    ;
+
+immutableTableNoDeleteClause
+    : NO DELETE (LOCKED? | UNTIL INTEGER_ DAYS AFTER INSERT LOCKED?)
+    ;
+
+blockchainTableClauses
+    : blockchainDropTableClause | blockchainRowRetentionClause | blockchainHashAndDataFormatClause
+    ;
+
+blockchainDropTableClause
+    : NO DROP (UNTIL INTEGER_ DAYS IDLE)?
+    ;
+
+blockchainRowRetentionClause
+    : NO DELETE (LOCKED? | UNTIL INTEGER_ DAYS AFTER INSERT LOCKED?)
+    ;
+
+blockchainHashAndDataFormatClause
+    : HASHING USING 'sha2_512' VERSION 'v1'
+    ;
+
 relationalProperty
     : columnDefinition | virtualColumnDefinition | outOfLineConstraint | outOfLineRefConstraint
     ;
 
 columnDefinition
-    : columnName REF? dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
+    : columnName REF? (dataType (COLLATE columnCollationName)?)? SORT? visibleClause (DEFAULT (ON NULL)? expr | identityClause)? 
+    ( ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
     | REF LP_ columnName RP_ WITH ROWID
     | SCOPE FOR LP_ columnName RP_ IS identifier
     ;
 
 visibleClause
     : (VISIBLE | INVISIBLE)?
-    ;
-
-defaultNullClause
-    : DEFAULT (ON NULL)?
     ;
 
 identityClause
@@ -383,11 +390,12 @@ clusterIndexClause
     ;
 
 indexAttributes
-    : (ONLINE | (SORT|NOSORT) | REVERSE | (VISIBLE | INVISIBLE))
+    : (physicalAttributesClause | loggingClause | ONLINE | TABLESPACE (tablespaceName | DEFAULT) | indexCompression
+    | (SORT | NOSORT) | REVERSE | (VISIBLE | INVISIBLE) | partialIndexClause | parallelClause)+
     ;
 
 tableIndexClause
-    : tableName alias? indexExpressions
+    : tableName alias? indexExpressions indexProperties?
     ;
 
 indexExpressions
@@ -396,6 +404,149 @@ indexExpressions
 
 indexExpression
     : (columnName | expr) (ASC | DESC)?
+    ;
+
+indexProperties
+    : (((globalPartitionedIndex | localPartitionedIndex) | indexAttributes)+ | INDEXTYPE IS (domainIndexClause | xmlIndexClause))?
+    ;
+
+globalPartitionedIndex
+    : GLOBAL PARTITION BY (RANGE LP_ columnOrColumnList RP_ LP_ indexPartitioningClause RP_ | HASH LP_ columnOrColumnList RP_ (individualHashPartitions | hashPartitionsByQuantity))
+    ;
+
+indexPartitioningClause
+    : PARTITION partitionName? VALUES LESS THAN LP_ literals (COMMA_ literals) RP_ segmentAttributesClause?
+    ;
+
+localPartitionedIndex
+    : LOCAL (onRangePartitionedTable | onListPartitionedTable | onHashPartitionedTable | onCompPartitionedTable)?
+    ;
+
+onRangePartitionedTable
+    : LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* (USABLE | UNUSABLE)? (COMMA_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* (USABLE | UNUSABLE)?) RP_
+    ;
+
+onListPartitionedTable
+    : LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* (USABLE | UNUSABLE)? (COMMA_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* (USABLE | UNUSABLE)?) RP_
+    ;
+
+onHashPartitionedTable
+    : (STORE IN LP_ tablespaceName (COMMA_ tablespaceName) RP_ | LP_ PARTITION partitionName? (TABLESPACE tablespaceName)? indexCompression? (USABLE | UNUSABLE)? RP_)
+    ;
+
+onCompPartitionedTable
+    : (STORE IN LP_ tablespaceName (COMMA_ tablespaceName) RP_)? LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* (USABLE | UNUSABLE)? indexSubpartitionClause RP_
+    ;
+
+domainIndexClause
+    : indexTypeName localDomainIndexClause? parallelClause? (PARAMETERS LP_ SQ_ odciParameters SQ_ RP_)?
+    ;
+
+localDomainIndexClause
+    : LOCAL (LP_ PARTITION partitionName? (PARAMETERS LP_ SQ_  SQ_ odciParameters RP_)? (COMMA_ PARTITION partitionName? (PARAMETERS LP_ SQ_  SQ_ odciParameters RP_)?)* RP_)?
+    ;
+
+xmlIndexClause
+    : (XDB COMMA_)? XMLINDEX localXmlIndexClause? parallelClause? xmlIndexParametersClause?
+    ;
+
+localXmlIndexClause
+    : LOCAL (LP_ PARTITION partitionName xmlIndexParametersClause? (COMMA_ PARTITION partitionName xmlIndexParametersClause?)* RP_)?
+    ;
+
+xmlIndexParametersClause
+    : PARAMETERS LP_ SQ_ (xmlIndexParameters | PARAM identifier) SQ_ RP_
+    ;
+
+xmlIndexParameters
+    : (xmlIndexParameterClause)* (TABLESPACE identifier)?
+    ;
+
+xmlIndexParameterClause
+    : unstructuredClause | structuredClause | asyncClause
+    ;
+
+unstructuredClause
+    : (PATHS (createIndexPathsClause | alterIndexPathsClause) | (pathTableClause | pikeyClause | pathIdClause | orderKeyClause | valueClause | dropPathTableClause) parallelClause?)
+    ;
+
+createIndexPathsClause
+    : LP_ (INCLUDE LP_ xPathsList RP_ | EXCLUDE LP_ xPathsList RP_) namespaceMappingClause RP_
+    ;
+
+alterIndexPathsClause
+    : LP_ (INDEX_ALL_PATHS | (INCLUDE | EXCLUDE) (ADD | REMOVE) LP_ xPathsList RP_ namespaceMappingClause?) RP_
+    ;
+
+namespaceMappingClause
+    : NAMESPACE MAPPING LP_ namespace+ RP_
+    ;
+
+pathTableClause
+    : PATH TABLE identifier? (LP_ segmentAttributesClause tableProperties RP_)?
+    ;
+
+pikeyClause
+    : PIKEY (INDEX identifier? (LP_ indexAttributes RP_)?)?
+    ;
+
+pathIdClause
+    : PATH ID (INDEX identifier? LP_ indexAttributes RP_)?
+    ;
+
+orderKeyClause
+    : ORDER KEY (INDEX identifier? LP_ indexAttributes RP_)?
+    ;
+
+valueClause
+    : VALUE (INDEX identifier? LP_ indexAttributes RP_)?
+    ;
+
+dropPathTableClause
+    : DROP PATH TABLE
+    ;
+
+structuredClause
+    : groupsClause | alterIndexGroupClause
+    ;
+
+asyncClause
+    : ASYNC LP_ SYNC (ALWAYS | MANUAL | EVERY repeatInterval=STRING_ | ON COMMIT) (STALE LP_ (FALSE | TRUE) RP_)? RP_
+    ;
+
+groupsClause
+    : ((GROUP identifier)? xmlIndexXmltableClause)+
+    ;
+
+xmlIndexXmltableClause
+    : XMLTABLE identifier (LP_ segmentAttributesClause tableCompression? inmemoryTableClause? tableProperties RP_)?
+    ( xmlNamespacesClause COMMA_)? xQueryString=STRING_ (PASSING identifier)? COLUMNS columnClause (COMMA_ columnClause)*
+    ;
+
+columnClause
+    : columnName (FOR ORDINALITY | dataType PATH STRING_ VIRTUAL?)
+    ;
+
+alterIndexGroupClause
+    : (NONBLOCKING? ADD_GROUP groupsClause | DROP_GROUP (GROUP identifier (COMMA_ identifier))?
+    | NONBLOCKING? ADD_COLUMN addColumnOptions | DROP_COLUMN dropColumnOptions
+    | NONBLOCKING ABORT | NONBLOCKING COMPLETE | MODIFY_COLUMN_TYPE modifyColumnTypeOptions)
+    ;
+
+addColumnOptions
+    : (GROUP identifier)? XMLTABLE identifier (xmlNamespacesClause COMMA_)? COLUMNS columnClause (COMMA_ columnClause)*
+    ;
+
+dropColumnOptions
+    : (GROUP identifier)? XMLTABLE identifier COLUMNS identifier (COMMA_ identifier)
+    ;
+
+modifyColumnTypeOptions
+    : (GROUP identifier)? XMLTABLE identifier COLUMNS identifier identifier (COMMA_ identifier identifier)
+    ;
+
+xmlNamespacesClause
+    : XMLNAMESPACES LP_ (STRING_ AS identifier | DEFAULT STRING_) (COMMA_ (STRING_ AS identifier | DEFAULT STRING_))* RP_
     ;
 
 bitmapJoinIndexClause
@@ -744,7 +895,7 @@ createSynonym
     ;
 
 commitClause
-    : (ON COMMIT (DROP | PRESERVE) ROWS)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
+    : (ON COMMIT (DROP | PRESERVE) DEFINITION)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     ;
 
 physicalProperties
@@ -876,7 +1027,7 @@ heapOrgTableClause
     ;
 
 indexOrgTableClause
-    : (mappingTableClause | PCTTHRESHOLD NUMBER_ | prefixCompression)* indexOrgOverflowClause?
+    : (mappingTableClause | PCTTHRESHOLD INTEGER_ | prefixCompression)* indexOrgOverflowClause?
     ;
 
 externalTableClause
@@ -908,20 +1059,9 @@ clusterRelatedClause
     ;
 
 tableProperties
-    :columnProperties?
-     readOnlyClause?
-     indexingClause?
-     tablePartitioningClauses?
-     attributeClusteringClause?
-     (CACHE | NOCACHE)?
-     ( RESULT_CACHE ( MODE (DEFAULT | FORCE) ) )?
-     parallelClause?
-     (ROWDEPENDENCIES | NOROWDEPENDENCIES)?
-     enableDisableClause*
-     rowMovementClause?
-     flashbackArchiveClause?
-     (ROW ARCHIVAL)?
-     (AS subquery | FOR EXCHANGE WITH TABLE tableName)?
+    : columnProperties? readOnlyClause? indexingClause? tablePartitioningClauses? attributeClusteringClause? (CACHE | NOCACHE)? parallelClause?
+    ( RESULT_CACHE (MODE (DEFAULT | FORCE)))? (ROWDEPENDENCIES | NOROWDEPENDENCIES)? enableDisableClause* rowMovementClause? logicalReplicationClause? flashbackArchiveClause?
+    ( ROW ARCHIVAL)? (AS selectSubquery | FOR EXCHANGE WITH TABLE tableName)?
     ;
 
 readOnlyClause
@@ -1098,13 +1238,12 @@ subpartitionByList
     ;
 
 subpartitionByHash
-    : SUBPARTITION BY HASH columnNames (SUBPARTITIONS NUMBER_ (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)? RP_)? | subpartitionTemplate)?
+    : SUBPARTITION BY HASH columnNames (SUBPARTITIONS INTEGER_ (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)? RP_)? | subpartitionTemplate)?
     ;
 
 subpartitionTemplate
-    : SUBPARTITION TEMPLATE
-    (LP_? rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)* RP_?)
-    | hashSubpartitionQuantity
+    : SUBPARTITION TEMPLATE (LP_ (rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)*
+    | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*) RP_) | hashSubpartitionQuantity
     ;
 
 rangeSubpartitionDesc
@@ -1119,10 +1258,13 @@ individualHashSubparts
     : SUBPARTITION subpartitionName? readOnlyClause? indexingClause? partitioningStorageClause?
     ;
 
+hashSubpartitionQuantity
+    : SUBPARTITIONS INTEGER_ (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_)?
+    ;
+
 rangePartitionDesc
-    : PARTITION partitionName? rangeValuesClause tablePartitionDescription
-    ((LP_? rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)* RP_?)
-    | hashSubpartitionQuantity)?
+    : PARTITION partitionName? rangeValuesClause tablePartitionDescription (LP_ (rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)*
+    | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*) RP_ | hashSubpartitionQuantity)?
     ;
 
 compositeListPartitions
@@ -1133,7 +1275,8 @@ compositeListPartitions
     ;
 
 listPartitionDesc
-    : PARTITIONSET partitionSetName listValuesClause (TABLESPACE SET tablespaceSetName)? lobStorageClause? (SUBPARTITIONS STORE IN LP_? tablespaceSetName (COMMA_ tablespaceSetName)* RP_?)?
+    : PARTITION partitionName? listValuesClause tablePartitionDescription (LP_ (rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)*
+    | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)*) RP_ | hashSubpartsByQuantity)?
     ;
 
 compositeHashPartitions

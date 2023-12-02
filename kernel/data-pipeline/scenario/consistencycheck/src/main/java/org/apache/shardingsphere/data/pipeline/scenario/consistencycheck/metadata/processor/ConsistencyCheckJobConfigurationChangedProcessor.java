@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.metadata.processor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
+import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.config.processor.impl.AbstractJobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
@@ -41,7 +41,7 @@ public final class ConsistencyCheckJobConfigurationChangedProcessor extends Abst
     }
     
     @Override
-    protected JobType getJobType() {
+    protected PipelineJobType getJobType() {
         return new ConsistencyCheckJobType();
     }
 }

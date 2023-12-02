@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.cdc.distsql.handler.update;
 
 import org.apache.shardingsphere.cdc.distsql.statement.DropStreamingStatement;
-import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
+import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.sql.SQLException;
 
@@ -28,11 +30,11 @@ import java.sql.SQLException;
  */
 public final class DropStreamingUpdater implements RALUpdater<DropStreamingStatement> {
     
-    private final CDCJobAPI jobAPI = new CDCJobAPI();
+    private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
     
     @Override
     public void executeUpdate(final String databaseName, final DropStreamingStatement sqlStatement) throws SQLException {
-        jobAPI.dropStreaming(sqlStatement.getJobId());
+        jobAPI.drop(sqlStatement.getJobId());
     }
     
     @Override

@@ -27,11 +27,13 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.Tabl
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
+import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -103,10 +105,15 @@ class PipelineGovernanceFacadeTest {
     
     @Test
     void assertIsExistedJobConfiguration() {
-        ClusterPersistRepository clusterPersistRepository = getClusterPersistRepository();
         assertFalse(governanceFacade.getJobFacade().getConfiguration().isExisted("foo_job"));
-        clusterPersistRepository.persist("/pipeline/jobs/foo_job/config", "foo");
+        JobConfigurationPOJO value = new JobConfigurationPOJO();
+        value.setJobName("foo_job");
+        value.setShardingTotalCount(1);
+        ClusterPersistRepository clusterPersistRepository = getClusterPersistRepository();
+        clusterPersistRepository.persist("/pipeline/jobs/foo_job/config", YamlEngine.marshal(value));
         assertTrue(governanceFacade.getJobFacade().getConfiguration().isExisted("foo_job"));
+        clusterPersistRepository.delete("/pipeline/jobs/foo_job/config");
+        assertFalse(governanceFacade.getJobFacade().getConfiguration().isExisted("foo_job"));
     }
     
     @Test
@@ -114,11 +121,11 @@ class PipelineGovernanceFacadeTest {
         String parentJobId = "testParentJob";
         String expectedCheckJobId = "testCheckJob";
         governanceFacade.getJobFacade().getCheck().persistLatestCheckJobId(parentJobId, expectedCheckJobId);
-        Optional<String> actualCheckJobIdOpt = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
+        Optional<String> actualCheckJobIdOpt = governanceFacade.getJobFacade().getCheck().findLatestCheckJobId(parentJobId);
         assertTrue(actualCheckJobIdOpt.isPresent());
         assertThat(actualCheckJobIdOpt.get(), is(expectedCheckJobId));
         governanceFacade.getJobFacade().getCheck().deleteLatestCheckJobId(parentJobId);
-        assertFalse(governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId).isPresent());
+        assertFalse(governanceFacade.getJobFacade().getCheck().findLatestCheckJobId(parentJobId).isPresent());
     }
     
     @Test

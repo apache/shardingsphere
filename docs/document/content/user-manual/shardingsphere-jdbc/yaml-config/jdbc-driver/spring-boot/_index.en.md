@@ -57,7 +57,7 @@ also applies to other Jakarta EE-based Web Frameworks, such as Quarkus 3, Micron
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.1</version>
+            <version>2.3.9</version>
         </dependency>
     </dependencies>
 </project>

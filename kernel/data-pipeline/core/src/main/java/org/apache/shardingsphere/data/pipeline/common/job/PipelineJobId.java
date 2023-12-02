@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.common.job;
 
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.job.type.JobType;
+import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
 
 /**
  * Pipeline job id.
@@ -30,7 +30,7 @@ public interface PipelineJobId {
      *
      * @return type
      */
-    JobType getJobType();
+    PipelineJobType getJobType();
     
     /**
      * Get format version.

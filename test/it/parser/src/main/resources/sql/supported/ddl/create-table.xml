@@ -150,4 +150,134 @@
     <sql-case id="create_table_with_negative_data_type" value="CREATE TABLE T(COL1 NUMBER, COL2 NUMBER(3), COL3 NUMBER(3,2), COL4 NUMBER(6,-2))" db-types="Oracle" />
     <sql-case id="create_table_with_ref_data_type" value="CREATE TABLE location_table (location_number NUMBER, building REF warehouse_typ SCOPE IS warehouse_table);" db-types="Oracle" />
     <sql-case id="create_table_with_select" value="CREATE TABLE t_order_new AS SELECT * FROM t_order" db-types="Oracle"/>
+    <sql-case id="create_table_organization_index_parallel_with_select" value="CREATE TABLE admin_iot3(i PRIMARY KEY, j, k, l) ORGANIZATION INDEX PARALLEL AS SELECT * FROM hr.jobs" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range" value="CREATE TABLE costs_demo (prod_id NUMBER(6), time_id DATE, unit_cost NUMBER(10,2), unit_price NUMBER(10,2))
+    PARTITION BY RANGE (time_id) (PARTITION costs_old VALUES LESS THAN (TO_DATE('01-JAN-2003', 'DD-MON-YYYY')) COMPRESS,
+    PARTITION costs_q1_2003 VALUES LESS THAN (TO_DATE('01-APR-2003', 'DD-MON-YYYY')),
+    PARTITION costs_q2_2003 VALUES LESS THAN (TO_DATE('01-JUN-2003', 'DD-MON-YYYY')),
+    PARTITION costs_recent VALUES LESS THAN (MAXVALUE))" db-types="Oracle" />
+    <sql-case id="create_table_default_user" value="CREATE TABLE audit_trail (value1 NUMBER, value2 VARCHAR2(32), inserter VARCHAR2(30) DEFAULT USER)" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_list_subpartition_by_hash1" value="CREATE TABLE car_rentals
+    (id NUMBER NOT NULL,
+     customer_id  NUMBER NOT NULL,
+     confirmation_number  VARCHAR2(12) NOT NULL,
+     car_id   NUMBER,
+     car_type VARCHAR2(10),
+     requested_car_type   VARCHAR2(10) NOT NULL,
+     reservation_date DATE NOT NULL,
+     start_date   DATE NOT NULL,
+     end_date DATE,
+     country as (substr(confirmation_number,9,2))
+    ) PARTITION BY LIST (country)
+    SUBPARTITION BY HASH (customer_id)
+    SUBPARTITIONS 16
+    (PARTITION north_america VALUES ('US','CA','MX'),
+      PARTITION south_america VALUES ('BR','AR','PE'),
+      PARTITION europe VALUES ('GB','DE','NL','BE','FR','ES','IT','CH'),
+      PARTITION apac VALUES ('NZ','AU','IN','CN')
+    ) ENABLE ROW MOVEMENT" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_list_subpartition_by_hash2" value="CREATE TABLE credit_card_accounts
+    (account_number NUMBER(16) NOT NULL,
+    customer_id NUMBER NOT NULL,
+    customer_region VARCHAR2(2) NOT NULL,
+    is_active VARCHAR2(1) NOT NULL,
+    date_opened DATE NOT NULL)
+    PARTITION BY LIST (customer_region)
+    SUBPARTITION BY HASH (customer_id)
+    SUBPARTITIONS 16
+    (PARTITION emea VALUES ('EU','ME','AF'),
+    PARTITION amer VALUES ('NA','LA'),
+    PARTITION apac VALUES ('SA','AU','NZ','IN','CH')) PARALLEL" db-types="Oracle" />
+    <sql-case id="create_table_subpartition_by_range_subpartition_template" value="CREATE TABLE account_balance_history
+    (id NUMBER NOT NULL,
+     account_number NUMBER NOT NULL,
+     customer_id    NUMBER NOT NULL,
+     transaction_date   DATE NOT NULL,
+     amount_credited    NUMBER,
+     amount_debited NUMBER,
+     end_of_day_balance NUMBER NOT NULL
+    ) PARTITION BY RANGE(transaction_date)
+    INTERVAL (NUMTODSINTERVAL(7,'DAY'))
+    SUBPARTITION BY RANGE(end_of_day_balance)
+    SUBPARTITION TEMPLATE
+    (SUBPARTITION unacceptable VALUES LESS THAN (-1000),
+      SUBPARTITION credit VALUES LESS THAN (0),
+      SUBPARTITION low VALUES LESS THAN (500),
+      SUBPARTITION normal VALUES LESS THAN (5000),
+      SUBPARTITION high VALUES LESS THAN (20000),
+      SUBPARTITION extraordinary VALUES LESS THAN (MAXVALUE)
+    ) (PARTITION p0 VALUES LESS THAN (TO_DATE('01-JAN-2007','dd-MON-yyyy')))" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range_subpartition_by_list" value="CREATE TABLE call_detail_records
+    (id NUMBER,
+      from_number VARCHAR2(20),
+      to_number VARCHAR2(20),
+      date_of_call DATE,
+      distance VARCHAR2(1),
+      call_duration_in_s NUMBER(4)
+    ) PARTITION BY RANGE(date_of_call)
+    INTERVAL (NUMTODSINTERVAL(1,'DAY'))
+    SUBPARTITION BY LIST(distance)
+    SUBPARTITION TEMPLATE
+    (SUBPARTITION local VALUES('L') TABLESPACE tbs1,
+    SUBPARTITION medium_long VALUES ('M') TABLESPACE tbs2,
+    SUBPARTITION long_distance VALUES ('D') TABLESPACE tbs3,
+    SUBPARTITION international VALUES ('I') TABLESPACE tbs4)(PARTITION p0 VALUES LESS THAN (TO_DATE('01-JAN-2005','dd-MON-yyyy'))) PARALLEL" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_range_subpartition_by_hash" value="CREATE TABLE composite_sales
+    ( prod_id NUMBER(6),
+      cust_id NUMBER,
+      time_id DATE,
+      channel_id CHAR(1),
+      promo_id NUMBER(6),
+      quantity_sold NUMBER(3),
+      amount_sold NUMBER(10,2)
+    )
+    PARTITION BY RANGE (time_id)
+    SUBPARTITION BY HASH (channel_id)
+    (PARTITION SALES_Q1_1998 VALUES LESS THAN (TO_DATE('01-APR-1998','DD-MON-YYYY')),
+    PARTITION SALES_Q2_1998 VALUES LESS THAN (TO_DATE('01-JUL-1998','DD-MON-YYYY')),
+    PARTITION SALES_Q3_1998 VALUES LESS THAN (TO_DATE('01-OCT-1998','DD-MON-YYYY')),
+    PARTITION SALES_Q4_1998 VALUES LESS THAN (TO_DATE('01-JAN-1999','DD-MON-YYYY')),
+    PARTITION SALES_Q1_1999 VALUES LESS THAN (TO_DATE('01-APR-1999','DD-MON-YYYY')),
+    PARTITION SALES_Q2_1999 VALUES LESS THAN (TO_DATE('01-JUL-1999','DD-MON-YYYY')),
+    PARTITION SALES_Q3_1999 VALUES LESS THAN (TO_DATE('01-OCT-1999','DD-MON-YYYY')),
+    PARTITION SALES_Q4_1999 VALUES LESS THAN (TO_DATE('01-JAN-2000','DD-MON-YYYY')),
+    PARTITION SALES_Q1_2000 VALUES LESS THAN (TO_DATE('01-APR-2000','DD-MON-YYYY')),
+    PARTITION SALES_Q2_2000 VALUES LESS THAN (TO_DATE('01-JUL-2000','DD-MON-YYYY')) SUBPARTITIONS 8,
+    PARTITION SALES_Q3_2000 VALUES LESS THAN (TO_DATE('01-OCT-2000','DD-MON-YYYY'))
+    (SUBPARTITION ch_c,
+    SUBPARTITION ch_i,
+    SUBPARTITION ch_p,
+    SUBPARTITION ch_s,
+    SUBPARTITION ch_t),
+    PARTITION SALES_Q4_2000 VALUES LESS THAN (MAXVALUE) SUBPARTITIONS 4)" db-types="Oracle" />
+    <sql-case id="create_table_partition_by_list_subpartition_by_list" value="CREATE TABLE current_inventory
+    (warehouse_id NUMBER,
+    warehouse_region  VARCHAR2(2),
+    product_id NUMBER,
+    product_category VARCHAR2(12),
+    amount_in_stock NUMBER,
+    unit_of_shipping  VARCHAR2(20),
+    products_per_unit NUMBER,
+    last_updated DATE)
+    PARTITION BY LIST (warehouse_region)
+    SUBPARTITION BY LIST (product_category)
+    SUBPARTITION TEMPLATE (SUBPARTITION perishable VALUES ('DAIRY','PRODUCE','MEAT','BREAD'),
+    SUBPARTITION non_perishable VALUES ('CANNED','PACKAGED'),
+    SUBPARTITION durable VALUES ('TOYS','KITCHENWARE'))
+    (PARTITION p_northwest VALUES ('OR', 'WA'),
+    PARTITION p_southwest VALUES ('AZ', 'UT', 'NM'),
+    PARTITION p_northeast VALUES ('NY', 'VM', 'NJ'),
+    PARTITION p_southeast VALUES ('FL', 'GA'),
+    PARTITION p_northcentral VALUES ('SD', 'WI'),
+    PARTITION p_southcentral VALUES ('OK', 'TX'))" db-types="Oracle" />
+    <sql-case id="create_table_organization_index" value="CREATE TABLE admin_docindex
+    (token char(20),
+    doc_id NUMBER,
+    token_frequency NUMBER,
+    token_offsets VARCHAR2(2000),
+    CONSTRAINT pk_admin_docindex PRIMARY KEY (token, doc_id))
+    ORGANIZATION INDEX 
+    TABLESPACE admin_tbs
+    PCTTHRESHOLD 20
+    OVERFLOW TABLESPACE admin_tbs2" db-types="Oracle" />
 </sql-cases>

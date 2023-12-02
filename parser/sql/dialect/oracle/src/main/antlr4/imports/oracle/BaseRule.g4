@@ -1024,10 +1024,6 @@ matchNone
     : 'Default does not match anything'
     ;
 
-hashSubpartitionQuantity
-    : NUMBER
-    ;
-
 odciParameters
     : STRING_
     ;
@@ -2120,5 +2116,9 @@ credentialName
     ;
 
 agentDblink
+    : STRING_
+    ;
+
+xPathsList
     : STRING_
     ;
