@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOp
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,7 +88,7 @@ public final class TransmissionJobManager {
      * @param jobId job ID
      * @return job item infos
      */
-    public List<TransmissionJobItemInfo> getJobItemInfos(final String jobId) {
+    public Collection<TransmissionJobItemInfo> getJobItemInfos(final String jobId) {
         PipelineJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobOption).getJobConfiguration(jobId);
         long startTimeMillis = Long.parseLong(Optional.ofNullable(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId).getProps().getProperty("start_time_millis")).orElse("0"));
         Map<Integer, TransmissionJobItemProgress> jobProgress = getJobProgress(jobConfig);
