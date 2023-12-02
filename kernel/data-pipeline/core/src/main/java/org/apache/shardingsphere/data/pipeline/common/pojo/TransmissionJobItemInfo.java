@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJ
  */
 @RequiredArgsConstructor
 @Getter
-public class TransmissionJobItemInfo {
+public final class TransmissionJobItemInfo {
     
     private final int shardingItem;
     
