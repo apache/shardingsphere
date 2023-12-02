@@ -44,14 +44,6 @@ public interface TransmissionJobOption extends PipelineJobOption {
     PipelineJobInfo getJobInfo(String jobId);
     
     /**
-     * Build transmission process context.
-     *
-     * @param jobConfig pipeline job configuration
-     * @return transmission process context
-     */
-    TransmissionProcessContext buildProcessContext(PipelineJobConfiguration jobConfig);
-    
-    /**
      * Build pipeline data consistency checker.
      *
      * @param jobConfig job configuration
