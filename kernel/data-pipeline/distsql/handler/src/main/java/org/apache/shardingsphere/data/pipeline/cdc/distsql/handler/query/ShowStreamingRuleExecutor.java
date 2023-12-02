@@ -18,39 +18,27 @@
 package org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query;
 
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingRuleStatement;
-import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfigurationUtils;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
+import org.apache.shardingsphere.data.pipeline.distsql.ShowTransmissionRuleQueryResult;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Show streaming rule executor.
  */
 public final class ShowStreamingRuleExecutor implements QueryableRALExecutor<ShowStreamingRuleStatement> {
     
-    private final PipelineProcessConfigurationPersistService persistService = new PipelineProcessConfigurationPersistService();
-    
-    @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingRuleStatement sqlStatement) {
-        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(persistService.load(new PipelineContextKey(InstanceType.PROXY), "STREAMING"));
-        return Collections.singleton(new LocalDataQueryResultRow(getString(processConfig.getRead()), getString(processConfig.getWrite()), getString(processConfig.getStreamChannel())));
-    }
-    
-    private String getString(final Object obj) {
-        return null == obj ? "" : JsonUtils.toJsonString(obj);
-    }
+    private final ShowTransmissionRuleQueryResult queryResult = new ShowTransmissionRuleQueryResult("STREAMING");
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("read", "write", "stream_channel");
+        return queryResult.getColumnNames();
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingRuleStatement sqlStatement) {
+        return queryResult.getRows();
     }
     
     @Override
