@@ -7748,6 +7748,14 @@ MANDATORY
     : M A N D A T O R Y
     ;
 
+BACKUPS
+    : B A C K U P S
+    ;
+
+NOPROMPT
+    : N O P R O M P T
+    ;
+
 IMMUTABLE
     : I M M U T A B L E
     ;
