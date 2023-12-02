@@ -192,7 +192,7 @@ class MigrationJobAPITest {
         MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
         initTableData(jobConfig);
         jobManager.start(jobConfig);
-        PipelineProcessConfiguration processConfig = new TransmissionJobManager(jobOption).showProcessConfiguration(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()));
+        PipelineProcessConfiguration processConfig = new TransmissionJobManager(jobOption).showProcessConfiguration(jobConfig.getJobId());
         TransmissionProcessContext processContext = new TransmissionProcessContext(jobConfig.getJobId(), processConfig);
         Map<String, TableDataConsistencyCheckResult> checkResultMap = jobOption.buildDataConsistencyChecker(
                 jobConfig, processContext, new ConsistencyCheckJobItemProgressContext(jobConfig.getJobId(), 0, "H2")).check("FIXTURE", null);
