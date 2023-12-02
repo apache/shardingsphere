@@ -39,10 +39,10 @@ public final class ShowStreamingJobStatusExecutor implements QueryableRALExecuto
     public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingStatusStatement sqlStatement) {
         Collection<TransmissionJobItemInfo> jobItemInfos = new TransmissionJobManager(new CDCJobOption()).getJobItemInfos(sqlStatement.getJobId());
         long currentTimeMillis = System.currentTimeMillis();
-        return jobItemInfos.stream().map(each -> generateResultRow(each, currentTimeMillis)).collect(Collectors.toList());
+        return jobItemInfos.stream().map(each -> getRow(each, currentTimeMillis)).collect(Collectors.toList());
     }
     
-    private LocalDataQueryResultRow generateResultRow(final TransmissionJobItemInfo jobItemInfo, final long currentTimeMillis) {
+    private LocalDataQueryResultRow getRow(final TransmissionJobItemInfo jobItemInfo, final long currentTimeMillis) {
         TransmissionJobItemProgress jobItemProgress = jobItemInfo.getJobItemProgress();
         if (null == jobItemProgress) {
             return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), "", "", "", "", "", "", jobItemInfo.getErrorMessage());
