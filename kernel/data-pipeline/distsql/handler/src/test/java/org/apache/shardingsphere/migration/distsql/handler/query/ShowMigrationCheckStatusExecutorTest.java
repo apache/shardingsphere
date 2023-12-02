@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
+import org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query.ShowMigrationCheckStatusExecutor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;

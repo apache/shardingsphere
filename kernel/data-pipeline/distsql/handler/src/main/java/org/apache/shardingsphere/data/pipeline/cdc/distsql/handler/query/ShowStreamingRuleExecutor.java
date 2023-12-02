@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
+package org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query;
 
+import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingRuleStatement;
 import org.apache.shardingsphere.data.pipeline.distsql.ShowTransmissionRuleQueryResult;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowMigrationRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 
 import java.util.Collection;
 
 /**
- * Show migration rule executor.
+ * Show streaming rule executor.
  */
-public final class ShowMigrationRuleExecutor implements QueryableRALExecutor<ShowMigrationRuleStatement> {
+public final class ShowStreamingRuleExecutor implements QueryableRALExecutor<ShowStreamingRuleStatement> {
     
-    private final ShowTransmissionRuleQueryResult queryResult = new ShowTransmissionRuleQueryResult("MIGRATION");
+    private final ShowTransmissionRuleQueryResult queryResult = new ShowTransmissionRuleQueryResult("STREAMING");
     
     @Override
     public Collection<String> getColumnNames() {
@@ -37,12 +37,12 @@ public final class ShowMigrationRuleExecutor implements QueryableRALExecutor<Sho
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationRuleStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingRuleStatement sqlStatement) {
         return queryResult.getRows();
     }
     
     @Override
-    public Class<ShowMigrationRuleStatement> getType() {
-        return ShowMigrationRuleStatement.class;
+    public Class<ShowStreamingRuleStatement> getType() {
+        return ShowStreamingRuleStatement.class;
     }
 }
