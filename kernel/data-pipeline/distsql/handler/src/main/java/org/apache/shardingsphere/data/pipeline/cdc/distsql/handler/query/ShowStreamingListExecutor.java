@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query;
 
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingListStatement;
-import org.apache.shardingsphere.data.pipeline.cdc.CDCJobOption;
+import org.apache.shardingsphere.data.pipeline.cdc.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  */
 public final class ShowStreamingListExecutor implements QueryableRALExecutor<ShowStreamingListStatement> {
     
-    private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new CDCJobOption());
+    private final PipelineJobManager pipelineJobManager = new PipelineJobManager(new CDCJobType());
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingListStatement sqlStatement) {

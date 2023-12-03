@@ -35,7 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfi
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobId;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobOption;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.YamlConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.YamlConsistencyCheckJobConfigurationSwapper;
@@ -72,10 +72,10 @@ public final class ConsistencyCheckJobAPI {
     
     private final PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager;
     
-    public ConsistencyCheckJobAPI(final ConsistencyCheckJobOption jobOption) {
-        progressSwapper = jobOption.getYamlJobItemProgressSwapper();
-        jobManager = new PipelineJobManager(jobOption);
-        jobConfigManager = new PipelineJobConfigurationManager(jobOption);
+    public ConsistencyCheckJobAPI(final ConsistencyCheckJobType jobType) {
+        progressSwapper = jobType.getYamlJobItemProgressSwapper();
+        jobManager = new PipelineJobManager(jobType);
+        jobConfigManager = new PipelineJobConfigurationManager(jobType);
         jobItemManager = new PipelineJobItemManager<>(progressSwapper);
     }
     

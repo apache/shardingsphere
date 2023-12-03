@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query;
 
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingStatusStatement;
-import org.apache.shardingsphere.data.pipeline.cdc.CDCJobOption;
+import org.apache.shardingsphere.data.pipeline.cdc.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.common.pojo.TransmissionJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
@@ -37,7 +37,7 @@ public final class ShowStreamingJobStatusExecutor implements QueryableRALExecuto
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingStatusStatement sqlStatement) {
-        Collection<TransmissionJobItemInfo> jobItemInfos = new TransmissionJobManager(new CDCJobOption()).getJobItemInfos(sqlStatement.getJobId());
+        Collection<TransmissionJobItemInfo> jobItemInfos = new TransmissionJobManager(new CDCJobType()).getJobItemInfos(sqlStatement.getJobId());
         long currentTimeMillis = System.currentTimeMillis();
         return jobItemInfos.stream().map(each -> getRow(each, currentTimeMillis)).collect(Collectors.toList());
     }
