@@ -61,7 +61,7 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            processFailed(new PipelineJobManager(getJobOption()), jobId, shardingItem, ex);
+            processFailed(new PipelineJobManager(getJobType()), jobId, shardingItem, ex);
             throw ex;
         }
     }

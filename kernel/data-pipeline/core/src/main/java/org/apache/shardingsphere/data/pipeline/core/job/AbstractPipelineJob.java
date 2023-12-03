@@ -27,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.common.listener.PipelineElasticJo
 import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
-import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
@@ -56,7 +55,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     private final String jobId;
     
     @Getter(AccessLevel.PROTECTED)
-    private final PipelineJobOption jobOption;
+    private final PipelineJobType jobType;
     
     private final AtomicBoolean stopping = new AtomicBoolean(false);
     
@@ -66,7 +65,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     protected AbstractPipelineJob(final String jobId) {
         this.jobId = jobId;
-        jobOption = TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobId).getType()).getOption();
+        jobType = TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobId).getType());
     }
     
     /**

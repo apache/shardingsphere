@@ -17,9 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.common.job.type;
 
-import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
-
-import static org.mockito.Mockito.mock;
+import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
+import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressSwapper;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * Fixture job type.
@@ -32,8 +40,29 @@ public final class FixtureJobType implements PipelineJobType {
     }
     
     @Override
-    public PipelineJobOption getOption() {
-        return mock(PipelineJobOption.class);
+    public <Y extends YamlConfiguration, T extends PipelineJobConfiguration> YamlPipelineJobConfigurationSwapper<Y, T> getYamlJobConfigurationSwapper() {
+        return null;
+    }
+    
+    @Override
+    public <T extends PipelineJobItemProgress> YamlPipelineJobItemProgressSwapper<YamlPipelineJobItemProgressConfiguration, T> getYamlJobItemProgressSwapper() {
+        return null;
+    }
+    
+    @Override
+    public Class<? extends PipelineJob> getJobClass() {
+        return null;
+    }
+    
+    @Override
+    public PipelineJobInfo getJobInfo(final String jobId) {
+        return null;
+    }
+    
+    @Override
+    public PipelineDataConsistencyChecker buildDataConsistencyChecker(final PipelineJobConfiguration jobConfig,
+                                                                      final TransmissionProcessContext processContext, final ConsistencyCheckJobItemProgressContext progressContext) {
+        return null;
     }
     
     @Override
