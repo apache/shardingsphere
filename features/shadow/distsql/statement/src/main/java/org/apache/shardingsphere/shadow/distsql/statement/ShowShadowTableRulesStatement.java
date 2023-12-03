@@ -26,8 +26,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
  */
 @Getter
 public final class ShowShadowTableRulesStatement extends ShowRulesStatement {
+    private final String tableName;
     
-    public ShowShadowTableRulesStatement(final DatabaseSegment database) {
+    public ShowShadowTableRulesStatement(final DatabaseSegment database, final String tableName) {
         super(database);
+        this.tableName = tableName;
     }
 }
