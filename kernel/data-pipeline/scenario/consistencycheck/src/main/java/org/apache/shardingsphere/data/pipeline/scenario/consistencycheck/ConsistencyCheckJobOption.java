@@ -17,7 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
+import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlConsistencyCheckJobItemProgressSwapper;
+import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.YamlConsistencyCheckJobConfigurationSwapper;
 
@@ -46,6 +51,17 @@ public final class ConsistencyCheckJobOption implements PipelineJobOption {
     @Override
     public boolean isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished() {
         return true;
+    }
+    
+    @Override
+    public PipelineJobInfo getJobInfo(final String jobId) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public PipelineDataConsistencyChecker buildDataConsistencyChecker(final PipelineJobConfiguration jobConfig,
+                                                                      final TransmissionProcessContext processContext, final ConsistencyCheckJobItemProgressContext progressContext) {
+        return null;
     }
     
     @Override

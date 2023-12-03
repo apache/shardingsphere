@@ -33,7 +33,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHas
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
-import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -174,11 +173,12 @@ public final class PipelineJobManager {
      * @return jobs info
      */
     public List<PipelineJobInfo> getJobInfos(final PipelineContextKey contextKey) {
-        if (jobOption instanceof TransmissionJobOption) {
+        try {
             return PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo().stream()
                     .filter(each -> !each.getJobName().startsWith("_") && jobOption.getType().equals(PipelineJobIdUtils.parseJobType(each.getJobName()).getType()))
-                    .map(each -> ((TransmissionJobOption) jobOption).getJobInfo(each.getJobName())).collect(Collectors.toList());
+                    .map(each -> jobOption.getJobInfo(each.getJobName())).collect(Collectors.toList());
+        } catch (final UnsupportedOperationException ex) {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
     }
 }

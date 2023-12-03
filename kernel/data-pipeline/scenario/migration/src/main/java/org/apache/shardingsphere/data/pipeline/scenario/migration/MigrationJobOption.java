@@ -21,12 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.common.datanode.DataNodeUtils;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlTransmissionJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
+import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency.MigrationDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
@@ -40,12 +41,18 @@ import java.util.Optional;
  * Migration job option.
  */
 @Slf4j
-public final class MigrationJobOption implements TransmissionJobOption {
+public final class MigrationJobOption implements PipelineJobOption {
     
     @SuppressWarnings("unchecked")
     @Override
     public YamlMigrationJobConfigurationSwapper getYamlJobConfigurationSwapper() {
         return new YamlMigrationJobConfigurationSwapper();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public YamlTransmissionJobItemProgressSwapper getYamlJobItemProgressSwapper() {
+        return new YamlTransmissionJobItemProgressSwapper();
     }
     
     @Override

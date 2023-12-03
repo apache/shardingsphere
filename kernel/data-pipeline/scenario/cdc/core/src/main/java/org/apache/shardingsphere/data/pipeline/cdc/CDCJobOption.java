@@ -22,24 +22,31 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguratio
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.context.TransmissionProcessContext;
+import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlTransmissionJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
+import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 
 /**
  * CDC job option.
  */
 @Slf4j
-public final class CDCJobOption implements TransmissionJobOption {
+public final class CDCJobOption implements PipelineJobOption {
     
     @SuppressWarnings("unchecked")
     @Override
     public YamlCDCJobConfigurationSwapper getYamlJobConfigurationSwapper() {
         return new YamlCDCJobConfigurationSwapper();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public YamlTransmissionJobItemProgressSwapper getYamlJobItemProgressSwapper() {
+        return new YamlTransmissionJobItemProgressSwapper();
     }
     
     @Override
