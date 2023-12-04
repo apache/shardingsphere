@@ -25,19 +25,14 @@ import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
  */
 public interface PipelineJobId {
     
+    String CURRENT_VERSION = "02";
+    
     /**
      * Get job type.
      *
      * @return type
      */
     PipelineJobType getJobType();
-    
-    /**
-     * Get format version.
-     *
-     * @return format version
-     */
-    String getFormatVersion();
     
     /**
      * Get pipeline context key.

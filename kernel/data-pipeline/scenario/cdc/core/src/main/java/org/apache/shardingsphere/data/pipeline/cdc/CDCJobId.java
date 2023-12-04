@@ -19,10 +19,12 @@ package org.apache.shardingsphere.data.pipeline.cdc;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
+import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -31,9 +33,15 @@ import java.util.List;
 /**
  * CDC job id.
  */
-@Getter
+@RequiredArgsConstructor
 @ToString(callSuper = true)
-public final class CDCJobId extends AbstractPipelineJobId {
+public final class CDCJobId implements PipelineJobId {
+    
+    @Getter
+    private final PipelineJobType jobType = new CDCJobType();
+    
+    @Getter
+    private final PipelineContextKey contextKey;
     
     private final List<String> schemaTableNames;
     
@@ -41,15 +49,8 @@ public final class CDCJobId extends AbstractPipelineJobId {
     
     private final String sinkType;
     
-    public CDCJobId(final PipelineContextKey contextKey, final List<String> schemaTableNames, final boolean full, final String sinkType) {
-        super(new CDCJobType(), contextKey);
-        this.schemaTableNames = schemaTableNames;
-        this.full = full;
-        this.sinkType = sinkType;
-    }
-    
     @Override
     public String marshal() {
-        return PipelineJobIdUtils.marshalJobIdCommonPrefix(this) + DigestUtils.md5Hex(Joiner.on('|').join(getContextKey().getDatabaseName(), schemaTableNames, full).getBytes(StandardCharsets.UTF_8));
+        return PipelineJobIdUtils.marshalPrefix(this) + DigestUtils.md5Hex(Joiner.on('|').join(getContextKey().getDatabaseName(), schemaTableNames, full).getBytes(StandardCharsets.UTF_8));
     }
 }

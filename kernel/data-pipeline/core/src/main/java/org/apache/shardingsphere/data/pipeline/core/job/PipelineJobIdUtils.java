@@ -44,18 +44,18 @@ import java.nio.charset.StandardCharsets;
 public final class PipelineJobIdUtils {
     
     /**
-     * Marshal job id common prefix.
+     * Marshal job id prefix.
      *
-     * @param pipelineJobId pipeline job id
+     * @param jobId pipeline job id
      * @return job id common prefix
      */
-    public static String marshalJobIdCommonPrefix(final PipelineJobId pipelineJobId) {
-        InstanceType instanceType = pipelineJobId.getContextKey().getInstanceType();
-        String databaseName = instanceType == InstanceType.PROXY ? "" : pipelineJobId.getContextKey().getDatabaseName();
+    public static String marshalPrefix(final PipelineJobId jobId) {
+        InstanceType instanceType = jobId.getContextKey().getInstanceType();
+        String databaseName = instanceType == InstanceType.PROXY ? "" : jobId.getContextKey().getDatabaseName();
         String databaseNameHex = Hex.encodeHexString(databaseName.getBytes(StandardCharsets.UTF_8), true);
         String databaseNameLengthHex = Hex.encodeHexString(Shorts.toByteArray((short) databaseNameHex.length()), true);
         char encodedInstanceType = InstanceTypeUtils.encode(instanceType);
-        return 'j' + pipelineJobId.getJobType().getCode() + pipelineJobId.getFormatVersion() + encodedInstanceType + databaseNameLengthHex + databaseNameHex;
+        return 'j' + jobId.getJobType().getCode() + jobId.CURRENT_VERSION + encodedInstanceType + databaseNameLengthHex + databaseNameHex;
     }
     
     /**
@@ -84,7 +84,7 @@ public final class PipelineJobIdUtils {
     public static PipelineContextKey parseContextKey(final String jobId) {
         verifyJobId(jobId);
         String formatVersion = jobId.substring(3, 5);
-        Preconditions.checkArgument(AbstractPipelineJobId.CURRENT_VERSION.equals(formatVersion), "Format version doesn't match, format version: " + formatVersion);
+        Preconditions.checkArgument(PipelineJobId.CURRENT_VERSION.equals(formatVersion), "Format version doesn't match, format version: " + formatVersion);
         char instanceType = jobId.charAt(5);
         short databaseNameLength = Shorts.fromByteArray(Hex.decodeHex(jobId.substring(6, 10)));
         String databaseName = new String(Hex.decodeHex(jobId.substring(10, 10 + databaseNameLength)), StandardCharsets.UTF_8);
