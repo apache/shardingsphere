@@ -20,6 +20,8 @@ package org.apache.shardingsphere.data.pipeline.common.job;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
 
+import java.util.Optional;
+
 /**
  * Pipeline job id.
  */
@@ -40,4 +42,13 @@ public interface PipelineJobId {
      * @return pipeline context key
      */
     PipelineContextKey getContextKey();
+    
+    /**
+     * Get sequence.
+     *
+     * @return sequence
+     */
+    default Optional<Integer> getSequence() {
+        return Optional.empty();
+    }
 }
