@@ -96,7 +96,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
                 int times = reconnectTimes.incrementAndGet();
                 log.error("Connect failed, reconnect times={}", times, ex);
                 if (isRunning()) {
-                    Thread.sleep(5000L);
+                    sleepIgnoreInterrupt(5000L);
                 }
                 if (times >= 5) {
                     throw new IngestException(ex);
@@ -105,7 +105,13 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
         }
     }
     
-    @SneakyThrows(InterruptedException.class)
+    private void sleepIgnoreInterrupt(final long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (final InterruptedException ignored) {
+        }
+    }
+    
     private void dump() throws SQLException {
         PGReplicationStream stream = null;
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
@@ -115,7 +121,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
-                    Thread.sleep(10L);
+                    sleepIgnoreInterrupt(5000L);
                     continue;
                 }
                 AbstractWALEvent event = decodingPlugin.decode(message, new OpenGaussLogSequenceNumber(stream.getLastReceiveLSN()));
