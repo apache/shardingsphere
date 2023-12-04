@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
@@ -28,13 +26,10 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.Co
 /**
  * Consistency check job id.
  */
-@ToString(callSuper = true)
 public final class ConsistencyCheckJobId implements PipelineJobId {
     
-    @Getter
     private final PipelineJobType jobType = new ConsistencyCheckJobType();
     
-    @Getter
     private final PipelineContextKey contextKey;
     
     private final String parentJobId;
