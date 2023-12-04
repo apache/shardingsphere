@@ -49,7 +49,7 @@ public final class PipelineJobIdUtils {
      * Marshal job id prefix.
      *
      * @param jobId pipeline job id
-     * @return job id common prefix
+     * @return job id
      */
     public static String marshal(final PipelineJobId jobId) {
         return marshalPrefix(jobId.getJobType(), jobId.getContextKey()) + marshalSuffix(jobId);
