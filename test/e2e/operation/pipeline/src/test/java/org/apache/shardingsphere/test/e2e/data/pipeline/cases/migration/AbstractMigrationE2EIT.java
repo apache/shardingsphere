@@ -147,6 +147,7 @@ public abstract class AbstractMigrationE2EIT {
     
     protected String getJobIdByTableName(final PipelineContainerComposer containerComposer, final String tableName) {
         List<Map<String, Object>> jobList = containerComposer.queryForListWithLog("SHOW MIGRATION LIST");
+        log.error("===============" + jobList);
         return jobList.stream().filter(a -> a.get("tables").toString().equals(tableName)).findFirst().orElseThrow(() -> new RuntimeException("not find " + tableName + " table")).get("id").toString();
     }
     
