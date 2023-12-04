@@ -76,7 +76,7 @@ public final class JobConfigurationBuilder {
         result.setTablesFirstDataNodes("t_order:ds_0.t_order");
         result.setJobShardingDataNodes(Collections.singletonList("t_order:ds_0.t_order"));
         PipelineContextKey contextKey = new PipelineContextKey(RandomStringUtils.randomAlphabetic(32), InstanceType.PROXY);
-        result.setJobId(new MigrationJobId(contextKey, result.getJobShardingDataNodes()).marshal());
+        result.setJobId(new MigrationJobId(contextKey).marshal());
         Map<String, YamlPipelineDataSourceConfiguration> sources = new LinkedHashMap<>();
         String databaseNameSuffix = RandomStringUtils.randomAlphabetic(9);
         PipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(
