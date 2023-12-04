@@ -29,8 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +46,7 @@ public final class GeneratedKeyContextEngine {
      * Create generate key context.
      *
      * @param insertColumnNames insert column names
-     * @param insertValueContexts value expressions
+     * @param insertValueContexts insert value contexts
      * @param params SQL parameters
      * @return generate key context
      */
@@ -105,14 +103,6 @@ public final class GeneratedKeyContextEngine {
             } else if (expression instanceof LiteralExpressionSegment) {
                 result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) expression).getLiterals());
             }
-        }
-        return result;
-    }
-    
-    private Collection<ExpressionSegment> findGenerateKeyExpressions(final List<String> insertColumnNames, final List<List<ExpressionSegment>> valueExpressions, final String generateKeyColumnName) {
-        Collection<ExpressionSegment> result = new LinkedList<>();
-        for (List<ExpressionSegment> each : valueExpressions) {
-            result.add(each.get(findGenerateKeyIndex(insertColumnNames, generateKeyColumnName.toLowerCase())));
         }
         return result;
     }
