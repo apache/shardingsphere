@@ -47,6 +47,6 @@ public final class MigrationJobId implements PipelineJobId {
     
     @Override
     public String marshal() {
-        return PipelineJobIdUtils.marshalPrefix(this) + DigestUtils.md5Hex(JsonUtils.toJsonString(this).getBytes(StandardCharsets.UTF_8));
+        return PipelineJobIdUtils.marshalPrefix(jobType, contextKey) + DigestUtils.md5Hex(JsonUtils.toJsonString(this).getBytes(StandardCharsets.UTF_8));
     }
 }

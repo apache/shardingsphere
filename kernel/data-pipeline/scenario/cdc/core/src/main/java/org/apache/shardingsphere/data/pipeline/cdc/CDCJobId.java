@@ -51,6 +51,6 @@ public final class CDCJobId implements PipelineJobId {
     
     @Override
     public String marshal() {
-        return PipelineJobIdUtils.marshalPrefix(this) + DigestUtils.md5Hex(Joiner.on('|').join(getContextKey().getDatabaseName(), schemaTableNames, full).getBytes(StandardCharsets.UTF_8));
+        return PipelineJobIdUtils.marshalPrefix(jobType, contextKey) + DigestUtils.md5Hex(Joiner.on('|').join(contextKey.getDatabaseName(), schemaTableNames, full).getBytes(StandardCharsets.UTF_8));
     }
 }
