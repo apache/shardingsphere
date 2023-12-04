@@ -25,9 +25,9 @@ public interface PipelineJobId {
     String CURRENT_VERSION = "02";
     
     /**
-     * Marshal job ID.
+     * Marshal pipeline job ID.
      * 
-     * @return job ID
+     * @return pipeline job ID
      */
     String marshal();
 }
