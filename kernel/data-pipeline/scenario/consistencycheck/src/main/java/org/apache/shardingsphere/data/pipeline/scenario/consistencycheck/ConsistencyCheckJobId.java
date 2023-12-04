@@ -67,6 +67,6 @@ public final class ConsistencyCheckJobId implements PipelineJobId {
     
     @Override
     public String marshal() {
-        return PipelineJobIdUtils.marshalPrefix(this) + parentJobId + sequence;
+        return PipelineJobIdUtils.marshalPrefix(jobType, contextKey) + parentJobId + sequence;
     }
 }

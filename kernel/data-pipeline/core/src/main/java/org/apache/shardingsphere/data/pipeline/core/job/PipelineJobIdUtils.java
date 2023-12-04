@@ -46,16 +46,17 @@ public final class PipelineJobIdUtils {
     /**
      * Marshal job id prefix.
      *
-     * @param jobId pipeline job id
+     * @param jobType pipeline job type
+     * @param contextKey pipeline context key
      * @return job id common prefix
      */
-    public static String marshalPrefix(final PipelineJobId jobId) {
-        InstanceType instanceType = jobId.getContextKey().getInstanceType();
-        String databaseName = instanceType == InstanceType.PROXY ? "" : jobId.getContextKey().getDatabaseName();
+    public static String marshalPrefix(final PipelineJobType jobType, final PipelineContextKey contextKey) {
+        InstanceType instanceType = contextKey.getInstanceType();
+        String databaseName = instanceType == InstanceType.PROXY ? "" : contextKey.getDatabaseName();
         String databaseNameHex = Hex.encodeHexString(databaseName.getBytes(StandardCharsets.UTF_8), true);
         String databaseNameLengthHex = Hex.encodeHexString(Shorts.toByteArray((short) databaseNameHex.length()), true);
         char encodedInstanceType = InstanceTypeUtils.encode(instanceType);
-        return 'j' + jobId.getJobType().getCode() + jobId.CURRENT_VERSION + encodedInstanceType + databaseNameLengthHex + databaseNameHex;
+        return 'j' + jobType.getCode() + PipelineJobId.CURRENT_VERSION + encodedInstanceType + databaseNameLengthHex + databaseNameHex;
     }
     
     /**
