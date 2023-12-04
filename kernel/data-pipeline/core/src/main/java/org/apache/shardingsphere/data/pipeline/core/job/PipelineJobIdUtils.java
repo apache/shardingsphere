@@ -52,7 +52,7 @@ public final class PipelineJobIdUtils {
      * @return job id
      */
     public static String marshal(final PipelineJobId jobId) {
-        return marshalPrefix(jobId.getJobType(), jobId.getContextKey()) + marshalSuffix(jobId);
+        return marshalPrefix(jobId.getJobType(), jobId.getContextKey()) + marshalSuffix(jobId) + jobId.getSequence().map(String::valueOf).orElse("");
     }
     
     private static String marshalPrefix(final PipelineJobType jobType, final PipelineContextKey contextKey) {

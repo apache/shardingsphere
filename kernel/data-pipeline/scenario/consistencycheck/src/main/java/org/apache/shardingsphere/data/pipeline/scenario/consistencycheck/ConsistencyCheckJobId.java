@@ -23,6 +23,8 @@ import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 
+import java.util.Optional;
+
 /**
  * Consistency check job id.
  */
@@ -59,5 +61,10 @@ public final class ConsistencyCheckJobId implements PipelineJobId {
      */
     public static int parseSequence(final String checkJobId) {
         return Integer.parseInt(checkJobId.substring(checkJobId.length() - 1));
+    }
+    
+    @Override
+    public Optional<Integer> getSequence() {
+        return Optional.of(sequence);
     }
 }
