@@ -22,6 +22,8 @@ import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -29,7 +31,7 @@ class CDCJobIdTest {
     
     @Test
     void assertParseJobType() {
-        String jobId = PipelineJobIdUtils.marshalPrefix(new CDCJobType(), new PipelineContextKey("sharding_db", InstanceType.PROXY)) + "abcd";
+        String jobId = PipelineJobIdUtils.marshal(new CDCJobId(new PipelineContextKey("sharding_db", InstanceType.PROXY), Collections.singletonList("foo"), true));
         assertThat(PipelineJobIdUtils.parseJobType(jobId), instanceOf(CDCJobType.class));
     }
 }

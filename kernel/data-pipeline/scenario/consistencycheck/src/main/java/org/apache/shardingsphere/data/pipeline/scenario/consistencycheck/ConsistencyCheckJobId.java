@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
+import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 
 /**
  * Consistency check job id.
  */
+@Getter
 public final class ConsistencyCheckJobId implements PipelineJobId {
     
     private final PipelineJobType jobType = new ConsistencyCheckJobType();
@@ -58,10 +59,5 @@ public final class ConsistencyCheckJobId implements PipelineJobId {
      */
     public static int parseSequence(final String checkJobId) {
         return Integer.parseInt(checkJobId.substring(checkJobId.length() - 1));
-    }
-    
-    @Override
-    public String marshal() {
-        return PipelineJobIdUtils.marshalPrefix(jobType, contextKey) + parentJobId + sequence;
     }
 }

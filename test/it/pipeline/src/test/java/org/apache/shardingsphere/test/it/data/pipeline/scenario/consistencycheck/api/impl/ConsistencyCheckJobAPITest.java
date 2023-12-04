@@ -72,7 +72,7 @@ class ConsistencyCheckJobAPITest {
                 parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
         ConsistencyCheckJobConfiguration checkJobConfig = new PipelineJobConfigurationManager(jobType).getJobConfiguration(checkJobId);
         int expectedSequence = ConsistencyCheckSequence.MIN_SEQUENCE;
-        String expectCheckJobId = new ConsistencyCheckJobId(PipelineJobIdUtils.parseContextKey(parentJobId), parentJobId, expectedSequence).marshal();
+        String expectCheckJobId = PipelineJobIdUtils.marshal(new ConsistencyCheckJobId(PipelineJobIdUtils.parseContextKey(parentJobId), parentJobId, expectedSequence));
         assertThat(checkJobConfig.getJobId(), is(expectCheckJobId));
         assertNull(checkJobConfig.getAlgorithmTypeName());
         int sequence = ConsistencyCheckJobId.parseSequence(expectCheckJobId);
