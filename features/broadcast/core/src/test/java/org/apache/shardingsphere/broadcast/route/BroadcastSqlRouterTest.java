@@ -65,13 +65,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class BroadcastSqlRouterTest {
+class BroadcastSqlRouterTest {
     
-    /**
-     * test For BroadcastSQLRouter.createRouteContext().
-     */
     @Test
-    public void assertCreateBroadcastRouteContextWithMultiDataSource() throws SQLException {
+    void assertCreateBroadcastRouteContextWithMultiDataSource() throws SQLException {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_order"));
         BroadcastRule broadcastRule = new BroadcastRule(currentConfig, DefaultDatabase.LOGIC_NAME, createMultiDataSourceMap(), Collections.emptyList());
@@ -84,14 +81,10 @@ public class BroadcastSqlRouterTest {
         RouteMapper tableMapper = routeUnits.get(0).getTableMappers().iterator().next();
         assertThat(tableMapper.getActualName(), is("t_order"));
         assertThat(tableMapper.getLogicName(), is("t_order"));
-        
     }
     
-    /**
-     * test For BroadcastSQLRouter.createRouteContext().
-     */
     @Test
-    public void assertCreateBroadcastRouteContextWithSingleDataSource() throws SQLException {
+    void assertCreateBroadcastRouteContextWithSingleDataSource() throws SQLException {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
         when(currentConfig.getTables()).thenReturn(Collections.singleton("t_order"));
         BroadcastRule broadcastRule = new BroadcastRule(currentConfig, DefaultDatabase.LOGIC_NAME, Collections.singletonMap("tmp_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
@@ -106,9 +99,6 @@ public class BroadcastSqlRouterTest {
         assertFalse(routeUnit.getTableMappers().isEmpty());
     }
     
-    /**
-     * test For BroadcastSQLRouter.decorateRouteContext().
-     */
     @Test
     void assertDecorateBroadcastRouteContextWithSingleDataSource() {
         BroadcastRuleConfiguration currentConfig = mock(BroadcastRuleConfiguration.class);
