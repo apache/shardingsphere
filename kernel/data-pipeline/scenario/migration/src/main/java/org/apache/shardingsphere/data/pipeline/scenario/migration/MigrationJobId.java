@@ -17,28 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * Migration job id.
  */
 @RequiredArgsConstructor
+@Getter
 public final class MigrationJobId implements PipelineJobId {
     
     private final PipelineJobType jobType = new MigrationJobType();
     
     private final PipelineContextKey contextKey;
-    
-    @Override
-    public String marshal() {
-        return PipelineJobIdUtils.marshalPrefix(jobType, contextKey) + DigestUtils.md5Hex(JsonUtils.toJsonString(this).getBytes(StandardCharsets.UTF_8));
-    }
 }

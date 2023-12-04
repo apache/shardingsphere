@@ -38,7 +38,7 @@ class PipelineJobIdUtilsTest {
     
     private void assertParse0(final InstanceType instanceType) {
         PipelineContextKey contextKey = new PipelineContextKey("sharding_db", instanceType);
-        String jobId = new MigrationJobId(contextKey).marshal();
+        String jobId = PipelineJobIdUtils.marshal(new MigrationJobId(contextKey));
         assertThat(PipelineJobIdUtils.parseJobType(jobId), instanceOf(MigrationJobType.class));
         PipelineContextKey actualContextKey = PipelineJobIdUtils.parseContextKey(jobId);
         assertThat(actualContextKey.getInstanceType(), is(instanceType));

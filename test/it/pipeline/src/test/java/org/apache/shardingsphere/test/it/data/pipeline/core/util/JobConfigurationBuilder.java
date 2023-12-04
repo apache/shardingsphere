@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.common.datasource.yaml.YamlPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.YamlMigrationJobConfiguration;
@@ -76,7 +77,7 @@ public final class JobConfigurationBuilder {
         result.setTablesFirstDataNodes("t_order:ds_0.t_order");
         result.setJobShardingDataNodes(Collections.singletonList("t_order:ds_0.t_order"));
         PipelineContextKey contextKey = new PipelineContextKey(RandomStringUtils.randomAlphabetic(32), InstanceType.PROXY);
-        result.setJobId(new MigrationJobId(contextKey).marshal());
+        result.setJobId(PipelineJobIdUtils.marshal(new MigrationJobId(contextKey)));
         Map<String, YamlPipelineDataSourceConfiguration> sources = new LinkedHashMap<>();
         String databaseNameSuffix = RandomStringUtils.randomAlphabetic(9);
         PipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(

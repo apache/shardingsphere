@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobCodeRegistry;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.nio.charset.StandardCharsets;
 
@@ -46,17 +48,24 @@ public final class PipelineJobIdUtils {
     /**
      * Marshal job id prefix.
      *
-     * @param jobType pipeline job type
-     * @param contextKey pipeline context key
-     * @return job id common prefix
+     * @param jobId pipeline job id
+     * @return job id
      */
-    public static String marshalPrefix(final PipelineJobType jobType, final PipelineContextKey contextKey) {
+    public static String marshal(final PipelineJobId jobId) {
+        return marshalPrefix(jobId.getJobType(), jobId.getContextKey()) + marshalSuffix(jobId);
+    }
+    
+    private static String marshalPrefix(final PipelineJobType jobType, final PipelineContextKey contextKey) {
         InstanceType instanceType = contextKey.getInstanceType();
         String databaseName = instanceType == InstanceType.PROXY ? "" : contextKey.getDatabaseName();
         String databaseNameHex = Hex.encodeHexString(databaseName.getBytes(StandardCharsets.UTF_8), true);
         String databaseNameLengthHex = Hex.encodeHexString(Shorts.toByteArray((short) databaseNameHex.length()), true);
         char encodedInstanceType = InstanceTypeUtils.encode(instanceType);
         return 'j' + jobType.getCode() + PipelineJobId.CURRENT_VERSION + encodedInstanceType + databaseNameLengthHex + databaseNameHex;
+    }
+    
+    private static String marshalSuffix(final PipelineJobId jobId) {
+        return DigestUtils.md5Hex(JsonUtils.toJsonString(jobId).getBytes(StandardCharsets.UTF_8));
     }
     
     /**
