@@ -46,7 +46,7 @@ public final class GeneratedKeyContextEngine {
      * Create generate key context.
      *
      * @param insertColumnNames insert column names
-     * @param insertValueContexts value expressions
+     * @param insertValueContexts insert value contexts
      * @param params SQL parameters
      * @return generate key context
      */
