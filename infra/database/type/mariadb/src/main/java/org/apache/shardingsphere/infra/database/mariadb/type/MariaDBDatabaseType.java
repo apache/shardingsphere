@@ -20,18 +20,18 @@ package org.apache.shardingsphere.infra.database.mariadb.type;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Database type of MariaDB.
+ * Database type of MariaDB. Includes verification of Docker Images involved in commonly used testcontainers.
  */
 public final class MariaDBDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton(String.format("jdbc:%s:", getType().toLowerCase()));
+        return Arrays.asList(String.format("jdbc:%s:", getType().toLowerCase()), "jdbc:tc:mariadb:");
     }
     
     @Override
