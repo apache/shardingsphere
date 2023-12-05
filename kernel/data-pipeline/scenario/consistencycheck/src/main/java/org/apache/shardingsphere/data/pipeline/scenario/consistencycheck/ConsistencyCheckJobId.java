@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 
