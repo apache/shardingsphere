@@ -9,11 +9,14 @@
     {"includeClasses": "java.lang.Thread"},
     {"includeClasses": "java.util.Properties"},
     {"excludeClasses": "javax.security.auth.x500.**"},
+    {"excludeClasses": "javax.smartcardio.**"},
     {"excludeClasses": "sun.misc.**"},
     {"excludeClasses": "sun.security.**"},
 
     {"excludeClasses": "com.github.benmanes.caffeine.cache.**"},
     {"excludeClasses": "com.google.common.util.concurrent.**"},
+    {"excludeClasses": "com.ibm.icu.text.**"},
+    {"excludeClasses": "com.mysql.cj.**"},
     {"excludeClasses": "com.sun.xml.bind.v2.**"},
     {"excludeClasses": "com.zaxxer.hikari.**"},
     {"excludeClasses": "javax.xml.bind.annotation.**"},
@@ -22,6 +25,7 @@
     {"excludeClasses": "org.codehaus.groovy.**"},
     {"excludeClasses": "org.h2.**"},
     {"excludeClasses": "org.locationtech.jts.geom.**"},
+    {"excludeClasses": "org.postgresql.**"},
     {"excludeClasses": "org.slf4j.event.**"},
 
     {"excludeClasses": "org.apache.shardingsphere.test.natived.**"}

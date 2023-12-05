@@ -142,7 +142,7 @@
         <hamcrest.version>2.2</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
         <awaitility.version>4.2.0</awaitility.version>
-        <testcontainers.version>1.17.3</testcontainers.version>
+        <testcontainers.version>1.17.6</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
         <graalvm.version>21.2.0</graalvm.version>
@@ -996,7 +996,6 @@
             <id>generateMetadata</id>
             <properties>
                 <java.version>17</java.version>
-                <spotless.apply.skip>true</spotless.apply.skip>
             </properties>
             <build>
                 <pluginManagement>
@@ -1082,6 +1081,7 @@
                                 <classesDirectory>${project.build.outputDirectory}</classesDirectory>
                                 <metadataRepository>
                                     <enabled>true</enabled>
+                                    <version>0.3.5</version>
                                 </metadataRepository>
                             </configuration>
                             <executions>

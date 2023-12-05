@@ -23,20 +23,20 @@ mode:
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:local_sharding_ds_0;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://localhost:49965/demo_ds_0
     username: root
     password: 123456
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:local_sharding_ds_1;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://localhost:49965/demo_ds_1
     username: root
     password: 123456
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:local_sharding_ds_2;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://localhost:49965/demo_ds_2
     username: root
     password: 123456
 
@@ -58,14 +58,11 @@ rules:
       shardingColumn: user_id
       shardingAlgorithmName: inline
   shardingAlgorithms:
-    # `groovy.lang.Closure` related classes are not available on GraalVM CE 23.0.2 For JDK 17.0.9,
-    # This CLASS_BASE algorithm class is designed to emulate INLINE's `ds_${user_id % 2}`.
-    # See https://github.com/oracle/graal/issues/5522 .
     inline:
       type: CLASS_BASED
       props:
         strategy: STANDARD
-        algorithmClassName: org.apache.shardingsphere.test.natived.jdbc.features.algorithm.ClassBasedInlineShardingAlgorithmFixture
+        algorithmClassName: org.apache.shardingsphere.test.natived.jdbc.commons.algorithm.ClassBasedInlineShardingAlgorithmFixture
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
