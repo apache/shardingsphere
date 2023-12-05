@@ -70,6 +70,8 @@ public enum MySQLVendorError implements VendorError {
     
     ER_UNKNOWN_COLLATION(XOpenSQLState.GENERAL_ERROR, 1273, "Unknown collation: '%s'"),
     
+    ER_PS_MANY_PARAM(XOpenSQLState.GENERAL_ERROR, 1390, "Prepared statement contains too many placeholders"),
+    
     ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE(XOpenSQLState.GENERAL_ERROR, 3176,
             "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. "
                     + "Although modifying it can lead to an inconsistent GTID state, if necessary you can modify it with a non-XA transaction.");
