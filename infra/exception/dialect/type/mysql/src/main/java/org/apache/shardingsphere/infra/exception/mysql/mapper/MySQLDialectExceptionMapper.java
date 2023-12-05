@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.exception.mysql.mapper;
 
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
+import org.apache.shardingsphere.infra.exception.core.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.connection.TooManyConnectionsException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
@@ -38,9 +40,8 @@ import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCharsetE
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnsupportedPreparedStatementException;
+import org.apache.shardingsphere.infra.exception.mysql.exception.TooManyPlaceholdersException;
 import org.apache.shardingsphere.infra.exception.mysql.vendor.MySQLVendorError;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.UnknownSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.vendor.VendorError;
 
 import java.sql.SQLException;
 
@@ -82,6 +83,9 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
         }
         if (sqlDialectException instanceof UnsupportedPreparedStatementException) {
             return toSQLException(MySQLVendorError.ER_UNSUPPORTED_PS);
+        }
+        if (sqlDialectException instanceof TooManyPlaceholdersException) {
+            return toSQLException(MySQLVendorError.ER_PS_MANY_PARAM);
         }
         if (sqlDialectException instanceof UnknownCharsetException) {
             return toSQLException(MySQLVendorError.ER_UNKNOWN_CHARACTER_SET, ((UnknownCharsetException) sqlDialectException).getCharset());
