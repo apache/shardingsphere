@@ -64,6 +64,11 @@ public final class ConsistencyCheckJobId implements PipelineJobId {
     }
     
     @Override
+    public Optional<String> getParentJobId() {
+        return Optional.of(parentJobId);
+    }
+    
+    @Override
     public Optional<Integer> getSequence() {
         return Optional.of(sequence);
     }
