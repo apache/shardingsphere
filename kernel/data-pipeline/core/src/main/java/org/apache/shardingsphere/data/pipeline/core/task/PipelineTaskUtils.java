@@ -22,10 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.common.ingest.channel.AckCallbacks;
-import org.apache.shardingsphere.data.pipeline.common.ingest.channel.PipelineChannelCreator;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.task.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.AckCallbacks;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannelCreator;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.progress.IncrementalTaskProgress;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;

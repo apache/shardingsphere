@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata;
 
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 
 /**
  * Pipeline meta data persist service.

@@ -26,8 +26,8 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Pipeline job progress persist context.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class PipelineJobProgressPersistContext {
     
     private final String jobId;

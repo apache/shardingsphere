@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressListener;
 
 /**
  * CDC channel and progress listener pair.

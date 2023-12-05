@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.job.service;
 
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextManager;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.JobOffsetInfo;
-import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineNodePath;
-import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.PipelineGovernanceFacade;
-import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.item.PipelineJobItemProcessGovernanceRepository;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.JobOffsetInfo;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineNodePath;
+import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
+import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.item.PipelineJobItemProcessGovernanceRepository;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;

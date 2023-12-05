@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.ddlgenerator;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.syntax.CreateTableSQLGenerateException;
-import org.apache.shardingsphere.data.pipeline.common.spi.sql.CreateTableSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.core.spi.sql.CreateTableSQLGenerator;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.createtable;
 
-import org.apache.shardingsphere.data.pipeline.common.spi.sql.CreateTableSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.core.spi.sql.CreateTableSQLGenerator;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;

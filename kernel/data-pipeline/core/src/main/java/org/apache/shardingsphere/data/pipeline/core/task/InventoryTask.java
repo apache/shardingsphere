@@ -23,8 +23,8 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.common.task.progress.InventoryTaskProgress;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 
 import java.util.Collection;

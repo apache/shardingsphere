@@ -19,9 +19,9 @@ package org.apache.shardingsphere.data.pipeline.cdc;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
-import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 
 import java.util.List;
 

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordR
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.DataChangeType;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.MetaData;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.TableColumn;
-import org.apache.shardingsphere.data.pipeline.common.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 
 import java.util.LinkedList;
 import java.util.List;
