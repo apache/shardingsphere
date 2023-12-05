@@ -49,7 +49,6 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
         queue.put(records);
     }
     
-    @SneakyThrows(InterruptedException.class)
     // TODO thread-safe?
     @Override
     public List<Record> fetchRecords(final int batchSize, final long timeout, final TimeUnit timeUnit) {
@@ -60,7 +59,11 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
         do {
             List<Record> records = queue.poll();
             if (null == records || records.isEmpty()) {
-                TimeUnit.MILLISECONDS.sleep(Math.min(100, timeoutMillis));
+                try {
+                    TimeUnit.MILLISECONDS.sleep(Math.min(100, timeoutMillis));
+                } catch (final InterruptedException ignored) {
+                    return Collections.emptyList();
+                }
             } else {
                 recordsCount += records.size();
                 result.addAll(records);
