@@ -33,9 +33,4 @@ public final class TrunkDatabaseTypeFixture implements DatabaseType {
     public String getType() {
         return "TRUNK";
     }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
 }

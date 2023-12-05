@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.database.sql92.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -31,5 +32,13 @@ class SQL92DatabaseTypeTest {
     @Test
     void assertGetJdbcUrlPrefixes() {
         assertThat(TypedSPILoader.getService(DatabaseType.class, "SQL92").getJdbcUrlPrefixes(), is(Collections.emptyList()));
+    }
+    
+    @Test
+    void assertGetDatabaseTypeWithUnrecognizedURL() {
+        assertThat(DatabaseTypeFactory.get("jdbc:not-existed:test").getType(), is("SQL92"));
+        assertThat(DatabaseTypeFactory.get("jdbc:vertica://VerticaHost:portNumber/databaseName").getType(), is("SQL92"));
+        assertThat(DatabaseTypeFactory.get("jdbc:ch://my-server/system").getType(), is("SQL92"));
+        assertThat(DatabaseTypeFactory.get("jdbc:clickhouse://localhost:8123/test").getType(), is("SQL92"));
     }
 }

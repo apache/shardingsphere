@@ -30,6 +30,7 @@ class SQLServerDatabaseTypeTest {
     
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "SQLServer").getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "SQLServer").getJdbcUrlPrefixes(),
+                is(Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:", "jdbc:tc:mcr.microsoft.com/mssql/server:", "jdbc:tc:mcr.microsoft.com/mssql/rhel/server:")));
     }
 }

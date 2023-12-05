@@ -19,10 +19,11 @@ package org.apache.shardingsphere.infra.database.core.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +40,10 @@ public final class DatabaseTypeFactory {
      */
     public static DatabaseType get(final String url) {
         Collection<DatabaseType> databaseTypes = ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class).stream().filter(each -> matchURLs(url, each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(!databaseTypes.isEmpty(), () -> new UnsupportedStorageTypeException(url));
+        if (databaseTypes.isEmpty()) {
+            return TypedSPILoader.findService(DatabaseType.class, null, new Properties())
+                    .orElseThrow(() -> new UnsupportedStorageTypeException(url));
+        }
         for (DatabaseType each : databaseTypes) {
             if (each.getTrunkDatabaseType().isPresent()) {
                 return each;
