@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.common.spi.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.spi.ingest.position.PositionInitializer;
 
 import javax.sql.DataSource;
 

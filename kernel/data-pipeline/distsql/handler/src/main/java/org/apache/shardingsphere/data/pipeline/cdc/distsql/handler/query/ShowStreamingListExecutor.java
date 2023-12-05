@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query;
 
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingListStatement;
 import org.apache.shardingsphere.data.pipeline.cdc.CDCJobType;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;

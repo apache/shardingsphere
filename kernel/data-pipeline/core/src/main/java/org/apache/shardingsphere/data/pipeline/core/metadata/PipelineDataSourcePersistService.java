@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.metadata;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
