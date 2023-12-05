@@ -4223,11 +4223,13 @@ alterType
     ;
 
 createCluster
-    : CREATE CLUSTER (schemaName DOT_)? clusterName
-    LP_ (columnName dataType SORT? (COMMA_ columnName dataType SORT?)*) RP_
-    (physicalAttributesClause | SET sizeClause | TABLESPACE tablespaceName | INDEX |
-    (SINGLE TABLE)? HASHKEYS INTEGER_ (HASH IS functionName LP_ (argument (COMMA_ argument)*) RP_)?)?
-    parallelClause? (NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)?
+    : CREATE CLUSTER (schemaName DOT_)? clusterName LP_ (columnName dataType (COLLATE columnCollationName)? SORT? (COMMA_ columnName dataType (COLLATE columnCollationName)? SORT?)*) RP_
+    ( physicalAttributesClause | SIZE sizeClause | TABLESPACE tablespaceName | INDEX | (SINGLE TABLE)? HASHKEYS INTEGER_ (HASH IS expr)?)? parallelClause?
+    ( NOROWDEPENDENCIES | ROWDEPENDENCIES)? (CACHE | NOCACHE)? clusterRangePartitions?
+    ;
+
+clusterRangePartitions
+    : PARTITION BY RANGE columns LP_ (PARTITION partitionName? rangeValuesClause tablePartitionDescription) (COMMA_ (PARTITION partitionName? rangeValuesClause tablePartitionDescription))* RP_
     ;
 
 createJava
