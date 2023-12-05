@@ -22,19 +22,19 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 
 /**
- * Xml name spaces string as identifier segment.
+ * Xml namespaces string as identifier segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class XmlNameSpaceStringAsIdentifierSegment implements ComplexExpressionSegment {
+public final class XmlNamespaceStringAsIdentifierSegment implements ComplexExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String xmlNameSpaceString;
+    private final String xmlNamespaceString;
     
-    private final String xmlNameSpaceIdentifier;
+    private final String xmlNamespaceIdentifier;
     
     private final String text;
 }

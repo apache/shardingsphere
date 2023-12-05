@@ -94,8 +94,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlExi
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlForestFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlIsSchemaValidFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlNameSpaceStringAsIdentifierContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlNameSpacesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlNamespaceStringAsIdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlNamespacesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlParseFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlPiFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlQueryFunctionContext;
@@ -127,8 +127,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpr
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.multiset.MultisetExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlElementFunctionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlNameSpaceStringAsIdentifierSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlNameSpacesClauseSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlNamespaceStringAsIdentifierSegment;
+import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlNamespacesClauseSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlPiFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlQueryAndExistsFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.segment.oracle.xml.XmlSerializeFunctionSegment;
@@ -874,25 +874,25 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     @Override
     public ASTNode visitXmlTableFunction(final XmlTableFunctionContext ctx) {
-        XmlNameSpacesClauseSegment xmlNameSpacesClause = null == ctx.xmlNameSpacesClause() ? null : (XmlNameSpacesClauseSegment) visit(ctx.xmlNameSpacesClause());
+        XmlNamespacesClauseSegment xmlNamespacesClause = null == ctx.xmlNamespacesClause() ? null : (XmlNamespacesClauseSegment) visit(ctx.xmlNamespacesClause());
         return new XmlTableFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLTABLE().getText(),
-                xmlNameSpacesClause, ctx.STRING_().getText(), (XmlTableOptionsSegment) visit(ctx.xmlTableOptions()), getOriginalText(ctx));
+                xmlNamespacesClause, ctx.STRING_().getText(), (XmlTableOptionsSegment) visit(ctx.xmlTableOptions()), getOriginalText(ctx));
     }
     
     @Override
-    public ASTNode visitXmlNameSpacesClause(final XmlNameSpacesClauseContext ctx) {
+    public ASTNode visitXmlNamespacesClause(final XmlNamespacesClauseContext ctx) {
         // TODO : throw exception if more than one defaultString exists in a xml name space clause
         String defaultString = null == ctx.defaultString() ? null : ctx.defaultString(0).STRING_().getText();
-        Collection<XmlNameSpaceStringAsIdentifierSegment> xmlNameSpaceStringAsIdentifierSegments = null == ctx.xmlNameSpaceStringAsIdentifier() ? Collections.emptyList()
-                : ctx.xmlNameSpaceStringAsIdentifier().stream().map(each -> (XmlNameSpaceStringAsIdentifierSegment) visit(each)).collect(Collectors.toList());
-        XmlNameSpacesClauseSegment result = new XmlNameSpacesClauseSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), defaultString, getOriginalText(ctx));
-        result.getStringAsIdentifier().addAll(xmlNameSpaceStringAsIdentifierSegments);
+        Collection<XmlNamespaceStringAsIdentifierSegment> xmlNamespaceStringAsIdentifierSegments = null == ctx.xmlNamespaceStringAsIdentifier() ? Collections.emptyList()
+                : ctx.xmlNamespaceStringAsIdentifier().stream().map(each -> (XmlNamespaceStringAsIdentifierSegment) visit(each)).collect(Collectors.toList());
+        XmlNamespacesClauseSegment result = new XmlNamespacesClauseSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), defaultString, getOriginalText(ctx));
+        result.getStringAsIdentifier().addAll(xmlNamespaceStringAsIdentifierSegments);
         return result;
     }
     
     @Override
-    public ASTNode visitXmlNameSpaceStringAsIdentifier(final XmlNameSpaceStringAsIdentifierContext ctx) {
-        return new XmlNameSpaceStringAsIdentifierSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.STRING_().getText(), ctx.identifier().getText(), getOriginalText(ctx));
+    public ASTNode visitXmlNamespaceStringAsIdentifier(final XmlNamespaceStringAsIdentifierContext ctx) {
+        return new XmlNamespaceStringAsIdentifierSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.STRING_().getText(), ctx.identifier().getText(), getOriginalText(ctx));
     }
     
     @Override

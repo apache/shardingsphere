@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Xml name spaces segment.
+ * Xml namespaces segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class XmlNameSpacesClauseSegment implements ComplexExpressionSegment {
+public final class XmlNamespacesClauseSegment implements ComplexExpressionSegment {
     
     private final int startIndex;
     
@@ -37,7 +37,7 @@ public final class XmlNameSpacesClauseSegment implements ComplexExpressionSegmen
     
     private final String defaultString;
     
-    private final Collection<XmlNameSpaceStringAsIdentifierSegment> stringAsIdentifier = new LinkedList<>();
+    private final Collection<XmlNamespaceStringAsIdentifierSegment> stringAsIdentifier = new LinkedList<>();
     
     private final String text;
 }
