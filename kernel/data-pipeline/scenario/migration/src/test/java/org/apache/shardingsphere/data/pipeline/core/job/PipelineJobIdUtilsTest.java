@@ -23,6 +23,8 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobTy
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,7 +40,7 @@ class PipelineJobIdUtilsTest {
     
     private void assertParse0(final InstanceType instanceType) {
         PipelineContextKey contextKey = new PipelineContextKey("sharding_db", instanceType);
-        String jobId = PipelineJobIdUtils.marshal(new MigrationJobId(contextKey));
+        String jobId = PipelineJobIdUtils.marshal(new MigrationJobId(contextKey, Collections.singletonList("t_order:ds_0.t_order_0,ds_0.t_order_1")));
         assertThat(PipelineJobIdUtils.parseJobType(jobId), instanceOf(MigrationJobType.class));
         PipelineContextKey actualContextKey = PipelineJobIdUtils.parseContextKey(jobId);
         assertThat(actualContextKey.getInstanceType(), is(instanceType));

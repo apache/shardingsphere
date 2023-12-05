@@ -23,6 +23,8 @@ import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
 
+import java.util.List;
+
 /**
  * Migration job id.
  */
@@ -33,4 +35,6 @@ public final class MigrationJobId implements PipelineJobId {
     private final PipelineJobType jobType = new MigrationJobType();
     
     private final PipelineContextKey contextKey;
+    
+    private final List<String> jobShardingDataNodes;
 }
