@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.Dumper
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.ActualAndLogicTableNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
-import org.apache.shardingsphere.data.pipeline.core.config.ingest.IncrementalDumperContextCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.config.IncrementalDumperContextCreator;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
