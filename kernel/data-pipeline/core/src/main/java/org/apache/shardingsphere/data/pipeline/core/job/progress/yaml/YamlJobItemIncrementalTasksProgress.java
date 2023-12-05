@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.core.progress.IncrementalTaskDelay;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskDelay;
 
 /**
  * YAML job item incremental tasks progress.

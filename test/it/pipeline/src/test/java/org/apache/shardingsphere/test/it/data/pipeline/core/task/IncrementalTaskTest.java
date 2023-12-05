@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.task;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosi
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.PrimaryKeyPositionFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemInventoryTasksProgress;
-import org.apache.shardingsphere.data.pipeline.core.progress.InventoryTaskProgress;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.InventoryTaskProgress;
 
 import java.util.Arrays;
 import java.util.Collections;
