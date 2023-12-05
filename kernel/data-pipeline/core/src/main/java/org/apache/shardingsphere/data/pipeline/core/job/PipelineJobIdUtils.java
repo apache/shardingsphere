@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.common.job.type.JobCodeRegistry;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.nio.charset.StandardCharsets;
 
@@ -44,18 +46,26 @@ import java.nio.charset.StandardCharsets;
 public final class PipelineJobIdUtils {
     
     /**
-     * Marshal job id common prefix.
+     * Marshal job id prefix.
      *
-     * @param pipelineJobId pipeline job id
-     * @return job id common prefix
+     * @param jobId pipeline job id
+     * @return job id
      */
-    public static String marshalJobIdCommonPrefix(final PipelineJobId pipelineJobId) {
-        InstanceType instanceType = pipelineJobId.getContextKey().getInstanceType();
-        String databaseName = instanceType == InstanceType.PROXY ? "" : pipelineJobId.getContextKey().getDatabaseName();
+    public static String marshal(final PipelineJobId jobId) {
+        return marshalPrefix(jobId.getJobType(), jobId.getContextKey()) + marshalSuffix(jobId) + jobId.getParentJobId().orElse("") + jobId.getSequence().map(String::valueOf).orElse("");
+    }
+    
+    private static String marshalPrefix(final PipelineJobType jobType, final PipelineContextKey contextKey) {
+        InstanceType instanceType = contextKey.getInstanceType();
+        String databaseName = instanceType == InstanceType.PROXY ? "" : contextKey.getDatabaseName();
         String databaseNameHex = Hex.encodeHexString(databaseName.getBytes(StandardCharsets.UTF_8), true);
         String databaseNameLengthHex = Hex.encodeHexString(Shorts.toByteArray((short) databaseNameHex.length()), true);
         char encodedInstanceType = InstanceTypeUtils.encode(instanceType);
-        return 'j' + pipelineJobId.getJobType().getCode() + pipelineJobId.getFormatVersion() + encodedInstanceType + databaseNameLengthHex + databaseNameHex;
+        return 'j' + jobType.getCode() + PipelineJobId.CURRENT_VERSION + encodedInstanceType + databaseNameLengthHex + databaseNameHex;
+    }
+    
+    private static String marshalSuffix(final PipelineJobId jobId) {
+        return DigestUtils.md5Hex(JsonUtils.toJsonString(jobId).getBytes(StandardCharsets.UTF_8));
     }
     
     /**
@@ -84,7 +94,7 @@ public final class PipelineJobIdUtils {
     public static PipelineContextKey parseContextKey(final String jobId) {
         verifyJobId(jobId);
         String formatVersion = jobId.substring(3, 5);
-        Preconditions.checkArgument(AbstractPipelineJobId.CURRENT_VERSION.equals(formatVersion), "Format version doesn't match, format version: " + formatVersion);
+        Preconditions.checkArgument(PipelineJobId.CURRENT_VERSION.equals(formatVersion), "Format version doesn't match, format version: " + formatVersion);
         char instanceType = jobId.charAt(5);
         short databaseNameLength = Shorts.fromByteArray(Hex.decodeHex(jobId.substring(6, 10)));
         String databaseName = new String(Hex.decodeHex(jobId.substring(10, 10 + databaseNameLength)), StandardCharsets.UTF_8);

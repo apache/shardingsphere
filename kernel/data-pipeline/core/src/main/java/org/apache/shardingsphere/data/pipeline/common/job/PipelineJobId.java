@@ -20,36 +20,44 @@ package org.apache.shardingsphere.data.pipeline.common.job;
 import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
 
+import java.util.Optional;
+
 /**
  * Pipeline job id.
  */
 public interface PipelineJobId {
     
+    String CURRENT_VERSION = "02";
+    
     /**
-     * Get job type.
-     *
-     * @return type
+     * Get pipeline job type.
+     * 
+     * @return pipeline job type
      */
     PipelineJobType getJobType();
     
     /**
-     * Get format version.
-     *
-     * @return format version
-     */
-    String getFormatVersion();
-    
-    /**
      * Get pipeline context key.
      *
-     * @return context key
+     * @return pipeline context key
      */
     PipelineContextKey getContextKey();
     
     /**
-     * Marshal job ID.
-     * 
-     * @return job ID
+     * Get parent job id.
+     *
+     * @return parent job id
      */
-    String marshal();
+    default Optional<String> getParentJobId() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get sequence.
+     *
+     * @return sequence
+     */
+    default Optional<Integer> getSequence() {
+        return Optional.empty();
+    }
 }

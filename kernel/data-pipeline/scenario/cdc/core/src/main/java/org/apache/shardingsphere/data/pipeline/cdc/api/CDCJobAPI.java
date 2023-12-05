@@ -134,7 +134,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     
     private YamlCDCJobConfiguration getYamlCDCJobConfiguration(final StreamDataParameter param, final CDCSinkType sinkType, final Properties sinkProps, final PipelineContextKey contextKey) {
         YamlCDCJobConfiguration result = new YamlCDCJobConfiguration();
-        result.setJobId(new CDCJobId(contextKey, param.getSchemaTableNames(), param.isFull(), sinkType.name()).marshal());
+        result.setJobId(PipelineJobIdUtils.marshal(new CDCJobId(contextKey, param.getSchemaTableNames(), param.isFull())));
         result.setDatabaseName(param.getDatabaseName());
         result.setSchemaTableNames(param.getSchemaTableNames());
         result.setFull(param.isFull());

@@ -96,7 +96,8 @@ public final class ConsistencyCheckJobAPI {
         }
         checkPipelineDatabaseTypes(param);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(parentJobId);
-        String result = latestCheckJobId.map(optional -> new ConsistencyCheckJobId(contextKey, parentJobId, optional)).orElseGet(() -> new ConsistencyCheckJobId(contextKey, parentJobId)).marshal();
+        String result = PipelineJobIdUtils.marshal(
+                latestCheckJobId.map(optional -> new ConsistencyCheckJobId(contextKey, parentJobId, optional)).orElseGet(() -> new ConsistencyCheckJobId(contextKey, parentJobId)));
         governanceFacade.getJobFacade().getCheck().persistLatestCheckJobId(parentJobId, result);
         governanceFacade.getJobFacade().getCheck().deleteCheckJobResult(parentJobId, result);
         jobManager.drop(result);
@@ -155,7 +156,7 @@ public final class ConsistencyCheckJobAPI {
         Optional<Integer> previousSequence = ConsistencyCheckSequence.getPreviousSequence(
                 checkJobIds.stream().map(ConsistencyCheckJobId::parseSequence).collect(Collectors.toList()), ConsistencyCheckJobId.parseSequence(latestCheckJobId));
         if (previousSequence.isPresent()) {
-            String checkJobId = new ConsistencyCheckJobId(contextKey, parentJobId, previousSequence.get()).marshal();
+            String checkJobId = PipelineJobIdUtils.marshal(new ConsistencyCheckJobId(contextKey, parentJobId, previousSequence.get()));
             governanceFacade.getJobFacade().getCheck().persistLatestCheckJobId(parentJobId, checkJobId);
         } else {
             governanceFacade.getJobFacade().getCheck().deleteLatestCheckJobId(parentJobId);
