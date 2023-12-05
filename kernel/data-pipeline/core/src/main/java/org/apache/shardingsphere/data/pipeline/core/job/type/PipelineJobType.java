@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.type;
 
-import org.apache.shardingsphere.data.pipeline.core.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.YamlPipelineJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlPipelineJobItemProgressConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlPipelineJobItemProgressSwapper;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;

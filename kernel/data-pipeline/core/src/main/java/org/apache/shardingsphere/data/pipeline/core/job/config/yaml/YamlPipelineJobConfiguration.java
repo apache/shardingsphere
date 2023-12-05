@@ -15,12 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.yaml;
+package org.apache.shardingsphere.data.pipeline.core.job.config.yaml;
 
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * YAML pipeline job item progress configuration.
+ * YAML pipeline job configuration.
  */
-public interface YamlPipelineJobItemProgressConfiguration extends YamlConfiguration {
+public interface YamlPipelineJobConfiguration extends YamlConfiguration {
+    
+    /**
+     * Get job id.
+     *
+     * @return job id
+     */
+    String getJobId();
+    
+    /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    String getDatabaseName();
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.listener.PipelineElasticJobListener;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;

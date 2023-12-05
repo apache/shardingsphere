@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.scenario.migration.api.i
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;

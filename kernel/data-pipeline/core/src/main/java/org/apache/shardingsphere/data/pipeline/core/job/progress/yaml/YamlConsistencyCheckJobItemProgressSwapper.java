@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressSwapper;
 
 /**
  * YAML data check job item progress swapper.

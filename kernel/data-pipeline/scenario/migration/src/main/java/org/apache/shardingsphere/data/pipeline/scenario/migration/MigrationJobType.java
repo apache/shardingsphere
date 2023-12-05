@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
-import org.apache.shardingsphere.data.pipeline.core.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datanode.DataNodeUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlTransmissionJobItemProgressSwapper;

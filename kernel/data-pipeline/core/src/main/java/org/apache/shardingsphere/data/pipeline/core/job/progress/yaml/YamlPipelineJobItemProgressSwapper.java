@@ -15,33 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.config.job;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
- * Pipeline job configuration.
+ * YAML pipeline job configuration swapper.
+ *
+ * @param <Y> type of YAML pipeline job item progress configuration
+ * @param <T> type of swapped pipeline job item progress
  */
-public interface PipelineJobConfiguration {
+public interface YamlPipelineJobItemProgressSwapper<Y extends YamlPipelineJobItemProgressConfiguration, T extends PipelineJobItemProgress> extends YamlConfigurationSwapper<Y, T> {
     
     /**
-     * Get job id.
-     *
-     * @return job id
+     * Get YAML pipeline job item progress configuration class.
+     * 
+     * @return YAML pipeline job item progress configuration class
      */
-    String getJobId();
-    
-    /**
-     * Get job sharding count.
-     *
-     * @return job sharding count
-     */
-    int getJobShardingCount();
-    
-    /**
-     * Get source database type.
-     *
-     * @return source database type
-     */
-    DatabaseType getSourceDatabaseType();
+    Class<Y> getYamlProgressClass();
 }

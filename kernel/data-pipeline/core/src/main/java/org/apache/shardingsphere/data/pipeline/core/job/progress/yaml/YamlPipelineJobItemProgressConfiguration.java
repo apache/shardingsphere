@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.yaml;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
-import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * YAML pipeline job configuration swapper.
- *
- * @param <Y> type of YAML pipeline job item progress configuration
- * @param <T> type of swapped pipeline job item progress
+ * YAML pipeline job item progress configuration.
  */
-public interface YamlPipelineJobItemProgressSwapper<Y extends YamlPipelineJobItemProgressConfiguration, T extends PipelineJobItemProgress> extends YamlConfigurationSwapper<Y, T> {
-    
-    /**
-     * Get YAML pipeline job item progress configuration class.
-     * 
-     * @return YAML pipeline job item progress configuration class
-     */
-    Class<Y> getYamlProgressClass();
+public interface YamlPipelineJobItemProgressConfiguration extends YamlConfiguration {
 }

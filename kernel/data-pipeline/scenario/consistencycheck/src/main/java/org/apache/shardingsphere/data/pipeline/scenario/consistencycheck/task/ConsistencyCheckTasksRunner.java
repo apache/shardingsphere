@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.task;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;

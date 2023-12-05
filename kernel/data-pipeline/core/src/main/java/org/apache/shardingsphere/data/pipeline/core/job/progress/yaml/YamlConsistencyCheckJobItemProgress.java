@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobItemProgressConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
