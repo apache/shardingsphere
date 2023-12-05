@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.repository.cluster.consul;
 
 import com.ecwid.consul.UrlParameters;
-import com.ecwid.consul.Utils;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ public final class ShardingSphereQueryParams implements UrlParameters {
             result.add(String.format("wait=%dms", TimeUnit.MILLISECONDS.toMillis(waitMillis)));
         }
         if (-1 != index) {
-            result.add(String.format("index=%s", Utils.toUnsignedString(index)));
+            result.add(String.format("index=%s", Long.toUnsignedString(index)));
         }
         return result;
     }
