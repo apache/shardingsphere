@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.common.execute.AbstractPipelineLifecycleRunnable;
-import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.IncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.common.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.OpenGaussLogicalReplication;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.MppdbDecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
@@ -83,6 +84,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
         this.decodeWithTX = dumperContext.isDecodeWithTX();
     }
     
+    @SneakyThrows(InterruptedException.class)
     @Override
     protected void runBlocking() {
         AtomicInteger reconnectTimes = new AtomicInteger();
@@ -94,11 +96,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
                 int times = reconnectTimes.incrementAndGet();
                 log.error("Connect failed, reconnect times={}", times, ex);
                 if (isRunning()) {
-                    try {
-                        Thread.sleep(5000L);
-                    } catch (final InterruptedException ignored) {
-                        break;
-                    }
+                    Thread.sleep(5000L);
                 }
                 if (times >= 5) {
                     throw new IngestException(ex);
@@ -107,6 +105,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
         }
     }
     
+    @SneakyThrows(InterruptedException.class)
     private void dump() throws SQLException {
         PGReplicationStream stream = null;
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
@@ -116,11 +115,7 @@ public final class OpenGaussWALDumper extends AbstractPipelineLifecycleRunnable 
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
-                    try {
-                        Thread.sleep(5000L);
-                    } catch (final InterruptedException ignored) {
-                        break;
-                    }
+                    Thread.sleep(10L);
                     continue;
                 }
                 AbstractWALEvent event = decodingPlugin.decode(message, new OpenGaussLogSequenceNumber(stream.getLastReceiveLSN()));
