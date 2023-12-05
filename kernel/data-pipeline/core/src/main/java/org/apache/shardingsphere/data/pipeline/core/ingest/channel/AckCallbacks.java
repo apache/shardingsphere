@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositi
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.AckCallbacks;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;

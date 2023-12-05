@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.progress;
+package org.apache.shardingsphere.data.pipeline.core.task.progress;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 

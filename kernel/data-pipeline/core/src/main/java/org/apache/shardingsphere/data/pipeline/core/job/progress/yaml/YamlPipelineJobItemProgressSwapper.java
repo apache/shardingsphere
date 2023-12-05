@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.progress;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
- * Incremental task delay.
+ * YAML pipeline job configuration swapper.
+ *
+ * @param <Y> type of YAML pipeline job item progress configuration
+ * @param <T> type of swapped pipeline job item progress
  */
-@Getter
-@Setter
-public final class IncrementalTaskDelay {
+public interface YamlPipelineJobItemProgressSwapper<Y extends YamlPipelineJobItemProgressConfiguration, T extends PipelineJobItemProgress> extends YamlConfigurationSwapper<Y, T> {
     
-    private long lastEventTimestamps;
-    
-    private long latestActiveTimeMillis;
+    /**
+     * Get YAML pipeline job item progress configuration class.
+     * 
+     * @return YAML pipeline job item progress configuration class
+     */
+    Class<Y> getYamlProgressClass();
 }

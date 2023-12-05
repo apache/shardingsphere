@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.progress;
+package org.apache.shardingsphere.data.pipeline.core.job.config.yaml;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Task progress.
+ * YAML pipeline job configuration.
  */
-public interface TaskProgress {
+public interface YamlPipelineJobConfiguration extends YamlConfiguration {
     
     /**
-     * Get position.
+     * Get job id.
      *
-     * @return position
+     * @return job id
      */
-    IngestPosition getPosition();
+    String getJobId();
+    
+    /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    String getDatabaseName();
 }

@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.progress;
+package org.apache.shardingsphere.data.pipeline.core.task.progress;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 /**
- * Inventory task progress.
+ * Task progress.
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class InventoryTaskProgress implements TaskProgress {
+public interface TaskProgress {
     
-    private final IngestPosition position;
+    /**
+     * Get position.
+     *
+     * @return position
+     */
+    IngestPosition getPosition();
 }

@@ -15,33 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.config.job;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Pipeline job configuration.
+ * YAML pipeline job item progress configuration.
  */
-public interface PipelineJobConfiguration {
-    
-    /**
-     * Get job id.
-     *
-     * @return job id
-     */
-    String getJobId();
-    
-    /**
-     * Get job sharding count.
-     *
-     * @return job sharding count
-     */
-    int getJobShardingCount();
-    
-    /**
-     * Get source database type.
-     *
-     * @return source database type
-     */
-    DatabaseType getSourceDatabaseType();
+public interface YamlPipelineJobItemProgressConfiguration extends YamlConfiguration {
 }
