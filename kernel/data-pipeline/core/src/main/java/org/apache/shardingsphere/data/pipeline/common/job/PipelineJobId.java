@@ -44,6 +44,15 @@ public interface PipelineJobId {
     PipelineContextKey getContextKey();
     
     /**
+     * Get parent job id.
+     *
+     * @return parent job id
+     */
+    default Optional<String> getParentJobId() {
+        return Optional.empty();
+    }
+    
+    /**
      * Get sequence.
      *
      * @return sequence
