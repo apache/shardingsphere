@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.rewrite.fixture.keygen;
+package org.apache.shardingsphere.keygen.core.context;
 
-import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-public final class RewriteKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+/**
+ * Key generate context.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class KeyGenerateContext {
     
-    @Override
-    public Collection<Long> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 1L).collect(Collectors.toList());
-    }
+    private final String databaseName;
     
-    @Override
-    public String getType() {
-        return "REWRITE.FIXTURE";
-    }
+    private final String schemaName;
+    
+    private final String tableName;
+    
+    private final String columnName;
 }

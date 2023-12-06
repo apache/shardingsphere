@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.keygen.uuid.algorithm;
 
+import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 class UUIDKeyGenerateAlgorithmTest {
     
@@ -28,6 +30,7 @@ class UUIDKeyGenerateAlgorithmTest {
     
     @Test
     void assertGenerateKey() {
-        assertThat(uuidKeyGenerateAlgorithm.generateKey().length(), is(32));
+        assertThat(uuidKeyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).size(), is(1));
+        assertThat(uuidKeyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().toString().length(), is(32));
     }
 }
