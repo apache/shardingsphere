@@ -115,6 +115,10 @@ unlockCluster
     : UNLOCK CLUSTER
     ;
 
+showSPIImplementations
+    : SHOW IMPLEMENTATIONS OF spiFullName
+    ;
+
 transmissionRule
     : LP_ readDefinition? (COMMA_? writeDefinition)? (COMMA_? streamChannel)? RP_
     ;
@@ -201,4 +205,8 @@ showLike
 
 likePattern
     : STRING_
+    ;
+
+spiFullName
+    : IDENTIFIER_ | STRING_
     ;
