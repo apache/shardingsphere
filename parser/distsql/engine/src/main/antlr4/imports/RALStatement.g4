@@ -115,8 +115,8 @@ unlockCluster
     : UNLOCK CLUSTER
     ;
 
-showSPIImplementations
-    : SHOW IMPLEMENTATIONS OF spiFullName
+showServiceProviderImplementations
+    : SHOW IMPLEMENTATIONS OF serviceProviderInterface
     ;
 
 transmissionRule
@@ -207,6 +207,6 @@ likePattern
     : STRING_
     ;
 
-spiFullName
+serviceProviderInterface
     : IDENTIFIER_ | STRING_
     ;

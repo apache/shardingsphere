@@ -58,7 +58,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowLogicalTablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowMigrationRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowRulesUsedStorageUnitContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowSPIImplementationsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowServiceProviderImplementationsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowStorageUnitsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StorageUnitDefinitionContext;
@@ -85,7 +85,7 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNode
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariablesStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowMigrationRuleStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowSPIImplementationsStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowServiceProviderImplementationsStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterComputeNodeStatement;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterTransmissionRuleStatement;
@@ -405,7 +405,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitShowSPIImplementations(final ShowSPIImplementationsContext ctx) {
-        return new ShowSPIImplementationsStatement(getIdentifierValue(ctx.spiFullName()));
+    public ASTNode visitShowServiceProviderImplementations(final ShowServiceProviderImplementationsContext ctx) {
+        return new ShowServiceProviderImplementationsStatement(getIdentifierValue(ctx.serviceProviderInterface()));
     }
 }

@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
 /**
- * Show SPI implementations statement.
+ * Show service provider implementations statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowSPIImplementationsStatement extends QueryableRALStatement {
+public final class ShowServiceProviderImplementationsStatement extends QueryableRALStatement {
     
-    private final String spiFullName;
+    private final String serviceProviderInterface;
 }

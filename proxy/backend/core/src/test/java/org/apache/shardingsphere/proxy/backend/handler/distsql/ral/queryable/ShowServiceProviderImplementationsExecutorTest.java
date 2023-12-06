@@ -17,26 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import com.google.common.base.Splitter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ConvertYamlConfigurationStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowSPIImplementationsStatement;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowServiceProviderImplementationsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingAlgorithmImplementationsExecutor;
-import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAlgorithmImplementationsStatement;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,13 +32,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShowSPIImplementationsExecutorTest {
+class ShowServiceProviderImplementationsExecutorTest {
     
     @Test
     void assertGetRowData() {
-        QueryableRALExecutor<ShowSPIImplementationsStatement> executor = new ShowSPIImplementationsExecutor();
-        ShowSPIImplementationsStatement statement = mock(ShowSPIImplementationsStatement.class);
-        when(statement.getSpiFullName()).thenReturn("org.apache.shardingsphere.sharding.spi.ShardingAlgorithm");
+        QueryableRALExecutor<ShowServiceProviderImplementationsStatement> executor = new ShowServiceProviderImplementationsExecutor();
+        ShowServiceProviderImplementationsStatement statement = mock(ShowServiceProviderImplementationsStatement.class);
+        when(statement.getServiceProviderInterface()).thenReturn("org.apache.shardingsphere.sharding.spi.ShardingAlgorithm");
         Collection<LocalDataQueryResultRow> actual = executor.getRows(statement);
         assertTrue(actual.size() > 0);
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
@@ -63,7 +50,7 @@ class ShowSPIImplementationsExecutorTest {
     
     @Test
     void assertGetColumnNames() {
-        QueryableRALExecutor<ShowSPIImplementationsStatement> executor = new ShowSPIImplementationsExecutor();
+        QueryableRALExecutor<ShowServiceProviderImplementationsStatement> executor = new ShowServiceProviderImplementationsExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();

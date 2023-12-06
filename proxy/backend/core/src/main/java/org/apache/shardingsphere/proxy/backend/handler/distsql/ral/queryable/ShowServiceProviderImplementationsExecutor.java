@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowSPIImplementationsStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowServiceProviderImplementationsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
@@ -29,9 +29,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Show SPI implementations executor.
+ * Show service provider implementations executor.
  */
-public final class ShowSPIImplementationsExecutor implements QueryableRALExecutor<ShowSPIImplementationsStatement> {
+public final class ShowServiceProviderImplementationsExecutor implements QueryableRALExecutor<ShowServiceProviderImplementationsStatement> {
     
     @Override
     public Collection<String> getColumnNames() {
@@ -39,13 +39,13 @@ public final class ShowSPIImplementationsExecutor implements QueryableRALExecuto
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(ShowSPIImplementationsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(ShowServiceProviderImplementationsStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Class<?> clazz;
         try {
-            clazz = Class.forName(sqlStatement.getSpiFullName());
+            clazz = Class.forName(sqlStatement.getServiceProviderInterface());
         } catch (final ClassNotFoundException ex) {
-            throw new InvalidValueException(sqlStatement.getSpiFullName());
+            throw new InvalidValueException(sqlStatement.getServiceProviderInterface());
         }
         Collection<?> shardingAlgorithms = ShardingSphereServiceLoader.getServiceInstances(clazz);
         for (Object each : shardingAlgorithms) {
@@ -57,7 +57,7 @@ public final class ShowSPIImplementationsExecutor implements QueryableRALExecuto
     }
     
     @Override
-    public Class<ShowSPIImplementationsStatement> getType() {
-        return ShowSPIImplementationsStatement.class;
+    public Class<ShowServiceProviderImplementationsStatement> getType() {
+        return ShowServiceProviderImplementationsStatement.class;
     }
 }
