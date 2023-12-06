@@ -20,17 +20,24 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra-expr</artifactId>
+        <artifactId>shardingsphere-infra-expr-type</artifactId>
         <version>5.4.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-expr-type</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-infra-expr-interval</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>groovy</module>
-        <module>literal</module>
-        <module>espresso</module>
-        <module>interval</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-expr-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-util</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
