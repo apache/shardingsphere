@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.common.config.CreateTableConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.config.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.config.CreateTableConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 

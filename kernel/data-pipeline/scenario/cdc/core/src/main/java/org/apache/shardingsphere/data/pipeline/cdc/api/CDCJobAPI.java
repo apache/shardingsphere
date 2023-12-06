@@ -22,25 +22,25 @@ import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDa
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.CDCJob;
 import org.apache.shardingsphere.data.pipeline.cdc.CDCJobId;
-import org.apache.shardingsphere.data.pipeline.cdc.CDCJobOption;
+import org.apache.shardingsphere.data.pipeline.cdc.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.YamlCDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.YamlCDCJobConfiguration.YamlSinkConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextManager;
-import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeEntry;
-import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
-import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLineConvertUtils;
-import org.apache.shardingsphere.data.pipeline.common.datasource.DefaultPipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceConfigurationFactory;
-import org.apache.shardingsphere.data.pipeline.common.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.common.datasource.yaml.YamlPipelineDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.JobItemIncrementalTasksProgress;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.PipelineGovernanceFacade;
-import org.apache.shardingsphere.data.pipeline.common.task.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
+import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
+import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.YamlPipelineDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
@@ -49,7 +49,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.Dumper
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
@@ -83,7 +83,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class CDCJobAPI implements TransmissionJobAPI {
     
-    private final CDCJobOption jobOption;
+    private final CDCJobType jobType;
     
     private final PipelineJobManager jobManager;
     
@@ -96,9 +96,9 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     private final YamlPipelineDataSourceConfigurationSwapper pipelineDataSourceConfigSwapper;
     
     public CDCJobAPI() {
-        jobOption = new CDCJobOption();
-        jobManager = new PipelineJobManager(jobOption);
-        jobConfigManager = new PipelineJobConfigurationManager(jobOption);
+        jobType = new CDCJobType();
+        jobManager = new PipelineJobManager(jobType);
+        jobConfigManager = new PipelineJobConfigurationManager(jobType);
         dataSourceConfigSwapper = new YamlDataSourceConfigurationSwapper();
         ruleConfigSwapperEngine = new YamlRuleConfigurationSwapperEngine();
         pipelineDataSourceConfigSwapper = new YamlPipelineDataSourceConfigurationSwapper();
@@ -121,7 +121,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         if (governanceFacade.getJobFacade().getConfiguration().isExisted(jobConfig.getJobId())) {
             log.warn("CDC job already exists in registry center, ignore, job id is `{}`", jobConfig.getJobId());
         } else {
-            governanceFacade.getJobFacade().getJob().create(jobConfig.getJobId(), jobOption.getJobClass());
+            governanceFacade.getJobFacade().getJob().create(jobConfig.getJobId(), jobType.getJobClass());
             JobConfigurationPOJO jobConfigPOJO = jobConfigManager.convertToJobConfigurationPOJO(jobConfig);
             jobConfigPOJO.setDisabled(true);
             governanceFacade.getJobFacade().getConfiguration().persist(jobConfig.getJobId(), jobConfigPOJO);
@@ -134,7 +134,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     
     private YamlCDCJobConfiguration getYamlCDCJobConfiguration(final StreamDataParameter param, final CDCSinkType sinkType, final Properties sinkProps, final PipelineContextKey contextKey) {
         YamlCDCJobConfiguration result = new YamlCDCJobConfiguration();
-        result.setJobId(new CDCJobId(contextKey, param.getSchemaTableNames(), param.isFull(), sinkType.name()).marshal());
+        result.setJobId(PipelineJobIdUtils.marshal(new CDCJobId(contextKey, param.getSchemaTableNames(), param.isFull())));
         result.setDatabaseName(param.getDatabaseName());
         result.setSchemaTableNames(param.getSchemaTableNames());
         result.setFull(param.isFull());
@@ -169,7 +169,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     
     private void initIncrementalPosition(final CDCJobConfiguration jobConfig) {
         String jobId = jobConfig.getJobId();
-        PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobOption.getYamlJobItemProgressSwapper());
+        PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
         try (PipelineDataSourceManager pipelineDataSourceManager = new DefaultPipelineDataSourceManager()) {
             for (int i = 0; i < jobConfig.getJobShardingCount(); i++) {
                 if (jobItemManager.getProgress(jobId, i).isPresent()) {
@@ -178,7 +178,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
                 IncrementalDumperContext dumperContext = buildDumperContext(jobConfig, i, new TableAndSchemaNameMapper(jobConfig.getSchemaTableNames()));
                 TransmissionJobItemProgress jobItemProgress = getTransmissionJobItemProgress(jobConfig, pipelineDataSourceManager, dumperContext);
                 PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getProcess().persist(
-                        jobId, i, YamlEngine.marshal(jobOption.getYamlJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress)));
+                        jobId, i, YamlEngine.marshal(jobType.getYamlJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress)));
             }
         } catch (final SQLException ex) {
             throw new PrepareJobWithGetBinlogPositionException(jobId, ex);
@@ -225,7 +225,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
-        jobConfigPOJO.getProps().remove("stop_time_millis");
+        jobConfigPOJO.getProps().remove("stop_time");
         PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobConfigPOJO.getJobName())).updateJobConfiguration(jobConfigPOJO);
     }
     
@@ -238,7 +238,6 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
         jobConfigPOJO.setDisabled(true);
         jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DateTimeFormatterFactory.getStandardFormatter()));
-        jobConfigPOJO.getProps().setProperty("stop_time_millis", String.valueOf(System.currentTimeMillis()));
         PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobConfigPOJO.getJobName())).updateJobConfiguration(jobConfigPOJO);
     }
     

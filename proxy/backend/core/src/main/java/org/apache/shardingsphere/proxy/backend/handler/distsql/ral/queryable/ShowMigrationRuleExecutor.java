@@ -17,43 +17,28 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.data.pipeline.common.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
-import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobManager;
+import org.apache.shardingsphere.data.pipeline.distsql.ShowTransmissionRuleQueryResult;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowMigrationRuleStatement;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Show migration rule executor.
  */
 public final class ShowMigrationRuleExecutor implements QueryableRALExecutor<ShowMigrationRuleStatement> {
     
-    @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationRuleStatement sqlStatement) {
-        PipelineProcessConfiguration processConfig = new TransmissionJobManager((TransmissionJobOption) TypedSPILoader.getService(PipelineJobType.class, "MIGRATION").getOption())
-                .showProcessConfiguration(new PipelineContextKey(InstanceType.PROXY));
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        result.add(new LocalDataQueryResultRow(getString(processConfig.getRead()), getString(processConfig.getWrite()), getString(processConfig.getStreamChannel())));
-        return result;
-    }
-    
-    private String getString(final Object obj) {
-        return null == obj ? "" : JsonUtils.toJsonString(obj);
-    }
+    private final ShowTransmissionRuleQueryResult queryResult = new ShowTransmissionRuleQueryResult("MIGRATION");
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("read", "write", "stream_channel");
+        return queryResult.getColumnNames();
+    }
+    
+    @Override
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationRuleStatement sqlStatement) {
+        return queryResult.getRows();
     }
     
     @Override

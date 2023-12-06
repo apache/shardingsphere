@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.util.Properties;

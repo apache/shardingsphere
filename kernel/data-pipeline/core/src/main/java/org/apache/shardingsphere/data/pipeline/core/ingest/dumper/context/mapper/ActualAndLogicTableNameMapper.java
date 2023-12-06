@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mappe
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.common.metadata.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
 
 import java.util.Map;
 

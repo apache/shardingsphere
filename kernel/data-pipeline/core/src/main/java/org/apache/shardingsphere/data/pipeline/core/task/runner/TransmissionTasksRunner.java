@@ -20,16 +20,15 @@ package org.apache.shardingsphere.data.pipeline.core.task.runner;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.context.TransmissionJobItemContext;
-import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteCallback;
-import org.apache.shardingsphere.data.pipeline.common.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.common.ingest.position.FinishedPosition;
-import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.TransmissionJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
+import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
@@ -57,7 +56,7 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
     
     private final Collection<PipelineTask> incrementalTasks;
     
-    private final PipelineJobOption jobOption;
+    private final PipelineJobType jobType;
     
     private final PipelineJobManager jobManager;
     
@@ -67,9 +66,9 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
         this.jobItemContext = jobItemContext;
         inventoryTasks = jobItemContext.getInventoryTasks();
         incrementalTasks = jobItemContext.getIncrementalTasks();
-        jobOption = TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType()).getOption();
-        jobManager = new PipelineJobManager(jobOption);
-        jobItemManager = new PipelineJobItemManager<>(jobOption.getYamlJobItemProgressSwapper());
+        jobType = TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType());
+        jobManager = new PipelineJobManager(jobType);
+        jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
     }
     
     @Override
@@ -90,7 +89,7 @@ public class TransmissionTasksRunner implements PipelineTasksRunner {
         if (jobItemContext.isStopping()) {
             return;
         }
-        new PipelineJobItemManager<>(TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType()).getOption()
+        new PipelineJobItemManager<>(TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getType())
                 .getYamlJobItemProgressSwapper()).persistProgress(jobItemContext);
         if (PipelineJobProgressDetector.isAllInventoryTasksFinished(inventoryTasks)) {
             log.info("All inventory tasks finished.");

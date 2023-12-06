@@ -18,24 +18,24 @@
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.ConsistencyCheckJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.yaml.YamlConsistencyCheckJobItemProgressSwapper;
-import org.apache.shardingsphere.data.pipeline.common.pojo.ConsistencyCheckJobItemInfo;
-import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.PipelineGovernanceFacade;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobItemProgressSwapper;
+import org.apache.shardingsphere.data.pipeline.core.pojo.ConsistencyCheckJobItemInfo;
+import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyCheckerFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineDatabaseTypeException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.UncompletedConsistencyCheckJobExistsException;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobId;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobOption;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.YamlConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.YamlConsistencyCheckJobConfigurationSwapper;
@@ -72,10 +72,10 @@ public final class ConsistencyCheckJobAPI {
     
     private final PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager;
     
-    public ConsistencyCheckJobAPI(final ConsistencyCheckJobOption jobOption) {
-        progressSwapper = jobOption.getYamlJobItemProgressSwapper();
-        jobManager = new PipelineJobManager(jobOption);
-        jobConfigManager = new PipelineJobConfigurationManager(jobOption);
+    public ConsistencyCheckJobAPI(final ConsistencyCheckJobType jobType) {
+        progressSwapper = jobType.getYamlJobItemProgressSwapper();
+        jobManager = new PipelineJobManager(jobType);
+        jobConfigManager = new PipelineJobConfigurationManager(jobType);
         jobItemManager = new PipelineJobItemManager<>(progressSwapper);
     }
     
@@ -96,7 +96,8 @@ public final class ConsistencyCheckJobAPI {
         }
         checkPipelineDatabaseTypes(param);
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(parentJobId);
-        String result = latestCheckJobId.map(optional -> new ConsistencyCheckJobId(contextKey, parentJobId, optional)).orElseGet(() -> new ConsistencyCheckJobId(contextKey, parentJobId)).marshal();
+        String result = PipelineJobIdUtils.marshal(
+                latestCheckJobId.map(optional -> new ConsistencyCheckJobId(contextKey, parentJobId, optional)).orElseGet(() -> new ConsistencyCheckJobId(contextKey, parentJobId)));
         governanceFacade.getJobFacade().getCheck().persistLatestCheckJobId(parentJobId, result);
         governanceFacade.getJobFacade().getCheck().deleteCheckJobResult(parentJobId, result);
         jobManager.drop(result);
@@ -155,7 +156,7 @@ public final class ConsistencyCheckJobAPI {
         Optional<Integer> previousSequence = ConsistencyCheckSequence.getPreviousSequence(
                 checkJobIds.stream().map(ConsistencyCheckJobId::parseSequence).collect(Collectors.toList()), ConsistencyCheckJobId.parseSequence(latestCheckJobId));
         if (previousSequence.isPresent()) {
-            String checkJobId = new ConsistencyCheckJobId(contextKey, parentJobId, previousSequence.get()).marshal();
+            String checkJobId = PipelineJobIdUtils.marshal(new ConsistencyCheckJobId(contextKey, parentJobId, previousSequence.get()));
             governanceFacade.getJobFacade().getCheck().persistLatestCheckJobId(parentJobId, checkJobId);
         } else {
             governanceFacade.getJobFacade().getCheck().deleteLatestCheckJobId(parentJobId);

@@ -20,8 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.common.job.PipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 
 import java.util.Collection;

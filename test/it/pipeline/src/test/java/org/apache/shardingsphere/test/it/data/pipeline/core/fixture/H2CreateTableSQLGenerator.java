@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.syntax.CreateTableSQLGenerateException;
-import org.apache.shardingsphere.data.pipeline.common.spi.sql.CreateTableSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.core.spi.sql.CreateTableSQLGenerator;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 
 import javax.sql.DataSource;

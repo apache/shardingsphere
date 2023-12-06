@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
-import org.apache.shardingsphere.data.pipeline.common.spi.ingest.dumper.DialectColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.DialectColumnValueReader;
 import org.postgresql.util.PGobject;
 
 import java.sql.ResultSet;

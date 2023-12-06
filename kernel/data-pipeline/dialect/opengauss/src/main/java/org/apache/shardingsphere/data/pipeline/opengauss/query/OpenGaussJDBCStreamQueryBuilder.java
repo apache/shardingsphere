@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.query;
 
-import org.apache.shardingsphere.data.pipeline.common.query.DialectJDBCStreamQueryBuilder;
+import org.apache.shardingsphere.data.pipeline.core.query.DialectJDBCStreamQueryBuilder;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.sql.Connection;

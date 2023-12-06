@@ -18,18 +18,22 @@
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
+
+import java.util.Optional;
 
 /**
  * Consistency check job id.
  */
 @Getter
-@ToString(callSuper = true)
-public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
+public final class ConsistencyCheckJobId implements PipelineJobId {
+    
+    private final PipelineJobType jobType = new ConsistencyCheckJobType();
+    
+    private final PipelineContextKey contextKey;
     
     private final String parentJobId;
     
@@ -44,7 +48,7 @@ public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
     }
     
     public ConsistencyCheckJobId(final PipelineContextKey contextKey, final String parentJobId, final int sequence) {
-        super(new ConsistencyCheckJobType(), contextKey);
+        this.contextKey = contextKey;
         this.parentJobId = parentJobId;
         this.sequence = sequence > ConsistencyCheckSequence.MAX_SEQUENCE ? ConsistencyCheckSequence.MIN_SEQUENCE : sequence;
     }
@@ -60,7 +64,12 @@ public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
     }
     
     @Override
-    public String marshal() {
-        return PipelineJobIdUtils.marshalJobIdCommonPrefix(this) + parentJobId + sequence;
+    public Optional<String> getParentJobId() {
+        return Optional.of(parentJobId);
+    }
+    
+    @Override
+    public Optional<Integer> getSequence() {
+        return Optional.of(sequence);
     }
 }

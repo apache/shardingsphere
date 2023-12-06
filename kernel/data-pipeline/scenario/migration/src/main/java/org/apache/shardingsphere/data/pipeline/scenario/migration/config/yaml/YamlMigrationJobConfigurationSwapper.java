@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml;
 
-import org.apache.shardingsphere.data.pipeline.common.datanode.JobDataNodeLine;
-import org.apache.shardingsphere.data.pipeline.common.datasource.yaml.YamlPipelineDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.YamlPipelineDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.YamlPipelineJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;

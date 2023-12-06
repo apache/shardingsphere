@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml;
 
-import org.apache.shardingsphere.data.pipeline.core.job.yaml.YamlPipelineJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.YamlPipelineJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;

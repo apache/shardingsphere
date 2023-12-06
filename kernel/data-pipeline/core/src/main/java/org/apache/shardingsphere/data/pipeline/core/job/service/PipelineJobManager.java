@@ -19,21 +19,19 @@ package org.apache.shardingsphere.data.pipeline.core.job.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.common.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.common.job.progress.PipelineJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.common.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.common.pojo.PipelineJobInfo;
-import org.apache.shardingsphere.data.pipeline.common.registrycenter.repository.PipelineGovernanceFacade;
-import org.apache.shardingsphere.data.pipeline.common.util.PipelineDistributedBarrier;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyStartedException;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
-import org.apache.shardingsphere.data.pipeline.core.job.option.TransmissionJobOption;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -53,7 +51,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class PipelineJobManager {
     
-    private final PipelineJobOption jobOption;
+    private final PipelineJobType jobType;
     
     /**
      * Start job.
@@ -68,8 +66,8 @@ public final class PipelineJobManager {
             log.warn("jobId already exists in registry center, ignore, job id is `{}`", jobId);
             return;
         }
-        governanceFacade.getJobFacade().getJob().create(jobId, jobOption.getJobClass());
-        governanceFacade.getJobFacade().getConfiguration().persist(jobId, new PipelineJobConfigurationManager(jobOption).convertToJobConfigurationPOJO(jobConfig));
+        governanceFacade.getJobFacade().getJob().create(jobId, jobType.getJobClass());
+        governanceFacade.getJobFacade().getConfiguration().persist(jobId, new PipelineJobConfigurationManager(jobType).convertToJobConfigurationPOJO(jobConfig));
     }
     
     /**
@@ -78,15 +76,15 @@ public final class PipelineJobManager {
      * @param jobId job id
      */
     public void resume(final String jobId) {
-        if (jobOption.isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished()) {
-            Optional<? extends PipelineJobItemProgress> jobItemProgress = new PipelineJobItemManager<>(jobOption.getYamlJobItemProgressSwapper()).getProgress(jobId, 0);
+        if (jobType.isIgnoreToStartDisabledJobWhenJobItemProgressIsFinished()) {
+            Optional<? extends PipelineJobItemProgress> jobItemProgress = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper()).getProgress(jobId, 0);
             if (jobItemProgress.isPresent() && JobStatus.FINISHED == jobItemProgress.get().getStatus()) {
                 log.info("job status is FINISHED, ignore, jobId={}", jobId);
                 return;
             }
         }
         startCurrentDisabledJob(jobId);
-        jobOption.getToBeStartDisabledNextJobType().ifPresent(optional -> startNextDisabledJob(jobId, optional));
+        jobType.getToBeStartDisabledNextJobType().ifPresent(optional -> startNextDisabledJob(jobId, optional));
         
     }
     
@@ -98,7 +96,6 @@ public final class PipelineJobManager {
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
         jobConfigPOJO.getProps().remove("stop_time");
-        jobConfigPOJO.getProps().remove("stop_time_millis");
         jobConfigPOJO.getProps().setProperty("run_count", String.valueOf(Integer.parseInt(jobConfigPOJO.getProps().getProperty("run_count", "0")) + 1));
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         pipelineDistributedBarrier.register(barrierEnablePath, jobConfigPOJO.getShardingTotalCount());
@@ -109,7 +106,7 @@ public final class PipelineJobManager {
     private void startNextDisabledJob(final String jobId, final String toBeStartDisabledNextJobType) {
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobFacade().getCheck().findLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
-                new PipelineJobManager(TypedSPILoader.getService(PipelineJobType.class, toBeStartDisabledNextJobType).getOption()).resume(optional);
+                new PipelineJobManager(TypedSPILoader.getService(PipelineJobType.class, toBeStartDisabledNextJobType)).resume(optional);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -124,14 +121,14 @@ public final class PipelineJobManager {
      * @param jobId job id
      */
     public void stop(final String jobId) {
-        jobOption.getToBeStoppedPreviousJobType().ifPresent(optional -> stopPreviousJob(jobId, optional));
+        jobType.getToBeStoppedPreviousJobType().ifPresent(optional -> stopPreviousJob(jobId, optional));
         stopCurrentJob(jobId);
     }
     
     private void stopPreviousJob(final String jobId, final String toBeStoppedPreviousJobType) {
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobFacade().getCheck().findLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
-                new PipelineJobManager(TypedSPILoader.getService(PipelineJobType.class, toBeStoppedPreviousJobType).getOption()).stop(optional);
+                new PipelineJobManager(TypedSPILoader.getService(PipelineJobType.class, toBeStoppedPreviousJobType)).stop(optional);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -149,7 +146,6 @@ public final class PipelineJobManager {
         }
         jobConfigPOJO.setDisabled(true);
         jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DateTimeFormatterFactory.getStandardFormatter()));
-        jobConfigPOJO.getProps().setProperty("stop_time_millis", String.valueOf(System.currentTimeMillis()));
         String barrierPath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
         pipelineDistributedBarrier.register(barrierPath, jobConfigPOJO.getShardingTotalCount());
         PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId)).updateJobConfiguration(jobConfigPOJO);
@@ -174,11 +170,12 @@ public final class PipelineJobManager {
      * @return jobs info
      */
     public List<PipelineJobInfo> getJobInfos(final PipelineContextKey contextKey) {
-        if (jobOption instanceof TransmissionJobOption) {
+        try {
             return PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo().stream()
-                    .filter(each -> !each.getJobName().startsWith("_") && jobOption.getType().equals(PipelineJobIdUtils.parseJobType(each.getJobName()).getType()))
-                    .map(each -> ((TransmissionJobOption) jobOption).getJobInfo(each.getJobName())).collect(Collectors.toList());
+                    .filter(each -> !each.getJobName().startsWith("_") && jobType.getType().equals(PipelineJobIdUtils.parseJobType(each.getJobName()).getType()))
+                    .map(each -> jobType.getJobInfo(each.getJobName())).collect(Collectors.toList());
+        } catch (final UnsupportedOperationException ex) {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
     }
 }

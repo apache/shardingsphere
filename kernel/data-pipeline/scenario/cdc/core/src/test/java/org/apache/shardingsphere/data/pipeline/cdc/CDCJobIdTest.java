@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc;
 
-import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
-import org.apache.shardingsphere.data.pipeline.common.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,10 +31,7 @@ class CDCJobIdTest {
     
     @Test
     void assertParseJobType() {
-        PipelineContextKey contextKey = new PipelineContextKey("sharding_db", InstanceType.PROXY);
-        CDCJobId pipelineJobId = new CDCJobId(contextKey, Arrays.asList("test", "t_order"), false, CDCSinkType.SOCKET.name());
-        String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";
-        PipelineJobType actualJobType = PipelineJobIdUtils.parseJobType(jobId);
-        assertThat(actualJobType, instanceOf(CDCJobType.class));
+        String jobId = PipelineJobIdUtils.marshal(new CDCJobId(new PipelineContextKey("sharding_db", InstanceType.PROXY), Collections.singletonList("foo"), true));
+        assertThat(PipelineJobIdUtils.parseJobType(jobId), instanceOf(CDCJobType.class));
     }
 }

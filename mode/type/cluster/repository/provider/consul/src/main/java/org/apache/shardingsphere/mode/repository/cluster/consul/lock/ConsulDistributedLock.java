@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.repository.cluster.consul.lock;
 
 import com.ecwid.consul.ConsulException;
-import com.ecwid.consul.transport.RawResponse;
+import com.ecwid.consul.transport.HttpResponse;
 import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.OperationException;
 import com.ecwid.consul.v1.QueryParams;
@@ -133,7 +133,7 @@ public final class ConsulDistributedLock implements DistributedLock {
         }
     }
     
-    private Response<GetValue> getResponse(final RawResponse rawResponse) {
+    private Response<GetValue> getResponse(final HttpResponse rawResponse) {
         if (200 == rawResponse.getStatusCode()) {
             List<GetValue> value = JsonUtils.fromJsonString(rawResponse.getContent(), new TypeReference<List<GetValue>>() {
             });

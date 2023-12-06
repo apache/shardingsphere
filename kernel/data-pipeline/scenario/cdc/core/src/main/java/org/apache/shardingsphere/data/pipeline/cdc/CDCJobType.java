@@ -17,8 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc;
 
-import org.apache.shardingsphere.data.pipeline.common.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.job.option.PipelineJobOption;
+import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.YamlCDCJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlTransmissionJobItemProgressSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobMetaData;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 
 /**
  * CDC job type.
@@ -30,9 +40,39 @@ public final class CDCJobType implements PipelineJobType {
         return "03";
     }
     
+    @SuppressWarnings("unchecked")
     @Override
-    public PipelineJobOption getOption() {
-        return new CDCJobOption();
+    public YamlCDCJobConfigurationSwapper getYamlJobConfigurationSwapper() {
+        return new YamlCDCJobConfigurationSwapper();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public YamlTransmissionJobItemProgressSwapper getYamlJobItemProgressSwapper() {
+        return new YamlTransmissionJobItemProgressSwapper();
+    }
+    
+    @Override
+    public Class<CDCJob> getJobClass() {
+        return CDCJob.class;
+    }
+    
+    @Override
+    public boolean isForceNoShardingWhenConvertToJobConfigurationPOJO() {
+        return true;
+    }
+    
+    @Override
+    public PipelineJobInfo getJobInfo(final String jobId) {
+        PipelineJobMetaData jobMetaData = new PipelineJobMetaData(PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId));
+        CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(new CDCJobType()).getJobConfiguration(jobId);
+        return new PipelineJobInfo(jobMetaData, jobConfig.getDatabaseName(), String.join(", ", jobConfig.getSchemaTableNames()));
+    }
+    
+    @Override
+    public PipelineDataConsistencyChecker buildDataConsistencyChecker(final PipelineJobConfiguration jobConfig, final TransmissionProcessContext processContext,
+                                                                      final ConsistencyCheckJobItemProgressContext progressContext) {
+        throw new UnsupportedOperationException();
     }
     
     @Override

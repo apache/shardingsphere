@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
-import org.apache.shardingsphere.data.pipeline.common.spi.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.core.spi.ingest.position.PositionInitializer;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

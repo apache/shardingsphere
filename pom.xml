@@ -106,11 +106,11 @@
         <zookeeper.version>3.9.0</zookeeper.version>
         <audience-annotations.version>0.12.0</audience-annotations.version>
         <jetcd.version>0.7.6</jetcd.version>
-        <consul.api.version>1.4.1</consul.api.version>
+        <consul.api.version>1.4.5</consul.api.version>
         
         <grpc.version>1.58.0</grpc.version>
         <protobuf.version>3.21.12</protobuf.version>
-        <httpclient.version>4.5.13</httpclient.version>
+        <httpclient.version>4.5.14</httpclient.version>
         <okhttp.version>4.12.0</okhttp.version>
         
         <elasticjob.version>3.0.4</elasticjob.version>
