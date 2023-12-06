@@ -172,10 +172,10 @@ public final class InsertClauseShardingConditionEngine {
         Optional<GeneratedKeyContext> generatedKey = sqlStatementContext.getGeneratedKeyContext();
         String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         if (generatedKey.isPresent() && generatedKey.get().isGenerated() && shardingRule.findTableRule(tableName).isPresent()) {
-            String schemaName =
-                    sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
-            generatedKey.get().getGeneratedValues()
-                    .addAll(shardingRule.generateKeys(new KeyGenerateContext(database.getName(), schemaName, tableName, generatedKey.get().getColumnName()), sqlStatementContext.getValueListCount()));
+            String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
+                    .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
+            KeyGenerateContext keyGenerateContext = new KeyGenerateContext(database.getName(), schemaName, tableName, generatedKey.get().getColumnName());
+            generatedKey.get().getGeneratedValues().addAll(shardingRule.generateKeys(keyGenerateContext, sqlStatementContext.getValueListCount()));
             generatedKey.get().setSupportAutoIncrement(shardingRule.isSupportAutoIncrement(tableName));
             if (shardingRule.findShardingColumn(generatedKey.get().getColumnName(), tableName).isPresent()) {
                 appendGeneratedKeyCondition(generatedKey.get(), tableName, shardingConditions);
