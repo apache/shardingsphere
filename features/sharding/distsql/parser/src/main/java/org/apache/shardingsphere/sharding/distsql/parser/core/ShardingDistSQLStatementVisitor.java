@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.distsql.parser.core;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterDefaultShardingStrategyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingTableReferenceRuleContext;
