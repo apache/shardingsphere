@@ -39,7 +39,7 @@ public final class ShowServiceProviderImplementationsExecutor implements Queryab
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(ShowServiceProviderImplementationsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowServiceProviderImplementationsStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Class<?> clazz;
         try {
