@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDataba
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
 import org.apache.shardingsphere.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
@@ -50,6 +51,7 @@ import java.util.function.Consumer;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * E2E IT for different types of indexes, includes:
@@ -94,9 +96,9 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             // TODO PostgreSQL update delete events not support if table without unique keys at increment task.
             final Consumer<DataSource> incrementalTaskFn = dataSource -> {
                 if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
-                    doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys());
+                    doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next());
                 }
-                Object orderId = keyGenerateAlgorithm.generateKeys();
+                Object orderId = keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next();
                 insertOneOrder(containerComposer, orderId);
                 containerComposer.assertOrderRecordExist(dataSource, "t_order", orderId);
             };
@@ -171,10 +173,10 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
                 return;
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-            Object uniqueKey = keyGenerateAlgorithm.generateKeys();
+            Object uniqueKey = keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next();
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
-                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys());
+                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next());
                 containerComposer.assertOrderRecordExist(dataSource, "t_order", uniqueKey);
             });
         }
@@ -194,10 +196,10 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
                 return;
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
-            Object uniqueKey = keyGenerateAlgorithm.generateKeys();
+            Object uniqueKey = keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next();
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
-                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys());
+                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next());
                 containerComposer.assertOrderRecordExist(dataSource, "t_order", uniqueKey);
             });
         }

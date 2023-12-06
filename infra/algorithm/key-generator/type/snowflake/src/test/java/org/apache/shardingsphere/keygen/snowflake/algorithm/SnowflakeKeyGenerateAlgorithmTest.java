@@ -41,7 +41,9 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -107,11 +109,14 @@ class SnowflakeKeyGenerateAlgorithmTest {
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
-        assertThat(algorithm.generateKeys(), is(0L));
-        assertThat(algorithm.generateKeys(), is(1L));
-        assertThat(algorithm.generateKeys(), is(2L));
-        assertThat(algorithm.generateKeys(), is(3L));
-        assertThat(algorithm.generateKeys(), is(4L));
+        Collection<? extends Comparable<?>> actual = algorithm.generateKeys(mock(KeyGenerateContext.class), 5);
+        assertThat(actual.size(), is(5));
+        Iterator<? extends Comparable<?>> iterator = actual.iterator();
+        assertThat(iterator.next(), is(0L));
+        assertThat(iterator.next(), is(1L));
+        assertThat(iterator.next(), is(2L));
+        assertThat(iterator.next(), is(3L));
+        assertThat(iterator.next(), is(4L));
     }
     
     @Test
@@ -121,19 +126,19 @@ class SnowflakeKeyGenerateAlgorithmTest {
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
-        String actualGenerateKey0 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys().toString()));
+        String actualGenerateKey0 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().toString()));
         assertThat(Integer.parseInt(actualGenerateKey0.substring(actualGenerateKey0.length() - 3), 2), is(0));
         Awaitility.await().pollDelay(2L, TimeUnit.MILLISECONDS).until(() -> true);
-        String actualGenerateKey1 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys().toString()));
+        String actualGenerateKey1 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().toString()));
         assertThat(Integer.parseInt(actualGenerateKey1.substring(actualGenerateKey1.length() - 3), 2), is(1));
         Awaitility.await().pollDelay(2L, TimeUnit.MILLISECONDS).until(() -> true);
-        String actualGenerateKey2 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys().toString()));
+        String actualGenerateKey2 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().toString()));
         assertThat(Integer.parseInt(actualGenerateKey2.substring(actualGenerateKey2.length() - 3), 2), is(2));
         Awaitility.await().pollDelay(2L, TimeUnit.MILLISECONDS).until(() -> true);
-        String actualGenerateKey3 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys().toString()));
+        String actualGenerateKey3 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().toString()));
         assertThat(Integer.parseInt(actualGenerateKey3.substring(actualGenerateKey3.length() - 3), 2), is(3));
         Awaitility.await().pollDelay(2L, TimeUnit.MILLISECONDS).until(() -> true);
-        String actualGenerateKey4 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys().toString()));
+        String actualGenerateKey4 = Long.toBinaryString(Long.parseLong(algorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next().toString()));
         assertThat(Integer.parseInt(actualGenerateKey4.substring(actualGenerateKey4.length() - 3), 2), is(0));
     }
     
@@ -148,9 +153,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         setLastMillis(algorithm, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L, 20971521L, 25165825L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
-        for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
-            actual.add(algorithm.generateKeys());
-        }
+        actual.addAll(algorithm.generateKeys(mock(KeyGenerateContext.class), DEFAULT_KEY_AMOUNT));
         assertThat(actual, is(expected));
     }
     
@@ -167,9 +170,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     private void batchGenerate(final KeyGenerateAlgorithm algorithm) {
-        for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
-            algorithm.generateKeys();
-        }
+        algorithm.generateKeys(mock(KeyGenerateContext.class), DEFAULT_KEY_AMOUNT);
     }
     
     @Test
@@ -184,9 +185,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         setSequence(algorithm, (1 << DEFAULT_SEQUENCE_BITS) - 1L);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 4194305L, 4194306L, 8388608L, 8388609L, 8388610L, 12582913L, 12582914L, 12582915L, 16777216L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
-        for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
-            actual.add(algorithm.generateKeys());
-        }
+        actual.addAll(algorithm.generateKeys(mock(KeyGenerateContext.class), DEFAULT_KEY_AMOUNT));
         assertThat(actual, is(expected));
     }
     
@@ -211,7 +210,8 @@ class SnowflakeKeyGenerateAlgorithmTest {
     @Test
     void assertSetMaxVibrationOffsetFailureWhenNegative() {
         assertThrows(KeyGenerateAlgorithmInitializationException.class,
-                () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "-1"))).generateKeys());
+                () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "-1")))
+                        .generateKeys(mock(KeyGenerateContext.class), 1));
     }
     
     @Test
@@ -225,7 +225,8 @@ class SnowflakeKeyGenerateAlgorithmTest {
     @Test
     void assertSetMaxVibrationOffsetFailureWhenOutOfRange() {
         assertThrows(KeyGenerateAlgorithmInitializationException.class,
-                () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "4096"))).generateKeys());
+                () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "4096")))
+                        .generateKeys(mock(KeyGenerateContext.class), 1));
     }
     
     @Test
@@ -237,6 +238,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
     @Test
     void assertMaxTolerateTimeDifferenceMillisecondsWhenNegative() {
         assertThrows(KeyGenerateAlgorithmInitializationException.class,
-                () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-tolerate-time-difference-milliseconds", "-1"))).generateKeys());
+                () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-tolerate-time-difference-milliseconds", "-1")))
+                        .generateKeys(mock(KeyGenerateContext.class), 1));
     }
 }

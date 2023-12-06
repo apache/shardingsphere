@@ -121,8 +121,8 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     @Override
-    public Collection<Comparable<?>> generateKeys(KeyGenerateContext keyGenerateContext, int keyGenerateCount) {
-        Collection<Comparable<?>> result = new LinkedList<>();
+    public Collection<Long> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
+        Collection<Long> result = new LinkedList<>();
         for (int index = 0; index < keyGenerateCount; index++) {
             result.add(generateKey());
         }

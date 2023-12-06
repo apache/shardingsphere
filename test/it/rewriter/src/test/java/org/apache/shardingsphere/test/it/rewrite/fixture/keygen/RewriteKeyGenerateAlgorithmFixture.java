@@ -18,12 +18,17 @@
 package org.apache.shardingsphere.test.it.rewrite.fixture.keygen;
 
 import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public final class RewriteKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     @Override
-    public Long generateKeys() {
-        return 1L;
+    public Collection<Long> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
+        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 1L).collect(Collectors.toList());
     }
     
     @Override

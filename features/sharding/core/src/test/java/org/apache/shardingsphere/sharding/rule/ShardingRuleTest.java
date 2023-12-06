@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
 import org.apache.shardingsphere.keygen.core.exception.algorithm.GenerateKeyStrategyNotFoundException;
 import org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm;
@@ -316,7 +317,9 @@ class ShardingRuleTest {
     
     @Test
     void assertGenerateKeyFailure() {
-        assertThrows(GenerateKeyStrategyNotFoundException.class, () -> createMaximumShardingRule().generateKey("table_0"));
+        KeyGenerateContext generateContext = mock(KeyGenerateContext.class);
+        when(generateContext.getTableName()).thenReturn("table_0");
+        assertThrows(GenerateKeyStrategyNotFoundException.class, () -> createMaximumShardingRule().generateKeys(generateContext, 1));
     }
     
     @Test
@@ -394,12 +397,20 @@ class ShardingRuleTest {
     
     @Test
     void assertGenerateKeyWithDefaultKeyGenerator() {
-        assertThat(createMinimumShardingRule().generateKey("logic_table"), instanceOf(Long.class));
+        KeyGenerateContext generateContext = mock(KeyGenerateContext.class);
+        when(generateContext.getTableName()).thenReturn("logic_table");
+        Collection<? extends Comparable<?>> actual = createMinimumShardingRule().generateKeys(generateContext, 1);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), instanceOf(Long.class));
     }
     
     @Test
     void assertGenerateKeyWithKeyGenerator() {
-        assertThat(createMaximumShardingRule().generateKey("logic_table"), instanceOf(String.class));
+        KeyGenerateContext generateContext = mock(KeyGenerateContext.class);
+        when(generateContext.getTableName()).thenReturn("logic_table");
+        Collection<? extends Comparable<?>> actual = createMaximumShardingRule().generateKeys(generateContext, 1);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), instanceOf(String.class));
     }
     
     @Test

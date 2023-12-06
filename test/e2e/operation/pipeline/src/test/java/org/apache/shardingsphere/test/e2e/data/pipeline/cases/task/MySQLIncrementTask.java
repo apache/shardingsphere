@@ -20,12 +20,15 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.task;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtils;
 
 import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static org.mockito.Mockito.mock;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -59,7 +62,7 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private Object insertOrder() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        Object[] orderInsertDate = new Object[]{primaryKeyGenerateAlgorithm.generateKeys(), random.nextInt(0, 6),
+        Object[] orderInsertDate = new Object[]{primaryKeyGenerateAlgorithm.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next(), random.nextInt(0, 6),
                 random.nextInt(1, 99), "中文测试"};
         DataSourceExecuteUtils.execute(dataSource, String.format("INSERT INTO %s (order_id,user_id,t_unsigned_int,status) VALUES (?, ?, ?, ?)", orderTableName), orderInsertDate);
         return orderInsertDate[0];

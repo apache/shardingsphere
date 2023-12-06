@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
 import org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
@@ -31,6 +32,8 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static org.mockito.Mockito.mock;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -68,7 +71,8 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private Object insertOrder() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKeys(), random.nextInt(0, 6), "'中文'" + System.currentTimeMillis(), PipelineCaseHelper.generateJsonString(5, true),
+        Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKeys(mock(KeyGenerateContext.class), 1).iterator().next(), random.nextInt(0, 6), "'中文'" + System.currentTimeMillis(),
+                PipelineCaseHelper.generateJsonString(5, true),
                 PipelineCaseHelper.generateJsonString(10, false)};
         String insertSQL = String.format("INSERT INTO %s (order_id,user_id,status,t_json,t_jsonb) VALUES (?, ?, ?, ?, ?)", getTableNameWithSchema(orderTableName));
         log.info("insert order sql:{}", insertSQL);

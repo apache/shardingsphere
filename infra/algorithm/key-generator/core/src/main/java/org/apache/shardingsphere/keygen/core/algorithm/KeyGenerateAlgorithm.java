@@ -34,7 +34,7 @@ public interface KeyGenerateAlgorithm extends ShardingSphereAlgorithm {
      * @param keyGenerateCount key generate count
      * @return generated keys
      */
-    Collection<Comparable<?>> generateKeys(KeyGenerateContext keyGenerateContext, int keyGenerateCount);
+    Collection<? extends Comparable<?>> generateKeys(KeyGenerateContext keyGenerateContext, int keyGenerateCount);
     
     /**
      * Judge whether support auto increment or not.

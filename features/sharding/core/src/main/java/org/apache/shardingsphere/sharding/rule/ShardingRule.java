@@ -618,13 +618,12 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     /**
      * Find the generated keys of logic table.
      *
-     * @param logicTableName logic table name
      * @param keyGenerateContext key generate context 
      * @param keyGenerateCount key generate count
      * @return generated keys
      */
-    public Collection<Comparable<?>> generateKeys(final String logicTableName, final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
-        return getKeyGenerateAlgorithm(logicTableName).generateKeys(keyGenerateContext, keyGenerateCount);
+    public Collection<? extends Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
+        return getKeyGenerateAlgorithm(keyGenerateContext.getTableName()).generateKeys(keyGenerateContext, keyGenerateCount);
     }
     
     private KeyGenerateAlgorithm getKeyGenerateAlgorithm(final String logicTableName) {

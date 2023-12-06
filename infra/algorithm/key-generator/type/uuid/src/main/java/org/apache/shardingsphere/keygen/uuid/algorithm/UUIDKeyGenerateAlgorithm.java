@@ -31,8 +31,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class UUIDKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Override
-    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
-        Collection<Comparable<?>> result = new LinkedList<>();
+    public Collection<String> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
+        Collection<String> result = new LinkedList<>();
         ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
         for (int index = 0; index < keyGenerateCount; index++) {
             result.add(generateKey(threadLocalRandom));
