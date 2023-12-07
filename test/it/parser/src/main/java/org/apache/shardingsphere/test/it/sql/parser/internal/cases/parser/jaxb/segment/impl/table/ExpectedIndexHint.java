@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedDelimiterSQLSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -27,18 +27,15 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Expected simple table.
+ * Expected index hint.
  */
 @Getter
 @Setter
-public final class ExpectedSimpleTable extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedIndexHint extends AbstractExpectedDelimiterSQLSegment {
     
-    @XmlAttribute
-    private String alias;
+    @XmlElement(name = "hint-index-name")
+    private final Collection<ExpectedHintIndexName> hintIndexNames = new LinkedList<>();
     
-    @XmlElement
-    private ExpectedOwner owner;
-    
-    @XmlElement(name = "index-hint")
-    private final Collection<ExpectedIndexHint> indexHints = new LinkedList<>();
+    @XmlAttribute(name = "origin-text")
+    private String originText;
 }

@@ -15,30 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Expected simple table.
+ * Index hint segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ExpectedSimpleTable extends AbstractExpectedIdentifierSQLSegment {
+public final class IndexHintSegment implements SQLSegment {
     
-    @XmlAttribute
-    private String alias;
+    private final int startIndex;
     
-    @XmlElement
-    private ExpectedOwner owner;
+    private final int stopIndex;
     
-    @XmlElement(name = "index-hint")
-    private final Collection<ExpectedIndexHint> indexHints = new LinkedList<>();
+    private final Collection<String> indexNames;
+    
+    private final String useType;
+    
+    private final String indexType;
+    
+    @Setter
+    private String hintScope;
+    
+    private final String originText;
 }

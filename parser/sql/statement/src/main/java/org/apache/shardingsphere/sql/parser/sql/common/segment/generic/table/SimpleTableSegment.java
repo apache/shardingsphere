@@ -26,6 +26,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.PivotSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -42,6 +44,8 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     
     @Setter
     private AliasSegment alias;
+    
+    private final Collection<IndexHintSegment> indexHintSegments = new LinkedList<>();
     
     @Setter
     private PivotSegment pivot;
