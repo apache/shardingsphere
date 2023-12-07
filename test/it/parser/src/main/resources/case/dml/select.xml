@@ -2521,7 +2521,11 @@
         <from>
             <join-table join-type="INNER">
                 <left>
-                    <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
+                    <simple-table name="t_order" alias="o" start-index="16" stop-index="24">
+                        <index-hint origin-text="FORCE INDEX(order_index)" start-index="26" stop-index="49">
+                            <hint-index-name name="order_index" start-index="38" stop-index="48"/>
+                        </index-hint>
+                    </simple-table>
                 </left>
                 <right>
                     <simple-table name="t_order_item" alias="i" start-index="56" stop-index="69" />
