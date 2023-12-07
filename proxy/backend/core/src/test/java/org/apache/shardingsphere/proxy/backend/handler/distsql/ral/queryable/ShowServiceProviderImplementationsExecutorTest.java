@@ -27,7 +27,7 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,14 +37,14 @@ class ShowServiceProviderImplementationsExecutorTest {
     void assertGetRowData() {
         QueryableRALExecutor<ShowServiceProviderImplementationsStatement> executor = new ShowServiceProviderImplementationsExecutor();
         ShowServiceProviderImplementationsStatement statement = mock(ShowServiceProviderImplementationsStatement.class);
-        when(statement.getServiceProviderInterface()).thenReturn("org.apache.shardingsphere.sharding.spi.ShardingAlgorithm");
+        when(statement.getServiceProviderInterface()).thenReturn("org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolActiveDetector");
         Collection<LocalDataQueryResultRow> actual = executor.getRows(statement);
-        assertTrue(actual.size() > 0);
+        assertFalse(actual.isEmpty());
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("FooDistSQLShardingAlgorithmFixture"));
-        assertThat(row.getCell(2), is("FOO.DISTSQL.FIXTURE"));
-        assertThat(row.getCell(3), is("org.apache.shardingsphere.proxy.backend.handler.distsql.fixture.FooDistSQLShardingAlgorithmFixture"));
+        assertThat(row.getCell(1), is("HikariDataSourcePoolActiveDetector"));
+        assertThat(row.getCell(2), is("com.zaxxer.hikari.HikariDataSource"));
+        assertThat(row.getCell(3), is("org.apache.shardingsphere.infra.datasource.pool.hikari.detector.HikariDataSourcePoolActiveDetector"));
     }
     
     @Test
