@@ -44,7 +44,7 @@ countShadowRule
     ;
 
 tableRule
-    :RULE tableName
+    : RULE tableName
     ;
 
 databaseName
