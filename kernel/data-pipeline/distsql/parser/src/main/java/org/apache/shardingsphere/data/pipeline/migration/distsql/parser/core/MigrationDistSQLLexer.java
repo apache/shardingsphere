@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.parser.core;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core;
 
 import org.antlr.v4.runtime.CharStream;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementLexer;

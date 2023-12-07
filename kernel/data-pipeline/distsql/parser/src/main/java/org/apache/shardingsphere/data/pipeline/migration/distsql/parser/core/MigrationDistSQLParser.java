@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cdc.distsql.parser.core;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core;
 
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementParser;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * SQL parser for CDC.
+ * SQL parser for migration.
  */
-public final class CDCDistSQLParser extends CDCDistSQLStatementParser implements SQLParser {
+public final class MigrationDistSQLParser extends MigrationDistSQLStatementParser implements SQLParser {
     
-    public CDCDistSQLParser(final TokenStream input) {
+    public MigrationDistSQLParser(final TokenStream input) {
         super(input);
     }
     

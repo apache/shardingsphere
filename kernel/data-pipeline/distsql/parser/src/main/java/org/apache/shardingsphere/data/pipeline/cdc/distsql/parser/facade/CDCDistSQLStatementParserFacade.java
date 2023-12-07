@@ -15,39 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.parser.facade;
+package org.apache.shardingsphere.data.pipeline.cdc.distsql.parser.facade;
 
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.parser.core.CDCDistSQLLexer;
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.parser.core.CDCDistSQLParser;
+import org.apache.shardingsphere.data.pipeline.cdc.distsql.parser.core.CDCDistSQLStatementVisitor;
 import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
-import org.apache.shardingsphere.migration.distsql.parser.core.MigrationDistSQLLexer;
-import org.apache.shardingsphere.migration.distsql.parser.core.MigrationDistSQLParser;
-import org.apache.shardingsphere.migration.distsql.parser.core.MigrationDistSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for migration DistSQL statement.
+ * SQL parser facade for CDC DistSQL statement.
  */
-public final class MigrationDistSQLStatementParserFacade implements FeaturedDistSQLStatementParserFacade {
+public final class CDCDistSQLStatementParserFacade implements FeaturedDistSQLStatementParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
-        return MigrationDistSQLLexer.class;
+        return CDCDistSQLLexer.class;
     }
     
     @Override
     public Class<? extends SQLParser> getParserClass() {
-        return MigrationDistSQLParser.class;
+        return CDCDistSQLParser.class;
     }
     
     @Override
     public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
-        return MigrationDistSQLStatementVisitor.class;
+        return CDCDistSQLStatementVisitor.class;
     }
     
     @Override
     public String getType() {
-        return "migration";
+        return "CDC";
     }
 }

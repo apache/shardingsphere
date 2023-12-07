@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cdc.distsql.parser.core;
+package org.apache.shardingsphere.data.pipeline.cdc.distsql.parser.core;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.cdc.distsql.statement.DropStreamingStatement;
