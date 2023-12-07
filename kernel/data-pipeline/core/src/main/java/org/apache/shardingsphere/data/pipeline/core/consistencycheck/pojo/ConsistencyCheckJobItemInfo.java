@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.pojo;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.pojo;
 
 import lombok.Getter;
 import lombok.Setter;

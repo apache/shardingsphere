@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.core.pojo.ConsistencyCheckJobItemInfo;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.pojo.ConsistencyCheckJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
