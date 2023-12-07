@@ -484,7 +484,7 @@ class ShardingRuleTest {
     void assertGetDataSourceNamesWithoutShardingTablesAndShardingAutoTables() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, createDataSources(), mock(InstanceContext.class));
-        assertThat(shardingRule.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1", "resource0", "resource1")));
+        assertThat(shardingRule.getDataSourceNames(), is(new LinkedHashSet<>(Arrays.asList("ds_0", "ds_1", "resource0", "resource1"))));
     }
     
     private ShardingRule createMaximumShardingRule() {
