@@ -152,7 +152,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitShowShadowTableRules(final ShowShadowTableRulesContext ctx) {
-        return new ShowShadowTableRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), "");
+        return new ShowShadowTableRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), ctx.TABLE().getText());
     }
     
     private String getIdentifierValue(final ParserRuleContext ctx) {
