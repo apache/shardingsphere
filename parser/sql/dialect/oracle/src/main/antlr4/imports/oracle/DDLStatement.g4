@@ -520,7 +520,7 @@ groupsClause
 
 xmlIndexXmltableClause
     : XMLTABLE identifier (LP_ segmentAttributesClause tableCompression? inmemoryTableClause? tableProperties RP_)?
-    ( xmlNameSpacesClause COMMA_)? xQueryString=STRING_ (PASSING identifier)? COLUMNS columnClause (COMMA_ columnClause)*
+    ( xmlNamespacesClause COMMA_)? xQueryString=STRING_ (PASSING identifier)? COLUMNS columnClause (COMMA_ columnClause)*
     ;
 
 columnClause
@@ -534,7 +534,7 @@ alterIndexGroupClause
     ;
 
 addColumnOptions
-    : (GROUP identifier)? XMLTABLE identifier (xmlNameSpacesClause COMMA_)? COLUMNS columnClause (COMMA_ columnClause)*
+    : (GROUP identifier)? XMLTABLE identifier (xmlNamespacesClause COMMA_)? COLUMNS columnClause (COMMA_ columnClause)*
     ;
 
 dropColumnOptions
