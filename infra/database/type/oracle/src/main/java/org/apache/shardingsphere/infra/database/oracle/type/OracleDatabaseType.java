@@ -19,17 +19,17 @@ package org.apache.shardingsphere.infra.database.oracle.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
- * Database type of Oracle.
+ * Database type of Oracle. Includes verification of Docker Images involved in commonly used testcontainers.
  */
 public final class OracleDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton(String.format("jdbc:%s:", getType().toLowerCase()));
+        return Arrays.asList(String.format("jdbc:%s:", getType().toLowerCase()), "jdbc:tc:gvenzl/oracle-free:", "jdbc:tc:gvenzl/oracle-xe:");
     }
     
     @Override

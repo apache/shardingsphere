@@ -15,25 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.postgresql.type;
+package org.apache.shardingsphere.infra.database.clickhouse.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
- * Database type of PostgreSQL. Includes verification of Docker Images involved in commonly used testcontainers.
+ * Database type of ClickHouse. Includes verification of Docker Images involved in commonly used testcontainers.
+ * ClickHouse currently uses MySQL dialect parsing.
  */
-public final class PostgreSQLDatabaseType implements DatabaseType {
+public final class ClickHouseDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList(String.format("jdbc:%s:", getType().toLowerCase()), "jdbc:tc:postgres:");
+        return Arrays.asList("jdbc:ch:", "jdbc:clickhouse:", "jdbc:tc:clickhouse/clickhouse-server:", "jdbc:tc:yandex/clickhouse-server:");
+    }
+    
+    @Override
+    public Optional<DatabaseType> getTrunkDatabaseType() {
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     }
     
     @Override
     public String getType() {
-        return "PostgreSQL";
+        return "ClickHouse";
     }
 }

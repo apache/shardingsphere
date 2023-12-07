@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.postgresql.type;
+package org.apache.shardingsphere.infra.database.clickhouse.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 
-/**
- * Database type of PostgreSQL. Includes verification of Docker Images involved in commonly used testcontainers.
- */
-public final class PostgreSQLDatabaseType implements DatabaseType {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class ClickHouseDatabaseTypeTest {
     
-    @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList(String.format("jdbc:%s:", getType().toLowerCase()), "jdbc:tc:postgres:");
-    }
-    
-    @Override
-    public String getType() {
-        return "PostgreSQL";
+    @Test
+    void assertGetJdbcUrlPrefixes() {
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "ClickHouse").getJdbcUrlPrefixes(),
+                is(Arrays.asList("jdbc:ch:", "jdbc:clickhouse:", "jdbc:tc:clickhouse/clickhouse-server:", "jdbc:tc:yandex/clickhouse-server:")));
     }
 }
