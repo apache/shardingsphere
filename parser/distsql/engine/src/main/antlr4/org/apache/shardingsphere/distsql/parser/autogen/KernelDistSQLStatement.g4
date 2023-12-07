@@ -50,5 +50,6 @@ execute
     | alterMigrationRule
     | lockCluster
     | unlockCluster
+    | showServiceProviderImplementations
     ) SEMI_? EOF
     ;

@@ -115,6 +115,10 @@ unlockCluster
     : UNLOCK CLUSTER
     ;
 
+showServiceProviderImplementations
+    : SHOW IMPLEMENTATIONS OF serviceProviderInterface
+    ;
+
 transmissionRule
     : LP_ readDefinition? (COMMA_? writeDefinition)? (COMMA_? streamChannel)? RP_
     ;
@@ -201,4 +205,8 @@ showLike
 
 likePattern
     : STRING_
+    ;
+
+serviceProviderInterface
+    : IDENTIFIER_ | STRING_
     ;
