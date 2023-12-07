@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.config;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.swapper;
 
-import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineReadConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineWriteConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.yaml.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.yaml.YamlPipelineReadConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.yaml.YamlPipelineWriteConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;

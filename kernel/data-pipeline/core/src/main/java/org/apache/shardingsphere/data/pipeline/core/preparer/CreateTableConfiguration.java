@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.config.process;
+package org.apache.shardingsphere.data.pipeline.core.preparer;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
 
 /**
- * Pipeline write configuration.
+ * Create table configuration.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public final class PipelineWriteConfiguration {
+@ToString(exclude = {"sourceDataSourceConfig", "targetDataSourceConfig"})
+public final class CreateTableConfiguration {
     
-    private final Integer workerThread;
+    private final PipelineDataSourceConfiguration sourceDataSourceConfig;
     
-    private final Integer batchSize;
+    private final CaseInsensitiveQualifiedTable sourceName;
     
-    private final AlgorithmConfiguration rateLimiter;
+    private final PipelineDataSourceConfiguration targetDataSourceConfig;
+    
+    private final CaseInsensitiveQualifiedTable targetName;
 }

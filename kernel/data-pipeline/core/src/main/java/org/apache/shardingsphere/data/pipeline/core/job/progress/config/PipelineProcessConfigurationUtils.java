@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.config.process;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.config.process.yaml.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.yaml.YamlPipelineReadConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.yaml.YamlPipelineWriteConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 
 import java.util.Properties;

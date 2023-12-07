@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.metadata;
 
-import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.yaml.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.yaml.YamlPipelineReadConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.yaml.YamlPipelineWriteConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;

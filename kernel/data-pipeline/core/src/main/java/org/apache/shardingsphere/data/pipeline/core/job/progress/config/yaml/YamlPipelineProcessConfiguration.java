@@ -15,27 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.config;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 
 /**
- * Create table configuration.
+ * YAML pipeline process configuration.
  */
-@RequiredArgsConstructor
 @Getter
-@ToString(exclude = {"sourceDataSourceConfig", "targetDataSourceConfig"})
-public final class CreateTableConfiguration {
+@Setter
+public final class YamlPipelineProcessConfiguration implements YamlConfiguration {
     
-    private final PipelineDataSourceConfiguration sourceDataSourceConfig;
+    private YamlPipelineReadConfiguration read;
     
-    private final CaseInsensitiveQualifiedTable sourceName;
+    private YamlPipelineWriteConfiguration write;
     
-    private final PipelineDataSourceConfiguration targetDataSourceConfig;
+    private YamlAlgorithmConfiguration streamChannel;
     
-    private final CaseInsensitiveQualifiedTable targetName;
+    /**
+     * Check all fields is null.
+     *
+     * @return true if all fields is null, otherwise is false.
+     */
+    public boolean isAllFieldsNull() {
+        return null == read && null == write && null == streamChannel;
+    }
 }

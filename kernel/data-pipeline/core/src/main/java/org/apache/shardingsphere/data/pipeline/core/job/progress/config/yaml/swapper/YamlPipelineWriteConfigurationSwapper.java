@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.config.process.yaml.swapper;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.swapper;
 
-import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineWriteConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.yaml.YamlPipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 
