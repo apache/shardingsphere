@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.ingest.dumper;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.DumperCommonContext;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.ActualAndLogicTableNameMapper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContextCreator;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.DumperCommonContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContextCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.ActualAndLogicTableNameMapper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 
 /**
@@ -37,10 +37,10 @@ public final class MigrationIncrementalDumperContextCreator implements Increment
     
     @Override
     public IncrementalDumperContext createDumperContext(final JobDataNodeLine jobDataNodeLine) {
-        String dataSourceName = jobDataNodeLine.getEntries().get(0).getDataNodes().get(0).getDataSourceName();
+        String dataSourceName = jobDataNodeLine.getEntries().iterator().next().getDataNodes().iterator().next().getDataSourceName();
         ActualAndLogicTableNameMapper tableNameMapper = JobDataNodeLineConvertUtils.buildTableNameMapper(jobDataNodeLine);
         TableAndSchemaNameMapper tableAndSchemaNameMapper = new TableAndSchemaNameMapper(jobConfig.getTargetTableSchemaMap());
-        return new IncrementalDumperContext(
-                new DumperCommonContext(dataSourceName, jobConfig.getSources().get(dataSourceName), tableNameMapper, tableAndSchemaNameMapper), jobConfig.getJobId(), false);
+        DumperCommonContext commonContext = new DumperCommonContext(dataSourceName, jobConfig.getSources().get(dataSourceName), tableNameMapper, tableAndSchemaNameMapper);
+        return new IncrementalDumperContext(commonContext, jobConfig.getJobId(), false);
     }
 }

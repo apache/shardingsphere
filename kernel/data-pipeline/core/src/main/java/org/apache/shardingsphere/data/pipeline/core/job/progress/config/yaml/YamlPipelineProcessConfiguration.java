@@ -15,43 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.pojo;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 
 /**
- * Consistency check job item info.
+ * YAML pipeline process configuration.
  */
-// TODO use final for fields
-// TODO embed ConsistencyCheckJobItemProgress to reduce fields
 @Getter
 @Setter
-public final class ConsistencyCheckJobItemInfo {
+public final class YamlPipelineProcessConfiguration implements YamlConfiguration {
     
-    private boolean active;
+    private YamlPipelineReadConfiguration read;
     
-    private String tableNames;
+    private YamlPipelineWriteConfiguration write;
     
-    private Boolean checkSuccess;
+    private YamlAlgorithmConfiguration streamChannel;
     
-    private String checkFailedTableNames;
-    
-    private int inventoryFinishedPercentage;
-    
-    private long inventoryRemainingSeconds;
-    
-    private String incrementalIdleSeconds = "";
-    
-    private String checkBeginTime;
-    
-    private String checkEndTime;
-    
-    private long durationSeconds;
-    
-    private String algorithmType;
-    
-    private String algorithmProps;
-    
-    private String errorMessage;
+    /**
+     * Check all fields is null.
+     *
+     * @return true if all fields is null, otherwise is false.
+     */
+    public boolean isAllFieldsNull() {
+        return null == read && null == write && null == streamChannel;
+    }
 }

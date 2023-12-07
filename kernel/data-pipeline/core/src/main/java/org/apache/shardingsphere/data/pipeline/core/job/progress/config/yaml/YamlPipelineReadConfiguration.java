@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.config.process.yaml;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,31 +23,36 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 
 /**
- * YAML pipeline write configuration.
+ * YAML pipeline read configuration.
  */
 @Getter
 @Setter
-public final class YamlPipelineWriteConfiguration implements YamlConfiguration {
+public final class YamlPipelineReadConfiguration implements YamlConfiguration {
     
     private static final Integer DEFAULT_WORKER_THREAD = 20;
     
     private static final Integer DEFAULT_BATCH_SIZE = 1000;
     
+    private static final Integer DEFAULT_SHARDING_SIZE = 10000000;
+    
     private Integer workerThread;
     
     private Integer batchSize;
+    
+    private Integer shardingSize;
     
     private YamlAlgorithmConfiguration rateLimiter;
     
     /**
      * Build with default value.
      *
-     * @return write configuration
+     * @return read configuration
      */
-    public static YamlPipelineWriteConfiguration buildWithDefaultValue() {
-        YamlPipelineWriteConfiguration result = new YamlPipelineWriteConfiguration();
+    public static YamlPipelineReadConfiguration buildWithDefaultValue() {
+        YamlPipelineReadConfiguration result = new YamlPipelineReadConfiguration();
         result.workerThread = DEFAULT_WORKER_THREAD;
         result.batchSize = DEFAULT_BATCH_SIZE;
+        result.shardingSize = DEFAULT_SHARDING_SIZE;
         return result;
     }
     
@@ -60,6 +65,9 @@ public final class YamlPipelineWriteConfiguration implements YamlConfiguration {
         }
         if (null == batchSize) {
             batchSize = DEFAULT_BATCH_SIZE;
+        }
+        if (null == shardingSize) {
+            shardingSize = DEFAULT_SHARDING_SIZE;
         }
     }
 }

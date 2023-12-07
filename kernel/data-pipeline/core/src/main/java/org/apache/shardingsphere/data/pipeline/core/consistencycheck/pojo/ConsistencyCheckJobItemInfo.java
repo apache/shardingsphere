@@ -15,24 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.config.process;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.pojo;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import lombok.Setter;
 
 /**
- * Pipeline write configuration.
+ * Consistency check job item info.
  */
-@RequiredArgsConstructor
+// TODO use final for fields
+// TODO embed ConsistencyCheckJobItemProgress to reduce fields
 @Getter
-@ToString
-public final class PipelineWriteConfiguration {
+@Setter
+public final class ConsistencyCheckJobItemInfo {
     
-    private final Integer workerThread;
+    private boolean active;
     
-    private final Integer batchSize;
+    private String tableNames;
     
-    private final AlgorithmConfiguration rateLimiter;
+    private Boolean checkSuccess;
+    
+    private String checkFailedTableNames;
+    
+    private int inventoryFinishedPercentage;
+    
+    private long inventoryRemainingSeconds;
+    
+    private String incrementalIdleSeconds = "";
+    
+    private String checkBeginTime;
+    
+    private String checkEndTime;
+    
+    private long durationSeconds;
+    
+    private String algorithmType;
+    
+    private String algorithmProps;
+    
+    private String errorMessage;
 }

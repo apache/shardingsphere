@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.config;
+package org.apache.shardingsphere.data.pipeline.core.preparer;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
