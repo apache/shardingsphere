@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.statement;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.statement.pojo;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 
 /**
- * Register migration source storage unit statement.
+ * Source target entry.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RegisterMigrationSourceStorageUnitStatement extends UpdatableMigrationRALStatement {
+@EqualsAndHashCode(of = {"source", "targetTableName"})
+public final class SourceTargetEntry {
     
-    private final Collection<DataSourceSegment> dataSources;
+    // TODO Remove targetDatabaseName, or keep it but rebuild it
+    private final String targetDatabaseName;
+    
+    private final DataNode source;
+    
+    private final String targetTableName;
 }

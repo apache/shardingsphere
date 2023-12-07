@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.statement.pojo;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.statement;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.QueryableMigrationRALStatement;
 
 /**
- * Source target entry.
+ * Show migration status statement.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(of = {"source", "targetTableName"})
-public final class SourceTargetEntry {
+public final class ShowMigrationStatusStatement extends QueryableMigrationRALStatement {
     
-    // TODO Remove targetDatabaseName, or keep it but rebuild it
-    private final String targetDatabaseName;
-    
-    private final DataNode source;
-    
-    private final String targetTableName;
+    private final String jobId;
 }

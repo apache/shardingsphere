@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.statement;
+package org.apache.shardingsphere.data.pipeline.cdc.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.cdc.QueryableCDCRALStatement;
 
 /**
- * Rollback migration statement.
+ * Show streaming status statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RollbackMigrationStatement extends UpdatableMigrationRALStatement {
+public final class ShowStreamingStatusStatement extends QueryableCDCRALStatement {
     
     private final String jobId;
 }

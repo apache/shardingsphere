@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.statement;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.statement;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
 
-import java.util.Collection;
-
 /**
- * Unregister migration source storage unit statement.
+ * Commit migration statement.
  */
+@RequiredArgsConstructor
 @Getter
-public final class UnregisterMigrationSourceStorageUnitStatement extends UpdatableMigrationRALStatement {
+public final class CommitMigrationStatement extends UpdatableMigrationRALStatement {
     
-    private final Collection<String> names;
-    
-    public UnregisterMigrationSourceStorageUnitStatement(final Collection<String> names) {
-        this.names = names;
-    }
+    private final String jobId;
 }

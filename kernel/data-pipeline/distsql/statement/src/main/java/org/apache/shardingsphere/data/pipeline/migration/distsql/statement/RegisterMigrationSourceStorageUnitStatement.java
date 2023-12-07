@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cdc.distsql.statement;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.ral.pipeline.cdc.QueryableCDCRALStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
+
+import java.util.Collection;
 
 /**
- * Show streaming list statement.
+ * Register migration source storage unit statement.
  */
-public final class ShowStreamingListStatement extends QueryableCDCRALStatement {
+@RequiredArgsConstructor
+@Getter
+public final class RegisterMigrationSourceStorageUnitStatement extends UpdatableMigrationRALStatement {
+    
+    private final Collection<DataSourceSegment> dataSources;
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.statement;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

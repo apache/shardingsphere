@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.statement;
+package org.apache.shardingsphere.data.pipeline.cdc.distsql.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.QueryableMigrationRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.cdc.QueryableCDCRALStatement;
 
 /**
- * Show migration check status statement.
+ * Show streaming rule statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShowMigrationCheckStatusStatement extends QueryableMigrationRALStatement {
-    
-    private final String jobId;
+public final class ShowStreamingRuleStatement extends QueryableCDCRALStatement {
 }

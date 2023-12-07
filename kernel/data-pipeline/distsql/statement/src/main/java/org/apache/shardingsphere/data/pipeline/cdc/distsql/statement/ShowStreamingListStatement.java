@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cdc.distsql.statement;
+package org.apache.shardingsphere.data.pipeline.cdc.distsql.statement;
 
 import org.apache.shardingsphere.distsql.statement.ral.pipeline.cdc.QueryableCDCRALStatement;
 
 /**
- * Show streaming rule statement.
+ * Show streaming list statement.
  */
-public final class ShowStreamingRuleStatement extends QueryableCDCRALStatement {
+public final class ShowStreamingListStatement extends QueryableCDCRALStatement {
 }

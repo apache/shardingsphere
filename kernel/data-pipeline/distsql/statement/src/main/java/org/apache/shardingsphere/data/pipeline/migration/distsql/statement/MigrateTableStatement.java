@@ -15,18 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.statement;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.QueryableMigrationRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.pojo.SourceTargetEntry;
+
+import java.util.List;
 
 /**
- * Show migration status statement.
+ * Migrate table statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowMigrationStatusStatement extends QueryableMigrationRALStatement {
+public final class MigrateTableStatement extends UpdatableMigrationRALStatement {
     
-    private final String jobId;
+    private final List<SourceTargetEntry> sourceTargetEntries;
+    
+    private final String targetDatabaseName;
 }

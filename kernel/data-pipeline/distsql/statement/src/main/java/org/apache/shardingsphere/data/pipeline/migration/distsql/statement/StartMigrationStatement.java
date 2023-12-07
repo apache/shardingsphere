@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cdc.distsql.statement;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.pipeline.cdc.UpdatableCDCRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
 
 /**
- * Drop streaming statement.
+ * Start migration statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropStreamingStatement extends UpdatableCDCRALStatement {
+public final class StartMigrationStatement extends UpdatableMigrationRALStatement {
     
     private final String jobId;
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
-import org.apache.shardingsphere.migration.distsql.statement.DropMigrationCheckStatement;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.DropMigrationCheckStatement;
 
 /**
  * Drop migration check updater.

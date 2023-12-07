@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.statement;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.pipeline.migration.QueryableMigrationRALStatement;
 
 /**
- * Drop migration check statement.
+ * Show migration check status statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropMigrationCheckStatement extends UpdatableMigrationRALStatement {
+public final class ShowMigrationCheckStatusStatement extends QueryableMigrationRALStatement {
     
     private final String jobId;
 }
