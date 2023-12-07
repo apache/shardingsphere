@@ -42,8 +42,7 @@ public final class ShowShardingAlgorithmImplementationsExecutor implements Query
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<ShardingAlgorithm> shardingAlgorithms = ShardingSphereServiceLoader.getServiceInstances(ShardingAlgorithm.class);
         for (ShardingAlgorithm each : shardingAlgorithms) {
-            LocalDataQueryResultRow row = new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName());
-            result.add(row);
+            result.add(new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName()));
         }
         return result;
     }

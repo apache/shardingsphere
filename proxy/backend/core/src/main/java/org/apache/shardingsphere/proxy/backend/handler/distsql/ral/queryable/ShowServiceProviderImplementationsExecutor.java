@@ -49,9 +49,8 @@ public final class ShowServiceProviderImplementationsExecutor implements Queryab
         }
         Collection<?> shardingAlgorithms = ShardingSphereServiceLoader.getServiceInstances(clazz);
         for (Object each : shardingAlgorithms) {
-            TypedSPI type = (TypedSPI) each;
-            LocalDataQueryResultRow row = new LocalDataQueryResultRow(type.getClass().getSimpleName(), type.getType(), type.getClass().getName());
-            result.add(row);
+            TypedSPI implementation = (TypedSPI) each;
+            result.add(new LocalDataQueryResultRow(implementation.getClass().getSimpleName(), implementation.getType(), implementation.getClass().getName()));
         }
         return result;
     }

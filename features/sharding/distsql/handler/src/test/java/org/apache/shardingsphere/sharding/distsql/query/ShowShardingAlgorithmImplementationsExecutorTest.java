@@ -28,7 +28,7 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
 class ShowShardingAlgorithmImplementationsExecutorTest {
@@ -37,7 +37,7 @@ class ShowShardingAlgorithmImplementationsExecutorTest {
     void assertGetRowData() {
         QueryableRALExecutor<ShowShardingAlgorithmImplementationsStatement> executor = new ShowShardingAlgorithmImplementationsExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShardingAlgorithmImplementationsStatement.class));
-        assertTrue(actual.size() > 0);
+        assertFalse(actual.isEmpty());
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("FooDistSQLShardingAlgorithmFixture"));
