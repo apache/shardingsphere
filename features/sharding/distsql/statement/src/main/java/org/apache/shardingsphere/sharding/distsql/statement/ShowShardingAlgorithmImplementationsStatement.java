@@ -23,5 +23,4 @@ import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
  * Show sharding algorithm implementations statement.
  */
 public final class ShowShardingAlgorithmImplementationsStatement extends QueryableRALStatement {
-    
 }
