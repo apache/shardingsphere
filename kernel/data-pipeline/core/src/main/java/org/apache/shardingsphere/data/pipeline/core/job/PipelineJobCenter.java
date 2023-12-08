@@ -90,12 +90,7 @@ public final class PipelineJobCenter {
      * @return job item context
      */
     public static Optional<PipelineJobItemContext> getJobItemContext(final String jobId, final int shardingItem) {
-        PipelineJob job = JOB_MAP.get(jobId);
-        if (null == job) {
-            return Optional.empty();
-        }
-        Optional<PipelineTasksRunner> tasksRunner = job.getTasksRunner(shardingItem);
-        return tasksRunner.map(PipelineTasksRunner::getJobItemContext);
+        return JOB_MAP.containsKey(jobId) ? JOB_MAP.get(jobId).getTasksRunner(shardingItem).map(PipelineTasksRunner::getJobItemContext) : Optional.empty();
     }
     
     /**
