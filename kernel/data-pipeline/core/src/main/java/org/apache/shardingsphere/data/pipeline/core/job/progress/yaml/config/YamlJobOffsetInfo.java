@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -15,29 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
+package org.apache.shardingsphere.data.pipeline.core.job.config.yaml.swapper;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
- * YAML transmission job item progress.
+ * YAML pipeline job configuration swapper.
+ *
+ * @param <Y> type of YAML configuration
+ * @param <T> type of swapped pipeline job configuration
  */
-@Getter
-@Setter
-public final class YamlTransmissionJobItemProgress implements YamlPipelineJobItemProgressConfiguration {
+public interface YamlPipelineJobConfigurationSwapper<Y extends YamlConfiguration, T extends PipelineJobConfiguration> extends YamlConfigurationSwapper<Y, T> {
     
-    private String status;
-    
-    private String sourceDatabaseType;
-    
-    private String dataSourceName;
-    
-    private YamlJobItemInventoryTasksProgress inventory;
-    
-    private YamlJobItemIncrementalTasksProgress incremental;
-    
-    private long processedRecordsCount;
-    
-    private long inventoryRecordsCount;
+    /**
+     * Swap to job configuration from text.
+     *
+     * @param jobParam job parameter
+     * @return job configuration
+     */
+    T swapToObject(String jobParam);
 }

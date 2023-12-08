@@ -15,33 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.YamlPipelineJobConfiguration;
-
-import java.util.Properties;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskDelay;
 
 /**
- * Consistency check job configuration for YAML.
+ * YAML job item incremental tasks progress.
  */
 @Getter
 @Setter
-public final class YamlConsistencyCheckJobConfiguration implements YamlPipelineJobConfiguration {
+public final class YamlJobItemIncrementalTasksProgress {
     
-    private String jobId;
+    private String position;
     
-    private String parentJobId;
-    
-    private String algorithmTypeName;
-    
-    private Properties algorithmProps;
-    
-    private String sourceDatabaseType;
-    
-    @Override
-    public String getDatabaseName() {
-        throw new UnsupportedOperationException("");
-    }
+    private IncrementalTaskDelay delay;
 }

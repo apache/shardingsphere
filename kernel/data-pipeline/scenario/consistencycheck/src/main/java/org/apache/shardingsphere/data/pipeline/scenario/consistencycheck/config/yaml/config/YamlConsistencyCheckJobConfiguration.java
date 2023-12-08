@@ -15,32 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml;
+package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.config.YamlPipelineJobConfiguration;
+
+import java.util.Properties;
 
 /**
- * YAML pipeline process configuration.
+ * Consistency check job configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlPipelineProcessConfiguration implements YamlConfiguration {
+public final class YamlConsistencyCheckJobConfiguration implements YamlPipelineJobConfiguration {
     
-    private YamlPipelineReadConfiguration read;
+    private String jobId;
     
-    private YamlPipelineWriteConfiguration write;
+    private String parentJobId;
     
-    private YamlAlgorithmConfiguration streamChannel;
+    private String algorithmTypeName;
     
-    /**
-     * Check all fields is null.
-     *
-     * @return true if all fields is null, otherwise is false.
-     */
-    public boolean isAllFieldsNull() {
-        return null == read && null == write && null == streamChannel;
+    private Properties algorithmProps;
+    
+    private String sourceDatabaseType;
+    
+    @Override
+    public String getDatabaseName() {
+        throw new UnsupportedOperationException("");
     }
 }

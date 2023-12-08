@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.pk.PrimaryKeyPositionFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemInventoryTasksProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlJobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.InventoryTaskProgress;
 
 import java.util.Arrays;

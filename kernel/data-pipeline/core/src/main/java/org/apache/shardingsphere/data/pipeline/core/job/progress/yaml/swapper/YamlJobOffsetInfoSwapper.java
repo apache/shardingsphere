@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper;
 
-import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.JobOffsetInfo;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlJobOffsetInfo;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
- * YAML pipeline job configuration swapper.
- *
- * @param <Y> type of YAML pipeline job item progress configuration
- * @param <T> type of swapped pipeline job item progress
+ * Yaml job offset info swapper.
  */
-public interface YamlPipelineJobItemProgressSwapper<Y extends YamlPipelineJobItemProgressConfiguration, T extends PipelineJobItemProgress> extends YamlConfigurationSwapper<Y, T> {
+public final class YamlJobOffsetInfoSwapper implements YamlConfigurationSwapper<YamlJobOffsetInfo, JobOffsetInfo> {
     
-    /**
-     * Get YAML pipeline job item progress configuration class.
-     * 
-     * @return YAML pipeline job item progress configuration class
-     */
-    Class<Y> getYamlProgressClass();
+    @Override
+    public YamlJobOffsetInfo swapToYamlConfiguration(final JobOffsetInfo data) {
+        YamlJobOffsetInfo result = new YamlJobOffsetInfo();
+        result.setTargetSchemaTableCreated(data.isTargetSchemaTableCreated());
+        return result;
+    }
+    
+    @Override
+    public JobOffsetInfo swapToObject(final YamlJobOffsetInfo yamlConfig) {
+        return new JobOffsetInfo(yamlConfig.isTargetSchemaTableCreated());
+    }
 }

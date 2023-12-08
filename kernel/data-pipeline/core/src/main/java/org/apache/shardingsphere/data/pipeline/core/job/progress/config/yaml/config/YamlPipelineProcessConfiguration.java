@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.config.yaml;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 
 /**
- * YAML pipeline job configuration.
+ * YAML pipeline process configuration.
  */
-public interface YamlPipelineJobConfiguration extends YamlConfiguration {
+@Getter
+@Setter
+public final class YamlPipelineProcessConfiguration implements YamlConfiguration {
+    
+    private YamlPipelineReadConfiguration read;
+    
+    private YamlPipelineWriteConfiguration write;
+    
+    private YamlAlgorithmConfiguration streamChannel;
     
     /**
-     * Get job id.
+     * Check all fields is null.
      *
-     * @return job id
+     * @return true if all fields is null, otherwise is false.
      */
-    String getJobId();
-    
-    /**
-     * Get database name.
-     *
-     * @return database name
-     */
-    String getDatabaseName();
+    public boolean isAllFieldsNull() {
+        return null == read && null == write && null == streamChannel;
+    }
 }
