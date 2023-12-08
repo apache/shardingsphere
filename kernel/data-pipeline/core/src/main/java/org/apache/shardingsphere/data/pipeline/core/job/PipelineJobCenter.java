@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 
@@ -33,7 +32,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Pipeline job center.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public final class PipelineJobCenter {
     
     private static final Map<String, PipelineJob> JOBS = new ConcurrentHashMap<>();
