@@ -316,7 +316,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     }
     
     @Override
-    public ASTNode visitScriptVariableName(SQLServerStatementParser.ScriptVariableNameContext ctx) {
+    public ASTNode visitScriptVariableName(final SQLServerStatementParser.ScriptVariableNameContext ctx) {
         return new IdentifierValue(ctx.getText());
     }
     
