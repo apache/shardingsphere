@@ -282,3 +282,7 @@ NONE
 IMPLEMENTATIONS
     : I M P L E M E N T A T I O N S
     ;
+
+GENERATE
+    : G E N E R A T E
+    ;

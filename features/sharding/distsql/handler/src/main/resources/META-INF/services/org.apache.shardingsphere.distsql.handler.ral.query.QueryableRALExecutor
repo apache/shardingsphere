@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingAlgorithmImplementationsExecutor
+org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingKeyGenerateAlgorithmImplementationsExecutor
