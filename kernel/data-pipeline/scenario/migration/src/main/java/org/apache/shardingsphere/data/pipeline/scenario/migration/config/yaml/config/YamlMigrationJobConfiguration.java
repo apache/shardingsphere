@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml;
+package org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.config;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.YamlPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.YamlPipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.config.YamlPipelineJobConfiguration;
 
 import java.util.List;
 import java.util.Map;

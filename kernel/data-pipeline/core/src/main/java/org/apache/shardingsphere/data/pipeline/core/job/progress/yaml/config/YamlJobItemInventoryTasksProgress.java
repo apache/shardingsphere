@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config;
 
-import org.apache.shardingsphere.data.pipeline.core.job.progress.JobOffsetInfo;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Yaml job offset info swapper.
+ * YAML job item inventory tasks progress.
  */
-public final class YamlJobOffsetInfoSwapper implements YamlConfigurationSwapper<YamlJobOffsetInfo, JobOffsetInfo> {
+@Getter
+@Setter
+public final class YamlJobItemInventoryTasksProgress {
     
-    @Override
-    public YamlJobOffsetInfo swapToYamlConfiguration(final JobOffsetInfo data) {
-        YamlJobOffsetInfo result = new YamlJobOffsetInfo();
-        result.setTargetSchemaTableCreated(data.isTargetSchemaTableCreated());
-        return result;
-    }
+    private String[] finished = new String[0];
     
-    @Override
-    public JobOffsetInfo swapToObject(final YamlJobOffsetInfo yamlConfig) {
-        return new JobOffsetInfo(yamlConfig.isTargetSchemaTableCreated());
-    }
+    private Map<String, String> unfinished = new HashMap<>();
 }

@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
+package org.apache.shardingsphere.data.pipeline.core.job.config.yaml.config;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * YAML job item inventory tasks progress.
+ * YAML pipeline job configuration.
  */
-@Getter
-@Setter
-public final class YamlJobItemInventoryTasksProgress {
+public interface YamlPipelineJobConfiguration extends YamlConfiguration {
     
-    private String[] finished = new String[0];
+    /**
+     * Get job id.
+     *
+     * @return job id
+     */
+    String getJobId();
     
-    private Map<String, String> unfinished = new HashMap<>();
+    /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    String getDatabaseName();
 }

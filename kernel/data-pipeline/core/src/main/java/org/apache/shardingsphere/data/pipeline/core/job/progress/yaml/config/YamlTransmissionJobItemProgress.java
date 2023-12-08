@@ -15,20 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskDelay;
 
 /**
- * YAML job item incremental tasks progress.
+ * YAML transmission job item progress.
  */
 @Getter
 @Setter
-public final class YamlJobItemIncrementalTasksProgress {
+public final class YamlTransmissionJobItemProgress implements YamlPipelineJobItemProgressConfiguration {
     
-    private String position;
+    private String status;
     
-    private IncrementalTaskDelay delay;
+    private String sourceDatabaseType;
+    
+    private String dataSourceName;
+    
+    private YamlJobItemInventoryTasksProgress inventory;
+    
+    private YamlJobItemIncrementalTasksProgress incremental;
+    
+    private long processedRecordsCount;
+    
+    private long inventoryRecordsCount;
 }
