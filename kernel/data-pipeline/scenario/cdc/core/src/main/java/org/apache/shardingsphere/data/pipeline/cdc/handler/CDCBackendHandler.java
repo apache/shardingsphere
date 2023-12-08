@@ -134,7 +134,7 @@ public final class CDCBackendHandler {
     public void startStreaming(final String jobId, final CDCConnectionContext connectionContext, final Channel channel) {
         CDCJobConfiguration cdcJobConfig = jobConfigManager.getJobConfiguration(jobId);
         ShardingSpherePreconditions.checkNotNull(cdcJobConfig, () -> new PipelineJobNotFoundException(jobId));
-        if (PipelineJobCenter.isJobExisting(jobId)) {
+        if (PipelineJobCenter.isExisting(jobId)) {
             PipelineJobCenter.stop(jobId);
         }
         ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(cdcJobConfig.getDatabaseName());
@@ -153,7 +153,7 @@ public final class CDCBackendHandler {
             log.warn("job id is null or empty, ignored");
             return;
         }
-        CDCJob job = (CDCJob) PipelineJobCenter.getJob(jobId);
+        CDCJob job = (CDCJob) PipelineJobCenter.get(jobId);
         if (null == job) {
             return;
         }
