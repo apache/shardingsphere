@@ -7498,4 +7498,31 @@
             <column-item name="updatable" order-direction="ASC" start-index="116" stop-index="124" />
         </order-by>
     </select>
+    <select sql-case-id="select_with_script_variables">
+        <from>
+            <simple-table name="Person" alias="x" start-index="28" stop-index="42">
+                <owner name="Person" start-index="28" stop-index="33"/>
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="21">
+            <column-projection name="$(ColumnName)" start-index="7" stop-index="21">
+                <owner name="x" start-index="7" stop-index="7" />
+            </column-projection>>
+        </projections>
+        <where start-index="44" stop-index="71">
+            <expr>
+                <binary-operation-expression start-index="50" stop-index="71">
+                    <left>
+                        <column name="BusinessEntityID" start-index="50" stop-index="67">
+                            <owner name="x" start-index="50" stop-index="50" />
+                        </column>
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression value="5" start-index="71" stop-index="71" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

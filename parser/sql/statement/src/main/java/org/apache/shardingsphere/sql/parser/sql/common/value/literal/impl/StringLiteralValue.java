@@ -30,7 +30,11 @@ public final class StringLiteralValue implements LiteralValue<String> {
     private final String value;
     
     public StringLiteralValue(final String value) {
-        this.value = value.substring(1, value.length() - 1);
+        if (value.startsWith("N")) {
+            this.value = value.substring(2, value.length() - 1);
+        } else {
+            this.value = value.substring(1, value.length() - 1);
+        }
     }
     
     /**

@@ -35,6 +35,7 @@ literals
 
 stringLiterals
     : STRING_
+    | NCHAR_TEXT
     ;
 
 numberLiterals
@@ -151,7 +152,7 @@ sequenceName
     ;
 
 tableName
-    : (owner DOT_)? name
+    : ((databaseName DOT_)? owner DOT_)? name
     ;
 
 queueName
@@ -167,7 +168,11 @@ serviceName
     ;
 
 columnName
-    : (owner DOT_)? name
+    : (owner DOT_)? (name | scriptVariableName)
+    ;
+
+scriptVariableName
+    : DOLLAR_ LP_ name RP_
     ;
 
 owner
