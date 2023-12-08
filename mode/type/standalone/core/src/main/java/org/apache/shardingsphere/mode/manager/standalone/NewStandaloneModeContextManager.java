@@ -281,8 +281,8 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     
     private void sendDatabaseRuleChangedEvent(final String databaseName, final MetaDataVersion metaDataVersion) {
         for (String each : metaDataVersion.getActiveVersionKeys()) {
-            ruleConfigurationEventBuilder.build(databaseName, new DataChangedEvent(each, metaDataVersion.getCurrentActiveVersion(), Type.UPDATED)).ifPresent(optional ->
-                    contextManager.getInstanceContext().getEventBusContext().post(optional));
+            ruleConfigurationEventBuilder.build(databaseName, new DataChangedEvent(each, metaDataVersion.getCurrentActiveVersion(), Type.UPDATED))
+                    .ifPresent(optional -> contextManager.getInstanceContext().getEventBusContext().post(optional));
         }
     }
     
