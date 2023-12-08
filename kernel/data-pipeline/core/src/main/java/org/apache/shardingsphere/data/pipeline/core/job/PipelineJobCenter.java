@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public final class PipelineJobCenter {
     
-    private static final Map<String, PipelineJob> JOB_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, PipelineJob> JOBS = new ConcurrentHashMap<>();
     
     /**
      * Add job.
@@ -45,7 +45,7 @@ public final class PipelineJobCenter {
      * @param job job
      */
     public static void addJob(final String jobId, final PipelineJob job) {
-        JOB_MAP.put(jobId, job);
+        JOBS.put(jobId, job);
     }
     
     /**
@@ -55,7 +55,7 @@ public final class PipelineJobCenter {
      * @return true when job exists, else false
      */
     public static boolean isJobExisting(final String jobId) {
-        return JOB_MAP.containsKey(jobId);
+        return JOBS.containsKey(jobId);
     }
     
     /**
@@ -65,7 +65,7 @@ public final class PipelineJobCenter {
      * @return job
      */
     public static PipelineJob getJob(final String jobId) {
-        return JOB_MAP.get(jobId);
+        return JOBS.get(jobId);
     }
     
     /**
@@ -74,12 +74,12 @@ public final class PipelineJobCenter {
      * @param jobId job id
      */
     public static void stop(final String jobId) {
-        PipelineJob job = JOB_MAP.get(jobId);
+        PipelineJob job = JOBS.get(jobId);
         if (null == job) {
             return;
         }
         job.stop();
-        JOB_MAP.remove(jobId);
+        JOBS.remove(jobId);
     }
     
     /**
@@ -90,7 +90,7 @@ public final class PipelineJobCenter {
      * @return job item context
      */
     public static Optional<PipelineJobItemContext> getJobItemContext(final String jobId, final int shardingItem) {
-        return JOB_MAP.containsKey(jobId) ? JOB_MAP.get(jobId).getTasksRunner(shardingItem).map(PipelineTasksRunner::getJobItemContext) : Optional.empty();
+        return JOBS.containsKey(jobId) ? JOBS.get(jobId).getTasksRunner(shardingItem).map(PipelineTasksRunner::getJobItemContext) : Optional.empty();
     }
     
     /**
@@ -100,7 +100,7 @@ public final class PipelineJobCenter {
      * @return sharding items.
      */
     public static Collection<Integer> getShardingItems(final String jobId) {
-        PipelineJob pipelineJob = JOB_MAP.get(jobId);
+        PipelineJob pipelineJob = JOBS.get(jobId);
         return null == pipelineJob ? Collections.emptyList() : pipelineJob.getShardingItems();
     }
 }
