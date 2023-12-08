@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.TransmissionJobM
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.ShowMigrationStatusStatement;
 
 import java.util.Arrays;
 import java.util.Collection;

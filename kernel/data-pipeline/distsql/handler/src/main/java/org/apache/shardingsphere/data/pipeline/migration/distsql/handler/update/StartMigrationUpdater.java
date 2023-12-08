@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.update
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
-import org.apache.shardingsphere.migration.distsql.statement.StartMigrationStatement;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.StartMigrationStatement;
 
 /**
  * Start migration updater.

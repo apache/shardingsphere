@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJ
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.migration.distsql.statement.UnregisterMigrationSourceStorageUnitStatement;
+import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.UnregisterMigrationSourceStorageUnitStatement;
 
 /**
  * Unregister migration source storage unit updater.

@@ -19,6 +19,9 @@ package org.apache.shardingsphere.data.pipeline.h2.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.core.spi.sql.DialectPipelineSQLBuilder;
 
+/**
+ * Pipeline SQL builder for H2.
+ */
 public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
