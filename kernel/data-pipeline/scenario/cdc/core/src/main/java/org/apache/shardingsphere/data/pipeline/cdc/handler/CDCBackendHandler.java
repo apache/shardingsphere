@@ -134,9 +134,7 @@ public final class CDCBackendHandler {
     public void startStreaming(final String jobId, final CDCConnectionContext connectionContext, final Channel channel) {
         CDCJobConfiguration cdcJobConfig = jobConfigManager.getJobConfiguration(jobId);
         ShardingSpherePreconditions.checkNotNull(cdcJobConfig, () -> new PipelineJobNotFoundException(jobId));
-        if (PipelineJobRegistry.isExisting(jobId)) {
-            PipelineJobRegistry.stop(jobId);
-        }
+        PipelineJobRegistry.stop(jobId);
         ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(cdcJobConfig.getDatabaseName());
         jobAPI.start(jobId, new CDCSocketSink(channel, database, cdcJobConfig.getSchemaTableNames()));
         connectionContext.setJobId(jobId);
