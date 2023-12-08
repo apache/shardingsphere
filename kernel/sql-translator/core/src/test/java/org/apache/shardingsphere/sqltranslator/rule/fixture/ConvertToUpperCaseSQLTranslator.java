@@ -21,16 +21,18 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
+import java.util.List;
 import java.util.Locale;
 
 public final class ConvertToUpperCaseSQLTranslator implements SQLTranslator {
     
     @Override
-    public String translate(final String sql, final QueryContext queryContext, final DatabaseType storageType, final ShardingSphereDatabase database,
-                            final RuleMetaData globalRuleMetaData) {
-        return sql.toUpperCase(Locale.ROOT);
+    public SQLTranslatorContext translate(final String sql, final List<Object> parameters, final QueryContext queryContext, final DatabaseType storageType, final ShardingSphereDatabase database,
+                                          final RuleMetaData globalRuleMetaData) {
+        return new SQLTranslatorContext(sql.toUpperCase(Locale.ROOT), parameters);
     }
     
     @Override

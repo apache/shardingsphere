@@ -162,8 +162,8 @@ public final class RouteSQLRewriteEngine {
         Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         for (Entry<RouteUnit, SQLRewriteUnit> entry : sqlRewriteUnits.entrySet()) {
             DatabaseType storageType = storageUnits.get(entry.getKey().getDataSourceMapper().getActualName()).getStorageType();
-            String sql = translatorRule.translate(entry.getValue().getSql(), queryContext, storageType, database, globalRuleMetaData);
-            SQLRewriteUnit sqlRewriteUnit = new SQLRewriteUnit(sql, entry.getValue().getParameters());
+            SQLTranslatorContext sqlTranslatorContext = translatorRule.translate(entry.getValue().getSql(), entry.getValue().getParameters(), queryContext, storageType, database, globalRuleMetaData);
+            SQLRewriteUnit sqlRewriteUnit = new SQLRewriteUnit(sqlTranslatorContext.getSql(), sqlTranslatorContext.getParameters());
             result.put(entry.getKey(), sqlRewriteUnit);
         }
         return result;
