@@ -15,23 +15,10 @@
  * limitations under the License.
  */
 
-grammar ShadowDistSQLStatement;
+grammar RALStatement;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import BaseRule;
 
-execute
-    : (createShadowRule
-    | alterShadowRule
-    | dropShadowRule
-    | showShadowRules
-    | showShadowTableRules
-    | showShadowAlgorithms
-    | showDefaultShadowAlgorithm
-    | dropShadowAlgorithm
-    | dropDefaultShadowAlgorithm
-    | createDefaultShadowAlgorithm
-    | alterDefaultShadowAlgorithm
-    | countShadowRule
-    | showShadowAlgorithmImplementations
-    ) SEMI_? EOF
+showShadowAlgorithmImplementations
+    : SHOW SHADOW ALGORITHM IMPLEMENTATIONS
     ;

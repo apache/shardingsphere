@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-grammar ShadowDistSQLStatement;
+package org.apache.shardingsphere.shadow.distsql.fixture;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 
-execute
-    : (createShadowRule
-    | alterShadowRule
-    | dropShadowRule
-    | showShadowRules
-    | showShadowTableRules
-    | showShadowAlgorithms
-    | showDefaultShadowAlgorithm
-    | dropShadowAlgorithm
-    | dropDefaultShadowAlgorithm
-    | createDefaultShadowAlgorithm
-    | alterDefaultShadowAlgorithm
-    | countShadowRule
-    | showShadowAlgorithmImplementations
-    ) SEMI_? EOF
-    ;
+import java.util.Collection;
+
+public final class DistSQLShadowAlgorithmFixture implements HintShadowAlgorithm<String> {
+    
+    @Override
+    public boolean isShadow(Collection<String> relatedShadowTables, PreciseHintShadowValue<String> hintShadowValue) {
+        return false;
+    }
+    
+    @Override
+    public String getType() {
+        return "DISTSQL.FIXTURE";
+    }
+}

@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-grammar ShadowDistSQLStatement;
+package org.apache.shardingsphere.shadow.distsql.statement;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
-execute
-    : (createShadowRule
-    | alterShadowRule
-    | dropShadowRule
-    | showShadowRules
-    | showShadowTableRules
-    | showShadowAlgorithms
-    | showDefaultShadowAlgorithm
-    | dropShadowAlgorithm
-    | dropDefaultShadowAlgorithm
-    | createDefaultShadowAlgorithm
-    | alterDefaultShadowAlgorithm
-    | countShadowRule
-    | showShadowAlgorithmImplementations
-    ) SEMI_? EOF
-    ;
+/**
+ * Show shadow algorithm implementations statement.
+ */
+public final class ShowShadowAlgorithmImplementationsStatement extends QueryableRALStatement {
+}
