@@ -55,7 +55,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.Dumper
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
@@ -187,7 +187,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     private void processFailed(final String jobId, final int shardingItem, final Exception ex) {
         log.error("job execution failed, {}-{}", jobId, shardingItem, ex);
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, shardingItem, ex);
-        PipelineJobCenter.stop(jobId);
+        PipelineJobRegistry.stop(jobId);
         jobAPI.disable(jobId);
     }
     
@@ -268,7 +268,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
                 CDCSocketSink cdcSink = (CDCSocketSink) jobItemContext.getSink();
                 cdcSink.getChannel().writeAndFlush(CDCResponseUtils.failed("", "", throwable.getMessage()));
             }
-            PipelineJobCenter.stop(jobId);
+            PipelineJobRegistry.stop(jobId);
             jobAPI.disable(jobId);
         }
     }

@@ -41,7 +41,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumpe
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.preparer.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.PipelineJobPreparerUtils;
@@ -92,7 +92,7 @@ public final class CDCJobPreparer {
             jobItemManager.persistProgress(jobItemContext);
         }
         if (jobItemContext.isStopping()) {
-            PipelineJobCenter.stop(jobItemContext.getJobId());
+            PipelineJobRegistry.stop(jobItemContext.getJobId());
             return;
         }
         initIncrementalPosition(jobItemContext);
