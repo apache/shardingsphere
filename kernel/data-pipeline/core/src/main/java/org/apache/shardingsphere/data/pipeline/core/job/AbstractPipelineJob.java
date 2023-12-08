@@ -99,12 +99,12 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
     
     @Override
-    public Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {
+    public final Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {
         return Optional.ofNullable(tasksRunnerMap.get(shardingItem));
     }
     
     @Override
-    public Collection<Integer> getShardingItems() {
+    public final Collection<Integer> getShardingItems() {
         return new ArrayList<>(tasksRunnerMap.keySet());
     }
     
@@ -120,7 +120,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     }
     
     @Override
-    public void stop() {
+    public final void stop() {
         try {
             innerStop();
         } finally {
