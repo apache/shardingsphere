@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.handler.query;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.migration.distsql.handler.query.ShowMigrationSourceStorageUnitsExecutor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -26,25 +25,23 @@ import java.util.Iterator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ShowMigrationSourceStorageUnitsExecutorTest {
+class ShowMigrationJobStatusExecutorTest {
+    
+    private final ShowMigrationJobStatusExecutor executor = new ShowMigrationJobStatusExecutor();
     
     @Test
     void assertGetColumnNames() {
-        ShowMigrationSourceStorageUnitsExecutor executor = new ShowMigrationSourceStorageUnitsExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(12));
+        assertThat(columns.size(), is(9));
         Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("name"));
-        assertThat(iterator.next(), is("type"));
-        assertThat(iterator.next(), is("host"));
-        assertThat(iterator.next(), is("port"));
-        assertThat(iterator.next(), is("db"));
-        assertThat(iterator.next(), is("connection_timeout_milliseconds"));
-        assertThat(iterator.next(), is("idle_timeout_milliseconds"));
-        assertThat(iterator.next(), is("max_lifetime_milliseconds"));
-        assertThat(iterator.next(), is("max_pool_size"));
-        assertThat(iterator.next(), is("min_pool_size"));
-        assertThat(iterator.next(), is("read_only"));
-        assertThat(iterator.next(), is("other_attributes"));
+        assertThat(iterator.next(), is("item"));
+        assertThat(iterator.next(), is("data_source"));
+        assertThat(iterator.next(), is("tables"));
+        assertThat(iterator.next(), is("status"));
+        assertThat(iterator.next(), is("active"));
+        assertThat(iterator.next(), is("processed_records_count"));
+        assertThat(iterator.next(), is("inventory_finished_percentage"));
+        assertThat(iterator.next(), is("incremental_idle_seconds"));
+        assertThat(iterator.next(), is("error_message"));
     }
 }
