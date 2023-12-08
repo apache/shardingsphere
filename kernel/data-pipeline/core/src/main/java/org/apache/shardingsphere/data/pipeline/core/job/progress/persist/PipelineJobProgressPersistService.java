@@ -121,7 +121,7 @@ public final class PipelineJobProgressPersistService {
                     && !persistContext.getHasNewEvents().get()) {
                 return;
             }
-            Optional<PipelineJobItemContext> jobItemContext = PipelineJobCenter.getJobItemContext(jobId, shardingItem);
+            Optional<PipelineJobItemContext> jobItemContext = PipelineJobCenter.getItemContext(jobId, shardingItem);
             if (!jobItemContext.isPresent()) {
                 return;
             }

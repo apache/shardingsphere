@@ -57,7 +57,7 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
         switch (eventType) {
             case ADDED:
             case UPDATED:
-                if (PipelineJobCenter.isJobExisting(jobId)) {
+                if (PipelineJobCenter.isExisting(jobId)) {
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
                     executeJob(jobConfig);
@@ -81,7 +81,7 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
     protected void executeJob(final JobConfiguration jobConfig) {
         String jobId = jobConfig.getJobName();
         AbstractPipelineJob job = buildPipelineJob(jobId);
-        PipelineJobCenter.addJob(jobId, job);
+        PipelineJobCenter.add(jobId, job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfig);
         job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();

@@ -37,39 +37,39 @@ public final class PipelineJobCenter {
     private static final Map<String, PipelineJob> JOBS = new ConcurrentHashMap<>();
     
     /**
-     * Add job.
+     * Add pipeline job.
      *
-     * @param jobId job id
-     * @param job job
+     * @param jobId pipeline job id
+     * @param job pipeline job
      */
-    public static void addJob(final String jobId, final PipelineJob job) {
+    public static void add(final String jobId, final PipelineJob job) {
         JOBS.put(jobId, job);
     }
     
     /**
-     * Is job existing.
+     * Judge whether pipeline job existing.
      *
-     * @param jobId job id
-     * @return true when job exists, else false
+     * @param jobId pipeline job id
+     * @return pipeline job exists or not
      */
-    public static boolean isJobExisting(final String jobId) {
+    public static boolean isExisting(final String jobId) {
         return JOBS.containsKey(jobId);
     }
     
     /**
-     * Get job.
+     * Get pipeline job.
      *
-     * @param jobId job id
-     * @return job
+     * @param jobId pipeline job id
+     * @return pipeline job
      */
-    public static PipelineJob getJob(final String jobId) {
+    public static PipelineJob get(final String jobId) {
         return JOBS.get(jobId);
     }
     
     /**
-     * Stop job.
+     * Stop pipeline job.
      *
-     * @param jobId job id
+     * @param jobId pipeline job id
      */
     public static void stop(final String jobId) {
         PipelineJob job = JOBS.get(jobId);
@@ -81,21 +81,21 @@ public final class PipelineJobCenter {
     }
     
     /**
-     * Get job item context.
+     * Get pipeline job item context.
      *
-     * @param jobId job id
+     * @param jobId pipeline job id
      * @param shardingItem sharding item
-     * @return job item context
+     * @return pipeline job item context
      */
-    public static Optional<PipelineJobItemContext> getJobItemContext(final String jobId, final int shardingItem) {
+    public static Optional<PipelineJobItemContext> getItemContext(final String jobId, final int shardingItem) {
         return JOBS.containsKey(jobId) ? JOBS.get(jobId).getTasksRunner(shardingItem).map(PipelineTasksRunner::getJobItemContext) : Optional.empty();
     }
     
     /**
      * Get sharding items.
      *
-     * @param jobId job id
-     * @return sharding items.
+     * @param jobId pipeline job id
+     * @return sharding items
      */
     public static Collection<Integer> getShardingItems(final String jobId) {
         PipelineJob pipelineJob = JOBS.get(jobId);

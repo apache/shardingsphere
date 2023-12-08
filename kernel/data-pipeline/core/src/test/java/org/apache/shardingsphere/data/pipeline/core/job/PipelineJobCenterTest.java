@@ -41,12 +41,12 @@ class PipelineJobCenterTest {
     @Test
     void assertPipelineJobCenter() {
         PipelineJob pipelineJob = mock(PipelineJob.class);
-        PipelineJobCenter.addJob("Job1", pipelineJob);
-        assertTrue(PipelineJobCenter.isJobExisting("Job1"));
-        assertFalse(PipelineJobCenter.isJobExisting("Job2"));
-        assertNotNull(PipelineJobCenter.getJob("Job1"));
-        assertEquals(pipelineJob, PipelineJobCenter.getJob("Job1"));
-        assertNull(PipelineJobCenter.getJob("Job2"));
+        PipelineJobCenter.add("Job1", pipelineJob);
+        assertTrue(PipelineJobCenter.isExisting("Job1"));
+        assertFalse(PipelineJobCenter.isExisting("Job2"));
+        assertNotNull(PipelineJobCenter.get("Job1"));
+        assertEquals(pipelineJob, PipelineJobCenter.get("Job1"));
+        assertNull(PipelineJobCenter.get("Job2"));
         PipelineJobCenter.stop("Job1");
     }
     
@@ -57,11 +57,11 @@ class PipelineJobCenterTest {
         PipelineJobItemContext pipelineJobItemContext = mock(PipelineJobItemContext.class);
         when(pipelineJob.getTasksRunner(anyInt())).thenReturn(Optional.of(pipelineTasksRunner));
         when(pipelineTasksRunner.getJobItemContext()).thenReturn(pipelineJobItemContext);
-        PipelineJobCenter.addJob("Job1", pipelineJob);
-        Optional<PipelineJobItemContext> result = PipelineJobCenter.getJobItemContext("Job1", 1);
+        PipelineJobCenter.add("Job1", pipelineJob);
+        Optional<PipelineJobItemContext> result = PipelineJobCenter.getItemContext("Job1", 1);
         Optional<PipelineJobItemContext> optionalPipelineJobItemContext = Optional.ofNullable(pipelineJobItemContext);
         assertTrue(result.isPresent());
-        assertEquals(Optional.empty(), PipelineJobCenter.getJobItemContext("Job2", 1));
+        assertEquals(Optional.empty(), PipelineJobCenter.getItemContext("Job2", 1));
         assertEquals(optionalPipelineJobItemContext, result);
         PipelineJobCenter.stop("Job1");
     }
@@ -69,7 +69,7 @@ class PipelineJobCenterTest {
     @Test
     void assertGetShardingItems() {
         PipelineJob pipelineJob = mock(PipelineJob.class);
-        PipelineJobCenter.addJob("Job1", pipelineJob);
+        PipelineJobCenter.add("Job1", pipelineJob);
         when(pipelineJob.getShardingItems()).thenReturn(Arrays.asList(1, 2, 3));
         Collection<Integer> shardingItems = pipelineJob.getShardingItems();
         Assertions.assertFalse(shardingItems.isEmpty());
