@@ -37,16 +37,6 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
         super(jobId);
     }
     
-    /**
-     * Build pipeline job item context.
-     * 
-     * @param shardingContext sharding context
-     * @return pipeline job item context
-     */
-    protected abstract PipelineJobItemContext buildPipelineJobItemContext(ShardingContext shardingContext);
-    
-    protected abstract PipelineTasksRunner buildPipelineTasksRunner(PipelineJobItemContext pipelineJobItemContext);
-    
     @Override
     public void execute(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
@@ -57,8 +47,7 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
             return;
         }
         try {
-            PipelineJobItemContext jobItemContext = buildPipelineJobItemContext(shardingContext);
-            execute0(jobItemContext);
+            execute(buildPipelineJobItemContext(shardingContext));
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -67,7 +56,7 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
         }
     }
     
-    private void execute0(final PipelineJobItemContext jobItemContext) {
+    private void execute(final PipelineJobItemContext jobItemContext) {
         String jobId = jobItemContext.getJobId();
         int shardingItem = jobItemContext.getShardingItem();
         PipelineTasksRunner tasksRunner = buildPipelineTasksRunner(jobItemContext);
@@ -79,6 +68,10 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
         log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
         tasksRunner.start();
     }
+    
+    protected abstract PipelineJobItemContext buildPipelineJobItemContext(ShardingContext shardingContext);
+    
+    protected abstract PipelineTasksRunner buildPipelineTasksRunner(PipelineJobItemContext pipelineJobItemContext);
     
     private void processFailed(final PipelineJobManager jobManager, final String jobId, final int shardingItem, final Exception ex) {
         log.error("job execution failed, {}-{}", jobId, shardingItem, ex);
