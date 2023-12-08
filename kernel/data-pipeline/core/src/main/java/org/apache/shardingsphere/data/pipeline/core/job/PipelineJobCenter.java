@@ -98,7 +98,6 @@ public final class PipelineJobCenter {
      * @return sharding items
      */
     public static Collection<Integer> getShardingItems(final String jobId) {
-        PipelineJob pipelineJob = JOBS.get(jobId);
-        return null == pipelineJob ? Collections.emptyList() : pipelineJob.getShardingItems();
+        return JOBS.containsKey(jobId) ? JOBS.get(jobId).getShardingItems() : Collections.emptyList();
     }
 }
