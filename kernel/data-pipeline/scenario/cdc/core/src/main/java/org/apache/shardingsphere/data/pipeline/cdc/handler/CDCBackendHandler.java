@@ -47,7 +47,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.util.CDCSchemaTableUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
@@ -134,8 +134,8 @@ public final class CDCBackendHandler {
     public void startStreaming(final String jobId, final CDCConnectionContext connectionContext, final Channel channel) {
         CDCJobConfiguration cdcJobConfig = jobConfigManager.getJobConfiguration(jobId);
         ShardingSpherePreconditions.checkNotNull(cdcJobConfig, () -> new PipelineJobNotFoundException(jobId));
-        if (PipelineJobCenter.isExisting(jobId)) {
-            PipelineJobCenter.stop(jobId);
+        if (PipelineJobRegistry.isExisting(jobId)) {
+            PipelineJobRegistry.stop(jobId);
         }
         ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(cdcJobConfig.getDatabaseName());
         jobAPI.start(jobId, new CDCSocketSink(channel, database, cdcJobConfig.getSchemaTableNames()));
@@ -153,13 +153,13 @@ public final class CDCBackendHandler {
             log.warn("job id is null or empty, ignored");
             return;
         }
-        CDCJob job = (CDCJob) PipelineJobCenter.get(jobId);
+        CDCJob job = (CDCJob) PipelineJobRegistry.get(jobId);
         if (null == job) {
             return;
         }
         if (job.getSink().identifierMatched(channelId)) {
             log.info("close CDC job, channel id: {}", channelId);
-            PipelineJobCenter.stop(jobId);
+            PipelineJobRegistry.stop(jobId);
             jobAPI.disable(jobId);
         }
     }

@@ -29,10 +29,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Pipeline job center.
+ * Pipeline job registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PipelineJobCenter {
+public final class PipelineJobRegistry {
     
     private static final Map<String, PipelineJob> JOBS = new ConcurrentHashMap<>();
     
