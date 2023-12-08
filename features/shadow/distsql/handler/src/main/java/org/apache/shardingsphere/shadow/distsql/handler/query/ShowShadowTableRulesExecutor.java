@@ -49,7 +49,7 @@ public final class ShowShadowTableRulesExecutor implements RQLExecutor<ShowShado
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
         Iterator<Map<String, String>> data = Collections.emptyIterator();
         if (rule.isPresent()) {
-            data = buildData((ShadowRuleConfiguration) rule.get().getConfiguration()).iterator();
+            data = buildData((ShadowRuleConfiguration) rule.get().getConfiguration(), sqlStatement).iterator();
         }
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         while (data.hasNext()) {
@@ -59,20 +59,35 @@ public final class ShowShadowTableRulesExecutor implements RQLExecutor<ShowShado
         return result;
     }
     
-    private List<Map<String, String>> buildData(final ShadowRuleConfiguration shadowRuleConfig) {
+    private List<Map<String, String>> buildData(final ShadowRuleConfiguration shadowRuleConfig, final ShowShadowTableRulesStatement sqlStatement) {
         List<Map<String, String>> result = new ArrayList<>();
-        shadowRuleConfig.getTables().forEach((key, value) -> {
-            Map<String, String> map = new HashMap<>();
-            map.put(SHADOW_TABLE, key);
-            map.put(SHADOW_ALGORITHM_NAME, convertToString(value.getShadowAlgorithmNames()));
-            result.add(map);
-        });
+        if (isSpecified(sqlStatement)) {
+            shadowRuleConfig.getTables().forEach((key, value) -> {
+                Map<String, String> map = new HashMap<>();
+                if (key.equalsIgnoreCase(sqlStatement.getTableName())) {
+                    map.put(SHADOW_TABLE, key);
+                    map.put(SHADOW_ALGORITHM_NAME, convertToString(value.getShadowAlgorithmNames()));
+                }
+                result.add(map);
+            });
+        } else {
+            shadowRuleConfig.getTables().forEach((key, value) -> {
+                Map<String, String> map = new HashMap<>();
+                map.put(SHADOW_TABLE, key);
+                map.put(SHADOW_ALGORITHM_NAME, convertToString(value.getShadowAlgorithmNames()));
+                result.add(map);
+            });
+        }
         return result;
     }
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList(SHADOW_TABLE, SHADOW_ALGORITHM_NAME);
+    }
+    
+    private boolean isSpecified(final ShowShadowTableRulesStatement sqlStatement) {
+        return null != sqlStatement.getTableName() && !sqlStatement.getTableName().isEmpty();
     }
     
     private String convertToString(final Collection<String> shadowTables) {
