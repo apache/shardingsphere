@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -47,6 +46,8 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Slf4j
 public abstract class AbstractPipelineJob implements PipelineJob {
+    
+    private static final long JOB_WAITING_TIMEOUT_MILLS = 2000L;
     
     @Getter
     private final String jobId;
@@ -107,49 +108,40 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     @Override
     public final void stop() {
         try {
-            innerStop();
+            stopping.set(true);
+            log.info("Stop tasks runner, jobId={}", jobId);
+            tasksRunners.values().forEach(PipelineTasksRunner::stop);
+            awaitJobStopped(jobId);
+            if (null != jobBootstrap.get()) {
+                jobBootstrap.get().shutdown();
+            }
         } finally {
-            innerClean();
-            doClean();
+            PipelineJobProgressPersistService.remove(jobId);
+            tasksRunners.values().stream().map(each -> each.getJobItemContext().getJobProcessContext()).forEach(QuietlyCloser::close);
+            clean();
         }
     }
     
-    private void innerStop() {
-        stopping.set(true);
-        log.info("stop tasks runner, jobId={}", jobId);
-        for (PipelineTasksRunner each : tasksRunners.values()) {
-            each.stop();
+    private void awaitJobStopped(final String jobId) {
+        Optional<ElasticJobListener> jobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
+        if (!jobListener.isPresent()) {
+            return;
         }
-        Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
-        pipelineJobListener.ifPresent(optional -> awaitJobStopped((PipelineElasticJobListener) optional, jobId, TimeUnit.SECONDS.toMillis(2)));
-        if (null != jobBootstrap.get()) {
-            jobBootstrap.get().shutdown();
-        }
-    }
-    
-    private void awaitJobStopped(final PipelineElasticJobListener jobListener, final String jobId, final long timeoutMillis) {
-        int time = 0;
-        int sleepTime = 50;
-        while (time < timeoutMillis) {
-            if (!jobListener.isJobRunning(jobId)) {
+        long spentMills = 0L;
+        long sleepMillis = 50L;
+        while (spentMills < JOB_WAITING_TIMEOUT_MILLS) {
+            if (!((PipelineElasticJobListener) jobListener.get()).isJobRunning(jobId)) {
                 break;
             }
             try {
-                Thread.sleep(sleepTime);
+                Thread.sleep(sleepMillis);
             } catch (final InterruptedException ignored) {
                 Thread.currentThread().interrupt();
                 break;
             }
-            time += sleepTime;
+            spentMills += sleepMillis;
         }
     }
     
-    private void innerClean() {
-        PipelineJobProgressPersistService.remove(jobId);
-        for (PipelineTasksRunner each : tasksRunners.values()) {
-            QuietlyCloser.close(each.getJobItemContext().getJobProcessContext());
-        }
-    }
-    
-    protected abstract void doClean();
+    protected abstract void clean();
 }
