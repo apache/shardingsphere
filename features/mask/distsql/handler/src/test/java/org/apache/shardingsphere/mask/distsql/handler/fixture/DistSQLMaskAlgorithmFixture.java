@@ -24,7 +24,7 @@ import java.util.Objects;
 public final class DistSQLMaskAlgorithmFixture implements MaskAlgorithm<Object, String> {
     
     @Override
-    public String mask(Object plainValue) {
+    public String mask(final Object plainValue) {
         return Objects.toString(plainValue);
     }
     

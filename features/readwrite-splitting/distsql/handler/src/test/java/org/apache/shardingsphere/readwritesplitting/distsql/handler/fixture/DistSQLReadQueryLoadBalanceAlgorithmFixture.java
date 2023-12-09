@@ -24,7 +24,7 @@ import java.util.List;
 public final class DistSQLReadQueryLoadBalanceAlgorithmFixture implements ReadQueryLoadBalanceAlgorithm {
     
     @Override
-    public String getDataSource(String name, String writeDataSourceName, List<String> readDataSourceNames) {
+    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
         return readDataSourceNames.get(0);
     }
     

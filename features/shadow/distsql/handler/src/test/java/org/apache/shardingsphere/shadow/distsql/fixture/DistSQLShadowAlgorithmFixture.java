@@ -25,7 +25,7 @@ import java.util.Collection;
 public final class DistSQLShadowAlgorithmFixture implements HintShadowAlgorithm<String> {
     
     @Override
-    public boolean isShadow(Collection<String> relatedShadowTables, PreciseHintShadowValue<String> hintShadowValue) {
+    public boolean isShadow(final Collection<String> relatedShadowTables, final PreciseHintShadowValue<String> hintShadowValue) {
         return false;
     }
     
