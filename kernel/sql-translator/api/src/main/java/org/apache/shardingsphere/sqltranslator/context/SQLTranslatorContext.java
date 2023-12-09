@@ -15,36 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job;
+package org.apache.shardingsphere.sqltranslator.context;
 
-import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
-import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 
 /**
- * Pipeline job.
+ * SQL translator context.
  */
-public interface PipelineJob extends SimpleJob {
+@RequiredArgsConstructor
+@Getter
+public class SQLTranslatorContext {
     
-    /**
-     * Get tasks runner.
-     *
-     * @param shardingItem sharding item
-     * @return tasks runner
-     */
-    Optional<PipelineTasksRunner> getTasksRunner(int shardingItem);
+    private final String sql;
     
-    /**
-     * Get sharding items.
-     *
-     * @return sharding items
-     */
-    Collection<Integer> getShardingItems();
-    
-    /**
-     * Stop job.
-     */
-    void stop();
+    private final List<Object> parameters;
 }

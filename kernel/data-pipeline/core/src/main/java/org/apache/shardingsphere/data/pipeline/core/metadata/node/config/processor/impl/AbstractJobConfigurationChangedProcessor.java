@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDa
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.JobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
@@ -47,8 +47,8 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
         }
         String jobId = jobConfig.getJobName();
         if (disabled || deleted) {
-            Collection<Integer> jobItems = PipelineJobCenter.getShardingItems(jobId);
-            PipelineJobCenter.stop(jobId);
+            Collection<Integer> jobItems = PipelineJobRegistry.getShardingItems(jobId);
+            PipelineJobRegistry.stop(jobId);
             if (disabled) {
                 onDisabled(jobConfig, jobItems);
             }
@@ -57,7 +57,7 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
         switch (eventType) {
             case ADDED:
             case UPDATED:
-                if (PipelineJobCenter.isJobExisting(jobId)) {
+                if (PipelineJobRegistry.isExisting(jobId)) {
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
                     executeJob(jobConfig);
@@ -81,7 +81,7 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
     protected void executeJob(final JobConfiguration jobConfig) {
         String jobId = jobConfig.getJobName();
         AbstractPipelineJob job = buildPipelineJob(jobId);
-        PipelineJobCenter.addJob(jobId, job);
+        PipelineJobRegistry.add(jobId, job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfig);
         job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
