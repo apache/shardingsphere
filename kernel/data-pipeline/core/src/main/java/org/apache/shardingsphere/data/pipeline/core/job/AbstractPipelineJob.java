@@ -61,7 +61,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private final AtomicReference<JobBootstrap> jobBootstrap = new AtomicReference<>();
     
-    private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
+    private final Map<Integer, PipelineTasksRunner> tasksRunners = new ConcurrentHashMap<>();
     
     protected AbstractPipelineJob(final String jobId) {
         this.jobId = jobId;
@@ -86,7 +86,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         this.jobBootstrap.set(jobBootstrap);
     }
     
-    protected void prepare(final PipelineJobItemContext jobItemContext) {
+    protected final void prepare(final PipelineJobItemContext jobItemContext) {
         try {
             doPrepare(jobItemContext);
             // CHECKSTYLE:OFF
@@ -100,16 +100,16 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     @Override
     public final Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {
-        return Optional.ofNullable(tasksRunnerMap.get(shardingItem));
+        return Optional.ofNullable(tasksRunners.get(shardingItem));
     }
     
     @Override
     public final Collection<Integer> getShardingItems() {
-        return new ArrayList<>(tasksRunnerMap.keySet());
+        return new ArrayList<>(tasksRunners.keySet());
     }
     
     protected final boolean addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
-        if (null != tasksRunnerMap.putIfAbsent(shardingItem, tasksRunner)) {
+        if (null != tasksRunners.putIfAbsent(shardingItem, tasksRunner)) {
             log.warn("shardingItem {} tasks runner exists, ignore", shardingItem);
             return false;
         }
@@ -132,7 +132,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     private void innerStop() {
         stopping.set(true);
         log.info("stop tasks runner, jobId={}", jobId);
-        for (PipelineTasksRunner each : tasksRunnerMap.values()) {
+        for (PipelineTasksRunner each : tasksRunners.values()) {
             each.stop();
         }
         Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
@@ -161,7 +161,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private void innerClean() {
         PipelineJobProgressPersistService.remove(jobId);
-        for (PipelineTasksRunner each : tasksRunnerMap.values()) {
+        for (PipelineTasksRunner each : tasksRunners.values()) {
             QuietlyCloser.close(each.getJobItemContext().getJobProcessContext());
         }
     }

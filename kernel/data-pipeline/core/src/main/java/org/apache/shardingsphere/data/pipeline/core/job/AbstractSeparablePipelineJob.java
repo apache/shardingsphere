@@ -28,12 +28,12 @@ import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
 /**
- * Abstract simple pipeline job.
+ * Abstract separable pipeline job.
  */
 @Slf4j
-public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob implements SimpleJob {
+public abstract class AbstractSeparablePipelineJob extends AbstractPipelineJob implements SimpleJob {
     
-    protected AbstractSimplePipelineJob(final String jobId) {
+    protected AbstractSeparablePipelineJob(final String jobId) {
         super(jobId);
     }
     
