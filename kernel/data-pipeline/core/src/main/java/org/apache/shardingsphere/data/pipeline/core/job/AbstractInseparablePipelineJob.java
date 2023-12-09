@@ -43,10 +43,6 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public abstract class AbstractInseparablePipelineJob<T extends PipelineJobItemContext> extends AbstractPipelineJob {
     
-    protected AbstractInseparablePipelineJob(final String jobId) {
-        super(jobId);
-    }
-    
     @Override
     public final void execute(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
@@ -130,7 +126,6 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobItemCo
     }
     
     private void executeIncrementalTasks(final PipelineJobType jobType, final Collection<T> jobItemContexts) {
-        log.info("Execute incremental tasks, jobId={}", getJobId());
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (T each : jobItemContexts) {
             if (JobStatus.EXECUTE_INCREMENTAL_TASK == each.getStatus()) {
