@@ -55,7 +55,7 @@ class ConsistencyCheckJobTest {
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey()).getJobItemFacade().getProcess().persist(checkJobId, 0,
                 YamlEngine.marshal(createYamlConsistencyCheckJobItemProgress(expectTableCheckPosition)));
         ConsistencyCheckJob consistencyCheckJob = new ConsistencyCheckJob(checkJobId);
-        ConsistencyCheckJobItemContext actual = consistencyCheckJob.buildPipelineJobItemContext(
+        ConsistencyCheckJobItemContext actual = consistencyCheckJob.buildJobItemContext(
                 new ShardingContext(checkJobId, "", 1, YamlEngine.marshal(createYamlConsistencyCheckJobConfiguration(checkJobId)), 0, ""));
         assertThat(actual.getProgressContext().getSourceTableCheckPositions(), is(expectTableCheckPosition));
         assertThat(actual.getProgressContext().getTargetTableCheckPositions(), is(expectTableCheckPosition));

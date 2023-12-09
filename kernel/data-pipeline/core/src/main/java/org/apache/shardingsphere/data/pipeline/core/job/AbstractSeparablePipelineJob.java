@@ -40,16 +40,16 @@ public abstract class AbstractSeparablePipelineJob extends AbstractPipelineJob {
     }
     
     @Override
-    public void execute(final ShardingContext shardingContext) {
+    public final void execute(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
         int shardingItem = shardingContext.getShardingItem();
         log.info("Execute job {}-{}", jobId, shardingItem);
         if (isStopping()) {
-            log.info("stopping true, ignore");
+            log.info("Stopping true, ignore");
             return;
         }
         try {
-            execute(buildPipelineJobItemContext(shardingContext));
+            execute(buildJobItemContext(shardingContext));
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -61,13 +61,13 @@ public abstract class AbstractSeparablePipelineJob extends AbstractPipelineJob {
     private void execute(final PipelineJobItemContext jobItemContext) {
         String jobId = jobItemContext.getJobId();
         int shardingItem = jobItemContext.getShardingItem();
-        PipelineTasksRunner tasksRunner = buildPipelineTasksRunner(jobItemContext);
+        PipelineTasksRunner tasksRunner = buildTasksRunner(jobItemContext);
         if (!addTasksRunner(shardingItem, tasksRunner)) {
             return;
         }
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().clean(jobId, shardingItem);
         prepare(jobItemContext);
-        log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
+        log.info("Start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
         tasksRunner.start();
     }
     
@@ -83,12 +83,12 @@ public abstract class AbstractSeparablePipelineJob extends AbstractPipelineJob {
     
     protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
     
-    protected abstract PipelineJobItemContext buildPipelineJobItemContext(ShardingContext shardingContext);
+    protected abstract PipelineJobItemContext buildJobItemContext(ShardingContext shardingContext);
     
-    protected abstract PipelineTasksRunner buildPipelineTasksRunner(PipelineJobItemContext pipelineJobItemContext);
+    protected abstract PipelineTasksRunner buildTasksRunner(PipelineJobItemContext pipelineJobItemContext);
     
     private void processFailed(final PipelineJobManager jobManager, final String jobId, final int shardingItem, final Exception ex) {
-        log.error("job execution failed, {}-{}", jobId, shardingItem, ex);
+        log.error("Job execution failed, {}-{}", jobId, shardingItem, ex);
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, shardingItem, ex);
         try {
             jobManager.stop(jobId);

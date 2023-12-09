@@ -82,7 +82,7 @@ public final class MigrationJob extends AbstractSeparablePipelineJob {
     }
     
     @Override
-    protected TransmissionJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {
+    protected TransmissionJobItemContext buildJobItemContext(final ShardingContext shardingContext) {
         int shardingItem = shardingContext.getShardingItem();
         MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         Optional<TransmissionJobItemProgress> initProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem);
@@ -132,7 +132,7 @@ public final class MigrationJob extends AbstractSeparablePipelineJob {
     }
     
     @Override
-    protected PipelineTasksRunner buildPipelineTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {
+    protected PipelineTasksRunner buildTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {
         return new TransmissionTasksRunner((TransmissionJobItemContext) pipelineJobItemContext);
     }
     

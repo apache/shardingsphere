@@ -43,7 +43,7 @@ public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob {
     }
     
     @Override
-    public ConsistencyCheckJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {
+    public ConsistencyCheckJobItemContext buildJobItemContext(final ShardingContext shardingContext) {
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(getJobType().getYamlJobItemProgressSwapper());
         Optional<ConsistencyCheckJobItemProgress> jobItemProgress = jobItemManager.getProgress(jobConfig.getJobId(), shardingContext.getShardingItem());
@@ -51,7 +51,7 @@ public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob {
     }
     
     @Override
-    protected PipelineTasksRunner buildPipelineTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {
+    protected PipelineTasksRunner buildTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {
         return new ConsistencyCheckTasksRunner((ConsistencyCheckJobItemContext) pipelineJobItemContext);
     }
     
