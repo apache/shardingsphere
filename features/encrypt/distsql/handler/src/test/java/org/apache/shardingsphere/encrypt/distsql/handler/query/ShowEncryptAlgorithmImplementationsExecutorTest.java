@@ -39,9 +39,9 @@ class ShowEncryptAlgorithmImplementationsExecutorTest {
         assertFalse(actual.isEmpty());
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("DistSQLMaskAlgorithmFixture"));
+        assertThat(row.getCell(1), is("DistSQLEncryptAlgorithmFixture"));
         assertThat(row.getCell(2), is("DISTSQL.FIXTURE"));
-        assertThat(row.getCell(3), is("org.apache.shardingsphere.mask.distsql.handler.fixture.DistSQLMaskAlgorithmFixture"));
+        assertThat(row.getCell(3), is("org.apache.shardingsphere.encrypt.distsql.handler.fixture.DistSQLEncryptAlgorithmFixture"));
     }
     
     @Test
