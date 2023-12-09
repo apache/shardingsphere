@@ -25,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSour
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCJobItemContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.CDCSocketSink;
 import org.apache.shardingsphere.data.pipeline.cdc.core.prepare.CDCJobPreparer;
@@ -61,7 +60,6 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConf
 import org.apache.shardingsphere.data.pipeline.core.spi.algorithm.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.util.ShardingColumnsExtractor;
-import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
@@ -100,28 +98,13 @@ public final class CDCJob extends AbstractInseparablePipelineJob implements Simp
     }
     
     @Override
-    protected PipelineJobConfiguration getJobConfiguration(final ShardingContext shardingContext) {
-        return new YamlCDCJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
-    }
-    
-    @Override
-    protected PipelineJobItemContext buildPipelineJobItemContext(final PipelineJobConfiguration jobConfig, final int shardingItem) {
+    protected PipelineJobItemContext buildJobItemContext(final PipelineJobConfiguration jobConfig, final int shardingItem) {
         Optional<TransmissionJobItemProgress> initProgress = jobItemManager.getProgress(jobConfig.getJobId(), shardingItem);
         PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(
                 processConfigPersistService.load(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()), jobType.getType()));
         TransmissionProcessContext jobProcessContext = new TransmissionProcessContext(jobConfig.getJobId(), processConfig);
         CDCTaskConfiguration taskConfig = buildTaskConfiguration((CDCJobConfiguration) jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
         return new CDCJobItemContext((CDCJobConfiguration) jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager, sink);
-    }
-    
-    @Override
-    protected PipelineTasksRunner buildPipelineTasksRunner(final PipelineJobItemContext jobItemContext) {
-        return new CDCTasksRunner((CDCJobItemContext) jobItemContext);
-    }
-    
-    @Override
-    protected void doPrepare0(final Collection<PipelineJobItemContext> jobItemContexts) {
-        jobPreparer.initTasks(jobItemContexts.stream().map(each -> (CDCJobItemContext) each).collect(Collectors.toList()));
     }
     
     private CDCTaskConfiguration buildTaskConfiguration(final CDCJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration processConfig) {
@@ -152,6 +135,16 @@ public final class CDCJob extends AbstractInseparablePipelineJob implements Simp
         Map<CaseInsensitiveIdentifier, Set<String>> shardingColumnsMap = new ShardingColumnsExtractor()
                 .getShardingColumnsMap(jobConfig.getDataSourceConfig().getRootConfig().getRules(), schemaTableNames.stream().map(CaseInsensitiveIdentifier::new).collect(Collectors.toSet()));
         return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, tableAndSchemaNameMapper, batchSize, writeRateLimitAlgorithm, 0, 1);
+    }
+    
+    @Override
+    protected PipelineTasksRunner buildTasksRunner(final PipelineJobItemContext jobItemContext) {
+        return new CDCTasksRunner((CDCJobItemContext) jobItemContext);
+    }
+    
+    @Override
+    protected void doPrepare(final Collection<PipelineJobItemContext> jobItemContexts) {
+        jobPreparer.initTasks(jobItemContexts.stream().map(each -> (CDCJobItemContext) each).collect(Collectors.toList()));
     }
     
     @Override
