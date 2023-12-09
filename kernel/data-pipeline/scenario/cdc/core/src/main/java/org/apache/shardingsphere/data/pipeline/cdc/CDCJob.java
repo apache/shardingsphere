@@ -170,10 +170,6 @@ public final class CDCJob extends AbstractInseparablePipelineJob implements Simp
     }
     
     @Override
-    protected void doPrepare(final PipelineJobItemContext jobItemContext) {
-    }
-    
-    @Override
     protected void doClean() {
         dataSourceManager.close();
         QuietlyCloser.close(sink);

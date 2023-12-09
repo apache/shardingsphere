@@ -20,22 +20,19 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.listener.PipelineElasticJobListener;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -85,18 +82,6 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     public void setJobBootstrap(final JobBootstrap jobBootstrap) {
         this.jobBootstrap.set(jobBootstrap);
     }
-    
-    protected final void prepare(final PipelineJobItemContext jobItemContext) {
-        try {
-            doPrepare(jobItemContext);
-            // CHECKSTYLE:OFF
-        } catch (final SQLException ex) {
-            // CHECKSTYLE:ON
-            throw new PipelineInternalException(ex);
-        }
-    }
-    
-    protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
     
     @Override
     public final Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {
