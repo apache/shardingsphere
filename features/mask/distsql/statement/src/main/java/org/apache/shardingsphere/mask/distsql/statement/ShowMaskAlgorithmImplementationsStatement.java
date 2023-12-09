@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-grammar MaskDistSQLStatement;
+package org.apache.shardingsphere.mask.distsql.statement;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
-execute
-    : (createMaskRule
-    | alterMaskRule
-    | dropMaskRule
-    | showMaskRules
-    | countMaskRule
-    | showMaskAlgorithmImplementations
-    ) SEMI_? EOF
-    ;
+/**
+ * Show mask algorithm implementations statement.
+ */
+public final class ShowMaskAlgorithmImplementationsStatement extends QueryableRALStatement {
+}

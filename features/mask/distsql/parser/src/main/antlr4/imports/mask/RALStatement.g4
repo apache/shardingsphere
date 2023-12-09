@@ -15,16 +15,10 @@
  * limitations under the License.
  */
 
-grammar MaskDistSQLStatement;
+grammar RALStatement;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import BaseRule;
 
-execute
-    : (createMaskRule
-    | alterMaskRule
-    | dropMaskRule
-    | showMaskRules
-    | countMaskRule
-    | showMaskAlgorithmImplementations
-    ) SEMI_? EOF
+showMaskAlgorithmImplementations
+    : SHOW MASK ALGORITHM IMPLEMENTATIONS
     ;

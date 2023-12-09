@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-grammar MaskDistSQLStatement;
+package org.apache.shardingsphere.mask.distsql.handler.fixture;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
-execute
-    : (createMaskRule
-    | alterMaskRule
-    | dropMaskRule
-    | showMaskRules
-    | countMaskRule
-    | showMaskAlgorithmImplementations
-    ) SEMI_? EOF
-    ;
+import java.util.Objects;
+
+public final class DistSQLMaskAlgorithmFixture implements MaskAlgorithm<Object, String> {
+    
+    @Override
+    public String mask(Object plainValue) {
+        return Objects.toString(plainValue);
+    }
+    
+    @Override
+    public String getType() {
+        return "DISTSQL.FIXTURE";
+    }
+}
