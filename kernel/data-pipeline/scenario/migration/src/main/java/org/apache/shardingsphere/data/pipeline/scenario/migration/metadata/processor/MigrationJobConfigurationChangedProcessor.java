@@ -40,7 +40,7 @@ public final class MigrationJobConfigurationChangedProcessor extends AbstractJob
     
     @Override
     protected AbstractPipelineJob buildPipelineJob(final String jobId) {
-        return new MigrationJob(jobId);
+        return new MigrationJob();
     }
     
     @Override

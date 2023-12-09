@@ -87,8 +87,7 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemConte
     
     private final CDCJobPreparer jobPreparer;
     
-    public CDCJob(final String jobId, final PipelineSink sink) {
-        super(jobId);
+    public CDCJob(final PipelineSink sink) {
         this.sink = sink;
         jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
         jobItemManager = new PipelineJobItemManager<>(new CDCJobType().getYamlJobItemProgressSwapper());

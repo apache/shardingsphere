@@ -37,10 +37,6 @@ import java.sql.SQLException;
 @Slf4j
 public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemContext> extends AbstractPipelineJob {
     
-    protected AbstractSeparablePipelineJob(final String jobId) {
-        super(jobId);
-    }
-    
     @Override
     public final void execute(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();

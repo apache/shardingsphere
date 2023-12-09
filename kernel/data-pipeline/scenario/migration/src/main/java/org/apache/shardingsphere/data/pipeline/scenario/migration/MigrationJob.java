@@ -74,8 +74,7 @@ public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJo
     // Shared by all sharding items
     private final MigrationJobPreparer jobPreparer;
     
-    public MigrationJob(final String jobId) {
-        super(jobId);
+    public MigrationJob() {
         jobItemManager = new PipelineJobItemManager<>(new MigrationJobType().getYamlJobItemProgressSwapper());
         processConfigPersistService = new PipelineProcessConfigurationPersistService();
         dataSourceManager = new DefaultPipelineDataSourceManager();

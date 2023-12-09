@@ -35,10 +35,6 @@ import java.util.Optional;
  */
 public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob<ConsistencyCheckJobItemContext> {
     
-    public ConsistencyCheckJob(final String jobId) {
-        super(jobId);
-    }
-    
     @Override
     public ConsistencyCheckJobItemContext buildJobItemContext(final ShardingContext shardingContext) {
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());

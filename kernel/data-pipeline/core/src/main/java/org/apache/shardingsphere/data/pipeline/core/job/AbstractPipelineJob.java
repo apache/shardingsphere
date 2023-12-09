@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
-import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.listener.PipelineElasticJobListener;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
@@ -30,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarr
 import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import java.util.ArrayList;
@@ -49,22 +45,11 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private static final long JOB_WAITING_TIMEOUT_MILLS = 2000L;
     
-    @Getter
-    private final String jobId;
-    
-    @Getter(AccessLevel.PROTECTED)
-    private final PipelineJobType jobType;
-    
     private final AtomicBoolean stopping = new AtomicBoolean(false);
     
     private final AtomicReference<JobBootstrap> jobBootstrap = new AtomicReference<>();
     
     private final Map<Integer, PipelineTasksRunner> tasksRunners = new ConcurrentHashMap<>();
-    
-    protected AbstractPipelineJob(final String jobId) {
-        this.jobId = jobId;
-        jobType = TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobId).getType());
-    }
     
     /**
      * Is stopping.
@@ -107,16 +92,17 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     @Override
     public final void stop() {
+        Optional<String> jobId = tasksRunners.values().stream().findFirst().map(each -> each.getJobItemContext().getJobId());
         try {
             stopping.set(true);
             log.info("Stop tasks runner, jobId={}", jobId);
             tasksRunners.values().forEach(PipelineTasksRunner::stop);
-            awaitJobStopped(jobId);
+            jobId.ifPresent(this::awaitJobStopped);
             if (null != jobBootstrap.get()) {
                 jobBootstrap.get().shutdown();
             }
         } finally {
-            PipelineJobProgressPersistService.remove(jobId);
+            jobId.ifPresent(PipelineJobProgressPersistService::remove);
             tasksRunners.values().stream().map(each -> each.getJobItemContext().getJobProcessContext()).forEach(QuietlyCloser::close);
             clean();
         }
