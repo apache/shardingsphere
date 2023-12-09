@@ -55,7 +55,7 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemCont
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            processFailed(new PipelineJobManager(getJobType()), jobId, shardingItem, ex);
+            processFailed(jobId, shardingItem, ex);
             throw ex;
         }
     }
@@ -89,11 +89,11 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemCont
     
     protected abstract void doPrepare(T jobItemContext) throws SQLException;
     
-    private void processFailed(final PipelineJobManager jobManager, final String jobId, final int shardingItem, final Exception ex) {
+    private void processFailed(final String jobId, final int shardingItem, final Exception ex) {
         log.error("Job execution failed, {}-{}", jobId, shardingItem, ex);
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().update(jobId, shardingItem, ex);
         try {
-            jobManager.stop(jobId);
+            new PipelineJobManager(PipelineJobIdUtils.parseJobType(jobId)).stop(jobId);
         } catch (final PipelineJobNotFoundException ignored) {
         }
     }

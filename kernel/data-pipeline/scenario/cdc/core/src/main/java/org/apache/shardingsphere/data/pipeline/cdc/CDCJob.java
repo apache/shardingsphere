@@ -91,7 +91,7 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemConte
         super(jobId);
         this.sink = sink;
         jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
-        jobItemManager = new PipelineJobItemManager<>(getJobType().getYamlJobItemProgressSwapper());
+        jobItemManager = new PipelineJobItemManager<>(new CDCJobType().getYamlJobItemProgressSwapper());
         processConfigPersistService = new PipelineProcessConfigurationPersistService();
         dataSourceManager = new DefaultPipelineDataSourceManager();
         jobPreparer = new CDCJobPreparer();
@@ -101,7 +101,7 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemConte
     protected CDCJobItemContext buildJobItemContext(final PipelineJobConfiguration jobConfig, final int shardingItem) {
         Optional<TransmissionJobItemProgress> initProgress = jobItemManager.getProgress(jobConfig.getJobId(), shardingItem);
         PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(
-                processConfigPersistService.load(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()), getJobType().getType()));
+                processConfigPersistService.load(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()), "STREAMING"));
         TransmissionProcessContext jobProcessContext = new TransmissionProcessContext(jobConfig.getJobId(), processConfig);
         CDCTaskConfiguration taskConfig = buildTaskConfiguration((CDCJobConfiguration) jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
         return new CDCJobItemContext((CDCJobConfiguration) jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager, sink);
