@@ -142,7 +142,7 @@ public final class MigrationJob extends AbstractSeparablePipelineJob {
     }
     
     @Override
-    public void doClean() {
+    public void clean() {
         dataSourceManager.close();
     }
 }

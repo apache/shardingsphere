@@ -60,6 +60,6 @@ public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob {
     }
     
     @Override
-    protected void doClean() {
+    protected void clean() {
     }
 }
