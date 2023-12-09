@@ -19,21 +19,23 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
-import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+
+import java.sql.SQLException;
 
 /**
- * Abstract simple pipeline job.
+ * Abstract separable pipeline job.
  */
 @Slf4j
-public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob implements SimpleJob {
+public abstract class AbstractSeparablePipelineJob extends AbstractPipelineJob {
     
-    protected AbstractSimplePipelineJob(final String jobId) {
+    protected AbstractSeparablePipelineJob(final String jobId) {
         super(jobId);
     }
     
@@ -68,6 +70,18 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
         log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
         tasksRunner.start();
     }
+    
+    protected final void prepare(final PipelineJobItemContext jobItemContext) {
+        try {
+            doPrepare(jobItemContext);
+            // CHECKSTYLE:OFF
+        } catch (final SQLException ex) {
+            // CHECKSTYLE:ON
+            throw new PipelineInternalException(ex);
+        }
+    }
+    
+    protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
     
     protected abstract PipelineJobItemContext buildPipelineJobItemContext(ShardingContext shardingContext);
     

@@ -20,22 +20,19 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.listener.PipelineElasticJobListener;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -61,7 +58,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private final AtomicReference<JobBootstrap> jobBootstrap = new AtomicReference<>();
     
-    private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
+    private final Map<Integer, PipelineTasksRunner> tasksRunners = new ConcurrentHashMap<>();
     
     protected AbstractPipelineJob(final String jobId) {
         this.jobId = jobId;
@@ -86,30 +83,18 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         this.jobBootstrap.set(jobBootstrap);
     }
     
-    protected void prepare(final PipelineJobItemContext jobItemContext) {
-        try {
-            doPrepare(jobItemContext);
-            // CHECKSTYLE:OFF
-        } catch (final SQLException ex) {
-            // CHECKSTYLE:ON
-            throw new PipelineInternalException(ex);
-        }
-    }
-    
-    protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
-    
     @Override
     public final Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {
-        return Optional.ofNullable(tasksRunnerMap.get(shardingItem));
+        return Optional.ofNullable(tasksRunners.get(shardingItem));
     }
     
     @Override
     public final Collection<Integer> getShardingItems() {
-        return new ArrayList<>(tasksRunnerMap.keySet());
+        return new ArrayList<>(tasksRunners.keySet());
     }
     
     protected final boolean addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
-        if (null != tasksRunnerMap.putIfAbsent(shardingItem, tasksRunner)) {
+        if (null != tasksRunners.putIfAbsent(shardingItem, tasksRunner)) {
             log.warn("shardingItem {} tasks runner exists, ignore", shardingItem);
             return false;
         }
@@ -132,7 +117,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     private void innerStop() {
         stopping.set(true);
         log.info("stop tasks runner, jobId={}", jobId);
-        for (PipelineTasksRunner each : tasksRunnerMap.values()) {
+        for (PipelineTasksRunner each : tasksRunners.values()) {
             each.stop();
         }
         Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
@@ -161,7 +146,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private void innerClean() {
         PipelineJobProgressPersistService.remove(jobId);
-        for (PipelineTasksRunner each : tasksRunnerMap.values()) {
+        for (PipelineTasksRunner each : tasksRunners.values()) {
             QuietlyCloser.close(each.getJobItemContext().getJobProcessContext());
         }
     }
