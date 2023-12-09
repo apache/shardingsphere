@@ -29,7 +29,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemM
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
-import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -39,7 +38,7 @@ import java.util.concurrent.CompletableFuture;
  * Abstract inseparable pipeline job.
  */
 @Slf4j
-public abstract class AbstractInseparablePipelineJob extends AbstractPipelineJob implements SimpleJob {
+public abstract class AbstractInseparablePipelineJob extends AbstractPipelineJob {
     
     private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
     

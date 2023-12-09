@@ -26,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
-import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
 import java.sql.SQLException;
 
@@ -34,7 +33,7 @@ import java.sql.SQLException;
  * Abstract separable pipeline job.
  */
 @Slf4j
-public abstract class AbstractSeparablePipelineJob extends AbstractPipelineJob implements SimpleJob {
+public abstract class AbstractSeparablePipelineJob extends AbstractPipelineJob {
     
     protected AbstractSeparablePipelineJob(final String jobId) {
         super(jobId);
