@@ -58,7 +58,6 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConf
 import org.apache.shardingsphere.data.pipeline.core.spi.algorithm.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.util.ShardingColumnsExtractor;
-import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
@@ -73,7 +72,7 @@ import java.util.stream.Collectors;
  * CDC job.
  */
 @Slf4j
-public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemContext> implements SimpleJob {
+public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemContext> {
     
     @Getter
     private final PipelineSink sink;

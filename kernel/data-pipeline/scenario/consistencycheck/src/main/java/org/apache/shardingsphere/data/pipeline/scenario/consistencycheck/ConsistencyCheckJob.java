@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.job.AbstractSeparablePipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractSeparablePipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
@@ -36,14 +35,14 @@ import java.util.Optional;
  * Consistency check job.
  */
 @Slf4j
-public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob {
+public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob<ConsistencyCheckJobItemContext> {
     
     public ConsistencyCheckJob(final String jobId) {
         super(jobId);
     }
     
     @Override
-    public ConsistencyCheckJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {
+    public ConsistencyCheckJobItemContext buildJobItemContext(final ShardingContext shardingContext) {
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(getJobType().getYamlJobItemProgressSwapper());
         Optional<ConsistencyCheckJobItemProgress> jobItemProgress = jobItemManager.getProgress(jobConfig.getJobId(), shardingContext.getShardingItem());
@@ -51,12 +50,12 @@ public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob {
     }
     
     @Override
-    protected PipelineTasksRunner buildPipelineTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {
-        return new ConsistencyCheckTasksRunner((ConsistencyCheckJobItemContext) pipelineJobItemContext);
+    protected PipelineTasksRunner buildTasksRunner(final ConsistencyCheckJobItemContext jobItemContext) {
+        return new ConsistencyCheckTasksRunner(jobItemContext);
     }
     
     @Override
-    protected void doPrepare(final PipelineJobItemContext jobItemContext) {
+    protected void doPrepare(final ConsistencyCheckJobItemContext jobItemContext) {
     }
     
     @Override
