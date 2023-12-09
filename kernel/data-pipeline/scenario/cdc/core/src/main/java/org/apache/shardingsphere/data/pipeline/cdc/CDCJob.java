@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.CDCSocketS
 import org.apache.shardingsphere.data.pipeline.cdc.core.prepare.CDCJobPreparer;
 import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCTasksRunner;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseUtils;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
@@ -74,7 +73,7 @@ import java.util.stream.Collectors;
  * CDC job.
  */
 @Slf4j
-public final class CDCJob extends AbstractInseparablePipelineJob implements SimpleJob {
+public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemContext> implements SimpleJob {
     
     @Getter
     private final PipelineSink sink;
@@ -100,51 +99,49 @@ public final class CDCJob extends AbstractInseparablePipelineJob implements Simp
     }
     
     @Override
-    protected PipelineJobItemContext buildJobItemContext(final PipelineJobConfiguration jobConfig, final int shardingItem) {
+    protected CDCJobItemContext buildJobItemContext(final PipelineJobConfiguration jobConfig, final int shardingItem) {
         Optional<TransmissionJobItemProgress> initProgress = jobItemManager.getProgress(jobConfig.getJobId(), shardingItem);
         PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(
                 processConfigPersistService.load(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()), getJobType().getType()));
         TransmissionProcessContext jobProcessContext = new TransmissionProcessContext(jobConfig.getJobId(), processConfig);
         CDCTaskConfiguration taskConfig = buildTaskConfiguration((CDCJobConfiguration) jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
-        log.debug("buildTaskConfiguration, result={}", taskConfig);
         return new CDCJobItemContext((CDCJobConfiguration) jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager, sink);
     }
     
     private CDCTaskConfiguration buildTaskConfiguration(final CDCJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration processConfig) {
-        TableAndSchemaNameMapper tableAndSchemaNameMapper = new TableAndSchemaNameMapper(jobConfig.getSchemaTableNames());
-        IncrementalDumperContext dumperContext = buildDumperContext(jobConfig, jobShardingItem, tableAndSchemaNameMapper);
-        ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, processConfig, jobConfig.getSchemaTableNames(), tableAndSchemaNameMapper);
+        TableAndSchemaNameMapper mapper = new TableAndSchemaNameMapper(jobConfig.getSchemaTableNames());
+        IncrementalDumperContext dumperContext = buildDumperContext(jobConfig, jobShardingItem, mapper);
+        ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, processConfig, jobConfig.getSchemaTableNames(), mapper);
         return new CDCTaskConfiguration(dumperContext, importerConfig);
     }
     
-    private IncrementalDumperContext buildDumperContext(final CDCJobConfiguration jobConfig, final int jobShardingItem, final TableAndSchemaNameMapper tableAndSchemaNameMapper) {
+    private IncrementalDumperContext buildDumperContext(final CDCJobConfiguration jobConfig, final int jobShardingItem, final TableAndSchemaNameMapper mapper) {
         JobDataNodeLine dataNodeLine = jobConfig.getJobShardingDataNodes().get(jobShardingItem);
         String dataSourceName = dataNodeLine.getEntries().iterator().next().getDataNodes().iterator().next().getDataSourceName();
         StandardPipelineDataSourceConfiguration actualDataSourceConfig = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(dataSourceName);
-        return new IncrementalDumperContext(
-                new DumperCommonContext(dataSourceName, actualDataSourceConfig, JobDataNodeLineConvertUtils.buildTableNameMapper(dataNodeLine), tableAndSchemaNameMapper),
-                jobConfig.getJobId(), jobConfig.isDecodeWithTX());
+        DumperCommonContext dumperCommonContext = new DumperCommonContext(dataSourceName, actualDataSourceConfig, JobDataNodeLineConvertUtils.buildTableNameMapper(dataNodeLine), mapper);
+        return new IncrementalDumperContext(dumperCommonContext, jobConfig.getJobId(), jobConfig.isDecodeWithTX());
     }
     
     private ImporterConfiguration buildImporterConfiguration(final CDCJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig, final Collection<String> schemaTableNames,
-                                                             final TableAndSchemaNameMapper tableAndSchemaNameMapper) {
-        PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getDataSourceConfig().getType(),
-                jobConfig.getDataSourceConfig().getParameter());
-        JobRateLimitAlgorithm writeRateLimitAlgorithm = new TransmissionProcessContext(jobConfig.getJobId(), pipelineProcessConfig).getWriteRateLimitAlgorithm();
-        int batchSize = pipelineProcessConfig.getWrite().getBatchSize();
+                                                             final TableAndSchemaNameMapper mapper) {
+        PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
+                jobConfig.getDataSourceConfig().getType(), jobConfig.getDataSourceConfig().getParameter());
         Map<CaseInsensitiveIdentifier, Set<String>> shardingColumnsMap = new ShardingColumnsExtractor()
                 .getShardingColumnsMap(jobConfig.getDataSourceConfig().getRootConfig().getRules(), schemaTableNames.stream().map(CaseInsensitiveIdentifier::new).collect(Collectors.toSet()));
-        return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, tableAndSchemaNameMapper, batchSize, writeRateLimitAlgorithm, 0, 1);
+        int batchSize = pipelineProcessConfig.getWrite().getBatchSize();
+        JobRateLimitAlgorithm writeRateLimitAlgorithm = new TransmissionProcessContext(jobConfig.getJobId(), pipelineProcessConfig).getWriteRateLimitAlgorithm();
+        return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, mapper, batchSize, writeRateLimitAlgorithm, 0, 1);
     }
     
     @Override
-    protected PipelineTasksRunner buildTasksRunner(final PipelineJobItemContext jobItemContext) {
-        return new CDCTasksRunner((CDCJobItemContext) jobItemContext);
+    protected PipelineTasksRunner buildTasksRunner(final CDCJobItemContext jobItemContext) {
+        return new CDCTasksRunner(jobItemContext);
     }
     
     @Override
-    protected void doPrepare(final Collection<PipelineJobItemContext> jobItemContexts) {
-        jobPreparer.initTasks(jobItemContexts.stream().map(each -> (CDCJobItemContext) each).collect(Collectors.toList()));
+    protected void doPrepare(final Collection<CDCJobItemContext> jobItemContexts) {
+        jobPreparer.initTasks(jobItemContexts);
     }
     
     @Override
@@ -153,13 +150,13 @@ public final class CDCJob extends AbstractInseparablePipelineJob implements Simp
     }
     
     @Override
-    protected void executeInventoryTasks(final Collection<CompletableFuture<?>> futures, final Collection<PipelineJobItemContext> jobItemContexts) {
-        ExecuteEngine.trigger(futures, new CDCExecuteCallback("inventory", (CDCJobItemContext) jobItemContexts.iterator().next()));
+    protected void executeInventoryTasks(final Collection<CompletableFuture<?>> futures, final Collection<CDCJobItemContext> jobItemContexts) {
+        ExecuteEngine.trigger(futures, new CDCExecuteCallback("inventory", jobItemContexts.iterator().next()));
     }
     
     @Override
-    protected void executeIncrementalTasks(final Collection<CompletableFuture<?>> futures, final Collection<PipelineJobItemContext> jobItemContexts) {
-        ExecuteEngine.trigger(futures, new CDCExecuteCallback("incremental", (CDCJobItemContext) jobItemContexts.iterator().next()));
+    protected void executeIncrementalTasks(final Collection<CompletableFuture<?>> futures, final Collection<CDCJobItemContext> jobItemContexts) {
+        ExecuteEngine.trigger(futures, new CDCExecuteCallback("incremental", jobItemContexts.iterator().next()));
     }
     
     @Override
