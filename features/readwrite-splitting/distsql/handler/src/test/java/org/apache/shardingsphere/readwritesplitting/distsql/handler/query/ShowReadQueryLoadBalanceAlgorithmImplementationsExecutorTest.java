@@ -39,9 +39,9 @@ class ShowReadQueryLoadBalanceAlgorithmImplementationsExecutorTest {
         assertFalse(actual.isEmpty());
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("DistSQLShadowAlgorithmFixture"));
+        assertThat(row.getCell(1), is("DistSQLReadQueryLoadBalanceAlgorithmFixture"));
         assertThat(row.getCell(2), is("DISTSQL.FIXTURE"));
-        assertThat(row.getCell(3), is("org.apache.shardingsphere.shadow.distsql.fixture.DistSQLShadowAlgorithmFixture"));
+        assertThat(row.getCell(3), is("org.apache.shardingsphere.readwritesplitting.distsql.handler.fixture.DistSQLReadQueryLoadBalanceAlgorithmFixture"));
     }
     
     @Test
