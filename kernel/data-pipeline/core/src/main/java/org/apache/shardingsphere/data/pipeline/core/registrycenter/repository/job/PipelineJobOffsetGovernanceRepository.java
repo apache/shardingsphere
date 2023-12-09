@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.j
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobOffsetInfo;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobOffsetInfo;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobOffsetInfoSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlJobOffsetInfo;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlJobOffsetInfoSwapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;

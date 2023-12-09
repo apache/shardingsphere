@@ -23,9 +23,11 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.exception.syntax.UnsupportedTranslatedDatabaseException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -44,10 +46,9 @@ class SQLTranslatorRuleTest {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext().getDatabaseType()).thenReturn(databaseType);
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", new Properties(), false)).translate(expected, queryContext, databaseType,
-                mock(ShardingSphereDatabase.class),
-                mock(RuleMetaData.class));
-        assertThat(actual, is(expected));
+        SQLTranslatorContext actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("FIXTURE", new Properties(), false)).translate(expected, Collections.emptyList(),
+                queryContext, databaseType, mock(ShardingSphereDatabase.class), mock(RuleMetaData.class));
+        assertThat(actual.getSql(), is(expected));
     }
     
     @Test
@@ -56,10 +57,9 @@ class SQLTranslatorRuleTest {
         DatabaseType sqlParserType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext().getDatabaseType()).thenReturn(sqlParserType);
-        String actual =
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", new Properties(), false)).translate(expected, queryContext, null, mock(ShardingSphereDatabase.class),
-                        mock(RuleMetaData.class));
-        assertThat(actual, is(expected));
+        SQLTranslatorContext actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("FIXTURE", new Properties(), false)).translate(expected, Collections.emptyList(),
+                queryContext, null, mock(ShardingSphereDatabase.class), mock(RuleMetaData.class));
+        assertThat(actual.getSql(), is(expected));
     }
     
     @Test
@@ -69,23 +69,21 @@ class SQLTranslatorRuleTest {
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext().getDatabaseType()).thenReturn(sqlParserType);
         DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", new Properties(), false)).translate(input, queryContext, storageType,
-                mock(ShardingSphereDatabase.class),
-                mock(RuleMetaData.class));
-        assertThat(actual, is(input.toUpperCase(Locale.ROOT)));
+        SQLTranslatorContext actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("FIXTURE", new Properties(), false)).translate(input, Collections.emptyList(),
+                queryContext, storageType, mock(ShardingSphereDatabase.class), mock(RuleMetaData.class));
+        assertThat(actual.getSql(), is(input.toUpperCase(Locale.ROOT)));
     }
     
     @Test
     void assertUseOriginalSQLWhenTranslatingFailed() {
-        String expected = "select 1";
+        String expected = "ERROR: select 1";
         DatabaseType sqlParserType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext().getDatabaseType()).thenReturn(sqlParserType);
         DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        String actual =
-                new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", new Properties(), true)).translate(expected, queryContext, storageType, mock(ShardingSphereDatabase.class),
-                        mock(RuleMetaData.class));
-        assertThat(actual, is(expected));
+        SQLTranslatorContext actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("FIXTURE", new Properties(), true)).translate(
+                expected, Collections.emptyList(), queryContext, storageType, mock(ShardingSphereDatabase.class), mock(RuleMetaData.class));
+        assertThat(actual.getSql(), is(expected));
     }
     
     @Test
@@ -94,14 +92,13 @@ class SQLTranslatorRuleTest {
         DatabaseType sqlParserType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         when(queryContext.getSqlStatementContext().getDatabaseType()).thenReturn(sqlParserType);
         DatabaseType storageType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        assertThrows(UnsupportedTranslatedDatabaseException.class,
-                () -> new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", new Properties(), false)).translate("", queryContext, storageType,
-                        mock(ShardingSphereDatabase.class), mock(RuleMetaData.class)));
+        assertThrows(UnsupportedTranslatedDatabaseException.class, () -> new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("FIXTURE", new Properties(), false)).translate(
+                "ERROR: select 1", Collections.emptyList(), queryContext, storageType, mock(ShardingSphereDatabase.class), mock(RuleMetaData.class)));
     }
     
     @Test
     void assertGetConfiguration() {
-        SQLTranslatorRuleConfiguration expected = new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", new Properties(), false);
+        SQLTranslatorRuleConfiguration expected = new SQLTranslatorRuleConfiguration("FIXTURE", new Properties(), false);
         assertThat(new SQLTranslatorRule(expected).getConfiguration(), is(expected));
     }
 }

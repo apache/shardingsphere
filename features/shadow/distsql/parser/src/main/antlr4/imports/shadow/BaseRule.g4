@@ -49,6 +49,10 @@ property
     : key=STRING_ EQ_ value=literal
     ;
 
+tableName
+    : IDENTIFIER_
+    ;
+
 ruleName
     : IDENTIFIER_
     ;

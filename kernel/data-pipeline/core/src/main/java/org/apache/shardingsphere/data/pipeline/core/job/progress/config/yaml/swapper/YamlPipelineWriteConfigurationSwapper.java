@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.swapper;
 
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineWriteConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 

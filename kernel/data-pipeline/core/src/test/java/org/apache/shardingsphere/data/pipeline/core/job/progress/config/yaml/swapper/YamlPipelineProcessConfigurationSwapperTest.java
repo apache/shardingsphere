@@ -20,9 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.sw
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineWriteConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineReadConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;

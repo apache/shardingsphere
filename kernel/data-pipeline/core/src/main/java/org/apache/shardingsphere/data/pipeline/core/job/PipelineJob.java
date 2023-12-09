@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
-import org.apache.shardingsphere.elasticjob.api.ElasticJob;
+import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -26,7 +26,7 @@ import java.util.Optional;
 /**
  * Pipeline job.
  */
-public interface PipelineJob extends ElasticJob {
+public interface PipelineJob extends SimpleJob {
     
     /**
      * Get tasks runner.

@@ -23,9 +23,9 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDat
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.YamlPipelineJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlPipelineJobItemProgressConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlPipelineJobItemProgressSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.config.yaml.swapper.YamlPipelineJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlPipelineJobItemProgressConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlPipelineJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 

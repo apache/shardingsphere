@@ -41,18 +41,19 @@ public final class ShowServiceProviderImplementationsExecutor implements Queryab
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowServiceProviderImplementationsStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        Class<?> clazz;
-        try {
-            clazz = Class.forName(sqlStatement.getServiceProviderInterface());
-        } catch (final ClassNotFoundException ex) {
-            throw new InvalidValueException(sqlStatement.getServiceProviderInterface());
-        }
-        Collection<?> shardingAlgorithms = ShardingSphereServiceLoader.getServiceInstances(clazz);
-        for (Object each : shardingAlgorithms) {
+        for (Object each : ShardingSphereServiceLoader.getServiceInstances(getServiceProviderImplementationClass(sqlStatement))) {
             TypedSPI implementation = (TypedSPI) each;
             result.add(new LocalDataQueryResultRow(implementation.getClass().getSimpleName(), implementation.getType(), implementation.getClass().getName()));
         }
         return result;
+    }
+    
+    private static Class<?> getServiceProviderImplementationClass(final ShowServiceProviderImplementationsStatement sqlStatement) {
+        try {
+            return Class.forName(sqlStatement.getServiceProviderInterface());
+        } catch (final ClassNotFoundException ex) {
+            throw new InvalidValueException(sqlStatement.getServiceProviderInterface());
+        }
     }
     
     @Override

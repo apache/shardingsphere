@@ -19,9 +19,9 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineReadConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.YamlPipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 
