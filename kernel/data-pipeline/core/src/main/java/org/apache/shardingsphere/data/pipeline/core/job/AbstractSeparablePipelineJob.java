@@ -31,9 +31,11 @@ import java.sql.SQLException;
 
 /**
  * Abstract separable pipeline job.
+ * 
+ * @param <T> type of pipeline job item context
  */
 @Slf4j
-public abstract class AbstractSeparablePipelineJob extends AbstractPipelineJob {
+public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemContext> extends AbstractPipelineJob {
     
     protected AbstractSeparablePipelineJob(final String jobId) {
         super(jobId);
@@ -58,7 +60,7 @@ public abstract class AbstractSeparablePipelineJob extends AbstractPipelineJob {
         }
     }
     
-    private void execute(final PipelineJobItemContext jobItemContext) {
+    private void execute(final T jobItemContext) {
         String jobId = jobItemContext.getJobId();
         int shardingItem = jobItemContext.getShardingItem();
         PipelineTasksRunner tasksRunner = buildTasksRunner(jobItemContext);
@@ -71,11 +73,11 @@ public abstract class AbstractSeparablePipelineJob extends AbstractPipelineJob {
         tasksRunner.start();
     }
     
-    protected abstract PipelineJobItemContext buildJobItemContext(ShardingContext shardingContext);
+    protected abstract T buildJobItemContext(ShardingContext shardingContext);
     
-    protected abstract PipelineTasksRunner buildTasksRunner(PipelineJobItemContext pipelineJobItemContext);
+    protected abstract PipelineTasksRunner buildTasksRunner(T jobItemContext);
     
-    protected final void prepare(final PipelineJobItemContext jobItemContext) {
+    protected final void prepare(final T jobItemContext) {
         try {
             doPrepare(jobItemContext);
             // CHECKSTYLE:OFF
@@ -85,7 +87,7 @@ public abstract class AbstractSeparablePipelineJob extends AbstractPipelineJob {
         }
     }
     
-    protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
+    protected abstract void doPrepare(T jobItemContext) throws SQLException;
     
     private void processFailed(final PipelineJobManager jobManager, final String jobId, final int shardingItem, final Exception ex) {
         log.error("Job execution failed, {}-{}", jobId, shardingItem, ex);

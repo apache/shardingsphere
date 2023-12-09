@@ -20,8 +20,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
@@ -65,7 +63,7 @@ import java.util.stream.Collectors;
  * Migration job.
  */
 @Slf4j
-public final class MigrationJob extends AbstractSeparablePipelineJob {
+public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJobItemContext> {
     
     private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
     
@@ -85,7 +83,7 @@ public final class MigrationJob extends AbstractSeparablePipelineJob {
     }
     
     @Override
-    protected TransmissionJobItemContext buildJobItemContext(final ShardingContext shardingContext) {
+    protected MigrationJobItemContext buildJobItemContext(final ShardingContext shardingContext) {
         MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         int shardingItem = shardingContext.getShardingItem();
         Optional<TransmissionJobItemProgress> initProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem);
@@ -130,13 +128,13 @@ public final class MigrationJob extends AbstractSeparablePipelineJob {
     }
     
     @Override
-    protected PipelineTasksRunner buildTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {
-        return new TransmissionTasksRunner((TransmissionJobItemContext) pipelineJobItemContext);
+    protected PipelineTasksRunner buildTasksRunner(final MigrationJobItemContext jobItemContext) {
+        return new TransmissionTasksRunner(jobItemContext);
     }
     
     @Override
-    protected void doPrepare(final PipelineJobItemContext jobItemContext) throws SQLException {
-        jobPreparer.prepare((MigrationJobItemContext) jobItemContext);
+    protected void doPrepare(final MigrationJobItemContext jobItemContext) throws SQLException {
+        jobPreparer.prepare(jobItemContext);
     }
     
     @Override
