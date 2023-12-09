@@ -68,17 +68,21 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class MigrationJob extends AbstractSeparablePipelineJob {
     
-    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new MigrationJobType().getYamlJobItemProgressSwapper());
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
     
-    private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
+    private final PipelineProcessConfigurationPersistService processConfigPersistService;
     
-    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+    private final PipelineDataSourceManager dataSourceManager;
     
     // Shared by all sharding items
-    private final MigrationJobPreparer jobPreparer = new MigrationJobPreparer();
+    private final MigrationJobPreparer jobPreparer;
     
     public MigrationJob(final String jobId) {
         super(jobId);
+        jobItemManager = new PipelineJobItemManager<>(new MigrationJobType().getYamlJobItemProgressSwapper());
+        processConfigPersistService = new PipelineProcessConfigurationPersistService();
+        dataSourceManager = new DefaultPipelineDataSourceManager();
+        jobPreparer = new MigrationJobPreparer();
     }
     
     @Override

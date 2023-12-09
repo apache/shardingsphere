@@ -71,6 +71,10 @@ public abstract class AbstractSeparablePipelineJob extends AbstractPipelineJob {
         tasksRunner.start();
     }
     
+    protected abstract PipelineJobItemContext buildJobItemContext(ShardingContext shardingContext);
+    
+    protected abstract PipelineTasksRunner buildTasksRunner(PipelineJobItemContext pipelineJobItemContext);
+    
     protected final void prepare(final PipelineJobItemContext jobItemContext) {
         try {
             doPrepare(jobItemContext);
@@ -82,10 +86,6 @@ public abstract class AbstractSeparablePipelineJob extends AbstractPipelineJob {
     }
     
     protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
-    
-    protected abstract PipelineJobItemContext buildJobItemContext(ShardingContext shardingContext);
-    
-    protected abstract PipelineTasksRunner buildTasksRunner(PipelineJobItemContext pipelineJobItemContext);
     
     private void processFailed(final PipelineJobManager jobManager, final String jobId, final int shardingItem, final Exception ex) {
         log.error("Job execution failed, {}-{}", jobId, shardingItem, ex);
