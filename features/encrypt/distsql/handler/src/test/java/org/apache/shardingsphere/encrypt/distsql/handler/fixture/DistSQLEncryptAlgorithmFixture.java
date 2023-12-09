@@ -15,16 +15,25 @@
  * limitations under the License.
  */
 
-grammar EncryptDistSQLStatement;
+package org.apache.shardingsphere.encrypt.distsql.handler.fixture;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 
-execute
-    : (createEncryptRule
-    | alterEncryptRule
-    | dropEncryptRule
-    | showEncryptRules
-    | countEncryptRule
-    | showEncryptAlgorithmImplementations
-    ) SEMI_? EOF
-    ;
+public final class DistSQLEncryptAlgorithmFixture implements StandardEncryptAlgorithm {
+    
+    @Override
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "encryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+        return "decryptValue";
+    }
+    
+    @Override
+    public String getType() {
+        return "DISTSQL.FIXTURE";
+    }
+}

@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-grammar EncryptDistSQLStatement;
+package org.apache.shardingsphere.encrypt.distsql.statement;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
-execute
-    : (createEncryptRule
-    | alterEncryptRule
-    | dropEncryptRule
-    | showEncryptRules
-    | countEncryptRule
-    | showEncryptAlgorithmImplementations
-    ) SEMI_? EOF
-    ;
+/**
+ * Show encrypt algorithm implementations statement.
+ */
+public final class ShowEncryptAlgorithmImplementationsStatement extends QueryableRALStatement {
+}
