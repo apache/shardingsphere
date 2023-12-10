@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
@@ -40,8 +43,12 @@ import java.util.concurrent.CompletableFuture;
  * 
  * @param <T> type of pipeline job item context
  */
+@RequiredArgsConstructor
+@Getter
 @Slf4j
-public abstract class AbstractInseparablePipelineJob<T extends PipelineJobItemContext> extends AbstractPipelineJob {
+public abstract class AbstractInseparablePipelineJob<T extends PipelineJobItemContext> implements PipelineJob {
+    
+    private final PipelineJobRunnerManager jobRunnerManager;
     
     @Override
     public final void execute(final ShardingContext shardingContext) {
@@ -51,12 +58,12 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobItemCo
         PipelineJobConfiguration jobConfig = jobType.getYamlJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         Collection<T> jobItemContexts = new LinkedList<>();
         for (int shardingItem = 0; shardingItem < jobConfig.getJobShardingCount(); shardingItem++) {
-            if (isStopping()) {
+            if (jobRunnerManager.isStopping()) {
                 log.info("Stopping true, ignore");
                 return;
             }
             T jobItemContext = buildJobItemContext(jobConfig, shardingItem);
-            if (!addTasksRunner(shardingItem, buildTasksRunner(jobItemContext))) {
+            if (!jobRunnerManager.addTasksRunner(shardingItem, buildTasksRunner(jobItemContext))) {
                 continue;
             }
             jobItemContexts.add(jobItemContext);

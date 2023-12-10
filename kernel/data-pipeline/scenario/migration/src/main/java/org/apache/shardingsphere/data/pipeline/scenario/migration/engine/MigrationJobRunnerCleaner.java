@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job;
+package org.apache.shardingsphere.data.pipeline.scenario.migration.engine;
 
-import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
-import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerCleaner;
 
 /**
- * Pipeline job.
+ * Migration job runner cleaner.
  */
-public interface PipelineJob extends SimpleJob {
+public final class MigrationJobRunnerCleaner implements PipelineJobRunnerCleaner {
     
-    /**
-     * Get pipeline job runner manager.
-     * 
-     * @return pipeline job runner manager
-     */
-    PipelineJobRunnerManager getJobRunnerManager();
+    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+    
+    @Override
+    public void clean() {
+        dataSourceManager.close();
+    }
 }

@@ -23,6 +23,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -42,7 +43,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PipelineJobRegistryTest {
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private PipelineJob job;
     
     @BeforeEach
@@ -75,7 +76,7 @@ class PipelineJobRegistryTest {
     @Test
     void assertStop() {
         PipelineJobRegistry.stop("foo_job");
-        verify(job).stop();
+        verify(job.getJobRunnerManager()).stop();
         assertFalse(PipelineJobRegistry.isExisting("foo_job"));
     }
     
@@ -84,7 +85,7 @@ class PipelineJobRegistryTest {
         PipelineJobItemContext jobItemContext = mock(PipelineJobItemContext.class);
         PipelineTasksRunner tasksRunner = mock(PipelineTasksRunner.class);
         when(tasksRunner.getJobItemContext()).thenReturn(jobItemContext);
-        when(job.getTasksRunner(anyInt())).thenReturn(Optional.of(tasksRunner));
+        when(job.getJobRunnerManager().getTasksRunner(anyInt())).thenReturn(Optional.of(tasksRunner));
         Optional<PipelineJobItemContext> actual = PipelineJobRegistry.getItemContext("foo_job", 1);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(jobItemContext));
@@ -97,7 +98,7 @@ class PipelineJobRegistryTest {
     
     @Test
     void assertGetExistedShardingItems() {
-        when(job.getShardingItems()).thenReturn(Arrays.asList(1, 2, 3));
+        when(job.getJobRunnerManager().getShardingItems()).thenReturn(Arrays.asList(1, 2, 3));
         assertThat(PipelineJobRegistry.getShardingItems("foo_job"), is(Arrays.asList(1, 2, 3)));
     }
     

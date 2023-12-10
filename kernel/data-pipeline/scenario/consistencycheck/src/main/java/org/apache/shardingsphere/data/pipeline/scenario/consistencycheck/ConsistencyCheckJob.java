@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSeparablePipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
@@ -35,6 +36,10 @@ import java.util.Optional;
  */
 public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob<ConsistencyCheckJobItemContext> {
     
+    public ConsistencyCheckJob() {
+        super(new PipelineJobRunnerManager());
+    }
+    
     @Override
     public ConsistencyCheckJobItemContext buildJobItemContext(final ShardingContext shardingContext) {
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
@@ -50,9 +55,5 @@ public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob<Cons
     
     @Override
     protected void doPrepare(final ConsistencyCheckJobItemContext jobItemContext) {
-    }
-    
-    @Override
-    protected void clean() {
     }
 }
