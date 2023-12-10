@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Pipeline channel.
+ * <p>It supports multiple push threads and one fetch thread.</p>
  */
 public interface PipelineChannel extends Closeable {
     

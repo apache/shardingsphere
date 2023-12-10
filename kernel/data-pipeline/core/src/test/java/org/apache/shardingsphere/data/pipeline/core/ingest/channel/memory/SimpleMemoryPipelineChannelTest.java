@@ -17,24 +17,43 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.EmptyAckCallback;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.PlaceholderRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SimpleMemoryPipelineChannelTest {
     
+    @SneakyThrows(InterruptedException.class)
+    @Test
+    void assertZeroQueueSizeWorks() {
+        SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(0, new EmptyAckCallback());
+        List<Record> records = Collections.singletonList(new PlaceholderRecord(new FinishedPosition()));
+        Thread thread = new Thread(() -> channel.pushRecords(records));
+        thread.start();
+        assertThat(channel.fetchRecords(1, 500, TimeUnit.MILLISECONDS), is(records));
+        thread.join();
+    }
+    
     @Test
     void assertFetchRecordsTimeoutCorrectly() {
-        SimpleMemoryPipelineChannel simpleMemoryPipelineChannel = new SimpleMemoryPipelineChannel(10, new EmptyAckCallback());
+        SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10, new EmptyAckCallback());
         long startMills = System.currentTimeMillis();
-        simpleMemoryPipelineChannel.fetchRecords(1, 1, TimeUnit.MILLISECONDS);
+        channel.fetchRecords(1, 1, TimeUnit.MILLISECONDS);
         long delta = System.currentTimeMillis() - startMills;
         assertTrue(delta >= 1 && delta < 50, "Delta is not in [1,50) : " + delta);
         startMills = System.currentTimeMillis();
-        simpleMemoryPipelineChannel.fetchRecords(1, 500, TimeUnit.MILLISECONDS);
+        channel.fetchRecords(1, 500, TimeUnit.MILLISECONDS);
         delta = System.currentTimeMillis() - startMills;
         assertTrue(delta >= 500 && delta < 650, "Delta is not in [500,650) : " + delta);
     }

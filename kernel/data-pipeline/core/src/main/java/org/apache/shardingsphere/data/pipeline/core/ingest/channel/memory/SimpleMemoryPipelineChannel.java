@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -39,7 +40,7 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     private final AckCallback ackCallback;
     
     public SimpleMemoryPipelineChannel(final int blockQueueSize, final AckCallback ackCallback) {
-        this.queue = new ArrayBlockingQueue<>(blockQueueSize);
+        this.queue = blockQueueSize < 1 ? new SynchronousQueue<>() : new ArrayBlockingQueue<>(blockQueueSize);
         this.ackCallback = ackCallback;
     }
     
@@ -50,7 +51,6 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     }
     
     @SneakyThrows(InterruptedException.class)
-    // TODO thread-safe?
     @Override
     public List<Record> fetchRecords(final int batchSize, final long timeout, final TimeUnit timeUnit) {
         List<Record> result = new LinkedList<>();
