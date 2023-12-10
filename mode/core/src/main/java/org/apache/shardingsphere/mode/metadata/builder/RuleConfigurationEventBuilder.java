@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.watcher;
+package org.apache.shardingsphere.mode.metadata.builder;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.mode.path.RuleNodePath;

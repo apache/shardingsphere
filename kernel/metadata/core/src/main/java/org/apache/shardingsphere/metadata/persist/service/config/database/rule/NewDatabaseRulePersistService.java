@@ -98,17 +98,19 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public void delete(final String databaseName, final Collection<RuleConfiguration> configs) {
+    public Collection<MetaDataVersion> deleteConfig(final String databaseName, final Collection<RuleConfiguration> configs) {
+        Collection<MetaDataVersion> result = new LinkedList<>();
         Map<RuleConfiguration, NewYamlRuleConfigurationSwapper> yamlConfigs = new NewYamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs);
         for (Entry<RuleConfiguration, NewYamlRuleConfigurationSwapper> entry : yamlConfigs.entrySet()) {
             Collection<YamlDataNode> dataNodes = entry.getValue().swapToDataNodes(entry.getKey());
             if (dataNodes.isEmpty()) {
                 continue;
             }
-            List<YamlDataNode> result = new LinkedList<>(dataNodes);
-            Collections.reverse(result);
-            deleteDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), result);
+            List<YamlDataNode> newDataNodes = new LinkedList<>(dataNodes);
+            Collections.reverse(newDataNodes);
+            result.addAll(deleteDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), newDataNodes));
         }
+        return result;
     }
     
     @Override
@@ -116,10 +118,14 @@ public final class NewDatabaseRulePersistService extends AbstractPersistService 
         repository.delete(NewDatabaseMetaDataNode.getDatabaseRuleNode(databaseName, ruleName));
     }
     
-    private void deleteDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
+    private Collection<MetaDataVersion> deleteDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
+        Collection<MetaDataVersion> result = new LinkedList<>();
         for (YamlDataNode each : dataNodes) {
-            repository.delete(NewDatabaseMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey()));
+            String delKey = NewDatabaseMetaDataNode.getDatabaseRuleNode(databaseName, ruleName, each.getKey());
+            repository.delete(delKey);
+            result.add(new MetaDataVersion(delKey));
         }
+        return result;
     }
     
     @Override
