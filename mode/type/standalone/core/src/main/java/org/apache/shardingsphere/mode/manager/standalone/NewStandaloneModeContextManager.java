@@ -35,11 +35,14 @@ import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataBasedPersistService;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerAware;
 import org.apache.shardingsphere.mode.manager.switcher.NewResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.builder.RuleConfigurationEventBuilder;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -56,6 +59,8 @@ import java.util.stream.Collectors;
  * New Standalone mode context manager.
  */
 public final class NewStandaloneModeContextManager implements ModeContextManager, ContextManagerAware {
+    
+    private final RuleConfigurationEventBuilder ruleConfigurationEventBuilder = new RuleConfigurationEventBuilder();
     
     private ContextManager contextManager;
     
@@ -260,19 +265,32 @@ public final class NewStandaloneModeContextManager implements ModeContextManager
     @Override
     public Collection<MetaDataVersion> alterRuleConfiguration(final String databaseName, final RuleConfiguration toBeAlteredRuleConfig) {
         if (null != toBeAlteredRuleConfig) {
-            contextManager.getConfigurationContextManager().alterRuleConfiguration(databaseName, Collections.singletonList(toBeAlteredRuleConfig));
-            contextManager.getMetaDataContexts().getPersistService()
-                    .getDatabaseRulePersistService().persist(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), Collections.singletonList(toBeAlteredRuleConfig));
+            sendDatabaseRuleChangedEvent(databaseName,
+                    contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService()
+                            .persistConfig(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), Collections.singletonList(toBeAlteredRuleConfig)));
             clearServiceCache();
         }
         return Collections.emptyList();
     }
     
+    private void sendDatabaseRuleChangedEvent(final String databaseName, final Collection<MetaDataVersion> metaDataVersions) {
+        for (MetaDataVersion each : metaDataVersions) {
+            sendDatabaseRuleChangedEvent(databaseName, each);
+        }
+    }
+    
+    private void sendDatabaseRuleChangedEvent(final String databaseName, final MetaDataVersion metaDataVersion) {
+        for (String each : metaDataVersion.getActiveVersionKeys()) {
+            ruleConfigurationEventBuilder.build(databaseName, new DataChangedEvent(each, metaDataVersion.getCurrentActiveVersion(), Type.UPDATED))
+                    .ifPresent(optional -> contextManager.getInstanceContext().getEventBusContext().post(optional));
+        }
+    }
+    
     @Override
     public void removeRuleConfigurationItem(final String databaseName, final RuleConfiguration toBeRemovedRuleConfig) {
         if (null != toBeRemovedRuleConfig) {
-            contextManager.getConfigurationContextManager().dropRuleConfiguration(databaseName, toBeRemovedRuleConfig);
-            contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().delete(databaseName, Collections.singleton(toBeRemovedRuleConfig));
+            sendDatabaseRuleChangedEvent(databaseName,
+                    contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().deleteConfig(databaseName, Collections.singleton(toBeRemovedRuleConfig)));
             clearServiceCache();
         }
     }
