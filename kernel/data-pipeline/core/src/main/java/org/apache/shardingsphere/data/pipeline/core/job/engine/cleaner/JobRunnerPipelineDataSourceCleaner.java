@@ -15,15 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.engine;
+package org.apache.shardingsphere.data.pipeline.core.job.engine.cleaner;
+
+import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 
 /**
- * Pipeline job runner cleaner.
+ * Job runner pipeline data source cleaner.
  */
-public interface PipelineJobRunnerCleaner {
+public final class JobRunnerPipelineDataSourceCleaner implements PipelineJobRunnerCleaner {
     
-    /**
-     * Clean pipeline job.
-     */
-    void clean();
+    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+    
+    @Override
+    public void clean() {
+        dataSourceManager.close();
+    }
 }
