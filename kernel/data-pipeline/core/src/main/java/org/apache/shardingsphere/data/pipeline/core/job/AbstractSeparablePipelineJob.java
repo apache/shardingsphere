@@ -44,6 +44,10 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemCont
     
     private final PipelineJobRunnerManager jobRunnerManager;
     
+    public AbstractSeparablePipelineJob() {
+        this(new PipelineJobRunnerManager());
+    }
+    
     @Override
     public final void execute(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
