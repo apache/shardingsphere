@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
@@ -121,15 +123,7 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobItemCo
         if (futures.isEmpty()) {
             return;
         }
-        executeInventoryTasks(futures, jobItemContexts);
-    }
-    
-    protected abstract void executeInventoryTasks(Collection<CompletableFuture<?>> futures, Collection<T> jobItemContexts);
-    
-    private void updateJobItemStatus(final T jobItemContext, final PipelineJobType jobType, final JobStatus jobStatus) {
-        jobItemContext.setStatus(jobStatus);
-        PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
-        jobItemManager.updateStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
+        ExecuteEngine.trigger(futures, buildExecuteCallback("inventory", jobItemContexts.iterator().next()));
     }
     
     private void executeIncrementalTasks(final PipelineJobType jobType, final Collection<T> jobItemContexts) {
@@ -147,8 +141,14 @@ public abstract class AbstractInseparablePipelineJob<T extends PipelineJobItemCo
                 futures.addAll(task.start());
             }
         }
-        executeIncrementalTasks(futures, jobItemContexts);
+        ExecuteEngine.trigger(futures, buildExecuteCallback("incremental", jobItemContexts.iterator().next()));
     }
     
-    protected abstract void executeIncrementalTasks(Collection<CompletableFuture<?>> futures, Collection<T> jobItemContexts);
+    private void updateJobItemStatus(final T jobItemContext, final PipelineJobType jobType, final JobStatus jobStatus) {
+        jobItemContext.setStatus(jobStatus);
+        PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+        jobItemManager.updateStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
+    }
+    
+    protected abstract ExecuteCallback buildExecuteCallback(String identifier, T jobItemContext);
 }

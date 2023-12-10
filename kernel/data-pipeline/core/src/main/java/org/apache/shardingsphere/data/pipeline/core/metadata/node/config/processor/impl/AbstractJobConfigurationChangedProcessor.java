@@ -79,15 +79,15 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
     protected abstract void onDeleted(JobConfiguration jobConfig);
     
     protected void executeJob(final JobConfiguration jobConfig) {
+        PipelineJob job = buildJob();
         String jobId = jobConfig.getJobName();
-        PipelineJob job = buildPipelineJob(jobId);
         PipelineJobRegistry.add(jobId, job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfig);
         job.getJobRunnerManager().setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
     }
     
-    protected abstract PipelineJob buildPipelineJob(String jobId);
+    protected abstract PipelineJob buildJob();
     
     protected abstract PipelineJobType getJobType();
     
