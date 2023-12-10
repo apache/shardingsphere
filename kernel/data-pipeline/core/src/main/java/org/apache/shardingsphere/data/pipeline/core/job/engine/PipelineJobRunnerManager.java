@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.engine;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.job.engine.cleaner.PipelineJobRunnerCleaner;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
@@ -53,6 +56,9 @@ public final class PipelineJobRunnerManager {
     private final AtomicReference<JobBootstrap> jobBootstrap = new AtomicReference<>();
     
     private final Map<Integer, PipelineTasksRunner> tasksRunners = new ConcurrentHashMap<>();
+    
+    @Getter
+    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     
     private final PipelineJobRunnerCleaner cleaner;
     
@@ -131,6 +137,7 @@ public final class PipelineJobRunnerManager {
         } finally {
             jobId.ifPresent(PipelineJobProgressPersistService::remove);
             tasksRunners.values().stream().map(each -> each.getJobItemContext().getJobProcessContext()).forEach(QuietlyCloser::close);
+            dataSourceManager.close();
             if (null != cleaner) {
                 cleaner.clean();
             }
