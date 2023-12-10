@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.cdc.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
-import org.apache.shardingsphere.data.pipeline.core.job.engine.cleaner.JobRunnerPipelineDataSourceCleaner;
 import org.apache.shardingsphere.data.pipeline.core.job.engine.cleaner.PipelineJobRunnerCleaner;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
@@ -29,13 +28,10 @@ import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 @RequiredArgsConstructor
 public final class CDCJobRunnerCleaner implements PipelineJobRunnerCleaner {
     
-    private final JobRunnerPipelineDataSourceCleaner dataSourceCleaner = new JobRunnerPipelineDataSourceCleaner();
-    
     private final PipelineSink sink;
     
     @Override
     public void clean() {
-        dataSourceCleaner.clean();
         QuietlyCloser.close(sink);
     }
 }

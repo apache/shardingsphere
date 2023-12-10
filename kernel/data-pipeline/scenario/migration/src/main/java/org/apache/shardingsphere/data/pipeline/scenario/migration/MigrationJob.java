@@ -22,14 +22,11 @@ import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfigurati
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSeparablePipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
-import org.apache.shardingsphere.data.pipeline.core.job.engine.cleaner.JobRunnerPipelineDataSourceCleaner;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
@@ -71,16 +68,13 @@ public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJo
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService;
     
-    private final PipelineDataSourceManager dataSourceManager;
-    
     // Shared by all sharding items
     private final MigrationJobPreparer jobPreparer;
     
     public MigrationJob() {
-        super(new PipelineJobRunnerManager(new JobRunnerPipelineDataSourceCleaner()));
+        super(new PipelineJobRunnerManager());
         jobItemManager = new PipelineJobItemManager<>(new MigrationJobType().getYamlJobItemProgressSwapper());
         processConfigPersistService = new PipelineProcessConfigurationPersistService();
-        dataSourceManager = new DefaultPipelineDataSourceManager();
         jobPreparer = new MigrationJobPreparer();
     }
     
@@ -93,7 +87,7 @@ public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJo
                 processConfigPersistService.load(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()), "MIGRATION"));
         TransmissionProcessContext jobProcessContext = new TransmissionProcessContext(jobConfig.getJobId(), processConfig);
         MigrationTaskConfiguration taskConfig = buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
-        return new MigrationJobItemContext(jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager);
+        return new MigrationJobItemContext(jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, getJobRunnerManager().getDataSourceManager());
     }
     
     private MigrationTaskConfiguration buildTaskConfiguration(final MigrationJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration processConfig) {

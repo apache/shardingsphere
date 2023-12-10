@@ -34,7 +34,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
@@ -83,8 +82,6 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemConte
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService;
     
-    private final DefaultPipelineDataSourceManager dataSourceManager;
-    
     private final CDCJobPreparer jobPreparer;
     
     public CDCJob(final PipelineSink sink) {
@@ -93,7 +90,6 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemConte
         jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
         jobItemManager = new PipelineJobItemManager<>(new CDCJobType().getYamlJobItemProgressSwapper());
         processConfigPersistService = new PipelineProcessConfigurationPersistService();
-        dataSourceManager = new DefaultPipelineDataSourceManager();
         jobPreparer = new CDCJobPreparer();
     }
     
@@ -104,7 +100,7 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemConte
                 processConfigPersistService.load(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()), "STREAMING"));
         TransmissionProcessContext jobProcessContext = new TransmissionProcessContext(jobConfig.getJobId(), processConfig);
         CDCTaskConfiguration taskConfig = buildTaskConfiguration((CDCJobConfiguration) jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
-        return new CDCJobItemContext((CDCJobConfiguration) jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager, sink);
+        return new CDCJobItemContext((CDCJobConfiguration) jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, getJobRunnerManager().getDataSourceManager(), sink);
     }
     
     private CDCTaskConfiguration buildTaskConfiguration(final CDCJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration processConfig) {
