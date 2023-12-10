@@ -40,7 +40,7 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     private final AckCallback ackCallback;
     
     public SimpleMemoryPipelineChannel(final int blockQueueSize, final AckCallback ackCallback) {
-        this.queue = blockQueueSize < 1 ? new SynchronousQueue<>() : new ArrayBlockingQueue<>(blockQueueSize);
+        this.queue = blockQueueSize < 1 ? new SynchronousQueue<>(true) : new ArrayBlockingQueue<>(blockQueueSize, true);
         this.ackCallback = ackCallback;
     }
     
