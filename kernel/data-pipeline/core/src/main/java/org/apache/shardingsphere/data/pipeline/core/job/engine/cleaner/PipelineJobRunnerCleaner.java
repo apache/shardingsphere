@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job;
-
-import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
-import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+package org.apache.shardingsphere.data.pipeline.core.job.engine.cleaner;
 
 /**
- * Pipeline job.
+ * Pipeline job runner cleaner.
  */
-public interface PipelineJob extends SimpleJob {
+public interface PipelineJobRunnerCleaner {
     
     /**
-     * Get pipeline job runner manager.
-     * 
-     * @return pipeline job runner manager
+     * Clean pipeline job.
      */
-    PipelineJobRunnerManager getJobRunnerManager();
+    void clean();
 }

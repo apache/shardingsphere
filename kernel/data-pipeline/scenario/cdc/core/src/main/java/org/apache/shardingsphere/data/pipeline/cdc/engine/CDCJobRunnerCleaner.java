@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job;
+package org.apache.shardingsphere.data.pipeline.cdc.engine;
 
-import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
-import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
+import org.apache.shardingsphere.data.pipeline.core.job.engine.cleaner.PipelineJobRunnerCleaner;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 /**
- * Pipeline job.
+ * CDC job runner cleaner.
  */
-public interface PipelineJob extends SimpleJob {
+@RequiredArgsConstructor
+public final class CDCJobRunnerCleaner implements PipelineJobRunnerCleaner {
     
-    /**
-     * Get pipeline job runner manager.
-     * 
-     * @return pipeline job runner manager
-     */
-    PipelineJobRunnerManager getJobRunnerManager();
+    private final PipelineSink sink;
+    
+    @Override
+    public void clean() {
+        QuietlyCloser.close(sink);
+    }
 }

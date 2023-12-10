@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.it.data.pipeline.common;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceConfigurationFactory;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
@@ -38,7 +37,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DefaultPipelineDataSourceManagerTest {
+class PipelineDataSourceManagerTest {
     
     private MigrationJobConfiguration jobConfig;
     
@@ -54,7 +53,7 @@ class DefaultPipelineDataSourceManagerTest {
     
     @Test
     void assertGetDataSource() {
-        try (PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager()) {
+        try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
             PipelineDataSourceConfiguration source = jobConfig.getSources().values().iterator().next();
             DataSource actual = dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter()));
             assertThat(actual, instanceOf(PipelineDataSourceWrapper.class));
@@ -64,10 +63,10 @@ class DefaultPipelineDataSourceManagerTest {
     @Test
     void assertClose() throws ReflectiveOperationException {
         PipelineDataSourceConfiguration source = jobConfig.getSources().values().iterator().next();
-        try (PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager()) {
+        try (PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager()) {
             dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter()));
             dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter()));
-            Map<?, ?> cachedDataSources = (Map<?, ?>) Plugins.getMemberAccessor().get(DefaultPipelineDataSourceManager.class.getDeclaredField("cachedDataSources"), dataSourceManager);
+            Map<?, ?> cachedDataSources = (Map<?, ?>) Plugins.getMemberAccessor().get(PipelineDataSourceManager.class.getDeclaredField("cachedDataSources"), dataSourceManager);
             assertThat(cachedDataSources.size(), is(2));
             dataSourceManager.close();
             assertTrue(cachedDataSources.isEmpty());
