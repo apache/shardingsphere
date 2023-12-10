@@ -76,7 +76,7 @@ public final class PipelineJobRegistry {
         if (null == job) {
             return;
         }
-        job.stop();
+        job.getJobRunnerManager().stop();
         JOBS.remove(jobId);
     }
     
@@ -88,7 +88,7 @@ public final class PipelineJobRegistry {
      * @return pipeline job item context
      */
     public static Optional<PipelineJobItemContext> getItemContext(final String jobId, final int shardingItem) {
-        return JOBS.containsKey(jobId) ? JOBS.get(jobId).getTasksRunner(shardingItem).map(PipelineTasksRunner::getJobItemContext) : Optional.empty();
+        return JOBS.containsKey(jobId) ? JOBS.get(jobId).getJobRunnerManager().getTasksRunner(shardingItem).map(PipelineTasksRunner::getJobItemContext) : Optional.empty();
     }
     
     /**
@@ -98,6 +98,6 @@ public final class PipelineJobRegistry {
      * @return sharding items
      */
     public static Collection<Integer> getShardingItems(final String jobId) {
-        return JOBS.containsKey(jobId) ? JOBS.get(jobId).getShardingItems() : Collections.emptyList();
+        return JOBS.containsKey(jobId) ? JOBS.get(jobId).getJobRunnerManager().getShardingItems() : Collections.emptyList();
     }
 }

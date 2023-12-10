@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfigurati
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSeparablePipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
@@ -45,6 +46,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.Migrati
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.engine.MigrationJobRunnerCleaner;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.ingest.dumper.MigrationIncrementalDumperContextCreator;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.preparer.MigrationJobPreparer;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
@@ -75,6 +77,7 @@ public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJo
     private final MigrationJobPreparer jobPreparer;
     
     public MigrationJob() {
+        super(new PipelineJobRunnerManager(new MigrationJobRunnerCleaner()));
         jobItemManager = new PipelineJobItemManager<>(new MigrationJobType().getYamlJobItemProgressSwapper());
         processConfigPersistService = new PipelineProcessConfigurationPersistService();
         dataSourceManager = new DefaultPipelineDataSourceManager();
@@ -134,10 +137,5 @@ public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJo
     @Override
     protected void doPrepare(final MigrationJobItemContext jobItemContext) throws SQLException {
         jobPreparer.prepare(jobItemContext);
-    }
-    
-    @Override
-    public void clean() {
-        dataSourceManager.close();
     }
 }

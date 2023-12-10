@@ -217,7 +217,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         enable(jobId);
         JobConfigurationPOJO jobConfigPOJO = PipelineJobIdUtils.getElasticJobConfigurationPOJO(jobId);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfigPOJO.toJobConfiguration());
-        job.setJobBootstrap(oneOffJobBootstrap);
+        job.getJobRunnerManager().setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
     }
     

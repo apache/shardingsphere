@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
@@ -34,15 +37,19 @@ import java.sql.SQLException;
  * 
  * @param <T> type of pipeline job item context
  */
+@RequiredArgsConstructor
+@Getter
 @Slf4j
-public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemContext> extends AbstractPipelineJob {
+public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemContext> implements PipelineJob {
+    
+    private final PipelineJobRunnerManager jobRunnerManager;
     
     @Override
     public final void execute(final ShardingContext shardingContext) {
         String jobId = shardingContext.getJobName();
         int shardingItem = shardingContext.getShardingItem();
         log.info("Execute job {}-{}", jobId, shardingItem);
-        if (isStopping()) {
+        if (jobRunnerManager.isStopping()) {
             log.info("Stopping true, ignore");
             return;
         }
@@ -60,7 +67,7 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemCont
         String jobId = jobItemContext.getJobId();
         int shardingItem = jobItemContext.getShardingItem();
         PipelineTasksRunner tasksRunner = buildTasksRunner(jobItemContext);
-        if (!addTasksRunner(shardingItem, tasksRunner)) {
+        if (!jobRunnerManager.addTasksRunner(shardingItem, tasksRunner)) {
             return;
         }
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().clean(jobId, shardingItem);
