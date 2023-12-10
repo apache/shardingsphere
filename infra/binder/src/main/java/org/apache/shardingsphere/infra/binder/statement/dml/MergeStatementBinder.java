@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.SneakyThrows;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.enums.SegmentType;
 import org.apache.shardingsphere.infra.binder.segment.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.segment.expression.impl.ColumnSegmentBinder;
