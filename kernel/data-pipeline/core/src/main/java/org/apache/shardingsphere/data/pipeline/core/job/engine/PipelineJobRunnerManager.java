@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.job.engine;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.job.engine.cleaner.PipelineJobRunnerCleaner;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
@@ -58,7 +57,7 @@ public final class PipelineJobRunnerManager {
     private final Map<Integer, PipelineTasksRunner> tasksRunners = new ConcurrentHashMap<>();
     
     @Getter
-    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+    private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
     
     private final PipelineJobRunnerCleaner cleaner;
     
