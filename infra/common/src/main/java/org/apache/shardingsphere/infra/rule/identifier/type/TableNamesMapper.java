@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type;
 
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveMap;
 
 import java.util.Collection;
 import java.util.Map;
