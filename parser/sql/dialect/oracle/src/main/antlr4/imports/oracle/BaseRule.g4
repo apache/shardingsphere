@@ -48,6 +48,8 @@ intervalUnit
 
 stringLiterals
     : STRING_
+    | NCHAR_TEXT
+    | UCHAR_TEXT
     ;
 
 numberLiterals

@@ -7307,19 +7307,19 @@
 
     <select sql-case-id="select_with_unicode_string">
         <projections start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
-            <expression-projection text="'test" start-index="7" stop-index="13" literal-start-index="7"
+            <expression-projection text="test" start-index="7" stop-index="13" literal-start-index="7"
                                    literal-stop-index="13">
-                <literalText>'test</literalText>
+                <literalText>test</literalText>
                 <expr>
-                    <literal-expression value="'test" start-index="7" stop-index="13" literal-start-index="7"
+                    <literal-expression value="test" start-index="7" stop-index="13" literal-start-index="7"
                                         literal-stop-index="13"/>
                 </expr>
             </expression-projection>
-            <expression-projection text="'test" start-index="16" stop-index="22" literal-start-index="16"
+            <expression-projection text="test" start-index="16" stop-index="22" literal-start-index="16"
                                    literal-stop-index="22">
-                <literalText>'test</literalText>
+                <literalText>test</literalText>
                 <expr>
-                    <literal-expression value="'test" start-index="16" stop-index="22" literal-start-index="16"
+                    <literal-expression value="test" start-index="16" stop-index="22" literal-start-index="16"
                                         literal-stop-index="22"/>
                 </expr>
             </expression-projection>
