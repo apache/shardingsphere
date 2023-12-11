@@ -21,13 +21,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.features.ShardingTest"},
     "pattern":"\\Qtest-native/yaml/features/sharding.yaml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
-    "pattern":"\\Qsql/H2.xml\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
-    "pattern":"\\Qsql/MySQL.xml\\E"
-  }
-  ]},
+  }]},
   "bundles":[]
 }

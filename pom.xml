@@ -142,7 +142,7 @@
         <hamcrest.version>2.2</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
         <awaitility.version>4.2.0</awaitility.version>
-        <testcontainers.version>1.17.6</testcontainers.version>
+        <testcontainers.version>1.19.3</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
         <graalvm.version>21.2.0</graalvm.version>

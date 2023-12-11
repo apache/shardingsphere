@@ -20,73 +20,16 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.test.natived.jdbc.commons.AbstractShardingCommonTest;
 import org.apache.shardingsphere.test.natived.jdbc.commons.FileTestUtils;
-import org.awaitility.Awaitility;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.time.Duration;
-import java.util.Properties;
 
 public class PostgresTest {
     
-    private static final String USERNAME = "root";
-    
-    private static final String PASSWORD = "123456";
-    
-    private static final String DATABASE = "test";
-    
-    private static final String JDBC_URL = "jdbc:postgresql://localhost:49965/" + DATABASE;
-    
-    private static Process process;
-    
     private AbstractShardingCommonTest abstractShardingCommonTest;
-    
-    private static Connection openConnection() throws SQLException {
-        Properties props = new Properties();
-        props.setProperty("user", USERNAME);
-        props.setProperty("password", PASSWORD);
-        return DriverManager.getConnection(JDBC_URL, props);
-    }
-    
-    @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
-    @BeforeAll
-    static void beforeAll() throws IOException {
-        System.out.println("Starting PostgreSQL ...");
-        process = new ProcessBuilder(
-                "docker", "run", "--rm", "-p", "49965:5432", "-e", "POSTGRES_DB=" + DATABASE, "-e", "POSTGRES_USER=" + USERNAME,
-                "-e", "POSTGRES_PASSWORD=" + PASSWORD, "postgres:16.1-bookworm")
-                        .redirectOutput(new File("target/test-classes/postgres-stdout.txt"))
-                        .redirectError(new File("target/test-classes/postgres-stderr.txt"))
-                        .start();
-        Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().until(() -> {
-            openConnection().close();
-            return true;
-        });
-        try (Connection connection = openConnection()) {
-            connection.createStatement().executeUpdate("CREATE DATABASE demo_ds_0;");
-            connection.createStatement().executeUpdate("CREATE DATABASE demo_ds_1;");
-            connection.createStatement().executeUpdate("CREATE DATABASE demo_ds_2;");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println("PostgreSQL started");
-    }
-    
-    @AfterAll
-    static void tearDown() {
-        if (process != null && process.isAlive()) {
-            System.out.println("Shutting down PostgreSQL");
-            process.destroy();
-        }
-    }
     
     @Test
     @EnabledInNativeImage

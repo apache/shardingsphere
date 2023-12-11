@@ -23,22 +23,16 @@ mode:
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.postgresql.Driver
-    jdbcUrl: jdbc:postgresql://localhost:49965/demo_ds_0
-    username: root
-    password: 123456
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:postgresql:16.1-bookworm://test-native-databases-postgres/demo_ds_0?TC_DAEMON=true
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.postgresql.Driver
-    jdbcUrl: jdbc:postgresql://localhost:49965/demo_ds_1
-    username: root
-    password: 123456
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:postgresql:16.1-bookworm://test-native-databases-postgres/demo_ds_1?TC_DAEMON=true
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.postgresql.Driver
-    jdbcUrl: jdbc:postgresql://localhost:49965/demo_ds_2
-    username: root
-    password: 123456
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:postgresql:16.1-bookworm://test-native-databases-postgres/demo_ds_2?TC_DAEMON=true
 
 rules:
 - !SHARDING

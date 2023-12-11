@@ -27,6 +27,7 @@
     {"excludeClasses": "org.locationtech.jts.geom.**"},
     {"excludeClasses": "org.postgresql.**"},
     {"excludeClasses": "org.slf4j.event.**"},
+    {"excludeClasses": "org.testcontainers.jdbc.**"},
 
     {"excludeClasses": "org.apache.shardingsphere.test.natived.**"}
   ],
