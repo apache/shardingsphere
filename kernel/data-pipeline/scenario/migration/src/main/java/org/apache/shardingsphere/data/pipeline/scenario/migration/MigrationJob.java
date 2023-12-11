@@ -67,7 +67,6 @@ public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJo
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
-    // Shared by all sharding items
     private final MigrationJobPreparer jobPreparer = new MigrationJobPreparer();
     
     @Override
@@ -95,15 +94,18 @@ public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJo
     private Collection<CreateTableConfiguration> buildCreateTableConfigurations(final MigrationJobConfiguration jobConfig, final TableAndSchemaNameMapper mapper) {
         Collection<CreateTableConfiguration> result = new LinkedList<>();
         for (JobDataNodeEntry each : jobConfig.getTablesFirstDataNodes().getEntries()) {
-            String sourceSchemaName = mapper.getSchemaName(each.getLogicTableName());
-            String targetSchemaName = new DatabaseTypeRegistry(jobConfig.getTargetDatabaseType()).getDialectDatabaseMetaData().isSchemaAvailable() ? sourceSchemaName : null;
-            DataNode dataNode = each.getDataNodes().get(0);
-            PipelineDataSourceConfiguration sourceDataSourceConfig = jobConfig.getSources().get(dataNode.getDataSourceName());
-            CreateTableConfiguration createTableConfig = new CreateTableConfiguration(sourceDataSourceConfig, new CaseInsensitiveQualifiedTable(sourceSchemaName, dataNode.getTableName()),
-                    jobConfig.getTarget(), new CaseInsensitiveQualifiedTable(targetSchemaName, each.getLogicTableName()));
-            result.add(createTableConfig);
+            result.add(getCreateTableConfiguration(jobConfig, mapper, each));
         }
         return result;
+    }
+    
+    private CreateTableConfiguration getCreateTableConfiguration(final MigrationJobConfiguration jobConfig, final TableAndSchemaNameMapper mapper, final JobDataNodeEntry jobDataNodeEntry) {
+        DataNode dataNode = jobDataNodeEntry.getDataNodes().get(0);
+        PipelineDataSourceConfiguration sourceDataSourceConfig = jobConfig.getSources().get(dataNode.getDataSourceName());
+        String sourceSchemaName = mapper.getSchemaName(jobDataNodeEntry.getLogicTableName());
+        String targetSchemaName = new DatabaseTypeRegistry(jobConfig.getTargetDatabaseType()).getDialectDatabaseMetaData().isSchemaAvailable() ? sourceSchemaName : null;
+        return new CreateTableConfiguration(sourceDataSourceConfig, new CaseInsensitiveQualifiedTable(sourceSchemaName, dataNode.getTableName()),
+                jobConfig.getTarget(), new CaseInsensitiveQualifiedTable(targetSchemaName, jobDataNodeEntry.getLogicTableName()));
     }
     
     private ImporterConfiguration buildImporterConfiguration(final MigrationJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig,
