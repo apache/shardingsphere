@@ -50,7 +50,7 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemCont
     
     private final PipelineJobRunnerManager jobRunnerManager;
     
-    public AbstractSeparablePipelineJob() {
+    protected AbstractSeparablePipelineJob() {
         this(new PipelineJobRunnerManager());
     }
     
