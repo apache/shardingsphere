@@ -44,7 +44,7 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemCont
     
     private final PipelineJobRunnerManager jobRunnerManager;
     
-    public AbstractSeparablePipelineJob() {
+    protected AbstractSeparablePipelineJob() {
         this(new PipelineJobRunnerManager());
     }
     
@@ -68,12 +68,12 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemCont
     }
     
     private void execute(final T jobItemContext) {
-        String jobId = jobItemContext.getJobId();
         int shardingItem = jobItemContext.getShardingItem();
         PipelineTasksRunner tasksRunner = buildTasksRunner(jobItemContext);
         if (!jobRunnerManager.addTasksRunner(shardingItem, tasksRunner)) {
             return;
         }
+        String jobId = jobItemContext.getJobId();
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemFacade().getErrorMessage().clean(jobId, shardingItem);
         prepare(jobItemContext);
         log.info("Start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
