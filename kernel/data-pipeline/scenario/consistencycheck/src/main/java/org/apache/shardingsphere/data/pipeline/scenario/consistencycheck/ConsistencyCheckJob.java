@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSeparablePipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
@@ -34,17 +33,12 @@ import java.util.Optional;
 /**
  * Consistency check job.
  */
-@Slf4j
 public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob<ConsistencyCheckJobItemContext> {
-    
-    public ConsistencyCheckJob(final String jobId) {
-        super(jobId);
-    }
     
     @Override
     public ConsistencyCheckJobItemContext buildJobItemContext(final ShardingContext shardingContext) {
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
-        PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(getJobType().getYamlJobItemProgressSwapper());
+        PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new ConsistencyCheckJobType().getYamlJobItemProgressSwapper());
         Optional<ConsistencyCheckJobItemProgress> jobItemProgress = jobItemManager.getProgress(jobConfig.getJobId(), shardingContext.getShardingItem());
         return new ConsistencyCheckJobItemContext(jobConfig, shardingContext.getShardingItem(), JobStatus.RUNNING, jobItemProgress.orElse(null));
     }
@@ -56,9 +50,5 @@ public final class ConsistencyCheckJob extends AbstractSeparablePipelineJob<Cons
     
     @Override
     protected void doPrepare(final ConsistencyCheckJobItemContext jobItemContext) {
-    }
-    
-    @Override
-    protected void clean() {
     }
 }

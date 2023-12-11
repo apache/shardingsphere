@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job;
+package org.apache.shardingsphere.data.pipeline.core.job.engine;
 
-import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.job.engine.cleaner.PipelineJobRunnerCleaner;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
-import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.listener.PipelineElasticJobListener;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarr
 import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import java.util.ArrayList;
@@ -42,18 +42,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Abstract pipeline job.
+ * Pipeline job runner manager.
  */
+@RequiredArgsConstructor
 @Slf4j
-public abstract class AbstractPipelineJob implements PipelineJob {
+public final class PipelineJobRunnerManager {
     
     private static final long JOB_WAITING_TIMEOUT_MILLS = 2000L;
-    
-    @Getter
-    private final String jobId;
-    
-    @Getter(AccessLevel.PROTECTED)
-    private final PipelineJobType jobType;
     
     private final AtomicBoolean stopping = new AtomicBoolean(false);
     
@@ -61,9 +56,13 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private final Map<Integer, PipelineTasksRunner> tasksRunners = new ConcurrentHashMap<>();
     
-    protected AbstractPipelineJob(final String jobId) {
-        this.jobId = jobId;
-        jobType = TypedSPILoader.getService(PipelineJobType.class, PipelineJobIdUtils.parseJobType(jobId).getType());
+    @Getter
+    private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+    
+    private final PipelineJobRunnerCleaner cleaner;
+    
+    public PipelineJobRunnerManager() {
+        this(null);
     }
     
     /**
@@ -84,17 +83,33 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         this.jobBootstrap.set(jobBootstrap);
     }
     
-    @Override
-    public final Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {
+    /**
+     * Get tasks runner.
+     *
+     * @param shardingItem sharding item
+     * @return tasks runner
+     */
+    public Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {
         return Optional.ofNullable(tasksRunners.get(shardingItem));
     }
     
-    @Override
-    public final Collection<Integer> getShardingItems() {
+    /**
+     * Get sharding items.
+     *
+     * @return sharding items
+     */
+    public Collection<Integer> getShardingItems() {
         return new ArrayList<>(tasksRunners.keySet());
     }
     
-    protected final boolean addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
+    /**
+     * Add tasks runner.
+     * 
+     * @param shardingItem sharding item
+     * @param tasksRunner tasks runner
+     * @return add success or not
+     */
+    public boolean addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
         if (null != tasksRunners.putIfAbsent(shardingItem, tasksRunner)) {
             log.warn("shardingItem {} tasks runner exists, ignore", shardingItem);
             return false;
@@ -105,20 +120,26 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         return true;
     }
     
-    @Override
-    public final void stop() {
+    /**
+     * Stop job.
+     */
+    public void stop() {
+        Optional<String> jobId = tasksRunners.values().stream().findFirst().map(each -> each.getJobItemContext().getJobId());
         try {
             stopping.set(true);
             log.info("Stop tasks runner, jobId={}", jobId);
             tasksRunners.values().forEach(PipelineTasksRunner::stop);
-            awaitJobStopped(jobId);
+            jobId.ifPresent(this::awaitJobStopped);
             if (null != jobBootstrap.get()) {
                 jobBootstrap.get().shutdown();
             }
         } finally {
-            PipelineJobProgressPersistService.remove(jobId);
+            jobId.ifPresent(PipelineJobProgressPersistService::remove);
             tasksRunners.values().stream().map(each -> each.getJobItemContext().getJobProcessContext()).forEach(QuietlyCloser::close);
-            clean();
+            dataSourceManager.close();
+            if (null != cleaner) {
+                cleaner.clean();
+            }
         }
     }
     
@@ -142,6 +163,4 @@ public abstract class AbstractPipelineJob implements PipelineJob {
             spentMills += sleepMillis;
         }
     }
-    
-    protected abstract void clean();
 }

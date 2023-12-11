@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.id;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
-import java.util.Optional;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Pipeline job id.
@@ -44,20 +46,11 @@ public interface PipelineJobId {
     PipelineContextKey getContextKey();
     
     /**
-     * Get parent job id.
+     * Marshal job id suffix.
      *
-     * @return parent job id
+     * @return marshaled suffix
      */
-    default Optional<String> getParentJobId() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Get sequence.
-     *
-     * @return sequence
-     */
-    default Optional<Integer> getSequence() {
-        return Optional.empty();
+    default String marshalSuffix() {
+        return DigestUtils.md5Hex(JsonUtils.toJsonString(this).getBytes(StandardCharsets.UTF_8));
     }
 }

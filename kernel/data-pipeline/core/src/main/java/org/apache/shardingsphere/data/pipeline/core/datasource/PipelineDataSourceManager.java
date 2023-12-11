@@ -17,12 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Pipeline data source manager.
  */
-public interface PipelineDataSourceManager extends AutoCloseable {
+@Slf4j
+public final class PipelineDataSourceManager implements AutoCloseable {
+    
+    private final Map<PipelineDataSourceConfiguration, PipelineDataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
     
     /**
      * Get cached data source.
@@ -30,8 +38,38 @@ public interface PipelineDataSourceManager extends AutoCloseable {
      * @param dataSourceConfig data source configuration
      * @return data source
      */
-    PipelineDataSourceWrapper getDataSource(PipelineDataSourceConfiguration dataSourceConfig);
+    public PipelineDataSourceWrapper getDataSource(final PipelineDataSourceConfiguration dataSourceConfig) {
+        PipelineDataSourceWrapper result = cachedDataSources.get(dataSourceConfig);
+        if (null != result) {
+            return result;
+        }
+        synchronized (cachedDataSources) {
+            result = cachedDataSources.get(dataSourceConfig);
+            if (null != result) {
+                if (!result.isClosed()) {
+                    return result;
+                } else {
+                    log.warn("{} is already closed, create again", result);
+                }
+            }
+            result = PipelineDataSourceFactory.newInstance(dataSourceConfig);
+            cachedDataSources.put(dataSourceConfig, result);
+            return result;
+        }
+    }
     
     @Override
-    void close();
+    public void close() {
+        for (PipelineDataSourceWrapper each : cachedDataSources.values()) {
+            if (each.isClosed()) {
+                continue;
+            }
+            try {
+                each.close();
+            } catch (final SQLException ex) {
+                log.error("An exception occurred while closing the data source", ex);
+            }
+        }
+        cachedDataSources.clear();
+    }
 }

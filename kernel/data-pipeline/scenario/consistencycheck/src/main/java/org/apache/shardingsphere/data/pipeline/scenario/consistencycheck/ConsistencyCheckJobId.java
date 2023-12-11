@@ -23,8 +23,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 
-import java.util.Optional;
-
 /**
  * Consistency check job id.
  */
@@ -64,12 +62,7 @@ public final class ConsistencyCheckJobId implements PipelineJobId {
     }
     
     @Override
-    public Optional<String> getParentJobId() {
-        return Optional.of(parentJobId);
-    }
-    
-    @Override
-    public Optional<Integer> getSequence() {
-        return Optional.of(sequence);
+    public String marshalSuffix() {
+        return parentJobId + sequence;
     }
 }

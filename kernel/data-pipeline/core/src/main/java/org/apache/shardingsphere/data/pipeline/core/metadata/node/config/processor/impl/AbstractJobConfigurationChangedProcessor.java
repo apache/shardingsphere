@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
+import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.JobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
-import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -79,15 +79,15 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
     protected abstract void onDeleted(JobConfiguration jobConfig);
     
     protected void executeJob(final JobConfiguration jobConfig) {
+        PipelineJob job = buildJob();
         String jobId = jobConfig.getJobName();
-        AbstractPipelineJob job = buildPipelineJob(jobId);
         PipelineJobRegistry.add(jobId, job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfig);
-        job.setJobBootstrap(oneOffJobBootstrap);
+        job.getJobRunnerManager().setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
     }
     
-    protected abstract AbstractPipelineJob buildPipelineJob(String jobId);
+    protected abstract PipelineJob buildJob();
     
     protected abstract PipelineJobType getJobType();
     

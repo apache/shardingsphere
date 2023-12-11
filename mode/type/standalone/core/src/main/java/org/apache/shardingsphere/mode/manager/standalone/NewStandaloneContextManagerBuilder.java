@@ -32,6 +32,8 @@ import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.Stan
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.NewMetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
+import org.apache.shardingsphere.mode.subsciber.NewConfigurationChangedSubscriber;
+import org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber;
 
 import java.sql.SQLException;
 import java.util.Properties;
@@ -52,6 +54,7 @@ public final class NewStandaloneContextManagerBuilder implements ContextManagerB
         new StandaloneProcessSubscriber(instanceContext.getEventBusContext());
         MetaDataContexts metaDataContexts = NewMetaDataContextsFactory.create(persistService, param, instanceContext);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
+        registerSubscriber(result);
         setContextManagerAware(result);
         return result;
     }
@@ -59,6 +62,11 @@ public final class NewStandaloneContextManagerBuilder implements ContextManagerB
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter param) {
         return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()),
                 new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new NewStandaloneModeContextManager(), new GlobalLockContext(null), new EventBusContext());
+    }
+    
+    private void registerSubscriber(final ContextManager contextManager) {
+        contextManager.getInstanceContext().getEventBusContext().register(new RuleItemChangedSubscriber(contextManager));
+        new NewConfigurationChangedSubscriber(contextManager);
     }
     
     private void setContextManagerAware(final ContextManager contextManager) {
