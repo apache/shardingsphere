@@ -67,7 +67,6 @@ public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJo
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
-    // Shared by all sharding items
     private final MigrationJobPreparer jobPreparer = new MigrationJobPreparer();
     
     @Override
