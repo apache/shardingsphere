@@ -71,24 +71,20 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemContext> {
     
+    private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
+    
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new CDCJobType().getYamlJobItemProgressSwapper());
+    
+    private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
+    
+    private final CDCJobPreparer jobPreparer = new CDCJobPreparer();
+    
     @Getter
     private final PipelineSink sink;
-    
-    private final CDCJobAPI jobAPI;
-    
-    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
-    
-    private final PipelineProcessConfigurationPersistService processConfigPersistService;
-    
-    private final CDCJobPreparer jobPreparer;
     
     public CDCJob(final PipelineSink sink) {
         super(new PipelineJobRunnerManager(new CDCJobRunnerCleaner(sink)));
         this.sink = sink;
-        jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
-        jobItemManager = new PipelineJobItemManager<>(new CDCJobType().getYamlJobItemProgressSwapper());
-        processConfigPersistService = new PipelineProcessConfigurationPersistService();
-        jobPreparer = new CDCJobPreparer();
     }
     
     @Override
