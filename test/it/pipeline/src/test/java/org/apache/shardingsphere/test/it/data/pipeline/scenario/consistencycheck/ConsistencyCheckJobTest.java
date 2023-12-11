@@ -63,7 +63,7 @@ class ConsistencyCheckJobTest {
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(createYamlConsistencyCheckJobConfiguration(checkJobId));
         PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new ConsistencyCheckJobType().getYamlJobItemProgressSwapper());
         Optional<ConsistencyCheckJobItemProgress> jobItemProgress = jobItemManager.getProgress(jobConfig.getJobId(), 0);
-        ConsistencyCheckJobItemContext actual = consistencyCheckJob.buildJobItemContext(jobConfig, 0, jobItemProgress.orElse(null));
+        ConsistencyCheckJobItemContext actual = consistencyCheckJob.buildJobItemContext(jobConfig, 0, jobItemProgress.orElse(null), null);
         assertThat(actual.getProgressContext().getSourceTableCheckPositions(), is(expectTableCheckPosition));
         assertThat(actual.getProgressContext().getTargetTableCheckPositions(), is(expectTableCheckPosition));
     }
