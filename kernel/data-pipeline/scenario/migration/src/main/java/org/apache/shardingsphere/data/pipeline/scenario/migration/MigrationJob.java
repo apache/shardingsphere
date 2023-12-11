@@ -26,13 +26,10 @@ import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfigurati
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSeparablePipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
-import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
 import org.apache.shardingsphere.data.pipeline.core.preparer.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.spi.algorithm.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
@@ -59,15 +56,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJobConfiguration, MigrationJobItemContext, TransmissionJobItemProgress> {
     
-    private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
-    
     private final MigrationJobPreparer jobPreparer = new MigrationJobPreparer();
     
     @Override
-    protected MigrationJobItemContext buildJobItemContext(final MigrationJobConfiguration jobConfig, final int shardingItem, final TransmissionJobItemProgress jobItemProgress) {
-        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(
-                processConfigPersistService.load(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()), "MIGRATION"));
-        TransmissionProcessContext jobProcessContext = new TransmissionProcessContext(jobConfig.getJobId(), processConfig);
+    protected MigrationJobItemContext buildJobItemContext(final MigrationJobConfiguration jobConfig,
+                                                          final int shardingItem, final TransmissionJobItemProgress jobItemProgress, final TransmissionProcessContext jobProcessContext) {
         MigrationTaskConfiguration taskConfig = buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
         return new MigrationJobItemContext(jobConfig, shardingItem, jobItemProgress, jobProcessContext, taskConfig, getJobRunnerManager().getDataSourceManager());
     }
