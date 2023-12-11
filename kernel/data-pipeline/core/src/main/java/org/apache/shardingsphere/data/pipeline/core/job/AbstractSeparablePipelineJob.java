@@ -28,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfig
 import org.apache.shardingsphere.data.pipeline.core.job.engine.PipelineJobRunnerManager;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManager;
@@ -41,12 +40,14 @@ import java.sql.SQLException;
 /**
  * Abstract separable pipeline job.
  * 
- * @param <T> type of pipeline job item context
+ * @param <T> type of pipeline job configuration
+ * @param <I> type of pipeline job item context
+ * @param <P> type of pipeline job item progress
  */
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemContext> implements PipelineJob {
+public abstract class AbstractSeparablePipelineJob<T extends PipelineJobConfiguration, I extends PipelineJobItemContext, P extends PipelineJobItemProgress> implements PipelineJob {
     
     private final PipelineJobRunnerManager jobRunnerManager;
     
@@ -65,9 +66,9 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemCont
         }
         PipelineJobType jobType = PipelineJobIdUtils.parseJobType(jobId);
         PipelineJobConfigurationManager jobConfigManager = new PipelineJobConfigurationManager(jobType);
-        PipelineJobConfiguration jobConfig = jobConfigManager.getJobConfiguration(jobId);
-        PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
-        TransmissionJobItemProgress jobItemProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem).orElse(null);
+        T jobConfig = jobConfigManager.getJobConfiguration(jobId);
+        PipelineJobItemManager<P> jobItemManager = new PipelineJobItemManager<>(jobType.getYamlJobItemProgressSwapper());
+        P jobItemProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem).orElse(null);
         try {
             execute(buildJobItemContext(jobConfig, shardingItem, jobItemProgress));
             // CHECKSTYLE:OFF
@@ -78,7 +79,7 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemCont
         }
     }
     
-    private void execute(final T jobItemContext) {
+    private void execute(final I jobItemContext) {
         int shardingItem = jobItemContext.getShardingItem();
         PipelineTasksRunner tasksRunner = buildTasksRunner(jobItemContext);
         if (!jobRunnerManager.addTasksRunner(shardingItem, tasksRunner)) {
@@ -91,11 +92,11 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemCont
         tasksRunner.start();
     }
     
-    protected abstract T buildJobItemContext(PipelineJobConfiguration jobConfig, int shardingItem, PipelineJobItemProgress jobItemProgress);
+    protected abstract I buildJobItemContext(T jobConfig, int shardingItem, P jobItemProgress);
     
-    protected abstract PipelineTasksRunner buildTasksRunner(T jobItemContext);
+    protected abstract PipelineTasksRunner buildTasksRunner(I jobItemContext);
     
-    protected final void prepare(final T jobItemContext) {
+    protected final void prepare(final I jobItemContext) {
         try {
             doPrepare(jobItemContext);
             // CHECKSTYLE:OFF
@@ -105,7 +106,7 @@ public abstract class AbstractSeparablePipelineJob<T extends PipelineJobItemCont
         }
     }
     
-    protected abstract void doPrepare(T jobItemContext) throws SQLException;
+    protected abstract void doPrepare(I jobItemContext) throws SQLException;
     
     private void processFailed(final String jobId, final int shardingItem, final Exception ex) {
         log.error("Job execution failed, {}-{}", jobId, shardingItem, ex);
