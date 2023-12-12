@@ -41,8 +41,9 @@ public final class MemoryPipelineChannelCreator implements PipelineChannelCreato
     
     @Override
     public PipelineChannel createPipelineChannel(final int outputConcurrency, final int averageElementSize, final AckCallback ackCallback) {
-        return 1 == outputConcurrency ? new SimpleMemoryPipelineChannel(blockQueueSize / averageElementSize, ackCallback)
-                : new MultiplexMemoryPipelineChannel(outputConcurrency, blockQueueSize < 1 ? 5 : blockQueueSize, ackCallback);
+        return 1 == outputConcurrency
+                ? new SimpleMemoryPipelineChannel(blockQueueSize / averageElementSize, ackCallback)
+                : new MultiplexMemoryPipelineChannel(outputConcurrency, blockQueueSize, ackCallback);
     }
     
     @Override

@@ -46,7 +46,8 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     
     public MultiplexMemoryPipelineChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
         this.channelNumber = channelNumber;
-        channels = IntStream.range(0, channelNumber).mapToObj(each -> new SimpleMemoryPipelineChannel(blockQueueSize, ackCallback)).collect(Collectors.toList());
+        int handledQueueSize = blockQueueSize < 1 ? 5 : blockQueueSize;
+        channels = IntStream.range(0, channelNumber).mapToObj(each -> new SimpleMemoryPipelineChannel(handledQueueSize, ackCallback)).collect(Collectors.toList());
     }
     
     @Override
