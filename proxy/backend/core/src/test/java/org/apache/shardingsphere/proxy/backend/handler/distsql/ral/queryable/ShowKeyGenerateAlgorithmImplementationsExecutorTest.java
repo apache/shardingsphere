@@ -15,14 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.query;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowKeyGenerateAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingAlgorithmImplementationsExecutor;
-import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingKeyGenerateAlgorithmImplementationsExecutor;
-import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAlgorithmImplementationsStatement;
-import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGenerateAlgorithmImplementationsStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -33,23 +30,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
-class ShowShardingKeyGenerateAlgorithmImplementationsExecutorTest {
+class ShowKeyGenerateAlgorithmImplementationsExecutorTest {
     
     @Test
     void assertGetRowData() {
-        QueryableRALExecutor<ShowShardingKeyGenerateAlgorithmImplementationsStatement> executor = new ShowShardingKeyGenerateAlgorithmImplementationsExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowShardingKeyGenerateAlgorithmImplementationsStatement.class));
+        QueryableRALExecutor<ShowKeyGenerateAlgorithmImplementationsStatement> executor = new ShowKeyGenerateAlgorithmImplementationsExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowKeyGenerateAlgorithmImplementationsStatement.class));
         assertFalse(actual.isEmpty());
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("DistSQLKeyGenerateAlgorithmFixture"));
         assertThat(row.getCell(2), is("DISTSQL.FIXTURE"));
-        assertThat(row.getCell(3), is("org.apache.shardingsphere.sharding.distsql.fixture.keygen.DistSQLKeyGenerateAlgorithmFixture"));
+        assertThat(row.getCell(3), is("org.apache.shardingsphere.proxy.backend.handler.distsql.fixture.DistSQLKeyGenerateAlgorithmFixture"));
     }
     
     @Test
     void assertGetColumnNames() {
-        QueryableRALExecutor<ShowShardingAlgorithmImplementationsStatement> executor = new ShowShardingAlgorithmImplementationsExecutor();
+        QueryableRALExecutor<ShowKeyGenerateAlgorithmImplementationsStatement> executor = new ShowKeyGenerateAlgorithmImplementationsExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
