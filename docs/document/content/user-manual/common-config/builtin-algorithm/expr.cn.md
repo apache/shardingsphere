@@ -48,7 +48,6 @@ weight = 10
 6. `DU` 代表 datetime upper 的缩写，意为时间上界值，格式与 `SP` 定义的时间戳格式一致。
 7. `C` 代表 chronology 的缩写，意为日历系统，必须遵循 Java `java.time.chrono.Chronology#getId()` 的格式。
 例如：`Japanese`，`Minguo`，`ThaiBuddhist`。存在默认值为 `ISO`。
-受 https://bugs.openjdk.org/browse/JDK-8068571 影响，`Japanese` 仅在 JDK 11+ 上可用。
 
 类型：INTERVAL
 
