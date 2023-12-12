@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor;
 
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
 /**
  * Job configuration changed processor.
@@ -27,10 +27,19 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 public interface JobConfigurationChangedProcessor extends TypedSPI {
     
     /**
-     * Process changed job configuration.
-     *
-     * @param eventType event type
-     * @param jobConfig job configuration
+     * Create pipeline job.
+     * 
+     * @return pipeline job
      */
-    void process(Type eventType, JobConfiguration jobConfig);
+    PipelineJob createJob();
+    
+    /**
+     * Clean pipeline job.
+     * 
+     * @param jobConfig pipeline job configuration
+     */
+    void clean(JobConfiguration jobConfig);
+    
+    @Override
+    String getType();
 }

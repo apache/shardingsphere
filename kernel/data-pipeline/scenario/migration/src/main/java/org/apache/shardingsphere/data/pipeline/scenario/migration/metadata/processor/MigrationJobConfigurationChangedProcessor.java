@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration.metadata.processor;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.impl.AbstractJobConfigurationChangedProcessor;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.JobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.preparer.MigrationJobPreparer;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
@@ -30,21 +27,20 @@ import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 /**
  * Migration job configuration changed processor.
  */
-@Slf4j
-public final class MigrationJobConfigurationChangedProcessor extends AbstractJobConfigurationChangedProcessor {
+public final class MigrationJobConfigurationChangedProcessor implements JobConfigurationChangedProcessor {
     
     @Override
-    protected void onDeleted(final JobConfiguration jobConfig) {
-        new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter()));
-    }
-    
-    @Override
-    protected PipelineJob buildJob() {
+    public PipelineJob createJob() {
         return new MigrationJob();
     }
     
     @Override
-    protected PipelineJobType getJobType() {
-        return new MigrationJobType();
+    public void clean(final JobConfiguration jobConfig) {
+        new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter()));
+    }
+    
+    @Override
+    public String getType() {
+        return "MIGRATION";
     }
 }
