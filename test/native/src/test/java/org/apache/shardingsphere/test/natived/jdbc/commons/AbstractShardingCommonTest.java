@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.jdbc.features;
+package org.apache.shardingsphere.test.natived.jdbc.commons;
 
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.test.natived.jdbc.commons.FileTestUtils;
+import lombok.Getter;
 import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Address;
 import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Order;
 import org.apache.shardingsphere.test.natived.jdbc.commons.entity.OrderItem;
 import org.apache.shardingsphere.test.natived.jdbc.commons.repository.AddressRepository;
 import org.apache.shardingsphere.test.natived.jdbc.commons.repository.OrderItemRepository;
 import org.apache.shardingsphere.test.natived.jdbc.commons.repository.OrderRepository;
-import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -39,40 +37,43 @@ import java.util.stream.LongStream;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MaskTest {
+@Getter
+public class AbstractShardingCommonTest {
     
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
     
-    private OrderItemRepository orderItemRepository;
+    private final OrderItemRepository orderItemRepository;
     
-    private AddressRepository addressRepository;
+    private final AddressRepository addressRepository;
     
-    @Test
-    void assertMaskInLocalTransactions() throws SQLException, IOException {
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/features/mask.yaml"));
-        orderRepository = new OrderRepository(dataSource);
-        orderItemRepository = new OrderItemRepository(dataSource);
-        addressRepository = new AddressRepository(dataSource);
-        this.initEnvironment();
-        this.processSuccess();
-        this.cleanEnvironment();
+    public AbstractShardingCommonTest(final DataSource dataSource) {
+        this.orderRepository = new OrderRepository(dataSource);
+        this.orderItemRepository = new OrderItemRepository(dataSource);
+        this.addressRepository = new AddressRepository(dataSource);
     }
     
-    private void initEnvironment() throws SQLException {
-        orderRepository.createTableIfNotExistsInMySQL();
-        orderItemRepository.createTableIfNotExistsInMySQL();
-        addressRepository.createTableIfNotExists();
-        orderRepository.truncateTable();
-        orderItemRepository.truncateTable();
-        addressRepository.truncateTable();
-    }
-    
-    private void processSuccess() throws SQLException {
+    /**
+     * process success.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public void processSuccess() throws SQLException {
         final Collection<Long> orderIds = insertData();
-        assertThat(orderRepository.selectAll(),
-                equalTo(IntStream.range(1, 11).mapToObj(i -> new Order(i, i % 2, i, i, "INSERT_TEST")).collect(Collectors.toList())));
-        assertThat(orderItemRepository.selectAll(),
-                equalTo(IntStream.range(1, 11).mapToObj(i -> new OrderItem(i, i, i, "138****0001", "INSERT_TEST")).collect(Collectors.toList())));
+        Collection<Order> orders = orderRepository.selectAll();
+        assertThat(orders.stream().map(Order::getOrderType).collect(Collectors.toList()),
+                equalTo(Arrays.asList(1, 1, 1, 1, 1, 0, 0, 0, 0, 0)));
+        assertThat(orders.stream().map(Order::getUserId).collect(Collectors.toList()),
+                equalTo(new ArrayList<>(Arrays.asList(1, 3, 5, 7, 9, 2, 4, 6, 8, 10))));
+        assertThat(orders.stream().map(Order::getAddressId).collect(Collectors.toList()),
+                equalTo(new ArrayList<>(Arrays.asList(1L, 3L, 5L, 7L, 9L, 2L, 4L, 6L, 8L, 10L))));
+        assertThat(orders.stream().map(Order::getStatus).collect(Collectors.toList()),
+                equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
+        Collection<OrderItem> orderItems = orderItemRepository.selectAll();
+        assertThat(orderItems.stream().map(OrderItem::getUserId).collect(Collectors.toList()),
+                equalTo(new ArrayList<>(Arrays.asList(1, 3, 5, 7, 9, 2, 4, 6, 8, 10))));
+        assertThat(orderItems.stream().map(OrderItem::getPhone).collect(Collectors.toList()),
+                equalTo(IntStream.range(1, 11).mapToObj(i -> "13800000001").collect(Collectors.toList())));
+        assertThat(orderItems.stream().map(OrderItem::getStatus).collect(Collectors.toList()),
+                equalTo(IntStream.range(1, 11).mapToObj(i -> "INSERT_TEST").collect(Collectors.toList())));
         assertThat(addressRepository.selectAll(),
                 equalTo(LongStream.range(1, 11).mapToObj(i -> new Address(i, "address_test_" + i)).collect(Collectors.toList())));
         deleteData(orderIds);
@@ -81,7 +82,12 @@ class MaskTest {
         assertThat(addressRepository.selectAll(), equalTo(new ArrayList<>()));
     }
     
-    private Collection<Long> insertData() throws SQLException {
+    /**
+     * insert data.
+     * @return orderId of the insert statement.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public Collection<Long> insertData() throws SQLException {
         Collection<Long> result = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
             Order order = new Order();
@@ -103,7 +109,12 @@ class MaskTest {
         return result;
     }
     
-    private void deleteData(final Collection<Long> orderIds) throws SQLException {
+    /**
+     * delete data.
+     * @param orderIds orderId of the insert statement.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public void deleteData(final Collection<Long> orderIds) throws SQLException {
         long count = 1;
         for (Long each : orderIds) {
             orderRepository.delete(each);
@@ -112,7 +123,11 @@ class MaskTest {
         }
     }
     
-    private void cleanEnvironment() throws SQLException {
+    /**
+     * clean environment.
+     * @throws SQLException An exception that provides information on a database access error or other errors.
+     */
+    public void cleanEnvironment() throws SQLException {
         orderRepository.dropTable();
         orderItemRepository.dropTable();
         addressRepository.dropTable();

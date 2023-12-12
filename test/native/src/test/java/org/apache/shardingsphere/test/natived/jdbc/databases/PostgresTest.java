@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.jdbc.features;
+package org.apache.shardingsphere.test.natived.jdbc.databases;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.test.natived.jdbc.commons.AbstractShardingCommonTest;
 import org.apache.shardingsphere.test.natived.jdbc.commons.FileTestUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledInNativeImage;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 
-class ShardingTest {
+public class PostgresTest {
     
     private AbstractShardingCommonTest abstractShardingCommonTest;
     
     @Test
+    @EnabledInNativeImage
     void assertShardingInLocalTransactions() throws SQLException, IOException {
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/features/sharding.yaml"));
+        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/databases/postgresql.yaml"));
         abstractShardingCommonTest = new AbstractShardingCommonTest(dataSource);
         this.initEnvironment();
         abstractShardingCommonTest.processSuccess();
@@ -40,8 +42,8 @@ class ShardingTest {
     }
     
     private void initEnvironment() throws SQLException {
-        abstractShardingCommonTest.getOrderRepository().createTableIfNotExistsInMySQL();
-        abstractShardingCommonTest.getOrderItemRepository().createTableIfNotExistsInMySQL();
+        abstractShardingCommonTest.getOrderRepository().createTableIfNotExistsInPostgres();
+        abstractShardingCommonTest.getOrderItemRepository().createTableIfNotExistsInPostgres();
         abstractShardingCommonTest.getAddressRepository().createTableIfNotExists();
         abstractShardingCommonTest.getOrderRepository().truncateTable();
         abstractShardingCommonTest.getOrderItemRepository().truncateTable();

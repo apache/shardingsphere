@@ -23,22 +23,16 @@ mode:
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:local_sharding_ds_0;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
-    username: root
-    password: 123456
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:postgresql:16.1-bookworm://test-native-databases-postgres/demo_ds_0?TC_DAEMON=true
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:local_sharding_ds_1;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
-    username: root
-    password: 123456
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:postgresql:16.1-bookworm://test-native-databases-postgres/demo_ds_1?TC_DAEMON=true
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:local_sharding_ds_2;MODE=MYSQL;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
-    username: root
-    password: 123456
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    jdbcUrl: jdbc:tc:postgresql:16.1-bookworm://test-native-databases-postgres/demo_ds_2?TC_DAEMON=true
 
 rules:
 - !SHARDING
@@ -58,14 +52,11 @@ rules:
       shardingColumn: user_id
       shardingAlgorithmName: inline
   shardingAlgorithms:
-    # `groovy.lang.Closure` related classes are not available on GraalVM CE 23.0.2 For JDK 17.0.9,
-    # This CLASS_BASE algorithm class is designed to emulate INLINE's `ds_${user_id % 2}`.
-    # See https://github.com/oracle/graal/issues/5522 .
     inline:
       type: CLASS_BASED
       props:
         strategy: STANDARD
-        algorithmClassName: org.apache.shardingsphere.test.natived.jdbc.features.algorithm.ClassBasedInlineShardingAlgorithmFixture
+        algorithmClassName: org.apache.shardingsphere.test.natived.jdbc.commons.algorithm.ClassBasedInlineShardingAlgorithmFixture
   keyGenerators:
     snowflake:
       type: SNOWFLAKE

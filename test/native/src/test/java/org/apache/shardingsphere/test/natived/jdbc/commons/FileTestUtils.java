@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived;
+package org.apache.shardingsphere.test.natived.jdbc.commons;
 
 import java.io.BufferedReader;
 import java.io.IOException;

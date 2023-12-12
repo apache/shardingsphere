@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.jdbc.features.repository;
+package org.apache.shardingsphere.test.natived.jdbc.commons.repository;
 
-import org.apache.shardingsphere.test.natived.jdbc.features.entity.Order;
+import org.apache.shardingsphere.test.natived.jdbc.commons.entity.Order;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -38,12 +38,31 @@ public final class OrderRepository {
     }
     
     /**
-     * create table if not exists.
+     * create table if not exists in MySQL.
      * @throws SQLException SQL exception
      */
-    public void createTableIfNotExists() throws SQLException {
+    public void createTableIfNotExistsInMySQL() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS t_order "
                 + "(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id))";
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+    
+    /**
+     * create table if not exists in Postgres.
+     * @throws SQLException SQL exception
+     */
+    public void createTableIfNotExistsInPostgres() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS t_order (\n"
+                + "    order_id BIGSERIAL PRIMARY KEY,\n"
+                + "    order_type INTEGER,\n"
+                + "    user_id INTEGER NOT NULL,\n"
+                + "    address_id BIGINT NOT NULL,\n"
+                + "    status VARCHAR(50)\n"
+                + ");";
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {

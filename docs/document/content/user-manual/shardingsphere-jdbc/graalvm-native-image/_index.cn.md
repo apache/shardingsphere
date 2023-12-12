@@ -210,6 +210,8 @@ ShardingSphere 定义了 `nativeTestInShardingSphere` 的 Maven Profile 用于�
 假设贡献者处于新的 Ubuntu 22.04.3 LTS 实例下，其可通过如下 bash 命令通过 SDKMAN! 管理 JDK 和工具链，
 并为 `shardingsphere-test-native` 子模块执行 nativeTest。
 
+你必须安装 Docker Engine 或 PodMan 等 container tools 以执行 `testcontainers-java` 相关的单元测试。
+
 ```bash
 sudo apt install unzip zip curl sed -y
 curl -s "https://get.sdkman.io" | bash

@@ -33,14 +33,11 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
-  "name":"java.lang.Boolean"
+  "name":"java.lang.Boolean",
+  "fields":[{"name":"FALSE"}, {"name":"TRUE"}]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
-  "name":"java.lang.Thread"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory"},
   "name":"java.lang.Thread",
   "fields":[{"name":"threadLocalRandomProbe"}]
 },
@@ -68,32 +65,34 @@
   "name":"org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration",
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setTables","parameterTypes":["java.util.Collection"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getTables","parameterTypes":[] }, {"name":"setTables","parameterTypes":["java.util.Collection"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.broadcast.yaml.swapper.NewYamlBroadcastRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getTables","parameterTypes":[] }]
+  "condition":{"typeReachable":"org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfigurationBeanInfo"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
-  "name":"org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfiguration"
+  "condition":{"typeReachable":"org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.broadcast.yaml.config.YamlBroadcastRuleConfigurationCustomizer"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.ShardingSphereDriver"},
   "name":"org.apache.shardingsphere.driver.ShardingSphereDriver"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.api.yaml.YamlJDBCConfiguration"},
-  "name":"org.apache.shardingsphere.driver.api.yaml.YamlJDBCConfiguration",
-  "methods":[{"name":"setSqlParser","parameterTypes":["org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
   "name":"org.apache.shardingsphere.driver.api.yaml.YamlJDBCConfiguration",
   "allDeclaredFields":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setDataSources","parameterTypes":["java.util.Map"] }, {"name":"setMode","parameterTypes":["org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration"] }, {"name":"setProps","parameterTypes":["java.util.Properties"] }, {"name":"setRules","parameterTypes":["java.util.Collection"] }]
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setDataSources","parameterTypes":["java.util.Map"] }, {"name":"setMode","parameterTypes":["org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration"] }, {"name":"setProps","parameterTypes":["java.util.Properties"] }, {"name":"setRules","parameterTypes":["java.util.Collection"] }, {"name":"setSqlParser","parameterTypes":["org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.api.yaml.YamlJDBCConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.driver.api.yaml.YamlJDBCConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.api.yaml.YamlJDBCConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.driver.api.yaml.YamlJDBCConfigurationCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.rule.EncryptRule"},
@@ -110,6 +109,10 @@
   "name":"org.apache.shardingsphere.encrypt.yaml.config.YamlCompatibleEncryptRuleConfiguration"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
+  "name":"org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration"},
   "name":"org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration",
   "allDeclaredFields":true,
@@ -117,8 +120,12 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setEncryptors","parameterTypes":["java.util.Map"] }, {"name":"setTables","parameterTypes":["java.util.Map"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
-  "name":"org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration"
+  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfigurationCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration"},
@@ -128,11 +135,33 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getEncryptorName","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"setEncryptorName","parameterTypes":["java.lang.String"] }, {"name":"setName","parameterTypes":["java.lang.String"] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfigurationCustomizer"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration"},
   "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration",
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getAssistedQuery","parameterTypes":[] }, {"name":"getCipher","parameterTypes":[] }, {"name":"getLikeQuery","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"setAssistedQuery","parameterTypes":["org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration"] }, {"name":"setCipher","parameterTypes":["org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfigurationCustomizer"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.swapper.NewYamlEncryptRuleConfigurationSwapper"},
+  "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration",
+  "allDeclaredFields":true,
+  "methods":[{"name":"getColumns","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration"},
@@ -142,10 +171,12 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setColumns","parameterTypes":["java.util.Map"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.swapper.NewYamlEncryptRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getColumns","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }]
+  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfigurationCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
@@ -156,46 +187,53 @@
   "name":"org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.encrypt.yaml.swapper.NewYamlEncryptRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration"},
   "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration",
   "allDeclaredFields":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setProps","parameterTypes":["java.util.Properties"] }, {"name":"setType","parameterTypes":["java.lang.String"] }]
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }, {"name":"setProps","parameterTypes":["java.util.Properties"] }, {"name":"setType","parameterTypes":["java.lang.String"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.swapper.NewYamlMaskRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfigurationBeanInfo"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.swapper.NewYamlShadowRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.swapper.NewYamlShardingRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getProps","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }]
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfigurationCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
   "name":"org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration",
   "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setRepository","parameterTypes":["org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration"] }, {"name":"setType","parameterTypes":["java.lang.String"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfigurationCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
   "name":"org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration",
   "allDeclaredFields":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setType","parameterTypes":["java.lang.String"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration"},
+  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration",
+  "queryAllPublicMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfigurationCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstructor"},
@@ -208,10 +246,65 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.metadata.persist.service.schema.NewTableMetaDataPersistService"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.metadata.persist.service.schema.ShardingSphereTableRowDataPersistService"},
+  "name":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData",
+  "allDeclaredFields":true,
+  "methods":[{"name":"getRows","parameterTypes":[] }, {"name":"getUniqueKey","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"getDataType","parameterTypes":[] }, {"name":"isPrimaryKey","parameterTypes":[] }, {"name":"isGenerated","parameterTypes":[] }, {"name":"isCaseSensitive","parameterTypes":[] }, {"name":"isVisible","parameterTypes":[] }, {"name":"isUnsigned","parameterTypes":[] }, {"name":"isNullable","parameterTypes":[] }, {"name":"setCaseSensitive","parameterTypes":["boolean"] }, {"name":"setDataType","parameterTypes":["int"] }, {"name":"setGenerated","parameterTypes":["boolean"] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setPrimaryKey","parameterTypes":["boolean"] }, {"name":"setUnsigned","parameterTypes":["boolean"] }, {"name":"setVisible","parameterTypes":["boolean"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumnBeanInfo"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumnBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumnCustomizer"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumnCustomizer"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndex",
+  "queryAllPublicMethods":true,
+  "allDeclaredFields":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getColumns","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"isUnique","parameterTypes":[] }, {"name":"setName","parameterTypes":["java.lang.String"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexBeanInfo"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexCustomizer"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexCustomizer"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable"},
   "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
   "allDeclaredFields":true,
-  "methods":[{"name":"getColumns","parameterTypes":[] }, {"name":"getConstraints","parameterTypes":[] }, {"name":"getIndexes","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }]
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setColumns","parameterTypes":["java.util.Map"] }, {"name":"setIndexes","parameterTypes":["java.util.Map"] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"getColumns","parameterTypes":[] }, {"name":"getConstraints","parameterTypes":[] }, {"name":"getIndexes","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTableBeanInfo"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTableBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTableCustomizer"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTableCustomizer"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.ShardingRule"},
+  "name":"org.apache.shardingsphere.keygen.snowflake.algorithm.SnowflakeKeyGenerateAlgorithm",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.ShardingRule"},
+  "name":"org.apache.shardingsphere.keygen.uuid.algorithm.UUIDKeyGenerateAlgorithm",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
@@ -269,11 +362,33 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setMaskAlgorithms","parameterTypes":["java.util.Map"] }, {"name":"setTables","parameterTypes":["java.util.Map"] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfigurationCustomizer"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfiguration"},
   "name":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfiguration",
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getLogicColumn","parameterTypes":[] }, {"name":"getMaskAlgorithm","parameterTypes":[] }, {"name":"setMaskAlgorithm","parameterTypes":["java.lang.String"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskColumnRuleConfigurationCustomizer"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.swapper.NewYamlMaskRuleConfigurationSwapper"},
+  "name":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration",
+  "allDeclaredFields":true,
+  "methods":[{"name":"getColumns","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration"},
@@ -283,18 +398,20 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setColumns","parameterTypes":["java.util.Map"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.swapper.NewYamlMaskRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getColumns","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }]
+  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfigurationBeanInfo"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfigurationCustomizer"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.subscriber.StandaloneProcessSubscriber"},
   "name":"org.apache.shardingsphere.mode.manager.standalone.subscriber.StandaloneProcessSubscriber",
   "queryAllDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.subscriber.StandaloneProcessSubscriber"},
   "name":"org.apache.shardingsphere.mode.process.ProcessSubscriber",
   "queryAllDeclaredMethods":true
 },
@@ -310,6 +427,16 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.subsciber.NewConfigurationChangedSubscriber"},
+  "name":"org.apache.shardingsphere.mode.subsciber.NewConfigurationChangedSubscriber",
+  "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.NewStandaloneContextManagerBuilder"},
+  "name":"org.apache.shardingsphere.mode.subsciber.RuleItemChangedSubscriber",
+  "queryAllDeclaredMethods":true
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration"},
   "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration",
   "allDeclaredFields":true,
@@ -317,8 +444,22 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getInitialCapacity","parameterTypes":[] }, {"name":"getMaximumSize","parameterTypes":[] }, {"name":"setInitialCapacity","parameterTypes":["int"] }, {"name":"setMaximumSize","parameterTypes":["long"] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfigurationCustomizer"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
   "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.parser.yaml.swapper.NewYamlSQLParserRuleConfigurationSwapper"},
+  "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration",
+  "allDeclaredFields":true,
+  "methods":[{"name":"getParseTreeCache","parameterTypes":[] }, {"name":"getSqlStatementCache","parameterTypes":[] }, {"name":"isSqlCommentParseEnabled","parameterTypes":[] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration"},
@@ -328,10 +469,12 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setParseTreeCache","parameterTypes":["org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration"] }, {"name":"setSqlCommentParseEnabled","parameterTypes":["boolean"] }, {"name":"setSqlStatementCache","parameterTypes":["org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.parser.yaml.swapper.NewYamlSQLParserRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getParseTreeCache","parameterTypes":[] }, {"name":"getSqlStatementCache","parameterTypes":[] }, {"name":"isSqlCommentParseEnabled","parameterTypes":[] }]
+  "condition":{"typeReachable":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfigurationCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule"},
@@ -360,6 +503,20 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setDataSources","parameterTypes":["java.util.Map"] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfigurationCustomizer"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.yaml.swapper.NewYamlReadwriteSplittingRuleConfigurationSwapper"},
+  "name":"org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration",
+  "allDeclaredFields":true,
+  "methods":[{"name":"getLoadBalancerName","parameterTypes":[] }, {"name":"getReadDataSourceNames","parameterTypes":[] }, {"name":"getTransactionalReadQueryStrategy","parameterTypes":[] }, {"name":"getWriteDataSourceName","parameterTypes":[] }]
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration"},
   "name":"org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration",
   "allDeclaredFields":true,
@@ -367,10 +524,12 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setReadDataSourceNames","parameterTypes":["java.util.List"] }, {"name":"setWriteDataSourceName","parameterTypes":["java.lang.String"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.yaml.swapper.NewYamlReadwriteSplittingRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getLoadBalancerName","parameterTypes":[] }, {"name":"getReadDataSourceNames","parameterTypes":[] }, {"name":"getTransactionalReadQueryStrategy","parameterTypes":[] }, {"name":"getWriteDataSourceName","parameterTypes":[] }]
+  "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfigurationCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.shadow.rule.ShadowRule"},
@@ -399,6 +558,20 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setDataSources","parameterTypes":["java.util.Map"] }, {"name":"setDefaultShadowAlgorithmName","parameterTypes":["java.lang.String"] }, {"name":"setShadowAlgorithms","parameterTypes":["java.util.Map"] }, {"name":"setTables","parameterTypes":["java.util.Map"] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfigurationCustomizer"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.swapper.NewYamlShadowRuleConfigurationSwapper"},
+  "name":"org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration",
+  "allDeclaredFields":true,
+  "methods":[{"name":"getProductionDataSourceName","parameterTypes":[] }, {"name":"getShadowDataSourceName","parameterTypes":[] }]
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration"},
   "name":"org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration",
   "allDeclaredFields":true,
@@ -406,10 +579,18 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setProductionDataSourceName","parameterTypes":["java.lang.String"] }, {"name":"setShadowDataSourceName","parameterTypes":["java.lang.String"] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfigurationCustomizer"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.swapper.NewYamlShadowRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration",
+  "name":"org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration",
   "allDeclaredFields":true,
-  "methods":[{"name":"getProductionDataSourceName","parameterTypes":[] }, {"name":"getShadowDataSourceName","parameterTypes":[] }]
+  "methods":[{"name":"getDataSourceNames","parameterTypes":[] }, {"name":"getShadowAlgorithmNames","parameterTypes":[] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration"},
@@ -419,24 +600,16 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setDataSourceNames","parameterTypes":["java.util.Collection"] }, {"name":"setShadowAlgorithmNames","parameterTypes":["java.util.Collection"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.swapper.NewYamlShadowRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getDataSourceNames","parameterTypes":[] }, {"name":"getShadowAlgorithmNames","parameterTypes":[] }]
+  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfigurationCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.ShardingRule"},
   "name":"org.apache.shardingsphere.sharding.algorithm.audit.DMLShardingConditionsShardingAuditAlgorithm",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.ShardingRule"},
-  "name":"org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.rule.ShardingRule"},
-  "name":"org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -490,10 +663,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
-  "name":"org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"},
   "name":"org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration",
   "allDeclaredFields":true,
@@ -501,17 +670,27 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setAuditors","parameterTypes":["java.util.Map"] }, {"name":"setDefaultDatabaseStrategy","parameterTypes":["org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration"] }, {"name":"setKeyGenerators","parameterTypes":["java.util.Map"] }, {"name":"setShardingAlgorithms","parameterTypes":["java.util.Map"] }, {"name":"setTables","parameterTypes":["java.util.Map"] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurationCustomizer"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration"},
   "name":"org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration",
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setActualDataNodes","parameterTypes":["java.lang.String"] }, {"name":"setKeyGenerateStrategy","parameterTypes":["org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setActualDataNodes","parameterTypes":["java.lang.String"] }, {"name":"setKeyGenerateStrategy","parameterTypes":["org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration"] }, {"name":"getActualDataNodes","parameterTypes":[] }, {"name":"getAuditStrategy","parameterTypes":[] }, {"name":"getDatabaseStrategy","parameterTypes":[] }, {"name":"getKeyGenerateStrategy","parameterTypes":[] }, {"name":"getLogicTable","parameterTypes":[] }, {"name":"getTableStrategy","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.swapper.NewYamlShardingRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getActualDataNodes","parameterTypes":[] }, {"name":"getAuditStrategy","parameterTypes":[] }, {"name":"getDatabaseStrategy","parameterTypes":[] }, {"name":"getKeyGenerateStrategy","parameterTypes":[] }, {"name":"getLogicTable","parameterTypes":[] }, {"name":"getTableStrategy","parameterTypes":[] }]
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfigurationCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration"},
@@ -521,17 +700,27 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getColumn","parameterTypes":[] }, {"name":"getKeyGeneratorName","parameterTypes":[] }, {"name":"setColumn","parameterTypes":["java.lang.String"] }, {"name":"setKeyGeneratorName","parameterTypes":["java.lang.String"] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfigurationCustomizer"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration"},
   "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration",
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setStandard","parameterTypes":["org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setStandard","parameterTypes":["org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration"] }, {"name":"getComplex","parameterTypes":[] }, {"name":"getHint","parameterTypes":[] }, {"name":"getNone","parameterTypes":[] }, {"name":"getStandard","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.swapper.NewYamlShardingRuleConfigurationSwapper"},
-  "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration",
-  "allDeclaredFields":true,
-  "methods":[{"name":"getComplex","parameterTypes":[] }, {"name":"getHint","parameterTypes":[] }, {"name":"getNone","parameterTypes":[] }, {"name":"getStandard","parameterTypes":[] }]
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfigurationCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration"},
@@ -539,6 +728,14 @@
   "allDeclaredFields":true,
   "queryAllPublicMethods":true,
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getShardingAlgorithmName","parameterTypes":[] }, {"name":"getShardingColumn","parameterTypes":[] }, {"name":"setShardingAlgorithmName","parameterTypes":["java.lang.String"] }, {"name":"setShardingColumn","parameterTypes":["java.lang.String"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfigurationCustomizer"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
@@ -551,16 +748,29 @@
   "methods":[{"name":"getDefaultDataSource","parameterTypes":[] }, {"name":"getTables","parameterTypes":[] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration"},
+  "name":"org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration",
+  "queryAllPublicMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfigurationBeanInfo"},
+  "name":"org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfigurationBeanInfo"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfigurationCustomizer"},
+  "name":"org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfigurationCustomizer"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.cache.ParseTreeCacheBuilder"},
   "name":"org.apache.shardingsphere.sql.parser.core.database.cache.ParseTreeCacheLoader"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.SQLParserFactory"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.mysql.parser.MySQLLexer"},
   "name":"org.apache.shardingsphere.sql.parser.mysql.parser.MySQLLexer",
   "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.CharStream"] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.SQLParserFactory"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParser"},
   "name":"org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParser",
   "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.TokenStream"] }]
 },
@@ -570,13 +780,8 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDDLStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDDLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"},
-  "name":"org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDMLStatementVisitor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -590,23 +795,53 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLLexer"},
+  "name":"org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLLexer",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.CharStream"] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLParser"},
+  "name":"org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLParser",
+  "methods":[{"name":"<init>","parameterTypes":["org.antlr.v4.runtime.TokenStream"] }]
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
   "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementBinder"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDDLStatementVisitor"},
+  "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDDLStatementVisitor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement"},
   "name":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementBinder"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement"},
   "name":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementBinder"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement"},
   "name":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDeleteStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDeleteStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -620,65 +855,9 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.connection.refresher.type.table.DropTableStatementSchemaRefresher"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.context.ConfigurationContextManager"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.NewStandaloneContextManagerBuilder"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.standalone.NewStandaloneModeContextManager"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.NewMetaDataContextsFactory"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContextFactory"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"},
   "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils",
   "queryAllPublicMethods":true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationPlannerUtils"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.rule.builder.SQLFederationRuleBuilder"},
-  "name":"org.apache.shardingsphere.sqlfederation.optimizer.planner.util.SQLFederationFunctionUtils"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
@@ -700,5 +879,15 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.config.shortcut.YamlRuleConfigurationShortcuts"},
   "name":"org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"},
+  "name":"org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDMLStatementVisitor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
+  "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDMLStatementVisitor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 }
 ]

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.natived.jdbc.features.algorithm;
+package org.apache.shardingsphere.test.natived.jdbc.commons.algorithm;
 
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
