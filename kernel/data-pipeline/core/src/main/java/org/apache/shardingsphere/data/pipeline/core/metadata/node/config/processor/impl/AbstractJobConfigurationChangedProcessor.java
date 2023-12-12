@@ -30,8 +30,6 @@ import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
-import java.util.Collection;
-
 /**
  * Abstract job configuration changed processor.
  */
@@ -39,18 +37,17 @@ import java.util.Collection;
 public abstract class AbstractJobConfigurationChangedProcessor implements JobConfigurationChangedProcessor {
     
     @Override
-    public void process(final Type eventType, final JobConfiguration jobConfig) {
-        boolean disabled = jobConfig.isDisabled();
+    public final void process(final Type eventType, final JobConfiguration jobConfig) {
         boolean deleted = Type.DELETED == eventType;
         if (deleted) {
             onDeleted(jobConfig);
         }
+        boolean disabled = jobConfig.isDisabled();
         String jobId = jobConfig.getJobName();
         if (disabled || deleted) {
-            Collection<Integer> jobItems = PipelineJobRegistry.getShardingItems(jobId);
             PipelineJobRegistry.stop(jobId);
             if (disabled) {
-                onDisabled(jobConfig, jobItems);
+                onDisabled(jobId);
             }
             return;
         }
@@ -68,15 +65,14 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
         }
     }
     
-    protected void onDisabled(final JobConfiguration jobConfig, final Collection<Integer> jobItems) {
-        String jobId = jobConfig.getJobName();
+    protected abstract void onDeleted(JobConfiguration jobConfig);
+    
+    private void onDisabled(final String jobId) {
         PipelineDistributedBarrier distributedBarrier = PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId));
-        for (Integer each : jobItems) {
+        for (Integer each : PipelineJobRegistry.getShardingItems(jobId)) {
             distributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
         }
     }
-    
-    protected abstract void onDeleted(JobConfiguration jobConfig);
     
     protected void executeJob(final JobConfiguration jobConfig) {
         PipelineJob job = buildJob();
