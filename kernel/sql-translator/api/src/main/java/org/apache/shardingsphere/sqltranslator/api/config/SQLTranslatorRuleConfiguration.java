@@ -35,8 +35,4 @@ public final class SQLTranslatorRuleConfiguration implements GlobalRuleConfigura
     private final Properties props;
     
     private final boolean useOriginalSQLWhenTranslatingFailed;
-    
-    public SQLTranslatorRuleConfiguration() {
-        this(null, new Properties(), true);
-    }
 }
