@@ -40,8 +40,8 @@ public final class ShowShardingKeyGenerateAlgorithmImplementationsExecutor imple
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowShardingKeyGenerateAlgorithmImplementationsStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        Collection<KeyGenerateAlgorithm> shardingAlgorithms = ShardingSphereServiceLoader.getServiceInstances(KeyGenerateAlgorithm.class);
-        for (KeyGenerateAlgorithm each : shardingAlgorithms) {
+        Collection<KeyGenerateAlgorithm> keyGenerateAlgorithms = ShardingSphereServiceLoader.getServiceInstances(KeyGenerateAlgorithm.class);
+        for (KeyGenerateAlgorithm each : keyGenerateAlgorithms) {
             result.add(new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName()));
         }
         return result;

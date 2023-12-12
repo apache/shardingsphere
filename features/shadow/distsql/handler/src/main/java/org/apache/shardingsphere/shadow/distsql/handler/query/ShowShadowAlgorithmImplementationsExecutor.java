@@ -40,8 +40,8 @@ public final class ShowShadowAlgorithmImplementationsExecutor implements Queryab
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowShadowAlgorithmImplementationsStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        Collection<ShadowAlgorithm> shardingAlgorithms = ShardingSphereServiceLoader.getServiceInstances(ShadowAlgorithm.class);
-        for (ShadowAlgorithm each : shardingAlgorithms) {
+        Collection<ShadowAlgorithm> shadowAlgorithms = ShardingSphereServiceLoader.getServiceInstances(ShadowAlgorithm.class);
+        for (ShadowAlgorithm each : shadowAlgorithms) {
             result.add(new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName()));
         }
         return result;

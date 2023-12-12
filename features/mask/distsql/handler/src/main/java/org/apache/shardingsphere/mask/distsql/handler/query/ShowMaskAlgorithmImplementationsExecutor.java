@@ -40,8 +40,8 @@ public final class ShowMaskAlgorithmImplementationsExecutor implements Queryable
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMaskAlgorithmImplementationsStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        Collection<MaskAlgorithm> shardingAlgorithms = ShardingSphereServiceLoader.getServiceInstances(MaskAlgorithm.class);
-        for (MaskAlgorithm each : shardingAlgorithms) {
+        Collection<MaskAlgorithm> maskAlgorithms = ShardingSphereServiceLoader.getServiceInstances(MaskAlgorithm.class);
+        for (MaskAlgorithm each : maskAlgorithms) {
             result.add(new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName()));
         }
         return result;

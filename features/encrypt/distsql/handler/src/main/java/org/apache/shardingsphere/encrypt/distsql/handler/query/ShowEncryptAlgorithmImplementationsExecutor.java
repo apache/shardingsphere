@@ -40,8 +40,8 @@ public final class ShowEncryptAlgorithmImplementationsExecutor implements Querya
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowEncryptAlgorithmImplementationsStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        Collection<EncryptAlgorithm> shardingAlgorithms = ShardingSphereServiceLoader.getServiceInstances(EncryptAlgorithm.class);
-        for (EncryptAlgorithm each : shardingAlgorithms) {
+        Collection<EncryptAlgorithm> encryptAlgorithms = ShardingSphereServiceLoader.getServiceInstances(EncryptAlgorithm.class);
+        for (EncryptAlgorithm each : encryptAlgorithms) {
             result.add(new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName()));
         }
         return result;
