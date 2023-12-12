@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.readwritesplitting.distsql.handler.fixture;
 
-import BaseRule;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
-alterReadwriteSplittingStorageUnitStatus
-    : ALTER READWRITE_SPLITTING RULE (groupName)? (ENABLE | DISABLE) storageUnitName (FROM databaseName)?
-    ;
+import java.util.List;
 
-showStatusFromReadwriteSplittingRules
-    : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName) (FROM databaseName)?
-    ;
-
-showReadQueryLoadBalanceAlgorithmImplementations
-    : SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS
-    ;
+public final class DistSQLReadQueryLoadBalanceAlgorithmFixture implements ReadQueryLoadBalanceAlgorithm {
+    
+    @Override
+    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
+        return readDataSourceNames.get(0);
+    }
+    
+    @Override
+    public String getType() {
+        return "DISTSQL.FIXTURE";
+    }
+}

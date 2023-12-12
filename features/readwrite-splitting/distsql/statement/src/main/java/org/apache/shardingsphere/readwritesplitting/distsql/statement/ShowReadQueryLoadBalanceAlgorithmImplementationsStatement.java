@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.readwritesplitting.distsql.statement;
 
-import BaseRule;
+import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
-alterReadwriteSplittingStorageUnitStatus
-    : ALTER READWRITE_SPLITTING RULE (groupName)? (ENABLE | DISABLE) storageUnitName (FROM databaseName)?
-    ;
-
-showStatusFromReadwriteSplittingRules
-    : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName) (FROM databaseName)?
-    ;
-
-showReadQueryLoadBalanceAlgorithmImplementations
-    : SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS
-    ;
+/**
+ * Show read query load balance algorithm implementations statement.
+ */
+public final class ShowReadQueryLoadBalanceAlgorithmImplementationsStatement extends QueryableRALStatement {
+}

@@ -19,14 +19,6 @@ grammar RALStatement;
 
 import BaseRule;
 
-alterReadwriteSplittingStorageUnitStatus
-    : ALTER READWRITE_SPLITTING RULE (groupName)? (ENABLE | DISABLE) storageUnitName (FROM databaseName)?
-    ;
-
-showStatusFromReadwriteSplittingRules
-    : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName) (FROM databaseName)?
-    ;
-
-showReadQueryLoadBalanceAlgorithmImplementations
-    : SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS
+showEncryptAlgorithmImplementations
+    : SHOW ENCRYPT ALGORITHM IMPLEMENTATIONS
     ;

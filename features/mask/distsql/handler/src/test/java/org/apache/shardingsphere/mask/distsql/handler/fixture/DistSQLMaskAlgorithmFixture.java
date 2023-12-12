@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.mask.distsql.handler.fixture;
 
-import BaseRule;
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
-alterReadwriteSplittingStorageUnitStatus
-    : ALTER READWRITE_SPLITTING RULE (groupName)? (ENABLE | DISABLE) storageUnitName (FROM databaseName)?
-    ;
+import java.util.Objects;
 
-showStatusFromReadwriteSplittingRules
-    : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName) (FROM databaseName)?
-    ;
-
-showReadQueryLoadBalanceAlgorithmImplementations
-    : SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS
-    ;
+public final class DistSQLMaskAlgorithmFixture implements MaskAlgorithm<Object, String> {
+    
+    @Override
+    public String mask(final Object plainValue) {
+        return Objects.toString(plainValue);
+    }
+    
+    @Override
+    public String getType() {
+        return "DISTSQL.FIXTURE";
+    }
+}

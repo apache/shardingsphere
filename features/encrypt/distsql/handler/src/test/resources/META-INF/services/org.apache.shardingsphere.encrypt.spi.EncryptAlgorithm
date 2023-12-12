@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingAlgorithmImplementationsExecutor
-org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingKeyGenerateAlgorithmImplementationsExecutor
+org.apache.shardingsphere.encrypt.distsql.handler.fixture.DistSQLEncryptAlgorithmFixture

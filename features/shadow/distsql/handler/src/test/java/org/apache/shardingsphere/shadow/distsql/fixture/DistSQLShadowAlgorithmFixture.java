@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.shadow.distsql.fixture;
 
-import BaseRule;
+import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
+import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 
-alterReadwriteSplittingStorageUnitStatus
-    : ALTER READWRITE_SPLITTING RULE (groupName)? (ENABLE | DISABLE) storageUnitName (FROM databaseName)?
-    ;
+import java.util.Collection;
 
-showStatusFromReadwriteSplittingRules
-    : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName) (FROM databaseName)?
-    ;
-
-showReadQueryLoadBalanceAlgorithmImplementations
-    : SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS
-    ;
+public final class DistSQLShadowAlgorithmFixture implements HintShadowAlgorithm<String> {
+    
+    @Override
+    public boolean isShadow(final Collection<String> relatedShadowTables, final PreciseHintShadowValue<String> hintShadowValue) {
+        return false;
+    }
+    
+    @Override
+    public String getType() {
+        return "DISTSQL.FIXTURE";
+    }
+}

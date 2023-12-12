@@ -22,3 +22,7 @@ import BaseRule;
 showShardingAlgorithmImplementations
     : SHOW SHARDING ALGORITHM IMPLEMENTATIONS
     ;
+
+showShardingKeyGenerateAlgorithmImplementations
+    : SHOW SHARDING KEY GENERATE ALGORITHM IMPLEMENTATIONS
+    ;

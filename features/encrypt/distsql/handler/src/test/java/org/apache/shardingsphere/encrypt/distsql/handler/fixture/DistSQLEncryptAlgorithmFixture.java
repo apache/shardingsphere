@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.encrypt.distsql.handler.fixture;
 
-import BaseRule;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 
-alterReadwriteSplittingStorageUnitStatus
-    : ALTER READWRITE_SPLITTING RULE (groupName)? (ENABLE | DISABLE) storageUnitName (FROM databaseName)?
-    ;
-
-showStatusFromReadwriteSplittingRules
-    : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName) (FROM databaseName)?
-    ;
-
-showReadQueryLoadBalanceAlgorithmImplementations
-    : SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS
-    ;
+public final class DistSQLEncryptAlgorithmFixture implements StandardEncryptAlgorithm {
+    
+    @Override
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "encryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final Object cipherValue, final EncryptContext encryptContext) {
+        return "decryptValue";
+    }
+    
+    @Override
+    public String getType() {
+        return "DISTSQL.FIXTURE";
+    }
+}

@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.encrypt.distsql.statement;
 
-import BaseRule;
+import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
-alterReadwriteSplittingStorageUnitStatus
-    : ALTER READWRITE_SPLITTING RULE (groupName)? (ENABLE | DISABLE) storageUnitName (FROM databaseName)?
-    ;
-
-showStatusFromReadwriteSplittingRules
-    : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName) (FROM databaseName)?
-    ;
-
-showReadQueryLoadBalanceAlgorithmImplementations
-    : SHOW READ QUERY LOAD BALANCE ALGORITHM IMPLEMENTATIONS
-    ;
+/**
+ * Show encrypt algorithm implementations statement.
+ */
+public final class ShowEncryptAlgorithmImplementationsStatement extends QueryableRALStatement {
+}

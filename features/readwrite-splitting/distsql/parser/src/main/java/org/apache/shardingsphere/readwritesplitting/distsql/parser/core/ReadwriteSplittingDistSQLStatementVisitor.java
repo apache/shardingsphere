@@ -29,6 +29,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQ
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ReadwriteSplittingRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadQueryLoadBalanceAlgorithmImplementationsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowReadwriteSplittingRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQLStatementParser.ShowStatusFromReadwriteSplittingRulesContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadw
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.CountReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.DropReadwriteSplittingRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowReadQueryLoadBalanceAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
@@ -127,5 +129,10 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
             result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitShowReadQueryLoadBalanceAlgorithmImplementations(final ShowReadQueryLoadBalanceAlgorithmImplementationsContext ctx) {
+        return new ShowReadQueryLoadBalanceAlgorithmImplementationsStatement();
     }
 }
