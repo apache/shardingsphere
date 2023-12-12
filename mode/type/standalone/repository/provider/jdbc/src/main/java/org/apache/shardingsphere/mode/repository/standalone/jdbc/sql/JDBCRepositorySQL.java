@@ -17,43 +17,41 @@
 
 package org.apache.shardingsphere.mode.repository.standalone.jdbc.sql;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Getter;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * JDBC repository SQL.
  */
-@XmlRootElement(name = "sql")
+@JacksonXmlRootElement(localName = "sql")
 @Getter
 public final class JDBCRepositorySQL {
     
-    @XmlAttribute(required = true)
+    @JacksonXmlProperty(isAttribute = true)
     private String type;
     
-    @XmlAttribute(name = "driver-class-name", required = true)
+    @JacksonXmlProperty(localName = "driver-class-name", isAttribute = true)
     private String driverClassName;
     
-    @XmlAttribute(name = "default")
+    @JacksonXmlProperty(localName = "default", isAttribute = true)
     private boolean isDefault;
     
-    @XmlElement(name = "create-table", required = true)
+    @JacksonXmlProperty(localName = "create-table")
     private String createTableSQL;
     
-    @XmlElement(name = "select-by-key", required = true)
+    @JacksonXmlProperty(localName = "select-by-key")
     private String selectByKeySQL;
     
-    @XmlElement(name = "select-by-parent", required = true)
+    @JacksonXmlProperty(localName = "select-by-parent")
     private String selectByParentKeySQL;
     
-    @XmlElement(name = "insert", required = true)
+    @JacksonXmlProperty(localName = "insert")
     private String insertSQL;
     
-    @XmlElement(name = "update", required = true)
+    @JacksonXmlProperty(localName = "update")
     private String updateSQL;
     
-    @XmlElement(name = "delete", required = true)
+    @JacksonXmlProperty(localName = "delete")
     private String deleteSQL;
 }
