@@ -19,6 +19,18 @@ grammar BaseRule;
 
 import Symbol, Keyword, Literals;
 
+algorithmDefinition
+    : TYPE LP_ NAME EQ_ algorithmTypeName (COMMA_ propertiesDefinition)? RP_
+    ;
+
+algorithmTypeName
+    : STRING_ | buildInProviderTypeName
+    ;
+
+buildInProviderTypeName
+    : JOOQ | NATIVE
+    ;
+
 propertiesDefinition
     : PROPERTIES LP_ properties? RP_
     ;

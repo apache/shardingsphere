@@ -19,9 +19,8 @@ package org.apache.shardingsphere.sqltranslator.distsql.statement.updateable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.ral.UpdatableGlobalRuleRALStatement;
-
-import java.util.Properties;
 
 /**
  * Alter SQL translator rule statement.
@@ -30,9 +29,7 @@ import java.util.Properties;
 @Getter
 public final class AlterSQLTranslatorRuleStatement extends UpdatableGlobalRuleRALStatement {
     
-    private final String type;
-    
-    private final Properties props;
+    private final AlgorithmSegment provider;
     
     private final Boolean useOriginalSQLWhenTranslatingFailed;
 }

@@ -28,19 +28,11 @@ alterSQLTranslatorRule
     ;
 
 sqlTranslatorRuleDefinition
-    : TYPE LP_ NAME EQ_ providerName (COMMA_ propertiesDefinition)? RP_ (COMMA_ useOriginalSQLDefinition)?
+    : algorithmDefinition (COMMA_ useOriginalSQLDefinition)?
     ;
 
 useOriginalSQLDefinition
     : USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED EQ_ useOriginalSQL
-    ;
-
-providerName
-    : STRING_ | buildInProviderTypeName
-    ;
-
-buildInProviderTypeName
-    : JOOQ | NATIVE
     ;
 
 useOriginalSQL

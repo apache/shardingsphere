@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.distsql.handler.update;
 
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.updateable.AlterSQLTranslatorRuleStatement;
@@ -36,8 +37,8 @@ class AlterSQLTranslatorRuleStatementUpdaterTest {
     @Test
     void assertExecute() {
         AlterSQLTranslatorRuleStatementUpdater updater = new AlterSQLTranslatorRuleStatementUpdater();
-        SQLTranslatorRuleConfiguration actual = updater.buildAlteredRuleConfiguration(createSQLTranslatorRuleConfiguration(), new AlterSQLTranslatorRuleStatement("JOOQ",
-                PropertiesBuilder.build(new Property("foo", "bar")), null));
+        SQLTranslatorRuleConfiguration actual = updater.buildAlteredRuleConfiguration(createSQLTranslatorRuleConfiguration(),
+                new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("JOOQ", PropertiesBuilder.build(new Property("foo", "bar"))), null));
         assertThat(actual.getType(), is("JOOQ"));
         assertFalse(actual.getProps().isEmpty());
         String props = PropertiesConverter.convert(actual.getProps());
