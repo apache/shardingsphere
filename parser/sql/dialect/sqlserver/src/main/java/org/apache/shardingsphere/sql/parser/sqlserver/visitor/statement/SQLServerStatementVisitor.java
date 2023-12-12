@@ -25,6 +25,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
@@ -228,7 +229,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
-        return new StringLiteralValue(ctx.getText());
+        if (null != ctx.STRING_()) {
+            return new StringLiteralValue(ctx.getText());
+        } else {
+            return new StringLiteralValue(ctx.getText().substring(1));
+        }
     }
     
     @Override
@@ -289,19 +294,37 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+            OwnerSegment ownerSegment = new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier()));
+            if (null != ctx.databaseName()) {
+                SQLServerStatementParser.DatabaseNameContext dbName = ctx.databaseName();
+                ownerSegment.setOwner(new OwnerSegment(dbName.getStart().getStartIndex(), dbName.getStop().getStopIndex(), (IdentifierValue) visit(dbName.identifier())));
+            }
+            result.setOwner(ownerSegment);
+        } else if (null != ctx.databaseName()) {
+            SQLServerStatementParser.DatabaseNameContext dbName = ctx.databaseName();
+            result.setOwner(new OwnerSegment(dbName.getStart().getStartIndex(), dbName.getStop().getStopIndex(), (IdentifierValue) visit(dbName.identifier())));
         }
         return result;
     }
     
     @Override
     public final ASTNode visitColumnName(final ColumnNameContext ctx) {
-        ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
+        ColumnSegment result;
+        if (null != ctx.name()) {
+            result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
+        } else {
+            result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.scriptVariableName()));
+        }
         OwnerContext owner = ctx.owner();
         if (null != owner) {
             result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitScriptVariableName(final SQLServerStatementParser.ScriptVariableNameContext ctx) {
+        return new IdentifierValue(ctx.getText());
     }
     
     @Override

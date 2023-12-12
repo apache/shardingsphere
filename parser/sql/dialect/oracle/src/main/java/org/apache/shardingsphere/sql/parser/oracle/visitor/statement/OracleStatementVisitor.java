@@ -238,7 +238,11 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
-        return new StringLiteralValue(ctx.getText());
+        if (null != ctx.STRING_()) {
+            return new StringLiteralValue(ctx.getText());
+        } else {
+            return new StringLiteralValue(ctx.getText().substring(1));
+        }
     }
     
     @Override
