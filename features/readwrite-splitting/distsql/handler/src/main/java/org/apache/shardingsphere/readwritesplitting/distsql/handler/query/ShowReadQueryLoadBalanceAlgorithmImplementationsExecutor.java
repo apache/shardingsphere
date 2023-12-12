@@ -40,8 +40,8 @@ public final class ShowReadQueryLoadBalanceAlgorithmImplementationsExecutor impl
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowReadQueryLoadBalanceAlgorithmImplementationsStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        Collection<ReadQueryLoadBalanceAlgorithm> shardingAlgorithms = ShardingSphereServiceLoader.getServiceInstances(ReadQueryLoadBalanceAlgorithm.class);
-        for (ReadQueryLoadBalanceAlgorithm each : shardingAlgorithms) {
+        Collection<ReadQueryLoadBalanceAlgorithm> loadBalanceAlgorithms = ShardingSphereServiceLoader.getServiceInstances(ReadQueryLoadBalanceAlgorithm.class);
+        for (ReadQueryLoadBalanceAlgorithm each : loadBalanceAlgorithms) {
             result.add(new LocalDataQueryResultRow(each.getClass().getSimpleName(), each.getType(), each.getClass().getName()));
         }
         return result;
