@@ -87,7 +87,7 @@ public final class TableExtractor {
         if (selectStatement.getWhere().isPresent()) {
             extractTablesFromExpression(selectStatement.getWhere().get().getExpr());
         }
-        if (null != selectStatement.getProjections()) {
+        if (null != selectStatement.getProjections() && !selectStatement.getCombine().isPresent()) {
             extractTablesFromProjections(selectStatement.getProjections());
         }
         if (selectStatement.getGroupBy().isPresent()) {
