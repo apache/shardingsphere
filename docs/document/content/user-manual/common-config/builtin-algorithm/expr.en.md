@@ -56,7 +56,6 @@ It must follow the enumeration value of Java `java.time.temporal.ChronoUnit#toSt
 6. `DU` stands for the abbreviation of datetime upper, which means the upper bound value of time. The format is consistent with the timestamp format defined by `SP`.
 7. `C` stands for the abbreviation of chronology, which means calendar system and must follow the format of Java `java.time.chrono.Chronology#getId()`.
 For example: `Japanese`, `Minguo`, `ThaiBuddhist`. There is a default value of `ISO`.
-Affected by https://bugs.openjdk.org/browse/JDK-8068571, `Japanese` is only available on JDK 11+.
 
 Type: INTERVAL
 

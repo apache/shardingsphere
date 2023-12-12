@@ -21,10 +21,9 @@ import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 
 import java.util.List;
+import java.util.Locale;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -84,21 +83,28 @@ public class IntervalInlineExpressionParserTest {
     
     /**
      * Background reference <a href="https://bugs.openjdk.org/browse/JDK-8068571">JDK-8068571</a>.
-     * Unable to parse `GGGGyy_MM_dd` due to OpenJDK 21.0.1 limitation.
+     * Unable to parse `GGGGyy_MM_dd` due to {@link java.time.chrono.JapaneseChronology} limitation.
+     *
+     * @see java.time.chrono.JapaneseChronology
      */
     @Test
-    @EnabledForJreRange(min = JRE.JAVA_11, max = JRE.OTHER)
     void assertEvaluateForJapaneseDate() {
-        List<String> expectedBYGGGGyyyy = getResultList("P=ds-0.t_order_;SP=GGGGyyyy_MM_dd;DIA=1;DIU=Days;DL=平成0001_12_05;DU=平成0001_12_06;C=Japanese");
-        assertThat(expectedBYGGGGyyyy.size(), is(2));
-        assertThat(expectedBYGGGGyyyy, hasItems("ds-0.t_order_平成0001_12_05", "ds-0.t_order_平成0001_12_06"));
-        List<String> expectedByGGGGyyy = getResultList("P=ds-0.t_order_;SP=GGGGyyy_MM_dd;DIA=1;DIU=Days;DL=平成001_12_05;DU=平成001_12_06;C=Japanese");
-        assertThat(expectedByGGGGyyy.size(), is(2));
-        assertThat(expectedByGGGGyyy, hasItems("ds-0.t_order_平成001_12_05", "ds-0.t_order_平成001_12_06"));
-        List<String> expectedByGGGGy = getResultList("P=ds-0.t_order_;SP=GGGGy_MM_dd;DIA=1;DIU=Days;DL=平成1_12_05;DU=平成1_12_06;C=Japanese");
-        assertThat(expectedByGGGGy.size(), is(2));
-        assertThat(expectedByGGGGy, hasItems("ds-0.t_order_平成1_12_05", "ds-0.t_order_平成1_12_06"));
-        assertThrows(RuntimeException.class, () -> getResultList("P=ds-0.t_order_;SP=GGGGyy_MM_dd;DIA=1;DIU=Days;DL=平成01_12_05;DU=平成01_12_06;C=Japanese"));
+        Locale originLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.JAPAN);
+            List<String> expectedBYGGGGyyyy = getResultList("P=ds-0.t_order_;SP=GGGGyyyy_MM_dd;DIA=1;DIU=Days;DL=平成0001_12_05;DU=平成0001_12_06;C=Japanese");
+            assertThat(expectedBYGGGGyyyy.size(), is(2));
+            assertThat(expectedBYGGGGyyyy, hasItems("ds-0.t_order_平成0001_12_05", "ds-0.t_order_平成0001_12_06"));
+            List<String> expectedByGGGGyyy = getResultList("P=ds-0.t_order_;SP=GGGGyyy_MM_dd;DIA=1;DIU=Days;DL=平成001_12_05;DU=平成001_12_06;C=Japanese");
+            assertThat(expectedByGGGGyyy.size(), is(2));
+            assertThat(expectedByGGGGyyy, hasItems("ds-0.t_order_平成001_12_05", "ds-0.t_order_平成001_12_06"));
+            List<String> expectedByGGGGy = getResultList("P=ds-0.t_order_;SP=GGGGy_MM_dd;DIA=1;DIU=Days;DL=平成1_12_05;DU=平成1_12_06;C=Japanese");
+            assertThat(expectedByGGGGy.size(), is(2));
+            assertThat(expectedByGGGGy, hasItems("ds-0.t_order_平成1_12_05", "ds-0.t_order_平成1_12_06"));
+            assertThrows(RuntimeException.class, () -> getResultList("P=ds-0.t_order_;SP=GGGGyy_MM_dd;DIA=1;DIU=Days;DL=平成01_12_05;DU=平成01_12_06;C=Japanese"));
+        } finally {
+            Locale.setDefault(originLocale);
+        }
     }
     
     private List<String> getResultList(final String inlineExpression) {
