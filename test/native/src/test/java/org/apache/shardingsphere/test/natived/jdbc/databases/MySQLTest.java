@@ -64,8 +64,8 @@ public class MySQLTest {
         process = new ProcessBuilder(
                 "docker", "run", "--rm", "-p", "65107:3306", "-e", "MYSQL_DATABASE=" + DATABASE,
                 "-e", "MYSQL_ROOT_PASSWORD=" + PASSWORD, "mysql:8.2.0-oracle")
-                        .redirectOutput(new File("target/test-classes/mysql-stdout.txt"))
-                        .redirectError(new File("target/test-classes/mysql-stderr.txt"))
+                        .redirectOutput(new File("target/mysql-stdout.txt"))
+                        .redirectError(new File("target/mysql-stderr.txt"))
                         .start();
         Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptionsMatching(e -> e instanceof CommunicationsException)
                 .until(() -> {
