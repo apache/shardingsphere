@@ -2948,7 +2948,7 @@
             </value>
         </values>
     </insert>
-    <insert sql-case-id="insert_with_dbName">
+    <insert sql-case-id="insert_with_data_base_name">
         <table name="VariableTest" start-index="12" stop-index="46">
             <owner name="dbo" start-index="31" stop-index="33">
                 <owner name="AdventureWorks2022" start-index="12" stop-index="29"/>
