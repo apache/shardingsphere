@@ -38,17 +38,10 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
     
     @Override
     public final void process(final Type eventType, final JobConfiguration jobConfig) {
-        boolean deleted = Type.DELETED == eventType;
-        if (deleted) {
-            onDeleted(jobConfig);
-        }
-        boolean disabled = jobConfig.isDisabled();
         String jobId = jobConfig.getJobName();
-        if (disabled || deleted) {
+        if (jobConfig.isDisabled()) {
             PipelineJobRegistry.stop(jobId);
-            if (disabled) {
-                onDisabled(jobId);
-            }
+            onDisabled(jobId);
             return;
         }
         switch (eventType) {
@@ -60,12 +53,14 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
                     executeJob(jobConfig);
                 }
                 break;
+            case DELETED:
+                PipelineJobRegistry.stop(jobId);
+                onDeleted(jobConfig);
+                break;
             default:
                 break;
         }
     }
-    
-    protected abstract void onDeleted(JobConfiguration jobConfig);
     
     private void onDisabled(final String jobId) {
         PipelineDistributedBarrier distributedBarrier = PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId));
@@ -84,6 +79,8 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
     }
     
     protected abstract PipelineJob buildJob();
+    
+    protected abstract void onDeleted(JobConfiguration jobConfig);
     
     protected abstract PipelineJobType getJobType();
     
