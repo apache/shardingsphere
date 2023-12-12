@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.metadata.proc
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.JobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.preparer.MigrationJobPreparer;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
@@ -27,10 +28,10 @@ import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 /**
  * Migration job configuration changed processor.
  */
-public final class MigrationJobConfigurationChangedProcessor implements JobConfigurationChangedProcessor {
+public final class MigrationJobConfigurationChangedProcessor implements JobConfigurationChangedProcessor<MigrationJobConfiguration> {
     
     @Override
-    public PipelineJob createJob() {
+    public PipelineJob createJob(final MigrationJobConfiguration jobConfig) {
         return new MigrationJob();
     }
     

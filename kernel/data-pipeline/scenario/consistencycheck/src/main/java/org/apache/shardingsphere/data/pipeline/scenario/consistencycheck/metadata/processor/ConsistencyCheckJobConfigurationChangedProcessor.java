@@ -20,20 +20,16 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.metada
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.JobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
-import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
 
 /**
  * Consistency check job configuration changed processor.
  */
-public final class ConsistencyCheckJobConfigurationChangedProcessor implements JobConfigurationChangedProcessor {
+public final class ConsistencyCheckJobConfigurationChangedProcessor implements JobConfigurationChangedProcessor<ConsistencyCheckJobConfiguration> {
     
     @Override
-    public PipelineJob createJob() {
+    public PipelineJob createJob(final ConsistencyCheckJobConfiguration jobConfig) {
         return new ConsistencyCheckJob();
-    }
-    
-    @Override
-    public void clean(final JobConfiguration jobConfig) {
     }
     
     @Override

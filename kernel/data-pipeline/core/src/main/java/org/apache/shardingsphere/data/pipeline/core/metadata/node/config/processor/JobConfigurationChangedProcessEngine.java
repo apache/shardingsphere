@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
@@ -40,8 +41,11 @@ public final class JobConfigurationChangedProcessEngine {
      * @param eventType event type
      * @param jobConfig pipeline job configuration
      * @param processor pipeline job configuration changed processor
+     * @param <T> type of pipeline job configuration
      */
-    public void process(final Type eventType, final JobConfiguration jobConfig, final JobConfigurationChangedProcessor processor) {
+    @SuppressWarnings("unchecked")
+    public <T extends PipelineJobConfiguration> void process(final Type eventType, final JobConfiguration jobConfig, final JobConfigurationChangedProcessor<T> processor) {
+        T pipelineJobConfig = (T) PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getYamlJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter());
         String jobId = jobConfig.getJobName();
         if (jobConfig.isDisabled()) {
             PipelineJobRegistry.stop(jobId);
@@ -54,7 +58,7 @@ public final class JobConfigurationChangedProcessEngine {
                 if (PipelineJobRegistry.isExisting(jobId)) {
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
-                    executeJob(jobConfig, processor);
+                    executeJob(jobConfig, pipelineJobConfig, processor);
                 }
                 break;
             case DELETED:
@@ -73,8 +77,8 @@ public final class JobConfigurationChangedProcessEngine {
         }
     }
     
-    private void executeJob(final JobConfiguration jobConfig, final JobConfigurationChangedProcessor processor) {
-        PipelineJob job = processor.createJob();
+    private <T extends PipelineJobConfiguration> void executeJob(final JobConfiguration jobConfig, final T pipelineJobConfig, final JobConfigurationChangedProcessor<T> processor) {
+        PipelineJob job = processor.createJob(pipelineJobConfig);
         String jobId = jobConfig.getJobName();
         PipelineJobRegistry.add(jobId, job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfig);
