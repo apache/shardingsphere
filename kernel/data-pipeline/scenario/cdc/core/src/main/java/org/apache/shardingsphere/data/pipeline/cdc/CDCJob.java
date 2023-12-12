@@ -36,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.DumperCommonContext;
@@ -64,7 +63,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -73,24 +71,20 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemContext> {
     
+    private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
+    
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new CDCJobType().getYamlJobItemProgressSwapper());
+    
+    private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
+    
+    private final CDCJobPreparer jobPreparer = new CDCJobPreparer();
+    
     @Getter
     private final PipelineSink sink;
-    
-    private final CDCJobAPI jobAPI;
-    
-    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
-    
-    private final PipelineProcessConfigurationPersistService processConfigPersistService;
-    
-    private final CDCJobPreparer jobPreparer;
     
     public CDCJob(final PipelineSink sink) {
         super(new PipelineJobRunnerManager(new CDCJobRunnerCleaner(sink)));
         this.sink = sink;
-        jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
-        jobItemManager = new PipelineJobItemManager<>(new CDCJobType().getYamlJobItemProgressSwapper());
-        processConfigPersistService = new PipelineProcessConfigurationPersistService();
-        jobPreparer = new CDCJobPreparer();
     }
     
     @Override
@@ -145,13 +139,8 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemConte
     }
     
     @Override
-    protected void executeInventoryTasks(final Collection<CompletableFuture<?>> futures, final Collection<CDCJobItemContext> jobItemContexts) {
-        ExecuteEngine.trigger(futures, new CDCExecuteCallback("inventory", jobItemContexts.iterator().next()));
-    }
-    
-    @Override
-    protected void executeIncrementalTasks(final Collection<CompletableFuture<?>> futures, final Collection<CDCJobItemContext> jobItemContexts) {
-        ExecuteEngine.trigger(futures, new CDCExecuteCallback("incremental", jobItemContexts.iterator().next()));
+    protected ExecuteCallback buildExecuteCallback(final String identifier, final CDCJobItemContext jobItemContext) {
+        return new CDCExecuteCallback(identifier, jobItemContext);
     }
     
     @RequiredArgsConstructor

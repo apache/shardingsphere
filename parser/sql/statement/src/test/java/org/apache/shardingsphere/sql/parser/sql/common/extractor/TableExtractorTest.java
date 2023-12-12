@@ -28,10 +28,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDupl
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -170,6 +172,26 @@ class TableExtractorTest {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
         tableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
         result.setFrom(tableSegment);
+        return result;
+    }
+    
+    @Test
+    void assertExtractTablesFromCombineWithSubQueryProjection() {
+        MySQLSelectStatement selectStatement = createSelectStatementWithSubQueryProjection("t_order");
+        selectStatement.setCombine(new CombineSegment(0, 0, createSelectStatementWithSubQueryProjection("t_order"), CombineType.UNION, createSelectStatementWithSubQueryProjection("t_order_item")));
+        tableExtractor.extractTablesFromSelect(selectStatement);
+        Collection<SimpleTableSegment> actual = tableExtractor.getRewriteTables();
+        assertThat(actual.size(), is(2));
+        Iterator<SimpleTableSegment> iterator = actual.iterator();
+        assertTableSegment(iterator.next(), 0, 0, "t_order");
+        assertTableSegment(iterator.next(), 0, 0, "t_order_item");
+    }
+    
+    private MySQLSelectStatement createSelectStatementWithSubQueryProjection(final String tableName) {
+        MySQLSelectStatement result = new MySQLSelectStatement();
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, createSelectStatement(tableName), ""), ""));
+        result.setProjections(projections);
         return result;
     }
     

@@ -36,7 +36,7 @@ public final class ConsistencyCheckJobConfigurationChangedProcessor extends Abst
     }
     
     @Override
-    protected PipelineJob buildPipelineJob(final String jobId) {
+    protected PipelineJob buildJob() {
         return new ConsistencyCheckJob();
     }
     
