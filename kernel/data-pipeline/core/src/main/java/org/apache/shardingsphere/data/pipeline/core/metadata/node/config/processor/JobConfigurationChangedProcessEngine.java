@@ -15,33 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.impl;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
-import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.JobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
 /**
- * Abstract job configuration changed processor.
+ * Job configuration changed process engine.
  */
 @Slf4j
-public abstract class AbstractJobConfigurationChangedProcessor implements JobConfigurationChangedProcessor {
+public final class JobConfigurationChangedProcessEngine {
     
-    @Override
-    public final void process(final Type eventType, final JobConfiguration jobConfig) {
+    /**
+     * Process changed job configuration.
+     *
+     * @param eventType event type
+     * @param jobConfig pipeline job configuration
+     * @param processor pipeline job configuration changed processor
+     */
+    public void process(final Type eventType, final JobConfiguration jobConfig, final JobConfigurationChangedProcessor processor) {
         String jobId = jobConfig.getJobName();
         if (jobConfig.isDisabled()) {
             PipelineJobRegistry.stop(jobId);
-            onDisabled(jobId);
+            disableJob(jobId);
             return;
         }
         switch (eventType) {
@@ -50,42 +54,31 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
                 if (PipelineJobRegistry.isExisting(jobId)) {
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
-                    executeJob(jobConfig);
+                    executeJob(jobConfig, processor);
                 }
                 break;
             case DELETED:
                 PipelineJobRegistry.stop(jobId);
-                onDeleted(jobConfig);
+                processor.clean(jobConfig);
                 break;
             default:
                 break;
         }
     }
     
-    private void onDisabled(final String jobId) {
+    private void disableJob(final String jobId) {
         PipelineDistributedBarrier distributedBarrier = PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId));
         for (Integer each : PipelineJobRegistry.getShardingItems(jobId)) {
             distributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
         }
     }
     
-    protected void executeJob(final JobConfiguration jobConfig) {
-        PipelineJob job = buildJob();
+    private void executeJob(final JobConfiguration jobConfig, final JobConfigurationChangedProcessor processor) {
+        PipelineJob job = processor.createJob();
         String jobId = jobConfig.getJobName();
         PipelineJobRegistry.add(jobId, job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfig);
         job.getJobRunnerManager().setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
-    }
-    
-    protected abstract PipelineJob buildJob();
-    
-    protected abstract void onDeleted(JobConfiguration jobConfig);
-    
-    protected abstract PipelineJobType getJobType();
-    
-    @Override
-    public String getType() {
-        return getJobType().getType();
     }
 }
