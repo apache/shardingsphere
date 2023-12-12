@@ -58,7 +58,7 @@ public final class JDBCRepositorySQLLoader {
     
     private static final Collection<String> JAR_URL_PROTOCOLS = new HashSet<>(Arrays.asList("jar", "war", "zip", "wsjar", "vfszip"));
     
-    private static final ObjectMapper XML_MAPPER = new XmlMapper();
+    private static final ObjectMapper XML_MAPPER = XmlMapper.builder().defaultUseWrapper(false).build();
     
     /**
      * Load JDBC repository SQL.
