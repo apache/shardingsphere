@@ -62,8 +62,6 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
         }
     }
     
-    protected abstract void onDeleted(JobConfiguration jobConfig);
-    
     private void onDisabled(final String jobId) {
         PipelineDistributedBarrier distributedBarrier = PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId));
         for (Integer each : PipelineJobRegistry.getShardingItems(jobId)) {
@@ -81,6 +79,8 @@ public abstract class AbstractJobConfigurationChangedProcessor implements JobCon
     }
     
     protected abstract PipelineJob buildJob();
+    
+    protected abstract void onDeleted(JobConfiguration jobConfig);
     
     protected abstract PipelineJobType getJobType();
     
