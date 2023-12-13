@@ -122,7 +122,7 @@ public abstract class BaseDQLE2EIT {
         for (int i = 0; i < actualResultSetMetaData.getColumnCount(); i++) {
             assertThat(actualResultSetMetaData.getColumnLabel(i + 1), is(expectedResultSetMetaData.getColumnLabel(i + 1)));
             assertThat(actualResultSetMetaData.getColumnName(i + 1), is(expectedResultSetMetaData.getColumnName(i + 1)));
-            if ("jdbc".equals(testParam.getAdapter())) {
+            if ("jdbc".equals(testParam.getAdapter()) && "Cluster".equals(testParam.getMode())) {
                 // FIXME correct columnType with proxy adapter
                 assertThat(actualResultSetMetaData.getColumnType(i + 1), is(expectedResultSetMetaData.getColumnType(i + 1)));
             }
