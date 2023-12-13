@@ -15,25 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.postgresql.type;
+package org.apache.shardingsphere.infra.database.testcontainers.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
- * Database type of PostgreSQL.
+ * Abstract Database type in testcontainers-java.
+ * All jdbcUrl prefixes supported by testcontainers-java should extend this class.
  */
-public final class PostgreSQLDatabaseType implements DatabaseType {
-    
-    @Override
-    public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singletonList(String.format("jdbc:%s:", getType().toLowerCase()));
-    }
-    
-    @Override
-    public String getType() {
-        return "PostgreSQL";
-    }
+public abstract class AbstractTestcontainersDatabaseType implements DatabaseType {
 }

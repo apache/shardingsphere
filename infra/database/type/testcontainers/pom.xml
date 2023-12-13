@@ -20,23 +20,24 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra-database</artifactId>
+        <artifactId>shardingsphere-infra-database-type</artifactId>
         <version>5.4.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-database-type</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-infra-database-testcontainers</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>mysql</module>
-        <module>mariadb</module>
-        <module>postgresql</module>
-        <module>opengauss</module>
-        <module>oracle</module>
-        <module>sqlserver</module>
-        <module>h2</module>
-        <module>sql92</module>
-        <module>clickhouse</module>
-        <module>testcontainers</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-database-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-util</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.mysql.type;
+package org.apache.shardingsphere.infra.database.testcontainers.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MySQLDatabaseTypeTest {
+class TestcontainersDatabaseTypeTest {
     
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "MySQL").getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TestContainersClickHouse").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:tc:clickhouse:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TestContainersMariaDB").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:tc:mariadb:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TestContainersMySQL").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:tc:mysql:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TestContainersOracle").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:tc:oracle:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TestContainersPostgreSQL").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:tc:postgresql:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "TestContainersSQLServer").getJdbcUrlPrefixes(), is(Collections.singletonList("jdbc:tc:sqlserver:")));
     }
 }

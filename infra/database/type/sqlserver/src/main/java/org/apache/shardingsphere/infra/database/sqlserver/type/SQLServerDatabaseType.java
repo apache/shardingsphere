@@ -23,13 +23,13 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Database type of SQLServer. Includes verification of Docker Images involved in commonly used testcontainers.
+ * Database type of SQLServer.
  */
 public final class SQLServerDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:", "jdbc:tc:mcr.microsoft.com/mssql/server:");
+        return Arrays.asList("jdbc:microsoft:sqlserver:", "jdbc:sqlserver:");
     }
     
     @Override
