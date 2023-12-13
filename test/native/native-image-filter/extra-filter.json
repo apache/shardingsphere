@@ -13,11 +13,12 @@
     {"excludeClasses": "sun.misc.**"},
     {"excludeClasses": "sun.security.**"},
 
+    {"excludeClasses": "com.fasterxml.jackson.databind.**"},
     {"excludeClasses": "com.github.benmanes.caffeine.cache.**"},
+    {"excludeClasses": "com.github.dockerjava.api.**"},
     {"excludeClasses": "com.google.common.util.concurrent.**"},
     {"excludeClasses": "com.ibm.icu.text.**"},
     {"excludeClasses": "com.mysql.cj.**"},
-    {"excludeClasses": "com.sun.xml.bind.v2.**"},
     {"excludeClasses": "com.zaxxer.hikari.**"},
     {"excludeClasses": "javax.xml.bind.annotation.**"},
     {"excludeClasses": "groovy.**"},
@@ -25,9 +26,10 @@
     {"excludeClasses": "org.codehaus.groovy.**"},
     {"excludeClasses": "org.h2.**"},
     {"excludeClasses": "org.locationtech.jts.geom.**"},
+    {"excludeClasses": "org.opengauss.**"},
     {"excludeClasses": "org.postgresql.**"},
     {"excludeClasses": "org.slf4j.event.**"},
-    {"excludeClasses": "org.testcontainers.jdbc.**"},
+    {"excludeClasses": "org.testcontainers.**"},
 
     {"excludeClasses": "org.apache.shardingsphere.test.natived.**"}
   ],

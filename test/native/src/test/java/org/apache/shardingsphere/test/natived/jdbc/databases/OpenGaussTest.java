@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.natived.jdbc.databases;
 
-import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.test.natived.jdbc.commons.AbstractShardingCommonTest;
 import org.apache.shardingsphere.test.natived.jdbc.commons.FileTestUtils;
@@ -34,15 +33,15 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Properties;
 
-public class MySQLTest {
+public class OpenGaussTest {
     
-    private static final String USERNAME = "root";
+    private static final String USERNAME = "gaussdb";
     
-    private static final String PASSWORD = "123456";
+    private static final String PASSWORD = "openGauss@123";
     
-    private static final String DATABASE = "test";
+    private static final String DATABASE = "postgres";
     
-    private static final String JDBC_URL = "jdbc:mysql://localhost:65107/" + DATABASE;
+    private static final String JDBC_URL = "jdbc:opengauss://localhost:62390/" + DATABASE;
     
     private static Process process;
     
@@ -52,7 +51,7 @@ public class MySQLTest {
     @EnabledInNativeImage
     void assertShardingInLocalTransactions() throws SQLException, IOException {
         beforeAll();
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/databases/mysql.yaml"));
+        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/databases/opengauss.yaml"));
         abstractShardingCommonTest = new AbstractShardingCommonTest(dataSource);
         this.initEnvironment();
         abstractShardingCommonTest.processSuccess();
@@ -61,8 +60,8 @@ public class MySQLTest {
     }
     
     private void initEnvironment() throws SQLException {
-        abstractShardingCommonTest.getOrderRepository().createTableIfNotExistsInMySQL();
-        abstractShardingCommonTest.getOrderItemRepository().createTableIfNotExistsInMySQL();
+        abstractShardingCommonTest.getOrderRepository().createTableIfNotExistsInPostgres();
+        abstractShardingCommonTest.getOrderItemRepository().createTableIfNotExistsInPostgres();
         abstractShardingCommonTest.getAddressRepository().createTableIfNotExists();
         abstractShardingCommonTest.getOrderRepository().truncateTable();
         abstractShardingCommonTest.getOrderItemRepository().truncateTable();
@@ -78,18 +77,17 @@ public class MySQLTest {
     
     @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
     private static void beforeAll() throws IOException {
-        System.out.println("Starting MySQL ...");
+        System.out.println("Starting OpenGauss ...");
         process = new ProcessBuilder(
-                "docker", "run", "--rm", "-p", "65107:3306", "-e", "MYSQL_DATABASE=" + DATABASE,
-                "-e", "MYSQL_ROOT_PASSWORD=" + PASSWORD, "mysql:8.2.0-oracle")
-                        .redirectOutput(new File("target/mysql-stdout.txt"))
-                        .redirectError(new File("target/mysql-stderr.txt"))
+                "docker", "run", "--rm", "-p", "62390:5432", "-e", "GS_PASSWORD=" + PASSWORD,
+                "opengauss/opengauss:5.0.0")
+                        .redirectOutput(new File("target/opengauss-stdout.txt"))
+                        .redirectError(new File("target/opengauss-stderr.txt"))
                         .start();
-        Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptionsMatching(e -> e instanceof CommunicationsException)
-                .until(() -> {
-                    openConnection().close();
-                    return true;
-                });
+        Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().until(() -> {
+            openConnection().close();
+            return true;
+        });
         try (Connection connection = openConnection()) {
             connection.createStatement().executeUpdate("CREATE DATABASE demo_ds_0;");
             connection.createStatement().executeUpdate("CREATE DATABASE demo_ds_1;");
@@ -97,12 +95,12 @@ public class MySQLTest {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("MySQL started");
+        System.out.println("OpenGauss started");
     }
     
     private static void tearDown() {
         if (null != process && process.isAlive()) {
-            System.out.println("Shutting down MySQL");
+            System.out.println("Shutting down OpenGauss");
             process.destroy();
         }
     }

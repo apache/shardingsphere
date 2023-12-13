@@ -219,7 +219,7 @@ ShardingSphere defines the Maven Profile of `nativeTestInShardingSphere` for exe
 Assuming that the contributor is under a new Ubuntu 22.04.3 LTS instance, Contributors can manage the JDK and tool chain through 
 `SDKMAN!` through the following bash command, and execute nativeTest for the `shardingsphere-test-native` submodule.
 
-You must install container tools such as Docker Engine or PodMan to execute `testcontainers-java` related unit tests.
+You must install Docker Engine to execute `testcontainers-java` related unit tests.
 
 ```bash
 sudo apt install unzip zip curl sed -y
