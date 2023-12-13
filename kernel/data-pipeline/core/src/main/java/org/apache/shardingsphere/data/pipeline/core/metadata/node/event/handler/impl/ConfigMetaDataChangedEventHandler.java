@@ -42,6 +42,7 @@ public final class ConfigMetaDataChangedEventHandler implements PipelineMetaData
         return PipelineMetaDataNode.CONFIG_PATTERN;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public void handle(final String jobId, final DataChangedEvent event) {
         JobConfiguration jobConfig;
@@ -54,7 +55,7 @@ public final class ConfigMetaDataChangedEventHandler implements PipelineMetaData
             return;
         }
         log.info("{} job configuration: {}, disabled={}", event.getType(), event.getKey(), jobConfig.isDisabled());
-        TypedSPILoader.findService(JobConfigurationChangedProcessor.class, PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getType()).ifPresent(
-                optional -> new JobConfigurationChangedProcessEngine().process(event.getType(), jobConfig, optional));
+        String jobType = PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getType();
+        TypedSPILoader.findService(JobConfigurationChangedProcessor.class, jobType).ifPresent(optional -> new JobConfigurationChangedProcessEngine().process(event.getType(), jobConfig, optional));
     }
 }
