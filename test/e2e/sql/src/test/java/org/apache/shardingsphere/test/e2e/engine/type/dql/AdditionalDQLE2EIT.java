@@ -60,7 +60,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (isUseXMLAsExpectedDataset()) {
             assertExecuteQueryWithXMLExpected(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         } else {
-            assertExecuteQueryWithExpectedDataSource(containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            assertExecuteQueryWithExpectedDataSource(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         }
     }
     
@@ -81,7 +81,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (isUseXMLAsExpectedDataset()) {
             assertExecuteQueryWithXMLExpected(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
         } else {
-            assertExecuteQueryWithExpectedDataSource(containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+            assertExecuteQueryWithExpectedDataSource(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
         }
     }
     
@@ -102,7 +102,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (isUseXMLAsExpectedDataset()) {
             assertExecuteWithXMLExpected(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         } else {
-            assertExecuteWithExpectedDataSource(containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            assertExecuteWithExpectedDataSource(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         }
     }
     
@@ -123,7 +123,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (isUseXMLAsExpectedDataset()) {
             assertExecuteWithXMLExpected(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
         } else {
-            assertExecuteWithExpectedDataSource(containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+            assertExecuteWithExpectedDataSource(testParam, containerComposer, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
         }
     }
     
@@ -146,21 +146,21 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteQueryWithExpectedDataSource(final SingleE2EContainerComposer containerComposer, final int... resultSetTypes) throws SQLException {
+    private void assertExecuteQueryWithExpectedDataSource(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer, final int... resultSetTypes) throws SQLException {
         try (
                 Connection actualConnection = containerComposer.getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
-                assertExecuteQueryForStatementWithResultSetTypes(containerComposer, actualConnection, expectedConnection, resultSetTypes);
+                assertExecuteQueryForStatementWithResultSetTypes(containerComposer, actualConnection, expectedConnection, testParam, resultSetTypes);
             } else {
-                assertExecuteQueryForPreparedStatementWithResultSetTypes(containerComposer, actualConnection, expectedConnection, resultSetTypes);
+                assertExecuteQueryForPreparedStatementWithResultSetTypes(containerComposer, actualConnection, expectedConnection, testParam, resultSetTypes);
             }
         }
     }
     
     private void assertExecuteQueryForStatementWithResultSetTypes(final SingleE2EContainerComposer containerComposer,
                                                                   final Connection actualConnection, final Connection expectedConnection,
-                                                                  final int... resultSetTypes) throws SQLException {
+                                                                  final AssertionTestParameter testParam, final int... resultSetTypes) throws SQLException {
         try (
                 Statement actualStatement = 2 == resultSetTypes.length ? actualConnection.createStatement(resultSetTypes[0], resultSetTypes[1])
                         : actualConnection.createStatement(resultSetTypes[0], resultSetTypes[1], resultSetTypes[2]);
@@ -168,12 +168,12 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
                 Statement expectedStatement = 2 == resultSetTypes.length ? expectedConnection.createStatement(resultSetTypes[0], resultSetTypes[1])
                         : expectedConnection.createStatement(resultSetTypes[0], resultSetTypes[1], resultSetTypes[2]);
                 ResultSet expectedResultSet = expectedStatement.executeQuery(containerComposer.getSQL())) {
-            assertResultSet(actualResultSet, expectedResultSet);
+            assertResultSet(actualResultSet, expectedResultSet, testParam);
         }
     }
     
     private void assertExecuteQueryForPreparedStatementWithResultSetTypes(final SingleE2EContainerComposer containerComposer, final Connection actualConnection, final Connection expectedConnection,
-                                                                          final int... resultSetTypes) throws SQLException {
+                                                                          final AssertionTestParameter testParam, final int... resultSetTypes) throws SQLException {
         try (
                 PreparedStatement actualPreparedStatement = 2 == resultSetTypes.length ? actualConnection.prepareStatement(containerComposer.getSQL(), resultSetTypes[0], resultSetTypes[1])
                         : actualConnection.prepareStatement(containerComposer.getSQL(), resultSetTypes[0], resultSetTypes[1], resultSetTypes[2]);
@@ -186,7 +186,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
             try (
                     ResultSet actualResultSet = actualPreparedStatement.executeQuery();
                     ResultSet expectedResultSet = expectedPreparedStatement.executeQuery()) {
-                assertResultSet(actualResultSet, expectedResultSet);
+                assertResultSet(actualResultSet, expectedResultSet, testParam);
             }
         }
     }
@@ -207,20 +207,20 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteWithExpectedDataSource(final SingleE2EContainerComposer containerComposer, final int... resultSetTypes) throws SQLException {
+    private void assertExecuteWithExpectedDataSource(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer, final int... resultSetTypes) throws SQLException {
         try (
                 Connection actualConnection = containerComposer.getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
-                assertExecuteForStatementWithResultSetTypes(containerComposer, actualConnection, expectedConnection, resultSetTypes);
+                assertExecuteForStatementWithResultSetTypes(containerComposer, actualConnection, expectedConnection, testParam, resultSetTypes);
             } else {
-                assertExecuteForPreparedStatementWithResultSetTypes(containerComposer, actualConnection, expectedConnection, resultSetTypes);
+                assertExecuteForPreparedStatementWithResultSetTypes(containerComposer, actualConnection, expectedConnection, testParam, resultSetTypes);
             }
         }
     }
     
-    private void assertExecuteForStatementWithResultSetTypes(final SingleE2EContainerComposer containerComposer,
-                                                             final Connection actualConnection, final Connection expectedConnection, final int... resultSetTypes) throws SQLException {
+    private void assertExecuteForStatementWithResultSetTypes(final SingleE2EContainerComposer containerComposer, final Connection actualConnection, final Connection expectedConnection,
+                                                             final AssertionTestParameter testParam, final int... resultSetTypes) throws SQLException {
         try (
                 Statement actualStatement = 2 == resultSetTypes.length ? actualConnection.createStatement(resultSetTypes[0], resultSetTypes[1])
                         : actualConnection.createStatement(resultSetTypes[0], resultSetTypes[1], resultSetTypes[2]);
@@ -230,13 +230,13 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
             try (
                     ResultSet actualResultSet = actualStatement.getResultSet();
                     ResultSet expectedResultSet = expectedStatement.getResultSet()) {
-                assertResultSet(actualResultSet, expectedResultSet);
+                assertResultSet(actualResultSet, expectedResultSet, testParam);
             }
         }
     }
     
     private void assertExecuteForPreparedStatementWithResultSetTypes(final SingleE2EContainerComposer containerComposer, final Connection actualConnection, final Connection expectedConnection,
-                                                                     final int... resultSetTypes) throws SQLException {
+                                                                     final AssertionTestParameter testParam, final int... resultSetTypes) throws SQLException {
         try (
                 PreparedStatement actualPreparedStatement = 2 == resultSetTypes.length ? actualConnection.prepareStatement(containerComposer.getSQL(), resultSetTypes[0], resultSetTypes[1])
                         : actualConnection.prepareStatement(containerComposer.getSQL(), resultSetTypes[0], resultSetTypes[1], resultSetTypes[2]);
@@ -250,7 +250,7 @@ class AdditionalDQLE2EIT extends BaseDQLE2EIT {
             try (
                     ResultSet actualResultSet = actualPreparedStatement.getResultSet();
                     ResultSet expectedResultSet = expectedPreparedStatement.getResultSet()) {
-                assertResultSet(actualResultSet, expectedResultSet);
+                assertResultSet(actualResultSet, expectedResultSet, testParam);
             }
         }
     }

@@ -91,8 +91,8 @@ public abstract class BaseDQLE2EIT {
         }
     }
     
-    protected final void assertResultSet(final ResultSet actualResultSet, final ResultSet expectedResultSet) throws SQLException {
-        assertMetaData(actualResultSet.getMetaData(), expectedResultSet.getMetaData());
+    protected final void assertResultSet(final ResultSet actualResultSet, final ResultSet expectedResultSet, final AssertionTestParameter testParam) throws SQLException {
+        assertMetaData(actualResultSet.getMetaData(), expectedResultSet.getMetaData(), testParam);
         assertRows(actualResultSet, expectedResultSet);
     }
     
@@ -117,11 +117,15 @@ public abstract class BaseDQLE2EIT {
         return result;
     }
     
-    private void assertMetaData(final ResultSetMetaData actualResultSetMetaData, final ResultSetMetaData expectedResultSetMetaData) throws SQLException {
+    private void assertMetaData(final ResultSetMetaData actualResultSetMetaData, final ResultSetMetaData expectedResultSetMetaData, final AssertionTestParameter testParam) throws SQLException {
         assertThat(actualResultSetMetaData.getColumnCount(), is(expectedResultSetMetaData.getColumnCount()));
         for (int i = 0; i < actualResultSetMetaData.getColumnCount(); i++) {
             assertThat(actualResultSetMetaData.getColumnLabel(i + 1), is(expectedResultSetMetaData.getColumnLabel(i + 1)));
             assertThat(actualResultSetMetaData.getColumnName(i + 1), is(expectedResultSetMetaData.getColumnName(i + 1)));
+            if ("jdbc".equals(testParam.getAdapter()) && "Cluster".equals(testParam.getMode())) {
+                // FIXME correct columnType with proxy adapter
+                assertThat(actualResultSetMetaData.getColumnType(i + 1), is(expectedResultSetMetaData.getColumnType(i + 1)));
+            }
         }
     }
     
