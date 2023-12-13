@@ -19,22 +19,21 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Substitutable column name token.
@@ -57,14 +56,6 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         super(startIndex);
         this.stopIndex = stopIndex;
         this.lastColumn = false;
-        this.quoteCharacter = QuoteCharacter.NONE;
-        this.projections = projections;
-    }
-    
-    public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final Collection<Projection> projections, final boolean lastColumn) {
-        super(startIndex);
-        this.stopIndex = stopIndex;
-        this.lastColumn = lastColumn;
         this.quoteCharacter = QuoteCharacter.NONE;
         this.projections = projections;
     }
@@ -100,7 +91,7 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         if (null == routeUnit) {
             return Collections.emptyMap();
         }
-        Map<String, String> result = new LinkedHashMap<>();
+        Map<String, String> result = new CaseInsensitiveMap<>();
         for (RouteMapper each : routeUnit.getTableMappers()) {
             result.put(each.getLogicName().toLowerCase(), each.getActualName());
         }
@@ -112,21 +103,24 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         if (projection instanceof ColumnProjection) {
             appendColumnProjection((ColumnProjection) projection, logicActualTableNames, builder);
         } else {
-            // TODO use alias quoteCharacter to avoid oracle rewrite error
             builder.append(quoteCharacter.wrap(projection.getColumnLabel()));
         }
         return builder.toString();
     }
     
-    private static void appendColumnProjection(final ColumnProjection columnProjection, final Map<String, String> logicActualTableNames, final StringBuilder builder) {
+    private void appendColumnProjection(final ColumnProjection columnProjection, final Map<String, String> logicActualTableNames, final StringBuilder builder) {
         if (columnProjection.getOwner().isPresent()) {
-            Optional<IdentifierValue> owner = columnProjection.getOwner();
-            String lowerCaseOwner = owner.get().getValue().toLowerCase();
-            builder.append(owner.get().getQuoteCharacter().wrap(logicActualTableNames.getOrDefault(lowerCaseOwner, owner.get().getValue()))).append('.');
+            IdentifierValue owner = columnProjection.getOwner().get();
+            String actualTableOwner = logicActualTableNames.getOrDefault(owner.getValue(), owner.getValue());
+            builder.append(getValueWithQuoteCharacters(new IdentifierValue(actualTableOwner, owner.getQuoteCharacter()))).append('.');
         }
         builder.append(columnProjection.getName().getValueWithQuoteCharacters());
         if (columnProjection.getAlias().isPresent()) {
             builder.append(" AS ").append(columnProjection.getAlias().get().getValueWithQuoteCharacters());
         }
+    }
+    
+    private String getValueWithQuoteCharacters(final IdentifierValue identifierValue) {
+        return QuoteCharacter.NONE == identifierValue.getQuoteCharacter() ? identifierValue.getValue() : quoteCharacter.wrap(identifierValue.getValue());
     }
 }
