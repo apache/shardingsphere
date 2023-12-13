@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.query;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowKeyGenerateAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGenerateAlgorithmImplementationsStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Show sharding key generate algorithm implementations executor.
+ * Show key generate algorithm implementations executor.
  */
-public final class ShowShardingKeyGenerateAlgorithmImplementationsExecutor implements QueryableRALExecutor<ShowShardingKeyGenerateAlgorithmImplementationsStatement> {
+public final class ShowKeyGenerateAlgorithmImplementationsExecutor implements QueryableRALExecutor<ShowKeyGenerateAlgorithmImplementationsStatement> {
     
     @Override
     public Collection<String> getColumnNames() {
@@ -38,7 +38,7 @@ public final class ShowShardingKeyGenerateAlgorithmImplementationsExecutor imple
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShowShardingKeyGenerateAlgorithmImplementationsStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowKeyGenerateAlgorithmImplementationsStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Collection<KeyGenerateAlgorithm> keyGenerateAlgorithms = ShardingSphereServiceLoader.getServiceInstances(KeyGenerateAlgorithm.class);
         for (KeyGenerateAlgorithm each : keyGenerateAlgorithms) {
@@ -48,7 +48,7 @@ public final class ShowShardingKeyGenerateAlgorithmImplementationsExecutor imple
     }
     
     @Override
-    public Class<ShowShardingKeyGenerateAlgorithmImplementationsStatement> getType() {
-        return ShowShardingKeyGenerateAlgorithmImplementationsStatement.class;
+    public Class<ShowKeyGenerateAlgorithmImplementationsStatement> getType() {
+        return ShowKeyGenerateAlgorithmImplementationsStatement.class;
     }
 }
