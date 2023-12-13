@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.statement;
+package org.apache.shardingsphere.distsql.statement.ral.queryable;
 
 import org.apache.shardingsphere.distsql.statement.ral.QueryableRALStatement;
 
 /**
- * Show sharding key generate algorithm implementations statement.
+ * Show key generate algorithm implementations statement.
  */
-public final class ShowShardingKeyGenerateAlgorithmImplementationsStatement extends QueryableRALStatement {
+public final class ShowKeyGenerateAlgorithmImplementationsStatement extends QueryableRALStatement {
 }

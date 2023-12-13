@@ -56,6 +56,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowLogicalTablesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowKeyGenerateAlgorithmImplementationsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowMigrationRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowRulesUsedStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowServiceProviderImplementationsContext;
@@ -84,6 +85,7 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNode
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowComputeNodesStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowDistVariablesStatement;
+import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowKeyGenerateAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowMigrationRuleStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowServiceProviderImplementationsStatement;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.ShowTableMetaDataStatement;
@@ -407,5 +409,10 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitShowServiceProviderImplementations(final ShowServiceProviderImplementationsContext ctx) {
         return new ShowServiceProviderImplementationsStatement(getIdentifierValue(ctx.serviceProviderInterface()));
+    }
+    
+    @Override
+    public ASTNode visitShowKeyGenerateAlgorithmImplementations(final ShowKeyGenerateAlgorithmImplementationsContext ctx) {
+        return new ShowKeyGenerateAlgorithmImplementationsStatement();
     }
 }

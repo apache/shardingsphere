@@ -15,10 +15,25 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
-import BaseRule;
+import org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.keygen.core.context.KeyGenerateContext;
 
-showShardingAlgorithmImplementations
-    : SHOW SHARDING ALGORITHM IMPLEMENTATIONS
-    ;
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+public final class DistSQLKeyGenerateAlgorithmImplementationsFixture implements KeyGenerateAlgorithm {
+    
+    @Override
+    public Collection<Comparable<?>> generateKeys(final KeyGenerateContext keyGenerateContext, final int keyGenerateCount) {
+        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 0L).collect(Collectors.toList());
+        
+    }
+    
+    @Override
+    public String getType() {
+        return "DISTSQL.IMPLEMENTATIONS.FIXTURE";
+    }
+}
