@@ -25,14 +25,14 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Database type of ClickHouse. Includes verification of Docker Images involved in commonly used testcontainers.
+ * Database type of ClickHouse.
  * ClickHouse currently uses MySQL dialect parsing.
  */
 public final class ClickHouseDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList("jdbc:ch:", "jdbc:clickhouse:", "jdbc:tc:clickhouse/clickhouse-server:", "jdbc:tc:yandex/clickhouse-server:");
+        return Arrays.asList("jdbc:ch:", "jdbc:clickhouse:");
     }
     
     @Override

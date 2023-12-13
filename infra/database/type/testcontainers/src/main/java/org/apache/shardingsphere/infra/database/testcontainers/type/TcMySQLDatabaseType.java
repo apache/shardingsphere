@@ -15,25 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.database.postgresql.type;
+package org.apache.shardingsphere.infra.database.testcontainers.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
- * Database type of PostgreSQL.
+ * Database type of MySQL in testcontainers-java.
  */
-public final class PostgreSQLDatabaseType implements DatabaseType {
+public final class TcMySQLDatabaseType extends AbstractTestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singletonList(String.format("jdbc:%s:", getType().toLowerCase()));
+        return Collections.singletonList("jdbc:tc:mysql:");
+    }
+    
+    @Override
+    public Optional<DatabaseType> getTrunkDatabaseType() {
+        return Optional.of(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
     }
     
     @Override
     public String getType() {
-        return "PostgreSQL";
+        return "TestContainersMySQL";
     }
 }

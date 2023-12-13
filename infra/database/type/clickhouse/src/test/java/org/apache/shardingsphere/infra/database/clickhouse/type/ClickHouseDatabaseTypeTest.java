@@ -30,7 +30,6 @@ class ClickHouseDatabaseTypeTest {
     
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "ClickHouse").getJdbcUrlPrefixes(),
-                is(Arrays.asList("jdbc:ch:", "jdbc:clickhouse:", "jdbc:tc:clickhouse/clickhouse-server:", "jdbc:tc:yandex/clickhouse-server:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "ClickHouse").getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:ch:", "jdbc:clickhouse:")));
     }
 }
