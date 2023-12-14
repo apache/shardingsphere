@@ -71,6 +71,27 @@ public final class OrderItemRepository {
     }
     
     /**
+     * create table in MS SQL Server. `order_item_id` is not set to `IDENTITY(1,1)` to simplify the unit test.
+     * This also ignored the default schema of the `dbo`.
+     * @throws SQLException SQL exception
+     */
+    public void createTableInSQLServer() throws SQLException {
+        String sql = "CREATE TABLE [t_order_item] (\n"
+                + "    order_item_id bigint NOT NULL,\n"
+                + "    order_id bigint NOT NULL,\n"
+                + "    user_id int NOT NULL,\n"
+                + "    phone varchar(50),\n"
+                + "    status varchar(50),\n"
+                + "    PRIMARY KEY (order_item_id)\n"
+                + ");";
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+    
+    /**
      * drop table.
      * @throws SQLException SQL exception
      */
