@@ -67,8 +67,8 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             Optional<String> createSchemaSQL = pipelineSQLBuilder.buildCreateSchemaSQL(targetSchemaName);
             if (createSchemaSQL.isPresent()) {
                 Collection<String> sqls = new LinkedList<>();
-                sqls.add(createSchemaSQL.get());
                 pipelineSQLBuilder.buildDropSchemaSQL(targetSchemaName).ifPresent(sqls::add);
+                sqls.add(createSchemaSQL.get());
                 executeCreateSchema(param.getDataSourceManager(), each.getTargetDataSourceConfig(), sqls);
                 createdSchemaNames.add(targetSchemaName);
             }
