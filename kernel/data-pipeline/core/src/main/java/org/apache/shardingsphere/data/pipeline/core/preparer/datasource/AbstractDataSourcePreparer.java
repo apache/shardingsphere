@@ -21,8 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.preparer.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -55,11 +55,10 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         if (!dialectDatabaseMetaData.isSchemaAvailable()) {
             return;
         }
-        Collection<CreateTableConfiguration> createTableConfigs = param.getCreateTableConfigurations();
         String defaultSchema = dialectDatabaseMetaData.getDefaultSchema().orElse(null);
         PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(targetDatabaseType);
         Collection<String> createdSchemaNames = new HashSet<>();
-        for (CreateTableConfiguration each : createTableConfigs) {
+        for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
             String targetSchemaName = each.getTargetName().getSchemaName().toString();
             if (null == targetSchemaName || targetSchemaName.equalsIgnoreCase(defaultSchema) || createdSchemaNames.contains(targetSchemaName)) {
                 continue;
@@ -73,38 +72,21 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     }
     
     private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) throws SQLException {
-        log.info("prepareTargetSchemas, sql={}", sql);
-        try (Connection connection = getCachedDataSource(dataSourceManager, targetDataSourceConfig).getConnection()) {
-            try (Statement statement = connection.createStatement()) {
-                statement.execute(sql);
-            }
+        log.info("Prepare target schemas SQL: {}", sql);
+        try (
+                Connection connection = dataSourceManager.getDataSource(targetDataSourceConfig).getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(sql);
         }
     }
     
-    protected final PipelineDataSourceWrapper getCachedDataSource(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration dataSourceConfig) {
-        return dataSourceManager.getDataSource(dataSourceConfig);
-    }
-    
-    /**
-     * Execute target table SQL.
-     * 
-     * @param targetConnection target connection
-     * @param sql SQL
-     * @throws SQLException SQL exception
-     */
     protected void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
-        log.info("execute target table sql: {}", sql);
+        log.info("Execute target table SQL: {}", sql);
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
         }
     }
     
-    /**
-     * Add if not exists for create table SQL.
-     * 
-     * @param createTableSQL create table SQL
-     * @return create table if not existed SQL
-     */
     protected final String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
             return createTableSQL;
