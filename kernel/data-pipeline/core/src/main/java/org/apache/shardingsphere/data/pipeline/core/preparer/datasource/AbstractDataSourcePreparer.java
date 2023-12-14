@@ -35,6 +35,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -49,7 +50,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
     @Override
-    public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) throws SQLException {
+    public final void prepareTargetSchemas(final PrepareTargetSchemasParameter param) throws SQLException {
         DatabaseType targetDatabaseType = param.getTargetDatabaseType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(targetDatabaseType).getDialectDatabaseMetaData();
         if (!dialectDatabaseMetaData.isSchemaAvailable()) {
@@ -63,20 +64,26 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             if (null == targetSchemaName || targetSchemaName.equalsIgnoreCase(defaultSchema) || createdSchemaNames.contains(targetSchemaName)) {
                 continue;
             }
-            Optional<String> sql = pipelineSQLBuilder.buildCreateSchemaSQL(targetSchemaName);
-            if (sql.isPresent()) {
-                executeCreateSchema(param.getDataSourceManager(), each.getTargetDataSourceConfig(), sql.get());
+            Optional<String> createSchemaSQL = pipelineSQLBuilder.buildCreateSchemaSQL(targetSchemaName);
+            if (createSchemaSQL.isPresent()) {
+                Collection<String> sqls = new LinkedList<>();
+                sqls.add(createSchemaSQL.get());
+                pipelineSQLBuilder.buildDropSchemaSQL(targetSchemaName).ifPresent(sqls::add);
+                executeCreateSchema(param.getDataSourceManager(), each.getTargetDataSourceConfig(), sqls);
                 createdSchemaNames.add(targetSchemaName);
             }
         }
     }
     
-    private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) throws SQLException {
-        log.info("Prepare target schemas SQL: {}", sql);
+    private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager,
+                                     final PipelineDataSourceConfiguration targetDataSourceConfig, final Collection<String> sqls) throws SQLException {
+        log.info("Prepare target schemas SQL: {}", sqls);
         try (
                 Connection connection = dataSourceManager.getDataSource(targetDataSourceConfig).getConnection();
                 Statement statement = connection.createStatement()) {
-            statement.execute(sql);
+            for (String each : sqls) {
+                statement.execute(each);
+            }
         }
     }
     

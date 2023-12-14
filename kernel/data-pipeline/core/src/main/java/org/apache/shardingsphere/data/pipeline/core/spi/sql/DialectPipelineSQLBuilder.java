@@ -38,6 +38,16 @@ public interface DialectPipelineSQLBuilder extends DatabaseTypedSPI {
     }
     
     /**
+     * Build drop schema SQL.
+     *
+     * @param schemaName schema name
+     * @return built SQL
+     */
+    default Optional<String> buildDropSchemaSQL(String schemaName) {
+        return Optional.empty();
+    }
+    
+    /**
      * Build on duplicate clause of insert SQL.
      *
      * @param dataRecord data record

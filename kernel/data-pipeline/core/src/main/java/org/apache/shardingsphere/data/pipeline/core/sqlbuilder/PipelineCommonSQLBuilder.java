@@ -48,6 +48,16 @@ public final class PipelineCommonSQLBuilder {
     }
     
     /**
+     * Build drop schema SQL.
+     *
+     * @param schemaName schema name
+     * @return drop schema SQL
+     */
+    public Optional<String> buildDropSchemaSQL(final String schemaName) {
+        return dialectSQLBuilder.buildDropSchemaSQL(sqlSegmentBuilder.getEscapedIdentifier(schemaName));
+    }
+    
+    /**
      * Build drop SQL.
      *
      * @param schemaName schema name

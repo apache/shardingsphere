@@ -35,6 +35,11 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
     }
     
     @Override
+    public Optional<String> buildDropSchemaSQL(final String schemaName) {
+        return Optional.of(String.format("DROP SCHEMA IF EXISTS %s", schemaName));
+    }
+    
+    @Override
     public Optional<String> buildInsertOnDuplicateClause(final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder("ON DUPLICATE KEY UPDATE ");
         PipelineSQLSegmentBuilder sqlSegmentBuilder = new PipelineSQLSegmentBuilder(getType());
