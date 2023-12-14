@@ -1,6 +1,6 @@
 +++
 title = "SHADOW"
-weight = 1
+weight = 8
 chapter = true
 +++
 
