@@ -51,6 +51,24 @@ public final class AddressRepository {
     }
     
     /**
+     * create table t_address in MS SQL Server.
+     * This also ignored the default schema of the `dbo`.
+     * @throws SQLException SQL exception
+     */
+    public void createTableInSQLServer() throws SQLException {
+        String sql = "CREATE TABLE [t_address] (\n"
+                + "    address_id bigint NOT NULL,\n"
+                + "    address_name varchar(100) NOT NULL,\n"
+                + "    PRIMARY KEY (address_id)\n"
+                + ");";
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+    
+    /**
      * drop table t_address.
      * @throws SQLException SQL exception
      */

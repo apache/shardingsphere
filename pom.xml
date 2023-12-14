@@ -1078,6 +1078,9 @@
                             <version>${native-maven-plugin.version}</version>
                             <extensions>true</extensions>
                             <configuration>
+                                <buildArgs>
+                                    <buildArg>-H:+AddAllCharsets</buildArg>
+                                </buildArgs>
                                 <classesDirectory>${project.build.outputDirectory}</classesDirectory>
                                 <metadataRepository>
                                     <enabled>true</enabled>

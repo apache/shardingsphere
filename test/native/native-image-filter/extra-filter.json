@@ -20,7 +20,7 @@
     {"excludeClasses": "com.ibm.icu.text.**"},
     {"excludeClasses": "com.mysql.cj.**"},
     {"excludeClasses": "com.zaxxer.hikari.**"},
-    {"excludeClasses": "javax.xml.bind.annotation.**"},
+    {"excludeClasses": "javax.xml.**"},
     {"excludeClasses": "groovy.**"},
     {"excludeClasses": "org.apache.calcite.**"},
     {"excludeClasses": "org.codehaus.groovy.**"},

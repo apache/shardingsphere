@@ -41,6 +41,9 @@ ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 
                 <version>0.9.28</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <buildArgs>
+                        <buildArg>-H:+AddAllCharsets</buildArg>
+                    </buildArgs>
                     <metadataRepository>
                         <enabled>true</enabled>
                     </metadataRepository>
@@ -74,17 +77,25 @@ ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 
 
 ```groovy
 plugins {
-    id 'org.graalvm.buildtools.native' version '0.9.28'
+   id 'org.graalvm.buildtools.native' version '0.9.28'
 }
 
 dependencies {
-    implementation 'org.apache.shardingsphere:shardingsphere-jdbc-core:${shardingsphere.version}'
+   implementation 'org.apache.shardingsphere:shardingsphere-jdbc-core:${shardingsphere.version}'
 }
 
 graalvmNative {
-    metadataRepository {
-        enabled = true
-    }
+   binaries {
+      main {
+         buildArgs.add('-H:+AddAllCharsets')
+      }
+      test {
+         buildArgs.add('-H:+AddAllCharsets')
+      }
+   }
+   metadataRepository {
+      enabled = true
+   }
 }
 ```
 
@@ -193,7 +204,21 @@ rules:
 文件的 GraalVM Reachability Metadata。使用者可通过 GraalVM Native Build Tools 的 GraalVM Tracing Agent 来快速采集 GraalVM 
 Reachability Metadata。
 
-4. 尚未验证 DistSQL 的可用性。使用者需自行添加额外的 GraalVM Reachability Metadata。
+4. 以 MS SQL Server 的 JDBC Driver 为代表的 `com.microsoft.sqlserver:mssql-jdbc` 等 Maven 模块会根据数据库中使用的编码动态加载不同的字符集，这是不可预测的行为。
+当遇到如下 Error，使用者需要添加 `-H:+AddAllCharsets` 的 `buildArg` 到 GraalVM Native Build Tools 的配置中。
+
+```shell
+Caused by: java.io.UnsupportedEncodingException: SQL Server collation SQL_Latin1_General_CP1_CI_AS is not supported by this driver.
+ com.microsoft.sqlserver.jdbc.SQLCollation.encodingFromSortId(SQLCollation.java:506)
+ com.microsoft.sqlserver.jdbc.SQLCollation.<init>(SQLCollation.java:63)
+ com.microsoft.sqlserver.jdbc.SQLServerConnection.processEnvChange(SQLServerConnection.java:3174)
+ [...]
+Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supported by the Java environment.
+ com.microsoft.sqlserver.jdbc.Encoding.checkSupported(SQLCollation.java:572)
+ com.microsoft.sqlserver.jdbc.SQLCollation$SortOrder.getEncoding(SQLCollation.java:473)
+ com.microsoft.sqlserver.jdbc.SQLCollation.encodingFromSortId(SQLCollation.java:501)
+ [...]
+```
 
 ## 贡献 GraalVM Reachability Metadata
 
