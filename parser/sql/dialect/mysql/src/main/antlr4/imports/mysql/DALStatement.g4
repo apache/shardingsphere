@@ -416,7 +416,7 @@ shutdown
     ;
 
 explainType
-    : FORMAT EQ_ formatName
+    : (FORMAT EQ_ formatName | EXTENDED | PARTITIONS)
     ;
     
 explainableStatement
