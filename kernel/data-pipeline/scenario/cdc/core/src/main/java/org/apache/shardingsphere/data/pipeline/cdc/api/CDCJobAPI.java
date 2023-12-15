@@ -69,6 +69,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,9 +134,11 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     
     private YamlCDCJobConfiguration getYamlCDCJobConfiguration(final StreamDataParameter param, final CDCSinkType sinkType, final Properties sinkProps, final PipelineContextKey contextKey) {
         YamlCDCJobConfiguration result = new YamlCDCJobConfiguration();
-        result.setJobId(PipelineJobIdUtils.marshal(new CDCJobId(contextKey, param.getSchemaTableNames(), param.isFull())));
+        List<String> schemaTableNames = param.getSchemaTableNames();
+        Collections.sort(schemaTableNames);
+        result.setJobId(PipelineJobIdUtils.marshal(new CDCJobId(contextKey, schemaTableNames, param.isFull())));
         result.setDatabaseName(param.getDatabaseName());
-        result.setSchemaTableNames(param.getSchemaTableNames());
+        result.setSchemaTableNames(schemaTableNames);
         result.setFull(param.isFull());
         result.setDecodeWithTX(param.isDecodeWithTX());
         YamlSinkConfiguration sinkConfig = new YamlSinkConfiguration();
