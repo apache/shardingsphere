@@ -120,12 +120,11 @@ public final class CDCJobPreparer {
         TransmissionProcessContext processContext = jobItemContext.getJobProcessContext();
         for (InventoryDumperContext each : new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), new InventoryDumperContext(taskConfig.getDumperContext().getCommonContext()), importerConfig)
                 .splitInventoryDumperContext(jobItemContext)) {
-            if (each.getCommonContext().getPosition() instanceof FinishedPosition) {
-                continue;
-            }
             AtomicReference<IngestPosition> position = new AtomicReference<>(each.getCommonContext().getPosition());
             PipelineChannel channel = PipelineTaskUtils.createInventoryChannel(processContext.getPipelineChannelCreator(), importerConfig.getBatchSize(), position);
-            channelProgressPairs.add(new CDCChannelProgressPair(channel, jobItemContext));
+            if (!(position.get() instanceof FinishedPosition)) {
+                channelProgressPairs.add(new CDCChannelProgressPair(channel, jobItemContext));
+            }
             Dumper dumper = new InventoryDumper(each, channel, jobItemContext.getSourceDataSource(), jobItemContext.getSourceMetaDataLoader());
             Importer importer = importerUsed.get() ? null
                     : new CDCImporter(channelProgressPairs, importerConfig.getBatchSize(), 3, TimeUnit.SECONDS, jobItemContext.getSink(),
@@ -133,7 +132,9 @@ public final class CDCJobPreparer {
                             importerConfig.getRateLimitAlgorithm());
             jobItemContext.getInventoryTasks().add(new CDCInventoryTask(PipelineTaskUtils.generateInventoryTaskId(each), processContext.getInventoryDumperExecuteEngine(),
                     processContext.getInventoryImporterExecuteEngine(), dumper, importer, position));
-            importerUsed.set(true);
+            if (!(position.get() instanceof FinishedPosition)) {
+                importerUsed.set(true);
+            }
         }
         log.info("initInventoryTasks cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }

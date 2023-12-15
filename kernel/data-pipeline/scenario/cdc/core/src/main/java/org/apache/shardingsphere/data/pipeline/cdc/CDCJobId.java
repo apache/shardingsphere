@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * CDC job id.
@@ -36,7 +36,7 @@ public final class CDCJobId implements PipelineJobId {
     
     private final PipelineContextKey contextKey;
     
-    private final Set<String> schemaTableNames;
+    private final List<String> schemaTableNames;
     
     private final boolean full;
 }
