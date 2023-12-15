@@ -19,10 +19,9 @@ package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
 
 import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.preparer.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.preparer.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.AbstractDataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 
 import java.sql.Connection;
@@ -35,17 +34,6 @@ import java.sql.SQLException;
 public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePreparer {
     
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
-    
-    @Override
-    public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) {
-        try {
-            super.prepareTargetSchemas(param);
-        } catch (final SQLException ex) {
-            // openGauss CREATE SCHEMA doesn't support IF NOT EXISTS
-            // TODO Use actual data source to create schema, check whether schema exists or not
-            log.warn("create schema failed", ex);
-        }
-    }
     
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter param) throws SQLException {
@@ -72,6 +60,11 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
             }
             throw ex;
         }
+    }
+    
+    @Override
+    public boolean isSupportIfNotExistsOnCreateSchema() {
+        return false;
     }
     
     @Override

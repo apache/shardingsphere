@@ -45,4 +45,13 @@ public interface DataSourcePreparer extends DatabaseTypedSPI {
      * @throws SQLException SQL exception
      */
     void prepareTargetTables(PrepareTargetTablesParameter param) throws SQLException;
+    
+    /**
+     * Is support if not exists on create schema SQL.
+     * 
+     * @return supported or not
+     */
+    default boolean isSupportIfNotExistsOnCreateSchema() {
+        return true;
+    }
 }
