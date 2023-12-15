@@ -1770,7 +1770,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             return projection;
         }
         if (projection instanceof CaseWhenExpression || projection instanceof VariableSegment || projection instanceof BetweenExpression || projection instanceof InExpression
-                || projection instanceof CollateExpression) {
+                || projection instanceof CollateExpression || projection instanceof NotExpression) {
             return createExpressionProjectionSegment(ctx, alias, projection);
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
