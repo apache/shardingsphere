@@ -998,4 +998,17 @@
             </model>
         </select>
     </describe>
+    
+    <describe sql-case-id="explain_with_select_comment">
+        <select>
+            <projections start-index="78" stop-index="78">
+                <shorthand-projection start-index="78" stop-index="78" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="85" stop-index="91" />
+            </from>
+        </select>
+        <comment start-index="0" stop-index="19" text="/*FORCE_IMCI_NODES*/" />
+        <comment start-index="36" stop-index="76" text="/*+ SET_VAR(cost_threshold_for_imci=0) */" />
+    </describe>
 </sql-parser-test-cases>
