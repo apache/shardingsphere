@@ -17,7 +17,7 @@
 
 grammar BaseRule;
 
-import Symbol, Keyword, MySQLKeyword, Literals;
+import Comments, Symbol, Keyword, MySQLKeyword, Literals;
 
 parameterMarker
     : QUESTION_
