@@ -31,7 +31,7 @@ class CDCJobIdTest {
     
     @Test
     void assertParseJobType() {
-        String jobId = PipelineJobIdUtils.marshal(new CDCJobId(new PipelineContextKey("sharding_db", InstanceType.PROXY), Collections.singletonList("foo"), true));
+        String jobId = PipelineJobIdUtils.marshal(new CDCJobId(new PipelineContextKey("sharding_db", InstanceType.PROXY), Collections.singleton("foo"), true));
         assertThat(PipelineJobIdUtils.parseJobType(jobId), instanceOf(CDCJobType.class));
     }
 }

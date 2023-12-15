@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Stream data parameter.
@@ -33,7 +34,7 @@ public final class StreamDataParameter {
     
     private final String databaseName;
     
-    private final List<String> schemaTableNames;
+    private final Set<String> schemaTableNames;
     
     private final boolean full;
     
