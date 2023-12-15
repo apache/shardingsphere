@@ -1,6 +1,6 @@
 +++
-title = "SHADOW"
-weight = 8
+title = "Shadow"
+weight = 5
 chapter = true
 +++
 

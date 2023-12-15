@@ -1,6 +1,6 @@
 +++
 title = "SHOW KEY GENERATE ALGORITHM IMPLEMENTATIONS"
-weight = 14
+weight = 6
 +++
 
 ### Description

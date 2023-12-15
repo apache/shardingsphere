@@ -1,6 +1,6 @@
 +++
-title = "SHARDING"
-weight = 4
+title = "Sharding"
+weight = 1
 chapter = true
 +++
 

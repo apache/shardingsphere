@@ -1,16 +1,16 @@
 +++
 title = "SHOW IMPLEMENTATIONS OF `service provider interface`"
-weight = 15
+weight = 7
 +++
 
-### Description
+### 描述
 
-The `SHOW IMPLEMENTATIONS OF 'service provider interface'` syntax is used to query all the implementations of a `SPI`.
+`SHOW IMPLEMENTATIONS OF 'service provider interface'` 语法用于查询指定的 `SPI` 接口所有具体的实现类。
 
-### Syntax
+### 语法
 
 {{< tabs >}}
-{{% tab name="Grammar" %}}
+{{% tab name="语法" %}}
 ```sql
 showServiceProviderImplementations ::=
   'SHOW' 'IMPLEMENTATIONS' 'OF' serviceProviderInterface
@@ -19,22 +19,22 @@ serviceProviderInterface ::=
   identifier | string
 ```
 {{% /tab %}}
-{{% tab name="Railroad diagram" %}}
+{{% tab name="铁路图" %}}
 <iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
 {{% /tab %}}
 {{< /tabs >}}
 
-### Return Value Description
+### 返回值说明
 
-| Columns     | Description                           |
-|-------------|---------------------------------------|
-| name        | class name of the implementation      |
-| type        | type of the implementation            |
-| class_path  | full class name of the implementation |
+| 列    | 说明      |
+|------|---------|
+| name | 实现类名称   |
+| type | 类型      |
+| class_path | 实现类完整路径 |
 
-### Example
+### 示例
 
-- Query all the implementations for `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` interface
+- 查询 `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm` 接口的所有实现类
 
 ```sql
 SHOW IMPLEMENTATIONS OF 'org.apache.shardingsphere.sharding.spi.ShardingAlgorithm'
@@ -59,10 +59,10 @@ SHOW IMPLEMENTATIONS OF 'org.apache.shardingsphere.sharding.spi.ShardingAlgorith
 10 rows in set (0.52 sec)
 ```
 
-### Reserved word
+### 保留字
 
 `SHOW`、`IMPLEMENTATIONS`、`OF`
 
-### Related links
+### 相关链接
 
-- [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [保留字](/cn/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)

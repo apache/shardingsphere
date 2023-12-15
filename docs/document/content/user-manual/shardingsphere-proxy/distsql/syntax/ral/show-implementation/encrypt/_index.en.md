@@ -1,6 +1,6 @@
 +++
-title = "ENCRYPT"
-weight = 6
+title = "Encrypt"
+weight = 3
 chapter = true
 +++
 
