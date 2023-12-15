@@ -63,7 +63,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
     }
     
     @Override
-    public boolean isSupportIfNotExists() {
+    public boolean isSupportIfNotExistsOnCreateSchema() {
         return false;
     }
     

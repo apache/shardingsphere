@@ -51,7 +51,7 @@ public interface DataSourcePreparer extends DatabaseTypedSPI {
      * 
      * @return supported or not
      */
-    default boolean isSupportIfNotExists() {
+    default boolean isSupportIfNotExistsOnCreateSchema() {
         return true;
     }
 }

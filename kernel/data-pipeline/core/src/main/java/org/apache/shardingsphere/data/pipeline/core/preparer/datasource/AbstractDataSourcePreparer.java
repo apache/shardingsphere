@@ -78,7 +78,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
                 Statement statement = connection.createStatement()) {
             statement.execute(sql);
         } catch (final SQLException ex) {
-            if (isSupportIfNotExists()) {
+            if (isSupportIfNotExistsOnCreateSchema()) {
                 throw ex;
             }
             log.warn("create schema failed", ex);
