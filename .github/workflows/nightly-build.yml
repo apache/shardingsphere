@@ -39,7 +39,7 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   upload-to-nightlies:
-    if: github.repository == 'apache/shardingsphere'
+    # if: github.repository == 'apache/shardingsphere'
     name: Upload to Nightly Builds
     needs: global-environment
     runs-on: ubuntu-latest
@@ -71,7 +71,7 @@ jobs:
           remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
 
   build-proxy-image:
-    if: github.repository == 'apache/shardingsphere'
+    # if: github.repository == 'apache/shardingsphere'
     name: Build Proxy Image
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
@@ -106,7 +106,7 @@ jobs:
         run: ./mvnw -am -pl distribution/proxy -B -Prelease,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
 
   build-proxy-native-image:
-    if: github.repository == 'apache/shardingsphere'
+    # if: github.repository == 'apache/shardingsphere'
     name: Build GraalVM Native Image
     timeout-minutes: 90
     permissions:
@@ -139,7 +139,7 @@ jobs:
           ./mvnw -am -pl distribution/proxy-native -Prelease.native,docker.buildx.push.native -B -T1C -DskipTests -Dproxy.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.image.tag=${{ github.sha }} clean package
 
   build-cache:
-    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
+    # if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
     name: Build Project
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
