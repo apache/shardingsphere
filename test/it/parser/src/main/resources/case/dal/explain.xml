@@ -65,9 +65,9 @@
     
     <describe sql-case-id="explain_partitions_select">
         <select>
-            <projections start-index="24" stop-index="24">
-                <expression-projection text="1" start-index="24" stop-index="24">
-                    <literal-expression value="1" start-index="24" stop-index="24" />
+            <projections start-index="26" stop-index="26">
+                <expression-projection text="1" start-index="26" stop-index="26">
+                    <literal-expression value="1" start-index="26" stop-index="26" />
                 </expression-projection>
             </projections>
         </select>
