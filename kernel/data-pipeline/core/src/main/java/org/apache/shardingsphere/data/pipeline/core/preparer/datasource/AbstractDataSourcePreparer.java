@@ -49,7 +49,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
     @Override
-    public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) throws SQLException {
+    public final void prepareTargetSchemas(final PrepareTargetSchemasParameter param) throws SQLException {
         DatabaseType targetDatabaseType = param.getTargetDatabaseType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(targetDatabaseType).getDialectDatabaseMetaData();
         if (!dialectDatabaseMetaData.isSchemaAvailable()) {
@@ -77,6 +77,11 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
                 Connection connection = dataSourceManager.getDataSource(targetDataSourceConfig).getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute(sql);
+        } catch (final SQLException ex) {
+            if (isSupportIfNotExists()) {
+                throw ex;
+            }
+            log.warn("create schema failed", ex);
         }
     }
     
