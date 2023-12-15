@@ -2251,4 +2251,45 @@
             <primary-key-column name="doc_id" start-index="183" stop-index="188" />
         </constraint-definition>
     </create-table>
+    
+    <create-table sql-case-id="create_table_ref_type1">
+        <table name="departments_t" start-index="13" stop-index="25" />
+        <column-definition type="NUMBER" start-index="28" stop-index="38">
+            <column name="d_no" start-index="28" stop-index="31" />
+        </column-definition>
+        <column-definition type="employees_typ" start-index="41" stop-index="90">
+            <column name="mgr_ref" start-index="41" stop-index="47" />
+            <referenced-table name="employees_obj_t" start-index="76" stop-index="90" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_ref_type2">
+        <table name="departments_t" start-index="13" stop-index="25" />
+        <column-definition type="NUMBER" start-index="28" stop-index="38">
+            <column name="d_no" start-index="28" stop-index="31" />
+        </column-definition>
+        <column-definition type="employees_typ" start-index="41" stop-index="114">
+            <column name="mgr_ref" start-index="41" stop-index="47" />
+            <referenced-table name="employees_obj_t" start-index="100" stop-index="114" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_partition_by_range_subpartitions">
+        <table name="customers_part" start-index="13" stop-index="26" />
+        <column-definition type="NUMBER" start-index="33" stop-index="59">
+            <column name="customer_id" start-index="33" stop-index="43" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="66" stop-index="96">
+            <column name="cust_first_name" start-index="66" stop-index="80" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="103" stop-index="133">
+            <column name="cust_last_name" start-index="103" stop-index="116" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="140" stop-index="170">
+            <column name="nls_territory" start-index="140" stop-index="152" />
+        </column-definition>
+        <column-definition type="NUMBER" start-index="177" stop-index="206">
+            <column name="credit_limit" start-index="177" stop-index="188" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>
