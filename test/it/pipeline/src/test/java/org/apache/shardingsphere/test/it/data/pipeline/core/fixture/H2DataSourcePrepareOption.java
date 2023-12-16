@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePrepareOption;
 
 /**
- * Data source preparer for MySQL.
+ * Data source prepare option for H2.
  */
-public final class MySQLDataSourcePreparer implements DataSourcePreparer {
+public final class H2DataSourcePrepareOption implements DataSourcePrepareOption {
     
     @Override
     public String getDatabaseType() {
-        return "MySQL";
+        return "H2";
     }
 }

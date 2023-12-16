@@ -15,17 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePreparer;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Data source preparer for H2.
+ * Data source prepare option.
  */
-public final class H2DataSourcePreparer implements DataSourcePreparer {
+@SingletonSPI
+public interface DataSourcePrepareOption extends DatabaseTypedSPI {
     
-    @Override
-    public String getDatabaseType() {
-        return "H2";
+    /**
+     * Is support if not exists on create schema SQL.
+     * 
+     * @return supported or not
+     */
+    default boolean isSupportIfNotExistsOnCreateSchema() {
+        return true;
+    }
+    
+    /**
+     * Get ignored exception messages.
+     *
+     * @return ignored exception messages
+     */
+    default Collection<String> getIgnoredExceptionMessages() {
+        return Collections.emptyList();
     }
 }

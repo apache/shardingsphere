@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource.OpenGaussDataSourcePreparer
+org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource.MySQLDataSourcePrepareOption

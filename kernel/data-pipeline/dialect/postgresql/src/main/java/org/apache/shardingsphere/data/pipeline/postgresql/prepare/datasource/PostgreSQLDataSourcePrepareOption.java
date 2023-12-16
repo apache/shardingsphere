@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource;
 
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePrepareOption;
 
 /**
- * Data source preparer for PostgreSQL.
+ * Data source prepare option for PostgreSQL.
  */
-public final class PostgreSQLDataSourcePreparer implements DataSourcePreparer {
+public final class PostgreSQLDataSourcePrepareOption implements DataSourcePrepareOption {
     
     @Override
     public String getDatabaseType() {

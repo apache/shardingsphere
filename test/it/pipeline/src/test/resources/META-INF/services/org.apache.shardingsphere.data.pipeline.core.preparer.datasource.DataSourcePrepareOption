@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.it.data.pipeline.core.fixture.H2DataSourcePreparer
+org.apache.shardingsphere.test.it.data.pipeline.core.fixture.H2DataSourcePrepareOption
