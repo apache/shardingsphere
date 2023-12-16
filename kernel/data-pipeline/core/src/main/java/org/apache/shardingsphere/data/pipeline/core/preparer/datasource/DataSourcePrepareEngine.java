@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
 import com.google.common.base.Splitter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.preparer.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
+import org.apache.shardingsphere.data.pipeline.core.preparer.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineCommonSQLBuilder;
@@ -41,17 +42,25 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
- * Abstract data source preparer.
+ * Data source prepare engine.
  */
+@RequiredArgsConstructor
 @Slf4j
-public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
+public final class DataSourcePrepareEngine {
     
     private static final Pattern PATTERN_CREATE_TABLE_IF_NOT_EXISTS = Pattern.compile("CREATE\\s+TABLE\\s+IF\\s+NOT\\s+EXISTS\\s+", Pattern.CASE_INSENSITIVE);
     
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
-    @Override
-    public final void prepareTargetSchemas(final PrepareTargetSchemasParameter param) throws SQLException {
+    private final DataSourcePreparer dataSourcePreparer;
+    
+    /**
+     * Prepare target schemas.
+     *
+     * @param param prepare target schemas parameter
+     * @throws SQLException if prepare target schema fail
+     */
+    public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) throws SQLException {
         DatabaseType targetDatabaseType = param.getTargetDatabaseType();
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(targetDatabaseType).getDialectDatabaseMetaData();
         if (!dialectDatabaseMetaData.isSchemaAvailable()) {
@@ -80,15 +89,20 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
                 Statement statement = connection.createStatement()) {
             statement.execute(sql);
         } catch (final SQLException ex) {
-            if (isSupportIfNotExistsOnCreateSchema()) {
+            if (dataSourcePreparer.isSupportIfNotExistsOnCreateSchema()) {
                 throw ex;
             }
             log.warn("create schema failed", ex);
         }
     }
     
-    @Override
-    public final void prepareTargetTables(final PrepareTargetTablesParameter param) throws SQLException {
+    /**
+     * Prepare target tables.
+     *
+     * @param param prepare target tables parameter
+     * @throws SQLException SQL exception
+     */
+    public void prepareTargetTables(final PrepareTargetTablesParameter param) throws SQLException {
         PipelineDataSourceManager dataSourceManager = param.getDataSourceManager();
         for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
             String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine());
@@ -105,7 +119,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
         } catch (final SQLException ex) {
-            for (String each : getIgnoredExceptionMessages()) {
+            for (String each : dataSourcePreparer.getIgnoredExceptionMessages()) {
                 if (ex.getMessage().contains(each)) {
                     return;
                 }
@@ -115,14 +129,11 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     }
     
     private String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
-        if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
-            return createTableSQL;
-        }
-        return PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
+        return PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find() ? createTableSQL : PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
     }
     
     private String getCreateTargetTableSQL(final CreateTableConfiguration createTableConfig, final PipelineDataSourceManager dataSourceManager,
-                                                   final SQLParserEngine sqlParserEngine) throws SQLException {
+                                           final SQLParserEngine sqlParserEngine) throws SQLException {
         DatabaseType databaseType = createTableConfig.getSourceDataSourceConfig().getDatabaseType();
         DataSource sourceDataSource = dataSourceManager.getDataSource(createTableConfig.getSourceDataSourceConfig());
         String schemaName = createTableConfig.getSourceName().getSchemaName().toString();

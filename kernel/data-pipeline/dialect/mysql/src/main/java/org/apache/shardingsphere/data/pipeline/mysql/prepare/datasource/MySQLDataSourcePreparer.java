@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
 
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.AbstractDataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePreparer;
 
 /**
  * Data source preparer for MySQL.
  */
-public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
+public final class MySQLDataSourcePreparer implements DataSourcePreparer {
     
     @Override
     public String getDatabaseType() {

@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -31,22 +28,6 @@ import java.util.Collections;
  */
 @SingletonSPI
 public interface DataSourcePreparer extends DatabaseTypedSPI {
-    
-    /**
-     * Prepare target schemas.
-     *
-     * @param param prepare target schemas parameter
-     * @throws SQLException if prepare target schema fail
-     */
-    void prepareTargetSchemas(PrepareTargetSchemasParameter param) throws SQLException;
-    
-    /**
-     * Prepare target tables.
-     *
-     * @param param prepare target tables parameter
-     * @throws SQLException SQL exception
-     */
-    void prepareTargetTables(PrepareTargetTablesParameter param) throws SQLException;
     
     /**
      * Is support if not exists on create schema SQL.

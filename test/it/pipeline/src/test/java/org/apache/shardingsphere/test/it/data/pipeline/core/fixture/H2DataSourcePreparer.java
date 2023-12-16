@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.AbstractDataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePreparer;
 
 /**
  * Data source preparer for H2.
  */
-public final class H2DataSourcePreparer extends AbstractDataSourcePreparer {
+public final class H2DataSourcePreparer implements DataSourcePreparer {
     
     @Override
     public String getDatabaseType() {
