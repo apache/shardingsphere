@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
+import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.preparer.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -85,28 +87,47 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
     }
     
-    protected void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
-        log.info("Execute target table SQL: {}", sql);
-        try (Statement statement = targetConnection.createStatement()) {
-            statement.execute(sql);
+    @Override
+    public final void prepareTargetTables(final PrepareTargetTablesParameter param) throws SQLException {
+        PipelineDataSourceManager dataSourceManager = param.getDataSourceManager();
+        for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
+            String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine());
+            try (Connection targetConnection = dataSourceManager.getDataSource(each.getTargetDataSourceConfig()).getConnection()) {
+                for (String sql : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(createTargetTableSQL)) {
+                    executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(sql));
+                }
+            }
         }
     }
     
-    protected final String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
+    private void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
+        log.info("Execute target table SQL: {}", sql);
+        try (Statement statement = targetConnection.createStatement()) {
+            statement.execute(sql);
+        } catch (final SQLException ex) {
+            for (String each : getIgnoredExceptionMessages()) {
+                if (ex.getMessage().contains(each)) {
+                    return;
+                }
+            }
+            throw ex;
+        }
+    }
+    
+    private String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
             return createTableSQL;
         }
         return PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
     }
     
-    protected final String getCreateTargetTableSQL(final CreateTableConfiguration createTableConfig, final PipelineDataSourceManager dataSourceManager,
+    private String getCreateTargetTableSQL(final CreateTableConfiguration createTableConfig, final PipelineDataSourceManager dataSourceManager,
                                                    final SQLParserEngine sqlParserEngine) throws SQLException {
         DatabaseType databaseType = createTableConfig.getSourceDataSourceConfig().getDatabaseType();
         DataSource sourceDataSource = dataSourceManager.getDataSource(createTableConfig.getSourceDataSourceConfig());
         String schemaName = createTableConfig.getSourceName().getSchemaName().toString();
         String sourceTableName = createTableConfig.getSourceName().getTableName().toString();
         String targetTableName = createTableConfig.getTargetName().getTableName().toString();
-        PipelineDDLGenerator generator = new PipelineDDLGenerator();
-        return generator.generateLogicDDL(databaseType, sourceDataSource, schemaName, sourceTableName, targetTableName, sqlParserEngine);
+        return new PipelineDDLGenerator().generateLogicDDL(databaseType, sourceDataSource, schemaName, sourceTableName, targetTableName, sqlParserEngine);
     }
 }

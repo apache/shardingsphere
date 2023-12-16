@@ -17,32 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource;
 
-import com.google.common.base.Splitter;
-import org.apache.shardingsphere.data.pipeline.core.preparer.CreateTableConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.AbstractDataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
-
-import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Data source preparer for PostgreSQL.
  */
 public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePreparer {
-    
-    @Override
-    public void prepareTargetTables(final PrepareTargetTablesParameter param) throws SQLException {
-        PipelineDataSourceManager dataSourceManager = param.getDataSourceManager();
-        for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
-            String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine());
-            try (Connection targetConnection = dataSourceManager.getDataSource(each.getTargetDataSourceConfig()).getConnection()) {
-                for (String sql : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(createTargetTableSQL)) {
-                    executeTargetTableSQL(targetConnection, sql);
-                }
-            }
-        }
-    }
     
     @Override
     public String getDatabaseType() {

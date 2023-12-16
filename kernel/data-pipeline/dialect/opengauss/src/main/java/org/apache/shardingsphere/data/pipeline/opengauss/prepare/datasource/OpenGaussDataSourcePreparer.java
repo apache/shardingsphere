@@ -17,15 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
 
-import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.preparer.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.AbstractDataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Data source preparer for openGauss.
@@ -33,38 +29,14 @@ import java.sql.SQLException;
 @Slf4j
 public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePreparer {
     
-    private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
-    
-    @Override
-    public void prepareTargetTables(final PrepareTargetTablesParameter param) throws SQLException {
-        PipelineDataSourceManager dataSourceManager = param.getDataSourceManager();
-        for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
-            String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine());
-            try (Connection targetConnection = dataSourceManager.getDataSource(each.getTargetDataSourceConfig()).getConnection()) {
-                for (String sql : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(createTargetTableSQL)) {
-                    executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(sql));
-                }
-            }
-        }
-    }
-    
-    @Override
-    protected void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
-        try {
-            super.executeTargetTableSQL(targetConnection, sql);
-        } catch (final SQLException ex) {
-            for (String ignoreMessage : IGNORE_EXCEPTION_MESSAGE) {
-                if (ex.getMessage().contains(ignoreMessage)) {
-                    return;
-                }
-            }
-            throw ex;
-        }
-    }
-    
     @Override
     public boolean isSupportIfNotExistsOnCreateSchema() {
         return false;
+    }
+    
+    @Override
+    public Collection<String> getIgnoredExceptionMessages() {
+        return Arrays.asList("multiple primary keys for table", "already exists");
     }
     
     @Override
