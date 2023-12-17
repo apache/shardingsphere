@@ -70,13 +70,13 @@ public final class PipelineJobPreparer {
     /**
      * Prepare target schema.
      *
-     * @param prepareTargetSchemasParam prepare target schemas parameter
+     * @param param prepare target schemas parameter
      * @throws SQLException if prepare target schema fail
      */
-    public void prepareTargetSchema(final PrepareTargetSchemasParameter prepareTargetSchemasParam) throws SQLException {
+    public void prepareTargetSchema(final PrepareTargetSchemasParameter param) throws SQLException {
         DialectPipelineJobDataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)
                 .orElseGet(() -> DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, null));
-        new PipelineJobDataSourcePreparer(option).prepareTargetSchemas(prepareTargetSchemasParam);
+        new PipelineJobDataSourcePreparer(option).prepareTargetSchemas(param);
     }
     
     /**
