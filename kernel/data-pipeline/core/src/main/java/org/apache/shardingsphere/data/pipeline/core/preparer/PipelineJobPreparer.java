@@ -61,7 +61,7 @@ public final class PipelineJobPreparer {
     /**
      * Is incremental supported.
      *
-     * @return true if supported, otherwise false
+     * @return support incremental or not
      */
     public boolean isIncrementalSupported() {
         return DatabaseTypedSPILoader.findService(IncrementalDumperCreator.class, databaseType).map(IncrementalDumperCreator::isSupportIncrementalDump).orElse(false);
