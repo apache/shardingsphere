@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer;
+package org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
 
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQual
  */
 @RequiredArgsConstructor
 @Getter
-@ToString(exclude = {"sourceDataSourceConfig", "targetDataSourceConfig"})
 public final class CreateTableConfiguration {
     
     private final PipelineDataSourceConfiguration sourceDataSourceConfig;
