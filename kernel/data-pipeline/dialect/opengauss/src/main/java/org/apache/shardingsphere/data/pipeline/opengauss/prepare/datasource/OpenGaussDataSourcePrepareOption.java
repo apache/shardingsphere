@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DialectDataSourcePrepareOption;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectDataSourcePrepareOption;
 
 import java.util.Arrays;
 import java.util.Collection;

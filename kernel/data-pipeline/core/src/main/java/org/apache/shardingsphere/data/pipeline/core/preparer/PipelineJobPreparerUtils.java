@@ -31,7 +31,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositi
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourceCheckEngine;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DialectDataSourcePrepareOption;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectDataSourcePrepareOption;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
