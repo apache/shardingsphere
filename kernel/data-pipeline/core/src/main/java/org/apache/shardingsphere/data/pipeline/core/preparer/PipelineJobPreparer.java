@@ -56,7 +56,7 @@ import java.util.Optional;
 @Slf4j
 public final class PipelineJobPreparer {
     
-    private final DatabaseType databaseType; 
+    private final DatabaseType databaseType;
     
     /**
      * Is incremental supported.
