@@ -30,8 +30,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.Increm
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.checker.DataSourceCheckEngine;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectDataSourcePrepareOption;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PipelineJobDataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectPipelineJobDataSourcePrepareOption;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
@@ -76,9 +76,9 @@ public final class PipelineJobPreparerUtils {
      * @throws SQLException if prepare target schema fail
      */
     public static void prepareTargetSchema(final DatabaseType databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParam) throws SQLException {
-        DialectDataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DialectDataSourcePrepareOption.class, databaseType)
-                .orElseGet(() -> DatabaseTypedSPILoader.getService(DialectDataSourcePrepareOption.class, null));
-        new DataSourcePreparer(option).prepareTargetSchemas(prepareTargetSchemasParam);
+        DialectPipelineJobDataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)
+                .orElseGet(() -> DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, null));
+        new PipelineJobDataSourcePreparer(option).prepareTargetSchemas(prepareTargetSchemasParam);
     }
     
     /**
@@ -102,10 +102,10 @@ public final class PipelineJobPreparerUtils {
      * @throws SQLException SQL exception
      */
     public static void prepareTargetTables(final DatabaseType databaseType, final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
-        DialectDataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DialectDataSourcePrepareOption.class, databaseType)
-                .orElseGet(() -> DatabaseTypedSPILoader.getService(DialectDataSourcePrepareOption.class, null));
+        DialectPipelineJobDataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)
+                .orElseGet(() -> DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, null));
         long startTimeMillis = System.currentTimeMillis();
-        new DataSourcePreparer(option).prepareTargetTables(prepareTargetTablesParam);
+        new PipelineJobDataSourcePreparer(option).prepareTargetTables(prepareTargetTablesParam);
         log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     

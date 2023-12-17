@@ -21,9 +21,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Default data source prepare option.
+ * Default pipeline job data source prepare option.
  */
-public final class DefaultDataSourcePrepareOption implements DialectDataSourcePrepareOption {
+public final class DefaultPipelineJobDataSourcePrepareOption implements DialectPipelineJobDataSourcePrepareOption {
     
     @Override
     public boolean isSupportIfNotExistsOnCreateSchema() {

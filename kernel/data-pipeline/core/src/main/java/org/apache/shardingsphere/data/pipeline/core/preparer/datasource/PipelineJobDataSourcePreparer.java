@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectDataSourcePrepareOption;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectPipelineJobDataSourcePrepareOption;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
@@ -43,17 +43,17 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
- * Data source preparer.
+ * Pipeline job data source preparer.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class DataSourcePreparer {
+public final class PipelineJobDataSourcePreparer {
     
     private static final Pattern PATTERN_CREATE_TABLE_IF_NOT_EXISTS = Pattern.compile("CREATE\\s+TABLE\\s+IF\\s+NOT\\s+EXISTS\\s+", Pattern.CASE_INSENSITIVE);
     
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
-    private final DialectDataSourcePrepareOption option;
+    private final DialectPipelineJobDataSourcePrepareOption option;
     
     /**
      * Prepare target schemas.

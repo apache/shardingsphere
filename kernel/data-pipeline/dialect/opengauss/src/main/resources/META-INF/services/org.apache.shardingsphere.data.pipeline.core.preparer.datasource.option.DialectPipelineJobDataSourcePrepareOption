@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DefaultDataSourcePrepareOption
+org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource.OpenGaussPipelineJobDataSourcePrepareOption

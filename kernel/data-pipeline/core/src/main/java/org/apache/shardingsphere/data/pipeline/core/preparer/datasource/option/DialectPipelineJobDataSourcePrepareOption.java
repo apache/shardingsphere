@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
+package org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectDataSourcePrepareOption;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Data source prepare option for openGauss.
+ * Dialect pipeline job data source prepare option.
  */
-@Slf4j
-public final class OpenGaussDataSourcePrepareOption implements DialectDataSourcePrepareOption {
+@SingletonSPI
+public interface DialectPipelineJobDataSourcePrepareOption extends DatabaseTypedSPI {
     
-    @Override
-    public boolean isSupportIfNotExistsOnCreateSchema() {
-        return false;
-    }
+    /**
+     * Is support if not exists on create schema SQL.
+     * 
+     * @return supported or not
+     */
+    boolean isSupportIfNotExistsOnCreateSchema();
     
-    @Override
-    public Collection<String> getIgnoredExceptionMessages() {
-        return Arrays.asList("multiple primary keys for table", "already exists");
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
-    }
+    /**
+     * Get ignored exception messages.
+     *
+     * @return ignored exception messages
+     */
+    Collection<String> getIgnoredExceptionMessages();
 }
