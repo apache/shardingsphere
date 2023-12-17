@@ -52,7 +52,7 @@ public final class DataSourcePreparer {
     
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
-    private final DataSourcePrepareOption option;
+    private final DialectDataSourcePrepareOption option;
     
     /**
      * Prepare target schemas.

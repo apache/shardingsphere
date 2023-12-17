@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import java.util.Collection;
 
 /**
- * Data source prepare option.
+ * Dialect data source prepare option.
  */
 @SingletonSPI
-public interface DataSourcePrepareOption extends DatabaseTypedSPI {
+public interface DialectDataSourcePrepareOption extends DatabaseTypedSPI {
     
     /**
      * Is support if not exists on create schema SQL.

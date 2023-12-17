@@ -31,7 +31,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositi
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourceCheckEngine;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePrepareOption;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DialectDataSourcePrepareOption;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
@@ -76,8 +76,8 @@ public final class PipelineJobPreparerUtils {
      * @throws SQLException if prepare target schema fail
      */
     public static void prepareTargetSchema(final DatabaseType databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParam) throws SQLException {
-        DataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DataSourcePrepareOption.class, databaseType)
-                .orElseGet(() -> DatabaseTypedSPILoader.getService(DataSourcePrepareOption.class, null));
+        DialectDataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DialectDataSourcePrepareOption.class, databaseType)
+                .orElseGet(() -> DatabaseTypedSPILoader.getService(DialectDataSourcePrepareOption.class, null));
         new DataSourcePreparer(option).prepareTargetSchemas(prepareTargetSchemasParam);
     }
     
@@ -102,8 +102,8 @@ public final class PipelineJobPreparerUtils {
      * @throws SQLException SQL exception
      */
     public static void prepareTargetTables(final DatabaseType databaseType, final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
-        DataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DataSourcePrepareOption.class, databaseType)
-                .orElseGet(() -> DatabaseTypedSPILoader.getService(DataSourcePrepareOption.class, null));
+        DialectDataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DialectDataSourcePrepareOption.class, databaseType)
+                .orElseGet(() -> DatabaseTypedSPILoader.getService(DialectDataSourcePrepareOption.class, null));
         long startTimeMillis = System.currentTimeMillis();
         new DataSourcePreparer(option).prepareTargetTables(prepareTargetTablesParam);
         log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);

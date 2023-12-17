@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePrepareOption;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DialectDataSourcePrepareOption;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +27,7 @@ import java.util.Collection;
  * Data source prepare option for openGauss.
  */
 @Slf4j
-public final class OpenGaussDataSourcePrepareOption implements DataSourcePrepareOption {
+public final class OpenGaussDataSourcePrepareOption implements DialectDataSourcePrepareOption {
     
     @Override
     public boolean isSupportIfNotExistsOnCreateSchema() {

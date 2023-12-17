@@ -23,7 +23,7 @@ import java.util.Collections;
 /**
  * Default data source prepare option.
  */
-public final class DefaultDataSourcePrepareOption implements DataSourcePrepareOption {
+public final class DefaultDataSourcePrepareOption implements DialectDataSourcePrepareOption {
     
     @Override
     public boolean isSupportIfNotExistsOnCreateSchema() {
