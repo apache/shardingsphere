@@ -17,10 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Default data source prepare option.
  */
 public final class DefaultDataSourcePrepareOption implements DataSourcePrepareOption {
+    
+    @Override
+    public boolean isSupportIfNotExistsOnCreateSchema() {
+        return true;
+    }
+    
+    @Override
+    public Collection<String> getIgnoredExceptionMessages() {
+        return Collections.emptyList();
+    }
     
     @Override
     public boolean isDefault() {

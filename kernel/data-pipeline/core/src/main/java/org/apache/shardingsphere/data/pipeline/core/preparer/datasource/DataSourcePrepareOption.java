@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Data source prepare option.
@@ -34,16 +33,12 @@ public interface DataSourcePrepareOption extends DatabaseTypedSPI {
      * 
      * @return supported or not
      */
-    default boolean isSupportIfNotExistsOnCreateSchema() {
-        return true;
-    }
+    boolean isSupportIfNotExistsOnCreateSchema();
     
     /**
      * Get ignored exception messages.
      *
      * @return ignored exception messages
      */
-    default Collection<String> getIgnoredExceptionMessages() {
-        return Collections.emptyList();
-    }
+    Collection<String> getIgnoredExceptionMessages();
 }
