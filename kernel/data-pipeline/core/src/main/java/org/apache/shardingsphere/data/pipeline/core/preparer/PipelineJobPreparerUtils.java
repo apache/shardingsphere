@@ -76,12 +76,9 @@ public final class PipelineJobPreparerUtils {
      * @throws SQLException if prepare target schema fail
      */
     public static void prepareTargetSchema(final DatabaseType databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParam) throws SQLException {
-        Optional<DataSourcePrepareOption> option = DatabaseTypedSPILoader.findService(DataSourcePrepareOption.class, databaseType);
-        if (!option.isPresent()) {
-            log.info("Data source preparer option null, ignore prepare target");
-            return;
-        }
-        new DataSourcePreparer(option.get()).prepareTargetSchemas(prepareTargetSchemasParam);
+        DataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DataSourcePrepareOption.class, databaseType)
+                .orElseGet(() -> DatabaseTypedSPILoader.getService(DataSourcePrepareOption.class, null));
+        new DataSourcePreparer(option).prepareTargetSchemas(prepareTargetSchemasParam);
     }
     
     /**
@@ -105,13 +102,10 @@ public final class PipelineJobPreparerUtils {
      * @throws SQLException SQL exception
      */
     public static void prepareTargetTables(final DatabaseType databaseType, final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
-        Optional<DataSourcePrepareOption> option = DatabaseTypedSPILoader.findService(DataSourcePrepareOption.class, databaseType);
-        if (!option.isPresent()) {
-            log.info("Data source preparer option null, ignore prepare target");
-            return;
-        }
+        DataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DataSourcePrepareOption.class, databaseType)
+                .orElseGet(() -> DatabaseTypedSPILoader.getService(DataSourcePrepareOption.class, null));
         long startTimeMillis = System.currentTimeMillis();
-        new DataSourcePreparer(option.get()).prepareTargetTables(prepareTargetTablesParam);
+        new DataSourcePreparer(option).prepareTargetTables(prepareTargetTablesParam);
         log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     

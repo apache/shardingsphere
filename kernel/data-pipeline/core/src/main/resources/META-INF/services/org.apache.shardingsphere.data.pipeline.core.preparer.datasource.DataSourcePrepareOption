@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource.MySQLDataSourcePrepareOption
+org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DefaultDataSourcePrepareOption
