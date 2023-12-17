@@ -1910,3 +1910,7 @@ WITHOUT_ARRAY_WRAPPER
 XMLNAMESPACES
     : X M L N A M E S P A C E S
     ;
+
+APPLY
+    : A P P L Y
+    ;

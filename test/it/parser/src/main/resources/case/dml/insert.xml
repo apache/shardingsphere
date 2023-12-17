@@ -2965,4 +2965,39 @@
             </value>
         </values>
     </insert>
+    <insert sql-case-id="insert_with_batch_nchar">
+        <table name="Employees" start-index="12" stop-index="31">
+            <owner name="TestSchema" start-index="12" stop-index="21"/>
+        </table>
+        <columns start-index="33" stop-index="48">
+            <column name="Name" start-index="34" stop-index="37"/>
+            <column name="Location" start-index="40" stop-index="47"/>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Jared" start-index="58" stop-index="65"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Australia" start-index="69" stop-index="80"/>
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Nikita" start-index="85" stop-index="93"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="India" start-index="96" stop-index="103"/>
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Tom" start-index="108" stop-index="113"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Germany" start-index="116" stop-index="125"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

@@ -7525,4 +7525,126 @@
             </expr>
         </where>
     </select>
+    <select sql-case-id="select_with_count_temp_table">
+        <from>
+            <simple-table name="#Test" start-index="41" stop-index="45" />
+        </from>
+        <projections start-index="7" stop-index="34">
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14" alias="Number of rows"/>
+        </projections>
+    </select>
+    <select sql-case-id="select_with_bracket_alias">
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="dm_xe_objects" alias="obj1" start-index="139" stop-index="163">
+                        <owner name="sys" start-index="139" stop-index="141"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="dm_xe_object_columns" alias="col2"  start-index="176" stop-index="207">
+                        <owner name="sys" start-index="176" stop-index="178"/>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="212" stop-index="239">
+                        <left>
+                            <column name="object_name" start-index="212" stop-index="227">
+                                <owner name="col2" start-index="212" stop-index="215"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="name" start-index="231" stop-index="239">
+                                <owner name="obj1" start-index="231" stop-index="234"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="132">
+            <column-projection name="name" alias="XEvent-name" start-index="7" stop-index="32">
+                <owner name="obj1" start-index="7" stop-index="10"/>
+            </column-projection>
+            <column-projection name="name" alias="XEvent-column" start-index="35" stop-index="62">
+                <owner name="col2" start-index="35" stop-index="38"/>
+            </column-projection>
+            <column-projection name="description" alias="Descr-name" start-index="65" stop-index="96">
+                <owner name="obj1" start-index="65" stop-index="68"/>
+            </column-projection>
+            <column-projection name="description" alias="Descr-column" start-index="99" stop-index="132">
+                <owner name="col2" start-index="99" stop-index="102"/>
+            </column-projection>
+        </projections>
+        <order-by>
+            <column-item name="name" start-index="250" stop-index="258">
+                <owner name="obj1" start-index="250" stop-index="253"/>
+            </column-item>
+            <column-item name="name" start-index="261" stop-index="269">
+                <owner name="col2" start-index="261" stop-index="264"/>
+            </column-item>
+        </order-by>
+    </select>
+    <select sql-case-id="select_with_cross_apply">
+        <from>
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="dm_exec_requests" alias="r" start-index="122" stop-index="143">
+                        <owner name="sys" start-index="122" stop-index="124"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table table-alias="a">
+                        <table-function function-name="sys.dm_exec_sql_text" text="sys.dm_exec_sql_text(r.sql_handle)"/>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="115">
+            <column-projection name="text" alias="query" start-index="7" stop-index="20">
+                <owner name="a" start-index="15" stop-index="15"/>
+            </column-projection>
+            <column-projection name="start_time" start-index="23" stop-index="32"/>
+            <column-projection name="percent_complete" start-index="35" stop-index="50"/>
+            <expression-projection text="dateadd(second,estimated_completion_time/1000, getdate())" alias="eta" start-index="53" stop-index="115">
+                <expr>
+                    <function function-name="dateadd" text="dateadd(second,estimated_completion_time/1000, getdate())" start-index="59" stop-index="115">
+                        <parameter>
+                            <column name="second" start-index="67" stop-index="72"/>
+                        </parameter>
+                        <parameter>
+                            <binary-operation-expression start-index="74" stop-index="103" text="estimated_completion_time/1000">
+                                <left>
+                                    <column name="estimated_completion_time" start-index="74" stop-index="98"/>
+                                </left>
+                                <operator>/</operator>
+                                <right>
+                                    <literal-expression value="1000" start-index="100" stop-index="103"/>
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <function function-name="getdate" text="getdate()" start-index="106" stop-index="114"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <where start-index="194" stop-index="229">
+            <expr>
+                <binary-operation-expression text="r.command = 'RESTORE DATABASE'" start-index="200" stop-index="229">
+                    <left>
+                        <column name="command" start-index="200" stop-index="208">
+                            <owner name="r" start-index="200" stop-index="200"/>
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="RESTORE DATABASE" start-index="212" stop-index="229"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

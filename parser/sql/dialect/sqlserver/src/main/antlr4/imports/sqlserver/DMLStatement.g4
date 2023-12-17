@@ -93,7 +93,8 @@ projections
     ;
 
 projection
-    : (top | columnName | expr) (AS? alias)? | qualifiedShorthand
+    : (alias EQ_)? (top | columnName | expr) | qualifiedShorthand
+    | (top | columnName | expr) (AS? alias)? | qualifiedShorthand
     ;
 
 top
@@ -125,12 +126,16 @@ tableReference
     ;
 
 tableFactor
-    : tableName (AS? alias)? | subquery AS? alias columnNames? | LP_ tableReferences RP_
+    : tableName (AS? alias)?
+    | subquery AS? alias columnNames?
+    | expr (AS? alias) ?
+    | LP_ tableReferences RP_
     ;
 
 joinedTable
     : NATURAL? ((INNER | CROSS)? JOIN) tableFactor joinSpecification?
     | NATURAL? (LEFT | RIGHT | FULL) OUTER? JOIN tableFactor joinSpecification?
+    | (CROSS | OUTER) APPLY tableFactor joinSpecification?
     ;
 
 joinSpecification
