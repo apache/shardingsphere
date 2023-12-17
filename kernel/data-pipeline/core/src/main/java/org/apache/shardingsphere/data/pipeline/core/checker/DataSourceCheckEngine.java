@@ -38,11 +38,11 @@ public final class DataSourceCheckEngine {
     
     private final DatabaseType databaseType;
     
-    private final DialectDataSourceChecker dialectDataSourceChecker;
+    private final DialectDataSourceChecker checker;
     
     public DataSourceCheckEngine(final DatabaseType databaseType) {
         this.databaseType = databaseType;
-        dialectDataSourceChecker = DatabaseTypedSPILoader.findService(DialectDataSourceChecker.class, databaseType).orElse(null);
+        checker = DatabaseTypedSPILoader.findService(DialectDataSourceChecker.class, databaseType).orElse(null);
     }
     
     /**
@@ -102,11 +102,11 @@ public final class DataSourceCheckEngine {
      * @param dataSources data sources
      */
     public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-        if (null == dialectDataSourceChecker) {
+        if (null == checker) {
             return;
         }
         for (DataSource each : dataSources) {
-            dialectDataSourceChecker.checkPrivilege(each);
+            checker.checkPrivilege(each);
         }
     }
     
@@ -116,11 +116,11 @@ public final class DataSourceCheckEngine {
      * @param dataSources data sources
      */
     public void checkVariable(final Collection<? extends DataSource> dataSources) {
-        if (null == dialectDataSourceChecker) {
+        if (null == checker) {
             return;
         }
         for (DataSource each : dataSources) {
-            dialectDataSourceChecker.checkVariable(each);
+            checker.checkVariable(each);
         }
     }
 }
