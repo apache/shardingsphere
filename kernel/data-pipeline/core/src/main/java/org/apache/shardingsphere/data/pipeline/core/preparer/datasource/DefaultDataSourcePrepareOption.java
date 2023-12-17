@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
-
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePrepareOption;
+package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
 
 /**
- * Data source prepare option for H2.
+ * Default data source prepare option.
  */
-public final class H2DataSourcePrepareOption implements DataSourcePrepareOption {
+public final class DefaultDataSourcePrepareOption implements DataSourcePrepareOption {
     
     @Override
-    public String getDatabaseType() {
-        return "H2";
+    public boolean isDefault() {
+        return true;
     }
 }
