@@ -36,13 +36,13 @@ import java.util.Collection;
  */
 public final class DataSourceCheckEngine {
     
-    private final DatabaseType databaseType;
-    
     private final DialectDataSourceChecker checker;
     
+    private final PipelineCommonSQLBuilder sqlBuilder;
+    
     public DataSourceCheckEngine(final DatabaseType databaseType) {
-        this.databaseType = databaseType;
         checker = DatabaseTypedSPILoader.findService(DialectDataSourceChecker.class, databaseType).orElse(null);
+        sqlBuilder = new PipelineCommonSQLBuilder(databaseType);
     }
     
     /**
@@ -86,8 +86,7 @@ public final class DataSourceCheckEngine {
     }
     
     private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
-        PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(databaseType);
-        String sql = pipelineSQLBuilder.buildCheckEmptySQL(schemaName, tableName);
+        String sql = sqlBuilder.buildCheckEmptySQL(schemaName, tableName);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
