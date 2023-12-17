@@ -202,7 +202,8 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         TransmissionJobItemProgress result = new TransmissionJobItemProgress();
         result.setSourceDatabaseType(jobConfig.getSourceDatabaseType());
         result.setDataSourceName(incrementalDumperContext.getCommonContext().getDataSourceName());
-        IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(PipelineJobPreparer.getIncrementalPosition(null, incrementalDumperContext, dataSourceManager));
+        IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(new PipelineJobPreparer(
+                incrementalDumperContext.getCommonContext().getDataSourceConfig().getDatabaseType()).getIncrementalPosition(null, incrementalDumperContext, dataSourceManager));
         result.setIncremental(new JobItemIncrementalTasksProgress(incrementalTaskProgress));
         return result;
     }
@@ -258,7 +259,8 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     private void cleanup(final CDCJobConfiguration jobConfig) {
         for (Entry<String, Map<String, Object>> entry : jobConfig.getDataSourceConfig().getRootConfig().getDataSources().entrySet()) {
             try {
-                PipelineJobPreparer.destroyPosition(jobConfig.getJobId(), new StandardPipelineDataSourceConfiguration(entry.getValue()));
+                StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(entry.getValue());
+                new PipelineJobPreparer(pipelineDataSourceConfig.getDatabaseType()).destroyPosition(jobConfig.getJobId(), pipelineDataSourceConfig);
             } catch (final SQLException ex) {
                 log.warn("job destroying failed, jobId={}, dataSourceName={}", jobConfig.getJobId(), entry.getKey(), ex);
             }
