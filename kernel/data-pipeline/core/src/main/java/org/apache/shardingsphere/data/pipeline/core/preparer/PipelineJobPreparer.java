@@ -52,11 +52,11 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Pipeline job preparer utility class.
+ * Pipeline job preparer.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public final class PipelineJobPreparerUtils {
+public final class PipelineJobPreparer {
     
     /**
      * Is incremental supported.
