@@ -22,8 +22,6 @@ import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFac
 import org.apache.shardingsphere.test.natived.jdbc.commons.AbstractShardingCommonTest;
 import org.apache.shardingsphere.test.natived.jdbc.commons.FileTestUtils;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 
@@ -50,6 +48,27 @@ public class MySQLTest {
     
     private AbstractShardingCommonTest abstractShardingCommonTest;
     
+    @Test
+    @EnabledInNativeImage
+    void assertShardingInLocalTransactions() throws SQLException, IOException {
+        beforeAll();
+        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/databases/mysql.yaml"));
+        abstractShardingCommonTest = new AbstractShardingCommonTest(dataSource);
+        this.initEnvironment();
+        abstractShardingCommonTest.processSuccess();
+        abstractShardingCommonTest.cleanEnvironment();
+        tearDown();
+    }
+    
+    private void initEnvironment() throws SQLException {
+        abstractShardingCommonTest.getOrderRepository().createTableIfNotExistsInMySQL();
+        abstractShardingCommonTest.getOrderItemRepository().createTableIfNotExistsInMySQL();
+        abstractShardingCommonTest.getAddressRepository().createTableIfNotExists();
+        abstractShardingCommonTest.getOrderRepository().truncateTable();
+        abstractShardingCommonTest.getOrderItemRepository().truncateTable();
+        abstractShardingCommonTest.getAddressRepository().truncateTable();
+    }
+    
     private static Connection openConnection() throws SQLException {
         Properties props = new Properties();
         props.setProperty("user", USERNAME);
@@ -58,8 +77,7 @@ public class MySQLTest {
     }
     
     @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
-    @BeforeAll
-    static void beforeAll() throws IOException {
+    private static void beforeAll() throws IOException {
         System.out.println("Starting MySQL ...");
         process = new ProcessBuilder(
                 "docker", "run", "--rm", "-p", "65107:3306", "-e", "MYSQL_DATABASE=" + DATABASE,
@@ -82,30 +100,10 @@ public class MySQLTest {
         System.out.println("MySQL started");
     }
     
-    @AfterAll
-    static void tearDown() {
+    private static void tearDown() {
         if (null != process && process.isAlive()) {
             System.out.println("Shutting down MySQL");
             process.destroy();
         }
-    }
-    
-    @Test
-    @EnabledInNativeImage
-    void assertShardingInLocalTransactions() throws SQLException, IOException {
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/databases/mysql.yaml"));
-        abstractShardingCommonTest = new AbstractShardingCommonTest(dataSource);
-        this.initEnvironment();
-        abstractShardingCommonTest.processSuccess();
-        abstractShardingCommonTest.cleanEnvironment();
-    }
-    
-    private void initEnvironment() throws SQLException {
-        abstractShardingCommonTest.getOrderRepository().createTableIfNotExistsInMySQL();
-        abstractShardingCommonTest.getOrderItemRepository().createTableIfNotExistsInMySQL();
-        abstractShardingCommonTest.getAddressRepository().createTableIfNotExists();
-        abstractShardingCommonTest.getOrderRepository().truncateTable();
-        abstractShardingCommonTest.getOrderItemRepository().truncateTable();
-        abstractShardingCommonTest.getAddressRepository().truncateTable();
     }
 }

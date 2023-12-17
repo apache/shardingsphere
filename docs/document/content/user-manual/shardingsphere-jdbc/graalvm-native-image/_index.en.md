@@ -43,9 +43,12 @@ and the documentation of GraalVM Native Build Tools shall prevail.
                  <version>0.9.28</version>
                  <extensions>true</extensions>
                  <configuration>
-                     <metadataRepository>
-                         <enabled>true</enabled>
-                     </metadataRepository>
+                    <buildArgs>
+                       <buildArg>-H:+AddAllCharsets</buildArg>
+                    </buildArgs>
+                    <metadataRepository>
+                       <enabled>true</enabled>
+                    </metadataRepository>
                  </configuration>
                  <executions>
                      <execution>
@@ -85,9 +88,17 @@ dependencies {
 }
 
 graalvmNative {
-     metadataRepository {
-         enabled = true
-     }
+   binaries {
+      main {
+         buildArgs.add('-H:+AddAllCharsets')
+      }
+      test {
+         buildArgs.add('-H:+AddAllCharsets')
+      }
+   }
+   metadataRepository {
+      enabled = true
+   }
 }
 ```
 
@@ -201,7 +212,22 @@ rules:
 folder or `src/test/resources/META-INF/native-image` folder. Users can quickly collect GraalVM Reachability Metadata through 
 the GraalVM Tracing Agent of GraalVM Native Build Tools. 
 
-4. DistSQL availability has not been verified. Users need to add additional GraalVM Reachability Metadata by themselves.
+4. Maven modules such as `com.microsoft.sqlserver:mssql-jdbc`, represented by the JDBC Driver of MS SQL Server,
+will dynamically load different character sets based on the encoding used in the database, which is unpredictable behavior. 
+When encountering the following Error, users need to add the `buildArg` of `-H:+AddAllCharsets` to the configuration of GraalVM Native Build Tools.
+
+```shell
+Caused by: java.io.UnsupportedEncodingException: SQL Server collation SQL_Latin1_General_CP1_CI_AS is not supported by this driver.
+ com.microsoft.sqlserver.jdbc.SQLCollation.encodingFromSortId(SQLCollation.java:506)
+ com.microsoft.sqlserver.jdbc.SQLCollation.<init>(SQLCollation.java:63)
+ com.microsoft.sqlserver.jdbc.SQLServerConnection.processEnvChange(SQLServerConnection.java:3174)
+ [...]
+Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supported by the Java environment.
+ com.microsoft.sqlserver.jdbc.Encoding.checkSupported(SQLCollation.java:572)
+ com.microsoft.sqlserver.jdbc.SQLCollation$SortOrder.getEncoding(SQLCollation.java:473)
+ com.microsoft.sqlserver.jdbc.SQLCollation.encodingFromSortId(SQLCollation.java:501)
+ [...]
+```
 
 ## Contribute GraalVM Reachability Metadata
 
@@ -219,7 +245,7 @@ ShardingSphere defines the Maven Profile of `nativeTestInShardingSphere` for exe
 Assuming that the contributor is under a new Ubuntu 22.04.3 LTS instance, Contributors can manage the JDK and tool chain through 
 `SDKMAN!` through the following bash command, and execute nativeTest for the `shardingsphere-test-native` submodule.
 
-You must install container tools such as Docker Engine or PodMan to execute `testcontainers-java` related unit tests.
+You must install Docker Engine to execute `testcontainers-java` related unit tests.
 
 ```bash
 sudo apt install unzip zip curl sed -y

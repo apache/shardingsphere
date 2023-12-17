@@ -354,3 +354,15 @@ IMPLEMENTATIONS
 OF
     : O F
     ;
+
+KEY
+    : K E Y
+    ;
+
+GENERATE
+    : G E N E R A T E
+    ;
+
+ALGORITHM
+    : A L G O R I T H M
+    ;

@@ -1,8 +1,17 @@
 {
   "resources":{
   "includes":[{
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.MSSQLServerTest"},
+    "pattern":"\\Qcontainer-license-acceptance.txt\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.MSSQLServerTest"},
+    "pattern":"\\Qtest-native/yaml/databases/mssqlserver.yaml\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.MySQLTest"},
     "pattern":"\\Qtest-native/yaml/databases/mysql.yaml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.OpenGaussTest"},
+    "pattern":"\\Qtest-native/yaml/databases/opengauss.yaml\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.PostgresTest"},
     "pattern":"\\Qtest-native/yaml/databases/postgresql.yaml\\E"

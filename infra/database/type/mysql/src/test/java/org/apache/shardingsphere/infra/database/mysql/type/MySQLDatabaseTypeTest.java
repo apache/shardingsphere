@@ -30,6 +30,6 @@ class MySQLDatabaseTypeTest {
     
     @Test
     void assertGetJdbcUrlPrefixes() {
-        assertThat(TypedSPILoader.getService(DatabaseType.class, "MySQL").getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:", "jdbc:tc:mysql:")));
+        assertThat(TypedSPILoader.getService(DatabaseType.class, "MySQL").getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:")));
     }
 }

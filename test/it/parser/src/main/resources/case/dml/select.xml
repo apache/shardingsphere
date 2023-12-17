@@ -17,6 +17,17 @@
   -->
 
 <sql-parser-test-cases>
+    <select sql-case-id="select_with_comment">
+        <projections start-index="70" stop-index="70">
+            <shorthand-projection start-index="70" stop-index="70" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="77" stop-index="83" />
+        </from>
+        <comment start-index="0" stop-index="19" text="/*FORCE_IMCI_NODES*/" />
+        <comment start-index="28" stop-index="68" text="/*+ SET_VAR(cost_threshold_for_imci=0) */" />
+    </select>
+    
     <select sql-case-id="select_position_function">
         <projections start-index="7" stop-index="97">
             <expression-projection text="position(&quot;0&quot; in &quot;baaa&quot; in (1))" start-index="7" stop-index="36">

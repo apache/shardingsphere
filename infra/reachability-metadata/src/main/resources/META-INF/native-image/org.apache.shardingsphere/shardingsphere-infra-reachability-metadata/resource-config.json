@@ -1,6 +1,12 @@
 {
   "resources":{
   "includes":[{
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule"},
+    "pattern":".*schema/.+\\.yaml$"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
+    "pattern":".*sql/.+\\.xml$"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.ShardingSphereDriver"},
     "pattern":"\\QMETA-INF/services/java.sql.Driver\\E"
   }, {
@@ -126,12 +132,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
     "pattern":"\\Qsql\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
-    "pattern":".*sql/.+\\.xml$"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule"},
-    "pattern":".*schema/.+\\.yaml$"
   }]},
   "bundles":[]
 }

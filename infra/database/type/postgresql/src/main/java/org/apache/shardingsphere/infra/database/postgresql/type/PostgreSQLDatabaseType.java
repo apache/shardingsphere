@@ -19,17 +19,17 @@ package org.apache.shardingsphere.infra.database.postgresql.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Database type of PostgreSQL. Includes verification of Docker Images involved in commonly used testcontainers.
+ * Database type of PostgreSQL.
  */
 public final class PostgreSQLDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList(String.format("jdbc:%s:", getType().toLowerCase()), "jdbc:tc:postgresql:");
+        return Collections.singletonList(String.format("jdbc:%s:", getType().toLowerCase()));
     }
     
     @Override
