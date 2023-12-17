@@ -7,10 +7,10 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},
     "pattern":".*sql/.+\\.xml$"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.ShardingSphereDriver"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.infra.state.datasource.DataSourceStateManager"},
     "pattern":"\\QMETA-INF/services/java.sql.Driver\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.NewClusterContextManagerBuilder"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.authority.spi.AuthorityRegistryProvider\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader"},
@@ -64,7 +64,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.NewClusterContextManagerBuilder"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsBuilder\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry"},
@@ -103,8 +103,20 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.manager.ContextManagerBuilder\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.NewGovernanceWatcherFactory"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.NewGovernanceWatcher\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.NewClusterContextManagerBuilder"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.builder.RuleConfigurationEventBuilder"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.mode.spi.RuleNodePathProvider\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.readwritesplitting.route.standard.filter.ReadDataSourcesFilter\\E"
@@ -127,7 +139,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.sqltranslator.spi.SQLTranslator\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.NewClusterContextManagerBuilder"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.timeservice.spi.TimestampService\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader"},

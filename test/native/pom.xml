@@ -39,12 +39,13 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        
         <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-cluster-mode-repository-zookeeper</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
