@@ -1218,19 +1218,19 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = new ExpressionProjectionSegment(getStartIndexWithAlias(column, alias), getStopIndexWithAlias(column, alias), String.valueOf(column.getLiterals()), column);
-
+        
         result.setAlias(alias);
         return result;
     }
-
+    
     private int getStartIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
         return alias != null && alias.getStartIndex() < sqlSegment.getStartIndex() ? alias.getStartIndex() : sqlSegment.getStartIndex();
     }
-
+    
     private int getStopIndexWithAlias(final SQLSegment sqlSegment, final AliasSegment alias) {
         return alias != null && alias.getStopIndex() > sqlSegment.getStopIndex() ? alias.getStopIndex() : sqlSegment.getStopIndex();
     }
-
+    
     @Override
     public ASTNode visitFromClause(final FromClauseContext ctx) {
         return visit(ctx.tableReferences());
