@@ -60,7 +60,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Inventory data task splitter.
+ * Inventory task splitter.
  */
 @RequiredArgsConstructor
 @Slf4j
