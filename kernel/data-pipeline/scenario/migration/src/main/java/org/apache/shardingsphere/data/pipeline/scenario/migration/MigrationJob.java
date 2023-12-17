@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJob
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
-import org.apache.shardingsphere.data.pipeline.core.preparer.CreateTableConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.spi.algorithm.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.TransmissionTasksRunner;
@@ -45,7 +45,6 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -76,11 +75,7 @@ public final class MigrationJob extends AbstractSeparablePipelineJob<MigrationJo
     }
     
     private Collection<CreateTableConfiguration> buildCreateTableConfigurations(final MigrationJobConfiguration jobConfig, final TableAndSchemaNameMapper mapper) {
-        Collection<CreateTableConfiguration> result = new LinkedList<>();
-        for (JobDataNodeEntry each : jobConfig.getTablesFirstDataNodes().getEntries()) {
-            result.add(getCreateTableConfiguration(jobConfig, mapper, each));
-        }
-        return result;
+        return jobConfig.getTablesFirstDataNodes().getEntries().stream().map(each -> getCreateTableConfiguration(jobConfig, mapper, each)).collect(Collectors.toList());
     }
     
     private CreateTableConfiguration getCreateTableConfiguration(final MigrationJobConfiguration jobConfig, final TableAndSchemaNameMapper mapper, final JobDataNodeEntry jobDataNodeEntry) {

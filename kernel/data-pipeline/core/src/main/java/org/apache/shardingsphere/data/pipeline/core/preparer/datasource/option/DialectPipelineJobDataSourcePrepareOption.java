@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer;
+package org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+
+import java.util.Collection;
 
 /**
- * Create table configuration.
+ * Dialect pipeline job data source prepare option.
  */
-@RequiredArgsConstructor
-@Getter
-@ToString(exclude = {"sourceDataSourceConfig", "targetDataSourceConfig"})
-public final class CreateTableConfiguration {
+@SingletonSPI
+public interface DialectPipelineJobDataSourcePrepareOption extends DatabaseTypedSPI {
     
-    private final PipelineDataSourceConfiguration sourceDataSourceConfig;
+    /**
+     * Is support if not exists on create schema SQL.
+     * 
+     * @return supported or not
+     */
+    boolean isSupportIfNotExistsOnCreateSchema();
     
-    private final CaseInsensitiveQualifiedTable sourceName;
-    
-    private final PipelineDataSourceConfiguration targetDataSourceConfig;
-    
-    private final CaseInsensitiveQualifiedTable targetName;
+    /**
+     * Get ignored exception messages.
+     *
+     * @return ignored exception messages
+     */
+    Collection<String> getIgnoredExceptionMessages();
 }
