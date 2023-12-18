@@ -31,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositi
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PipelineJobDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectPipelineJobDataSourcePrepareOption;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.position.PositionInitializer;
@@ -65,16 +64,6 @@ public final class PipelineJobPreparer {
      */
     public boolean isIncrementalSupported() {
         return DatabaseTypedSPILoader.findService(IncrementalDumperCreator.class, databaseType).map(IncrementalDumperCreator::isSupportIncrementalDump).orElse(false);
-    }
-    
-    /**
-     * Prepare target schema.
-     *
-     * @param param prepare target schemas parameter
-     * @throws SQLException if prepare target schema fail
-     */
-    public void prepareTargetSchema(final PrepareTargetSchemasParameter param) throws SQLException {
-        new PipelineJobDataSourcePreparer(DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)).prepareTargetSchemas(param);
     }
     
     /**
