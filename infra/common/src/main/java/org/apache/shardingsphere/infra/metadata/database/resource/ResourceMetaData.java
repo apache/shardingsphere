@@ -45,14 +45,13 @@ public final class ResourceMetaData {
     private final Map<String, StorageUnit> storageUnits;
     
     public ResourceMetaData(final Map<String, DataSource> dataSources) {
-        Map<String, StorageNode> storageNodeMap = dataSources.keySet().stream()
-                .collect(Collectors.toMap(each -> each, StorageNode::new, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = dataSources.entrySet().stream().collect(
                 Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         this.dataSources = StorageNodeAggregator.aggregateDataSources(dataSources, dataSourcePoolPropsMap);
         storageUnits = new LinkedHashMap<>();
-        for (Entry<String, StorageNode> entry : storageNodeMap.entrySet()) {
-            storageUnits.put(entry.getKey(), new StorageUnit(entry.getValue(), dataSourcePoolPropsMap.get(entry.getKey()), dataSources.get(entry.getValue().getName())));
+        for (Entry<StorageNode, DataSource> entry : this.dataSources.entrySet()) {
+            String nodeName = entry.getKey().getName();
+            storageUnits.put(nodeName, new StorageUnit(entry.getKey(), dataSourcePoolPropsMap.get(nodeName), dataSources.get(nodeName)));
         }
     }
     
