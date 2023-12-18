@@ -39,7 +39,7 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   upload-to-nightlies:
-    # if: github.repository == 'apache/shardingsphere'
+    if: github.repository == 'apache/shardingsphere'
     name: Upload to Nightly Builds
     needs: global-environment
     runs-on: ubuntu-latest
@@ -71,7 +71,7 @@ jobs:
           remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
 
   build-proxy-image:
-    # if: github.repository == 'apache/shardingsphere'
+    if: github.repository == 'apache/shardingsphere'
     name: Build Proxy Image
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
@@ -106,7 +106,7 @@ jobs:
         run: ./mvnw -am -pl distribution/proxy -B -Prelease,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
 
   build-proxy-native-image:
-    # if: github.repository == 'apache/shardingsphere'
+    if: github.repository == 'apache/shardingsphere'
     name: Build GraalVM Native Image
     timeout-minutes: 90
     permissions:
@@ -139,7 +139,7 @@ jobs:
           ./mvnw -am -pl distribution/proxy-native -Prelease.native,docker.buildx.push.native -B -T1C -DskipTests -Dproxy.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.image.tag=${{ github.sha }} clean package
 
   build-cache:
-    # if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
+    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
     name: Build Project
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
@@ -161,7 +161,7 @@ jobs:
 
   generate-and-test-examples:
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
-    # if: github.repository == 'apache/shardingsphere'
+    if: github.repository == 'apache/shardingsphere'
     needs: build-cache
     runs-on: ubuntu-latest
     timeout-minutes: 90
@@ -223,16 +223,16 @@ jobs:
         run: ./mvnw -B clean install -f examples/shardingsphere-jdbc-example-generator/pom.xml -Pexample-generator -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
       - name: Test Examples
         run : ./mvnw -B test -f examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/pom.xml -Pexample-generator -Dexec.cleanupDaemonThreads=false
-#      - name: Package Examples
-#        run: |
-#          cd examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/
-#          tar -czvf ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}
-#      - uses: burnett01/rsync-deployments@5.2
-#        with:
-#          switches: -avzr
-#          path: examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
-#          remote_path: ${{ secrets.NIGHTLIES_RSYNC_PATH }}/shardingsphere/examples
-#          remote_host: ${{ secrets.NIGHTLIES_RSYNC_HOST }}
-#          remote_port: ${{ secrets.NIGHTLIES_RSYNC_PORT }}
-#          remote_user: ${{ secrets.NIGHTLIES_RSYNC_USER }}
-#          remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
+      - name: Package Examples
+        run: |
+          cd examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/
+          tar -czvf ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}
+      - uses: burnett01/rsync-deployments@5.2
+        with:
+          switches: -avzr
+          path: examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
+          remote_path: ${{ secrets.NIGHTLIES_RSYNC_PATH }}/shardingsphere/examples
+          remote_host: ${{ secrets.NIGHTLIES_RSYNC_HOST }}
+          remote_port: ${{ secrets.NIGHTLIES_RSYNC_PORT }}
+          remote_user: ${{ secrets.NIGHTLIES_RSYNC_USER }}
+          remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
