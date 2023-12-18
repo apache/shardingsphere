@@ -305,7 +305,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM pg_catalog.pg_stat_all_tables order by relid limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
+    <test-case sql="SELECT * FROM pg_catalog.pg_stat_all_tables where relname != 'pg_range' limit 1" db-types="PostgreSQL" scenario-types="tbl" adapters="proxy">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
