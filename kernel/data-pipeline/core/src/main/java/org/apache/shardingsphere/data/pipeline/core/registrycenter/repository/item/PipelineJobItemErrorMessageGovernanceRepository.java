@@ -50,7 +50,7 @@ public final class PipelineJobItemErrorMessageGovernanceRepository {
      * @param shardingItem sharding item
      */
     public void clean(final String jobId, final int shardingItem) {
-        repository.update(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem), "");
+        repository.persist(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem), "");
     }
     
     /**

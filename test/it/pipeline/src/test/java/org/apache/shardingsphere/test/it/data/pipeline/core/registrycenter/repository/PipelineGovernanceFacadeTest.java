@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.job.service;
+package org.apache.shardingsphere.test.it.data.pipeline.core.registrycenter.repository;
 
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineNodePath;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
+import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.item.PipelineJobItemErrorMessageGovernanceRepository;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.item.PipelineJobItemProcessGovernanceRepository;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
@@ -152,6 +153,20 @@ class PipelineGovernanceFacadeTest {
         actual = governanceFacade.getJobItemFacade().getProcess().load(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("testValue2"));
+    }
+    
+    @Test
+    void assertPersistJobItemErrorMessage() {
+        MigrationJobItemContext jobItemContext = mockJobItemContext();
+        PipelineJobItemErrorMessageGovernanceRepository jobItemErrorMessageRepository = governanceFacade.getJobItemFacade().getErrorMessage();
+        jobItemErrorMessageRepository.clean(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        assertThat(jobItemErrorMessageRepository.load(jobItemContext.getJobId(), jobItemContext.getShardingItem()), is(""));
+        jobItemErrorMessageRepository.update(jobItemContext.getJobId(), jobItemContext.getShardingItem(), new Exception("__DEBUG__"));
+        String actual = jobItemErrorMessageRepository.load(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        assertNotNull(actual, "Error message is null");
+        assertTrue(actual.contains("__DEBUG__"), "Error message does not contain __DEBUG__");
+        jobItemErrorMessageRepository.clean(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        assertThat(jobItemErrorMessageRepository.load(jobItemContext.getJobId(), jobItemContext.getShardingItem()), is(""));
     }
     
     @Test
