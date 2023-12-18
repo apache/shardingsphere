@@ -21,16 +21,18 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.TaskExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.task.progress.InventoryTaskProgress;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -59,6 +61,9 @@ public final class CDCInventoryTask implements PipelineTask {
     
     @Override
     public Collection<CompletableFuture<?>> start() {
+        if (position.get() instanceof FinishedPosition) {
+            return Collections.emptyList();
+        }
         Collection<CompletableFuture<?>> result = new LinkedList<>();
         result.add(inventoryDumperExecuteEngine.submit(dumper, new TaskExecuteCallback(this)));
         if (null != importer) {

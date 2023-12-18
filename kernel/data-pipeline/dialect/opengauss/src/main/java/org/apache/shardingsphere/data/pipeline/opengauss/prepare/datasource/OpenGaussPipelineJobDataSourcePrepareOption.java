@@ -15,24 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
 
-import org.apache.shardingsphere.data.pipeline.core.checker.DialectDataSourceChecker;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectPipelineJobDataSourcePrepareOption;
 
-import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.Collection;
 
-public final class FixtureDataSourceChecker implements DialectDataSourceChecker {
+/**
+ * Pipeline job data source prepare option for openGauss.
+ */
+@Slf4j
+public final class OpenGaussPipelineJobDataSourcePrepareOption implements DialectPipelineJobDataSourcePrepareOption {
     
     @Override
-    public void checkPrivilege(final DataSource dataSource) {
+    public boolean isSupportIfNotExistsOnCreateSchema() {
+        return false;
     }
     
     @Override
-    public void checkVariable(final DataSource dataSource) {
+    public Collection<String> getIgnoredExceptionMessages() {
+        return Arrays.asList("multiple primary keys for table", "already exists");
     }
     
     @Override
     public String getDatabaseType() {
-        return "H2";
+        return "openGauss";
     }
 }

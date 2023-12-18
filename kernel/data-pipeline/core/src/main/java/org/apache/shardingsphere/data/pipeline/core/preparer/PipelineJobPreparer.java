@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.core.preparer;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.checker.DataSourceCheckEngine;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourceCheckEngine;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PipelineJobDataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectPipelineJobDataSourcePrepareOption;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
@@ -40,7 +40,6 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -51,66 +50,56 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Pipeline job preparer utility class.
+ * Pipeline job preparer.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Slf4j
-public final class PipelineJobPreparerUtils {
+public final class PipelineJobPreparer {
+    
+    private final DatabaseType databaseType;
     
     /**
      * Is incremental supported.
      *
-     * @param databaseType database type
-     * @return true if supported, otherwise false
+     * @return support incremental or not
      */
-    public static boolean isIncrementalSupported(final DatabaseType databaseType) {
+    public boolean isIncrementalSupported() {
         return DatabaseTypedSPILoader.findService(IncrementalDumperCreator.class, databaseType).map(IncrementalDumperCreator::isSupportIncrementalDump).orElse(false);
     }
     
     /**
      * Prepare target schema.
      *
-     * @param databaseType database type
-     * @param prepareTargetSchemasParam prepare target schemas parameter
+     * @param param prepare target schemas parameter
      * @throws SQLException if prepare target schema fail
      */
-    public static void prepareTargetSchema(final DatabaseType databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParam) throws SQLException {
-        Optional<DataSourcePreparer> dataSourcePreparer = DatabaseTypedSPILoader.findService(DataSourcePreparer.class, databaseType);
-        if (!dataSourcePreparer.isPresent()) {
-            log.info("dataSourcePreparer null, ignore prepare target");
-            return;
-        }
-        dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParam);
+    public void prepareTargetSchema(final PrepareTargetSchemasParameter param) throws SQLException {
+        DialectPipelineJobDataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)
+                .orElseGet(() -> DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, null));
+        new PipelineJobDataSourcePreparer(option).prepareTargetSchemas(param);
     }
     
     /**
      * Get SQL parser engine.
      *
      * @param metaData meta data
-     * @param targetDatabaseName target database name
      * @return SQL parser engine
      */
-    public static SQLParserEngine getSQLParserEngine(final ShardingSphereMetaData metaData, final String targetDatabaseName) {
-        ShardingSphereDatabase database = metaData.getDatabase(targetDatabaseName);
-        DatabaseType databaseType = database.getProtocolType().getTrunkDatabaseType().orElse(database.getProtocolType());
+    public SQLParserEngine getSQLParserEngine(final ShardingSphereMetaData metaData) {
         return metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(databaseType);
     }
     
     /**
      * Prepare target tables.
      *
-     * @param databaseType database type
      * @param prepareTargetTablesParam prepare target tables parameter
      * @throws SQLException SQL exception
      */
-    public static void prepareTargetTables(final DatabaseType databaseType, final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
-        Optional<DataSourcePreparer> dataSourcePreparer = DatabaseTypedSPILoader.findService(DataSourcePreparer.class, databaseType);
-        if (!dataSourcePreparer.isPresent()) {
-            log.info("dataSourcePreparer null, ignore prepare target");
-            return;
-        }
+    public void prepareTargetTables(final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
+        DialectPipelineJobDataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)
+                .orElseGet(() -> DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, null));
         long startTimeMillis = System.currentTimeMillis();
-        dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParam);
+        new PipelineJobDataSourcePreparer(option).prepareTargetTables(prepareTargetTablesParam);
         log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
@@ -123,15 +112,14 @@ public final class PipelineJobPreparerUtils {
      * @return ingest position
      * @throws SQLException sql exception
      */
-    public static IngestPosition getIncrementalPosition(final JobItemIncrementalTasksProgress initIncremental, final IncrementalDumperContext dumperContext,
-                                                        final PipelineDataSourceManager dataSourceManager) throws SQLException {
+    public IngestPosition getIncrementalPosition(final JobItemIncrementalTasksProgress initIncremental, final IncrementalDumperContext dumperContext,
+                                                 final PipelineDataSourceManager dataSourceManager) throws SQLException {
         if (null != initIncremental) {
             Optional<IngestPosition> position = initIncremental.getIncrementalPosition();
             if (position.isPresent()) {
                 return position.get();
             }
         }
-        DatabaseType databaseType = dumperContext.getCommonContext().getDataSourceConfig().getDatabaseType();
         DataSource dataSource = dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig());
         return DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType).init(dataSource, dumperContext.getJobId());
     }
@@ -139,10 +127,9 @@ public final class PipelineJobPreparerUtils {
     /**
      * Check data source.
      *
-     * @param databaseType database type
      * @param dataSources data source
      */
-    public static void checkSourceDataSource(final DatabaseType databaseType, final Collection<? extends DataSource> dataSources) {
+    public void checkSourceDataSource(final Collection<? extends DataSource> dataSources) {
         if (dataSources.isEmpty()) {
             return;
         }
@@ -155,11 +142,10 @@ public final class PipelineJobPreparerUtils {
     /**
      * Check target data source.
      *
-     * @param databaseType database type
      * @param importerConfig importer config
      * @param targetDataSources target data sources
      */
-    public static void checkTargetDataSource(final DatabaseType databaseType, final ImporterConfiguration importerConfig, final Collection<? extends DataSource> targetDataSources) {
+    public void checkTargetDataSource(final ImporterConfiguration importerConfig, final Collection<? extends DataSource> targetDataSources) {
         if (null == targetDataSources || targetDataSources.isEmpty()) {
             log.info("target data source is empty, skip check");
             return;
@@ -172,12 +158,11 @@ public final class PipelineJobPreparerUtils {
     /**
      * Cleanup job preparer.
      *
-     * @param jobId job id
+     * @param jobId pipeline job id
      * @param pipelineDataSourceConfig pipeline data source config
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
-    public static void destroyPosition(final String jobId, final PipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
-        DatabaseType databaseType = pipelineDataSourceConfig.getDatabaseType();
+    public void destroyPosition(final String jobId, final PipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         PositionInitializer positionInitializer = DatabaseTypedSPILoader.getService(PositionInitializer.class, databaseType);
         final long startTimeMillis = System.currentTimeMillis();
         log.info("Cleanup database type:{}, data source type:{}", databaseType.getType(), pipelineDataSourceConfig.getType());

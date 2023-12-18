@@ -15,34 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
+package org.apache.shardingsphere.data.pipeline.core.checker;
 
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-import java.sql.SQLException;
+import javax.sql.DataSource;
 
 /**
- * Data source preparer.
+ * Dialect data source checker.
  */
 @SingletonSPI
-public interface DataSourcePreparer extends DatabaseTypedSPI {
+public interface DialectDataSourceChecker extends DatabaseTypedSPI {
     
     /**
-     * Prepare target schemas.
+     * Check user privileges.
      *
-     * @param param prepare target schemas parameter
-     * @throws SQLException if prepare target schema fail
+     * @param dataSource data source to be checked
      */
-    void prepareTargetSchemas(PrepareTargetSchemasParameter param) throws SQLException;
+    void checkPrivilege(DataSource dataSource);
     
     /**
-     * Prepare target tables.
+     * Check variables.
      *
-     * @param param prepare target tables parameter
-     * @throws SQLException SQL exception
+     * @param dataSource data source to be checked
      */
-    void prepareTargetTables(PrepareTargetTablesParameter param) throws SQLException;
+    void checkVariable(DataSource dataSource);
 }

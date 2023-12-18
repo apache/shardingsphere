@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param;
 
-import org.apache.shardingsphere.data.pipeline.core.checker.DialectDataSourceChecker;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
 
-import javax.sql.DataSource;
-
-public final class FixtureDataSourceChecker implements DialectDataSourceChecker {
+/**
+ * Create table configuration.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class CreateTableConfiguration {
     
-    @Override
-    public void checkPrivilege(final DataSource dataSource) {
-    }
+    private final PipelineDataSourceConfiguration sourceDataSourceConfig;
     
-    @Override
-    public void checkVariable(final DataSource dataSource) {
-    }
+    private final CaseInsensitiveQualifiedTable sourceName;
     
-    @Override
-    public String getDatabaseType() {
-        return "H2";
-    }
+    private final PipelineDataSourceConfiguration targetDataSourceConfig;
+    
+    private final CaseInsensitiveQualifiedTable targetName;
 }
