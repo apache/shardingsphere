@@ -74,9 +74,7 @@ public final class PipelineJobPreparer {
      * @throws SQLException if prepare target schema fail
      */
     public void prepareTargetSchema(final PrepareTargetSchemasParameter param) throws SQLException {
-        DialectPipelineJobDataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)
-                .orElseGet(() -> DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, null));
-        new PipelineJobDataSourcePreparer(option).prepareTargetSchemas(param);
+        new PipelineJobDataSourcePreparer(DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)).prepareTargetSchemas(param);
     }
     
     /**
@@ -96,10 +94,8 @@ public final class PipelineJobPreparer {
      * @throws SQLException SQL exception
      */
     public void prepareTargetTables(final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
-        DialectPipelineJobDataSourcePrepareOption option = DatabaseTypedSPILoader.findService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)
-                .orElseGet(() -> DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, null));
         long startTimeMillis = System.currentTimeMillis();
-        new PipelineJobDataSourcePreparer(option).prepareTargetTables(prepareTargetTablesParam);
+        new PipelineJobDataSourcePreparer(DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)).prepareTargetTables(prepareTargetTablesParam);
         log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
