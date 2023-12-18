@@ -7536,4 +7536,149 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_not_expression">
+        <projections start-index="7" stop-index="75">
+            <expression-projection text="!0" start-index="7" stop-index="8">
+                <expr>
+                    <not-expression start-index="7" stop-index="8">
+                        <expr>
+                            <literal-expression value="0" start-index="8" stop-index="8" />
+                        </expr>
+                    </not-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="NOT 0=1" start-index="10" stop-index="16">
+                <expr>
+                    <binary-operation-expression start-index="10" stop-index="16">
+                        <left>
+                            <not-expression start-index="10" stop-index="14">
+                                <expr>
+                                    <literal-expression value="0" start-index="14" stop-index="14" />
+                                </expr>
+                            </not-expression>
+                        </left>
+                        <right>
+                            <literal-expression value="1" start-index="16" stop-index="16" />
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="!(0=0)" start-index="18" stop-index="23">
+                <expr>
+                    <not-expression start-index="18" stop-index="23">
+                        <expr>
+                            <binary-operation-expression start-index="20" stop-index="22">
+                                <left>
+                                    <literal-expression value="0" start-index="20" stop-index="20" />
+                                </left>
+                                <right>
+                                    <literal-expression value="0" start-index="22" stop-index="22" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </expr>
+                    </not-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="1 AND 1" start-index="25" stop-index="31">
+                <expr>
+                    <binary-operation-expression start-index="25" stop-index="31">
+                        <left>
+                            <literal-expression value="1" start-index="25" stop-index="25" />
+                        </left>
+                        <right>
+                            <literal-expression value="1" start-index="31" stop-index="31" />
+                        </right>
+                        <operator>AND</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="1 &amp;&amp; 0" start-index="33" stop-index="38">
+                <expr>
+                    <binary-operation-expression start-index="33" stop-index="38">
+                        <left>
+                            <literal-expression value="1" start-index="33" stop-index="33" />
+                        </left>
+                        <right>
+                            <literal-expression value="0" start-index="38" stop-index="38" />
+                        </right>
+                        <operator>&amp;&amp;</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="0 OR 1" start-index="40" stop-index="45">
+                <expr>
+                    <binary-operation-expression start-index="40" stop-index="45">
+                        <left>
+                            <literal-expression value="0" start-index="40" stop-index="40" />
+                        </left>
+                        <right>
+                            <literal-expression value="1" start-index="45" stop-index="45" />
+                        </right>
+                        <operator>OR</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="1 || NULL" start-index="47" stop-index="55">
+                <expr>
+                    <binary-operation-expression start-index="47" stop-index="55">
+                        <left>
+                            <literal-expression value="1" start-index="47" stop-index="47" />
+                        </left>
+                        <right>
+                            <literal-expression value="null" start-index="52" stop-index="55" />
+                        </right>
+                        <operator>||</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="1=1 or 1=1 and 1=0" start-index="58" stop-index="75">
+                <expr>
+                    <binary-operation-expression start-index="58" stop-index="75">
+                        <left>
+                            <binary-operation-expression start-index="58" stop-index="60">
+                                <left>
+                                    <literal-expression value="1" start-index="58" stop-index="58" />
+                                </left>
+                                <right>
+                                    <literal-expression value="1" start-index="60" stop-index="60" />
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </left>
+                        <right>
+                            <binary-operation-expression start-index="65" stop-index="75">
+                                <left>
+                                    <binary-operation-expression start-index="65" stop-index="67">
+                                        <left>
+                                            <literal-expression value="1" start-index="65" stop-index="65" />
+                                        </left>
+                                        <right>
+                                            <literal-expression value="1" start-index="67" stop-index="67" />
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </left>
+                                <right>
+                                    <binary-operation-expression start-index="73" stop-index="75">
+                                        <left>
+                                            <literal-expression value="1" start-index="73" stop-index="73" />
+                                        </left>
+                                        <right>
+                                            <literal-expression value="0" start-index="75" stop-index="75" />
+                                        </right>
+                                        <operator>=</operator>
+                                    </binary-operation-expression>
+                                </right>
+                                <operator>and</operator>
+                            </binary-operation-expression>
+                        </right>
+                        <operator>or</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
