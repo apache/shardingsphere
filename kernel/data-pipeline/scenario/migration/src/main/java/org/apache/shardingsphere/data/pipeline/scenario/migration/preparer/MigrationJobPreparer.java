@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.preparer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.preparer.CreateTableConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
@@ -47,8 +47,8 @@ import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
-import org.apache.shardingsphere.data.pipeline.core.preparer.InventoryTaskSplitter;
-import org.apache.shardingsphere.data.pipeline.core.preparer.PipelineJobPreparerUtils;
+import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.InventoryTaskSplitter;
+import org.apache.shardingsphere.data.pipeline.core.preparer.PipelineJobPreparer;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
@@ -95,7 +95,8 @@ public final class MigrationJobPreparer {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(
                 jobItemContext.getTaskConfig().getDumperContext().getCommonContext().getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("Migration inventory dumper only support StandardPipelineDataSourceConfiguration"));
-        PipelineJobPreparerUtils.checkSourceDataSource(jobItemContext.getJobConfig().getSourceDatabaseType(), Collections.singleton(jobItemContext.getSourceDataSource()));
+        PipelineJobPreparer preparer = new PipelineJobPreparer(jobItemContext.getJobConfig().getSourceDatabaseType());
+        preparer.checkSourceDataSource(Collections.singleton(jobItemContext.getSourceDataSource()));
         if (jobItemContext.isStopping()) {
             PipelineJobRegistry.stop(jobItemContext.getJobId());
             return;
@@ -105,7 +106,7 @@ public final class MigrationJobPreparer {
             PipelineJobRegistry.stop(jobItemContext.getJobId());
             return;
         }
-        boolean isIncrementalSupported = PipelineJobPreparerUtils.isIncrementalSupported(jobItemContext.getJobConfig().getSourceDatabaseType());
+        boolean isIncrementalSupported = preparer.isIncrementalSupported();
         if (isIncrementalSupported) {
             prepareIncremental(jobItemContext);
         }
@@ -157,8 +158,8 @@ public final class MigrationJobPreparer {
         TransmissionJobItemProgress initProgress = jobItemContext.getInitProgress();
         if (null == initProgress) {
             PipelineDataSourceWrapper targetDataSource = jobItemContext.getDataSourceManager().getDataSource(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
-            PipelineJobPreparerUtils.checkTargetDataSource(
-                    jobItemContext.getJobConfig().getTargetDatabaseType(), jobItemContext.getTaskConfig().getImporterConfig(), Collections.singleton(targetDataSource));
+            new PipelineJobPreparer(jobItemContext.getJobConfig().getTargetDatabaseType()).checkTargetDataSource(
+                    jobItemContext.getTaskConfig().getImporterConfig(), Collections.singleton(targetDataSource));
         }
     }
     
@@ -167,18 +168,21 @@ public final class MigrationJobPreparer {
         Collection<CreateTableConfiguration> createTableConfigs = jobItemContext.getTaskConfig().getCreateTableConfigurations();
         PipelineDataSourceManager dataSourceManager = jobItemContext.getDataSourceManager();
         PrepareTargetSchemasParameter prepareTargetSchemasParam = new PrepareTargetSchemasParameter(jobItemContext.getJobConfig().getTargetDatabaseType(), createTableConfigs, dataSourceManager);
-        PipelineJobPreparerUtils.prepareTargetSchema(jobItemContext.getJobConfig().getTargetDatabaseType(), prepareTargetSchemasParam);
+        PipelineJobPreparer targetDataSourcePreparer = new PipelineJobPreparer(jobItemContext.getJobConfig().getTargetDatabaseType());
+        targetDataSourcePreparer.prepareTargetSchema(prepareTargetSchemasParam);
         ShardingSphereMetaData metaData = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId())).getContextManager().getMetaDataContexts().getMetaData();
-        SQLParserEngine sqlParserEngine = PipelineJobPreparerUtils.getSQLParserEngine(metaData, jobConfig.getTargetDatabaseName());
-        PipelineJobPreparerUtils.prepareTargetTables(jobItemContext.getJobConfig().getTargetDatabaseType(), new PrepareTargetTablesParameter(createTableConfigs, dataSourceManager, sqlParserEngine));
+        SQLParserEngine sqlParserEngine = new PipelineJobPreparer(
+                metaData.getDatabase(jobConfig.getTargetDatabaseName()).getProtocolType().getTrunkDatabaseType().orElse(metaData.getDatabase(jobConfig.getTargetDatabaseName()).getProtocolType()))
+                        .getSQLParserEngine(metaData);
+        targetDataSourcePreparer.prepareTargetTables(new PrepareTargetTablesParameter(createTableConfigs, dataSourceManager, sqlParserEngine));
     }
     
     private void prepareIncremental(final MigrationJobItemContext jobItemContext) {
         MigrationTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         JobItemIncrementalTasksProgress initIncremental = null == jobItemContext.getInitProgress() ? null : jobItemContext.getInitProgress().getIncremental();
         try {
-            taskConfig.getDumperContext().getCommonContext().setPosition(
-                    PipelineJobPreparerUtils.getIncrementalPosition(initIncremental, taskConfig.getDumperContext(), jobItemContext.getDataSourceManager()));
+            taskConfig.getDumperContext().getCommonContext().setPosition(new PipelineJobPreparer(taskConfig.getDumperContext().getCommonContext().getDataSourceConfig().getDatabaseType())
+                    .getIncrementalPosition(initIncremental, taskConfig.getDumperContext(), jobItemContext.getDataSourceManager()));
         } catch (final SQLException ex) {
             throw new PrepareJobWithGetBinlogPositionException(jobItemContext.getJobId(), ex);
         }
@@ -224,7 +228,7 @@ public final class MigrationJobPreparer {
     public void cleanup(final MigrationJobConfiguration jobConfig) {
         for (Entry<String, PipelineDataSourceConfiguration> entry : jobConfig.getSources().entrySet()) {
             try {
-                PipelineJobPreparerUtils.destroyPosition(jobConfig.getJobId(), entry.getValue());
+                new PipelineJobPreparer(entry.getValue().getDatabaseType()).destroyPosition(jobConfig.getJobId(), entry.getValue());
             } catch (final SQLException ex) {
                 log.warn("job destroying failed, jobId={}, dataSourceName={}", jobConfig.getJobId(), entry.getKey(), ex);
             }

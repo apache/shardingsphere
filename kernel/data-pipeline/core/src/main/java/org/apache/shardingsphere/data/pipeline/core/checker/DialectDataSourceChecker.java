@@ -15,15 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
+package org.apache.shardingsphere.data.pipeline.core.checker;
+
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+
+import javax.sql.DataSource;
 
 /**
- * Default data source prepare option.
+ * Dialect data source checker.
  */
-public final class DefaultDataSourcePrepareOption implements DataSourcePrepareOption {
+@SingletonSPI
+public interface DialectDataSourceChecker extends DatabaseTypedSPI {
     
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
+    /**
+     * Check user privileges.
+     *
+     * @param dataSource data source to be checked
+     */
+    void checkPrivilege(DataSource dataSource);
+    
+    /**
+     * Check variables.
+     *
+     * @param dataSource data source to be checked
+     */
+    void checkVariable(DataSource dataSource);
 }

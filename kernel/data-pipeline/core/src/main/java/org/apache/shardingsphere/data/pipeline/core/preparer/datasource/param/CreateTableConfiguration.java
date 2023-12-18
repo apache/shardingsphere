@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
+package org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.DataSourcePrepareOption;
-
-import java.util.Arrays;
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveQualifiedTable;
 
 /**
- * Data source prepare option for openGauss.
+ * Create table configuration.
  */
-@Slf4j
-public final class OpenGaussDataSourcePrepareOption implements DataSourcePrepareOption {
+@RequiredArgsConstructor
+@Getter
+public final class CreateTableConfiguration {
     
-    @Override
-    public boolean isSupportIfNotExistsOnCreateSchema() {
-        return false;
-    }
+    private final PipelineDataSourceConfiguration sourceDataSourceConfig;
     
-    @Override
-    public Collection<String> getIgnoredExceptionMessages() {
-        return Arrays.asList("multiple primary keys for table", "already exists");
-    }
+    private final CaseInsensitiveQualifiedTable sourceName;
     
-    @Override
-    public String getDatabaseType() {
-        return "openGauss";
-    }
+    private final PipelineDataSourceConfiguration targetDataSourceConfig;
+    
+    private final CaseInsensitiveQualifiedTable targetName;
 }
