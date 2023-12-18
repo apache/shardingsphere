@@ -48,8 +48,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Combine
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CompleteRegularFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConstraintNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConvertFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CurrentUserFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CteClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CurrentUserFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DuplicateSpecificationContext;
@@ -786,6 +786,8 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         CombineType combineType;
         if (null != ctx.EXCEPT()) {
             combineType = CombineType.EXCEPT;
+        } else if (null != ctx.INTERSECT()) {
+            combineType = CombineType.INTERSECT;
         } else {
             combineType = null == ctx.combineOption() || null == ctx.combineOption().ALL() ? CombineType.UNION : CombineType.UNION_ALL;
         }
