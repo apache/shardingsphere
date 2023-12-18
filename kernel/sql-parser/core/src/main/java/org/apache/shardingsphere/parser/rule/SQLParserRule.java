@@ -58,7 +58,7 @@ public final class SQLParserRule implements GlobalRule {
      */
     public SQLParserEngine getSQLParserEngine(final DatabaseType databaseType) {
         return "Standard".equals(engineType)
-                ? new ShardingSphereSQLParserEngine(databaseType, sqlStatementCache, parseTreeCache, sqlCommentParseEnabled)
+                ? new ShardingSphereSQLParserEngine(databaseType.getTrunkDatabaseType().orElse(databaseType), sqlStatementCache, parseTreeCache, sqlCommentParseEnabled)
                 : new SimpleSQLParserEngine();
     }
 }

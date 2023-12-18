@@ -38,10 +38,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -64,16 +61,6 @@ public final class PipelineJobPreparer {
      */
     public boolean isIncrementalSupported() {
         return DatabaseTypedSPILoader.findService(IncrementalDumperCreator.class, databaseType).map(IncrementalDumperCreator::isSupportIncrementalDump).orElse(false);
-    }
-    
-    /**
-     * Get SQL parser engine.
-     *
-     * @param metaData meta data
-     * @return SQL parser engine
-     */
-    public SQLParserEngine getSQLParserEngine(final ShardingSphereMetaData metaData) {
-        return metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(databaseType);
     }
     
     /**
