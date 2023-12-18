@@ -50,6 +50,24 @@ public final class StorageNodeAggregator {
     }
     
     /**
+     * Aggregate data source map to storage node grouped.
+     * @param dataSources storage unit name and data source map
+     * @param dataSourcePoolPropsMap storage unit name and data source pool properties map
+     * @return storage node and data source map
+     */
+    public static Map<StorageNode, DataSource> aggregateDataSources(final Map<String, DataSource> dataSources, final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap) {
+        Map<StorageNode, DataSource> result = new LinkedHashMap<>();
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            Map<String, Object> standardProps = dataSourcePoolPropsMap.get(entry.getKey()).getConnectionPropertySynonyms().getStandardProperties();
+            String url = standardProps.get("url").toString();
+            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
+            StorageNode storageNode = getStorageNode(entry.getKey(), url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
+            result.putIfAbsent(storageNode, entry.getValue());
+        }
+        return result;
+    }
+    
+    /**
      * Aggregate data source pool properties map to storage node grouped.
      *
      * @param storageUnitDataSourcePoolPropsMap storage unit name and data source pool properties map
