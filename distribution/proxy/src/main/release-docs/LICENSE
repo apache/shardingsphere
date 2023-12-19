@@ -306,6 +306,7 @@ The text of each license is the standard Apache 2.0 license.
     uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
     zookeeper 3.9.0: https://github.com/apache/zookeeper, Apache 2.0
     zookeeper-jute 3.9.0: https://github.com/apache/zookeeper, Apache 2.0
+    java-util 2.4.0: https://github.com/jdereg/java-util, Apache 2.0
 
 ========================================================================
 Apache 2.0 licenses
