@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer;
+package org.apache.shardingsphere.data.pipeline.core.preparer.inventory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

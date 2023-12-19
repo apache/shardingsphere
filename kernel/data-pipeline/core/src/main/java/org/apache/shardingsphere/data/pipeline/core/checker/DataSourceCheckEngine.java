@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.preparer.datasource;
+package org.apache.shardingsphere.data.pipeline.core.checker;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.mapper.TableAndSchemaNameMapper;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineCommonSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithInvalidConnectionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
-import org.apache.shardingsphere.data.pipeline.core.spi.datasource.DialectDataSourceChecker;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 
@@ -37,13 +36,13 @@ import java.util.Collection;
  */
 public final class DataSourceCheckEngine {
     
-    private final DatabaseType databaseType;
+    private final DialectDataSourceChecker checker;
     
-    private final DialectDataSourceChecker dialectDataSourceChecker;
+    private final PipelineCommonSQLBuilder sqlBuilder;
     
     public DataSourceCheckEngine(final DatabaseType databaseType) {
-        this.databaseType = databaseType;
-        dialectDataSourceChecker = DatabaseTypedSPILoader.findService(DialectDataSourceChecker.class, databaseType).orElse(null);
+        checker = DatabaseTypedSPILoader.findService(DialectDataSourceChecker.class, databaseType).orElse(null);
+        sqlBuilder = new PipelineCommonSQLBuilder(databaseType);
     }
     
     /**
@@ -87,8 +86,7 @@ public final class DataSourceCheckEngine {
     }
     
     private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
-        PipelineCommonSQLBuilder pipelineSQLBuilder = new PipelineCommonSQLBuilder(databaseType);
-        String sql = pipelineSQLBuilder.buildCheckEmptySQL(schemaName, tableName);
+        String sql = sqlBuilder.buildCheckEmptySQL(schemaName, tableName);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -103,11 +101,11 @@ public final class DataSourceCheckEngine {
      * @param dataSources data sources
      */
     public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-        if (null == dialectDataSourceChecker) {
+        if (null == checker) {
             return;
         }
         for (DataSource each : dataSources) {
-            dialectDataSourceChecker.checkPrivilege(each);
+            checker.checkPrivilege(each);
         }
     }
     
@@ -117,11 +115,11 @@ public final class DataSourceCheckEngine {
      * @param dataSources data sources
      */
     public void checkVariable(final Collection<? extends DataSource> dataSources) {
-        if (null == dialectDataSourceChecker) {
+        if (null == checker) {
             return;
         }
         for (DataSource each : dataSources) {
-            dialectDataSourceChecker.checkVariable(each);
+            checker.checkVariable(each);
         }
     }
 }

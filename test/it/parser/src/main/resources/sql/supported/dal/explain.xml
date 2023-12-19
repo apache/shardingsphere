@@ -73,4 +73,5 @@
     <sql-case id="explain_set_statement_id_with_into_update" value="EXPLAIN PLAN SET STATEMENT_ID = 'Raise in Tokyo' INTO plan_table FOR UPDATE employees SET salary = salary * 1.10 WHERE department_id = (SELECT department_id FROM departments WHERE location_id = 1700)" db-types="Oracle" />
     <sql-case id="explain_for_select_with_unique_partition_by" value="EXPLAIN PLAN FOR SELECT country, prod, year, sales FROM sales_view WHERE country IN ('Italy', 'Japan') MODEL UNIQUE DIMENSION PARTITION BY (country) DIMENSION BY (prod, year)
     MEASURES (sale sales) RULES UPSERT (sales['Bounce', 2003] = AVG(sales)[ANY, 2002] * 1.24, sales[prod &lt;&gt; 'Bounce', 2003] = sales['Bounce', 2003] * 0.25)" db-types="Oracle" />
+    <sql-case id="explain_with_select_comment" value="/*FORCE_IMCI_NODES*/ explain select /*+ SET_VAR(cost_threshold_for_imci=0) */ * from t_order" db-types="MySQL" />
 </sql-cases>

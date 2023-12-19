@@ -168,9 +168,4 @@ public final class GroovyInlineExpressionParser implements InlineExpressionParse
     public String getType() {
         return "GROOVY";
     }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
 }
