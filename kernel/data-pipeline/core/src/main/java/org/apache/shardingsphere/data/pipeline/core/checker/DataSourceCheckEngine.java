@@ -57,6 +57,24 @@ public final class DataSourceCheckEngine {
         checkVariable(dataSources);
     }
     
+    private void checkPrivilege(final Collection<DataSource> dataSources) {
+        if (null == checker) {
+            return;
+        }
+        for (DataSource each : dataSources) {
+            checker.checkPrivilege(each);
+        }
+    }
+    
+    private void checkVariable(final Collection<DataSource> dataSources) {
+        if (null == checker) {
+            return;
+        }
+        for (DataSource each : dataSources) {
+            checker.checkVariable(each);
+        }
+    }
+    
     /**
      * Check target data sources.
      *
@@ -74,7 +92,7 @@ public final class DataSourceCheckEngine {
      * @param dataSources data sources
      * @throws PrepareJobWithInvalidConnectionException prepare job with invalid connection exception
      */
-    public void checkConnection(final Collection<? extends DataSource> dataSources) {
+    public void checkConnection(final Collection<DataSource> dataSources) {
         try {
             for (DataSource each : dataSources) {
                 each.getConnection().close();
@@ -94,7 +112,7 @@ public final class DataSourceCheckEngine {
      */
     // TODO rename to common usage name
     // TODO Merge schemaName and tableNames
-    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final TableAndSchemaNameMapper tableAndSchemaNameMapper, final Collection<String> logicTableNames) {
+    public void checkTargetTable(final Collection<DataSource> dataSources, final TableAndSchemaNameMapper tableAndSchemaNameMapper, final Collection<String> logicTableNames) {
         try {
             for (DataSource each : dataSources) {
                 for (String tableName : logicTableNames) {
@@ -115,34 +133,6 @@ public final class DataSourceCheckEngine {
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             return !resultSet.next();
-        }
-    }
-    
-    /**
-     * Check user privileges.
-     *
-     * @param dataSources data sources
-     */
-    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-        if (null == checker) {
-            return;
-        }
-        for (DataSource each : dataSources) {
-            checker.checkPrivilege(each);
-        }
-    }
-    
-    /**
-     * Check data source variables.
-     *
-     * @param dataSources data sources
-     */
-    public void checkVariable(final Collection<? extends DataSource> dataSources) {
-        if (null == checker) {
-            return;
-        }
-        for (DataSource each : dataSources) {
-            checker.checkVariable(each);
         }
     }
 }
