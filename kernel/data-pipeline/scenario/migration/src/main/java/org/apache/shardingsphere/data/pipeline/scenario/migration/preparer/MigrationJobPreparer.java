@@ -76,7 +76,6 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -158,21 +157,19 @@ public final class MigrationJobPreparer {
     }
     
     private void prepareAndCheckTarget(final MigrationJobItemContext jobItemContext) throws SQLException {
+        DatabaseType targetDatabaseType = jobItemContext.getJobConfig().getTargetDatabaseType();
         if (jobItemContext.isSourceTargetDatabaseTheSame()) {
-            prepareTarget(jobItemContext);
+            prepareTarget(jobItemContext, targetDatabaseType);
         }
-        TransmissionJobItemProgress initProgress = jobItemContext.getInitProgress();
-        if (null == initProgress) {
+        if (null == jobItemContext.getInitProgress()) {
             PipelineDataSourceWrapper targetDataSource = jobItemContext.getDataSourceManager().getDataSource(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
-            new PipelineJobPreparer(jobItemContext.getJobConfig().getTargetDatabaseType()).checkTargetDataSource(
-                    jobItemContext.getTaskConfig().getImporterConfig(), Collections.singleton(targetDataSource));
+            new DataSourceCheckEngine(targetDatabaseType).checkTargetDataSource(targetDataSource, jobItemContext.getTaskConfig().getImporterConfig());
         }
     }
     
-    private void prepareTarget(final MigrationJobItemContext jobItemContext) throws SQLException {
+    private void prepareTarget(final MigrationJobItemContext jobItemContext, final DatabaseType targetDatabaseType) throws SQLException {
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
         Collection<CreateTableConfiguration> createTableConfigs = jobItemContext.getTaskConfig().getCreateTableConfigurations();
-        DatabaseType targetDatabaseType = jobItemContext.getJobConfig().getTargetDatabaseType();
         PipelineDataSourceManager dataSourceManager = jobItemContext.getDataSourceManager();
         PipelineJobDataSourcePreparer preparer = new PipelineJobDataSourcePreparer(DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, targetDatabaseType));
         preparer.prepareTargetSchemas(new PrepareTargetSchemasParameter(targetDatabaseType, createTableConfigs, dataSourceManager));
