@@ -208,7 +208,7 @@ public class IntervalInlineExpressionParser implements InlineExpressionParser {
         Month startTimeAsMonth = startTime.query(Month::from);
         Month endTimeAsMonth = endTime.query(Month::from);
         return LongStream.iterate(0, x -> x + stepAmount)
-                .limit((endTimeAsMonth.getValue() - startTimeAsMonth.getValue()) / stepAmount + 1)
+                .limit((endTimeAsMonth.getValue() - startTimeAsMonth.getValue()) / stepAmount + 1L)
                 .parallel()
                 .boxed()
                 .map(startTimeAsMonth::plus)

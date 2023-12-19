@@ -45,7 +45,6 @@ public final class JobConfigurationChangedProcessEngine {
      */
     @SuppressWarnings("unchecked")
     public <T extends PipelineJobConfiguration> void process(final Type eventType, final JobConfiguration jobConfig, final JobConfigurationChangedProcessor<T> processor) {
-        T pipelineJobConfig = (T) PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getYamlJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter());
         String jobId = jobConfig.getJobName();
         if (jobConfig.isDisabled()) {
             PipelineJobRegistry.stop(jobId);
@@ -58,6 +57,7 @@ public final class JobConfigurationChangedProcessEngine {
                 if (PipelineJobRegistry.isExisting(jobId)) {
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
+                    T pipelineJobConfig = (T) PipelineJobIdUtils.parseJobType(jobConfig.getJobName()).getYamlJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter());
                     executeJob(jobConfig, pipelineJobConfig, processor);
                 }
                 break;

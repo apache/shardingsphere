@@ -27,7 +27,7 @@ import java.util.Optional;
 /**
  * Database type of MySQL in testcontainers-java.
  */
-public final class TcMySQLDatabaseType extends AbstractTestcontainersDatabaseType {
+public final class TcMySQLDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

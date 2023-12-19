@@ -27,7 +27,7 @@ import java.util.Optional;
 /**
  * Database type of PostgreSQL in testcontainers-java.
  */
-public final class TcPostgreSQLDatabaseType extends AbstractTestcontainersDatabaseType {
+public final class TcPostgreSQLDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

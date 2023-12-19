@@ -27,7 +27,7 @@ import java.util.Optional;
 /**
  * Database type of ClickHouse in testcontainers-java.
  */
-public final class TcClickHouseDatabaseType extends AbstractTestcontainersDatabaseType {
+public final class TcClickHouseDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

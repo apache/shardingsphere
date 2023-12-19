@@ -27,7 +27,7 @@ import java.util.Optional;
 /**
  * Database type of Oracle in testcontainers-java.
  */
-public final class TcOracleDatabaseType extends AbstractTestcontainersDatabaseType {
+public final class TcOracleDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

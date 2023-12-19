@@ -27,7 +27,7 @@ import java.util.Optional;
 /**
  * Database type of MSSQL Server in testcontainers-java.
  */
-public final class TcSQLServerDatabaseType extends AbstractTestcontainersDatabaseType {
+public final class TcSQLServerDatabaseType implements TestcontainersDatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {

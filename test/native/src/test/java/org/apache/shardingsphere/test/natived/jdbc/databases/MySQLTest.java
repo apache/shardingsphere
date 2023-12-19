@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.test.natived.jdbc.commons.AbstractShardingCommonTest;
+import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
 import org.apache.shardingsphere.test.natived.jdbc.commons.FileTestUtils;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Properties;
 
-public class MySQLTest {
+class MySQLTest {
     
     private static final String USERNAME = "root";
     
@@ -46,27 +46,27 @@ public class MySQLTest {
     
     private static Process process;
     
-    private AbstractShardingCommonTest abstractShardingCommonTest;
+    private TestShardingService testShardingService;
     
     @Test
     @EnabledInNativeImage
     void assertShardingInLocalTransactions() throws SQLException, IOException {
         beforeAll();
         DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(FileTestUtils.readFromFileURLString("test-native/yaml/databases/mysql.yaml"));
-        abstractShardingCommonTest = new AbstractShardingCommonTest(dataSource);
+        testShardingService = new TestShardingService(dataSource);
         this.initEnvironment();
-        abstractShardingCommonTest.processSuccess();
-        abstractShardingCommonTest.cleanEnvironment();
+        testShardingService.processSuccess();
+        testShardingService.cleanEnvironment();
         tearDown();
     }
     
     private void initEnvironment() throws SQLException {
-        abstractShardingCommonTest.getOrderRepository().createTableIfNotExistsInMySQL();
-        abstractShardingCommonTest.getOrderItemRepository().createTableIfNotExistsInMySQL();
-        abstractShardingCommonTest.getAddressRepository().createTableIfNotExists();
-        abstractShardingCommonTest.getOrderRepository().truncateTable();
-        abstractShardingCommonTest.getOrderItemRepository().truncateTable();
-        abstractShardingCommonTest.getAddressRepository().truncateTable();
+        testShardingService.getOrderRepository().createTableIfNotExistsInMySQL();
+        testShardingService.getOrderItemRepository().createTableIfNotExistsInMySQL();
+        testShardingService.getAddressRepository().createTableIfNotExists();
+        testShardingService.getOrderRepository().truncateTable();
+        testShardingService.getOrderItemRepository().truncateTable();
+        testShardingService.getAddressRepository().truncateTable();
     }
     
     private static Connection openConnection() throws SQLException {
