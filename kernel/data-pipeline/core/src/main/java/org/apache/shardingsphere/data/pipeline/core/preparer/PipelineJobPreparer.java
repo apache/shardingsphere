@@ -32,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncremen
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PipelineJobDataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectPipelineJobDataSourcePrepareOption;
 import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
-import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -53,15 +52,6 @@ import java.util.Optional;
 public final class PipelineJobPreparer {
     
     private final DatabaseType databaseType;
-    
-    /**
-     * Is incremental supported.
-     *
-     * @return support incremental or not
-     */
-    public boolean isIncrementalSupported() {
-        return DatabaseTypedSPILoader.findService(IncrementalDumperCreator.class, databaseType).map(IncrementalDumperCreator::isSupportIncrementalDump).orElse(false);
-    }
     
     /**
      * Prepare target tables.
