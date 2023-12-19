@@ -15,20 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.sql;
 
-import org.apache.shardingsphere.data.pipeline.core.checker.DialectDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.core.exception.syntax.CreateTableSQLGenerateException;
+import org.apache.shardingsphere.data.pipeline.core.spi.sql.CreateTableSQLGenerator;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 
 import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Collections;
 
-public final class FixtureDataSourceChecker implements DialectDataSourceChecker {
+/**
+* Create table SQL generator for H2.
+ */
+public final class H2CreateTableSQLGenerator implements CreateTableSQLGenerator {
     
     @Override
-    public void checkPrivilege(final DataSource dataSource) {
-    }
-    
-    @Override
-    public void checkVariable(final DataSource dataSource) {
+    public Collection<String> generate(final DataSource dataSource, final String schemaName, final String tableName) {
+        if ("t_order".equalsIgnoreCase(tableName)) {
+            return Collections.singletonList(PipelineContextUtils.getCreateOrderTableSchema());
+        }
+        throw new CreateTableSQLGenerateException(tableName);
     }
     
     @Override

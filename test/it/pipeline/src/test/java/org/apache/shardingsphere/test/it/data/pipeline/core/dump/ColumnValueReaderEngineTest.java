@@ -36,7 +36,7 @@ class ColumnValueReaderEngineTest {
     
     @Test
     void assertReadValue() throws SQLException {
-        ColumnValueReaderEngine columnValueReaderEngine = new ColumnValueReaderEngine(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        ColumnValueReaderEngine columnValueReaderEngine = new ColumnValueReaderEngine(TypedSPILoader.getService(DatabaseType.class, "H2"));
         try (
                 HikariDataSource dataSource = createDataSource(RandomStringUtils.randomAlphanumeric(6));
                 Connection connection = dataSource.getConnection()) {

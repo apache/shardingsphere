@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.h2.sqlbuilder;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.dumper;
 
-import org.apache.shardingsphere.data.pipeline.core.spi.sql.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.DialectColumnValueReader;
+
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.util.Optional;
 
 /**
- * Pipeline SQL builder for H2.
+ * Column value reader for H2.
  */
-public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
+public final class H2ColumnValueReader implements DialectColumnValueReader {
     
     @Override
-    public String buildCheckEmptySQL(final String qualifiedTableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
+    public Optional<Object> read(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) {
+        return Optional.empty();
     }
     
     @Override

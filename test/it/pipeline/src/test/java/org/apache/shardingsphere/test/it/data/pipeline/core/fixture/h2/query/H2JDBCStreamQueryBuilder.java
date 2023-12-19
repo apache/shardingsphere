@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.h2.query;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.query;
 
 import org.apache.shardingsphere.data.pipeline.core.query.DialectJDBCStreamQueryBuilder;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;

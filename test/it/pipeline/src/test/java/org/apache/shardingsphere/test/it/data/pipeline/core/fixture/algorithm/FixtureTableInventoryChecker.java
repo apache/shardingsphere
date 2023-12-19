@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.h2.datasource;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.algorithm;
 
-import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryChecker;
 
-import java.util.Properties;
-
-/**
- * H2 JDBC query properties extension.
- *
- * <p>H2 is branch database of MySQL, but JDBC URL isn't compatible with MySQL.</p>
- */
-public final class H2JdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
+public final class FixtureTableInventoryChecker implements TableInventoryChecker {
     
     @Override
-    public void extendQueryProperties(final Properties props) {
+    public void cancel() {
     }
     
     @Override
-    public String getDatabaseType() {
-        return "H2";
+    public boolean isCanceling() {
+        return false;
+    }
+    
+    @Override
+    public TableDataConsistencyCheckResult checkSingleTableInventoryData() {
+        return new TableDataConsistencyCheckResult(true);
     }
 }

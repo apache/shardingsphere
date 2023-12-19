@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.dumper;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;
@@ -24,19 +24,21 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPositi
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.dumper.IncrementalDumperCreator;
 
+import static org.mockito.Mockito.mock;
+
 /**
- * Fixture incremental dumper creator.
+ * H2 incremental dumper creator.
  */
-public final class FixtureIncrementalDumperCreator implements IncrementalDumperCreator {
+public final class H2IncrementalDumperCreator implements IncrementalDumperCreator {
     
     @Override
     public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context, final IngestPosition position,
                                                      final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        return new FixtureIncrementalDumper();
+        return mock(IncrementalDumper.class);
     }
     
     @Override
     public String getDatabaseType() {
-        return "Fixture";
+        return "H2";
     }
 }

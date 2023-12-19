@@ -15,34 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.datasource;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
 
-@RequiredArgsConstructor
-public final class FixturePipelineDataSourceConfiguration implements PipelineDataSourceConfiguration {
-    
-    private final DatabaseType databaseType;
+import java.util.Properties;
+
+/**
+ * H2 JDBC query properties extension.
+ *
+ * <p>H2 is branch database of MySQL, but JDBC URL isn't compatible with MySQL.</p>
+ */
+public final class H2JdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
     
     @Override
-    public String getParameter() {
-        return null;
+    public void extendQueryProperties(final Properties props) {
     }
     
     @Override
-    public Object getDataSourceConfiguration() {
-        return null;
-    }
-    
-    @Override
-    public DatabaseType getDatabaseType() {
-        return databaseType;
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
+    public String getDatabaseType() {
+        return "H2";
     }
 }

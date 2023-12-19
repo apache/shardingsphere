@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.checker;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.core.spi.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.data.pipeline.core.checker.DialectDataSourceChecker;
 
 import javax.sql.DataSource;
 
-public final class H2PositionInitializer implements PositionInitializer {
+/**
+ * Data source checker for H2.
+ */
+public final class H2DataSourceChecker implements DialectDataSourceChecker {
     
     @Override
-    public PlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {
-        return new PlaceholderPosition();
+    public void checkPrivilege(final DataSource dataSource) {
     }
     
     @Override
-    public PlaceholderPosition init(final String data) {
-        return new PlaceholderPosition();
+    public void checkVariable(final DataSource dataSource) {
     }
     
     @Override

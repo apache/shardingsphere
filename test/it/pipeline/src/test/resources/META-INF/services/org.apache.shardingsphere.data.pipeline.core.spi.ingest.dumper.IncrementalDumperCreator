@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureIncrementalDumperCreator
-org.apache.shardingsphere.test.it.data.pipeline.h2.dumper.H2IncrementalDumperCreator
+org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.dumper.H2IncrementalDumperCreator

@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryChecker;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.core.spi.ingest.position.PositionInitializer;
 
-public final class FixtureTableInventoryChecker implements TableInventoryChecker {
+import javax.sql.DataSource;
+
+/**
+ * Position initializer for H2.
+ */
+public final class H2PositionInitializer implements PositionInitializer {
     
     @Override
-    public void cancel() {
+    public PlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {
+        return new PlaceholderPosition();
     }
     
     @Override
-    public boolean isCanceling() {
-        return false;
+    public PlaceholderPosition init(final String data) {
+        return new PlaceholderPosition();
     }
     
     @Override
-    public TableDataConsistencyCheckResult checkSingleTableInventoryData() {
-        return new TableDataConsistencyCheckResult(true);
+    public String getDatabaseType() {
+        return "H2";
     }
 }
