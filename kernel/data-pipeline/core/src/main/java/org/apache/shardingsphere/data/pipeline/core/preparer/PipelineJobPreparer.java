@@ -29,9 +29,6 @@ import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfigurati
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.PipelineJobDataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.option.DialectPipelineJobDataSourcePrepareOption;
-import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -54,25 +51,13 @@ public final class PipelineJobPreparer {
     private final DatabaseType databaseType;
     
     /**
-     * Prepare target tables.
-     *
-     * @param prepareTargetTablesParam prepare target tables parameter
-     * @throws SQLException SQL exception
-     */
-    public void prepareTargetTables(final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
-        long startTimeMillis = System.currentTimeMillis();
-        new PipelineJobDataSourcePreparer(DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, databaseType)).prepareTargetTables(prepareTargetTablesParam);
-        log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
-    }
-    
-    /**
      * Get incremental position.
      *
      * @param initIncremental init incremental
      * @param dumperContext dumper config
      * @param dataSourceManager data source manager
      * @return ingest position
-     * @throws SQLException sql exception
+     * @throws SQLException SQL exception
      */
     public IngestPosition getIncrementalPosition(final JobItemIncrementalTasksProgress initIncremental, final IncrementalDumperContext dumperContext,
                                                  final PipelineDataSourceManager dataSourceManager) throws SQLException {
@@ -95,10 +80,10 @@ public final class PipelineJobPreparer {
         if (dataSources.isEmpty()) {
             return;
         }
-        DataSourceCheckEngine dataSourceCheckEngine = new DataSourceCheckEngine(databaseType);
-        dataSourceCheckEngine.checkConnection(dataSources);
-        dataSourceCheckEngine.checkPrivilege(dataSources);
-        dataSourceCheckEngine.checkVariable(dataSources);
+        DataSourceCheckEngine checkEngine = new DataSourceCheckEngine(databaseType);
+        checkEngine.checkConnection(dataSources);
+        checkEngine.checkPrivilege(dataSources);
+        checkEngine.checkVariable(dataSources);
     }
     
     /**
