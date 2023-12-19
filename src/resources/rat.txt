@@ -62,4 +62,5 @@
 # test files
 
 **/export-metadata-configuration.data
+**/export-metadata-configuration_for_win.data
 
