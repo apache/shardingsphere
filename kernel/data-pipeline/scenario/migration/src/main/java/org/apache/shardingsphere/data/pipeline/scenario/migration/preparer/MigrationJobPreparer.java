@@ -172,12 +172,12 @@ public final class MigrationJobPreparer {
         Collection<CreateTableConfiguration> createTableConfigs = jobItemContext.getTaskConfig().getCreateTableConfigurations();
         DatabaseType targetDatabaseType = jobItemContext.getJobConfig().getTargetDatabaseType();
         PipelineDataSourceManager dataSourceManager = jobItemContext.getDataSourceManager();
-        PrepareTargetSchemasParameter prepareTargetSchemasParam = new PrepareTargetSchemasParameter(targetDatabaseType, createTableConfigs, dataSourceManager);
-        new PipelineJobDataSourcePreparer(DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, targetDatabaseType)).prepareTargetSchemas(prepareTargetSchemasParam);
+        PipelineJobDataSourcePreparer preparer = new PipelineJobDataSourcePreparer(DatabaseTypedSPILoader.getService(DialectPipelineJobDataSourcePrepareOption.class, targetDatabaseType));
+        preparer.prepareTargetSchemas(new PrepareTargetSchemasParameter(targetDatabaseType, createTableConfigs, dataSourceManager));
         ShardingSphereMetaData metaData = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId())).getContextManager().getMetaDataContexts().getMetaData();
         SQLParserEngine sqlParserEngine = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)
                 .getSQLParserEngine(metaData.getDatabase(jobConfig.getTargetDatabaseName()).getProtocolType());
-        new PipelineJobPreparer(targetDatabaseType).prepareTargetTables(new PrepareTargetTablesParameter(createTableConfigs, dataSourceManager, sqlParserEngine));
+        preparer.prepareTargetTables(new PrepareTargetTablesParameter(createTableConfigs, dataSourceManager, sqlParserEngine));
     }
     
     private void prepareIncremental(final MigrationJobItemContext jobItemContext) {

@@ -104,6 +104,7 @@ public final class PipelineJobDataSourcePreparer {
      * @throws SQLException SQL exception
      */
     public void prepareTargetTables(final PrepareTargetTablesParameter param) throws SQLException {
+        final long startTimeMillis = System.currentTimeMillis();
         PipelineDataSourceManager dataSourceManager = param.getDataSourceManager();
         for (CreateTableConfiguration each : param.getCreateTableConfigurations()) {
             String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine());
@@ -113,6 +114,7 @@ public final class PipelineJobDataSourcePreparer {
                 }
             }
         }
+        log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     private void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
