@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.h2.ingest.dumper;
+package org.apache.shardingsphere.test.it.data.pipeline.h2.dumper;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.context.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.PipelineChannel;

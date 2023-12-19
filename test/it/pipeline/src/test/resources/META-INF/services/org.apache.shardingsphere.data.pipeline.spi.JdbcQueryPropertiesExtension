@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.h2.query.H2JDBCStreamQueryBuilder
+org.apache.shardingsphere.test.it.data.pipeline.h2.datasource.H2JdbcQueryPropertiesExtension

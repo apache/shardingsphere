@@ -89,7 +89,7 @@ duplicateSpecification
     ;
 
 projections
-    : (unqualifiedShorthand | projection) (COMMA_ projection)*
+    : (unqualifiedShorthand | projection) (COMMA_ (unqualifiedShorthand | projection))*
     ;
 
 projection
