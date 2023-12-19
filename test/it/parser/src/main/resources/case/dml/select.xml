@@ -7681,4 +7681,17 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_unreserved_column">
+        <from>
+            <simple-table name="servers" start-index="38" stop-index="48">
+                <owner name="sys" start-index="38" stop-index="40"/>
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="31">
+           <column-projection name="name" start-index="7" stop-index="10"/>
+           <column-projection name="server_id" start-index="13" stop-index="21"/>
+           <column-projection name="provider" start-index="24" stop-index="31"/>
+        </projections>
+    </select>
 </sql-parser-test-cases>
