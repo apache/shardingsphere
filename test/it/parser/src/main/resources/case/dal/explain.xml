@@ -17,6 +17,62 @@
   -->
 
 <sql-parser-test-cases>
+    <describe sql-case-id="explain_extended_select">
+        <select>
+            <projections start-index="24" stop-index="49">
+                <expression-projection text="10 % 7" start-index="24" stop-index="29">
+                    <expr>
+                        <binary-operation-expression start-index="24" stop-index="29">
+                            <left>
+                                <literal-expression value="10" start-index="24" stop-index="25" />
+                            </left>
+                            <right>
+                                <literal-expression value="7" start-index="29" stop-index="29" />
+                            </right>
+                            <operator>%</operator>
+                        </binary-operation-expression>
+                    </expr>    
+                </expression-projection>
+                <expression-projection text="10 mod 7" start-index="32" stop-index="39">
+                    <expr>
+                        <binary-operation-expression start-index="32" stop-index="39">
+                            <left>
+                                <literal-expression value="10" start-index="32" stop-index="33" />
+                            </left>
+                            <right>
+                                <literal-expression value="7" start-index="39" stop-index="39" />
+                            </right>
+                            <operator>mod</operator>
+                        </binary-operation-expression>
+                    </expr>
+                </expression-projection>
+                <expression-projection text="10 div 3" start-index="42" stop-index="49">
+                    <expr>
+                        <binary-operation-expression start-index="42" stop-index="49">
+                            <left>
+                                <literal-expression value="10" start-index="42" stop-index="43" />
+                            </left>
+                            <right>
+                                <literal-expression value="3" start-index="49" stop-index="49" />
+                            </right>
+                            <operator>div</operator>
+                        </binary-operation-expression>
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </describe>
+    
+    <describe sql-case-id="explain_partitions_select">
+        <select>
+            <projections start-index="26" stop-index="26">
+                <expression-projection text="1" start-index="26" stop-index="26">
+                    <literal-expression value="1" start-index="26" stop-index="26" />
+                </expression-projection>
+            </projections>
+        </select>
+    </describe>
+    
     <describe sql-case-id="explain_select_constant_without_table">
         <select>
             <projections start-index="15" stop-index="20">
