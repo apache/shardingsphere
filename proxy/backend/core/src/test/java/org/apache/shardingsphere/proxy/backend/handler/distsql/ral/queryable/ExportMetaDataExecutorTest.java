@@ -84,8 +84,11 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class ExportMetaDataExecutorTest {
     
-    private static final String METADATA_VALUE_EXPECTED = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7ImVtcHR5X21ldGFkYXRhIjoiZGF0YWJhc2VOYW1lOiBudWxsXG5kYXRhU291cmNlczpcbn"
+    private static final String METADATA_VALUE_EXPECTED_FOR_UNIX = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7ImVtcHR5X21ldGFkYXRhIjoiZGF0YWJhc2VOYW1lOiBudWxsXG5kYXRhU291cmNlczpcbn"
             + "J1bGVzOlxuIn0sInByb3BzIjoiIiwicnVsZXMiOiJydWxlczpcbi0gIUdMT0JBTF9DTE9DS1xuICBlbmFibGVkOiBmYWxzZVxuICBwcm92aWRlcjogbG9jYWxcbiAgdHlwZTogVFNPXG4ifX0=";
+    
+    private static final String METADATA_VALUE_EXPECTED_FOR_WIN = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7ImVtcHR5X21ldGFkYXRhIjoiZGF0YWJhc2VOYW1lOiBudWxsXHJcbmRhdGFTb3VyY2VzO"
+            + "lxyXG5ydWxlczpcclxuIn0sInByb3BzIjoiIiwicnVsZXMiOiJydWxlczpcclxuLSAhR0xPQkFMX0NMT0NLXHJcbiAgZW5hYmxlZDogZmFsc2VcclxuICBwcm92aWRlcjogbG9jYWxcclxuICB0eXBlOiBUU09cclxuIn19";
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -117,7 +120,11 @@ class ExportMetaDataExecutorTest {
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(3), is(METADATA_VALUE_EXPECTED));
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            assertThat(row.getCell(3), is(METADATA_VALUE_EXPECTED_FOR_WIN));
+        } else {
+            assertThat(row.getCell(3), is(METADATA_VALUE_EXPECTED_FOR_UNIX));
+        }
     }
     
     private ContextManager mockEmptyContextManager() {
@@ -194,7 +201,12 @@ class ExportMetaDataExecutorTest {
     @SneakyThrows(IOException.class)
     private String loadExpectedRow() {
         StringBuilder result = new StringBuilder();
-        String fileName = Objects.requireNonNull(ExportMetaDataExecutorTest.class.getResource("/expected/export-metadata-configuration.data")).getFile();
+        String fileName;
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            fileName = Objects.requireNonNull(ExportMetaDataExecutorTest.class.getResource("/expected/export-metadata-configuration_for_win.data")).getFile();
+        } else {
+            fileName = Objects.requireNonNull(ExportMetaDataExecutorTest.class.getResource("/expected/export-metadata-configuration.data")).getFile();
+        }
         try (
                 FileReader fileReader = new FileReader(fileName);
                 BufferedReader reader = new BufferedReader(fileReader)) {
