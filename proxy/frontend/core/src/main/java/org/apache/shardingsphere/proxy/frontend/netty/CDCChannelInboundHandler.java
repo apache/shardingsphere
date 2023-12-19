@@ -210,7 +210,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         StopStreamingRequestBody requestBody = request.getStopStreamingRequestBody();
         String database = backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId());
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), database);
-        backendHandler.stopStreaming(connectionContext.getJobId(), ctx.channel().id());
+        backendHandler.stopStreaming(requestBody.getStreamingId(), ctx.channel().id());
         connectionContext.setJobId(null);
         ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
     }
@@ -218,8 +218,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     private void processDropStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
         DropStreamingRequestBody requestBody = request.getDropStreamingRequestBody();
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId()));
-        String streamingId = request.getDropStreamingRequestBody().getStreamingId();
-        backendHandler.dropStreaming(streamingId);
+        backendHandler.dropStreaming(requestBody.getStreamingId());
         connectionContext.setJobId(null);
         ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
     }
