@@ -39,7 +39,7 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements Assisted
     public String getType() {
         return "assistedTest";
     }
-    
+
     @Override
     public void init(Properties props) {
         this.props = props;
