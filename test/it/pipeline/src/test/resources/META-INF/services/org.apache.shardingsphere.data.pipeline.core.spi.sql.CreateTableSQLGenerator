@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.it.data.pipeline.core.fixture.H2CreateTableSQLGenerator
+org.apache.shardingsphere.test.it.data.pipeline.h2.sql.H2CreateTableSQLGenerator

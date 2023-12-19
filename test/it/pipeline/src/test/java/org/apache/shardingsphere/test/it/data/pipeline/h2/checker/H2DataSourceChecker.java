@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.test.it.data.pipeline.h2.checker;
 
 import org.apache.shardingsphere.data.pipeline.core.checker.DialectDataSourceChecker;
 
 import javax.sql.DataSource;
 
-public final class FixtureDataSourceChecker implements DialectDataSourceChecker {
+/**
+ * Data source checker for H2.
+ */
+public final class H2DataSourceChecker implements DialectDataSourceChecker {
     
     @Override
     public void checkPrivilege(final DataSource dataSource) {

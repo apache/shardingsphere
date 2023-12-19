@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.test.it.data.pipeline.h2.ingest.position;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.spi.ingest.position.PositionInitializer;
 
 import javax.sql.DataSource;
 
+/**
+ * Position initializer for H2.
+ */
 public final class H2PositionInitializer implements PositionInitializer {
     
     @Override

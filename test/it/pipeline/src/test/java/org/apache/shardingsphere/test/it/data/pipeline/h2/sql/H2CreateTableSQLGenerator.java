@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.test.it.data.pipeline.h2.sql;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.syntax.CreateTableSQLGenerateException;
 import org.apache.shardingsphere.data.pipeline.core.spi.sql.CreateTableSQLGenerator;
