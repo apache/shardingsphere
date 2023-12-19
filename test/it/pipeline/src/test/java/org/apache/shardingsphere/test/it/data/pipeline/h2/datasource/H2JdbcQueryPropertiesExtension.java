@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.h2.sqlbuilder;
+package org.apache.shardingsphere.test.it.data.pipeline.h2.datasource;
 
-import org.apache.shardingsphere.data.pipeline.core.spi.sql.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
+
+import java.util.Properties;
 
 /**
- * Pipeline SQL builder for H2.
+ * H2 JDBC query properties extension.
+ *
+ * <p>H2 is branch database of MySQL, but JDBC URL isn't compatible with MySQL.</p>
  */
-public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
+public final class H2JdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
     
     @Override
-    public String buildCheckEmptySQL(final String qualifiedTableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
+    public void extendQueryProperties(final Properties props) {
     }
     
     @Override

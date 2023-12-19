@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.h2.datasource;
+package org.apache.shardingsphere.test.it.data.pipeline.h2.query;
 
-import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
+import org.apache.shardingsphere.data.pipeline.core.query.DialectJDBCStreamQueryBuilder;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
-import java.util.Properties;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * H2 JDBC query properties extension.
- *
- * <p>H2 is branch database of MySQL, but JDBC URL isn't compatible with MySQL.</p>
+ * JDBC stream query builder for H2.
  */
-public final class H2JdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
+public final class H2JDBCStreamQueryBuilder implements DialectJDBCStreamQueryBuilder {
     
     @Override
-    public void extendQueryProperties(final Properties props) {
+    public PreparedStatement build(final DatabaseType databaseType, final Connection connection, final String sql) throws SQLException {
+        return connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
     }
     
     @Override

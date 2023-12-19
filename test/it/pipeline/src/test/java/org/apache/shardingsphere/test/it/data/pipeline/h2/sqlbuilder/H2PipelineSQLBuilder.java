@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.h2.query;
+package org.apache.shardingsphere.test.it.data.pipeline.h2.sqlbuilder;
 
-import org.apache.shardingsphere.data.pipeline.core.query.DialectJDBCStreamQueryBuilder;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.apache.shardingsphere.data.pipeline.core.spi.sql.DialectPipelineSQLBuilder;
 
 /**
- * JDBC stream query builder for H2.
+ * Pipeline SQL builder for H2.
  */
-public final class H2JDBCStreamQueryBuilder implements DialectJDBCStreamQueryBuilder {
+public final class H2PipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
-    public PreparedStatement build(final DatabaseType databaseType, final Connection connection, final String sql) throws SQLException {
-        return connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+    public String buildCheckEmptySQL(final String qualifiedTableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", qualifiedTableName);
     }
     
     @Override
