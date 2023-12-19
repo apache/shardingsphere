@@ -17,31 +17,23 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.metadata.processor;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.impl.AbstractJobConfigurationChangedProcessor;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.JobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
-import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
 
 /**
  * Consistency check job configuration changed processor.
  */
-@Slf4j
-public final class ConsistencyCheckJobConfigurationChangedProcessor extends AbstractJobConfigurationChangedProcessor {
+public final class ConsistencyCheckJobConfigurationChangedProcessor implements JobConfigurationChangedProcessor<ConsistencyCheckJobConfiguration> {
     
     @Override
-    protected void onDeleted(final JobConfiguration jobConfig) {
-    }
-    
-    @Override
-    protected PipelineJob buildJob() {
+    public PipelineJob createJob(final ConsistencyCheckJobConfiguration jobConfig) {
         return new ConsistencyCheckJob();
     }
     
     @Override
-    protected PipelineJobType getJobType() {
-        return new ConsistencyCheckJobType();
+    public String getType() {
+        return "CONSISTENCY_CHECK";
     }
 }

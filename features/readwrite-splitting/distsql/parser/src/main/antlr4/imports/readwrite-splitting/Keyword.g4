@@ -134,3 +134,23 @@ WEIGHT
 NOT
     : N O T
     ;
+
+QUERY
+    : Q U E R Y
+    ;
+
+LOAD
+    : L O A D
+    ;
+
+BALANCE
+    : B A L A N C E
+    ;
+
+ALGORITHM
+    : A L G O R I T H M
+    ;
+
+IMPLEMENTATIONS
+    : I M P L E M E N T A T I O N S
+    ;

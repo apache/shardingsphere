@@ -1171,7 +1171,7 @@ listPartitions
     ;
 
 listValuesClause
-    : VALUES ( listValues | DEFAULT )
+    : VALUES LP_ (listValues | DEFAULT) RP_
     ;
 
 listValues

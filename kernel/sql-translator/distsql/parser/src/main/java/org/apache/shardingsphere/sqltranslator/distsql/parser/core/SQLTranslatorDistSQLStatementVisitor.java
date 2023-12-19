@@ -19,10 +19,13 @@ package org.apache.shardingsphere.sqltranslator.distsql.parser.core;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.AlterSQLTranslatorRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.ShowSQLTranslatorRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.UseOriginalSQLDefinitionContext;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -43,9 +46,13 @@ public final class SQLTranslatorDistSQLStatementVisitor extends SQLTranslatorDis
     
     @Override
     public ASTNode visitAlterSQLTranslatorRule(final AlterSQLTranslatorRuleContext ctx) {
-        return new AlterSQLTranslatorRuleStatement(getIdentifierValue(ctx.sqlTranslatorRuleDefinition().providerName()), getProperties(ctx.sqlTranslatorRuleDefinition().propertiesDefinition()),
-                null == ctx.sqlTranslatorRuleDefinition().useOriginalSQLDefinition() ? null
-                        : Boolean.valueOf(getIdentifierValue(ctx.sqlTranslatorRuleDefinition().useOriginalSQLDefinition().useOriginalSQL())));
+        return new AlterSQLTranslatorRuleStatement((AlgorithmSegment) visit(ctx.sqlTranslatorRuleDefinition().algorithmDefinition()),
+                isUseOriginalSQLWhenTranslatingFailed(ctx.sqlTranslatorRuleDefinition().useOriginalSQLDefinition()));
+    }
+    
+    @Override
+    public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
+        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmTypeName()), getProperties(ctx.propertiesDefinition()));
     }
     
     private Properties getProperties(final PropertiesDefinitionContext ctx) {
@@ -57,6 +64,10 @@ public final class SQLTranslatorDistSQLStatementVisitor extends SQLTranslatorDis
             result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;
+    }
+    
+    private Boolean isUseOriginalSQLWhenTranslatingFailed(final UseOriginalSQLDefinitionContext ctx) {
+        return null == ctx ? null : Boolean.valueOf(getIdentifierValue(ctx.useOriginalSQL()));
     }
     
     private String getIdentifierValue(final ParseTree context) {

@@ -27,5 +27,6 @@ execute
     | alterReadwriteSplittingStorageUnitStatus
     | showStatusFromReadwriteSplittingRules
     | countReadwriteSplittingRule
+    | showReadQueryLoadBalanceAlgorithmImplementations
     ) SEMI_? EOF
     ;

@@ -34,6 +34,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShadowRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowDefaultShadowAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowAlgorithmsContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowAlgorithmImplementationsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowTableRulesContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
@@ -48,6 +49,7 @@ import org.apache.shardingsphere.shadow.distsql.statement.DropDefaultShadowAlgor
 import org.apache.shardingsphere.shadow.distsql.statement.DropShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.statement.DropShadowRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowDefaultShadowAlgorithmStatement;
+import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowAlgorithmImplementationsStatement;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowAlgorithmsStatement;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowRulesStatement;
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowTableRulesStatement;
@@ -200,5 +202,10 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     private String buildAlgorithmName(final String ruleName, final String tableName, final String algorithmType, final int index) {
         return String.format("%s_%s_%s_%d", ruleName, tableName, algorithmType, index).toLowerCase();
+    }
+    
+    @Override
+    public ASTNode visitShowShadowAlgorithmImplementations(final ShowShadowAlgorithmImplementationsContext ctx) {
+        return new ShowShadowAlgorithmImplementationsStatement();
     }
 }

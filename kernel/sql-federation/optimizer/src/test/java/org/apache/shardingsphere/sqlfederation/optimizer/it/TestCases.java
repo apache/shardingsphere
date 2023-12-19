@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.it;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
  * JAXB definition of test cases.
  */
-@XmlRootElement(name = "test-cases")
+@JacksonXmlRootElement(localName = "test-cases")
 @Getter
 public final class TestCases {
     
-    @XmlElement(name = "test-case")
+    @JacksonXmlProperty(localName = "test-case")
     private final Collection<TestCase> testCases = new LinkedList<>();
 }

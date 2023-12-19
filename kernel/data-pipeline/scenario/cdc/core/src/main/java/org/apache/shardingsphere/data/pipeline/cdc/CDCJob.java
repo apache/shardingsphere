@@ -51,6 +51,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfigurationUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineWriteConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.CaseInsensitiveIdentifier;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConfigurationPersistService;
@@ -71,24 +72,20 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemContext> {
     
+    private final CDCJobAPI jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
+    
+    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new CDCJobType().getYamlJobItemProgressSwapper());
+    
+    private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
+    
+    private final CDCJobPreparer jobPreparer = new CDCJobPreparer();
+    
     @Getter
     private final PipelineSink sink;
-    
-    private final CDCJobAPI jobAPI;
-    
-    private final PipelineJobItemManager<TransmissionJobItemProgress> jobItemManager;
-    
-    private final PipelineProcessConfigurationPersistService processConfigPersistService;
-    
-    private final CDCJobPreparer jobPreparer;
     
     public CDCJob(final PipelineSink sink) {
         super(new PipelineJobRunnerManager(new CDCJobRunnerCleaner(sink)));
         this.sink = sink;
-        jobAPI = (CDCJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "STREAMING");
-        jobItemManager = new PipelineJobItemManager<>(new CDCJobType().getYamlJobItemProgressSwapper());
-        processConfigPersistService = new PipelineProcessConfigurationPersistService();
-        jobPreparer = new CDCJobPreparer();
     }
     
     @Override
@@ -122,9 +119,10 @@ public final class CDCJob extends AbstractInseparablePipelineJob<CDCJobItemConte
                 jobConfig.getDataSourceConfig().getType(), jobConfig.getDataSourceConfig().getParameter());
         Map<CaseInsensitiveIdentifier, Set<String>> shardingColumnsMap = new ShardingColumnsExtractor()
                 .getShardingColumnsMap(jobConfig.getDataSourceConfig().getRootConfig().getRules(), schemaTableNames.stream().map(CaseInsensitiveIdentifier::new).collect(Collectors.toSet()));
-        int batchSize = pipelineProcessConfig.getWrite().getBatchSize();
-        JobRateLimitAlgorithm writeRateLimitAlgorithm = new TransmissionProcessContext(jobConfig.getJobId(), pipelineProcessConfig).getWriteRateLimitAlgorithm();
-        return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, mapper, batchSize, writeRateLimitAlgorithm, 0, 1);
+        PipelineWriteConfiguration write = pipelineProcessConfig.getWrite();
+        JobRateLimitAlgorithm writeRateLimitAlgorithm = null == write.getRateLimiter() ? null
+                : TypedSPILoader.getService(JobRateLimitAlgorithm.class, write.getRateLimiter().getType(), write.getRateLimiter().getProps());
+        return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, mapper, write.getBatchSize(), writeRateLimitAlgorithm, 0, 1);
     }
     
     @Override

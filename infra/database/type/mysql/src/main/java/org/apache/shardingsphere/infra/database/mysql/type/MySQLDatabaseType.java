@@ -23,13 +23,13 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Database type of MySQL. Includes verification of Docker Images involved in commonly used testcontainers.
+ * Database type of MySQL.
  */
 public final class MySQLDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:", "jdbc:tc:mysql:");
+        return Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:");
     }
     
     @Override

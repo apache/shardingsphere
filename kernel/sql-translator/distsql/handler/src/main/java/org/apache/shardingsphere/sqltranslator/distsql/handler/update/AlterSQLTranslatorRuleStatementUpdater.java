@@ -24,22 +24,18 @@ import org.apache.shardingsphere.sqltranslator.distsql.statement.updateable.Alte
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 
 /**
- * Alter SQL translator rule statement handler.
+ * Alter SQL translator rule statement updater.
  */
 public final class AlterSQLTranslatorRuleStatementUpdater implements GlobalRuleRALUpdater<AlterSQLTranslatorRuleStatement, SQLTranslatorRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final SQLTranslatorRuleConfiguration currentRuleConfig, final AlterSQLTranslatorRuleStatement sqlStatement) {
-        checkProvider(sqlStatement);
-    }
-    
-    private void checkProvider(final AlterSQLTranslatorRuleStatement sqlStatement) {
-        TypedSPILoader.checkService(SQLTranslator.class, sqlStatement.getType(), sqlStatement.getProps());
+        TypedSPILoader.checkService(SQLTranslator.class, sqlStatement.getProvider().getName(), sqlStatement.getProvider().getProps());
     }
     
     @Override
     public SQLTranslatorRuleConfiguration buildAlteredRuleConfiguration(final SQLTranslatorRuleConfiguration currentRuleConfig, final AlterSQLTranslatorRuleStatement sqlStatement) {
-        return new SQLTranslatorRuleConfiguration(sqlStatement.getType(), sqlStatement.getProps(),
+        return new SQLTranslatorRuleConfiguration(sqlStatement.getProvider().getName(), sqlStatement.getProvider().getProps(),
                 null == sqlStatement.getUseOriginalSQLWhenTranslatingFailed() ? currentRuleConfig.isUseOriginalSQLWhenTranslatingFailed() : sqlStatement.getUseOriginalSQLWhenTranslatingFailed());
     }
     

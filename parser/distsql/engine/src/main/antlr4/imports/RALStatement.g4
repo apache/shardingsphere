@@ -119,6 +119,10 @@ showServiceProviderImplementations
     : SHOW IMPLEMENTATIONS OF serviceProviderInterface
     ;
 
+showKeyGenerateAlgorithmImplementations
+    : SHOW KEY GENERATE ALGORITHM IMPLEMENTATIONS
+    ;
+
 transmissionRule
     : LP_ readDefinition? (COMMA_? writeDefinition)? (COMMA_? streamChannel)? RP_
     ;

@@ -258,11 +258,13 @@ The text of each license is the standard Apache 2.0 license.
     httpcore5-h2 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
     httpcore5 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
     j2objc-annotations 1.3 https://github.com/google/j2objc/, Apache 2.0
-    jackson-annotations 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-core 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-databind 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-dataformat-yaml 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-datatype-jsr310 2.14.0: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-annotations 2.16.0: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-core 2.16.0: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-databind 2.16.0: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-dataformat-xml 2.16.0: https://github.com/FasterXML/jackson-dataformat-xml, Apache 2.0
+    jackson-dataformat-yaml 2.16.0: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-datatype-jdk8 2.16.0: http://github.com/FasterXML/jackson-modules-java8, Apache 2.0
+    jackson-datatype-jsr310 2.16.0: http://github.com/FasterXML/jackson, Apache 2.0
     jcl-over-slf4j 1.7.36: https://github.com/qos-ch/slf4j, Apache 2.0
     jetcd-api 0.7.6: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-common 0.7.6: https://github.com/etcd-io/jetcd, Apache 2.0
@@ -335,17 +337,6 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     protobuf-java-util 3.21.12: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
     jts-io-common 1.19.0: https://github.com/locationtech/jts, EDL 1.0
     jts-core 1.19.0: https://github.com/locationtech/jts, EDL 1.0
-
-========================================================================
-EDL licenses
-========================================================================
-
-The following components are provided under the EDL License. See project link for details.
-The text of each license is also included at licenses/LICENSE-[project].txt.
-
-    jakarta.activation-api 1.2.2: https://github.com/jakartaee/jaf-api, EDL 1.0
-    jakarta.xml.bind-api 2.3.3: https://github.com/jakartaee/jaxb-api, EDL 1.0
-    jaxb-runtime 2.3.9 https://eclipse-ee4j.github.io/jaxb-ri/, EDL 1.0
 
 ========================================================================
 EPL licenses

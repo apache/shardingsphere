@@ -51,5 +51,6 @@ execute
     | lockCluster
     | unlockCluster
     | showServiceProviderImplementations
+    | showKeyGenerateAlgorithmImplementations
     ) SEMI_? EOF
     ;
